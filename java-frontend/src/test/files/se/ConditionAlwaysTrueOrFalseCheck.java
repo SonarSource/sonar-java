@@ -1627,3 +1627,39 @@ public class MultiThread {
   }
 }
 
+class BooleanWrapper {
+  void test1(Boolean condition) {
+    if (Boolean.FALSE.equals(condition)) {
+    } else if (Boolean.TRUE.equals(condition)) {
+    } else if (condition == null) { // Noncompliant
+    }
+  }
+
+  void test2(Boolean condition) {
+    if (Boolean.TRUE.equals(condition)) {
+    } else if (condition == null) {
+    } else if (Boolean.FALSE.equals(condition)) { // Noncompliant
+    }
+  }
+
+  void test3(Boolean condition) {
+    if (condition == null) {
+    } else if (Boolean.FALSE.equals(condition)) {
+    } else if (Boolean.TRUE.equals(condition)) { // Noncompliant
+    }
+  }
+
+  void test4(Boolean condition) {
+    if (Boolean.TRUE.equals(condition)) {
+      if (Boolean.FALSE.equals(condition)) {} // Noncompliant
+      if (null == condition) {} // Noncompliant
+    }
+  }
+
+  void test5(Boolean condition) {
+    if (null != condition) {
+      if (Boolean.FALSE.equals(condition)) {
+      } else if (Boolean.TRUE.equals(condition)) {} // Noncompliant
+    }
+  }
+}

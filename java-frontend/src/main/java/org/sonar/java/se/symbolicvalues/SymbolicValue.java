@@ -28,6 +28,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 
@@ -120,10 +121,23 @@ public class SymbolicValue {
         return ImmutableList.of();
       }
     }
-    if (data == null || !data.equals(nullConstraint)) {
+    if (data == null) {
+      if (isBoolean(this) && !nullConstraint.isNull()) {
+        return ImmutableList.of(programState.addConstraint(this, BooleanConstraint.TRUE), programState.addConstraint(this, BooleanConstraint.FALSE));
+      }
+      return ImmutableList.of(programState.addConstraint(this, nullConstraint));
+    }
+    if (isBoolean(this) && data instanceof BooleanConstraint) {
+      return nullConstraint.isNull() ? ImmutableList.of() : ImmutableList.of(programState);
+    }
+    if (!data.equals(nullConstraint)) {
       return ImmutableList.of(programState.addConstraint(this, nullConstraint));
     }
     return ImmutableList.of(programState);
+  }
+
+  private static boolean isBoolean(SymbolicValue sv) {
+    return sv instanceof TypedSymbolicValue && ((TypedSymbolicValue) sv).type.is("java.lang.Boolean");
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -153,6 +167,19 @@ public class SymbolicValue {
 
   public SymbolicValue wrappedValue() {
     return this;
+  }
+
+  public static class TypedSymbolicValue extends SymbolicValue {
+    private final Type type;
+
+    public TypedSymbolicValue(int id, Type type) {
+      super(id);
+      this.type = type;
+    }
+
+    public Type type() {
+      return type;
+    }
   }
 
   public abstract static class UnarySymbolicValue extends SymbolicValue {

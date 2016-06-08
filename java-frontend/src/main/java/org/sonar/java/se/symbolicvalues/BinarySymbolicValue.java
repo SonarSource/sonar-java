@@ -53,18 +53,38 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     Constraint constraintLeft = programState.getConstraint(from);
+
+    List<ProgramState> results = null;
     if (constraintLeft instanceof BooleanConstraint) {
       BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-      return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
+      results = to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
     } else if (constraintLeft instanceof ObjectConstraint) {
       ObjectConstraint nullConstraint = (ObjectConstraint) constraintLeft;
       if (nullConstraint.isNull()) {
-        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+        results = to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
       } else if (shouldNotInverse().equals(booleanConstraint)) {
-        return to.setConstraint(programState, nullConstraint);
+        results = to.setConstraint(programState, nullConstraint);
       }
     }
+    if (results != null) {
+      return ImmutableList.<ProgramState>builder().addAll(results).addAll(handleBooleanWrapper(to, programState, booleanConstraint)).build();
+    }
     return ImmutableList.of(programState);
+  }
+
+  private static List<ProgramState> handleBooleanWrapper(SymbolicValue sv, ProgramState programState, BooleanConstraint booleanConstraint) {
+    if (isBoolean(sv, programState) && hasNoConstraint(sv, programState) && booleanConstraint.isFalse()) {
+      return sv.setConstraint(programState, ObjectConstraint.nullConstraint());
+    }
+    return ImmutableList.of();
+  }
+
+  private static boolean hasNoConstraint(SymbolicValue sv, ProgramState programState) {
+    return programState.getConstraint(sv) == null;
+  }
+
+  private static boolean isBoolean(SymbolicValue sv, ProgramState programState) {
+    return sv instanceof TypedSymbolicValue && ((TypedSymbolicValue) sv).type().is("java.lang.Boolean");
   }
 
 }
