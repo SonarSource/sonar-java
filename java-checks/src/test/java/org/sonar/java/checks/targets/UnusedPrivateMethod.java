@@ -80,4 +80,17 @@ public class UnusedPrivateMethod {
     }
   }
 
+
+  public int wrapForLambda() {
+    // this method is public, but it calls private method via lambda.
+    // this is the only place lambdaUsedPrivateMethod called.
+    java.util.ArrayList<Integer> list = new java.util.ArrayList<Integer>();
+    list.stream().forEach(this::lambdaUsedPrivateMethod);
+    return 0;
+  }
+
+  private int lambdaUsedPrivateMethod(int i) {
+    return 1;
+  }
+
 }
