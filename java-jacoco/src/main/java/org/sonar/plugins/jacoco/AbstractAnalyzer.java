@@ -28,14 +28,12 @@ import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.coverage.CoverageType;
+import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoverageMeasuresBuilder;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.ResourceUtils;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
@@ -45,11 +43,11 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Lists.newArrayList;
 
 public abstract class AbstractAnalyzer {
 
@@ -82,23 +80,22 @@ public abstract class AbstractAnalyzer {
     return ("".equals(packageName) ? "" : (packageName + "/")) + StringUtils.substringBeforeLast(simpleClassName, ".");
   }
 
-  private Resource getResource(ISourceFileCoverage coverage, SensorContext context) {
+  private InputFile getResource(ISourceFileCoverage coverage) {
     String className = fullyQualifiedClassName(coverage.getPackageName(), coverage.getName());
 
-    Resource resourceInContext = context.getResource(javaResourceLocator.findResourceByClassName(className));
-    if (resourceInContext == null) {
+    InputFile inputFile = javaResourceLocator.findResourceByClassName(className);
+    if (inputFile == null) {
       // Do not save measures on resource which doesn't exist in the context
       return null;
     }
-    if (ResourceUtils.isUnitTestClass(resourceInContext)) {
-      // Ignore unit tests
+    if (inputFile.type() == InputFile.Type.TEST) {
       return null;
     }
 
-    return resourceInContext;
+    return inputFile;
   }
 
-  public final void analyse(Project project, SensorContext context) {
+  public final void analyse(SensorContext context) {
     classFilesCache = Maps.newHashMap();
     for (File classesDir : javaClasspath.getBinaryDirs()) {
       populateClassFilesCache(classesDir, "");
@@ -108,7 +105,7 @@ public abstract class AbstractAnalyzer {
       JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no class files.");
       return;
     }
-    String path = getReportPath(project);
+    String path = getReportPath();
     File jacocoExecutionData = pathResolver.relativeFile(fileSystem.baseDir(), path);
 
     readExecutionData(jacocoExecutionData, context);
@@ -144,10 +141,11 @@ public abstract class AbstractAnalyzer {
     CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values());
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-      Resource resource = getResource(coverage, context);
-      if (resource != null) {
-        CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-        saveMeasures(context, resource, builder.createMeasures());
+      InputFile inputFile = getResource(coverage);
+      if (inputFile != null) {
+        NewCoverage newCoverage = context.newCoverage().onFile(inputFile).ofType(coverageType());
+        analyzeFile(newCoverage, inputFile, coverage);
+        newCoverage.save();
         analyzedResources++;
       }
     }
@@ -179,7 +177,7 @@ public abstract class AbstractAnalyzer {
     }
     String testClassName = sessionId.substring(0, i);
     String testName = sessionId.substring(i + 1);
-    Resource testResource = context.getResource(javaResourceLocator.findResourceByClassName(testClassName));
+    InputFile testResource = javaResourceLocator.findResourceByClassName(testClassName);
     if (testResource == null) {
       // No such test class
       return false;
@@ -188,10 +186,11 @@ public abstract class AbstractAnalyzer {
     boolean result = false;
     CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataStore, classFilesOfStore(executionDataStore));
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
-      Resource resource = getResource(coverage, context);
+      InputFile resource = getResource(coverage);
       if (resource != null) {
-        CoverageMeasuresBuilder builder = analyzeFile(resource, coverage);
-        List<Integer> coveredLines = getCoveredLines(builder);
+        NewCoverage newCoverage = context.newCoverage().onFile(resource).ofType(coverageType());
+        List<Integer> coveredLines =  analyzeFile(newCoverage, resource, coverage);
+        newCoverage.save();
         if (!coveredLines.isEmpty() && addCoverage(resource, testResource, testName, coveredLines)) {
           result = true;
         }
@@ -212,17 +211,8 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private static List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
-    List<Integer> linesCover = newArrayList();
-    for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
-      if (hitsByLine.getValue() > 0) {
-        linesCover.add(hitsByLine.getKey());
-      }
-    }
-    return linesCover;
-  }
 
-  private boolean addCoverage(Resource resource, Resource testFile, String testName, List<Integer> coveredLines) {
+  private boolean addCoverage(InputFile resource, InputFile testFile, String testName, List<Integer> coveredLines) {
     boolean result = false;
     Testable testAbleFile = perspectives.as(MutableTestable.class, resource);
     if (testAbleFile != null) {
@@ -237,8 +227,8 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private static CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
-    CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
+  private static List<Integer> analyzeFile(NewCoverage newCoverage, InputFile resource, ISourceFileCoverage coverage) {
+    List<Integer> coveredLines = new ArrayList<>();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;
       ILine line = coverage.getLine(lineId);
@@ -256,20 +246,23 @@ public abstract class AbstractAnalyzer {
           JaCoCoExtensions.LOG.warn("Unknown status for line {} in {}", lineId, resource);
           continue;
       }
-      builder.setHits(lineId, hits);
+      newCoverage.lineHits(lineId, hits);
+      if(hits > 0) {
+        coveredLines.add(lineId);
+      }
 
       ICounter branchCounter = line.getBranchCounter();
       int conditions = branchCounter.getTotalCount();
       if (conditions > 0) {
         int coveredConditions = branchCounter.getCoveredCount();
-        builder.setConditions(lineId, conditions, coveredConditions);
+        newCoverage.conditions(lineId, conditions, coveredConditions);
       }
     }
-    return builder;
+    return coveredLines;
   }
 
-  protected abstract void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures);
+  protected abstract CoverageType coverageType();
 
-  protected abstract String getReportPath(Project project);
+  protected abstract String getReportPath();
 
 }

@@ -24,10 +24,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
@@ -45,7 +44,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   @VisibleForTesting
-  Map<String, Resource> resourcesByClass;
+  Map<String, InputFile> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
   private final Map<String, Integer> methodStartLines;
   private final ResourceMapping resourceMapping;
@@ -65,13 +64,13 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
-  public Resource findResourceByClassName(String className) {
+  public InputFile findResourceByClassName(String className) {
     String name = className.replace('.', '/');
-    Resource resource = resourcesByClass.get(name);
-    if (resource == null) {
+    InputFile inputFile = resourcesByClass.get(name);
+    if (inputFile == null) {
       LOG.debug("Class not found in resource cache : {}", className);
     }
-    return resource;
+    return inputFile;
   }
 
   @Override
@@ -122,13 +121,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
     InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
-    org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
-    if (currentResource == null) {
+    if (inputFile == null) {
       throw new IllegalStateException("resource not found : " + context.getFileKey());
     }
-    resourceMapping.addResource(currentResource, context.getFileKey());
+    resourceMapping.addResource(inputFile.key(), context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
-      resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
+      resourcesByClass.put(classIOFileEntry.getKey(), inputFile);
       if (context.getFileKey() != null) {
         sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
       }

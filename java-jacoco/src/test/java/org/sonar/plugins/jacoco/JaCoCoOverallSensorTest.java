@@ -23,14 +23,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.sensor.coverage.CoverageType;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.test.IsMeasure;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -40,20 +39,16 @@ import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class JaCoCoOverallSensorTest {
 
   private JacocoConfiguration configuration;
-  private SensorContext context;
+  private SensorContextTester context;
   private DefaultFileSystem fileSystem;
   private PathResolver pathResolver;
-  private Project project;
   private ResourcePerspectives perspectives;
   private JaCoCoOverallSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
@@ -64,106 +59,106 @@ public class JaCoCoOverallSensorTest {
     configuration = mock(JacocoConfiguration.class);
     when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
     when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
-    context = mock(SensorContext.class);
-    fileSystem = new DefaultFileSystem((File)null);
+    context = SensorContextTester.create(new File(""));
+    fileSystem = context.fileSystem();
     fileSystem.setWorkDir(new File("target/sonar"));
     pathResolver = mock(PathResolver.class);
-    project = mock(Project.class);
     perspectives = mock(ResourcePerspectives.class);
     sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
 
   @Test
   public void testSensorDefinition() {
-    assertThat(sensor.toString()).isEqualTo("JaCoCoOverallSensor");
+    org.fest.assertions.Assertions.assertThat(sensor.toString()).isEqualTo("JaCoCoOverallSensor");
   }
 
   @Test
   public void should_execute_if_both_report_exists() {
-    Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
 
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test
   public void execute_when_it_report_does_not_exists() {
-    Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test
   public void execute_when_ut_report_does_not_exists() {
-    Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test
   public void should_save_measures() throws IOException {
-    Resource resource = analyseReports("ut.exec", "it.exec");
-    verifyOverallMetrics(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 2.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=1;7=1;10=1;11=1;14=1;15=1;17=1;18=1;20=1;23=0;24=0")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 0.0)));
+    InputFile resource = analyseReports("ut.exec", "it.exec");
+    int[] oneHitlines = new int[] {3, 6, 7, 10, 11, 14, 15, 17, 18, 20};
+    int[] zeroHitlines = new int[] {23, 24};
+    verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 2);
   }
 
   @Test
   public void should_save_measures_when_it_report_is_not_found() throws IOException {
-    Resource resource = analyseReports("ut.exec", "it.not.found.exec");
-    verifyOverallMetrics(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 6.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=1;7=1;10=0;11=0;14=1;15=1;17=0;18=0;20=1;23=0;24=0")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 1.0)));
+    InputFile resource = analyseReports("ut.exec", "it.not.found.exec");
+    int[] oneHitlines = new int[] {3, 6, 7, 14, 15, 20};
+    int[] zeroHitlines = new int[] {10, 11, 17, 18, 23, 24};
+    verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 1);
   }
 
   @Test
   public void should_save_measures_when_ut_report_is_not_found() throws IOException {
-    Resource resource = analyseReports("ut.not.found.exec", "it.exec");
-    verifyOverallMetrics(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 5.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=1;6=0;7=0;10=1;11=1;14=1;15=0;17=1;18=1;20=1;23=0;24=0")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 1.0)));
+    InputFile resource = analyseReports("ut.not.found.exec", "it.exec");
+    int[] oneHitlines = new int[] {3, 10, 11, 14, 17, 18, 20};
+    int[] zeroHitlines = new int[] {6, 7, 15, 23, 24};
+    verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 1);
   }
 
 
   @Test
   public void should_save_measures_when_no_reports_and_force_property() throws IOException {
-    Resource resource = analyseReports("ut.not.found.exec", "it.not.found.exec");
-    verifyOverallMetrics(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 12.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=0;6=0;7=0;10=0;11=0;14=0;15=0;17=0;18=0;20=0;23=0;24=0")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 2.0)));
+    when(configuration.shouldExecuteOnProject(false)).thenReturn(true);
+    InputFile resource = analyseReports("ut.not.found.exec", "it.not.found.exec");
+    when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
+    int[] oneHitlines = new int[] {};
+    int[] zeroHitlines = new int[] {3, 6, 7, 10, 11, 14, 15, 17, 18, 20, 23, 24};
+    verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 0);
+//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 12.0)));
+//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=0;6=0;7=0;10=0;11=0;14=0;15=0;17=0;18=0;20=0;23=0;24=0")));
+//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 2.0)));
   }
 
-  private void verifyOverallMetrics(Resource resource) {
-    verify(context, times(1)).getResource(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_LINES_TO_COVER, 12.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_CONDITIONS_TO_COVER, 2.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_CONDITIONS_BY_LINE, "14=2")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERED_CONDITIONS_BY_LINE, (String) null)));
+  private void verifyOverallMetrics(InputFile resource,int[] zeroHitlines, int[] oneHitlines, int coveredConditions) {
+    for (int zeroHitline : zeroHitlines) {
+      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, zeroHitline)).isEqualTo(0);
+    }
+    for (int oneHitline : oneHitlines) {
+      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, oneHitline)).isEqualTo(1);
+    }
+    assertThat(context.conditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(2);
+    assertThat(context.coveredConditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(coveredConditions);
   }
 
-  private Resource analyseReports(String utReport, String itReport) throws IOException {
+  private InputFile analyseReports(String utReport, String itReport) throws IOException {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     File to = new File(outputDir, "HelloWorld.class");
     Files.copy(TestUtils.getResource("HelloWorld.class.toCopy"), to);
-    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
+    DefaultInputFile resource = new DefaultInputFile("", "");
+    resource.setLines(25);
 
-    when(context.getResource(any(Resource.class))).thenReturn(resource);
     when(javaResourceLocator.findResourceByClassName("com/sonar/coverages/HelloWorld")).thenReturn(resource);
     when(configuration.getReportPath()).thenReturn(utReport);
     when(configuration.getItReportPath()).thenReturn(itReport);
@@ -172,7 +167,7 @@ public class JaCoCoOverallSensorTest {
     when(pathResolver.relativeFile(any(File.class), eq(itReport))).thenReturn(new File(outputDir, itReport));
     when(pathResolver.relativeFile(any(File.class), eq(new File("target/sonar/jacoco-overall.exec").getAbsolutePath()))).thenReturn(new File("target/sonar/jacoco-overall.exec"));
 
-    sensor.analyse(project, context);
+    sensor.execute(context);
     return resource;
   }
 }

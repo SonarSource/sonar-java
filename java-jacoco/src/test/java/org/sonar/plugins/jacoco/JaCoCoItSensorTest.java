@@ -24,16 +24,14 @@ import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.coverage.CoverageType;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.test.IsMeasure;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -43,11 +41,10 @@ import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,51 +82,50 @@ public class JaCoCoItSensorTest {
 
   @Test
   public void shouldExecuteIfReportPathIsDefined() {
-    Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
     when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+    assertThat(sensor.shouldExecuteOnProject()).isTrue();
 
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
+    assertThat(sensor.shouldExecuteOnProject()).isFalse();
   }
 
   @Test
   public void testReadExecutionData() {
-    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
+    DefaultInputFile resource = new DefaultInputFile("", "org/sonar/plugins/jacoco/tests/Hello");
+    resource.setLines(19);
+    when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
-    SensorContext context = mock(SensorContext.class);
-    Project project = mock(Project.class);
-    when(context.getResource(any(Resource.class))).thenReturn(resource);
+    SensorContextTester context = SensorContextTester.create(new File(""));
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
-    sensor.analyse(project, context);
+    sensor.execute(context);
 
-    verify(context, times(1)).getResource(resource);
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_LINES_TO_COVER, 7.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_UNCOVERED_LINES, 3.0)));
-    verify(context).saveMeasure(eq(resource),
-      argThat(new IsMeasure(CoreMetrics.IT_COVERAGE_LINE_HITS_DATA, "6=1;7=1;8=1;11=1;15=0;16=0;18=0")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_CONDITIONS_TO_COVER, 2.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_UNCOVERED_CONDITIONS, 2.0)));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_CONDITIONS_BY_LINE, "15=2")));
-    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.IT_COVERED_CONDITIONS_BY_LINE, "15=0")));
+    int[] oneHitlines = new int[] {6, 7, 8, 11};
+    int[] zeroHitlines = new int[] {15, 16, 18};
+    for (int zeroHitline : zeroHitlines) {
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, zeroHitline)).isEqualTo(0);
+    }
+    for (int oneHitline : oneHitlines) {
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, oneHitline)).isEqualTo(1);
+    }
+    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, 15)).isEqualTo(2);
+    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, 15)).isEqualTo(0);
   }
 
   @Test
   public void doNotSaveMeasureOnResourceWhichDoesntExistInTheContext() {
     SensorContext context = mock(SensorContext.class);
-    Project project = mock(Project.class);
-    when(context.getResource(any(Resource.class))).thenReturn(null);
+    when(pathResolver.relativeFile(any(File.class), anyString())).thenReturn(jacocoExecutionData);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
-    sensor.analyse(project, context);
+    sensor.execute(context);
 
-    verify(context, never()).saveMeasure(any(Resource.class), any(Measure.class));
+    verify(context, never()).newCoverage();
   }
 
 }

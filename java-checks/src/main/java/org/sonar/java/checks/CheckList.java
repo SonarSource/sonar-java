@@ -219,7 +219,6 @@ public final class CheckList {
       .add(IncrementDecrementInSubExpressionCheck.class)
       .add(CollectionsEmptyConstantsCheck.class)
       .add(UselessExtendsCheck.class)
-      .add(CycleBetweenPackagesCheck.class)
       .add(DITCheck.class)
       .add(ArchitectureCheck.class)
       .add(CallToDeprecatedMethodCheck.class)

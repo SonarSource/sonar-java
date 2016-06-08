@@ -20,11 +20,11 @@
 package org.sonar.plugins.surefire;
 
 import org.sonar.api.batch.DependedUpon;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -50,12 +50,12 @@ public class SurefireSensor implements Sensor {
   }
 
   @Override
-  public boolean shouldExecuteOnProject(Project project) {
-    return fs.hasFiles(fs.predicates().hasLanguage("java"));
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.onlyOnLanguage("java");
   }
 
   @Override
-  public void analyse(Project project, SensorContext context) {
+  public void execute(SensorContext context) {
     File dir = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
     collect(context, dir);
   }
@@ -69,5 +69,4 @@ public class SurefireSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
-
 }

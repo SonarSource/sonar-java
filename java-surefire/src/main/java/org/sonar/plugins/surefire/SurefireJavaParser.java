@@ -21,11 +21,11 @@ package org.sonar.plugins.surefire;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.ParsingUtils;
@@ -42,6 +42,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -130,7 +131,7 @@ public class SurefireJavaParser {
       UnitTestClassReport report = entry.getValue();
       if (report.getTests() > 0) {
         negativeTimeTestNumber += report.getNegativeTimeTestNumber();
-        Resource resource = getUnitTestResource(entry.getKey());
+        InputFile resource = getUnitTestResource(entry.getKey());
         if (resource != null) {
           save(report, resource, context);
         } else {
@@ -143,22 +144,24 @@ public class SurefireJavaParser {
     }
   }
 
-  private void save(UnitTestClassReport report, Resource resource, SensorContext context) {
-    double testsCount = report.getTests() - report.getSkipped();
-    saveMeasure(context, resource, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
-    saveMeasure(context, resource, CoreMetrics.TESTS, testsCount);
-    saveMeasure(context, resource, CoreMetrics.TEST_ERRORS, report.getErrors());
-    saveMeasure(context, resource, CoreMetrics.TEST_FAILURES, report.getFailures());
-    saveMeasure(context, resource, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
+  private void save(UnitTestClassReport report, InputFile inputFile, SensorContext context) {
+    int testsCount = report.getTests() - report.getSkipped();
+    saveMeasure(context, inputFile, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
+    saveMeasure(context, inputFile, CoreMetrics.TESTS, testsCount);
+    saveMeasure(context, inputFile, CoreMetrics.TEST_ERRORS, report.getErrors());
+    saveMeasure(context, inputFile, CoreMetrics.TEST_FAILURES, report.getFailures());
+    saveMeasure(context, inputFile, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
     double passedTests = testsCount - report.getErrors() - report.getFailures();
     if (testsCount > 0) {
-      double percentage = passedTests * 100d / testsCount;
-      saveMeasure(context, resource, CoreMetrics.TEST_SUCCESS_DENSITY, ParsingUtils.scaleValue(percentage));
+      double percentage = ParsingUtils.scaleValue(passedTests * 100d / testsCount);
+      if (!Double.isNaN(percentage)) {
+        context.<Double>newMeasure().forMetric(CoreMetrics.TEST_SUCCESS_DENSITY).on(inputFile).withValue(percentage).save();
+      }
     }
-    saveResults(resource, report);
+    saveResults(inputFile, report);
   }
 
-  protected void saveResults(Resource testFile, UnitTestClassReport report) {
+  protected void saveResults(InputFile testFile, UnitTestClassReport report) {
     for (UnitTestResult unitTestResult : report.getResults()) {
       MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
       if (testPlan != null) {
@@ -172,14 +175,12 @@ public class SurefireJavaParser {
     }
   }
 
-  protected Resource getUnitTestResource(String classKey) {
+  protected InputFile getUnitTestResource(String classKey) {
     return javaResourceLocator.findResourceByClassName(classKey);
   }
 
-  private static void saveMeasure(SensorContext context, Resource resource, Metric metric, double value) {
-    if (!Double.isNaN(value)) {
-      context.saveMeasure(resource, metric, value);
-    }
+  private static <T extends Serializable> void saveMeasure(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
+    context.<T>newMeasure().forMetric(metric).on(inputFile).withValue(value).save();
   }
 
 }

@@ -20,7 +20,7 @@
 package org.sonar.java.bytecode.visitor;
 
 import org.junit.Test;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -30,7 +30,6 @@ import java.io.File;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class DefaultBytecodeContextTest {
   @Test
@@ -54,9 +53,9 @@ public class DefaultBytecodeContextTest {
     String message = "msg";
     int line = 42;
     JavaCheck javaCheck = mock(JavaCheck.class);
-    Resource resource = mock(Resource.class);
     String name = "name";
-    when(resource.getPath()).thenReturn(name);
+    DefaultInputFile resource = new DefaultInputFile("moduleKey", name);
+    resource.setModuleBaseDir(new File("").toPath());
     context.reportIssue(javaCheck, resource, message, line);
     verify(sonarComponents).addIssue(new File(name), javaCheck, line, message, null);
   }

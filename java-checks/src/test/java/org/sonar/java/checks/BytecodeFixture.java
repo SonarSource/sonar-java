@@ -21,10 +21,10 @@ package org.sonar.java.checks;
 
 import org.mockito.Matchers;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.resources.Resource;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
@@ -83,7 +83,7 @@ public class BytecodeFixture {
       this.visitor = visitor;
       this.fakeContext = new DefaultBytecodeContext(javaResourceLocator) {
         @Override
-        public void reportIssue(JavaCheck check, Resource resource, String message, int line) {
+        public void reportIssue(JavaCheck check, InputFile resource, String message, int line) {
           analyzerMessages.add(new AnalyzerMessage(check, file, line, message, 0));
         }
       };

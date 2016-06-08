@@ -43,7 +43,6 @@ import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.bridges.DesignBridge;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -91,12 +90,6 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
-    // Design
-    boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
-    if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
-      DesignBridge designBridge = new DesignBridge(squid.getGraph(), javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
-      designBridge.saveDesign();
-    }
   }
 
   private Iterable<File> getSourceFiles() {

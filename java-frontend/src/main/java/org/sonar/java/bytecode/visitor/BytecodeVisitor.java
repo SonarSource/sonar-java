@@ -19,7 +19,7 @@
  */
 package org.sonar.java.bytecode.visitor;
 
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmField;
@@ -59,7 +59,7 @@ public abstract class BytecodeVisitor implements JavaCheck {
   }
 
   @Nullable
-  protected final Resource getSourceFile(AsmClass asmClass) {
+  protected final InputFile getSourceFile(AsmClass asmClass) {
     return context.getJavaResourceLocator().findResourceByClassName(asmClass.getInternalName());
   }
 

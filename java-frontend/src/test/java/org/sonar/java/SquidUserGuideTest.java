@@ -75,7 +75,7 @@ public class SquidUserGuideTest {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 
       @Override
-      public Resource findResourceByClassName(String className) {
+      public InputFile findResourceByClassName(String className) {
         return null;
       }
 

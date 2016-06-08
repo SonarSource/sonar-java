@@ -20,7 +20,7 @@
 package org.sonar.java.bytecode.visitor;
 
 import org.junit.Test;
-import org.sonar.api.resources.File;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -29,10 +29,9 @@ public class ResourceMappingTest {
   @Test
   public void testGetComponentKeyByFileKey() {
     ResourceMapping resourceMapping = new ResourceMapping();
-    File resource = File.create("foo");
-    resource.setEffectiveKey("effectiveKey");
-    resourceMapping.addResource(resource, "key1");
+    DefaultInputFile resource = new DefaultInputFile("", "effectiveKey");
+    resourceMapping.addResource(resource.key(), "key1");
     assertThat(resourceMapping.getComponentKeyByFileKey("key1")).isNotNull();
-    assertThat(resourceMapping.getComponentKeyByFileKey("key1")).isSameAs(resource.getEffectiveKey());
+    assertThat(resourceMapping.getComponentKeyByFileKey("key1")).isEqualTo(resource.key());
   }
 }

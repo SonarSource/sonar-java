@@ -19,19 +19,18 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
+import com.google.common.annotations.VisibleForTesting;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
-import java.util.Collection;
 
 public class JaCoCoSensor implements Sensor {
 
@@ -53,12 +52,19 @@ public class JaCoCoSensor implements Sensor {
   }
 
   @Override
-  public void analyse(Project project, SensorContext context) {
-    new UnitTestsAnalyzer(perspectives).analyse(project, context);
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.onlyOnLanguage("java");
   }
 
   @Override
-  public boolean shouldExecuteOnProject(Project project) {
+  public void execute(SensorContext context) {
+    if(shouldExecuteOnProject()) {
+      new UnitTestsAnalyzer(perspectives).analyse(context);
+    }
+  }
+
+  @VisibleForTesting
+  boolean shouldExecuteOnProject() {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     boolean foundReport = report.isFile();
     if(!foundReport) {
@@ -67,22 +73,22 @@ public class JaCoCoSensor implements Sensor {
     return configuration.shouldExecuteOnProject(foundReport);
   }
 
+
   class UnitTestsAnalyzer extends AbstractAnalyzer {
     public UnitTestsAnalyzer(ResourcePerspectives perspectives) {
       super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     }
 
     @Override
-    protected String getReportPath(Project project) {
-      return configuration.getReportPath();
+    protected CoverageType coverageType() {
+      return CoverageType.UNIT;
     }
 
     @Override
-    protected void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures) {
-      for (Measure measure : measures) {
-        context.saveMeasure(resource, measure);
-      }
+    protected String getReportPath() {
+      return configuration.getReportPath();
     }
+
   }
 
   @Override

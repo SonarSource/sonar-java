@@ -36,11 +36,11 @@ public class UnitTestClassReportTest {
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_SKIPPED));
 
     assertThat(report.getResults().size(), is(4));
-    assertThat(report.getSkipped(), is(1L));
-    assertThat(report.getTests(), is(4L));
+    assertThat(report.getSkipped(), is(1));
+    assertThat(report.getTests(), is(4));
     assertThat(report.getDurationMilliseconds(), is(500L + 200L));
-    assertThat(report.getErrors(), is(1L));
-    assertThat(report.getFailures(), is(0L));
+    assertThat(report.getErrors(), is(1));
+    assertThat(report.getFailures(), is(0));
     assertThat(report.getNegativeTimeTestNumber(), is(1L));
   }
 
@@ -48,10 +48,10 @@ public class UnitTestClassReportTest {
   public void shouldHaveEmptyReport() {
     UnitTestClassReport report = new UnitTestClassReport();
     assertThat(report.getResults().size(), is(0));
-    assertThat(report.getSkipped(), is(0L));
-    assertThat(report.getTests(), is(0L));
+    assertThat(report.getSkipped(), is(0));
+    assertThat(report.getTests(), is(0));
     assertThat(report.getDurationMilliseconds(), is(0L));
-    assertThat(report.getErrors(), is(0L));
-    assertThat(report.getFailures(), is(0L));
+    assertThat(report.getErrors(), is(0));
+    assertThat(report.getFailures(), is(0));
   }
 }

@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 import org.sonar.api.batch.BatchSide;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 
 import javax.annotation.CheckForNull;
@@ -36,7 +36,7 @@ public interface JavaResourceLocator extends JavaFileScanner {
    * @return null if not found
    */
   @CheckForNull
-  Resource findResourceByClassName(String className);
+  InputFile findResourceByClassName(String className);
 
   String findSourceFileKeyByClassName(String className);
 

@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.PropertyType;
 import org.sonar.api.batch.BatchSide;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
@@ -41,19 +40,13 @@ public class JacocoConfiguration {
   public static final boolean REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE = false;
 
   private final Settings settings;
-  private final FileSystem fileSystem;
 
-  public JacocoConfiguration(Settings settings, FileSystem fileSystem) {
+  public JacocoConfiguration(Settings settings) {
     this.settings = settings;
-    this.fileSystem = fileSystem;
   }
 
   public boolean shouldExecuteOnProject(boolean reportFound) {
-    return hasJavaFiles() && (reportFound || isCoverageToZeroWhenNoReport());
-  }
-
-  private boolean hasJavaFiles() {
-    return fileSystem.hasFiles(fileSystem.predicates().hasLanguage("java"));
+    return reportFound || isCoverageToZeroWhenNoReport();
   }
 
   public String getReportPath() {

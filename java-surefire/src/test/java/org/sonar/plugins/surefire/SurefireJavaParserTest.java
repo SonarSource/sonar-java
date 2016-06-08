@@ -22,34 +22,28 @@ package org.sonar.plugins.surefire;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.File;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.resources.Resource;
-import org.sonar.api.resources.Scopes;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,19 +58,14 @@ public class SurefireJavaParserTest {
     perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(new Answer<Resource>() {
-      @Override
-      public Resource answer(InvocationOnMock invocation) throws Throwable {
-        return File.create((String) invocation.getArguments()[0]);
-      }
-    });
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new DefaultInputFile("", (String) invocation.getArguments()[0]));
 
     parser = new SurefireJavaParser(perspectives, javaResourceLocator);
   }
 
   @Test
   public void should_register_tests() throws URISyntaxException {
-    SensorContext context = mockContext();
+    SensorContextTester context = SensorContextTester.create(new File(""));
 
     MutableTestCase testCase = mock(MutableTestCase.class);
     when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
@@ -86,8 +75,15 @@ public class SurefireJavaParserTest {
     when(testCase.setType(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
-    when(perspectives.as(eq(MutableTestPlan.class),
-        argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")))).thenReturn(testPlan);
+    when(perspectives.as(eq(MutableTestPlan.class), argThat(new ArgumentMatcher<InputFile>() {
+      @Override
+      public boolean matches(Object o) {
+        if(o instanceof InputFile) {
+          return ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(((InputFile) o).key());
+        }
+        return false;
+      }
+    }))).thenReturn(testPlan);
 
     parser.collect(context, getDir("multipleReports"), true);
 
@@ -99,41 +95,40 @@ public class SurefireJavaParserTest {
   @Test
   public void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
 
-    SensorContext context = mockContext();
+    SensorContextTester context = mockContext();
     parser.collect(context, null, false);
-    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
     parser.collect(context, getDir("nonExistingReportsDirectory"), false);
-    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
     parser.collect(context, getDir("file.txt"), true);
-    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
   }
 
   @Test
   public void shouldAggregateReports() throws URISyntaxException {
-    SensorContext context = mockContext();
+    SensorContextTester context = mockContext();
 
     parser.collect(context, getDir("multipleReports"), true);
 
     // Only 6 tests measures should be stored, no more: the TESTS-AllTests.xml must not be read as there's 1 file result per unit test
     // (SONAR-2841).
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
-    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
+//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));
+//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
+//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
   }
 
   // SONAR-2841: if there's only a test suite report, then it should be read.
   @Test
   public void shouldUseTestSuiteReportIfAlone() throws URISyntaxException {
-    SensorContext context = mockContext();
+    SensorContextTester context = mockContext();
 
     parser.collect(context, getDir("onlyTestSuiteReport"), true);
-
-    verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
-    verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
+    assertThat(context.measures(":org.sonar.SecondTest")).hasSize(6);
+    assertThat(context.measures(":org.sonar.JavaNCSSCollectorTest")).hasSize(6);
   }
 
   /**
@@ -141,90 +136,52 @@ public class SurefireJavaParserTest {
    */
   @Test
   public void shouldInsertZeroWhenNoReports() throws URISyntaxException {
-    SensorContext context = mockContext();
-
+    SensorContext context = mock(SensorContext.class);
     parser.collect(context, getDir("noReports"), true);
-    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
-
-  }
-
-  /**
-   * See http://jira.codehaus.org/browse/SONAR-2371
-   */
-  @Test
-  public void shouldNotInsertZeroWhenNoReports() throws URISyntaxException {
-    SensorContext context = mockContext();
-    Project project = mock(Project.class);
-    when(project.getModules()).thenReturn(Arrays.asList(new Project("foo")));
-
-    parser.collect(context, getDir("noReports"), true);
-
-    verify(context, never()).saveMeasure(CoreMetrics.TESTS, 0.0);
+    verify(context, never()).newMeasure();
   }
 
   @Test
   public void shouldNotInsertZeroOnFiles() throws URISyntaxException {
-    SensorContext context = mockContext();
-
+    SensorContext context = mock(SensorContext.class);
     parser.collect(context, getDir("noTests"), true);
-
-    verify(context, never()).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
+    verify(context, never()).newMeasure();
   }
 
   @Test
   public void shouldMergeInnerClasses() throws URISyntaxException {
-
-    SensorContext context = mock(SensorContext.class);
-    when(context.isIndexed(argThat(new ArgumentMatcher<Resource>() {
-      @Override
-      public boolean matches(Object o) {
-        return !((Resource) o).getName().contains("$");
-      }
-    }), eq(false))).thenReturn(true);
-
+    SensorContextTester context = mockContext();
     parser.collect(context, getDir("innerClasses"), true);
-
-    verify(context)
-        .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
-    verify(context).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TEST_ERRORS),
-        eq(1.0));
-    verify(context, never()).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet")),
-        any(Metric.class), anyDouble());
+    assertThat(context.measure(":org.apache.commons.collections.bidimap.AbstractTestBidiMap", CoreMetrics.TESTS).value()).isEqualTo(7);
+    assertThat(context.measure(":org.apache.commons.collections.bidimap.AbstractTestBidiMap", CoreMetrics.TEST_ERRORS).value()).isEqualTo(1);
+    assertThat(context.measures(":org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet")).isEmpty();
   }
 
   @Test
   public void shouldMergeNestedInnerClasses() throws URISyntaxException {
-
-    SensorContext context = mockContext();
+    SensorContextTester context = mockContext();
     parser.collect(context, getDir("nestedInnerClasses"), true);
-
-    verify(context).saveMeasure(
-        argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
-        eq(CoreMetrics.TESTS),
-        eq(3.0));
+    assertThat(context.measure(":org.sonar.plugins.surefire.NestedInnerTest", CoreMetrics.TESTS).value()).isEqualTo(3);
   }
 
   @Test
   public void should_not_count_negative_tests() throws URISyntaxException {
-    SensorContext context = mockContext();
+    SensorContextTester context = mockContext();
 
     parser.collect(context, getDir("negativeTestTime"), true);
     //Test times : -1.120, 0.644, 0.015 -> computed time : 0.659, ignore negative time.
-
-    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));
-    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
-    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
-    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_FAILURES), anyDouble());
-    verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_EXECUTION_TIME), eq(659.0));
+    assertThat(context.measure(":java.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(0);
+    assertThat(context.measure(":java.Foo", CoreMetrics.TESTS).value()).isEqualTo(6);
+    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
+    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
+    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(659);
   }
 
   private java.io.File getDir(String dirname) throws URISyntaxException {
     return new java.io.File("src/test/resources/org/sonar/plugins/surefire/api/SurefireParserTest/" + dirname);
   }
 
-  private SensorContext mockContext() {
-    SensorContext context = mock(SensorContext.class);
-    when(context.isIndexed(any(Resource.class), eq(false))).thenReturn(true);
-    return context;
+  private SensorContextTester mockContext() {
+    return SensorContextTester.create(new File(""));
   }
 }

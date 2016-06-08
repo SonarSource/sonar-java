@@ -45,15 +45,15 @@ public class SurefireStaxHandlerTest {
     parse("innerClasses.xml");
 
     UnitTestClassReport publicClass = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap");
-    assertThat(publicClass.getTests(), is(2L));
+    assertThat(publicClass.getTests(), is(2));
 
     UnitTestClassReport innerClass1 = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet");
-    assertThat(innerClass1.getTests(), is(2L));
+    assertThat(innerClass1.getTests(), is(2));
 
     UnitTestClassReport innerClass2 = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestInverseBidiMap");
-    assertThat(innerClass2.getTests(), is(3L));
+    assertThat(innerClass2.getTests(), is(3));
     assertThat(innerClass2.getDurationMilliseconds(), is(30 + 1L));
-    assertThat(innerClass2.getErrors(), is(1L));
+    assertThat(innerClass2.getErrors(), is(1));
   }
 
   @Test
@@ -66,8 +66,8 @@ public class SurefireStaxHandlerTest {
   public void shouldHaveSkippedTests() throws XMLStreamException {
     parse("skippedTests.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(3L));
-    assertThat(report.getSkipped(), is(1L));
+    assertThat(report.getTests(), is(3));
+    assertThat(report.getSkipped(), is(1));
   }
 
   @Test
@@ -81,15 +81,15 @@ public class SurefireStaxHandlerTest {
     parse("rootPackage.xml");
     assertThat(index.size(), is(1));
     UnitTestClassReport report = index.get("NoPackagesTest");
-    assertThat(report.getTests(), is(2L));
+    assertThat(report.getTests(), is(2));
   }
 
   @Test
   public void shouldHaveErrorsAndFailures() throws XMLStreamException {
     parse("errorsAndFailures.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getErrors(), is(1L));
-    assertThat(report.getFailures(), is(1L));
+    assertThat(report.getErrors(), is(1));
+    assertThat(report.getFailures(), is(1));
     assertThat(report.getResults().size(), is(2));
 
     // failure
@@ -110,8 +110,8 @@ public class SurefireStaxHandlerTest {
   public void shouldSupportMultipleSuitesInSameReport() throws XMLStreamException {
     parse("multipleSuites.xml");
 
-    assertThat(index.get("org.sonar.JavaNCSSCollectorTest").getTests(), is(11L));
-    assertThat(index.get("org.sonar.SecondTest").getTests(), is(4L));
+    assertThat(index.get("org.sonar.JavaNCSSCollectorTest").getTests(), is(11));
+    assertThat(index.get("org.sonar.SecondTest").getTests(), is(4));
   }
 
   @Test
@@ -119,8 +119,8 @@ public class SurefireStaxHandlerTest {
     parse("skippedWithoutTimeAttribute.xml");
 
     UnitTestClassReport publicClass = index.get("TSuite.A");
-    assertThat(publicClass.getSkipped(), is(2L));
-    assertThat(publicClass.getTests(), is(4L));
+    assertThat(publicClass.getSkipped(), is(2));
+    assertThat(publicClass.getTests(), is(4));
   }
 
   private void parse(String path) throws XMLStreamException {

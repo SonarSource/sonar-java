@@ -25,10 +25,10 @@ import java.util.Collections;
 import java.util.List;
 
 public final class UnitTestClassReport {
-  private long errors = 0L;
-  private long failures = 0L;
-  private long skipped = 0L;
-  private long tests = 0L;
+  private int errors = 0;
+  private int failures = 0;
+  private int skipped = 0;
+  private int tests = 0;
   private long durationMilliseconds = 0L;
 
 
@@ -69,19 +69,19 @@ public final class UnitTestClassReport {
     }
   }
 
-  public long getErrors() {
+  public int getErrors() {
     return errors;
   }
 
-  public long getFailures() {
+  public int getFailures() {
     return failures;
   }
 
-  public long getSkipped() {
+  public int getSkipped() {
     return skipped;
   }
 
-  public long getTests() {
+  public int getTests() {
     return tests;
   }
 

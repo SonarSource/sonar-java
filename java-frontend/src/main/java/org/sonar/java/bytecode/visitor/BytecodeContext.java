@@ -19,7 +19,7 @@
  */
 package org.sonar.java.bytecode.visitor;
 
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -29,6 +29,6 @@ public interface BytecodeContext {
 
   JavaResourceLocator getJavaResourceLocator();
 
-  void reportIssue(JavaCheck check, Resource resource, String message, int line);
+  void reportIssue(JavaCheck check, InputFile resource, String message, int line);
 
 }

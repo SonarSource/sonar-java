@@ -34,7 +34,7 @@ public class UnitTestIndexTest {
 
     UnitTestClassReport report = index.index("org.sonar.Foo");
 
-    assertThat(report.getTests(), is(0L));
+    assertThat(report.getTests(), is(0));
     assertThat(index.size(), is(1));
     assertSame(index.get("org.sonar.Foo"), report);
   }
@@ -47,7 +47,7 @@ public class UnitTestIndexTest {
     UnitTestClassReport report2 = index.index("org.sonar.Foo");
 
     assertSame(report1, report2);
-    assertThat(report1.getTests(), is(0L));
+    assertThat(report1.getTests(), is(0));
     assertThat(index.size(), is(1));
     assertSame(index.get("org.sonar.Foo"), report1);
   }
@@ -77,10 +77,10 @@ public class UnitTestIndexTest {
 
     assertThat(index.size(), is(1));
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(4L));
-    assertThat(report.getFailures(), is(1L));
-    assertThat(report.getErrors(), is(2L));
-    assertThat(report.getSkipped(), is(0L));
+    assertThat(report.getTests(), is(4));
+    assertThat(report.getFailures(), is(1));
+    assertThat(report.getErrors(), is(2));
+    assertThat(report.getSkipped(), is(0));
     assertThat(report.getResults().size(), is(4));
     assertThat(report.getDurationMilliseconds(), is(500L + 200L + 1000L + 350L));
   }
@@ -96,10 +96,10 @@ public class UnitTestIndexTest {
 
     assertThat(index.size(), is(1));
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(2L));
-    assertThat(report.getFailures(), is(0L));
-    assertThat(report.getErrors(), is(1L));
-    assertThat(report.getSkipped(), is(0L));
+    assertThat(report.getTests(), is(2));
+    assertThat(report.getFailures(), is(0));
+    assertThat(report.getErrors(), is(1));
+    assertThat(report.getSkipped(), is(0));
     assertThat(report.getResults().size(), is(2));
     assertThat(report.getDurationMilliseconds(), is(500L + 200L));
   }

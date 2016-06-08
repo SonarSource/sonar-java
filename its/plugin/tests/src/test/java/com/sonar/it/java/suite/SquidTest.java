@@ -48,18 +48,6 @@ public class SquidTest {
     orchestrator.executeBuild(build);
   }
 
-  /**
-   * SONAR-2333
-   */
-  @Test
-  public void should_detect_cycles() {
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    List<Issue> issues = issueClient.find(IssueQuery.create().components(JavaTestSuite.keyFor("com.sonarsource.it.samples:squid", "package1/", "Class1.java"))).list();
-    assertThat(issues).hasSize(1);
-    assertThat(issues.get(0).ruleKey()).isEqualTo("squid:CycleBetweenPackages");
-    assertThat(issues.get(0).line()).isNull();
-  }
-
   @Test
   public void should_detect_missing_package_info() throws Exception {
     IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();

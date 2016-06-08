@@ -19,20 +19,17 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
-import java.util.Collection;
 
 public class JaCoCoOverallSensor implements Sensor {
 
@@ -56,7 +53,23 @@ public class JaCoCoOverallSensor implements Sensor {
   }
 
   @Override
-  public boolean shouldExecuteOnProject(Project project) {
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.onlyOnLanguage("java");
+  }
+
+  @Override
+  public void execute(SensorContext context) {
+    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
+    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
+    if(shouldExecuteOnProject()) {
+      File reportOverall = new File(fileSystem.workDir(), JACOCO_OVERALL);
+      reportOverall.getParentFile().mkdirs();
+      JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
+      new OverallAnalyzer(reportOverall, perspectives).analyse(context);
+    }
+  }
+
+  public boolean shouldExecuteOnProject() {
     File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
     boolean foundOneReport = reportUTs.exists() || reportITs.exists();
@@ -65,19 +78,6 @@ public class JaCoCoOverallSensor implements Sensor {
       JaCoCoExtensions.LOG.info("JaCoCoOverallSensor: JaCoCo reports not found.");
     }
     return shouldExecute;
-  }
-
-  @Override
-  public void analyse(Project project, SensorContext context) {
-    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
-    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-
-    File reportOverall = new File(fileSystem.workDir(), JACOCO_OVERALL);
-    reportOverall.getParentFile().mkdirs();
-
-    JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
-
-    new OverallAnalyzer(reportOverall, perspectives).analyse(project, context);
   }
 
   class OverallAnalyzer extends AbstractAnalyzer {
@@ -89,39 +89,15 @@ public class JaCoCoOverallSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath(Project project) {
-      return report.getAbsolutePath();
+    protected CoverageType coverageType() {
+      return CoverageType.OVERALL;
     }
 
     @Override
-    protected void saveMeasures(SensorContext context, Resource resource, Collection<Measure> measures) {
-      for (Measure measure : measures) {
-        Measure mergedMeasure = convertForOverall(measure);
-        if (mergedMeasure != null) {
-          context.saveMeasure(resource, mergedMeasure);
-        }
-      }
+    protected String getReportPath() {
+      return report.getAbsolutePath();
     }
 
-    private Measure convertForOverall(Measure measure) {
-      Measure itMeasure = null;
-      if (CoreMetrics.LINES_TO_COVER.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_LINES_TO_COVER, measure.getValue());
-      } else if (CoreMetrics.UNCOVERED_LINES.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_UNCOVERED_LINES, measure.getValue());
-      } else if (CoreMetrics.COVERAGE_LINE_HITS_DATA.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, measure.getData());
-      } else if (CoreMetrics.CONDITIONS_TO_COVER.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_CONDITIONS_TO_COVER, measure.getValue());
-      } else if (CoreMetrics.UNCOVERED_CONDITIONS.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, measure.getValue());
-      } else if (CoreMetrics.COVERED_CONDITIONS_BY_LINE.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_COVERED_CONDITIONS_BY_LINE, measure.getData());
-      } else if (CoreMetrics.CONDITIONS_BY_LINE.equals(measure.getMetric())) {
-        itMeasure = new Measure(CoreMetrics.OVERALL_CONDITIONS_BY_LINE, measure.getData());
-      }
-      return itMeasure;
-    }
   }
 
   @Override

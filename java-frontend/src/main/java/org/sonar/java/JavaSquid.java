@@ -23,12 +23,9 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.sonar.api.design.Dependency;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
-import org.sonar.graph.DirectedGraph;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
@@ -36,7 +33,6 @@ import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
-import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
@@ -57,9 +53,6 @@ public class JavaSquid {
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
-  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<>();
-
-  private boolean bytecodeScanned = false;
 
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
@@ -71,7 +64,7 @@ public class JavaSquid {
     }
 
     Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(commonVisitors);
+    Collection<CodeVisitor> testCodeVisitors = Lists.newArrayList(commonVisitors);
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);
@@ -105,8 +98,6 @@ public class JavaSquid {
     //Bytecode scanner
     BytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
     bytecodeScanner = new BytecodeScanner(bytecodeContext);
-    DependenciesVisitor dependenciesVisitor = new DependenciesVisitor(bytecodeContext, graph);
-    bytecodeScanner.accept(dependenciesVisitor);
     for (CodeVisitor visitor : visitors) {
       bytecodeScanner.accept(visitor);
     }
@@ -155,11 +146,9 @@ public class JavaSquid {
       Profiler profiler = Profiler.create(LOG).startInfo("Java bytecode scan");
 
       bytecodeScanner.scan(bytecodeFilesOrDirectories);
-      bytecodeScanned = true;
       profiler.stopInfo();
     } else {
       LOG.warn("Java bytecode has not been made available to the analyzer. The " + Joiner.on(", ").join(bytecodeScanner.getVisitors()) + " are disabled.");
-      bytecodeScanned = false;
     }
   }
 
@@ -177,12 +166,4 @@ public class JavaSquid {
     return false;
   }
 
-  public boolean isBytecodeScanned() {
-    return bytecodeScanned;
-  }
-
-
-  public DirectedGraph<Resource, Dependency> getGraph() {
-    return graph;
-  }
 }

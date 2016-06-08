@@ -20,7 +20,7 @@
 package org.sonar.java.bytecode.visitor;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -54,9 +54,9 @@ public class DefaultBytecodeContext implements BytecodeContext {
   }
 
   @Override
-  public void reportIssue(JavaCheck check, Resource resource, String message, int line) {
+  public void reportIssue(JavaCheck check, InputFile resource, String message, int line) {
     if (sonarComponents != null) {
-      sonarComponents.addIssue(new File(resource.getPath()), check, line, message, null);
+      sonarComponents.addIssue(new File(resource.absolutePath()), check, line, message, null);
     }
   }
 
