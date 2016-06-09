@@ -31,8 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -69,12 +67,9 @@ public class JavaPerformanceTest {
   }
 
   private static double sensorTime(File projectDir, String logs, String sensor) throws IOException {
-    if (is_SQ_greater_or_equals_to_5_1()) {
-      File profilingFile = new File(projectDir, ".sonar/profiling/project-profiler.properties");
-      Preconditions.checkArgument(profilingFile.isFile(), "Cannot find profiling file to extract time for sensor " + sensor + ": " + profilingFile.getAbsolutePath());
-      return getTimeValue(profilingFile, sensor);
-    }
-    return sensorTime_before5_1(logs, sensor);
+    File profilingFile = new File(projectDir, ".sonar/profiling/project-profiler.properties");
+    Preconditions.checkArgument(profilingFile.isFile(), "Cannot find profiling file to extract time for sensor " + sensor + ": " + profilingFile.getAbsolutePath());
+    return getTimeValue(profilingFile, sensor);
   }
 
   private static double getTimeValue(File profilingFile, String sensor) throws IOException {
@@ -83,21 +78,6 @@ public class JavaPerformanceTest {
     String time = properties.getProperty(sensor);
     Preconditions.checkNotNull(time, "Could not find a value for property : " + sensor);
     return toMilliseconds(time);
-  }
-
-  private static double sensorTime_before5_1(String logs, String sensor) {
-    Pattern pattern = Pattern.compile("Sensor " + sensor + " done: (\\d++) ms");
-    Matcher matcher = pattern.matcher(logs);
-
-    Preconditions.checkArgument(matcher.find(), "Unable to extract the timing of sensor \"" + sensor + "\" from the logs");
-    double result = toMilliseconds(matcher.group(1));
-    Preconditions.checkArgument(!matcher.find(), "Found several potential timings of sensor \"" + sensor + "\" in the logs");
-
-    return result;
-  }
-
-  private static boolean is_SQ_greater_or_equals_to_5_1() {
-    return ORCHESTRATOR.getConfiguration().getSonarVersion().isGreaterThanOrEquals("5.1");
   }
 
   private static double toMilliseconds(String time) {

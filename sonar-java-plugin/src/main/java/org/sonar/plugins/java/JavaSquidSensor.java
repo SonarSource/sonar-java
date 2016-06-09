@@ -77,7 +77,7 @@ public class JavaSquidSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage(Java.KEY);
+    descriptor.onlyOnLanguage(Java.KEY).name("JavaSquidSensor");
   }
 
   @Override
