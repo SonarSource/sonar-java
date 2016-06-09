@@ -20,11 +20,9 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -76,6 +74,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
@@ -213,33 +213,22 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     constraintManager = null;
   }
 
-  private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState ps) {
-    Iterable<ProgramState> startingStates = Lists.newArrayList(ps);
+  private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
+    Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name()) && tree.parameters().size() == 1;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
-      startingStates = Iterables.transform(startingStates, new Function<ProgramState, ProgramState>() {
-        @Override
-        public ProgramState apply(ProgramState input) {
-          return input.put(variableTree.symbol(), sv);
-        }
-      });
-
+      stateStream = stateStream.map(ps -> ps.put(variableTree.symbol(), sv));
       if (isEqualsMethod || parameterCanBeNull(variableTree)) {
-        startingStates = Iterables.concat(Iterables.transform(startingStates, new Function<ProgramState, List<ProgramState>>() {
-          @Override
-          public List<ProgramState> apply(ProgramState input) {
-            List<ProgramState> states = new ArrayList<>();
-            states.addAll(sv.setConstraint(input, ObjectConstraint.nullConstraint(variableTree)));
-            states.addAll(sv.setConstraint(input, ObjectConstraint.NOT_NULL));
-            return states;
-          }
-        }));
-
+        stateStream = stateStream.flatMap((ProgramState ps) ->
+          Stream.concat(
+            sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
+            sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
+            ));
       }
     }
-    return startingStates;
+    return stateStream.collect(Collectors.toList());
   }
 
   private static boolean parameterCanBeNull(final VariableTree variableTree) {
