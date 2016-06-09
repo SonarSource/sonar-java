@@ -137,7 +137,6 @@ public class MeasurerTest {
     DefaultInputFile inputFile = new DefaultInputFile(context.module().key(), relativePath);
     inputFile.setModuleBaseDir(fs.baseDirPath());
     fs.add(inputFile);
-//    when(context.getResource(any(InputPath.class))).thenReturn(mock(Resource.class));
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);

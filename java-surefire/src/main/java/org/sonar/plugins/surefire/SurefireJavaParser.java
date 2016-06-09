@@ -40,6 +40,7 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.xml.stream.XMLStreamException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.Serializable;
@@ -151,7 +152,7 @@ public class SurefireJavaParser {
     saveMeasure(context, inputFile, CoreMetrics.TEST_ERRORS, report.getErrors());
     saveMeasure(context, inputFile, CoreMetrics.TEST_FAILURES, report.getFailures());
     saveMeasure(context, inputFile, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
-    double passedTests = testsCount - report.getErrors() - report.getFailures();
+    double passedTests = testsCount - (double) report.getErrors() - report.getFailures();
     if (testsCount > 0) {
       double percentage = ParsingUtils.scaleValue(passedTests * 100d / testsCount);
       if (!Double.isNaN(percentage)) {
