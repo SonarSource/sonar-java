@@ -1663,3 +1663,11 @@ class BooleanWrapper {
     }
   }
 }
+class UtilObjects {
+  void fun(Object a, Object b) {
+    if(java.util.Objects.equals(a, b)) {
+      if(a.equals(b)) // Noncompliant
+      {}
+    }
+  }
+}

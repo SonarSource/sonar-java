@@ -106,6 +106,11 @@ public class ConstraintManager {
       SymbolicValue leftOp = values.get(0);
       SymbolicValue rightOp = values.get(1);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
+    } else if(isObjectsMethod(syntaxNode.symbol(), "equals")) {
+      result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.METHOD_EQUALS);
+      SymbolicValue leftOp = values.get(1);
+      SymbolicValue rightOp = values.get(2);
+      result.computedFrom(ImmutableList.of(rightOp, leftOp));
     } else if (isObjectsMethod(syntaxNode.symbol(), "isNull")) {
       result = new NullCheckSymbolicValue(counter, true);
       SymbolicValue operand = values.get(1);
