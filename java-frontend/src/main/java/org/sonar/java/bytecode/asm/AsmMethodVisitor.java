@@ -83,8 +83,7 @@ public class AsmMethodVisitor extends MethodVisitor {
     if (bsmArgs.length >= 2) {
       if (bsmArgs[1] instanceof Handle) {
         Handle handle = (Handle) bsmArgs[1];
-        // Magic Number from ASM library, not sure if required at all.
-        if (handle.getTag() == 7) {
+        if (handle.getTag() == Opcodes.H_INVOKESPECIAL) {
           AsmClass ownerClass = asmClassProvider.getClass(handle.getOwner(), DETAIL_LEVEL.NOTHING);
           AsmMethod targetMethod = ownerClass.getMethodOrCreateIt(handle.getName() + handle.getDesc());
           method.addEdge(new AsmEdge(method, targetMethod, SourceCodeEdgeUsage.CALLS_METHOD, lineNumber));
