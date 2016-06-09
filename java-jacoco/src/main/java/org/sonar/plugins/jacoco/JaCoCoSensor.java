@@ -53,7 +53,7 @@ public class JaCoCoSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage("java");
+    descriptor.onlyOnLanguage("java").name("JaCoCoSensor");
   }
 
   @Override
