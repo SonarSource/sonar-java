@@ -21,7 +21,6 @@ package org.sonar.java.se.constraint;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -35,7 +34,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -155,15 +153,7 @@ public class ConstraintManager {
 
   private SymbolicValue createDefaultSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
-    if (symbolicValueFactory == null) {
-      if (syntaxNode.is(Tree.Kind.VARIABLE)) {
-        result = new SymbolicValue.TypedSymbolicValue(counter, ((VariableTree) syntaxNode).symbol().type());
-      } else {
-        result = new SymbolicValue(counter);
-      }
-    } else {
-      result = symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
-    }
+    result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
     symbolicValueFactory = null;
     return result;
   }
