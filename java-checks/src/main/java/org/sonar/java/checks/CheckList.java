@@ -204,7 +204,6 @@ public final class CheckList {
       .add(ParameterReassignedToCheck.class)
       .add(HardcodedIpCheck.class)
       .add(LoggersDeclarationCheck.class)
-      .add(ObjectEqualsNullCheck.class)
       .add(MethodNameSameAsClassCheck.class)
       .add(CollectionImplementationReferencedCheck.class)
       .add(IncorrectOrderOfMembersCheck.class)
