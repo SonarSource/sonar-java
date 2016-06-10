@@ -20,12 +20,17 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 
 import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
 
@@ -112,6 +117,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     }
     List<ProgramState> results = new ArrayList<>();
     List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
+    if (Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind) {
+      copiedConstraints = addNullConstraintsForBooleanWrapper(booleanConstraint, initialProgramState, copiedConstraints);
+    }
     for (ProgramState ps : copiedConstraints) {
       List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
       if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
@@ -121,6 +129,16 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       }
     }
     return results;
+  }
+
+  private List<ProgramState> addNullConstraintsForBooleanWrapper(BooleanConstraint booleanConstraint, ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
+    Constraint leftConstraint = initialProgramState.getConstraint(leftOp);
+    Constraint rightConstraint = initialProgramState.getConstraint(rightOp);
+    if (leftConstraint instanceof BooleanConstraint && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
+      List<ProgramState> nullConstraints = copiedConstraints.stream().map(ps -> ps.addConstraint(rightOp, ObjectConstraint.nullConstraint())).collect(Collectors.toList());
+      return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
+    }
+    return copiedConstraints;
   }
 
   @Override

@@ -120,7 +120,13 @@ public class SymbolicValue {
         return ImmutableList.of();
       }
     }
-    if (data == null || !data.equals(nullConstraint)) {
+    if (data == null) {
+      return ImmutableList.of(programState.addConstraint(this, nullConstraint));
+    }
+    if (data instanceof BooleanConstraint) {
+      return nullConstraint.isNull() ? ImmutableList.of() : ImmutableList.of(programState);
+    }
+    if (!data.equals(nullConstraint)) {
       return ImmutableList.of(programState.addConstraint(this, nullConstraint));
     }
     return ImmutableList.of(programState);
@@ -129,18 +135,19 @@ public class SymbolicValue {
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
     Object data = programState.getConstraint(this);
     // update program state only for a different constraint
-    if (data instanceof BooleanConstraint) {
-      BooleanConstraint bc = (BooleanConstraint) data;
-      if (!bc.equals(booleanConstraint)) {
-        // setting null where value is known to be non null or the contrary
-        return ImmutableList.of();
-      }
+    if (data instanceof BooleanConstraint && !data.equals(booleanConstraint)) {
+      // setting null where value is known to be non null or the contrary
+      return ImmutableList.of();
     }
-    if ((data == null || !data.equals(booleanConstraint)) && programState.canReach(this)) {
+    if ((data == null || isNonNullConstraint(data)) && programState.canReach(this)) {
       // store constraint only if symbolic value can be reached by a symbol.
       return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
     }
     return ImmutableList.of(programState);
+  }
+
+  private static boolean isNonNullConstraint(Object data) {
+    return data instanceof ObjectConstraint && !((ObjectConstraint) data).isNull();
   }
 
   public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
