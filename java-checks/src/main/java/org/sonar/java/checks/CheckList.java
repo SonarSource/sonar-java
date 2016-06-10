@@ -33,7 +33,6 @@ import org.sonar.java.checks.naming.BadPackageNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
 import org.sonar.java.checks.naming.EnumAsIdentifierCheck;
-import org.sonar.java.checks.naming.FieldMatchMethodNameCheck;
 import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
@@ -236,7 +235,6 @@ public final class CheckList {
       .add(FieldNameMatchingTypeNameCheck.class)
       .add(AbstractClassWithoutAbstractMethodCheck.class)
       .add(UnusedMethodParameterCheck.class)
-      .add(FieldMatchMethodNameCheck.class)
       .add(MagicNumberCheck.class)
       .add(StringConcatenationInLoopCheck.class)
       .add(CompareObjectWithEqualsCheck.class)
