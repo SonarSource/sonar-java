@@ -289,6 +289,6 @@ public class PublicApiChecker extends BaseTreeVisitor {
     if (Double.doubleToRawLongBits(publicApi) == 0L) {
       return 100.0;
     }
-    return ParsingUtils.scaleValue(documentedPublicApi / publicApi * 100, 2);
+    return ParsingUtils.scaleValue(documentedPublicApi / ((double) publicApi) * 100, 2);
   }
 }
