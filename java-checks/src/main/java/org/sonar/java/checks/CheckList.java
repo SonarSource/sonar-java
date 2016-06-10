@@ -137,7 +137,6 @@ public final class CheckList {
       .add(AssignmentInSubExpressionCheck.class)
       .add(TrailingCommentCheck.class)
       .add(UselessImportCheck.class)
-      .add(LowerCaseLongSuffixCheck.class)
       .add(MissingDeprecatedCheck.class)
       .add(IndentationCheck.class)
       .add(HiddenFieldCheck.class)
