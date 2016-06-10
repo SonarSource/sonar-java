@@ -135,7 +135,6 @@ public final class CheckList {
       .add(EmptyStatementUsageCheck.class)
       .add(ModifiersOrderCheck.class)
       .add(AssignmentInSubExpressionCheck.class)
-      .add(StringEqualityComparisonCheck.class)
       .add(TrailingCommentCheck.class)
       .add(UselessImportCheck.class)
       .add(LowerCaseLongSuffixCheck.class)
