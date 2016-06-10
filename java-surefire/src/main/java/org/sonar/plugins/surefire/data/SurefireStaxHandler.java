@@ -25,13 +25,13 @@ import org.codehaus.staxmate.in.SMEvent;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.api.utils.StaxParser.XmlStreamHandler;
 
 import javax.xml.stream.XMLStreamException;
+
 import java.text.ParseException;
 import java.util.Locale;
 
-public class SurefireStaxHandler implements XmlStreamHandler {
+public class SurefireStaxHandler {
 
   private final UnitTestIndex index;
 
@@ -39,7 +39,6 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     this.index = index;
   }
 
-  @Override
   public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
     SMInputCursor testSuite = rootCursor.constructDescendantCursor(new ElementFilter("testsuite"));
     SMEvent testSuiteEvent;
