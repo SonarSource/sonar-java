@@ -582,6 +582,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         anonymousClassType.supertype = identifierType;
         anonymousClassType.interfaces = ImmutableList.of();
       }
+      anonymousClassType.symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", anonymousClassType.supertype, anonymousClassType.symbol));
       scan(classBody);
       constructedType = anonymousClassType;
     } else if (resolution.symbol().isMethodSymbol()) {
