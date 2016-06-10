@@ -259,7 +259,6 @@ public final class CheckList {
       .add(EmptyClassCheck.class)
       .add(InstanceOfAlwaysTrueCheck.class)
       .add(RedundantTypeCastCheck.class)
-      .add(ExtendDeprecatedSymbolCheck.class)
       .add(CollectionCallingItselfCheck.class)
       .add(UnusedLabelCheck.class)
       .add(ThrowCheckedExceptionCheck.class)
