@@ -241,7 +241,6 @@ public final class CheckList {
       .add(MagicNumberCheck.class)
       .add(StringConcatenationInLoopCheck.class)
       .add(CompareObjectWithEqualsCheck.class)
-      .add(ArrayEqualsCheck.class)
       .add(RepeatAnnotationCheck.class)
       .add(NPEThrowCheck.class)
       .add(NullDereferenceInConditionalCheck.class)
