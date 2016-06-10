@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -235,6 +236,9 @@ public class SymbolTableTest {
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).isEmpty();
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
+    Collection<JavaSymbol> superSymbols = typeSymbol.members.lookup("super");
+    assertThat(superSymbols).isNotEmpty();
+    assertThat(superSymbols.iterator().next().type()).isSameAs(result.symbol("Superclass").type);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("methodInAnonymousClassInterface").owner();
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
