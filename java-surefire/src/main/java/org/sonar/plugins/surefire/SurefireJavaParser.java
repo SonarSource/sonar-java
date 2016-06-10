@@ -29,20 +29,16 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.xml.stream.XMLStreamException;
-
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -89,12 +85,7 @@ public class SurefireJavaParser {
   }
 
   private static File[] findXMLFilesStartingWith(File dir, final String fileNameStart) {
-    return dir.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.startsWith(fileNameStart) && name.endsWith(".xml");
-      }
-    });
+    return dir.listFiles((parentDir, name) -> name.startsWith(fileNameStart) && name.endsWith(".xml"));
   }
 
   private void parseFiles(SensorContext context, File[] reports) {
@@ -105,8 +96,7 @@ public class SurefireJavaParser {
   }
 
   private static void parseFiles(File[] reports, UnitTestIndex index) {
-    SurefireStaxHandler staxParser = new SurefireStaxHandler(index);
-    StaxParser parser = new StaxParser(staxParser, false);
+    StaxParser parser = new StaxParser(index);
     for (File report : reports) {
       try {
         parser.parse(report);
@@ -170,7 +160,6 @@ public class SurefireJavaParser {
             .setDurationInMs(Math.max(unitTestResult.getDurationMilliseconds(), 0))
             .setStatus(TestCase.Status.of(unitTestResult.getStatus()))
             .setMessage(unitTestResult.getMessage())
-            .setType(TestCase.TYPE_UNIT)
             .setStackTrace(unitTestResult.getStackTrace());
       }
     }

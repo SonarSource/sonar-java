@@ -21,10 +21,11 @@ package org.sonar.plugins.surefire.data;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.utils.StaxParser;
+import org.sonar.plugins.surefire.StaxParser;
 import org.sonar.test.TestUtils;
 
 import javax.xml.stream.XMLStreamException;
+
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -125,8 +126,7 @@ public class SurefireStaxHandlerTest {
 
   private void parse(String path) throws XMLStreamException {
     File xml = TestUtils.getResource(getClass(), path);
-    SurefireStaxHandler staxParser = new SurefireStaxHandler(index);
-    StaxParser parser = new StaxParser(staxParser, false);
+    StaxParser parser = new StaxParser(index);
     parser.parse(xml);
   }
 }
