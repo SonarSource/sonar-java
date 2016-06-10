@@ -244,7 +244,6 @@ public final class CheckList {
       .add(SelfAssignementCheck.class)
       .add(MismatchPackageDirectoryCheck.class)
       .add(ReplaceLambdaByMethodRefCheck.class)
-      .add(StaticFinalArrayNotPrivateCheck.class)
       .add(FieldModifierCheck.class)
       .add(SerializableFieldInSerializableClassCheck.class)
       .add(PackageInfoCheck.class)

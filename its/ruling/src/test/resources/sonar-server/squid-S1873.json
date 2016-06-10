@@ -1,8 +1,0 @@
-{
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/BaseChart.java':[
-40,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/CustomBarRenderer.java':[
-28,
-],
-}
