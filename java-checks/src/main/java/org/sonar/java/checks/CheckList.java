@@ -275,7 +275,6 @@ public final class CheckList {
       .add(TransactionalMethodVisibilityCheck.class)
       .add(CompareToResultTestCheck.class)
       .add(SecureCookieCheck.class)
-      .add(UselessObjectCreationCheck.class)
       .add(CatchIllegalMonitorStateExceptionCheck.class)
       .add(ForLoopTerminationConditionCheck.class)
       .add(HttpRefererCheck.class)
