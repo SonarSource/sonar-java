@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -31,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,12 +37,9 @@ import java.util.regex.Pattern;
 public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
   private static final Pattern UNICODE_ESCAPED_CHAR = Pattern.compile("\\\\u+[a-fA-F0-9]{4}");
-  private static final Predicate<String> IS_PRINTABLE_ESCAPED_UNICODE = new Predicate<String>() {
-    @Override
-    public boolean apply(String input) {
-      int unicodePointDecimal = Integer.parseInt(input.substring(input.length() - 4), 16);
-      return (31 < unicodePointDecimal && unicodePointDecimal < 127) || 160 < unicodePointDecimal ;
-    }
+  private static final Predicate<String> IS_PRINTABLE_ESCAPED_UNICODE = input -> {
+    int unicodePointDecimal = Integer.parseInt(input.substring(input.length() - 4), 16);
+    return (31 < unicodePointDecimal && unicodePointDecimal < 127) || 160 < unicodePointDecimal ;
   };
 
   @Override
@@ -62,7 +58,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
     List<String> matches = getAllMatches(matcher);
     if (!matches.isEmpty()) {
       boolean notOnlyUnicodeEscaped = !matcher.replaceAll("").isEmpty();
-      if (notOnlyUnicodeEscaped && Iterables.any(matches, IS_PRINTABLE_ESCAPED_UNICODE)) {
+      if (notOnlyUnicodeEscaped && matches.stream().anyMatch(IS_PRINTABLE_ESCAPED_UNICODE)) {
         reportIssue(node, "Remove this Unicode escape sequence and use the character instead.");
       }
     }

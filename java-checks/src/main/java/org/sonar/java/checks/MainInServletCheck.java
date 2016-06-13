@@ -21,13 +21,10 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,15 +60,10 @@ public class MainInServletCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isServletOrEjb(Symbol symbol) {
-    if (Iterables.any(SERVLET_AND_EJB_CLASSES, SyntaxNodePredicates.isSubtypeOf(symbol.type()))) {
+    if (SERVLET_AND_EJB_CLASSES.stream().anyMatch(symbol.type()::isSubtypeOf)) {
       return true;
     }
-    for (SymbolMetadata.AnnotationInstance annotation : symbol.metadata().annotations()) {
-      if (annotation.symbol().type().fullyQualifiedName().startsWith("javax.ejb.")) {
-        return true;
-      }
-    }
-    return false;
+    return symbol.metadata().annotations().stream().anyMatch(annotation -> annotation.symbol().type().fullyQualifiedName().startsWith("javax.ejb."));
   }
 
 }
