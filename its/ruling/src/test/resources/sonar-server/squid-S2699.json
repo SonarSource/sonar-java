@@ -445,9 +445,6 @@
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/rule/ws/UpdateActionMediumTest.java':[
 73,
 ],
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/search/BaseDocTest.java':[
-35,
-],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/search/ws/SearchOptionsTest.java':[
 89,
 ],

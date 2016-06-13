@@ -64,7 +64,7 @@ public class TypeSubstitutionSolver {
         formals = applySiteSubstitutionToFormalParameters(formals, site);
         substitution = typeInferenceSolver.inferTypeSubstitution(method, formals, argTypes);
       }
-      if (substitution.size() == 0 || !isValidSubtitution(substitution, site)) {
+      if (!isValidSubtitution(substitution, site)) {
         // substitution discarded
         return null;
       }

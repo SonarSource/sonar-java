@@ -973,7 +973,7 @@ public class SymbolTableTest {
 
 
     JavaSymbol sym = result.symbol("o");
-    assertThat(sym.type.toString()).isEqualTo("!Defered type!"); // unknown while we do the analysis with java 7
+    assertThat(sym.type.is("java.lang.Object")).isTrue();
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
     assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));
 
@@ -987,7 +987,6 @@ public class SymbolTableTest {
     assertThat(myStringParam.type.is("java.lang.String")).isTrue();
 
   }
-  void plop(String s) {}
 
   @Test
   public void MethodReference() throws Exception {
