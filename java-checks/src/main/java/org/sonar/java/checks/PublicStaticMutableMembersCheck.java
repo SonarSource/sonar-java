@@ -22,11 +22,9 @@ package org.sonar.java.checks;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
@@ -157,7 +155,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   static boolean isMutable(@Nullable ExpressionTree initializer, Type type) {
     if (initializer == null) {
-      return Iterables.any(ALWAYS_MUTABLE_TYPES, SyntaxNodePredicates.isSubtypeOf(type));
+      return ALWAYS_MUTABLE_TYPES.stream().anyMatch(type::isSubtypeOf);
     }
     ExpressionTree expression = ExpressionsHelper.skipParentheses(initializer);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -192,6 +190,6 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   }
 
   static boolean isForbiddenType(final Type type) {
-    return type.isArray() || Iterables.any(MUTABLE_TYPES, SyntaxNodePredicates.isSubtypeOf(type));
+    return type.isArray() || MUTABLE_TYPES.stream().anyMatch(type::isSubtypeOf);
   }
 }

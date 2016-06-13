@@ -20,9 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -68,7 +66,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isEmpty(BlockTree block) {
     List<StatementTree> body = block.body();
-    return body.isEmpty() || Iterables.all(body, SyntaxNodePredicates.kind(Kind.EMPTY_STATEMENT));
+    return body.isEmpty() || body.stream().allMatch(stmt -> stmt.is(Kind.EMPTY_STATEMENT));
   }
 
   private static boolean containsComment(BlockTree block) {

@@ -20,9 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -51,6 +49,6 @@ public class EmptyClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isEmpty(ClassTree tree) {
-    return tree.modifiers().annotations().isEmpty() && Iterables.all(tree.members(), SyntaxNodePredicates.kind(Tree.Kind.EMPTY_STATEMENT));
+    return tree.modifiers().annotations().isEmpty() && tree.members().stream().allMatch(member -> member.is(Tree.Kind.EMPTY_STATEMENT));
   }
 }
