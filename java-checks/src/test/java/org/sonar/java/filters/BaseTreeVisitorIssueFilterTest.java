@@ -26,8 +26,8 @@ import com.google.common.collect.Multimap;
 import org.fest.assertions.BooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -52,11 +52,11 @@ public class BaseTreeVisitorIssueFilterTest {
   private static final String COMPONENT_KEY = "test:test.MyTest";
   private static final String RULE_KEY = "S42";
   private BaseTreeVisitorIssueFilter filter;
-  private Issue issue;
+  private FilterableIssue issue;
 
   @Before
   public void setup() {
-    issue = mock(Issue.class);
+    issue = mock(FilterableIssue.class);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));
 

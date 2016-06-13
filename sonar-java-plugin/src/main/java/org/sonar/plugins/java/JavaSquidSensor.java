@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -83,7 +84,6 @@ public class JavaSquidSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     javaResourceLocator.setSensorContext(context);
-    postAnalysisIssueFilter.setResourceMapping(javaResourceLocator.getResourceMapping());
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();

@@ -27,8 +27,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
-import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.SuppressWarningsCheck;
@@ -74,7 +74,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   }
 
   @Override
-  public boolean accept(Issue issue) {
+  public boolean accept(FilterableIssue issue) {
     Multimap<String, Integer> excludedLinesByRule = HashMultimap.create();
     if (excludedLinesByComponent.containsKey(issue.componentKey())) {
       excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
@@ -82,7 +82,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     return !issueShouldNotBeReported(issue, excludedLinesByRule);
   }
 
-  private static boolean issueShouldNotBeReported(Issue issue, Multimap<String, Integer> excludedLineByRule) {
+  private static boolean issueShouldNotBeReported(FilterableIssue issue, Multimap<String, Integer> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
       if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
