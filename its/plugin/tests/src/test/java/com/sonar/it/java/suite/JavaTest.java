@@ -25,6 +25,7 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
+
 import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -127,19 +128,6 @@ public class JavaTest {
     result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getStatus()).isEqualTo(0);
 
-  }
-
-  /**
-   * SONARJAVA-19
-   */
-  @Test
-  public void suppressWarnings_nosonar() throws Exception {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.profile", "suppress-warnings");
-    orchestrator.executeBuild(build);
-
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(2);
   }
 
   /**
