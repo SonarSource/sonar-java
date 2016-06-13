@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
@@ -41,16 +40,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<SymbolMetadata.AnnotationInstance> PREDICATE_ANNOTATION_TEST_OR_UNKNOWN = new Predicate<SymbolMetadata.AnnotationInstance>() {
-    @Override
-    public boolean apply(SymbolMetadata.AnnotationInstance input) {
-      Type type = input.symbol().type();
-      return type.isUnknown() || type.is("org.junit.Test") || type.is("org.testng.annotations.Test");
-    }
+  private static final Predicate<SymbolMetadata.AnnotationInstance> PREDICATE_ANNOTATION_TEST_OR_UNKNOWN = input -> {
+    Type type = input.symbol().type();
+    return type.isUnknown() || type.is("org.junit.Test") || type.is("org.testng.annotations.Test");
   };
 
   @Override
@@ -62,11 +59,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       CompilationUnitTree cut = (CompilationUnitTree) tree;
-      for (Tree typeTree : cut.types()) {
-        if (typeTree.is(Kind.CLASS)) {
-          checkClass((ClassTree) typeTree);
-        }
-      }
+      cut.types().stream().filter(typeTree -> typeTree.is(Kind.CLASS)).forEach(typeTree -> checkClass((ClassTree) typeTree));
     }
   }
 
@@ -127,7 +120,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isTestMethod(boolean forJunit4, Symbol member) {
     if (forJunit4) {
-      return Iterables.any(member.metadata().annotations(), PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
+      return member.metadata().annotations().stream().anyMatch(PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
     }
     return member.name().startsWith("test");
   }
