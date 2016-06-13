@@ -25,6 +25,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+
 import org.sonar.api.issue.Issue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
@@ -64,6 +65,10 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   @Override
   public void setComponentKey(String componentKey) {
     this.componentKey = componentKey;
+  }
+
+  public String getComponentKey() {
+    return componentKey;
   }
 
   @Override
