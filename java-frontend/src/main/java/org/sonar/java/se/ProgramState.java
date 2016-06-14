@@ -186,7 +186,7 @@ public class ProgramState {
   }
 
   ProgramState put(Symbol symbol, SymbolicValue value) {
-    if (symbol.isUnknown()) {
+    if (symbol.isUnknown() || isVolatileField(symbol)) {
       return this;
     }
     SymbolicValue oldValue = values.get(symbol);
@@ -200,6 +200,10 @@ public class ProgramState {
       return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
     }
     return this;
+  }
+
+  private static boolean isVolatileField(Symbol symbol) {
+    return isField(symbol) && symbol.isVolatile();
   }
 
   private static PMap<SymbolicValue, Integer> decreaseReference(PMap<SymbolicValue, Integer> givenReferences, SymbolicValue sv) {

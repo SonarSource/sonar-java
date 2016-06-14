@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ProgramState.Pop;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -70,7 +71,7 @@ public class ProgramStateTest {
   public void testToString() {
     SymbolicValue sv3 = new SymbolicValue(3);
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv3);
-    Symbol variable = new JavaSymbol.VariableJavaSymbol(0, "x", null);
+    Symbol variable = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
     SymbolicValue sv4 = new SymbolicValue(4);
     state = state.put(variable, sv4);
     SymbolicValue sv5 = new SymbolicValue(5);
