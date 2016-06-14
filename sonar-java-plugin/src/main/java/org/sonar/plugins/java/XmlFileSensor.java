@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.resources.Project;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.xml.XmlAnalyzer;
@@ -43,14 +43,20 @@ public class XmlFileSensor implements Sensor {
   }
 
   @Override
-  public boolean shouldExecuteOnProject(Project project) {
-    return fs.hasFiles(xmlFilePredicate);
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.name(this.toString());
   }
 
   @Override
-  public void analyse(Project module, SensorContext context) {
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getXmlChecks());
-    new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(getXmlFiles());
+  public void execute(SensorContext context) {
+    if (hasXmlFiles()) {
+      sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getXmlChecks());
+      new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(getXmlFiles());
+    }
+  }
+
+  private boolean hasXmlFiles() {
+    return fs.hasFiles(xmlFilePredicate);
   }
 
   private Iterable<File> getXmlFiles() {
