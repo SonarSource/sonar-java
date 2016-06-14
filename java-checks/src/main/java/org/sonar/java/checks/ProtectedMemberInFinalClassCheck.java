@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.predicates.VisibleForTestingPredicate;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -34,14 +34,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Predicate;
 
 @Rule(key = "S2156")
 public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
+  private static final Predicate<ModifiersTree> PREDICATE = new VisibleForTestingPredicate().negate();
   private static final String MESSAGE = "Remove this \"protected\" modifier.";
 
   @Override
@@ -77,18 +76,7 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean isNotVisibleForTesting(ModifiersTree modifiers) {
-    Collection<AnnotationTree> annotations = modifiers.annotations();
-    Optional<AnnotationTree> found = annotations.stream()
-            .filter(ProtectedMemberInFinalClassCheck::isVisibleForTesting)
-            .findFirst();
-
-    return !found.isPresent();
-  }
-
-  private static boolean isVisibleForTesting(AnnotationTree annotationTree) {
-    return annotationTree.annotationType()
-            .symbolType()
-            .is(GUAVA_FQCN);
+    return PREDICATE.test(modifiers);
   }
 
 }

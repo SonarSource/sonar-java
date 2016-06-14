@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.predicates.VisibleForTestingPredicate;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -31,10 +32,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Rule(key = "S2039")
 public class FieldModifierCheck extends IssuableSubscriptionVisitor {
 
+  private static final Predicate<ModifiersTree> MODIFIERS_TREE_PREDICATE = new VisibleForTestingPredicate().negate();
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
@@ -44,11 +47,17 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.VARIABLE) && hasNoVisibilityModifier((VariableTree) member)) {
+      if (isConsentWithCheck(member)) {
         IdentifierTree simpleName = ((VariableTree) member).simpleName();
         reportIssue(simpleName, "Explicitly declare the visibility for \"" + simpleName.name() + "\".");
       }
     }
+  }
+
+  private static boolean isConsentWithCheck(Tree member) {
+    return member.is(Tree.Kind.VARIABLE)
+      && hasNoVisibilityModifier((VariableTree) member)
+      && isNotVisibleForTesting((VariableTree) member);
   }
 
   private static boolean hasNoVisibilityModifier(VariableTree member) {
@@ -56,5 +65,9 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
     return !(ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC)
       || ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE)
       || ModifiersUtils.hasModifier(modifiers, Modifier.PROTECTED));
+  }
+
+  private static boolean isNotVisibleForTesting(VariableTree member) {
+    return MODIFIERS_TREE_PREDICATE.test(member.modifiers());
   }
 }
