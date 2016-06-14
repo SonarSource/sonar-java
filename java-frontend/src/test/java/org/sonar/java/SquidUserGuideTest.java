@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;
@@ -29,7 +30,6 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -93,11 +93,6 @@ public class SquidUserGuideTest {
 
       @Override
       public Integer getMethodStartLine(String fullyQualifiedMethodName) {
-        return null;
-      }
-
-      @Override
-      public ResourceMapping getResourceMapping() {
         return null;
       }
 
