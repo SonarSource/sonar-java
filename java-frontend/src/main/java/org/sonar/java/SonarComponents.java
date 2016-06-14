@@ -30,11 +30,11 @@ import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -110,8 +110,8 @@ public class SonarComponents {
     return resourcePerspectives.as(Symbolizable.class, inputFromIOFile(file));
   }
 
-  public Highlightable highlightableFor(File file) {
-    return resourcePerspectives.as(Highlightable.class, inputFromIOFile(file));
+  public NewHighlighting highlightableFor(File file) {
+    return context.newHighlighting().onFile(inputFromIOFile(file));
   }
 
   public List<File> getJavaClasspath() {
@@ -123,10 +123,6 @@ public class SonarComponents {
 
   public List<File> getJavaTestClasspath() {
     return javaTestClasspath.getElements();
-  }
-
-  public ResourcePerspectives getResourcePerspectives() {
-    return resourcePerspectives;
   }
 
   public void registerCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {

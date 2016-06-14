@@ -25,7 +25,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import org.sonar.api.source.Highlightable;
+import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
+import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -48,11 +49,11 @@ import java.util.Set;
 public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   private final SonarComponents sonarComponents;
-  private final Map<Tree.Kind, String> typesByKind;
+  private final Map<Tree.Kind, TypeOfText> typesByKind;
   private final Set<String> keywords;
   private final Charset charset;
 
-  private Highlightable.HighlightingBuilder highlighting;
+  private NewHighlighting highlighting;
   private List<Integer> lineStart;
 
   public SyntaxHighlighterVisitor(SonarComponents sonarComponents, Charset charset) {
@@ -63,14 +64,14 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     keywordsBuilder.add(JavaKeyword.keywordValues());
     keywords = keywordsBuilder.build();
 
-    ImmutableMap.Builder<Tree.Kind, String> typesByKindBuilder = ImmutableMap.builder();
-    typesByKindBuilder.put(Tree.Kind.STRING_LITERAL, "s");
-    typesByKindBuilder.put(Tree.Kind.CHAR_LITERAL, "s");
-    typesByKindBuilder.put(Tree.Kind.FLOAT_LITERAL, "c");
-    typesByKindBuilder.put(Tree.Kind.DOUBLE_LITERAL, "c");
-    typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, "c");
-    typesByKindBuilder.put(Tree.Kind.INT_LITERAL, "c");
-    typesByKindBuilder.put(Tree.Kind.ANNOTATION, "a");
+    ImmutableMap.Builder<Tree.Kind, TypeOfText> typesByKindBuilder = ImmutableMap.builder();
+    typesByKindBuilder.put(Tree.Kind.STRING_LITERAL, TypeOfText.STRING);
+    typesByKindBuilder.put(Tree.Kind.CHAR_LITERAL, TypeOfText.STRING);
+    typesByKindBuilder.put(Tree.Kind.FLOAT_LITERAL, TypeOfText.CONSTANT);
+    typesByKindBuilder.put(Tree.Kind.DOUBLE_LITERAL, TypeOfText.CONSTANT);
+    typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
+    typesByKindBuilder.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
+    typesByKindBuilder.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
     typesByKind = typesByKindBuilder.build();
   }
 
@@ -86,12 +87,12 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     File file = context.getFile();
-    highlighting = sonarComponents.highlightableFor(file).newHighlighting();
+    highlighting = sonarComponents.highlightableFor(file);
     lineStart = startLines(file, this.charset);
 
     super.scanFile(context);
 
-    highlighting.done();
+    highlighting.save();
     lineStart.clear();
   }
 
@@ -113,13 +114,13 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   public void visitToken(SyntaxToken syntaxToken) {
     String text = syntaxToken.text();
     if (keywords.contains(text)) {
-      highlighting.highlight(start(syntaxToken), end(syntaxToken), "k");
+      highlighting.highlight(start(syntaxToken), end(syntaxToken), TypeOfText.KEYWORD);
     }
   }
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    highlighting.highlight(start(syntaxTrivia), end(syntaxTrivia), "cppd");
+    highlighting.highlight(start(syntaxTrivia), end(syntaxTrivia), TypeOfText.COMMENT);
   }
 
   private int start(AnnotationTree annotationTree) {

@@ -20,18 +20,24 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
-import org.sonar.api.source.Highlightable;
-import org.sonar.api.source.Highlightable.HighlightingBuilder;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.highlighting.TypeOfText;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -39,44 +45,44 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class SyntaxHighlighterVisitorTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
-  private final SonarComponents sonarComponents = mock(SonarComponents.class);
-  private final Highlightable highlightable = mock(Highlightable.class);
-  private final HighlightingBuilderTester highlighting = spy(new HighlightingBuilderTester());
+  private SensorContextTester context;
+  private DefaultFileSystem fs;
+  private SonarComponents sonarComponents;
 
-  private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
+  private SyntaxHighlighterVisitor syntaxHighlighterVisitor;
 
   private List<String> lines;
   private String eol;
 
   @Before
   public void setUp() throws Exception {
-    when(sonarComponents.highlightableFor(Mockito.any(File.class))).thenReturn(highlightable);
-    when(highlightable.newHighlighting()).thenReturn(highlighting);
+    context = SensorContextTester.create(temp.getRoot());
+    fs = context.fileSystem();
+    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), mock(ResourcePerspectives.class), fs,
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), context, mock(CheckFactory.class));
+    syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
   }
 
   @Test
   public void parse_error() throws Exception {
+    SensorContextTester spy = spy(context);
     File file = temp.newFile();
     Files.write("ParseError", file, Charsets.UTF_8);
+    fs.add(new DefaultInputFile("", file.getName()));
     scan(file);
-    Mockito.verify(highlightable, times(1)).newHighlighting();
-    Mockito.verify(highlighting, never()).highlight(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
-    assertThat(highlighting.done).isTrue();
-    assertThat(highlighting.entries).isEmpty();
+    verify(spy, never()).newHighlighting();
   }
 
   @Test
@@ -111,107 +117,32 @@ public class SyntaxHighlighterVisitorTest {
   private File generateTestFile() throws IOException {
     File file = temp.newFile();
     Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
+    lines = Files.readLines(file, Charsets.UTF_8);
+    String content  = Joiner.on(eol).join(lines);
+    fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
     return file;
   }
 
   private void verifyHighlighting(File file) throws IOException {
-    lines = Files.readLines(file, Charsets.UTF_8);
-    assertThatHasBeenHighlighted(offset(1, 1), offset(3, 4), "cppd");
-    assertThatHasBeenHighlighted(offset(5, 1), offset(7, 4), "cppd");
-    assertThatHasBeenHighlighted(offset(8, 1), offset(8, 18), "a");
-    assertThatHasBeenHighlighted(offset(8, 19), offset(8, 27), "s");
-    assertThatHasBeenHighlighted(offset(9, 1), offset(9, 6), "k");
-    assertThatHasBeenHighlighted(offset(11, 3), offset(11, 24), "a");
-    assertThatHasBeenHighlighted(offset(12, 3), offset(12, 6), "k");
-    assertThatHasBeenHighlighted(offset(13, 5), offset(13, 11), "k");
-    assertThatHasBeenHighlighted(offset(13, 12), offset(13, 14), "c");
-    assertThatHasBeenHighlighted(offset(18, 2), offset(18, 11), "k");
-    assertThatHasBeenHighlighted(offset(19, 21), offset(19, 28), "k");
-    assertThatHasBeenHighlighted(offset(19, 29), offset(19, 30), "c");
-    assertThat(highlighting.done).isTrue();
-    assertThat(highlighting.entries).isEmpty();
+    String componentKey = ":" + file.getName();
+    assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 5, 1, 7, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 8, 1, 8, 18, TypeOfText.ANNOTATION);
+    assertThatHasBeenHighlighted(componentKey, 8, 19, 8, 27, TypeOfText.STRING);
+    assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 11, 3, 11, 24, TypeOfText.ANNOTATION);
+    assertThatHasBeenHighlighted(componentKey, 12, 3, 12, 6, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 13, 5, 13, 11, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 14, TypeOfText.CONSTANT);
+    assertThatHasBeenHighlighted(componentKey, 18, 2, 18, 11, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 19, 21, 19, 28, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 19, 29, 19, 30, TypeOfText.CONSTANT);
   }
 
-  private int offset(int line, int column) {
-    int result = 0;
-    for (int i = 0; i < line - 1; i++) {
-      result += lines.get(i).length() + eol.length();
-    }
-    result += column - 1;
-    return result;
-  }
-
-  private void assertThatHasBeenHighlighted(int start, int end, String type) {
-    assertThat(hasBeenHighlighted(start, end, type)).isTrue();
-  }
-
-  private boolean hasBeenHighlighted(int start, int end, String type) {
-    HighlightingBuilderTester.Entry expected = new HighlightingBuilderTester.Entry(start, end, type);
-    HighlightingBuilderTester.Entry observed = null;
-    for (HighlightingBuilderTester.Entry entry : highlighting.entries) {
-      if (entry.equals(expected)) {
-        observed = entry;
-        break;
-      }
-    }
-    if (observed == null) {
-      return false;
-    }
-
-    // consume the entry
-    highlighting.entries.remove(observed);
-    return true;
-  }
-
-  private static class HighlightingBuilderTester implements Highlightable.HighlightingBuilder {
-    private Set<Entry> entries = Sets.newHashSet();
-    private boolean done = false;
-
-    @Override
-    public HighlightingBuilder highlight(int startOffset, int endOffset, String typeOfText) {
-      entries.add(new Entry(startOffset, endOffset, typeOfText));
-      return this;
-    }
-
-    @Override
-    public HighlightingBuilder highlight(int startLine, int startLineOffset, int endLine, int endLineOffset, String typeOfText) {
-      // TODO implement this properly for cases requiring it.
-      return null;
-    }
-
-    @Override
-    public void done() {
-      done = true;
-    }
-
-    private static class Entry {
-      private final int start;
-      private final int end;
-      private final String type;
-
-      public Entry(int start, int end, String type) {
-        this.start = start;
-        this.end = end;
-        this.type = type;
-      }
-
-      @Override
-      public boolean equals(Object obj) {
-        Entry other = (Entry) obj;
-        if (end != other.end)
-          return false;
-        if (start != other.start)
-          return false;
-        if (!type.equals(other.type))
-          return false;
-        return true;
-      }
-
-      @Override
-      public String toString() {
-        return "[" + start + ", " + end + ", \"" + type + "\"]";
-      }
-    }
+  private void assertThatHasBeenHighlighted(String componentKey, int startLine, int startColumn, int endLine, int endColumn, TypeOfText expected) {
+    assertThat(context.highlightingTypeAt(componentKey, startLine, startColumn - 1)).hasSize(1).contains(expected);
+    // -1 because of offset (column start at 0) and -1 to be within the range.
+    assertThat(context.highlightingTypeAt(componentKey, endLine, endColumn - 1 - 1)).hasSize(1).contains(expected);
   }
 
 }

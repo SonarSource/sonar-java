@@ -19,27 +19,29 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
+import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
-import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
+import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
@@ -47,10 +49,16 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,28 +75,28 @@ public class JavaSquidSensorTest {
   }
 
   @Test
-  public void test_issues_creation_on_main_file() {
+  public void test_issues_creation_on_main_file() throws IOException {
     testIssueCreation(InputFile.Type.MAIN, 3);
   }
 
   @Test
-  public void test_issues_creation_on_test_file() { // NOSONAR required to test NOSONAR reporting on test files
+  public void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
     testIssueCreation(InputFile.Type.TEST, 0);
   }
 
 
-  private void testIssueCreation(InputFile.Type onType, int expectedIssues) {
+  private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     Settings settings = new Settings();
     SensorContextTester context = SensorContextTester.create(new File("src/test/java/"));
     DefaultFileSystem fs = context.fileSystem();
 
     String effectiveKey = "org/sonar/plugins/java/JavaSquidSensorTest.java";
-    File file = new File(effectiveKey);
-    DefaultInputFile inputFile = new DefaultInputFile("", file.getPath()).setLanguage("java").setType(onType);
+    File file = new File(fs.baseDir(), effectiveKey);
+    DefaultInputFile inputFile = new DefaultInputFile("", effectiveKey).setLanguage("java").setType(onType).initMetadata(new String(Files.readAllBytes(file.toPath()), "UTF-8"));
     fs.add(inputFile);
     JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
 
-    SonarComponents sonarComponents = createSonarComponentsMock(fs);
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
@@ -99,7 +107,7 @@ public class JavaSquidSensorTest {
     jss.execute(context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(noSonarFilter, times(1)).noSonarInFile(inputFile, Sets.newHashSet(75));
+    verify(noSonarFilter, times(1)).noSonarInFile(inputFile, Sets.newHashSet(83));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
@@ -112,26 +120,33 @@ public class JavaSquidSensorTest {
     jss.execute(context);
   }
 
-  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
+  private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
+
+    CheckFactory checkFactory = mock(CheckFactory.class);
+    Checks<Object> checks = mock(Checks.class);
+    when(checks.addAnnotatedChecks(any(Collection.class))).thenReturn(checks);
+    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
+
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    when(javaTestClasspath.getElements()).thenReturn(ImmutableList.of());
+
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    when(javaClasspath.getElements()).thenReturn(ImmutableList.of());
+    when(checkFactory.create(anyString())).thenReturn(checks);
+
+    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
+    ResourcePerspectives resourcePerspectives = mock(ResourcePerspectives.class);
+    Symbolizable symbolizable = mock(Symbolizable.class);
+    when(resourcePerspectives.as(eq(Symbolizable.class), any(InputFile.class))).thenReturn(symbolizable);
+    when(symbolizable.newSymbolTableBuilder()).thenReturn(mock(Symbolizable.SymbolTableBuilder.class));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, resourcePerspectives, contextTester.fileSystem(), javaClasspath, javaTestClasspath, contextTester, checkFactory));
+
+
+
     BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
-
-    Symbolizable symbolizable = mock(Symbolizable.class);
-    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
-    when(symbolizable.newSymbolTableBuilder()).thenReturn(mock(Symbolizable.SymbolTableBuilder.class));
-    when(sonarComponents.fileLinesContextFor(any(File.class))).thenReturn(mock(FileLinesContext.class));
-
-    Highlightable highlightable = mock(Highlightable.class);
-    when(highlightable.newHighlighting()).thenReturn(mock(Highlightable.HighlightingBuilder.class));
-    when(sonarComponents.highlightableFor(any(File.class))).thenReturn(highlightable);
-
-    when(sonarComponents.getFileSystem()).thenReturn(fs);
-
-    Checks<JavaCheck> checks = mock(Checks.class);
-    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
-    when(sonarComponents.checks()).thenReturn(Lists.<Checks<JavaCheck>>newArrayList(checks));
-
     return sonarComponents;
   }
 
