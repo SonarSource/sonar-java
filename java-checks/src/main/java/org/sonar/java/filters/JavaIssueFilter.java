@@ -19,7 +19,7 @@
  */
 package org.sonar.java.filters;
 
-import org.sonar.api.issue.Issue;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
@@ -29,7 +29,7 @@ public interface JavaIssueFilter extends JavaFileScanner {
 
   void setComponentKey(String componentKey);
 
-  boolean accept(Issue issue);
+  boolean accept(FilterableIssue issue);
 
   Set<Class<? extends JavaCheck>> filteredRules();
 }

@@ -21,12 +21,14 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import org.sonar.api.issue.Issue;
+
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.SuppressWarningsCheck;
@@ -34,6 +36,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,10 +47,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
+
+  private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
 
   private static final String SUPPRESS_WARNING_RULE_KEY = getSuppressWarningRuleKey();
 
@@ -61,11 +68,21 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   }
 
   @Override
-  public boolean accept(Issue issue) {
-    return !issueShouldNotBeReported(issue, excludedLinesByRule());
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    excludedLinesByComponent.put(getComponentKey(), HashMultimap.create(excludedLinesByRule()));
   }
 
-  private static boolean issueShouldNotBeReported(Issue issue, Multimap<String, Integer> excludedLineByRule) {
+  @Override
+  public boolean accept(FilterableIssue issue) {
+    Multimap<String, Integer> excludedLinesByRule = HashMultimap.create();
+    if (excludedLinesByComponent.containsKey(issue.componentKey())) {
+      excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
+    }
+    return !issueShouldNotBeReported(issue, excludedLinesByRule);
+  }
+
+  private static boolean issueShouldNotBeReported(FilterableIssue issue, Multimap<String, Integer> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
       if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {

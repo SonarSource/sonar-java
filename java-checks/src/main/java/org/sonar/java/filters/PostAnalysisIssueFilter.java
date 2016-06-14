@@ -22,11 +22,13 @@ package org.sonar.java.filters;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.batch.IssueFilterChain;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.squidbridge.api.AnalysisException;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
@@ -34,12 +36,11 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
     new EclipseI18NFilter(),
     new LombokFilter(),
     new SuppressWarningFilter());
-  private ResourceMapping resourceMapping;
   private Iterable<JavaIssueFilter> issueFilers;
+  private final FileSystem fileSystem;
 
-  @Override
-  public void setResourceMapping(ResourceMapping resourceMapping) {
-    this.resourceMapping = resourceMapping;
+  public PostAnalysisIssueFilter(FileSystem fileSystem) {
+    this.fileSystem = fileSystem;
   }
 
   @VisibleForTesting
@@ -56,7 +57,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
   }
 
   @Override
-  public boolean accept(Issue issue, IssueFilterChain chain) {
+  public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
     for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
       if (!javaIssueFilter.accept(issue)) {
         return false;
@@ -67,11 +68,14 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    String componentKey = resourceMapping.getComponentKeyByFileKey(context.getFileKey());
+    InputFile component = fileSystem.inputFile(fileSystem.predicates().is(context.getFile()));
+    if (component == null) {
+      throw new AnalysisException("Component not found: " + context.getFileKey());
+    }
+    String componentKey = component.key();
     for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
       javaIssueFilter.setComponentKey(componentKey);
       javaIssueFilter.scanFile(context);
     }
   }
-
 }

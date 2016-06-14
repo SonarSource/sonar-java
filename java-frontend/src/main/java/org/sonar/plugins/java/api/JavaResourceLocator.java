@@ -20,11 +20,12 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
 
 import javax.annotation.CheckForNull;
+
 import java.io.File;
 import java.util.Collection;
 
@@ -47,6 +48,4 @@ public interface JavaResourceLocator extends JavaFileScanner {
   Collection<File> classpath();
 
   Integer getMethodStartLine(String fullyQualifiedMethodName);
-
-  ResourceMapping getResourceMapping();
 }

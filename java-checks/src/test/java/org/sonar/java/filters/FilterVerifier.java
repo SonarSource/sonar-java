@@ -23,10 +23,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Fail;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
@@ -78,7 +79,7 @@ public class FilterVerifier {
     for (AnalyzerMessage analyzerMessage : testJavaFileScannerContext.getIssues()) {
       Integer issueLine = analyzerMessage.getLine();
       String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
-      Issue issue = mock(Issue.class);
+      FilterableIssue issue = mock(FilterableIssue.class);
       when(issue.ruleKey()).thenReturn(RuleKey.of("repo", ruleKey));
       when(issue.componentKey()).thenReturn(filename);
       when(issue.line()).thenReturn(issueLine);

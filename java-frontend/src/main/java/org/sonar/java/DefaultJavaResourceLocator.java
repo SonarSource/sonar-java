@@ -24,12 +24,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -47,7 +47,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   Map<String, InputFile> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
   private final Map<String, Integer> methodStartLines;
-  private final ResourceMapping resourceMapping;
   private SensorContext sensorContext;
 
   public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath) {
@@ -56,7 +55,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
-    resourceMapping = new ResourceMapping();
   }
 
   public void setSensorContext(SensorContext sensorContext) {
@@ -111,11 +109,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
-  public ResourceMapping getResourceMapping() {
-    return resourceMapping;
-  }
-
-  @Override
   public void scanFile(JavaFileScannerContext context) {
     Preconditions.checkNotNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
@@ -124,7 +117,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     if (inputFile == null) {
       throw new IllegalStateException("resource not found : " + context.getFileKey());
     }
-    resourceMapping.addResource(inputFile.key(), context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
       resourcesByClass.put(classIOFileEntry.getKey(), inputFile);
       if (context.getFileKey() != null) {

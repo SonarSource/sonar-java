@@ -8,5 +8,10 @@
       <key>S1197</key>
       <priority>MAJOR</priority>
     </rule>
+    <rule>
+      <repositoryKey>checkstyle</repositoryKey>
+      <key>com.puppycrawl.tools.checkstyle.checks.coding.ArrayTrailingCommaCheck</key>
+      <priority>MINOR</priority>
+    </rule>
   </rules>
 </profile>

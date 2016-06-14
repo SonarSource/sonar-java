@@ -39,6 +39,7 @@ import java.io.File;
   Struts139Test.class,
   JavaClasspathTest.class,
   JaCoCoControllerTest.class,
+  SuppressWarningTest.class
 })
 public class JavaTestSuite {
 
@@ -49,7 +50,6 @@ public class JavaTestSuite {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
       .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-dit.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-ignored-test.xml"))

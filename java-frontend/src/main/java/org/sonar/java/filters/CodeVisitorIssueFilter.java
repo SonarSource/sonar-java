@@ -19,12 +19,9 @@
  */
 package org.sonar.java.filters;
 
-import org.sonar.api.issue.batch.IssueFilter;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.api.scan.issue.filter.IssueFilter;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 public interface CodeVisitorIssueFilter extends CodeVisitor, IssueFilter {
-
-  void setResourceMapping(ResourceMapping resourceMapping);
 
 }

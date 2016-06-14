@@ -22,38 +22,48 @@ package org.sonar.java.filters;
 import com.google.common.collect.Lists;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.batch.IssueFilterChain;
-import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.junit.rules.ExpectedException;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.squidbridge.api.AnalysisException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PostAnalysisIssueFilterTest {
 
-  private static final String COMPONENT_KEY = "my_component";
-  private static final String FILE_KEY = "my_file";
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  private static final String FILE_KEY = "PostAnalysisIssueFilter.java";
   private static JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
   private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.<FakeJavaIssueFilter>newArrayList(new FakeJavaIssueFilter(true), new FakeJavaIssueFilter(false));
 
   @Before
   public void setUp() {
-    postAnalysisIssueFilter = new PostAnalysisIssueFilter();
-    ResourceMapping resourceMapping = mock(ResourceMapping.class);
-    when(resourceMapping.getComponentKeyByFileKey(anyString())).thenReturn(COMPONENT_KEY);
-    postAnalysisIssueFilter.setResourceMapping(resourceMapping);
+    DefaultFileSystem fileSystem = new DefaultFileSystem(new File("src/test/files/filters"));
+    DefaultInputFile inputFile = new DefaultInputFile("", FILE_KEY);
+    inputFile.setLanguage("java");
+    inputFile.setType(InputFile.Type.MAIN);
+    fileSystem.add(inputFile);
+    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fileSystem);
 
     context = mock(JavaFileScannerContext.class);
-    when(context.getFileKey()).thenReturn(FILE_KEY);
+    when(context.getFile()).thenReturn(inputFile.file());
+    when(context.getFileKey()).thenReturn(inputFile.key());
   }
 
   @Test
@@ -65,14 +75,14 @@ public class PostAnalysisIssueFilterTest {
   public void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
     postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
 
-    assertThat(postAnalysisIssueFilter.accept(mock(Issue.class), mock(IssueFilterChain.class))).isFalse();
+    assertThat(postAnalysisIssueFilter.accept(mock(FilterableIssue.class), mock(IssueFilterChain.class))).isFalse();
   }
 
   @Test
   public void issue_filter_should_depends_on_chain_if_filters_accetps() {
     postAnalysisIssueFilter.setIssueFilters(new ArrayList<JavaIssueFilter>());
 
-    Issue issue = mock(Issue.class);
+    FilterableIssue issue = mock(FilterableIssue.class);
     IssueFilterChain chain = mock(IssueFilterChain.class);
 
     when(chain.accept(issue)).thenReturn(true);
@@ -88,9 +98,19 @@ public class PostAnalysisIssueFilterTest {
     postAnalysisIssueFilter.scanFile(context);
 
     for (FakeJavaIssueFilter filter : ISSUE_FILTERS) {
-      assertThat(filter.componentKey).isEqualTo(COMPONENT_KEY);
+      assertThat(filter.componentKey).isEqualTo(":PostAnalysisIssueFilter.java");
       assertThat(filter.scanned).isTrue();
     }
+  }
+
+  @Test
+  public void missing_component_trigger_Exception() {
+    thrown.expect(AnalysisException.class);
+
+    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
+    when(context.getFile()).thenReturn(new File(""));
+
+    postAnalysisIssueFilter.scanFile(context);
   }
 
   private static class FakeJavaIssueFilter implements JavaIssueFilter {
@@ -114,7 +134,7 @@ public class PostAnalysisIssueFilterTest {
     }
 
     @Override
-    public boolean accept(Issue issue) {
+    public boolean accept(FilterableIssue issue) {
       return accepted;
     }
 
