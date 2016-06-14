@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -82,7 +81,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -196,8 +194,27 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-    if(mit.isTypeSet()) {
-      // nothing special to deduce once we have set type of expression
+    if(mit.isTypeSet() && mit.symbol().isMethodSymbol()) {
+      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
+      JavaType parametrizedTypeType = (JavaType) mit.symbolType();
+      if(parametrizedTypeType.isTagged(JavaType.PARAMETERIZED)) {
+        TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) parametrizedTypeType).typeSubstitution.replaceKeys(methodSymbol.typeVariableTypes);
+        parametrizedTypeType = parametrizedTypeCache.getParametrizedTypeType((JavaSymbol.TypeJavaSymbol) parametrizedTypeType.symbol(), typeSubstitution);
+      }
+      final JavaType finalParametrizedTypeType = parametrizedTypeType;
+      List<JavaType> inferedArgTypes =
+        methodSymbol.parameterTypes().stream().map(formalType -> resolve.resolveTypeSubstitution((JavaType) formalType, finalParametrizedTypeType)).collect(Collectors.toList());
+      List<JavaType> argTypes = getParameterTypes(tree.arguments());
+      for (int i = 0; i < argTypes.size(); i++) {
+        JavaType arg = argTypes.get(i);
+        int size = inferedArgTypes.size();
+        Type formal = inferedArgTypes.get((i < size) ? i : (size - 1));
+        if (formal != arg) {
+          AbstractTypedTree argTree = (AbstractTypedTree) mit.arguments().get(i);
+          argTree.setInferedType(formal);
+          argTree.accept(this);
+        }
+      }
       return;
     }
     Tree methodSelect = tree.methodSelect();
@@ -442,9 +459,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       List<JavaType> samMethodArgs = resolve.findSamMethodArgs(lambdaExpressionTree.symbolType());
       for (int i = 0; i < samMethodArgs.size(); i++) {
         VariableTree param = lambdaExpressionTree.parameters().get(i);
-        if (param.type().is(Tree.Kind.INFERED_TYPE) && ((JavaType) param.type().symbolType()).isTagged(JavaType.DEFERRED)) {
-          ((AbstractTypedTree) param.type()).setInferedType(samMethodArgs.get(i));
-          ((JavaSymbol.VariableJavaSymbol) param.symbol()).type = samMethodArgs.get(i);
+        if (param.type().is(Tree.Kind.INFERED_TYPE)) {
+          JavaType inferedType = samMethodArgs.get(i);
+          if(inferedType.isTagged(JavaType.WILDCARD)) {
+            // JLS8 18.5.3
+            inferedType = ((WildCardType) inferedType).bound;
+          }
+          ((AbstractTypedTree) param.type()).setInferedType(inferedType);
+          ((JavaSymbol.VariableJavaSymbol) param.symbol()).type = inferedType;
         }
       }
       super.visitLambdaExpression(tree);
@@ -790,9 +812,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    if (!((AbstractTypedTree) tree).isTypeSet()) {
-      resolveAs(tree, JavaSymbol.VAR);
-    }
+    resolveAs(tree, JavaSymbol.VAR);
   }
 
   @Override

@@ -87,3 +87,10 @@ class Overload<T> {
     new Overload<String>().foo(() -> sout("")).foo(s -> sout(s));
   }
 }
+
+class deferedInference {
+  void fun(List<String> l) {
+    l.stream().collect(java.util.stream.Collectors.toMap( s1 -> foo(s1), s2 -> s2 + "-"));
+  }
+  private void foo(String s){}
+}

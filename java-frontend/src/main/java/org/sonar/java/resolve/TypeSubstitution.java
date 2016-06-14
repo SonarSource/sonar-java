@@ -23,12 +23,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import javax.annotation.CheckForNull;
-
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  private Map<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
+  private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
   public TypeSubstitution() {
     // default behavior
@@ -92,6 +93,21 @@ public class TypeSubstitution {
       }
     }
     return true;
+  }
+  
+  public TypeSubstitution replaceKeys(List<TypeVariableJavaType> keys) {
+    TypeSubstitution result = new TypeSubstitution();
+    Collection<JavaType> values = substitutions.values();
+    int i = 0;
+    for (JavaType value : values) {
+      // incomplete substitution
+      if(i == keys.size()) {
+        break;
+      }
+      result.add(keys.get(i), value);
+      i++;
+    }
+    return result;
   }
 
   public TypeSubstitution combine(TypeSubstitution source) {

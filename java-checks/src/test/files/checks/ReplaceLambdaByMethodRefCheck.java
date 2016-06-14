@@ -1,8 +1,8 @@
 import java.util.Arrays;
-
+import java.util.*;
+import java.util.stream.Collectors;
 class A {
   void fun() {
-
     IntStream.range(1, 5)
         .map((x) -> x * x)
         .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with a method reference.}}
@@ -55,5 +55,15 @@ class A {
   }
   interface F {
     A apply(A a1);
+  }
+
+  public interface Query extends Unwrappable {
+    Collection<String> keys();
+    default String get(String name) {
+    }
+
+    default Map<String, String> keyValues() {
+      return keys().stream().collect(Collectors.toMap(key -> key, key -> get(key))); // Noncompliant
+    }
   }
 }
