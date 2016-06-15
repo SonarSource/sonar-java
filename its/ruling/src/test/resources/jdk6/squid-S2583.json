@@ -4,6 +4,7 @@
 ],
 'jdk6:java/awt/KeyboardFocusManager.java':[
 2226,
+2592,
 ],
 'jdk6:java/awt/MenuBar.java':[
 168,
@@ -30,9 +31,6 @@
 ],
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
-],
-'jdk6:java/math/BigDecimal.java':[
-3660,
 ],
 'jdk6:java/net/Socket.java':[
 374,
@@ -102,12 +100,6 @@
 ],
 'jdk6:java/util/concurrent/ScheduledThreadPoolExecutor.java':[
 236,
-],
-'jdk6:java/util/concurrent/ThreadPoolExecutor.java':[
-654,
-874,
-1349,
-1461,
 ],
 'jdk6:java/util/logging/LogManager.java':[
 771,
