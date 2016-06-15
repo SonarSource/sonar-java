@@ -20,7 +20,6 @@
 
 package org.sonar.java.checks.predicates;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 
@@ -29,14 +28,14 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * This is a predicate that finds if given modifiers tree contains {@link VisibleForTesting} annotation.
+ * This is a predicate that finds if given modifiers tree contains {@link com.google.common.annotations.VisibleForTesting} annotation.
  *
  * @author <a href="mailto:krzysztof.suszynski@coi.gov.pl">Krzysztof Suszynski</a>
  * @since 07.06.16
  */
 public class VisibleForTestingPredicate implements Predicate<ModifiersTree> {
 
-  public static final String GUAVA_FQCN = VisibleForTesting.class.getName();
+  public static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
 
   @Override
   public boolean test(ModifiersTree modifierTrees) {
