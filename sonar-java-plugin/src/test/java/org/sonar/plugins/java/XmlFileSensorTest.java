@@ -20,16 +20,16 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.resources.Project;
+import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
@@ -64,30 +64,22 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void should_execute_on_project_having_xml() {
-    Project project = mock(Project.class);
-    fileSystem.add(new DefaultInputFile("","fake.java").setLanguage(Java.KEY));
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-
-    fileSystem.add(new DefaultInputFile("", "fake.xml"));
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
-
-    fileSystem.add(new DefaultInputFile("", "myModule/pom.xml"));
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+  public void describe() {
+    SensorDescriptor sensorDescriptor = mock(SensorDescriptor.class);
+    sensor.describe(sensorDescriptor);
+    verify(sensorDescriptor).name("XmlFileSensor");
   }
 
   @Test
   public void test_issues_creation() throws Exception {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/"));
+    DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new DefaultInputFile("", file.getPath()));
+    fs.add(new DefaultInputFile("", "pom.xml"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 
-    SensorContext context = mock(SensorContext.class);
-    when(context.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create("src/test/files/maven/pom.xml"));
-
-    sensor.analyse(mock(Project.class), context);
+    sensor.execute(context);
 
     verify(sonarComponents, times(1)).reportIssue(Mockito.argThat(new ArgumentMatcher<AnalyzerMessage>() {
       @Override
@@ -95,6 +87,18 @@ public class XmlFileSensorTest {
         return file.getAbsolutePath().equals(((AnalyzerMessage) argument).getFile().getAbsolutePath());
       }
     }));
+  }
+
+  @Test
+  public void not_executed_without_xml_files_in_file_system() throws Exception {
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/"));
+    DefaultFileSystem fs = context.fileSystem();
+    SonarComponents sonarComponents = createSonarComponentsMock(fs);
+    XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
+
+    sensor.execute(context);
+
+    verify(sonarComponents, Mockito.never()).reportIssue(any());
   }
 
   private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
