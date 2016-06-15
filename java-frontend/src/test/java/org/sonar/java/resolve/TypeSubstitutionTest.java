@@ -19,11 +19,8 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -148,11 +145,4 @@ public class TypeSubstitutionTest {
     assertThat(substitution.equals(newSubstitution)).isFalse();
   }
 
-  @Test
-  public void replace_keys() {
-    TypeSubstitution newSubstitution = substitution.replaceKeys(new ArrayList<>());
-    assertThat(newSubstitution.size()).isEqualTo(0);
-    newSubstitution = substitution.replaceKeys(Lists.newArrayList(v, k));
-    assertThat(newSubstitution.typeVariables()).containsExactly(v, k);
-  }
 }

@@ -93,4 +93,16 @@ class deferedInference {
     l.stream().collect(java.util.stream.Collectors.toMap( s1 -> foo(s1), s2 -> s2 + "-"));
   }
   private void foo(String s){}
+
+  class MyClass {
+    static <X, Y> G<Y, X> myFoo(java.util.function.Function<X, Y> f) {
+      return null;
+    }
+
+    void myBar(G<String, Integer> g) {
+      myBar(myFoo(x -> x.toString()));
+    }
+  }
+
+  class G<A, B> {}
 }

@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import javax.annotation.CheckForNull;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,22 +93,14 @@ public class TypeSubstitution {
     }
     return true;
   }
-  
-  public TypeSubstitution replaceKeys(List<TypeVariableJavaType> keys) {
-    TypeSubstitution result = new TypeSubstitution();
-    Collection<JavaType> values = substitutions.values();
-    int i = 0;
-    for (JavaType value : values) {
-      // incomplete substitution
-      if(i == keys.size()) {
-        break;
-      }
-      result.add(keys.get(i), value);
-      i++;
-    }
-    return result;
-  }
 
+  /**
+   * Produce new substitution based on two substitutions using the same keys.
+   * if this.substitution is: A -> S, B -> I and source.substitution is : A -> Y, B -> X,
+   * produces Y -> S, X -> I
+   * @param source the substitution which values will be used as keys.
+   * @return combination of the two substitutions.
+   */
   public TypeSubstitution combine(TypeSubstitution source) {
     TypeSubstitution result = new TypeSubstitution();
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : substitutionEntries()) {
