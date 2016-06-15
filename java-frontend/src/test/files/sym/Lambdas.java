@@ -95,11 +95,11 @@ class deferedInference {
   private void foo(String s){}
 
   class MyClass {
-    static <X, Y> G<Y, X> myFoo(java.util.function.Function<X, Y> f) {
+    static <X, Y> G<Y, List<X>> myFoo(java.util.function.Function<X, Y> f) {
       return null;
     }
 
-    void myBar(G<String, Integer> g) {
+    void myBar(G<String, List<Integer>> g) {
       myBar(myFoo(x -> x.toString()));
     }
   }

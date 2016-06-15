@@ -31,10 +31,10 @@ public class TypeSubstitutionTest {
   TypeVariableJavaType v;
   JavaType c1;
   JavaType c2;
+  JavaSymbol.PackageJavaSymbol packageJavaSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
 
   @Before
   public void setUp() {
-    JavaSymbol.PackageJavaSymbol packageJavaSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
     k = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("K", packageJavaSymbol));
     v = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("V", packageJavaSymbol));
     c1 = new JavaType(JavaType.CLASS, null);
@@ -143,6 +143,55 @@ public class TypeSubstitutionTest {
       .add(k, c2)
       .add(v, c1);
     assertThat(substitution.equals(newSubstitution)).isFalse();
+  }
+
+  @Test
+  public void test_combine() throws Exception {
+    TypeVariableJavaType a = newTypeVar("A");
+    TypeVariableJavaType b = newTypeVar("B");
+    TypeVariableJavaType x = newTypeVar("X");
+    TypeVariableJavaType y = newTypeVar("Y");
+    JavaType s = newType("S");
+    JavaType i = newType("I");
+    TypeSubstitution t0 = new TypeSubstitution().add(a, s).add(b, i);
+    TypeSubstitution t1 = new TypeSubstitution().add(a, x).add(b, y);
+
+    TypeSubstitution combined = t1.combine(t0);
+    assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, y);
+    assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(s, i);
+
+    TypeSubstitution t3 = new TypeSubstitution().add(a, s).add(b, newParameterizedType("G", i));
+    TypeSubstitution t4 = new TypeSubstitution().add(a, x).add(b, newParameterizedType("G", y));
+    combined = t4.combine(t3);
+    assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, y);
+    assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(s, i);
+
+    TypeSubstitution t5 = new TypeSubstitution().add(a, new WildCardType(x, WildCardType.BoundType.SUPER)).add(b, new WildCardType(y, WildCardType.BoundType.EXTENDS));
+    combined = t5.combine(t0);
+    assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, y);
+    assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(s, i);
+
+
+    TypeSubstitution t6 = new TypeSubstitution().add(a, s).add(b, new ArrayJavaType(i, null));
+    TypeSubstitution t7 = new TypeSubstitution().add(a, x).add(b, new ArrayJavaType(y, null));
+    combined = t7.combine(t6);
+    assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, y);
+    assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(s, i);
+  }
+
+  private JavaType newType(String name) {
+    return new JavaType(JavaType.CLASS, new JavaSymbol.TypeJavaSymbol(0, name, packageJavaSymbol));
+  }
+
+  private TypeVariableJavaType newTypeVar(String name) {
+    return new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(name, packageJavaSymbol));
+  }
+
+  private ParametrizedTypeJavaType newParameterizedType(String name, JavaType substitutedType) {
+    JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(0, name, packageJavaSymbol);
+    symbol.addTypeParameter(k);
+    TypeSubstitution newSubstitution = new TypeSubstitution().add(k, substitutedType);
+    return new ParametrizedTypeJavaType(symbol, newSubstitution);
   }
 
 }
