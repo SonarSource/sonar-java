@@ -196,15 +196,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
     if(mit.isTypeSet() && mit.symbol().isMethodSymbol()) {
       JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
-      JavaType parametrizedTypeType = (JavaType) mit.symbolType();
-      if(parametrizedTypeType.isTagged(JavaType.PARAMETERIZED)) {
-        TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) parametrizedTypeType).typeSubstitution.replaceKeys(methodSymbol.typeVariableTypes);
-        parametrizedTypeType = parametrizedTypeCache.getParametrizedTypeType((JavaSymbol.TypeJavaSymbol) parametrizedTypeType.symbol(), typeSubstitution);
+      JavaType methodReturnedType = (JavaType) mit.symbolType();
+      TypeSubstitution typeSubstitution = new TypeSubstitution();
+      if(methodReturnedType.isTagged(JavaType.PARAMETERIZED)) {
+        typeSubstitution = ((ParametrizedTypeJavaType) methodReturnedType).typeSubstitution.replaceKeys(methodSymbol.typeVariableTypes);
       }
-      final JavaType finalParametrizedTypeType = parametrizedTypeType;
-      List<JavaType> inferedArgTypes =
-        methodSymbol.parameterTypes().stream().map(formalType -> resolve.resolveTypeSubstitution((JavaType) formalType, finalParametrizedTypeType)).collect(Collectors.toList());
       List<JavaType> argTypes = getParameterTypes(tree.arguments());
+      List<JavaType> inferedArgTypes = resolve.resolveTypeSubstitution(methodSymbol.parameterTypes().stream().map(t -> (JavaType) t).collect(Collectors.toList()), typeSubstitution);
       for (int i = 0; i < argTypes.size(); i++) {
         JavaType arg = argTypes.get(i);
         int size = inferedArgTypes.size();
