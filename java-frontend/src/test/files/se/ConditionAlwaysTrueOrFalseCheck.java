@@ -1078,26 +1078,26 @@ public static class Class extends SuperClass {
       b = true;
       c = true;
     } catch (Exception e) {
-      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { // unreachable
       }
-      if (b) {
+      if (b) { // unreachable
       }
       c = true;
       d = true;
     } catch (Exception e) {
-      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { // unreachable
       }
-      if (c) {
+      if (c) { // unreachable
       }
       d = true;
     }
     if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (b) {
+    if (b) { // Noncompliant
     }
-    if (c) {
+    if (c) { // Noncompliant
     }
-    if (d) {
+    if (d) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
@@ -1111,9 +1111,9 @@ public static class Class extends SuperClass {
     } finally {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (b) {
+      if (b) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (c) {
+      if (c) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       b = true;
     }

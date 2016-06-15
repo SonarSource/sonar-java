@@ -58,7 +58,7 @@ public class MyClass {
   public void doTheOtherThing() {
     Lock lock = new ReentrantLock();
     try {
-      lock.tryLock();  // False negative Noncompliant
+      lock.tryLock();
       // do work...
       lock.unlock(); // an exception will keep this line from being reached
     } catch (ExceptionType e) {
@@ -234,7 +234,7 @@ public class MyClass {
   public void unlockingInTryCatch() {
     Lock lock = new ReentrantLock();
     try {
-      lock.lock(); // Noncompliant
+      lock.lock();
     } finally {
       try {
         lock.unlock();
@@ -247,7 +247,7 @@ public class MyClass {
   public void unlockingInTryCatchButMissed() {
     Lock lock = new ReentrantLock();
     try {
-      lock.lock(); // Noncompliant
+      lock.lock();
     } finally {
       try {
         lock.unlock();

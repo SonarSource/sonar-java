@@ -66,7 +66,7 @@ public class TypeSubstitutionSolver {
       }
       if (!isValidSubtitution(substitution, site)) {
         // substitution discarded
-        return null;
+        substitution = new TypeSubstitution();
       }
     }
     return substitution;

@@ -238,12 +238,15 @@ class NullPointerTest {
     if (var2.equals("")) { } // Compliant
   }
 
+  private void potentiallyRaiseException() throws Exception {
+  }
+
   public void testTry() {
     Object object = null;
     try {
       object = new Object();
     } catch (Exception e) {
-      object.hashCode(); // Noncompliant
+      object.hashCode(); // unreachable
     } finally {
       object.hashCode();
     }

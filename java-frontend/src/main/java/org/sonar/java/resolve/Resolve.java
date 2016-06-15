@@ -494,9 +494,6 @@ public class Resolve {
       return bestSoFar;
     }
     TypeSubstitution substitution = typeSubstitutionSolver.getTypeSubstitution(methodJavaSymbol, callSite, typeParams, argTypes);
-    if (substitution == null) {
-      return bestSoFar;
-    }
     List<JavaType> formals = ((MethodJavaType) methodJavaSymbol.type).argTypes;
     formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, callSite);
     if(defSite != callSite) {

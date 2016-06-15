@@ -37,6 +37,10 @@ public class MethodJavaType extends JavaType {
     this.thrown = thrown;
   }
 
+  public List<JavaType> thrownTypes() {
+    return thrown;
+  }
+
   @Override
   public String toString() {
     return resultType == null ? "constructor" : ("returns " + resultType.toString());

@@ -100,6 +100,17 @@ public class
           blockOut.addAll(inOfSuccessor);
         }
       }
+
+      // Since we cut the catch entries, so add it to calculate variables.
+      if (block instanceof CFG.TryBlock) {
+        for (CFG.Block successor : ((CFG.TryBlock) block).catchEntries()) {
+          Set<Symbol> inOfSuccessor = in.get(successor);
+          if (inOfSuccessor != null) {
+            blockOut.addAll(inOfSuccessor);
+          }
+        }
+      }
+
       // in = gen and (out - kill)
       Set<Symbol> newIn = new HashSet<>(gen.get(block));
       newIn.addAll(Sets.difference(blockOut, kill.get(block)));
@@ -110,6 +121,15 @@ public class
       in.put(block, newIn);
       for (CFG.Block predecessor : block.predecessors()) {
         workList.addLast(predecessor);
+      }
+
+      // Since we cut the catch entries, so add it to calculate variables.
+      if (block.isCatchEntryBlock()) {
+        for (CFG.Block tryBlock : cfg.blocks()) {
+          if (tryBlock instanceof CFG.TryBlock && ((CFG.TryBlock) tryBlock).catchEntries().contains(block)) {
+            workList.addLast(tryBlock);
+          }
+        }
       }
     }
   }

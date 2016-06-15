@@ -93,13 +93,16 @@ class A {
   private void try_finally() {
     boolean success = false;
     try {
-      foo();
+      potentiallyRaiseException();
       success = true;
     } finally {
       if(success) {
 
       }
     }
+  }
+
+  void potentiallyRaiseException() throws Exception {
   }
 
   void foo() {
@@ -163,4 +166,27 @@ class A {
       default:;
     }
   }
+
+ public void test_try_catch_finally() {
+   try {
+     noExceptionThrown();
+   } catch (Exception e) {
+     new java.io.FileReader("xxx"); // no accessible
+   }
+
+   try {
+     try {
+         potentiallyRaiseException();
+     } finally {
+       new java.io.BufferedReader(a); // Noncompliant
+     }
+   } catch (Exception e) {
+     new java.io.BufferedReader(a); // Noncompliant
+   } finally {
+     new java.io.BufferedReader(a); // Noncompliant
+   }
+
+   throw new Exception();
+   new java.io.BufferedReader(a); // no accessible
+ }
 }

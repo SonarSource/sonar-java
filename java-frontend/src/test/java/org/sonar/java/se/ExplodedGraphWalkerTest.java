@@ -94,7 +94,7 @@ public class ExplodedGraphWalkerTest {
           tree.accept(new ExplodedGraphWalker());
           fail("Too many states were processed !");
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          assertThat(exception.getMessage()).startsWith("reached limit of 10000 steps for method");
+          assertThat(exception.getMessage()).startsWith("reached limit of 50000 steps for method");
         }
       }
     });
@@ -109,7 +109,7 @@ public class ExplodedGraphWalkerTest {
           tree.accept(new ExplodedGraphWalker());
           fail("Too many states were processed !");
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
+          assertThat(exception.getMessage()).startsWith("reached maximum number of 50000 branched states");
         }
       }
     });
