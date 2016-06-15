@@ -105,4 +105,11 @@ class deferedInference {
   }
 
   class G<A, B> {}
+
+  <K> K getField(String s) {
+    return null;
+  }
+  java.util.Map<String, String> myField() {
+    return getField("");
+  }
 }
