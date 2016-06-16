@@ -1671,3 +1671,36 @@ class UtilObjects {
     }
   }
 }
+
+class VolatileFields {
+  private volatile boolean volatileField = false;
+
+  void bar() {
+    boolean a = volatileField;
+    if (volatileField) {
+      return;
+    }
+    while (true) {
+      if (a) {} // Compliant as we don't known the state of volatileField prior to the method
+    }
+  }
+
+  void qix() {
+    boolean a = volatileField;
+    if (a) {
+      return;
+    }
+    while (true) {
+      if (a) {} // Noncompliant
+    }
+  }
+
+  void foo() {
+    if (volatileField) {
+      return;
+    }
+    while (true) {
+      if (volatileField) {} // Compliant as this field is volatile, it can be modified by another thread
+    }
+  }
+}
