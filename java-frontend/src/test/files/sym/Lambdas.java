@@ -87,3 +87,29 @@ class Overload<T> {
     new Overload<String>().foo(() -> sout("")).foo(s -> sout(s));
   }
 }
+
+class deferedInference {
+  void fun(List<String> l) {
+    l.stream().collect(java.util.stream.Collectors.toMap( s1 -> foo(s1), s2 -> s2 + "-"));
+  }
+  private void foo(String s){}
+
+  class MyClass {
+    static <X, Y> G<Y, List<X>> myFoo(java.util.function.Function<X, Y> f) {
+      return null;
+    }
+
+    void myBar(G<String, List<Integer>> g) {
+      myBar(myFoo(x -> x.toString()));
+    }
+  }
+
+  class G<A, B> {}
+
+  <K> K getField(String s) {
+    return null;
+  }
+  java.util.Map<String, String> myField() {
+    return getField("");
+  }
+}

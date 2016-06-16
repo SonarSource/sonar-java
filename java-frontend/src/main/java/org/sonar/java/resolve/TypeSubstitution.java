@@ -23,12 +23,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import javax.annotation.CheckForNull;
-
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  private Map<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
+  private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
   public TypeSubstitution() {
     // default behavior
@@ -94,17 +94,46 @@ public class TypeSubstitution {
     return true;
   }
 
+  /**
+   * Produce new substitution based on two substitutions using the same keys.
+   * if this.substitution is: A -> S, B -> I and source.substitution is : A -> Y, B -> X,
+   * produces Y -> S, X -> I
+   * @param source the substitution which values will be used as keys.
+   * @return combination of the two substitutions.
+   */
   public TypeSubstitution combine(TypeSubstitution source) {
     TypeSubstitution result = new TypeSubstitution();
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : substitutionEntries()) {
       TypeVariableJavaType typeVar = substitution.getKey();
       JavaType targetType = substitution.getValue();
-      if (source.substitutedType(typeVar) != null && targetType.isTagged(JavaType.TYPEVAR)) {
-        result.add((TypeVariableJavaType) targetType, source.substitutedType(typeVar));
+      if (targetType.isTagged(JavaType.WILDCARD)) {
+        targetType = ((WildCardType) targetType).bound;
+      }
+      JavaType substitutedType = source.substitutedType(typeVar);
+      if(substitutedType == null) {
+        result.add(typeVar, targetType);
+        continue;
+      }
+      if(targetType.isArray() && substitutedType.isArray()) {
+        targetType = elementType(targetType);
+        substitutedType = elementType(substitutedType);
+      }
+      if (targetType.isTagged(JavaType.TYPEVAR)) {
+        result.add((TypeVariableJavaType) targetType, substitutedType);
+      } else if(targetType.isParameterized() && substitutedType.isParameterized()) {
+        TypeSubstitution combined = ((ParametrizedTypeJavaType) targetType).typeSubstitution.combine(((ParametrizedTypeJavaType) substitutedType).typeSubstitution);
+        result.substitutions.putAll(combined.substitutions);
       } else {
         result.add(typeVar, targetType);
       }
     }
     return result;
+  }
+
+  private static JavaType elementType(JavaType javaType) {
+    if(javaType.isArray()) {
+      return elementType(((ArrayJavaType) javaType).elementType);
+    }
+    return javaType;
   }
 }

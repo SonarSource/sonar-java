@@ -19,18 +19,15 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
-
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TypeSubstitutionSolver {
 
@@ -140,10 +137,7 @@ public class TypeSubstitutionSolver {
     if(resolvedType.isTagged(JavaType.METHOD)) {
       MethodJavaType methodType = (MethodJavaType) resolvedType;
       JavaType resultType = applySiteSubstitution(methodType.resultType, callSite, resolvedTypeDefinition);
-      List<JavaType> argTypes = Lists.newArrayList();
-      for (JavaType argType : methodType.argTypes) {
-        argTypes.add(applySiteSubstitution(argType, callSite, resolvedTypeDefinition));
-      }
+      List<JavaType> argTypes = methodType.argTypes.stream().map(argType -> applySiteSubstitution(argType, callSite, resolvedTypeDefinition)).collect(Collectors.toList());
       return new MethodJavaType(argTypes, resultType, methodType.thrown, methodType.symbol);
     }
 
@@ -154,11 +148,7 @@ public class TypeSubstitutionSolver {
     if (substitution.size() == 0 || types.isEmpty()) {
       return types;
     }
-    List<JavaType> results = new ArrayList<>(types.size());
-    for (JavaType type : types) {
-      results.add(applySubstitution(type, substitution));
-    }
-    return results;
+    return types.stream().map(type -> applySubstitution(type, substitution)).collect(Collectors.toList());
   }
 
   JavaType applySubstitution(JavaType type, TypeSubstitution substitution) {

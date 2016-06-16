@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JavaSymbol implements Symbol {
 
@@ -259,7 +260,7 @@ public class JavaSymbol implements Symbol {
   @Override
   public List<IdentifierTree> usages() {
     if (usages == null) {
-      usages = usagesBuilder.build();
+      usages = ImmutableList.<IdentifierTree>builder().addAll(usagesBuilder.build().stream().distinct().collect(Collectors.toList())).build();
     }
     return usages;
   }

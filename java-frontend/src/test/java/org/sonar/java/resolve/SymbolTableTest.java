@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -986,6 +985,10 @@ public class SymbolTableTest {
     assertThat(stringParamMethod.usages()).hasSize(1);
     assertThat(myStringParam.type.is("java.lang.String")).isTrue();
 
+    assertThat(result.symbol("s1").type.is("java.lang.String")).as(result.symbol("s1").type.name()).isTrue();
+    assertThat(result.symbol("s2").type.is("java.lang.String")).isTrue();
+    assertThat(result.symbol("foo", 95).usages()).hasSize(1);
+    assertThat(result.symbol("x", 103).type.is("java.lang.Integer")).as(result.symbol("x",103).type.name()).isTrue();
   }
 
   @Test
