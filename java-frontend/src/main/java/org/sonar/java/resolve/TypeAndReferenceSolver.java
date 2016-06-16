@@ -195,18 +195,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethodInvocation(MethodInvocationTree tree) {
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
     if(mit.isTypeSet() && mit.symbol().isMethodSymbol()) {
-      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
-      JavaType methodReturnedType = (JavaType) mit.symbolType();
-      TypeSubstitution typeSubstitution = new TypeSubstitution();
-      if(methodReturnedType.isTagged(JavaType.PARAMETERIZED)) {
-        JavaType resultType = ((MethodJavaType) methodSymbol.type).resultType;
-        if(resultType.isTagged(JavaType.PARAMETERIZED)) {
-          typeSubstitution =((ParametrizedTypeJavaType) resultType).typeSubstitution.combine(((ParametrizedTypeJavaType) methodReturnedType).typeSubstitution);
-        } else if(resultType.isTagged(JavaType.TYPEVAR)) {
-          typeSubstitution.add((TypeVariableJavaType) resultType, methodReturnedType);
-        }
-      }
+      TypeSubstitution typeSubstitution = inferedSubstitution(mit);
       List<JavaType> argTypes = getParameterTypes(tree.arguments());
+      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
       List<JavaType> inferedArgTypes = resolve.resolveTypeSubstitution(methodSymbol.parameterTypes().stream().map(t -> (JavaType) t).collect(Collectors.toList()), typeSubstitution);
       for (int i = 0; i < argTypes.size(); i++) {
         JavaType arg = argTypes.get(i);
@@ -242,6 +233,21 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     registerType(tree, returnType);
     inferArgumentTypes(argTypes, resolution);
+  }
+
+  private TypeSubstitution inferedSubstitution(MethodInvocationTreeImpl mit) {
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
+    JavaType methodReturnedType = (JavaType) mit.symbolType();
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    if(methodReturnedType.isTagged(JavaType.PARAMETERIZED)) {
+      JavaType resultType = ((MethodJavaType) methodSymbol.type).resultType;
+      if(resultType.isTagged(JavaType.PARAMETERIZED)) {
+        typeSubstitution =((ParametrizedTypeJavaType) resultType).typeSubstitution.combine(((ParametrizedTypeJavaType) methodReturnedType).typeSubstitution);
+      } else if(resultType.isTagged(JavaType.TYPEVAR)) {
+        typeSubstitution.add((TypeVariableJavaType) resultType, methodReturnedType);
+      }
+    }
+    return typeSubstitution;
   }
 
   private void setInferedType(Type infered, DeferredType deferredType) {
