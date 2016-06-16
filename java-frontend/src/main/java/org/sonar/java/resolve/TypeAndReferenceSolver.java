@@ -235,7 +235,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     inferArgumentTypes(argTypes, resolution);
   }
 
-  private TypeSubstitution inferedSubstitution(MethodInvocationTreeImpl mit) {
+  private static TypeSubstitution inferedSubstitution(MethodInvocationTreeImpl mit) {
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
     JavaType methodReturnedType = (JavaType) mit.symbolType();
     TypeSubstitution typeSubstitution = new TypeSubstitution();
