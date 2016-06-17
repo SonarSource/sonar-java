@@ -21,52 +21,20 @@ package org.sonar.java.matcher;
 
 import org.sonar.plugins.java.api.semantic.Type;
 
-public abstract class TypeCriteria {
-  public static TypeCriteria subtypeOf(String fullyQualifiedName) {
-    return new SubtypeTypeCriteria(fullyQualifiedName);
+@FunctionalInterface
+public interface TypeCriteria {
+
+  boolean matches(Type type);
+
+  static TypeCriteria subtypeOf(String fullyQualifiedName) {
+    return type -> type.isSubtypeOf(fullyQualifiedName);
   }
 
-  public static TypeCriteria is(String fullyQualifiedName) {
-    return new FullyQualifiedNameTypeCriteria(fullyQualifiedName);
+  static TypeCriteria is(String fullyQualifiedName) {
+    return type -> type.is(fullyQualifiedName);
   }
 
-  public static TypeCriteria anyType() {
-    return new AnyTypeCriteria();
-  }
-
-  public abstract boolean matches(Type type);
-
-  private static class FullyQualifiedNameTypeCriteria extends TypeCriteria {
-    private String fullyQualifiedName;
-
-    public FullyQualifiedNameTypeCriteria(String fullyQualifiedName) {
-      this.fullyQualifiedName = fullyQualifiedName;
-    }
-
-    @Override
-    public boolean matches(Type type) {
-      return type.is(fullyQualifiedName);
-    }
-  }
-
-  private static class SubtypeTypeCriteria extends TypeCriteria {
-    private String superTypeName;
-
-    public SubtypeTypeCriteria(String superTypeName) {
-      this.superTypeName = superTypeName;
-    }
-
-    @Override
-    public boolean matches(Type type) {
-      return type.isSubtypeOf(superTypeName);
-    }
-  }
-
-  private static class AnyTypeCriteria extends TypeCriteria {
-
-    @Override
-    public boolean matches(Type type) {
-      return true;
-    }
+  static TypeCriteria anyType() {
+    return type -> true;
   }
 }

@@ -20,11 +20,17 @@
 package org.sonar.java.matcher;
 
 import org.junit.Test;
-import org.sonar.java.matcher.NameCriteria;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class NameCriteriaTest {
+
+  @Test
+  public void should_match_any() {
+    NameCriteria nc = NameCriteria.any();
+    assertThat(nc.matches(null)).isTrue();
+    assertThat(nc.matches("equal")).isTrue();
+  }
 
   @Test
   public void should_match_exact_name() {

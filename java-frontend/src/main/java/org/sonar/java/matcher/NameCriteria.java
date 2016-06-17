@@ -19,51 +19,20 @@
  */
 package org.sonar.java.matcher;
 
-public abstract class NameCriteria {
+@FunctionalInterface
+public interface NameCriteria {
 
-  public abstract boolean matches(String name);
-  public static NameCriteria any() {
-    return new AnyNameCriteria();
-  }
-  public static NameCriteria is(String exactName) {
-    return new ExactNameCriteria(exactName);
-  }
+  boolean matches(String name);
 
-  public static NameCriteria startsWith(String prefix) {
-    return new PrefixNameCriteria(prefix);
+  static NameCriteria any() {
+    return name -> true;
   }
 
-  private static class ExactNameCriteria extends NameCriteria {
-    private String exactName;
-
-    public ExactNameCriteria(String exactName) {
-      this.exactName = exactName;
-    }
-
-    @Override
-    public boolean matches(String name) {
-      return exactName.equals(name);
-    }
+  static NameCriteria is(String exactName) {
+    return name -> name.equals(exactName);
   }
 
-  private static class PrefixNameCriteria extends NameCriteria {
-    private String prefix;
-
-    public PrefixNameCriteria(String prefix) {
-      this.prefix = prefix;
-    }
-
-    @Override
-    public boolean matches(String name) {
-      return name.startsWith(prefix);
-    }
-
-  }
-
-  private static class AnyNameCriteria extends NameCriteria {
-    @Override
-    public boolean matches(String name) {
-      return true;
-    }
+  static NameCriteria startsWith(String prefix) {
+    return name -> name.startsWith(prefix);
   }
 }

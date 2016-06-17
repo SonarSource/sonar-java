@@ -20,6 +20,7 @@
 package org.sonar.java.collections;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -65,9 +66,8 @@ public interface PMap<K, V> {
 
   /**
    * Represents an operation that accepts two input arguments and returns no result.
-   *
-   * This interface intended to be a <i>functional interface</i> as defined by the Java Language Specification.
    */
+  @FunctionalInterface
   interface Consumer<K, V> {
 
     void accept(K key, V value);

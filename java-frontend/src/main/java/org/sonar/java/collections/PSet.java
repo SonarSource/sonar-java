@@ -54,9 +54,8 @@ public interface PSet<E> {
 
   /**
    * Represents an operation that accepts a single input argument and returns no result.
-   *
-   * This interface intended to be a <i>functional interface</i> as defined by the Java Language Specification.
    */
+  @FunctionalInterface
   interface Consumer<E> {
 
     void accept(E e);
