@@ -20,15 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
@@ -56,11 +57,15 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {
-    TypeTree returnType = methodTree.returnType();
-    return returnType != null && returnType.symbolType().is("java.lang.Boolean");
+    return methodTree.returnType().symbolType().is("java.lang.Boolean");
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
