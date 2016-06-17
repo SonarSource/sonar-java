@@ -136,7 +136,7 @@ public abstract class AbstractAnalyzer {
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
     jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
 
-    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
+    boolean collectedCoveragePerTest = readCoveragePerTests(executionDataVisitor);
 
     CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values());
     int analyzedResources = 0;
@@ -158,11 +158,11 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor) {
+  private boolean readCoveragePerTests(ExecutionDataVisitor executionDataVisitor) {
     boolean collectedCoveragePerTest = false;
     if (readCoveragePerTests) {
       for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
+        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue())) {
           collectedCoveragePerTest = true;
         }
       }
@@ -170,7 +170,7 @@ public abstract class AbstractAnalyzer {
     return collectedCoveragePerTest;
   }
 
-  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
       return false;
@@ -188,9 +188,7 @@ public abstract class AbstractAnalyzer {
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       InputFile resource = getResource(coverage);
       if (resource != null) {
-        NewCoverage newCoverage = context.newCoverage().onFile(resource).ofType(coverageType());
-        List<Integer> coveredLines =  analyzeFile(newCoverage, resource, coverage);
-        newCoverage.save();
+        List<Integer> coveredLines =  coveredLines(coverage);
         if (!coveredLines.isEmpty() && addCoverage(resource, testResource, testName, coveredLines)) {
           result = true;
         }
@@ -227,8 +225,25 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private static List<Integer> analyzeFile(NewCoverage newCoverage, InputFile resource, ISourceFileCoverage coverage) {
+  private static List<Integer> coveredLines(ISourceFileCoverage coverage) {
     List<Integer> coveredLines = new ArrayList<>();
+    for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
+      ILine line = coverage.getLine(lineId);
+      switch (line.getInstructionCounter().getStatus()) {
+        case ICounter.FULLY_COVERED:
+        case ICounter.PARTLY_COVERED:
+          coveredLines.add(lineId);
+          break;
+        case ICounter.NOT_COVERED:
+          break;
+        default:
+          continue;
+      }
+    }
+    return coveredLines;
+  }
+
+  private static void analyzeFile(NewCoverage newCoverage, InputFile resource, ISourceFileCoverage coverage) {
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;
       ILine line = coverage.getLine(lineId);
@@ -247,10 +262,6 @@ public abstract class AbstractAnalyzer {
           continue;
       }
       newCoverage.lineHits(lineId, hits);
-      if(hits > 0) {
-        coveredLines.add(lineId);
-      }
-
       ICounter branchCounter = line.getBranchCounter();
       int conditions = branchCounter.getTotalCount();
       if (conditions > 0) {
@@ -258,7 +269,6 @@ public abstract class AbstractAnalyzer {
         newCoverage.conditions(lineId, conditions, coveredConditions);
       }
     }
-    return coveredLines;
   }
 
   protected abstract CoverageType coverageType();
