@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -51,6 +52,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -147,8 +149,9 @@ public class JaCoCoSensorTest {
     when(testPlan.testCasesByName("test")).thenReturn(newArrayList(testCase));
 
     when(perspectives.as(eq(MutableTestPlan.class), eq(resource))).thenReturn(testPlan);
-
-    sensor.execute(context);
+    SensorContextTester spy = Mockito.spy(context);
+    sensor.execute(spy);
+    verify(spy, times(1)).newCoverage();
 
     verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 6));
   }

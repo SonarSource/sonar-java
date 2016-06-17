@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class JaCoCoControllerTest {
 
   @ClassRule
   public static final Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+  private String javaVersion;
 
 
   @BeforeClass
@@ -42,12 +44,12 @@ public class JaCoCoControllerTest {
     orchestrator.resetData();
   }
 
-  @Test
-  public void test_error_thrown() {
+  @Before
+  public void setUp() throws Exception {
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();
     String json = sonarClient.get("api/updatecenter/installed_plugins");
     Plugin[] plugins = new Gson().fromJson(json, Plugin[].class);
-    String javaVersion = "";
+    javaVersion = "";
     for (Plugin plugin : plugins) {
       if(plugin.key.equals("java")) {
         javaVersion = plugin.version;
@@ -55,6 +57,10 @@ public class JaCoCoControllerTest {
       }
     }
     assertThat(javaVersion).isNotEmpty();
+  }
+
+  @Test
+  public void test_error_thrown() {
     // We build the project with JunitListeners to get coverage but with no jacoco agent to let JaCoCoController throw NoClassDefFoundError
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("coverage_error"))
       .setProperty("skipTests", "false")
@@ -63,6 +69,19 @@ public class JaCoCoControllerTest {
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
     assertThat(buildResult.isSuccess()).isFalse();
     assertThat(buildResult.getLogs()).contains("JacocoControllerError");
+  }
+
+
+  @Test
+  public void test_coverage_per_test() throws Exception {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("coverage_error"))
+      .setProperty("skipTests", "false")
+      .setProperty("javaPluginVersion", javaVersion)
+      .setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify", "sonar:sonar");
+    BuildResult buildResult = orchestrator.executeBuildQuietly(build);
+    assertThat(buildResult.isSuccess()).isTrue();
+
+
   }
 
   private static class Plugin {
