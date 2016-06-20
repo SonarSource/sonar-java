@@ -1,9 +1,10 @@
-<p><code>Throwable.printStackTrace(...)</code> prints a throwable and its stack trace to some stream.</p>
-<p>Loggers should be used instead to print throwables, as they have many advantages:</p>
+<p><code>Throwable.printStackTrace(...)</code> prints a <code>Throwable</code> and its stack trace to some stream. By default that stream <code>System.Err</code>, which could inadvertently expose sensitive information.</p>
+<p>Loggers should be used instead to print <code>Throwable</code>s, as they have many advantages:</p>
 <ul>
 <li> Users are able to easily retrieve the logs.
 </li><li> The format of log messages is uniform and allow users to browse the logs easily.
 </li></ul>
+<p>This rule raises an issue when <code>printStackTrace</code> is used without arguments, i.e. when the stack trace is printed to the default stream.</p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
