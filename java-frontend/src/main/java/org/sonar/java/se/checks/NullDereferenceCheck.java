@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -62,7 +63,7 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
-    return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
   }
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree syntaxNode, SymbolicValue currentVal) {

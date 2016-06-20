@@ -21,6 +21,7 @@ package org.sonar.java.se.constraint;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -127,7 +128,7 @@ public class ConstraintManager {
   }
 
   private static boolean isObjectsMethod(Symbol symbol, String methodName) {
-    return symbol.owner().type().is("java.util.Objects") && methodName.equals(symbol.name());
+    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && methodName.equals(symbol.name());
   }
 
   private static boolean isEqualsMethod(MethodInvocationTree syntaxNode) {
