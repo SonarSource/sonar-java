@@ -1,5 +1,7 @@
 package javax.annotation;
+
 import org.apache.commons.lang.BooleanUtils;
+import java.util.stream.Stream;
 
 @interface CheckForNull{}
 
@@ -11,6 +13,11 @@ class A {
   public Boolean myOtherMethod() {
     return Boolean.TRUE; // Compliant
   }
+
+  A() {
+    // constructor (with null return type) are not covered by the rule
+    return;
+  }
 }
 
 class B {
@@ -20,7 +27,7 @@ class B {
   public Boolean myMethod() {
     return null; // Compliant
   }
-  
+
   public java.lang.Boolean myOtherMethod() {
     private class C {
       private java.lang.Boolean myInnerMethod() {
@@ -36,5 +43,19 @@ class B {
   @CheckForNull
   public java.lang.Boolean myMethod() {
     return null; // compliant method is annotated with @CheckForNull
+  }
+}
+
+class D {
+  public Boolean foo() {
+    class E {
+      void bar() {
+        return;
+      }
+    }
+    Stream.of("A").forEach(a -> {
+      return; // Compliant
+    });
+    return true;
   }
 }
