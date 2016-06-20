@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -57,8 +58,12 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
   public void visitMethodInvocation(MethodInvocationTree tree) {
     super.visitMethodInvocation(tree);
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      IdentifierTree identifierTree = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
-      if (!enclosingClassExtendsThrowable() && "printStackTrace".equals(identifierTree.name()) && calledOnTypeInheritedFromThrowable(tree)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) tree.methodSelect();
+      IdentifierTree identifierTree = memberSelectExpressionTree.identifier();
+      if (!enclosingClassExtendsThrowable()
+        && "printStackTrace".equals(identifierTree.name())
+        && calledOnTypeInheritedFromThrowable(memberSelectExpressionTree.expression())
+        && tree.arguments().isEmpty()) {
         context.reportIssue(this, identifierTree, "Use a logger to log this exception.");
       }
     }
@@ -68,7 +73,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
     return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
   }
 
-  private static boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
-    return ((MemberSelectExpressionTree) tree.methodSelect()).expression().symbolType().isSubtypeOf("java.lang.Throwable");
+  private static boolean calledOnTypeInheritedFromThrowable(ExpressionTree tree) {
+    return tree.symbolType().isSubtypeOf("java.lang.Throwable");
   }
 }

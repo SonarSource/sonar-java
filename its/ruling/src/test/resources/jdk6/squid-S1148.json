@@ -8,10 +8,6 @@
 'jdk6:java/awt/EventDispatchThread.java':[
 304,
 ],
-'jdk6:java/awt/EventQueue.java':[
-756,
-825,
-],
 'jdk6:java/awt/KeyboardFocusManager.java':[
 2559,
 ],
@@ -81,8 +77,5 @@
 'jdk6:java/util/logging/LogManager.java':[
 173,
 376,
-],
-'jdk6:java/util/logging/SimpleFormatter.java':[
-72,
 ],
 }

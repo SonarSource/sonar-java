@@ -3,11 +3,13 @@ import java.lang.reflect.InvocationTargetException;
 class A {
   private void f(Throwable e) {
     e.printStackTrace(); // Noncompliant [[sc=7;ec=22]] {{Use a logger to log this exception.}}
-    e.printStackTrace(System.out); // Noncompliant {{Use a logger to log this exception.}}
+    e.printStackTrace(System.out); // Compliant - forcing the stream
     e.getMessage(); // Compliant
     new java.lang.Throwable().printStackTrace(); // Noncompliant
     e.printStackTrace[0]; // Compliant
+    printStackTrace();
   }
+  void printStackTrace() {}
   void fun(MyException e) {
     e.printStackTrace(); // Noncompliant
   }
