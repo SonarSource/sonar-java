@@ -1,0 +1,12 @@
+{
+  "title": "Underscores should be used to make large numbers readable",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}
