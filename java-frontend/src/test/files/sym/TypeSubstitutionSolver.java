@@ -40,3 +40,9 @@ class testClass {
   J<String, Integer> jStringInteger;
   A<String> aString;
 }
+
+class Recurs<T, S extends T>  {
+  Recurs<Object, Boolean> inst = new Recurs<>(Boolean.class);
+  public Recurs(Class<S> requiredClass) {
+  }
+}

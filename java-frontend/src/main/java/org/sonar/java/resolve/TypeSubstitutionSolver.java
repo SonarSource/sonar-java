@@ -238,6 +238,10 @@ public class TypeSubstitutionSolver {
         if (newBound == null) {
           return ((JavaSymbol.TypeJavaSymbol) site.symbol()).typeVariableTypes.contains(currentBound);
         }
+        if (currentBound.equals(newBound)) {
+          // exploring the same substitution, we cannot deduce anything
+          break;
+        }
         currentBound = newBound;
       }
       if (!isUnboundedWildcard(typeParam) && !typeParam.isSubtypeOf(currentBound)) {
