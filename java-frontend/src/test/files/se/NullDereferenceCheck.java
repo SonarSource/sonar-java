@@ -646,3 +646,21 @@ class NullPointerTest {
     return result;
   }
 }
+
+class MyClass {
+  private MyClass(ThreadGroup tg) {
+    java.security.AccessController.doPrivileged(
+      (java.security.PrivilegedAction<Void>) () -> {
+        final Thread hook = new Thread(
+          tg,
+          new Runnable() {
+            @Override
+            public void run() {
+              unknownMethod(); // owner of the corresponding unknown symbol is PackageSymbol, with type null
+            }
+          },
+          "threadName");
+        return null;
+      });
+  }
+}
