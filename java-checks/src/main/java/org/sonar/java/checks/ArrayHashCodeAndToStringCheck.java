@@ -20,20 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import java.util.List;
 
 @Rule(key = "S2116")
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
-
-  private static final TypeCriteria IS_ARRAY = new IsArrayCriteria();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -44,7 +41,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
   private static MethodMatcher arrayMethodInvocation(String methodName) {
     return MethodMatcher.create()
-      .callSite(IS_ARRAY)
+      .callSite(type -> type.isArray())
       .name(methodName);
   }
 
@@ -53,14 +50,4 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
     String methodName = mit.symbol().name();
     reportIssue(MethodsHelper.methodName(mit), "Use \"Arrays." + methodName + "(array)\" instead.");
   }
-
-  private static class IsArrayCriteria extends TypeCriteria {
-
-    @Override
-    public boolean matches(Type type) {
-      return type.isArray();
-    }
-
-  }
-
 }

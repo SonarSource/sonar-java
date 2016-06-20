@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 
 import javax.annotation.Nullable;
+
 import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -436,15 +437,12 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
   /**
    * Not total ordering, but stable.
    */
-  private static final Comparator KEY_COMPARATOR = new Comparator() {
-    @Override
-    public int compare(Object o1, Object o2) {
-      int h1 = o1.hashCode();
-      int h2 = o2.hashCode();
-      if (h1 == h2) {
-        return o1.equals(o2) ? 0 : 1;
-      }
-      return h1 - h2;
+  private static final Comparator KEY_COMPARATOR = (o1, o2) -> {
+    int h1 = o1.hashCode();
+    int h2 = o2.hashCode();
+    if (h1 == h2) {
+      return o1.equals(o2) ? 0 : 1;
     }
+    return h1 - h2;
   };
 }
