@@ -20,6 +20,8 @@
 package org.sonar.java.syntaxtoken;
 
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -36,6 +38,15 @@ public class FirstSyntaxTokenFinder {
       return null;
     } else if (tree.is(Tree.Kind.TOKEN)) {
       return (SyntaxToken) tree;
+    }
+    if(tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if(mit.typeArguments() !=null && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        SyntaxToken syntaxToken = firstSyntaxToken(((MemberSelectExpressionTree) mit.methodSelect()).expression());
+        if (syntaxToken != null) {
+          return syntaxToken;
+        }
+      }
     }
     for (Tree next : ((JavaTree) tree).children()) {
       SyntaxToken syntaxToken = firstSyntaxToken(next);

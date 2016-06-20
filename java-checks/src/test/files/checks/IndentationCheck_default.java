@@ -225,4 +225,12 @@ public interface plop {
    public static class Inner { // Noncompliant
     public static final String FOO = "foo";
    }
+  private <T extends Serializable> void saveMetricOnFile(Metric metric, T value) {
+    sensorContext.<T>newMeasure()
+      .withValue(value)
+      .forMetric(metric)
+      .on(inputFile)
+      .save();
+  }
+
 }

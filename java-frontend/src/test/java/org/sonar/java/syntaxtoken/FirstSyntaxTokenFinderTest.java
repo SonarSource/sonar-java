@@ -616,6 +616,17 @@ public class FirstSyntaxTokenFinderTest {
   }
 
   @Test
+  public void parameterized_method() throws Exception {
+    String p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    bar.<T>qix().foo();"
+        + "  }"
+        + "}";
+    assertFirstStatementFirstTokenValue(p, "bar");
+  }
+
+  @Test
   public void syntax_token() {
     String p = "class Foo {}";
     ClassTree firstClass = getFirstClass(getCompilationUnit(p));
