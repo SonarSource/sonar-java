@@ -202,7 +202,6 @@ public class TypeSubstitutionSolverTest {
   @Test
   public void substitutionFromSuperType_concrete_type() {
     Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
-    Type stringType = result.symbol("string").type();
     ParametrizedTypeJavaType lNumber = (ParametrizedTypeJavaType) result.symbol("lNumber").type();
 
     ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
@@ -267,10 +266,7 @@ public class TypeSubstitutionSolverTest {
     Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
     Type stringType = result.symbol("string").type();
     Type integerType = result.symbol("integer").type();
-    Type numberType = result.symbol("number").type();
     ParametrizedTypeJavaType jStringInteger = (ParametrizedTypeJavaType) result.symbol("jStringInteger").type();
-    ParametrizedTypeJavaType LNumber = (ParametrizedTypeJavaType) result.symbol("lNumber").type();
-    ParametrizedTypeJavaType aString = (ParametrizedTypeJavaType) result.symbol("aString").type();
 
     ParametrizedTypeJavaType fWXYZ = (ParametrizedTypeJavaType) result.symbol("fWXYZ").type();
     TypeVariableJavaType w = fWXYZ.typeParameters().get(0);
@@ -285,5 +281,17 @@ public class TypeSubstitutionSolverTest {
     assertThat(substitution.substitutedType(x)).isSameAs(x);
     assertThat(substitution.substitutedType(y)).isSameAs(y);
     assertThat(substitution.substitutedType(z)).isSameAs(integerType);
+  }
+
+  @Test
+  public void test_no_infinite_recursion_on_validation() throws Exception {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    JavaType inst = result.symbol("inst").type;
+    assertThat(inst.isParameterized()).isTrue();
+    List<TypeVariableJavaType> typeVariableJavaTypes = ((ParametrizedTypeJavaType) inst).typeParameters();
+    assertThat(typeVariableJavaTypes).hasSize(2);
+    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(0)).is("java.lang.Object"));
+    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(1)).is("java.lang.Boolean"));
+
   }
 }
