@@ -290,8 +290,8 @@ public class TypeSubstitutionSolverTest {
     assertThat(inst.isParameterized()).isTrue();
     List<TypeVariableJavaType> typeVariableJavaTypes = ((ParametrizedTypeJavaType) inst).typeParameters();
     assertThat(typeVariableJavaTypes).hasSize(2);
-    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(0)).is("java.lang.Object"));
-    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(1)).is("java.lang.Boolean"));
+    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(0)).is("java.lang.Object")).isTrue();
+    assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(1)).is("java.lang.Boolean")).isTrue();
 
   }
 }
