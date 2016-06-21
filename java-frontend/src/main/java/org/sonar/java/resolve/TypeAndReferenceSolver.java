@@ -80,6 +80,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -221,10 +222,17 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       typeParamTypes = getParameterTypes(tree.typeArguments());
     }
     Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes, typeParamTypes);
-    JavaSymbol symbol = resolution.symbol();
+    JavaSymbol symbol;
+    JavaType returnType;
+    if(resolution == null) {
+      returnType = symbols.deferedType(mit);
+      symbol = Symbols.unknownSymbol;
+    } else {
+      symbol = resolution.symbol();
+      returnType = resolution.type();
+    }
     mit.setSymbol(symbol);
-    JavaType returnType = resolution.type();
-    if(resolution.symbol().isMethodSymbol()) {
+    if(symbol.isMethodSymbol()) {
       MethodJavaType methodType = (MethodJavaType) resolution.type();
       returnType = methodType.resultType;
     }
@@ -232,7 +240,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       ((DeferredType) returnType).setTree(mit);
     }
     registerType(tree, returnType);
-    inferArgumentTypes(argTypes, resolution);
+    if(resolution != null) {
+      inferArgumentTypes(argTypes, resolution);
+    }
   }
 
   private static TypeSubstitution inferedSubstitution(MethodInvocationTreeImpl mit) {
@@ -272,6 +282,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return builder.build();
   }
 
+  @CheckForNull
   private Resolve.Resolution resolveMethodSymbol(Tree methodSelect, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes) {
     Resolve.Resolution resolution;
     IdentifierTree identifier;
@@ -279,6 +290,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
       resolveAs(mset.expression(), JavaSymbol.TYP | JavaSymbol.VAR);
       JavaType type = getType(mset.expression());
+      if(type.isTagged(JavaType.DEFERRED)) {
+        return null;
+      }
       identifier = mset.identifier();
       resolution = resolve.findMethod(methodEnv, type, identifier.name(), argTypes, typeParamTypes);
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {

@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -1108,5 +1110,16 @@ public class SymbolTableTest {
     Result result = Result.createFor("ParameterizedMethodInvocation");
     assertThat(result.symbol("method")).isSameAs(result.reference(3, 9));
     assertThat(result.symbol("fun")).isSameAs(result.reference(3, 5));
+  }
+
+  @Test
+  public void lookup_method_on_defered_type() throws Exception {
+    Result result = Result.createFor("InferedCascadedReturnType");
+    JavaSymbol sortKeysByValue = result.symbol("sortKeysByValue");
+    JavaSymbol reverse = result.symbol("reverse");
+    //lookup on defered type allow method resolution
+    assertThat(sortKeysByValue.usages()).hasSize(1);
+    //Lack of resolution when target type is deduced, we should be able to redo the lookup
+    assertThat(reverse.usages()).isEmpty();
   }
 }
