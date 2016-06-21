@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +72,8 @@ public class SyntaxHighlighterVisitorTest {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), mock(ResourcePerspectives.class), fs,
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), context, mock(CheckFactory.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+    sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
   }
 
