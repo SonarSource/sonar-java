@@ -331,3 +331,14 @@ class Maps<V> {
   }
 
 }
+class MostSpecificArgType {
+  class Parent<A> {}
+  class Child<B> extends Parent<B> {}
+
+  private <K> void myMethod(Parent<K> c){}
+  private <T> void myMethod(Child<T> c){}
+
+  void plop() {
+    myMethod(new Child<String>());
+  }
+}

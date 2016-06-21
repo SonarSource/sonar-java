@@ -898,6 +898,8 @@ public class SymbolTableTest {
     assertThat(result.reference(330, 31)).isSameAs(result.symbol("in", 320));
     assertThat(result.reference(330, 12)).isSameAs(result.symbol("removeIf", 325));
 
+    assertThat(result.reference(342, 5)).isSameAs(result.symbol("myMethod", 339));
+    assertThat(result.symbol("myMethod", 338).usages()).isEmpty();
   }
 
   @Test

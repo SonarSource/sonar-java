@@ -515,7 +515,7 @@ public class Resolve {
       resolution.type = Symbols.unknownType;
       return resolution;
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, argTypes, substitution);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, argTypes, substitution, callSite);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       return bestSoFar;
@@ -641,13 +641,20 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution substitution) {
+  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, JavaType callSite) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
     }
-    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, substitution);
-    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, substitution);
+    TypeSubstitution m2Substitution = null;
+    if(((JavaSymbol.MethodJavaSymbol) m2).isParametrized()) {
+      m2Substitution = typeSubstitutionSolver.getTypeSubstitution((JavaSymbol.MethodJavaSymbol) m2, callSite, ImmutableList.of(), argTypes);
+    }
+    if(m2Substitution == null) {
+      m2Substitution = new TypeSubstitution();
+    }
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, m1Substitution, m2Substitution);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, m1Substitution, m2Substitution);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
       return new AmbiguityErrorJavaSymbol();
     } else if (m1SignatureMoreSpecific) {
@@ -661,7 +668,7 @@ public class Resolve {
   /**
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution substitution) {
+  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, TypeSubstitution m2Substitution) {
     List<JavaType> m1ArgTypes = ((MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
@@ -679,7 +686,8 @@ public class Resolve {
     if(!hasCompatibleArity(m1ArgTypes.size(), m2ArgTypes.size(), m2VarArity)) {
       return false;
     }
-    m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, substitution);
+    m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, m1Substitution);
+    m2ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m2ArgTypes, m2Substitution);
     return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, false);
   }
 
