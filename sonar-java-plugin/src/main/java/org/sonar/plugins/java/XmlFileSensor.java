@@ -51,6 +51,7 @@ public class XmlFileSensor implements Sensor {
   public void execute(SensorContext context) {
     if (hasXmlFiles()) {
       sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getXmlChecks());
+      sonarComponents.setSensorContext(context);
       new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(getXmlFiles());
     }
   }
