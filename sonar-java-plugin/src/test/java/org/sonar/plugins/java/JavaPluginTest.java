@@ -20,6 +20,8 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.api.Plugin;
+import org.sonar.api.SonarQubeVersion;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -27,7 +29,10 @@ public class JavaPluginTest {
 
   @Test
   public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(28);
+    JavaPlugin javaPlugin = new JavaPlugin();
+    Plugin.Context context = new Plugin.Context(SonarQubeVersion.V5_6);
+    javaPlugin.define(context);
+    assertThat(context.getExtensions()).hasSize(28);
   }
 
 }
