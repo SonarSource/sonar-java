@@ -71,7 +71,8 @@ public class SyntaxHighlighterVisitorTest {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), mock(ResourcePerspectives.class), fs,
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), context, mock(CheckFactory.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+    sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
   }
 

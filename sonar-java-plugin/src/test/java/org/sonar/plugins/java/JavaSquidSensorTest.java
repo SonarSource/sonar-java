@@ -141,9 +141,8 @@ public class JavaSquidSensorTest {
     Symbolizable symbolizable = mock(Symbolizable.class);
     when(resourcePerspectives.as(eq(Symbolizable.class), any(InputFile.class))).thenReturn(symbolizable);
     when(symbolizable.newSymbolTableBuilder()).thenReturn(mock(Symbolizable.SymbolTableBuilder.class));
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, resourcePerspectives, contextTester.fileSystem(), javaClasspath, javaTestClasspath, contextTester, checkFactory));
-
-
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, resourcePerspectives, contextTester.fileSystem(), javaClasspath, javaTestClasspath, checkFactory));
+    sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});

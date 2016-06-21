@@ -53,20 +53,20 @@ public class SonarComponents {
   private final ResourcePerspectives resourcePerspectives;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
-  private final SensorContext context;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
+  private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, SensorContext context,
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
     CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, context, null);
+    this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, SensorContext context,
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
     @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
@@ -74,7 +74,6 @@ public class SonarComponents {
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
-    this.context = context;
     this.checks = Lists.newArrayList();
     this.testChecks = Lists.newArrayList();
 
@@ -88,6 +87,10 @@ public class SonarComponents {
         registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<Class<? extends JavaCheck>>()));
       }
     }
+  }
+
+  public void setSensorContext(SensorContext context) {
+    this.context = context;
   }
 
   public InputFile inputFromIOFile(File file) {
@@ -111,6 +114,7 @@ public class SonarComponents {
   }
 
   public NewHighlighting highlightableFor(File file) {
+    Preconditions.checkNotNull(context);
     return context.newHighlighting().onFile(inputFromIOFile(file));
   }
 
@@ -196,6 +200,7 @@ public class SonarComponents {
 
   @VisibleForTesting
   void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
+    Preconditions.checkNotNull(context);
     JavaIssue issue = JavaIssue.create(context, key, cost);
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {
@@ -211,5 +216,4 @@ public class SonarComponents {
     }
     issue.save();
   }
-
 }
