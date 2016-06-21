@@ -20,14 +20,7 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.collect.ImmutableMap;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -42,6 +35,15 @@ import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -99,6 +101,36 @@ public class SonarLintTest {
       tuple("squid:UndocumentedApi", 2, inputFile.getPath(), "MINOR"),
       tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
       tuple("squid:S1481", 3, inputFile.getPath(), "MAJOR"));
+  }
+
+  @Test
+  public void simplePom() throws Exception {
+    ClientInputFile inputFile = prepareInputFile("pom.xml",
+      "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+        + " xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
+        + "  <modelVersion>4.0.0</modelVersion>\n"
+        + "  <groupId>org.sonarsource.java</groupId>\n"
+        + "  <artifactId>simple-project</artifactId>\n"
+        + "  <version>1.0-SNAPSHOT</version>\n"
+        + "  <packaging>jar</packaging>\n"
+        + "  <properties>"
+        + "    <deprecated>${pom.artifactId}</deprecated>\n" // S3421 line 7
+        + "  </properties>\n"
+        + "</project>",
+      false);
+
+    final List<Issue> issues = new ArrayList<>();
+    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Arrays.asList(inputFile), ImmutableMap.<String, String>of()),
+      new IssueListener() {
+
+        @Override
+        public void handle(Issue issue) {
+          issues.add(issue);
+        }
+      });
+
+    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
+      tuple("squid:S3421", 7, inputFile.getPath(), "MAJOR"));
   }
 
   @Test
