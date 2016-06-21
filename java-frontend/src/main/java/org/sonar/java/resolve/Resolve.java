@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -647,10 +646,10 @@ public class Resolve {
       return m1;
     }
     TypeSubstitution m2Substitution = null;
-    if(((JavaSymbol.MethodJavaSymbol) m2).isParametrized()) {
+    if (((JavaSymbol.MethodJavaSymbol) m2).isParametrized()) {
       m2Substitution = typeSubstitutionSolver.getTypeSubstitution((JavaSymbol.MethodJavaSymbol) m2, callSite, ImmutableList.of(), argTypes);
     }
-    if(m2Substitution == null) {
+    if (m2Substitution == null) {
       m2Substitution = new TypeSubstitution();
     }
     boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, m1Substitution, m2Substitution);
