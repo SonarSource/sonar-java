@@ -25,23 +25,20 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
-
+import java.io.File;
+import java.util.List;
 import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.CoreProperties;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueClient;
 import org.sonar.wsclient.issue.IssueQuery;
 import org.sonar.wsclient.services.Measure;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
-
-import java.io.File;
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -110,7 +107,7 @@ public class JavaTest {
       .setPom(TestUtils.projectPom("measures-on-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(build);
-    //since sonar-java 2.1 does not fail if multiple package in same directory.
+    // since sonar-java 2.1 does not fail if multiple package in same directory.
     assertThat(result.getStatus()).isEqualTo(0);
   }
 
@@ -123,7 +120,7 @@ public class JavaTest {
     assertThat(result.getStatus()).isEqualTo(0);
     inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
-      .setProperty(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY, "true")
+      .setProperty("sonar.skipPackageDesign", "true")
       .setGoals("sonar:sonar");
     result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getStatus()).isEqualTo(0);
@@ -198,11 +195,11 @@ public class JavaTest {
     MavenLocation junit_4_11 = MavenLocation.of("junit", "junit", "4.11");
     new MavenLocator(orchestrator.getConfiguration()).copyToDirectory(junit_4_11, tmp.getRoot());
     MavenBuild build = MavenBuild.create()
-        .setPom(TestUtils.projectPom("java-inner-classes"))
-        .setProperty("sonar.profile", "ignored-test-check")
-        .setProperty("sonar.java.test.binaries", "target/test-classes")
-        .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit_4_11.getFilename()).getAbsolutePath())
-        .setCleanPackageSonarGoals();
+      .setPom(TestUtils.projectPom("java-inner-classes"))
+      .setProperty("sonar.profile", "ignored-test-check")
+      .setProperty("sonar.java.test.binaries", "target/test-classes")
+      .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit_4_11.getFilename()).getAbsolutePath())
+      .setCleanPackageSonarGoals();
 
     orchestrator.executeBuild(build);
     Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:java-inner-classes", "violations"));
