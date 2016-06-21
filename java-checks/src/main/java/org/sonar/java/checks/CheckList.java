@@ -436,6 +436,7 @@ public final class CheckList {
       .add(IgnoredOperationStatusCheck.class)
       .add(UnderscoreOnNumberCheck.class)
       .add(OptionalAsParameterCheck.class)
+      .add(DoubleBraceInitializationCheck.class)
       .build();
   }
 
