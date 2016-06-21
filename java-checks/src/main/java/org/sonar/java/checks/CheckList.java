@@ -434,6 +434,7 @@ public final class CheckList {
       .add(ToArrayCheck.class)
       .add(ClassWithoutHashCodeInHashStructureCheck.class)
       .add(IgnoredOperationStatusCheck.class)
+      .add(UnderscoreOnNumberCheck.class)
       .build();
   }
 
