@@ -34,6 +34,8 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.component.ResourcePerspectives;
@@ -42,7 +44,6 @@ import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -61,6 +62,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -102,31 +104,32 @@ public class SonarComponentsTest {
 
   @Test
   public void test_sonar_components() {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
+    SensorContextTester sensorContextTester = spy(SensorContextTester.create(new File("")));
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
     ImmutableList<File> javaTestClasspathList = ImmutableList.of();
     when(javaTestClasspath.getElements()).thenReturn(javaTestClasspathList);
-    File file = new File("");
+    File file = new File("foo.java");
+    fs.add(new DefaultInputFile("", "foo.java"));
     Issuable issuable = mock(Issuable.class);
     when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(issuable);
-    Highlightable highlightable = mock(Highlightable.class);
-    when(resourcePerspectives.as(eq(Highlightable.class), any(InputFile.class))).thenReturn(highlightable);
     Symbolizable symbolizable = mock(Symbolizable.class);
     when(resourcePerspectives.as(eq(Symbolizable.class), any(InputFile.class))).thenReturn(symbolizable);
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fs, null, javaTestClasspath, null, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fs, null, javaTestClasspath, sensorContextTester, checkFactory);
 
     CodeVisitor[] visitors = sonarComponents.checkClasses();
     assertThat(visitors).hasSize(0);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
     assertThat(testChecks).hasSize(0);
     assertThat(sonarComponents.getFileSystem()).isEqualTo(fs);
-    assertThat(sonarComponents.getResourcePerspectives()).isEqualTo(resourcePerspectives);
     assertThat(sonarComponents.getJavaClasspath()).isEmpty();
     assertThat(sonarComponents.getJavaTestClasspath()).isEqualTo(javaTestClasspathList);
-    assertThat(sonarComponents.highlightableFor(file)).isEqualTo(highlightable);
+    NewHighlighting newHighlighting = sonarComponents.highlightableFor(file);
+    assertThat(newHighlighting).isNotNull();
+    verify(sensorContextTester, times(1)).newHighlighting();
     assertThat(sonarComponents.symbolizableFor(file)).isEqualTo(symbolizable);
     assertThat(sonarComponents.fileLinesContextFor(file)).isEqualTo(fileLinesContext);
 

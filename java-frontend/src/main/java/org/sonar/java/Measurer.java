@@ -104,7 +104,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
     }
     publicApiChecker.scan(context.getTree());
-    methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS); //CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION,
+    methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
     CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
     super.scanFile(context);
     //leave file.
