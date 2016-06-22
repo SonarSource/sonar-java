@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class A {
   private void myMethod() {
@@ -37,6 +38,9 @@ class A {
     myASet.contains(new C()); // Compliant
     myASet.remove(new B()); // Compliant
     myNumberList.contains(myInteger); // Compliant
+    mySetList.contains(unknownMethod()); // Compliant
+
+    myUnknownCollection.stream().filter(s -> myASet.contains(s.toString())).collect(Collectors.toSet()); // Compliant
   }
 
   private static Integer returnOne() {

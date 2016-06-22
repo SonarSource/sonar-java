@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -30,6 +31,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -38,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -67,20 +70,23 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
 
-    // FIXME remove this variable when SONARJAVA-1298 is fixed
-    boolean isCallToParametrizedMethod = isCallToParametrizedMethod(firstArgument);
-    if (!isCallToParametrizedMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      isCallToParametrizedMethod = isCallToParametrizedMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
+    boolean isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(firstArgument);
+    if (!isCallToParametrizedOrUnknownMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
     }
 
-    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isCallToParametrizedMethod && !isArgumentCompatible(argumentType, collectionParameterType)) {
+    if (collectionParameterType != null
+      && !collectionParameterType.isUnknown()
+      && !isCallToParametrizedOrUnknownMethod
+      && !isArgumentCompatible(argumentType, collectionParameterType)) {
       reportIssue(MethodsHelper.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
   }
 
-  private static boolean isCallToParametrizedMethod(ExpressionTree expressionTree) {
+  private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      return ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expressionTree).symbol()).isParametrized();
+      Symbol symbol = ((MethodInvocationTree) expressionTree).symbol();
+      return symbol.isUnknown() || ((JavaSymbol.MethodJavaSymbol) symbol).isParametrized();
     }
     return false;
   }
