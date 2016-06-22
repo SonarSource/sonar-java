@@ -22,12 +22,10 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
-
+import java.io.File;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-
-import java.io.File;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -39,16 +37,19 @@ import java.io.File;
   Struts139Test.class,
   JavaClasspathTest.class,
   JaCoCoControllerTest.class,
-  SuppressWarningTest.class
+  SuppressWarningTest.class,
+  SonarLintTest.class
 })
 public class JavaTestSuite {
+
+  static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar");
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
-      .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
+      .addPlugin(JAVA_PLUGIN_LOCATION)
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-dit.xml"))
@@ -56,7 +57,7 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-complexity.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/com/sonar/it/java/SquidTest/squid-backup.xml"));
-      orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
+    orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
     ORCHESTRATOR = orchestratorBuilder.build();
   }
 
