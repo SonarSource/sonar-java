@@ -27,7 +27,7 @@ public class BadTestClassNameCheckTest {
   public void test() {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
     JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
-    // play a second time with same check to reuse pattern
+    // test with same instance to cover reuse of regexp pattern.
     JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
 
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
