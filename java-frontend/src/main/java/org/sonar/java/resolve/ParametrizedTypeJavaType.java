@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import org.sonar.plugins.java.api.semantic.Type;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
 
+  private static TypeSubstitutionSolver typeSubstitutionSolver;
   final TypeSubstitution typeSubstitution;
   final JavaType rawType;
 
@@ -64,12 +66,25 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     if (((JavaType) superType).isTagged(TYPEVAR)) {
       return false;
     }
-    if (erasure().isSubtypeOf(superType.erasure())) {
-      boolean superTypeIsParametrizedJavaType = ((JavaType) superType).isParameterized();
-      if (superTypeIsParametrizedJavaType) {
+    if(erasure() == superType.erasure()) {
+      if (((JavaType) superType).isParameterized()) {
         return checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
       }
-      return !superTypeIsParametrizedJavaType;
+      return true;
+    }
+
+    JavaType superclass = symbol.getSuperclass();
+    if(superclass != null) {
+      superclass = typeSubstitutionSolver.applySubstitution(superclass, this.typeSubstitution);
+      if(superclass.isSubtypeOf(superType)) {
+        return true;
+      }
+    }
+    for (JavaType superInterface : symbol.getInterfaces()) {
+      superclass = typeSubstitutionSolver.applySubstitution(superInterface, this.typeSubstitution);
+      if(superclass.isSubtypeOf(superType)) {
+        return true;
+      }
     }
     if (((JavaType) superType).isTagged(WILDCARD)) {
       return ((WildCardType) superType).isSubtypeOfBound(this);
@@ -80,6 +95,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
   private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
     List<JavaType> myTypes = typeSubstitution.substitutedTypes();
     List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
+    Preconditions.checkState(myTypes.size() == itsTypes.size());
     if (itsTypes.size() != myTypes.size()) {
       return false;
     }
@@ -95,5 +111,9 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       }
     }
     return true;
+  }
+
+  public static void setTypeSubstitutionSolver(TypeSubstitutionSolver typeSubstitutionSolver) {
+    ParametrizedTypeJavaType.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 }
