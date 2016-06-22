@@ -31,6 +31,7 @@ import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.checks.naming.BadPackageNameCheck;
 import org.sonar.java.checks.naming.BadTestClassNameCheck;
+import org.sonar.java.checks.naming.BadTestMethodNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
 import org.sonar.java.checks.naming.EnumAsIdentifierCheck;
@@ -455,6 +456,7 @@ public final class CheckList {
       .add(ThreadSleepInTestsCheck.class)
       .add(UnusedTestRuleCheck.class)
       .add(BadTestClassNameCheck.class)
+      .add(BadTestMethodNameCheck.class)
       .build();
   }
 
