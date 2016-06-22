@@ -819,6 +819,8 @@ public class SymbolTableTest {
     assertThat(result.symbol("myMethod").usages()).hasSize(1);
     assertThat(result.symbol("myMethod2").usages()).hasSize(1);
     assertThat(result.symbol("myMethod3").usages()).hasSize(1);
+
+    assertThat(result.reference(62, 5)).isSameAs(result.symbol("meth"));
   }
 
   @Test

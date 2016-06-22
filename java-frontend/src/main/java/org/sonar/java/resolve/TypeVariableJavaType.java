@@ -53,7 +53,7 @@ public class TypeVariableJavaType extends JavaType {
       return true;
     }
     for (JavaType bound : bounds()) {
-      if (bound.isSubtypeOf(supType)) {
+      if (bound.isSubtypeOf(supType) || (supType.isParameterized() && bound == supType.erasure())) {
         return true;
       }
     }
