@@ -1,0 +1,25 @@
+<p>The Java language authors have been quite frank that <code>Optional</code> was intended for use only as a return type, as a way to convey that a method may or may not return a value. </p>
+<p>And for that, it's valuable but using <code>Optional</code> on the input side increases the work you have to do in the method without really increasing the value. With an <code>Optional</code> parameter, you go from having 2 possible inputs: null and not-null, to three: null, non-null-without-value, and non-null-with-value. Add to that the fact that overloading has long been available to convey that some parameters are optional, and there's really no reason to have <code>Optional</code> parameters.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public String sayHello(Optional&lt;String&gt; name) {  // Noncompliant
+  if (name == null || !name.isPresent()) {
+    return "Hello World";
+  } else {
+    return "Hello " + name;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public String sayHello(String name) {
+  if (name == null) {
+    return "Hello World";
+  } else {
+    return "Hello " + name;
+  }
+}
+</pre>
+
