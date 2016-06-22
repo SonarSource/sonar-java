@@ -312,8 +312,7 @@ public class GenericsTest {
       "Test<?,U,V>",
       "Test<?,V,U>",
       "Test<?,?,U>",
-      "Test<?,?,U>",
-      "Test<?,?>");
+      "Test<?,?,U>");
 
     Type wcAType = elementTypes.get(0);
     Type varTAType = elementTypes.get(1);
@@ -324,7 +323,6 @@ public class GenericsTest {
     Type wcTestWcVUType = elementTypes.get(6);
     Type wcTestWcWcUType = elementTypes.get(7);
     Type wcTestWcWcUType2 = elementTypes.get(8);
-    Type wcTestWcWcType = elementTypes.get(9);
 
     SubtypeAssert.assertThat(varTAType).isSubtypeOf(wcAType);
     SubtypeAssert.assertThat(varUAType).isSubtypeOf(wcAType);
@@ -337,8 +335,6 @@ public class GenericsTest {
 
     SubtypeAssert.assertThat(wcTestWcWcUType).isSubtypeOf(wcTestWcWcWcType);
     SubtypeAssert.assertThat(wcTestWcWcUType).isSubtypeOf(wcTestWcWcUType2);
-
-    SubtypeAssert.assertThat(wcTestWcWcWcType).isNotSubtypeOf(wcTestWcWcType);
   }
 
   @Test

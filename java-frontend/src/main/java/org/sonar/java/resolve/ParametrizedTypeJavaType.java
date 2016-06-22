@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import org.sonar.plugins.java.api.semantic.Type;
@@ -72,9 +73,16 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       return true;
     }
 
-    for (ClassJavaType classJavaType : symbol.superTypes()) {
-      JavaType javaType = typeSubstitutionSolver.applySubstitution(classJavaType, this.typeSubstitution);
-      if(javaType.isSubtypeOf(superType)) {
+    JavaType superclass = symbol.getSuperclass();
+    if(superclass != null) {
+      superclass = typeSubstitutionSolver.applySubstitution(superclass, this.typeSubstitution);
+      if(superclass.isSubtypeOf(superType)) {
+        return true;
+      }
+    }
+    for (JavaType superInterface : symbol.getInterfaces()) {
+      superclass = typeSubstitutionSolver.applySubstitution(superInterface, this.typeSubstitution);
+      if(superclass.isSubtypeOf(superType)) {
         return true;
       }
     }
@@ -87,6 +95,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
   private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
     List<JavaType> myTypes = typeSubstitution.substitutedTypes();
     List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
+    Preconditions.checkState(myTypes.size() == itsTypes.size());
     if (itsTypes.size() != myTypes.size()) {
       return false;
     }
