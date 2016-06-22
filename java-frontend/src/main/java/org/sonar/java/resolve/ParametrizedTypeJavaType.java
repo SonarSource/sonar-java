@@ -29,6 +29,7 @@ import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
 
+  private static TypeSubstitutionSolver typeSubstitutionSolver;
   final TypeSubstitution typeSubstitution;
   final JavaType rawType;
 
@@ -64,12 +65,18 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     if (((JavaType) superType).isTagged(TYPEVAR)) {
       return false;
     }
-    if (erasure().isSubtypeOf(superType.erasure())) {
-      boolean superTypeIsParametrizedJavaType = ((JavaType) superType).isParameterized();
-      if (superTypeIsParametrizedJavaType) {
+    if(erasure() == superType.erasure()) {
+      if (((JavaType) superType).isParameterized()) {
         return checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
       }
-      return !superTypeIsParametrizedJavaType;
+      return true;
+    }
+
+    for (ClassJavaType classJavaType : symbol.superTypes()) {
+      JavaType javaType = typeSubstitutionSolver.applySubstitution(classJavaType, this.typeSubstitution);
+      if(javaType.isSubtypeOf(superType)) {
+        return true;
+      }
     }
     if (((JavaType) superType).isTagged(WILDCARD)) {
       return ((WildCardType) superType).isSubtypeOfBound(this);
@@ -95,5 +102,9 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       }
     }
     return true;
+  }
+
+  public static void setTypeSubstitutionSolver(TypeSubstitutionSolver typeSubstitutionSolver) {
+    ParametrizedTypeJavaType.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 }

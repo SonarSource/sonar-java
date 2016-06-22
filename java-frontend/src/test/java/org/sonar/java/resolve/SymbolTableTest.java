@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,7 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -817,6 +815,9 @@ public class SymbolTableTest {
     assertThat(((JavaSymbol.MethodJavaSymbol) gulInt).parameterTypes().get(0).is("java.lang.Integer")).isTrue();
     assertThat(gulString.usages()).hasSize(1);
     assertThat(gulInt.usages()).isEmpty();
+
+    assertThat(result.symbol("myMethod").usages()).hasSize(1);
+    assertThat(result.symbol("myMethod2").usages()).hasSize(1);
   }
 
   @Test

@@ -39,3 +39,15 @@ abstract class NotDefered {
     gul(plop("hello"));
   }
 }
+class MostSpecificArgTypeWithGenerics {
+  class Parent<A> {}
+  class Child<C, B> extends Parent<Parent<B>> {}
+
+  private void myMethod(Parent<Parent<String>> c){}
+  private void myMethod2(Parent<?> c){}
+
+  void plop() {
+    myMethod(new Child<Integer, String>());
+    myMethod2(new Child<Integer, String>());
+  }
+}
