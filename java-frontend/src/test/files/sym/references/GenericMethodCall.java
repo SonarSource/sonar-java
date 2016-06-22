@@ -56,3 +56,9 @@ class MostSpecificArgTypeWithGenerics {
     myMethod3(param);
   }
 }
+class RawTypeBound<C extends Comparable> {
+  C field;
+  <S extends Comparable<?>> void meth(S s){
+    meth(field);
+  }
+}
