@@ -1,4 +1,7 @@
+import java.util.List;
+
 class A {
+  List<String> list;
   void voidMethod() {}
   int intMethod() {}
   UnknownType unknownTypeMethod() {}
@@ -15,7 +18,6 @@ class A {
     "plop".replace('p', 'b'); // Noncompliant [[sc=12;ec=19]] {{The return value of "replace" must be used.}}
     new RuntimeException("plop").getStackTrace()[0].getClassName(); // Noncompliant {{The return value of "getClassName" must be used.}}
     a++;
+    list.stream().filter(s -> s.length() > 4).map(s -> s.length()).forEach(i -> {System.out.println(i);});
   }
-
-
 }
