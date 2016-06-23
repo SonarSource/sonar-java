@@ -1,12 +1,4 @@
 {
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/DefaultJavaResourceLocator.java':[
-50,
-],
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/JavaFilesCache.java':[
-56,
-59,
-62,
-],
 'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/ast/parser/JavaNodeBuilder.java':[
 76,
 77,

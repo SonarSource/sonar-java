@@ -11,3 +11,14 @@ enum A {
 }
 </pre>
 
+<h2>Exceptions</h2>
+
+<p>Using Guava's <code>@VisibleForTesting</code> annotation. This annotation indicates that the visibility of a type or member has been purposely relaxed to make the code testable.</p>
+
+<pre>
+class Cone {
+  @VisibleForTesting
+  Logger logger; // Compliant
+}
+</pre>
+
