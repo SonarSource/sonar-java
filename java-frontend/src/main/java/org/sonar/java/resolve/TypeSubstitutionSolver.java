@@ -40,7 +40,7 @@ public class TypeSubstitutionSolver {
     this.parametrizedTypeCache = parametrizedTypeCache;
     this.symbols = symbols;
     this.leastUpperBound = new LeastUpperBound(this, parametrizedTypeCache, symbols);
-    this.typeInferenceSolver = new TypeInferenceSolver(leastUpperBound, symbols);
+    this.typeInferenceSolver = new TypeInferenceSolver(leastUpperBound, symbols, this);
   }
 
   Type leastUpperBound(Set<Type> refTypes) {

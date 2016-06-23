@@ -294,4 +294,12 @@ public class TypeSubstitutionSolverTest {
     assertThat(((ParametrizedTypeJavaType) inst).substitution(typeVariableJavaTypes.get(1)).is("java.lang.Boolean")).isTrue();
 
   }
+
+  @Test
+  public void inference_on_parameters_supertypes() throws Exception {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeInferenceOnSupertypes");
+    assertThat(result.reference(6, 5)).isSameAs(result.symbol("foo"));
+    Type type = result.referenceTree(6, 5).symbolType();
+    assertThat(((MethodJavaType) type).resultType.is("java.lang.String")).isTrue();
+  }
 }
