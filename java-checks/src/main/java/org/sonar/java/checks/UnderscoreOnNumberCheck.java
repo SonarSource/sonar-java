@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2148")
@@ -48,6 +47,15 @@ public class UnderscoreOnNumberCheck extends IssuableSubscriptionVisitor impleme
     Base(String prefix, int minimalLength) {
       this.prefix = prefix;
       this.minimalLength = minimalLength;
+    }
+
+    private static final Base ofLiteralValue(String literalValue) {
+      if (literalValue.startsWith(BINARY.prefix)) {
+        return BINARY;
+      } else if (literalValue.startsWith(HEXADECIMAL.prefix)) {
+        return Base.HEXADECIMAL;
+      }
+      return Base.DECIMAL;
     }
   }
 
@@ -84,6 +92,7 @@ public class UnderscoreOnNumberCheck extends IssuableSubscriptionVisitor impleme
 
   private static boolean shouldUseUnderscore(String literalValue) {
     String value = LiteralUtils.trimLongSuffix(literalValue);
-    return Arrays.stream(Base.values()).anyMatch(base -> value.startsWith(base.prefix) && value.length() > (base.minimalLength + base.prefix.length()));
+    Base base = Base.ofLiteralValue(value);
+    return value.length() >= (base.minimalLength + base.prefix.length());
   }
 }
