@@ -1,0 +1,13 @@
+{
+  "title": "\"Arrays.stream\" should be used for primitive arrays",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

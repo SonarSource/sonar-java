@@ -439,6 +439,7 @@ public final class CheckList {
       .add(UnderscoreOnNumberCheck.class)
       .add(OptionalAsParameterCheck.class)
       .add(DoubleBraceInitializationCheck.class)
+      .add(ArraysAsListOfPrimitiveToStreamCheck.class)
       .build();
   }
 
