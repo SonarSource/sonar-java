@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -83,7 +84,7 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private boolean isVisibleForTesting(Symbol symbol) {
+  private static boolean isVisibleForTesting(Symbol symbol) {
     return symbol.metadata().isAnnotatedWith(GUAVA_FQCN);
   }
 
