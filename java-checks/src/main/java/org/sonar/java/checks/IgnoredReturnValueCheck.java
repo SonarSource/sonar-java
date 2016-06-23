@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -57,25 +57,18 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     ExpressionStatementTree est = (ExpressionStatementTree) tree;
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
-      Type methodType = mit.symbolType();
-      if (!returnsVoid(methodType) && isCheckedType(mit)) {
+      if (!isVoidOrUnknown(mit.symbolType()) && isCheckedType(mit.symbol().owner().type())) {
         IdentifierTree methodName = MethodsHelper.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }
   }
 
-  private static boolean isCheckedType(MethodInvocationTree mit) {
-    Symbol owner = mit.symbol().owner();
-    for (String type : CHECKED_TYPES) {
-      if (owner.type().is(type)) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean isCheckedType(Type ownerType) {
+    return CHECKED_TYPES.stream().anyMatch(ownerType::is);
   }
 
-  private static boolean returnsVoid(Type methodType) {
+  private static boolean isVoidOrUnknown(Type methodType) {
     return methodType.isVoid() || methodType.isUnknown();
   }
 
