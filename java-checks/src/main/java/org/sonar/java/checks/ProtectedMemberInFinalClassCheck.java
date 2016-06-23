@@ -51,6 +51,9 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
     if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       classTree.members().forEach(this::checkMember);

@@ -27,5 +27,6 @@ public class FieldModifierCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/FieldModifier.java", new FieldModifierCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/FieldModifier.java", new FieldModifierCheck());
   }
 }
