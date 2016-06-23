@@ -47,7 +47,7 @@ public class TypeInferenceSolverTest {
     symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
     TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     LeastUpperBound lub = new LeastUpperBound(typeSubstitutionSolver, parametrizedTypeCache, symbols);
-    typeInferenceSolver = new TypeInferenceSolver(lub, symbols);
+    typeInferenceSolver = new TypeInferenceSolver(lub, symbols, typeSubstitutionSolver);
     T = getTypeVariable("T");
   }
 

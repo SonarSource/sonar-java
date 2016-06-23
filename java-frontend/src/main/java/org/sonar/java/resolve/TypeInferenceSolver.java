@@ -32,10 +32,12 @@ public class TypeInferenceSolver {
 
   private final Symbols symbols;
   private final LeastUpperBound leastUpperBound;
+  private final TypeSubstitutionSolver typeSubstitutionSolver;
 
-  public TypeInferenceSolver(LeastUpperBound leastUpperBound, Symbols symbols) {
+  public TypeInferenceSolver(LeastUpperBound leastUpperBound, Symbols symbols, TypeSubstitutionSolver typeSubstitutionSolver) {
     this.symbols = symbols;
     this.leastUpperBound = leastUpperBound;
+    this.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 
   TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
@@ -112,9 +114,28 @@ public class TypeInferenceSolver {
     List<JavaType> formalTypeSubstitutedTypes = formalType.typeSubstitution.substitutedTypes();
     TypeSubstitution result = substitution;
     if (argType.isParameterized()) {
-      List<JavaType> argTypeSubstitutedTypes = ((ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
-      TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
-      result = mergeTypeSubstitutions(substitution, newSubstitution);
+      ParametrizedTypeJavaType parametrizedArgType = (ParametrizedTypeJavaType) argType;
+      if(parametrizedArgType.rawType == formalType.rawType) {
+        List<JavaType> argTypeSubstitutedTypes = parametrizedArgType.typeSubstitution.substitutedTypes();
+        TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
+        return mergeTypeSubstitutions(substitution, newSubstitution);
+      }
+      JavaType superclass = argType.symbol.getSuperclass();
+      if(superclass != null) {
+        superclass = typeSubstitutionSolver.applySubstitution(superclass, parametrizedArgType.typeSubstitution);
+        TypeSubstitution newSubstitution = inferTypeSubstitutionInParameterizedType(method, substitution, formalType, superclass, variableArity, remainingArgTypes);
+        if(!newSubstitution.substitutedTypes().isEmpty()) {
+          result = mergeTypeSubstitutions(substitution, newSubstitution);
+        }
+      }
+      for (JavaType superInterface : argType.symbol.getInterfaces()) {
+        superclass = typeSubstitutionSolver.applySubstitution(superInterface, parametrizedArgType.typeSubstitution);
+        TypeSubstitution newSubstitution = inferTypeSubstitutionInParameterizedType(method, substitution, formalType, superclass, variableArity, remainingArgTypes);
+        if(!newSubstitution.substitutedTypes().isEmpty()) {
+          result = mergeTypeSubstitutions(substitution, newSubstitution);
+        }
+      }
+
     } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
       List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
       TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
