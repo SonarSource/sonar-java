@@ -115,23 +115,23 @@ public class TypeInferenceSolver {
     TypeSubstitution result = substitution;
     if (argType.isParameterized()) {
       ParametrizedTypeJavaType parametrizedArgType = (ParametrizedTypeJavaType) argType;
-      if(parametrizedArgType.rawType == formalType.rawType) {
+      if (parametrizedArgType.rawType == formalType.rawType) {
         List<JavaType> argTypeSubstitutedTypes = parametrizedArgType.typeSubstitution.substitutedTypes();
         TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
         return mergeTypeSubstitutions(substitution, newSubstitution);
       }
       JavaType superclass = argType.symbol.getSuperclass();
-      if(superclass != null) {
+      if (superclass != null) {
         superclass = typeSubstitutionSolver.applySubstitution(superclass, parametrizedArgType.typeSubstitution);
         TypeSubstitution newSubstitution = inferTypeSubstitutionInParameterizedType(method, substitution, formalType, superclass, variableArity, remainingArgTypes);
-        if(!newSubstitution.substitutedTypes().isEmpty()) {
+        if (!newSubstitution.substitutedTypes().isEmpty()) {
           result = mergeTypeSubstitutions(substitution, newSubstitution);
         }
       }
       for (JavaType superInterface : argType.symbol.getInterfaces()) {
         superclass = typeSubstitutionSolver.applySubstitution(superInterface, parametrizedArgType.typeSubstitution);
         TypeSubstitution newSubstitution = inferTypeSubstitutionInParameterizedType(method, substitution, formalType, superclass, variableArity, remainingArgTypes);
-        if(!newSubstitution.substitutedTypes().isEmpty()) {
+        if (!newSubstitution.substitutedTypes().isEmpty()) {
           result = mergeTypeSubstitutions(substitution, newSubstitution);
         }
       }
