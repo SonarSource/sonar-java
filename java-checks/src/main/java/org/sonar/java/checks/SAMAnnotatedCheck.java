@@ -19,42 +19,39 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
 @Rule(key = "S1609")
 public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>()
-    .put("equals", ImmutableList.of("Object"))
-    .put("getClass", ImmutableList.<String>of())
-    .put("hashcode", ImmutableList.<String>of())
-    .put("notify", ImmutableList.<String>of())
-    .put("notifyAll", ImmutableList.<String>of())
-    .put("toString", ImmutableList.<String>of())
-    .put("wait", ImmutableList.<String>of())
-    .put("wait", ImmutableList.of("long"))
-    .put("wait", ImmutableList.of("long", "int"))
-    .build();
+  private static final MethodMatcherCollection OBJECT_METHODS = MethodMatcherCollection.create(
+    methodMatcherWithName("equals", "java.lang.Object"),
+    methodMatcherWithName("getClass"),
+    methodMatcherWithName("hashcode"),
+    methodMatcherWithName("notify"),
+    methodMatcherWithName("notifyAll"),
+    methodMatcherWithName("toString"),
+    methodMatcherWithName("wait"),
+    methodMatcherWithName("wait", "long"),
+    methodMatcherWithName("wait", "long", "int"));
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -68,8 +65,11 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
-    if (hasOneAbstractMethod(classTree) && !isAnnotated(classTree)) {
+    if (hasOneAbstractMethod(classTree.symbol()) && !isAnnotated(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();
       reportIssue(
         simpleName,
@@ -78,70 +78,56 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private static boolean isAnnotated(ClassTree tree) {
-    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
-      Tree annotationType = annotationTree.annotationType();
-      if (annotationType.is(Tree.Kind.IDENTIFIER) && "FunctionalInterface".equals(((IdentifierTree) annotationType).name())) {
-        return true;
-      }
-    }
-    return false;
+    return tree.symbol().metadata().isAnnotatedWith("java.lang.FunctionalInterface");
   }
 
-  private static boolean hasOneAbstractMethod(ClassTree classTree) {
-    TypeSymbol symbol = classTree.symbol();
-    if (symbol != null) {
-      List<Type> types = symbol.interfaces();
-      for (Type type : types) {
-        if (!type.symbol().memberSymbols().isEmpty()) {
-          return false;
-        }
-      }
-    }
-    int methods = 0;
-    for (Tree member : classTree.members()) {
-      boolean isMethod = member.is(Tree.Kind.METHOD);
-      if (!isMethod) {
-        return false;
-      }
-      if (isNotObjectMethod((MethodTree) member) && isNonStaticNonDefaultMethod(member)) {
-        methods++;
-      }
-    }
-    return methods == 1;
+  private static boolean hasOneAbstractMethod(Symbol.TypeSymbol symbol) {
+    return numberOfAbstractMethod(symbol) == 1 && noAbstractMethodInParentInterfaces(symbol.interfaces());
   }
 
-  private static boolean isNotObjectMethod(MethodTree method) {
-    ImmutableCollection<List<String>> methods = OBJECT_METHODS.get(method.simpleName().name());
-    if (methods != null) {
-      for (List<String> types : methods) {
-        if (sameParameters(method.parameters(), types)) {
-          return false;
-        }
-      }
-    }
-    return true;
+  private static boolean noAbstractMethodInParentInterfaces(List<Type> interfaces) {
+    return interfaces.stream()
+      .map(Type::symbol)
+      .noneMatch(symbol -> numberOfAbstractMethod(symbol) > 0 || !noAbstractMethodInParentInterfaces(symbol.interfaces()));
   }
 
-  private static boolean sameParameters(List<VariableTree> provided, List<String> expectedTypes) {
-    List<String> args = Lists.newArrayList(expectedTypes);
-    if (provided.size() == args.size()) {
-      for (VariableTree var : provided) {
-        args.remove(var.type().symbolType().name());
-      }
-      if (args.isEmpty()) {
-        return true;
-      }
+  private static long numberOfAbstractMethod(Symbol symbol) {
+    if (!symbol.isTypeSymbol()) {
+      // unknown interface
+      return Integer.MAX_VALUE;
     }
-    return false;
+
+    Symbol.TypeSymbol interfaceSymbol = (Symbol.TypeSymbol) symbol;
+    return interfaceSymbol.memberSymbols().stream()
+      .filter(member -> member.isMethodSymbol())
+      .filter(member -> {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) member;
+        return isNotObjectMethod(methodSymbol) && isNonStaticNonDefaultMethod(methodSymbol);
+      }).count();
   }
 
-  private static boolean isNonStaticNonDefaultMethod(Tree memberTree) {
-    boolean result = memberTree.is(Tree.Kind.METHOD);
-    if (result) {
-      MethodTree methodTree = (MethodTree) memberTree;
-      ModifiersTree modifiers = methodTree.modifiers();
-      result = !ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT);
+
+  private static boolean isNotObjectMethod(Symbol.MethodSymbol method) {
+    MethodTree declaration = method.declaration();
+    return declaration == null || !OBJECT_METHODS.anyMatch(declaration);
+  }
+
+  private static boolean isNonStaticNonDefaultMethod(Symbol.MethodSymbol methodSymbol) {
+    return !methodSymbol.isStatic() && !isDefault(methodSymbol);
+  }
+
+  private static boolean isDefault(Symbol.MethodSymbol methodSymbol) {
+    return (((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.DEFAULT) != 0;
+  }
+
+  private static MethodMatcher methodMatcherWithName(String name, String... parameters) {
+    MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(name);
+    if (parameters.length == 0) {
+      return methodMatcher.withNoParameterConstraint();
     }
-    return result;
+    for (String parameter : parameters) {
+      methodMatcher = methodMatcher.addParameter(parameter);
+    }
+    return methodMatcher;
   }
 }
