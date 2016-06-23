@@ -67,20 +67,18 @@ public class LiteralUtils {
     }
 
     if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value());
-      if (value != null) {
-        // long as hexadecimal can be written using underscore to separate groups
-        value = value.replaceAll("\\_", "");
-        try {
-          return sign * Long.decode(value);
-        } catch (NumberFormatException e) {
-          // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, we ignore the number.
-          // Note that Long.MAX_VALUE = "0x7FFF_FFFF_FFFF_FFFFL", but it is possible to write larger numbers in hexadecimal
-          // to be used as mask in bitwise operation. For instance:
-          // 0x8000_0000_0000_0000L (MAX_VALUE + 1),
-          // 0xFFFF_FFFF_FFFF_FFFFL (only ones),
-          // 0xFFFF_FFFF_FFFF_FFFEL (only ones except least significant bit), ...
-        }
+      String value = trimLongSuffix(((LiteralTree) expression).value());
+      // long as hexadecimal can be written using underscore to separate groups
+      value = value.replaceAll("\\_", "");
+      try {
+        return sign * Long.decode(value);
+      } catch (NumberFormatException e) {
+        // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, we ignore the number.
+        // Note that Long.MAX_VALUE = "0x7FFF_FFFF_FFFF_FFFFL", but it is possible to write larger numbers in hexadecimal
+        // to be used as mask in bitwise operation. For instance:
+        // 0x8000_0000_0000_0000L (MAX_VALUE + 1),
+        // 0xFFFF_FFFF_FFFF_FFFFL (only ones),
+        // 0xFFFF_FFFF_FFFF_FFFEL (only ones except least significant bit), ...
       }
     }
     return null;
@@ -95,7 +93,6 @@ public class LiteralUtils {
     return value.substring(1, value.length() - 1);
   }
 
-  @CheckForNull
   public static String trimLongSuffix(String longString) {
     if (StringUtils.isBlank(longString)) {
       return longString;
