@@ -71,6 +71,12 @@ class A {
       IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
       foo((x, y) -> myMethod(x , y)); // Noncompliant
       foo((x, y) -> myMethod(y , x));
+      foo((x, y) -> myMethod(y));
+      foo((x,y) -> new ClassTree(x, y)); // Noncompliant
+      foo((x,y) -> new ClassTree(y, x));
+      foo((x,y) -> new ClassTree(x, y) {
+        //can get some capture
+      });
     }
   }
 }

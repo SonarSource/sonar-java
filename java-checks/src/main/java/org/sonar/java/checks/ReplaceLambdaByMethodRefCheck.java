@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -91,8 +92,16 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   }
 
   private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
-    if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Arguments arguments = ((MethodInvocationTree) tree).arguments();
+    if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+      Arguments arguments;
+      if(tree.is(Tree.Kind.NEW_CLASS)) {
+        if(((NewClassTree) tree).classBody() != null) {
+          return false;
+        }
+        arguments = ((NewClassTree) tree).arguments();
+      } else {
+        arguments = ((MethodInvocationTree) tree).arguments();
+      }
       return arguments.size() == lambdaTree.parameters().size() &&
         IntStream.range(0, arguments.size()).allMatch(i -> {
           List<IdentifierTree> usages = lambdaTree.parameters().get(i).symbol().usages();
