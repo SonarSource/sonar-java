@@ -65,5 +65,10 @@ class A {
     default Map<String, String> keyValues() {
       return keys().stream().collect(Collectors.toMap(key -> key, key -> get(key))); // Noncompliant
     }
+
+    void process(String s1, String s2, int i){}
+    void fun2(){
+      IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
+    }
   }
 }
