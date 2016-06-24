@@ -31,12 +31,14 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Rule(key = "S1612")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
@@ -58,27 +60,21 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
-    if (isSingleMethodInvocationUsingLambdaParamAsArg(tree) || isBlockInvokingMethod(tree.body())) {
+    if (isSingleMethodInvocationUsingLambdaParamAsArg(tree) || isBodyBlockInvokingMethod(tree)) {
       context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     }
     super.visitLambdaExpression(tree);
   }
 
-  private static boolean isSingleMethodInvocationUsingLambdaParamAsArg(LambdaExpressionTree tree) {
-    List<VariableTree> parameters = tree.parameters();
-    Tree body = tree.body();
-    if (parameters.size() == 1 && body.is(Tree.Kind.METHOD_INVOCATION)) {
-      List<IdentifierTree> usages = parameters.get(0).symbol().usages();
-      Arguments arguments = ((MethodInvocationTree) body).arguments();
-      return usages.size() == 1 && arguments.size() == 1 && usages.get(0).equals(arguments.get(0));
-    }
-    return false;
+  private static boolean isSingleMethodInvocationUsingLambdaParamAsArg(LambdaExpressionTree lambdaTree) {
+    return isMethodInvocation(lambdaTree.body(), lambdaTree);
   }
 
-  private static boolean isBlockInvokingMethod(Tree tree) {
-    if (isBlockWithOneStatement(tree)) {
-      Tree statement = ((BlockTree) tree).body().get(0);
-      return isExpressionStatementInvokingMethod(statement) || isReturnStatementInvokingMethod(statement);
+  private static boolean isBodyBlockInvokingMethod(LambdaExpressionTree lambdaTree) {
+    Tree lambdaBody = lambdaTree.body();
+    if (isBlockWithOneStatement(lambdaBody)) {
+      Tree statement = ((BlockTree) lambdaBody).body().get(0);
+      return isExpressionStatementInvokingMethod(statement, lambdaTree) || isReturnStatementInvokingMethod(statement, lambdaTree);
     }
     return false;
   }
@@ -87,16 +83,32 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     return tree.is(Tree.Kind.BLOCK) && ((BlockTree) tree).body().size() == 1;
   }
 
-  private static boolean isExpressionStatementInvokingMethod(Tree statement) {
-    return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression());
+  private static boolean isExpressionStatementInvokingMethod(Tree statement, LambdaExpressionTree lambdaTree) {
+    return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression(), lambdaTree);
   }
 
-  private static boolean isReturnStatementInvokingMethod(Tree statement) {
-    return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression());
+  private static boolean isReturnStatementInvokingMethod(Tree statement, LambdaExpressionTree lambdaTree) {
+    return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression(), lambdaTree);
   }
 
-  private static boolean isMethodInvocation(@Nullable Tree tree) {
-    return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION);
+  private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
+    if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+      Arguments arguments;
+      if(tree.is(Tree.Kind.NEW_CLASS)) {
+        if(((NewClassTree) tree).classBody() != null) {
+          return false;
+        }
+        arguments = ((NewClassTree) tree).arguments();
+      } else {
+        arguments = ((MethodInvocationTree) tree).arguments();
+      }
+      return arguments.size() == lambdaTree.parameters().size() &&
+        IntStream.range(0, arguments.size()).allMatch(i -> {
+          List<IdentifierTree> usages = lambdaTree.parameters().get(i).symbol().usages();
+          return usages.size() == 1 && usages.get(0).equals(arguments.get(i));
+        });
+    }
+    return false;
   }
 
 }
