@@ -77,6 +77,7 @@ class A {
       foo((x,y) -> new ClassTree(x, y) {
         //can get some capture
       });
+      foo(() -> myMethod()); // Noncompliant
     }
   }
 }
