@@ -5,13 +5,12 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "EXCEPTION_HANDLING",
   "tags": [
-    "cert",
+    "cwe",
     "error-handling",
-    "misra",
     "security",
-    "cwe"
+    "misra",
+    "cert"
   ],
   "defaultSeverity": "Critical"
 }

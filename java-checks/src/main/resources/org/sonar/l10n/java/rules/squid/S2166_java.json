@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
-    "pitfall",
-    "convention"
+    "convention",
+    "pitfall"
   ],
   "defaultSeverity": "Major"
 }

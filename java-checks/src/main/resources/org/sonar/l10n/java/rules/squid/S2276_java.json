@@ -5,12 +5,12 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [
+    "security",
     "multi-threading",
-    "cert",
     "performance",
-    "security"
+    "bug",
+    "cert"
   ],
   "defaultSeverity": "Critical"
 }

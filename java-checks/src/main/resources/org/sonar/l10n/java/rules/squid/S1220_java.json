@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
     "convention"
   ],

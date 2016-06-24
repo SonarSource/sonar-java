@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
-    "pitfall",
-    "misra"
+    "misra",
+    "pitfall"
   ],
   "defaultSeverity": "Major"
 }

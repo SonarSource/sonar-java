@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNIT_TESTABILITY",
   "tags": [
     "tests",
     "bug"

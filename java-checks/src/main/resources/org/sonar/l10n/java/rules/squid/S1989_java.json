@@ -5,12 +5,12 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "ERRORS",
   "tags": [
-    "cert",
+    "cwe",
     "error-handling",
     "security",
-    "cwe",
+    "bug",
+    "cert",
     "owasp-a6"
   ],
   "defaultSeverity": "Critical"

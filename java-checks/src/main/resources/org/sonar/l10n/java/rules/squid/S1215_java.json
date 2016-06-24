@@ -5,8 +5,8 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
+    "bug",
     "unpredictable",
     "bad-practice"
   ],

@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "READABILITY",
   "tags": [
-    "maven",
-    "convention"
+    "convention",
+    "maven"
   ],
   "defaultSeverity": "Minor"
 }

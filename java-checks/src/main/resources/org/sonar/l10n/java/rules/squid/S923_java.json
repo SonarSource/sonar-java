@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "1min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
+    "misra",
     "cert",
-    "pitfall",
-    "misra"
+    "pitfall"
   ],
   "defaultSeverity": "Info"
 }

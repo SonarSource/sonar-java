@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "MEMORY_EFFICIENCY",
   "tags": [
-    "cert",
     "serialization",
+    "cert",
     "pitfall"
   ],
   "defaultSeverity": "Major"

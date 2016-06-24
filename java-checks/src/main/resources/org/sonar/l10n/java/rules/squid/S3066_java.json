@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "API_ABUSE",
   "tags": [
-    "bad-practice",
-    "security"
+    "security",
+    "bad-practice"
   ],
   "defaultSeverity": "Critical"
 }

@@ -1,19 +1,18 @@
 {
-  "title": "Values passed to SQL commands should be sanitized",
+  "title": "SQL binding mechanisms should be used",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
   "tags": [
-    "hibernate",
-    "sans-top25-insecure",
-    "sql",
-    "cert",
+    "cwe",
     "owasp-a1",
     "security",
-    "cwe"
+    "sans-top25-insecure",
+    "cert",
+    "hibernate",
+    "sql"
   ],
   "defaultSeverity": "Critical"
 }

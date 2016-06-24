@@ -5,9 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "multi-threading",
+    "bug",
     "pitfall"
   ],
   "defaultSeverity": "Major"

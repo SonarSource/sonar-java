@@ -5,13 +5,12 @@
     "func": "Constant\/Issue",
     "constantCost": "3h"
   },
-  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
+    "cwe",
     "websphere",
     "security",
-    "cwe",
-    "owasp-a7",
-    "jee"
+    "jee",
+    "owasp-a7"
   ],
   "defaultSeverity": "Critical"
 }

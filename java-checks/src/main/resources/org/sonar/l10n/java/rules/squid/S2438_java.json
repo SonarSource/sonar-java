@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
     "multi-threading",
     "pitfall"

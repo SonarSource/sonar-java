@@ -5,12 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
-    "sans-top25-porous",
-    "security",
     "cwe",
-    "owasp-a6"
+    "security",
+    "owasp-a6",
+    "sans-top25-porous"
   ],
   "defaultSeverity": "Blocker"
 }

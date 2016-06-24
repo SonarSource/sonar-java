@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
-  "sqaleSubCharac": "READABILITY",
   "tags": [
-    "misra",
-    "cwe"
+    "cwe",
+    "misra"
   ],
   "defaultSeverity": "Major"
 }

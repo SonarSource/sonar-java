@@ -5,12 +5,12 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [
-    "multi-threading",
-    "cert",
+    "cwe",
     "security",
-    "cwe"
+    "multi-threading",
+    "bug",
+    "cert"
   ],
   "defaultSeverity": "Blocker"
 }

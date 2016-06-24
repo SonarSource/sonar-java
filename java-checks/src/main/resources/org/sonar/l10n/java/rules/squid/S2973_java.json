@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "confusing"
   ],

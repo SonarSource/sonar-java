@@ -5,12 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
   "tags": [
-    "sans-top25-insecure",
+    "cwe",
     "owasp-a1",
     "security",
-    "cwe"
+    "sans-top25-insecure"
   ],
   "defaultSeverity": "Critical"
 }

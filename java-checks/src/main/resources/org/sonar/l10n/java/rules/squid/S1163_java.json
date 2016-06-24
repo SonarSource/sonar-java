@@ -5,11 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
-    "suspicious",
+    "error-handling",
+    "bug",
     "cert",
-    "error-handling"
+    "suspicious"
   ],
   "defaultSeverity": "Major"
 }

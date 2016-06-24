@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
-    "cert",
-    "security",
     "cwe",
+    "security",
+    "cert",
     "jee"
   ],
   "defaultSeverity": "Critical"

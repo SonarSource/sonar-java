@@ -7,7 +7,6 @@
     "linearOffset": "2min",
     "linearFactor": "2min"
   },
-  "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [
     "design"
   ],

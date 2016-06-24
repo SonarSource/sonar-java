@@ -5,12 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [
-    "suspicious",
+    "cwe",
     "cert",
     "unused",
-    "cwe"
+    "suspicious"
   ],
   "defaultSeverity": "Major"
 }

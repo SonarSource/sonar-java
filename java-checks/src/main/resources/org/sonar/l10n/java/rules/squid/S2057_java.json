@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "DATA_CHANGEABILITY",
   "tags": [
-    "cert",
     "serialization",
+    "cert",
     "pitfall"
   ],
   "defaultSeverity": "Major"

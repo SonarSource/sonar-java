@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "2h"
   },
-  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
     "brain-overload"
   ],

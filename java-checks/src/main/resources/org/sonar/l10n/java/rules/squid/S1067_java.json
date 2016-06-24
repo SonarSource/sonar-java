@@ -7,7 +7,6 @@
     "linearOffset": "5min",
     "linearFactor": "1min"
   },
-  "sqaleSubCharac": "UNIT_TESTABILITY",
   "tags": [
     "brain-overload"
   ],

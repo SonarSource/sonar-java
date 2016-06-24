@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
-    "cert",
-    "security"
+    "security",
+    "cert"
   ],
   "defaultSeverity": "Critical"
 }

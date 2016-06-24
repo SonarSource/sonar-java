@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
-    "pitfall",
-    "bug"
+    "bug",
+    "pitfall"
   ],
   "defaultSeverity": "Critical"
 }

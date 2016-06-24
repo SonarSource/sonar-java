@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
     "suspicious"
   ],

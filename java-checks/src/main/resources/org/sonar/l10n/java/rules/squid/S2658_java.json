@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "45min"
   },
-  "sqaleSubCharac": "API_ABUSE",
   "tags": [
+    "cwe",
     "owasp-a1",
-    "security",
-    "cwe"
+    "security"
   ],
   "defaultSeverity": "Critical"
 }
