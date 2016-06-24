@@ -29,6 +29,7 @@ public class SAMAnnotatedCheckTest {
   @Test
   public void no_issue_with_no_java_version() {
     JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck_no_version.java", new SAMAnnotatedCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SAMAnnotatedCheck_no_version.java", new SAMAnnotatedCheck());
   }
 
   @Test

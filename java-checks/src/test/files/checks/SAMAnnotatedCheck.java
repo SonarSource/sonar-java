@@ -36,3 +36,26 @@ interface extendsOther2 extends notAnnotated, Annotated { //False negative, this
 interface NonFunc {
   boolean equals(Object obj);
 }
+
+interface Level0 {
+  void m1();
+  void m2();
+}
+
+interface Level1 extends Level0 {}
+
+interface Level2 extends Level1 { // Compliant
+  void plop1(int yolo);
+}
+
+interface InterfaceWithField { // Compliant
+  public static final int MY_CONST = 0;
+}
+
+interface InterfaceWithoutField extends InterfaceWithField { // Noncompliant
+  void m1();
+}
+
+interface InterfaceWithUnknownParent extends UnknownInterface { // Compliant
+  void m1();
+}
