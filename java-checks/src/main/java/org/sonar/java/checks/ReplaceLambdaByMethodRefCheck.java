@@ -33,10 +33,11 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Rule(key = "S1612")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
@@ -65,8 +66,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   }
 
   private static boolean isSingleMethodInvocationUsingLambdaParamAsArg(LambdaExpressionTree lambdaTree) {
-    List<VariableTree> lambdaParameters = lambdaTree.parameters();
-    return lambdaParameters.size() == 1 && isMethodInvocation(lambdaTree.body(), lambdaTree);
+    return isMethodInvocation(lambdaTree.body(), lambdaTree);
   }
 
   private static boolean isBodyBlockInvokingMethod(LambdaExpressionTree lambdaTree) {
@@ -92,9 +92,12 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
 
   private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      List<IdentifierTree> usages = lambdaTree.parameters() .get(0).symbol().usages();
       Arguments arguments = ((MethodInvocationTree) tree).arguments();
-      return usages.size() == 1 && arguments.size() == 1 && usages.get(0).equals(arguments.get(0));
+      return arguments.size() == lambdaTree.parameters().size() &&
+        IntStream.range(0, arguments.size()).allMatch(i -> {
+          List<IdentifierTree> usages = lambdaTree.parameters().get(i).symbol().usages();
+          return usages.size() == 1 && usages.get(0).equals(arguments.get(i));
+        });
     }
     return false;
   }

@@ -69,6 +69,8 @@ class A {
     void process(String s1, String s2, int i){}
     void fun2(){
       IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
+      foo((x, y) -> myMethod(x , y)); // Noncompliant
+      foo((x, y) -> myMethod(y , x));
     }
   }
 }
