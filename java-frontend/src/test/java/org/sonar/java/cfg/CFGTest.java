@@ -1004,7 +1004,7 @@ public class CFGTest {
       block(
         element(Kind.VARIABLE, "bar"),
         element(Kind.TRY_STATEMENT)
-      ).successors(5, 4).exit(4),
+      ).successors(5),
       block(
         element(Kind.NEW_CLASS),
         element(Kind.IDENTIFIER, "bar"),
@@ -1017,7 +1017,7 @@ public class CFGTest {
         element(Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)
       ).successors(2),
-      new BlockChecker(1, 0).exit(0),
+      new BlockChecker(1, 0).successors(1),
       block(
         element(Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)
@@ -1044,13 +1044,13 @@ public class CFGTest {
     CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.TRY_STATEMENT)
-      ).successors(3, 0),
+      ).successors(3),
       block(
         element(Tree.Kind.IDENTIFIER, "fileName"),
         element(Kind.NEW_CLASS),
         element(Kind.VARIABLE, "file"),
         element(Kind.TRY_STATEMENT)
-      ).successors(1, 2).exit(1),
+      ).successors(2),
       block(
         element(Tree.Kind.IDENTIFIER, "file"),
         element(Tree.Kind.METHOD_INVOCATION)
@@ -1070,7 +1070,7 @@ public class CFGTest {
     CFGChecker cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(1, 2).exit(1),
+        ).successors(2),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -1089,7 +1089,7 @@ public class CFGTest {
     cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(2, 3, 4),
+        ).successors(2),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'e'"),
             element(Tree.Kind.IDENTIFIER, "foo"),
@@ -1105,7 +1105,7 @@ public class CFGTest {
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(1, 3, 4),
+        ).successors(1),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'finally'"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -1123,12 +1123,11 @@ public class CFGTest {
     cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(1, 2),
+        ).successors(0),
         block(
             element(Tree.Kind.IDENTIFIER, "e"),
             element(Tree.Kind.INSTANCE_OF)
-        ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0),
-        new BlockChecker(0, 2) // particular case of a block with multiple successors but no instructions.
+        ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0)
     );
     cfgChecker.check(cfg);
     cfg = buildCFG(
@@ -1139,12 +1138,12 @@ public class CFGTest {
     cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(2, 3).exit(2),
+        ).successors(3),
         terminator(Kind.RETURN_STATEMENT).successors(2).exit(2),
         block(
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Kind.METHOD_INVOCATION)
-        ).successors(0, 1).exit(0),
+        ).successors(1).exit(0),
         block(
             element(Tree.Kind.IDENTIFIER, "bar"),
             element(Kind.METHOD_INVOCATION)
@@ -1321,7 +1320,7 @@ public class CFGTest {
         "} catch(Exception e) { foo();} bar(); }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(3, 5),
+        element(Tree.Kind.TRY_STATEMENT)).successors(5),
       block(
         element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(2, 4),
       block(
@@ -1332,7 +1331,7 @@ public class CFGTest {
         element(Kind.METHOD_INVOCATION)).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(1, 3),
+        element(Kind.METHOD_INVOCATION)).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
@@ -1347,18 +1346,17 @@ public class CFGTest {
         "} catch(Exception e) { foo();} bar(); }");
     cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(3, 5),
+        element(Tree.Kind.TRY_STATEMENT)).successors(4),
       block(
         element(Tree.Kind.IDENTIFIER, "doSomething"),
         element(Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(2, 4),
+        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(1, 3),
       block(
         element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(2),
+        element(Kind.METHOD_INVOCATION)).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)).successors(1),
-      new BlockChecker(1, 3),
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
@@ -1373,7 +1371,7 @@ public class CFGTest {
         "} finally { foo();} bar(); }");
     cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(2, 5),
+        element(Tree.Kind.TRY_STATEMENT)).successors(5),
       block(
         element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
       block(
@@ -1384,7 +1382,7 @@ public class CFGTest {
         element(Kind.METHOD_INVOCATION)).successors(2),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1),
+        element(Kind.METHOD_INVOCATION)).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));

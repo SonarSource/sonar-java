@@ -32,6 +32,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
@@ -74,7 +75,8 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
-    Lists.<SymbolicValue>newLinkedList());
+    Lists.<SymbolicValue>newLinkedList(),
+    null);
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
 
@@ -83,14 +85,17 @@ public class ProgramState {
   private final PMap<SymbolicValue, Integer> references;
   private final PMap<SymbolicValue, Constraint> constraints;
 
+  private List<Type> currentExceptions;
+
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack) {
+    Deque<SymbolicValue> stack, @Nullable List<Type> currentExceptions) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
+    this.currentExceptions = currentExceptions;
     constraintSize = 3;
   }
 
@@ -100,6 +105,7 @@ public class ProgramState {
     constraints = ps.constraints;
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
+    currentExceptions = ps.currentExceptions;
     stack = newStack;
   }
 
@@ -109,6 +115,7 @@ public class ProgramState {
     constraints = newConstraints;
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
+    currentExceptions = ps.currentExceptions;
     this.stack = ps.stack;
   }
 
@@ -120,6 +127,21 @@ public class ProgramState {
 
   ProgramState clearStack() {
     return unstackValue(stack.size()).state;
+  }
+
+  ProgramState setCurrentExceptions(@Nullable List<Type> exceptions) {
+    if (exceptions != null && exceptions.isEmpty()) {
+      exceptions = null;
+    }
+
+    if (exceptions != currentExceptions) {
+      return new ProgramState(values, references, constraints, visitedPoints, stack, exceptions);
+    }
+    return this;
+  }
+
+  List<Type> currentExceptions() {
+    return currentExceptions;
   }
 
   public Pop unstackValue(int nbElements) {
@@ -198,7 +220,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, currentExceptions);
     }
     return this;
   }
@@ -260,7 +282,7 @@ public class ProgramState {
         }
       }
     }
-    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack, currentExceptions) : this;
   }
 
   public ProgramState cleanupConstraints() {
@@ -278,7 +300,7 @@ public class ProgramState {
         newReferences = newReferences.remove(symbolicValue);
       }
     }
-    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack, currentExceptions) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -306,7 +328,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, currentExceptions);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -323,7 +345,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, currentExceptions);
   }
 
   @CheckForNull

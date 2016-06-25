@@ -51,7 +51,7 @@ public class A {
   public void whileLoopHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     while(needsMore()) {
-      stream = new FileInputStream("myFile");
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read();
       stream.close();
     }
@@ -148,7 +148,7 @@ public class A {
   }
   
   public void closePrimary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
     reader.read();
@@ -156,7 +156,7 @@ public class A {
   }
   
   public void closeSecondary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
     reader.read();
@@ -164,7 +164,7 @@ public class A {
   }
   
   public void closeTertiary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
     reader.read();
@@ -174,7 +174,7 @@ public class A {
   public void forLoopHandling(int maxLoop) {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     for(int i = 0; i < maxLoop; i++) {
-      stream = new FileInputStream("myFile");
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read();
       stream.close();
     }
@@ -184,7 +184,7 @@ public class A {
   public void forEachLoopHandling(List<Object> objects) {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     for(Object object : objects) {
-      stream = new FileInputStream("myFile");
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read();
       stream.close();
     }
@@ -389,7 +389,7 @@ public class A {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
     try {
     } finally {
-      closeQuietly(new FileInputStream("/tmp/foo"), is);
+      closeQuietly(new BufferedReader(inputStream), is);
     }
   }
 

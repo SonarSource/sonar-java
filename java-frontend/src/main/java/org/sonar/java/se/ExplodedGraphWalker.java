@@ -30,6 +30,10 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.statement.ThrowStatementTreeImpl;
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -83,8 +87,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 10000;
-  public static final int MAX_NESTED_BOOLEAN_STATES = 10000;
+  private static final int MAX_STEPS = 50000;
+  public static final int MAX_NESTED_BOOLEAN_STATES = 50000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
@@ -277,10 +281,22 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues();
           break;
+        case THROW_STATEMENT:
+          enqueueExceptions(programPosition.block.tryBlock(), getExceptionForThrow(terminator));
+          return;
         default:
           // do nothing by default.
       }
     }
+
+    // If there are exceptions when we exit finally block, enqueue to out try block again.
+    List<Type> exceptions = programState.currentExceptions();
+    if (programPosition.block.isFinallyExitBlock() && exceptions != null && !exceptions.isEmpty()) {
+      programState = programState.setCurrentExceptions(null);
+      enqueueExceptions(programPosition.block.tryBlock(), exceptions);
+      return;
+    }
+
     // unconditional jumps, for-statement, switch-statement, synchronized:
     if (node.exitPath) {
       if (block.exitBlock() != null) {
@@ -290,18 +306,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, true);
         }
       }
-
     } else {
       for (CFG.Block successor : block.successors()) {
-        if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
-          enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
-        }
+        enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
       }
     }
-  }
-
-  private static boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
-    return successor != block.exitBlock() || successor.isMethodExitBlock();
   }
 
   /**
@@ -341,11 +350,105 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
+  private boolean matchCatchException(Type exception, Type catchException) {
+    if (catchException.isUnknown()) {
+      if (exception.isUnknown()) {
+        return exception.name().equals(catchException.name());
+      }
+    } else {
+      if (exception.isUnknown()) {
+        return catchException.is("java.lang.Exception") || catchException.is("java.lang.Throwable");
+      } else {
+        return exception.isSubtypeOf(catchException);
+      }
+    }
+    return false;
+  }
+
+  private void enqueueExceptions(@Nullable CFG.TryBlock tryBlock, @Nullable List<Type> exceptions) {
+    if (exceptions == null || exceptions.isEmpty()) {
+      // No exception need to throw
+      return;
+    }
+
+    if (tryBlock == null) {
+      // Exception no catch, exit this method
+      enqueue(new ExplodedGraph.ProgramPoint(new CFG.Block(0), 0), programState, true);
+      return;
+    }
+
+    List<Type> uncaughtExceptions = new ArrayList<>();
+    List<CFG.Block> catchEntries = tryBlock.catchEntries();
+    for (Type exception : exceptions) {
+      boolean caught = false;
+      for (CFG.Block catchEntry : catchEntries) {
+        if (matchCatchException(exception, catchEntry.catchExceptionType())) {
+          enqueue(new ExplodedGraph.ProgramPoint(catchEntry, 0), programState, false);
+          caught = true;
+          break;
+        }
+      }
+
+      if (!caught) {
+        uncaughtExceptions.add(exception);
+      }
+    }
+
+    if (!uncaughtExceptions.isEmpty()) {
+      CFG.Block finallyEntry = tryBlock.finallyEntry();
+      if (finallyEntry != null) {
+        enqueue(new ExplodedGraph.ProgramPoint(finallyEntry, 0), programState.setCurrentExceptions(uncaughtExceptions), false);
+      } else {
+        // Enqueue exceptions to outer try block
+        enqueueExceptions(tryBlock.tryBlock(), uncaughtExceptions);
+      }
+    }
+  }
+
+  /** return True indicates we need enqueue the exceptions before statement execution.*/
+  private boolean getExceptionsAndEnqueuePoint(Tree tree, List<Type> exceptions) {
+    Type symbolType = null;
+    if (tree.kind() == Tree.Kind.METHOD_INVOCATION) {
+      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
+      if (mit.methodSelect().kind() == Tree.Kind.IDENTIFIER) {
+        symbolType = mit.methodSelect().symbolType();
+      } else if (mit.methodSelect().kind() == Tree.Kind.MEMBER_SELECT) {
+        symbolType = ((MemberSelectExpressionTree) mit.methodSelect()).identifier().symbolType();
+      }
+    } else if (tree.kind() == Tree.Kind.NEW_CLASS) {
+      symbolType = ((NewClassTreeImpl) tree).getConstructorIdentifier().symbol().type();
+    }
+
+    if (symbolType instanceof MethodJavaType) {
+      MethodJavaType type = (MethodJavaType) symbolType;
+      exceptions.addAll(type.thrownTypes());
+      return tree.is(Tree.Kind.NEW_CLASS) || !type.resultType().isVoid();
+    }
+    return true;
+  }
+
+  private List<Type> getExceptionForThrow(Tree tree) {
+    if (tree.is(Tree.Kind.THROW_STATEMENT)) {
+      List<Type> ret = new ArrayList<>();
+      ret.add(((ThrowStatementTreeImpl) tree).expression().symbolType());
+      return ret;
+    }
+    return null;
+  }
+
   private void visit(Tree tree, @Nullable Tree terminator) {
     if (!checkerDispatcher.executeCheckPreStatement(tree)) {
       // Some of the check pre statement sink the execution on this node.
       return;
     }
+
+    List<Type> exceptions = new ArrayList<>();
+    boolean exceptionBeforeExecution = getExceptionsAndEnqueuePoint(tree, exceptions);
+
+    if (!exceptions.isEmpty() && exceptionBeforeExecution) {
+      enqueueExceptions(programPosition.block.tryBlock(), exceptions);
+    }
+
     switch (tree.kind()) {
       case METHOD_INVOCATION:
         MethodInvocationTree mit = (MethodInvocationTree) tree;
@@ -449,6 +552,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       default:
+    }
+
+    if (!exceptions.isEmpty() && !exceptionBeforeExecution) {
+      enqueueExceptions(programPosition.block.tryBlock(), exceptions);
     }
 
     checkerDispatcher.executeCheckPostStatement(tree);
