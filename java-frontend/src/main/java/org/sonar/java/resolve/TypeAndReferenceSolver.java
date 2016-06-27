@@ -199,7 +199,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       TypeSubstitution typeSubstitution = inferedSubstitution(mit);
       List<JavaType> argTypes = getParameterTypes(tree.arguments());
       JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
-      List<JavaType> inferedArgTypes = resolve.resolveTypeSubstitution(methodSymbol.parameterTypes().stream().map(t -> (JavaType) t).collect(Collectors.toList()), typeSubstitution);
+      List<JavaType> formals = methodSymbol.parameterTypes().stream().map(t -> (JavaType) t).collect(Collectors.toList());
+      List<JavaType> inferedArgTypes = resolve.resolveTypeSubstitution(formals, typeSubstitution);
       for (int i = 0; i < argTypes.size(); i++) {
         JavaType arg = argTypes.get(i);
         int size = inferedArgTypes.size();

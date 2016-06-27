@@ -83,8 +83,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 10000;
-  public static final int MAX_NESTED_BOOLEAN_STATES = 10000;
+  private static final int MAX_STEPS = 10_000;
+  public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
