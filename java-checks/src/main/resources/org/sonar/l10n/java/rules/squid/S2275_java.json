@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
+    "bug",
     "cert",
-    "pitfall",
-    "bug"
+    "pitfall"
   ],
   "defaultSeverity": "Critical"
 }

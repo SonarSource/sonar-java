@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNIT_TESTABILITY",
   "tags": [
     "tests",
-    "confusing",
-    "unused"
+    "unused",
+    "confusing"
   ],
   "defaultSeverity": "Major"
 }

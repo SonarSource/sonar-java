@@ -5,11 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "EXCEPTION_HANDLING",
   "tags": [
-    "suspicious",
+    "error-handling",
+    "bug",
     "cert",
-    "error-handling"
+    "suspicious"
   ],
   "defaultSeverity": "Major"
 }

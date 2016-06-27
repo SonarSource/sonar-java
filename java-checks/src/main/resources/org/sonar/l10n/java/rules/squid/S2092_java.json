@@ -5,12 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
-    "owasp-a2",
-    "security",
     "cwe",
-    "owasp-a6"
+    "security",
+    "owasp-a6",
+    "owasp-a2"
   ],
   "defaultSeverity": "Critical"
 }

@@ -5,10 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
-    "cert",
-    "unpredictable"
+    "bug",
+    "unpredictable",
+    "cert"
   ],
   "defaultSeverity": "Major"
 }

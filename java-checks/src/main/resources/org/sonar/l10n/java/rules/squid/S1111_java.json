@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
-    "cert",
+    "cwe",
     "security",
-    "cwe"
+    "cert"
   ],
   "defaultSeverity": "Critical"
 }

@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
-  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
-    "cert",
-    "cwe"
+    "cwe",
+    "cert"
   ],
   "defaultSeverity": "Major"
 }

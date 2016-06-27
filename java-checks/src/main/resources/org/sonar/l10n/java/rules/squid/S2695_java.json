@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
-    "sql",
-    "bug"
+    "bug",
+    "sql"
   ],
   "defaultSeverity": "Blocker"
 }

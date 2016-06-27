@@ -5,9 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "EXCEPTION_HANDLING",
   "tags": [
-    "error-handling"
+    "error-handling",
+    "bug"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

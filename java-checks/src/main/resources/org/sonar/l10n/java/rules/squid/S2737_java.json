@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "cert",
-    "finding",
     "unused",
+    "finding",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

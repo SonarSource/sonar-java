@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "SOFTWARE_RELATED_PORTABILITY",
   "tags": [
-    "cert",
+    "cwe",
     "obsolete",
-    "cwe"
+    "cert"
   ],
   "defaultSeverity": "Minor"
 }

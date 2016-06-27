@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
   "tags": [
-    "security",
-    "cwe"
+    "cwe",
+    "security"
   ],
   "defaultSeverity": "Critical"
 }

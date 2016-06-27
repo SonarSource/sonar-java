@@ -5,9 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "READABILITY",
   "tags": [
-    "misra"
+    "misra",
+    "bad-practice"
   ],
   "defaultSeverity": "Minor"
 }

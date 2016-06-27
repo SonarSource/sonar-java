@@ -5,10 +5,9 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "READABILITY",
   "tags": [
-    "suspicious",
-    "misra"
+    "misra",
+    "suspicious"
   ],
   "defaultSeverity": "Major"
 }

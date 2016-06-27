@@ -5,7 +5,6 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [
     "multi-threading",
     "bug"

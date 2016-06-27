@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
-    "cert",
     "convention",
-    "misra"
+    "misra",
+    "cert"
   ],
   "defaultSeverity": "Minor"
 }

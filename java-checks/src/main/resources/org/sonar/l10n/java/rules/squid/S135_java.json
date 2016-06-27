@@ -6,7 +6,6 @@
     "linearDesc": "per extra [\"break\" or \"continue\"|\"CONTINUE\", \"EXIT\", \"CHECK\"] statement",
     "linearFactor": "20min"
   },
-  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "brain-overload"
   ],

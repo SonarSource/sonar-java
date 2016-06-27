@@ -10,7 +10,7 @@ public String [] getStringArray(List&lt;String&gt; strings) {
 <h2>Compliant Solution</h2>
 <pre>
 public String [] getStringArray(List&lt;String&gt; strings) {
-  return (String []) strings.toArray(new String[0]);
+  return strings.toArray(new String[0]);
 }
 </pre>
 

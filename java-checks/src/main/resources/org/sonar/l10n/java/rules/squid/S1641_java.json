@@ -5,9 +5,8 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "CPU_EFFICIENCY",
   "tags": [
     "performance"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

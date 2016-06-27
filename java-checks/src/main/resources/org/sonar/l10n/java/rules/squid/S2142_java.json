@@ -5,11 +5,10 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "EXCEPTION_HANDLING",
   "tags": [
+    "cwe",
     "multi-threading",
-    "bug",
-    "cwe"
+    "bug"
   ],
   "defaultSeverity": "Critical"
 }

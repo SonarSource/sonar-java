@@ -4,15 +4,23 @@
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-myCollection.map(new Mapper&lt;String,String&gt;() {
+myCollection.stream().map(new Mapper&lt;String,String&gt;() {
   public String map(String input) {
     return new StringBuilder(input).reverse().toString();
   }
 });
+
+Predicate&lt;String&gt; isEmpty = new Predicate&lt;String&gt; {
+    boolean test(String myString) {
+        return myString.isEmpty();
+    }
+}
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-myCollection.map(element -&gt; new StringBuilder(element).reverse().toString());
+myCollection.stream().map(input -&gt; new StringBuilder(input).reverse().toString());
+
+Predicate&lt;String&gt; isEmpty = myString -&gt; myString.isEmpty();
 </pre>
 

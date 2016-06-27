@@ -5,14 +5,13 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
-    "cert",
-    "leak",
-    "bug",
-    "security",
     "cwe",
-    "denial-of-service"
+    "leak",
+    "security",
+    "denial-of-service",
+    "bug",
+    "cert"
   ],
   "defaultSeverity": "Blocker"
 }

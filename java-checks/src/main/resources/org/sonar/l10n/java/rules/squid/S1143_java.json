@@ -5,12 +5,11 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
-    "cert",
+    "cwe",
     "error-handling",
     "bug",
-    "cwe"
+    "cert"
   ],
   "defaultSeverity": "Blocker"
 }
