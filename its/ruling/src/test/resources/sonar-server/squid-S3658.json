@@ -1,0 +1,8 @@
+{
+'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/db/EmbeddedDatabaseTest.java':[
+55,
+],
+'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java':[
+99,
+],
+}

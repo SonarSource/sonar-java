@@ -1,0 +1,13 @@
+{
+  "title": "Unit tests should throw exceptions",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "clumsy",
+    "tests"
+  ],
+  "defaultSeverity": "Major"
+}
