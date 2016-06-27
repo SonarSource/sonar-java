@@ -22,6 +22,7 @@ package com.sonar.it.java.suite;
 import com.google.common.collect.Sets;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class JavaComplexityTest {
   public void testNumberMethods() {
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ZeroComplexity.java"), "functions").getIntValue()).isEqualTo(0);
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "functions").getIntValue()).isEqualTo(4);
-    assertThat(getMeasure(PROJECT, "functions").getIntValue()).isEqualTo(8);
+    assertThat(getMeasure(PROJECT, "functions").getIntValue()).isEqualTo(10);
   }
 
   @Test
@@ -75,7 +76,7 @@ public class JavaComplexityTest {
 
   @Test
   public void testFileComplexity() {
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "complexity").getIntValue()).isEqualTo(5);
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "complexity").getIntValue()).isEqualTo(7);
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "complexity").getIntValue()).isEqualTo(5);
   }
 
@@ -86,18 +87,18 @@ public class JavaComplexityTest {
 
   @Test
   public void testPackageComplexity() {
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "complexity").getIntValue()).isEqualTo(14);
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "complexity").getIntValue()).isEqualTo(16);
   }
 
   @Test
   public void testProjectComplexity() {
-    assertThat(getMeasure(PROJECT, "complexity").getIntValue()).isEqualTo(14);
+    assertThat(getMeasure(PROJECT, "complexity").getIntValue()).isEqualTo(16);
   }
 
   @Test
   public void testAverageMethodComplexity() {
-    // complexity 4 / 2 methods
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "function_complexity").getValue()).isEqualTo(2.0);
+    // complexity 6 / 4 methods
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "function_complexity").getValue()).isEqualTo(1.5);
 
     // complexity 5 / 4 methods. Real value is 1.25 but round up to 1.3
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "function_complexity").getValue()).isEqualTo(1.3);
@@ -105,23 +106,23 @@ public class JavaComplexityTest {
     // (1 + 3) / 2 = 2
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "AnonymousClass.java"), "function_complexity").getValue()).isEqualTo(2.0);
 
-    // Helloworld: 4/2
+    // Helloworld: 6/4
     // ContainsInnerClasses: 5/4
     // AnonymousClass: 4/2
-    // => 13/8 Real value is 1.625 but round to 1.6
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity").getValue()).isEqualTo(1.6);
-    assertThat(getMeasure(PROJECT, "function_complexity").getValue()).isEqualTo(1.6);
+    // => 19/12 Real value is 1.5833 but lowered to 1.5
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity").getValue()).isEqualTo(1.5);
+    assertThat(getMeasure(PROJECT, "function_complexity").getValue()).isEqualTo(1.5);
   }
 
   @Test
   public void testAverageClassComplexity() {
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "class_complexity").getValue()).isEqualTo(5.0);
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "class_complexity").getValue()).isEqualTo(7.0);
 
     // 1 + 1 + 3 => complexity 5/3
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "class_complexity").getValue()).isEqualTo(1.7);
 
-    // 1 + 1 + 3 + 5 + 0 + 4 => 14/6 = 2.3
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "class_complexity").getValue()).isEqualTo(2.3);
+    // 1 + 1 + 3 + 7 + 0 + 4 => 16/6 = 2.666
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "class_complexity").getValue()).isEqualTo(2.7);
   }
 
   /**
@@ -139,8 +140,8 @@ public class JavaComplexityTest {
     // ContainsInnerClasses: 1+ 1 + 2 + 1
     // Helloworld: 1 + 3 (static block is not a method)
     // Anonymous class : 1 + 3
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity_distribution").getData()).isEqualTo("1=5;2=3;4=0;6=0;8=0;10=0;12=0");
-    assertThat(getMeasure(PROJECT, "function_complexity_distribution").getData()).isEqualTo("1=5;2=3;4=0;6=0;8=0;10=0;12=0");
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity_distribution").getData()).isEqualTo("1=7;2=3;4=0;6=0;8=0;10=0;12=0");
+    assertThat(getMeasure(PROJECT, "function_complexity_distribution").getData()).isEqualTo("1=7;2=3;4=0;6=0;8=0;10=0;12=0");
   }
 
   @Test
