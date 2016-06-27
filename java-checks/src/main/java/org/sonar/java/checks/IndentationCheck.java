@@ -61,7 +61,8 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     Kind.INITIALIZER,
     Kind.SWITCH_STATEMENT,
     Kind.CASE_GROUP,
-    Kind.METHOD_INVOCATION
+    Kind.METHOD_INVOCATION,
+    Kind.LAMBDA_EXPRESSION
   );
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;
@@ -76,6 +77,8 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
   private boolean isBlockAlreadyReported;
   private int lastCheckedLine;
   private Deque<Boolean> isInAnonymousClass = new LinkedList<>();
+  private Deque<SyntaxToken> methodInvocationFirstToken = new LinkedList<>();
+  private Deque<SyntaxToken> lambdaPreviousToken = new LinkedList<>();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -88,6 +91,8 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     isBlockAlreadyReported = false;
     lastCheckedLine = 0;
     isInAnonymousClass.clear();
+    methodInvocationFirstToken.clear();
+    lambdaPreviousToken.clear();
     super.scanFile(context);
   }
 
@@ -103,7 +108,11 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     } else if (tree.is(Kind.METHOD_INVOCATION)) {
       adjustMethodInvocation((MethodInvocationTree) tree);
       return;
+    } else if (tree.is(Kind.LAMBDA_EXPRESSION)) {
+      adjustLambdaExpression((LambdaExpressionTree) tree);
+      return;
     }
+
     expectedLevel += indentationLevel;
     isBlockAlreadyReported = false;
 
@@ -125,19 +134,84 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Kind.METHOD_INVOCATION)) {
+      restoreMethodInvocation((MethodInvocationTree) tree);
+      return;
+    } else if (tree.is(Kind.BLOCK)) {
+      restoreBlockForExceptionalParents(tree.parent());
+    } else if (tree.is(Kind.LAMBDA_EXPRESSION)) {
+      restoreLambdaExpression((LambdaExpressionTree) tree);
+      return;
+    }
+    expectedLevel -= indentationLevel;
+    isBlockAlreadyReported = false;
+    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
+    if (isClassTree(tree)) {
+      isInAnonymousClass.pop();
+    }
+  }
+
   private void adjustMethodInvocation(MethodInvocationTree tree) {
-    int startLine = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+    SyntaxToken firstToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+    methodInvocationFirstToken.push(firstToken);
     int parenthesisLine = tree.arguments().openParenToken().line();
-    if (startLine != parenthesisLine) {
+    if (firstToken.line() != parenthesisLine) {
       expectedLevel += indentationLevel;
     }
   }
 
   private void restoreMethodInvocation(MethodInvocationTree tree) {
-    int startLine = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+    int startLine = methodInvocationFirstToken.pop().line();
     int parenthesisLine = tree.arguments().openParenToken().line();
     if (startLine != parenthesisLine) {
       expectedLevel -= indentationLevel;
+    }
+  }
+
+  private void adjustLambdaExpression(LambdaExpressionTree lambda) {
+    SyntaxToken previousToken = getPreviousToken(lambda);
+    lambdaPreviousToken.push(previousToken);
+    int lambdaFirstTokenLine = FirstSyntaxTokenFinder.firstSyntaxToken(lambda).line();
+    if (previousToken.line() != lambdaFirstTokenLine) {
+      expectedLevel += indentationLevel;
+    }
+    Tree body = lambda.body();
+    if (partOfChainedMethodInvocations(lambda) && body.is(Kind.BLOCK)) {
+      // compensates block and method invocation
+      expectedLevel -= indentationLevel;
+    }
+  }
+
+  private static boolean partOfChainedMethodInvocations(Tree tree) {
+    Tree parent = tree.parent();
+    if (parent.is(Kind.ARGUMENTS, Kind.METHOD_INVOCATION)) {
+      return partOfChainedMethodInvocations(parent);
+    }
+    return parent.is(Kind.MEMBER_SELECT);
+  }
+
+  private static SyntaxToken getPreviousToken(Tree tree) {
+    Tree previous = null;
+    for (Tree children : ((JavaTree) tree.parent()).children()) {
+      if (children.equals(tree)) {
+        break;
+      }
+      previous = children;
+    }
+    return LastSyntaxTokenFinder.lastSyntaxToken(previous);
+  }
+
+  private void restoreLambdaExpression(LambdaExpressionTree lambda) {
+    int previousTokenLine = lambdaPreviousToken.pop().line();
+    int lambdaFirstTokenLine = FirstSyntaxTokenFinder.firstSyntaxToken(lambda).line();
+    if (previousTokenLine != lambdaFirstTokenLine) {
+      expectedLevel -= indentationLevel;
+    }
+    if (partOfChainedMethodInvocations(lambda) && lambda.body().is(Kind.BLOCK)) {
+      // compensates block and method invocation
+      expectedLevel += indentationLevel;
     }
   }
 
@@ -176,30 +250,12 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
   private void adjustBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel -= indentationLevel;
-    } else if (parent.is(Kind.LAMBDA_EXPRESSION)
-      && getPreviousToken((LambdaExpressionTree) parent).line() != FirstSyntaxTokenFinder.firstSyntaxToken(parent).line()) {
-      expectedLevel += indentationLevel;
     }
-  }
-
-  private static SyntaxToken getPreviousToken(LambdaExpressionTree lambda) {
-    Tree previous = null;
-    for (Tree children : ((JavaTree) lambda.parent()).children()) {
-      if (children.equals(lambda)) {
-        break;
-      }
-      previous = children;
-    }
-
-    return LastSyntaxTokenFinder.lastSyntaxToken(previous);
   }
 
   private void restoreBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel += indentationLevel;
-    } else if (parent.is(Kind.LAMBDA_EXPRESSION)
-      && getPreviousToken((LambdaExpressionTree) parent).line() != FirstSyntaxTokenFinder.firstSyntaxToken(parent).line()) {
-      expectedLevel -= indentationLevel;
     }
   }
 
@@ -216,22 +272,6 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
       isBlockAlreadyReported = true;
     }
     lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
-  }
-
-  @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Kind.METHOD_INVOCATION)) {
-      restoreMethodInvocation((MethodInvocationTree) tree);
-      return;
-    } else if (tree.is(Kind.BLOCK)) {
-      restoreBlockForExceptionalParents(tree.parent());
-    }
-    expectedLevel -= indentationLevel;
-    isBlockAlreadyReported = false;
-    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
-    if (isClassTree(tree)) {
-      isInAnonymousClass.pop();
-    }
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {
