@@ -61,7 +61,7 @@ public class DefaultJavaFileScannerContextTest {
   public void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(JAVA_FILE);
-    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, false, sonarComponents, null, true);
+    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, sonarComponents, null, true);
   }
 
   @Test

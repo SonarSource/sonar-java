@@ -21,6 +21,7 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -32,19 +33,11 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ComplexityVisitor extends SubscriptionVisitor {
 
   private List<Tree> blame = new ArrayList<>();
-  private Deque<ClassTree> classTrees = new LinkedList<>();
-  private boolean analyseAccessors;
-
-  public ComplexityVisitor(boolean analyseAccessors) {
-    this.analyseAccessors = analyseAccessors;
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -63,23 +56,17 @@ public class ComplexityVisitor extends SubscriptionVisitor {
         .add(Tree.Kind.CONDITIONAL_EXPRESSION)
         .add(Tree.Kind.CONDITIONAL_AND)
         .add(Tree.Kind.CONDITIONAL_OR)
-        .add(Tree.Kind.CLASS)
-        .add(Tree.Kind.ENUM)
-        .add(Tree.Kind.ANNOTATION_TYPE)
         .build();
   }
 
   public List<Tree> scan(ClassTree classTree, MethodTree tree) {
     blame.clear();
-    classTrees.clear();
-    classTrees.push(classTree);
     super.scanTree(tree);
     return blame;
   }
 
   public List<Tree> scan(Tree tree) {
     blame.clear();
-    classTrees.clear();
     super.scanTree(tree);
     return blame;
   }
@@ -87,11 +74,6 @@ public class ComplexityVisitor extends SubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     switch (tree.kind()) {
-      case CLASS:
-      case ENUM:
-      case ANNOTATION_TYPE:
-        classTrees.push((ClassTree) tree);
-        break;
       case METHOD:
       case CONSTRUCTOR:
         computeMethodComplexity((MethodTree) tree);
@@ -126,24 +108,14 @@ public class ComplexityVisitor extends SubscriptionVisitor {
 
   private void computeMethodComplexity(MethodTree methodTree) {
     BlockTree block = methodTree.block();
-    if (block != null && (classTrees.isEmpty() || !isAccessor(methodTree))) {
+    if (block != null) {
       blame.add(methodTree.simpleName().identifierToken());
     }
   }
 
-  private boolean isAccessor(MethodTree methodTree) {
-    return analyseAccessors && AccessorsUtils.isAccessor(classTrees.peek(), methodTree);
-  }
-
-
   @Override
   public void leaveNode(Tree tree) {
     switch (tree.kind()) {
-      case CLASS:
-      case ENUM:
-      case ANNOTATION_TYPE:
-        classTrees.pop();
-        break;
       case METHOD:
       case CONSTRUCTOR:
         leaveMethod((MethodTree) tree);

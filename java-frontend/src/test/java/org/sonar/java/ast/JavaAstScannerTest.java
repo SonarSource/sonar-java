@@ -77,7 +77,7 @@ public class JavaAstScannerTest {
     DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/Comments.java");
     fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
     verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(15));
   }
 
@@ -87,11 +87,11 @@ public class JavaAstScannerTest {
     DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/NoSonar.java");
     fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
     verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(8));
     //No Sonar on tests files
     NoSonarFilter noSonarFilterForTest = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilterForTest).new TestFileMeasurer()));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilterForTest).new TestFileMeasurer()));
     verify(noSonarFilterForTest).noSonarInFile(resource, ImmutableSet.of(8));
   }
 

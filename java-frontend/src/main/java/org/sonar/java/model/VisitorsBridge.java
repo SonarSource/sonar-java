@@ -56,7 +56,6 @@ public class VisitorsBridge {
   private final boolean symbolicExecutionEnabled;
   private SemanticModel semanticModel;
   private List<File> projectClasspath;
-  private boolean analyseAccessors;
   protected File currentFile;
   protected JavaVersion javaVersion;
 
@@ -82,10 +81,6 @@ public class VisitorsBridge {
     this.sonarComponents = sonarComponents;
     this.projectClasspath = projectClasspath;
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
-  }
-
-  public void setAnalyseAccessors(boolean analyseAccessors) {
-    this.analyseAccessors = analyseAccessors;
   }
 
   public void setCharset(Charset charset) {
@@ -119,7 +114,7 @@ public class VisitorsBridge {
         SemanticModel.handleMissingTypes(tree);
       }
     }
-    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents, fileParsed);
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
       new SymbolicExecutionVisitor(executableScanners).scanFile(javaFileScannerContext);
@@ -144,12 +139,11 @@ public class VisitorsBridge {
   }
 
   protected JavaFileScannerContext createScannerContext(
-    CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents, boolean fileParsed) {
+    CompilationUnitTree tree, SemanticModel semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
       tree,
       currentFile,
       semanticModel,
-      analyseAccessors,
       sonarComponents,
       javaVersion,
       fileParsed);

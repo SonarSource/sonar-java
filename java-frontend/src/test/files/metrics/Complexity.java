@@ -49,10 +49,10 @@ abstract class AbstractClass {
   private int i;
   abstract void method(); // +0
   public int getI(){
-    return i; //+0 Accessor
+    return i; // +1
   }
   public void setI(int i){
-    this.i = i;//+0 Accessor
+    this.i = i; // +1
   }
 }
 

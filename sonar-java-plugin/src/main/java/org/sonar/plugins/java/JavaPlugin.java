@@ -39,8 +39,6 @@ public class JavaPlugin implements Plugin {
   private static final String JAVA_CATEGORY = "java";
   private static final String GENERAL_SUBCATEGORY = "General";
 
-  public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
-  public static final boolean SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE = true;
   @Override
   public void define(Context context) {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
@@ -57,16 +55,6 @@ public class JavaPlugin implements Plugin {
         .name("File suffixes")
         .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
         .subCategory("General")
-        .onQualifiers(Qualifiers.PROJECT)
-        .build(),
-      PropertyDefinition.builder(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
-        .defaultValue(Boolean.toString(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE))
-        .category(JAVA_CATEGORY)
-        .subCategory(GENERAL_SUBCATEGORY)
-        .name("Separate Accessors")
-        .description("Flag whether SonarQube should separate accessors (getters/setters) from methods. " +
-          "In that case, accessors are not counted in metrics such as complexity or API documentation.")
-        .type(PropertyType.BOOLEAN)
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
       PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)

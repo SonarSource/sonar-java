@@ -29,7 +29,6 @@ import org.sonar.api.ce.measure.RangeDistributionBuilder;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -56,11 +55,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private final FileSystem fs;
   private final SensorContext sensorContext;
-  private final boolean separateAccessorsFromMethods;
   private final NoSonarFilter noSonarFilter;
   private InputFile sonarFile;
   private int methods;
-  private int accessors;
   private int complexityInMethods;
   private RangeDistributionBuilder methodComplexityDistribution;
 
@@ -68,10 +65,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private Charset charset;
   private int classes;
 
-  public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods, NoSonarFilter noSonarFilter) {
+  public Measurer(FileSystem fs, SensorContext context, NoSonarFilter noSonarFilter) {
     this.fs = fs;
     this.sensorContext = context;
-    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
     this.noSonarFilter = noSonarFilter;
   }
 
@@ -97,12 +93,8 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     classTrees.clear();
     methods = 0;
     complexityInMethods = 0;
-    accessors = 0;
     classes = 0;
-    PublicApiChecker publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
-    if (separateAccessorsFromMethods) {
-      publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
-    }
+    PublicApiChecker publicApiChecker = new PublicApiChecker();
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
     CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
@@ -111,7 +103,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
-    saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
@@ -157,14 +148,10 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
-      if (separateAccessorsFromMethods && AccessorsUtils.isAccessor(classTrees.peek(), methodTree)) {
-        accessors++;
-      } else {
-        methods++;
-        int methodComplexity = context.getMethodComplexityNodes(classTrees.peek(), methodTree).size();
-        methodComplexityDistribution.add(methodComplexity);
-        complexityInMethods += methodComplexity;
-      }
+      methods++;
+      int methodComplexity = context.getMethodComplexityNodes(classTrees.peek(), methodTree).size();
+      methodComplexityDistribution.add(methodComplexity);
+      complexityInMethods += methodComplexity;
     }
 
   }

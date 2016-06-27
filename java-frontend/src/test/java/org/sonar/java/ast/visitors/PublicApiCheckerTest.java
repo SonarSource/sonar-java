@@ -47,24 +47,17 @@ public class PublicApiCheckerTest {
   @Before
   public void setUp() {
     ActionParser p = JavaParser.createParser(Charsets.UTF_8);
-    publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
+    publicApiChecker = new PublicApiChecker();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
   public void isPublicApiAccessorsHandledAsMethods() {
-    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker, false);
+    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
     visitor.scanTree(cut);
   }
 
-  @Test
-  public void isPublicApiAccessorsSeparatedFromMethods() {
-    publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
-    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker, true);
-    visitor.scanTree(cut);
-  }
-
-  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker, final boolean separateAccessorsFromMethods) {
+  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker) {
     return new SubscriptionVisitor() {
 
       private final Deque<ClassTree> classTrees = Lists.newLinkedList();
@@ -89,12 +82,8 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          if (separateAccessorsFromMethods) {
-            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public"));
-          } else {
-            // getters and setters are included in the public API only if checker does not ignore accessors
-            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
-          }
+          // getters and setters are included in the public API
+          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
         } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
           if(className==null) {

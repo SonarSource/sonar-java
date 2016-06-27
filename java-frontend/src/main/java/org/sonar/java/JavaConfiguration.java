@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 public class JavaConfiguration {
 
   private final Charset charset;
-  private boolean separateAccessorsFromMethods = true;
   private JavaVersion javaVersion = new JavaVersionImpl();
 
   public JavaConfiguration(Charset charset) {
@@ -36,14 +35,6 @@ public class JavaConfiguration {
 
   public Charset getCharset() {
     return charset;
-  }
-
-  public boolean separatesAccessorsFromMethods() {
-    return separateAccessorsFromMethods;
-  }
-
-  public void setSeparateAccessorsFromMethods(boolean separateAccessorsFromMethods) {
-    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
   }
 
   public JavaVersion javaVersion() {

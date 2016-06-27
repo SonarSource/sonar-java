@@ -66,10 +66,10 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors,
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel,
                                                         SonarComponents sonarComponents, boolean failedParsing) {
     SemanticModel model = enableSemantic ? semanticModel : null;
-    testContext = new TestJavaFileScannerContext(tree, currentFile, model, analyseAccessors, sonarComponents, javaVersion, failedParsing);
+    testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
     return testContext;
   }
 
@@ -82,8 +82,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     private final Set<AnalyzerMessage> issues = new HashSet<>();
 
     public TestJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel,
-                                      boolean analyseAccessors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
-      super(tree, file, semanticModel, analyseAccessors, sonarComponents, javaVersion, failedParsing);
+                                      @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
+      super(tree, file, semanticModel, sonarComponents, javaVersion, failedParsing);
     }
 
     public Set<AnalyzerMessage> getIssues() {

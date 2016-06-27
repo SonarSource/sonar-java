@@ -49,13 +49,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
 
-  public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel, boolean analyseAccessors,
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
     this.file = file;
     this.semanticModel = semanticModel;
     this.sonarComponents = sonarComponents;
-    this.complexityVisitor = new ComplexityVisitor(analyseAccessors);
+    this.complexityVisitor = new ComplexityVisitor();
     this.javaVersion = javaVersion;
     this.fileParsed = fileParsed;
   }

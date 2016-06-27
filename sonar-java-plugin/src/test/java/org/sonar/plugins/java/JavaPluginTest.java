@@ -32,7 +32,7 @@ public class JavaPluginTest {
     JavaPlugin javaPlugin = new JavaPlugin();
     Plugin.Context context = new Plugin.Context(SonarQubeVersion.V5_6);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(28);
+    assertThat(context.getExtensions()).hasSize(27);
   }
 
 }

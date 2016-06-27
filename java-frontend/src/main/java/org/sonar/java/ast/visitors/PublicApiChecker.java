@@ -74,19 +74,6 @@ public class PublicApiChecker extends BaseTreeVisitor {
   private final Deque<Tree> currentParents = new LinkedList<>();
   private int publicApi;
   private int documentedPublicApi;
-  private final boolean separateAccessorsFromMethods;
-
-  public static PublicApiChecker newInstanceWithAccessorsHandledAsMethods() {
-    return new PublicApiChecker(false);
-  }
-
-  public static PublicApiChecker newInstanceWithAccessorsSeparatedFromMethods() {
-    return new PublicApiChecker(true);
-  }
-
-  private PublicApiChecker(boolean separateAccessorsFromMethods) {
-    this.separateAccessorsFromMethods = separateAccessorsFromMethods;
-  }
 
   public static Kind[] classKinds() {
     return CLASS_KINDS.clone();
@@ -174,11 +161,8 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
-  private boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
+  private static boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
-    if (separateAccessorsFromMethods && AccessorsUtils.isAccessor(classTree, methodTree)) {
-      return false;
-    }
     if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
     } else if (isEmptyDefaultConstructor(methodTree)
