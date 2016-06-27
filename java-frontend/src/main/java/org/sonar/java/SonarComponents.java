@@ -31,17 +31,15 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
-import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +48,6 @@ import java.util.List;
 public class SonarComponents {
 
   private final FileLinesContextFactory fileLinesContextFactory;
-  private final ResourcePerspectives resourcePerspectives;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
   private final FileSystem fs;
@@ -59,17 +56,16 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> testChecks;
   private SensorContext context;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
     CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
     @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
-    this.resourcePerspectives = resourcePerspectives;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
@@ -109,8 +105,8 @@ public class SonarComponents {
     return fileLinesContextFactory.createFor(inputFromIOFile(file));
   }
 
-  public Symbolizable symbolizableFor(File file) {
-    return resourcePerspectives.as(Symbolizable.class, inputFromIOFile(file));
+  public NewSymbolTable symbolizableFor(File file) {
+    return context.newSymbolTable().onFile(inputFromIOFile(file));
   }
 
   public NewHighlighting highlightableFor(File file) {
@@ -129,7 +125,7 @@ public class SonarComponents {
     return javaTestClasspath.getElements();
   }
 
-  public void registerCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {
+  public void registerCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
     checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 
@@ -148,7 +144,7 @@ public class SonarComponents {
     return Iterables.concat(checks, Lists.newArrayList(testChecks));
   }
 
-  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {
+  public void registerTestCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
     testChecks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 

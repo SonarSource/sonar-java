@@ -20,91 +20,108 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.source.Symbol;
-import org.sonar.api.source.Symbolizable;
+import org.junit.rules.TemporaryFolder;
+import org.sonar.api.batch.fs.TextPointer;
+import org.sonar.api.batch.fs.TextRange;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.DefaultTextPointer;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.java.JavaClasspath;
+import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 public class SonarSymbolTableVisitorTest {
 
-  private final SonarComponents sonarComponents = mock(SonarComponents.class);
-  private final Symbolizable symbolizable = mock(Symbolizable.class);
-  private final Symbolizable.SymbolTableBuilder symboltableBuilder = mock(Symbolizable.SymbolTableBuilder.class);
-
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();
   private static final String EOL = "\n";
   private List<String> lines;
+  private SensorContextTester context;
+  private DefaultFileSystem fs;
+  private SonarComponents sonarComponents;
 
   @Before
-  public void init() {
-    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
-    when(symbolizable.newSymbolTableBuilder()).thenReturn(symboltableBuilder);
+  public void setUp() throws Exception {
+    context = SensorContextTester.create(temp.getRoot());
+    fs = context.fileSystem();
+    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+    sonarComponents.setSensorContext(context);
   }
 
   @Test
   public void sonar_symbol_table() throws Exception {
-    File file = new File("src/test/files/highlighter/SonarSymTable.java");
+    File file = temp.newFile();
+    Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, Charsets.UTF_8);
     lines = Files.readLines(file, Charsets.UTF_8);
+    String content  = Joiner.on(EOL).join(lines);
+    fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
-
-    // import List
-    verify(symboltableBuilder).newSymbol(offset(1, 18), offset(1, 22));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(5, 3)));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(9, 11)));
+    String componentKey = ":" + file.getName();
+    verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));
     // Example class declaration
-    verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 14));
-    verify(symboltableBuilder).newSymbol(offset(4, 15), offset(4, 16));
+    verifyUsages(componentKey, 4, 6);
+    verifyUsages(componentKey, 4, 14);
     // list field
-    verify(symboltableBuilder).newSymbol(offset(5, 16), offset(5, 20));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(10, 10)));
+    verifyUsages(componentKey, 5, 15, reference(10, 9));
+
     // Example empty constructor
-    verify(symboltableBuilder).newSymbol(offset(6, 3), offset(6, 10));
+    verifyUsages(componentKey, 6, 2);
     // Do not reference constructor of class using this() and super() as long as SONAR-5894 is not fixed
     //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 5)));
+
     // Example list constructor
-    verify(symboltableBuilder).newSymbol(offset(9, 3), offset(9, 10));
+    verifyUsages(componentKey, 9, 2);
+
     // list local var
-    verify(symboltableBuilder).newSymbol(offset(9, 24), offset(9, 28));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(10, 17)));
+    verifyUsages(componentKey, 9, 23, reference(10, 16));
     // method
-    verify(symboltableBuilder).newSymbol(offset(12, 7), offset(12, 13));
+    verifyUsages(componentKey, 12, 6);
     //label
-    verify(symboltableBuilder).newSymbol(offset(13, 5), offset(13, 10));
+    verifyUsages(componentKey, 13, 4);
     //Enum
-    verify(symboltableBuilder).newSymbol(offset(16, 8), offset(16, 26));
-    verify(symboltableBuilder).newSymbol(offset(17, 5), offset(17, 12));
+    verifyUsages(componentKey, 16, 7);
+    verifyUsages(componentKey, 17, 5);
     // Do not reference constructor of enum as it can leads to failure in analysis as long as SONAR-5894 is not fixed
     //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(14, 5)));
-    verify(symboltableBuilder).newSymbol(offset(18, 5), offset(18, 23));
-    verify(symboltableBuilder).newSymbol(offset(21, 4), offset(21, 5));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(21, 20)));
-    verify(symboltableBuilder).newSymbol(offset(21, 12), offset(21, 19));
-    verify(symboltableBuilder).newSymbol(offset(21, 22), offset(21, 23));
-    verify(symboltableBuilder).build();
-    verifyNoMoreInteractions(symboltableBuilder);
+
+    verifyUsages(componentKey, 18, 4);
+    verifyUsages(componentKey, 21, 3, reference(21, 19));
+    verifyUsages(componentKey, 21, 11);
+    verifyUsages(componentKey, 21, 21);
   }
 
-  private int offset(int line, int column) {
-    int result = 0;
-    for (int i = 0; i < line - 1; i++) {
-      result += lines.get(i).length() + EOL.length();
+  private void verifyUsages(String componentKey, int line, int offset, TextPointer... tps) {
+    Collection<TextRange> textRanges = context.referencesForSymbolAt(componentKey, line, offset);
+    if(tps.length == 0) {
+      // TODO assert correctly that symbol is effectevly created see : SONAR-7850
+      assertThat(textRanges).isEmpty();
+    } else {
+      assertThat(textRanges.stream().map(TextRange::start).collect(Collectors.toList())).isNotEmpty().containsOnly(tps);
     }
-    result += column - 1;
-    return result;
+  }
+
+  private static TextPointer reference(int line, int column) {
+    return new DefaultTextPointer(line, column);
   }
 
 }

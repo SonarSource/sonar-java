@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,13 +38,12 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -57,10 +55,8 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -77,9 +73,6 @@ public class SonarComponentsTest {
   private FileLinesContextFactory fileLinesContextFactory;
 
   @Mock
-  private ResourcePerspectives resourcePerspectives;
-
-  @Mock
   private CheckFactory checkFactory;
 
   @Mock
@@ -92,14 +85,14 @@ public class SonarComponentsTest {
   public void setUp() {
     // configure mocks that need verification
     when(this.checkFactory.<JavaCheck>create(anyString())).thenReturn(this.checks);
-    when(this.checks.addAnnotatedChecks(anyCollectionOf(Class.class))).thenReturn(this.checks);
+    when(this.checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(this.checks);
   }
 
   public void postTestExecutionChecks() {
     // each time a SonarComponent is instantiated the following methods must be called twice
     // once for custom checks, once for custom java checks
     verify(this.checkFactory, times(2)).create(REPOSITORY_NAME);
-    verify(this.checks, times(2)).addAnnotatedChecks(anyCollectionOf(Class.class));
+    verify(this.checks, times(2)).addAnnotatedChecks(any(Iterable.class));
     verify(this.checks, times(2)).all();
   }
 
@@ -112,14 +105,10 @@ public class SonarComponentsTest {
     when(javaTestClasspath.getElements()).thenReturn(javaTestClasspathList);
     File file = new File("foo.java");
     fs.add(new DefaultInputFile("", "foo.java"));
-    Issuable issuable = mock(Issuable.class);
-    when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(issuable);
-    Symbolizable symbolizable = mock(Symbolizable.class);
-    when(resourcePerspectives.as(eq(Symbolizable.class), any(InputFile.class))).thenReturn(symbolizable);
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fs, null, javaTestClasspath, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContextTester);
 
     CodeVisitor[] visitors = sonarComponents.checkClasses();
@@ -132,13 +121,15 @@ public class SonarComponentsTest {
     NewHighlighting newHighlighting = sonarComponents.highlightableFor(file);
     assertThat(newHighlighting).isNotNull();
     verify(sensorContextTester, times(1)).newHighlighting();
-    assertThat(sonarComponents.symbolizableFor(file)).isEqualTo(symbolizable);
+    NewSymbolTable newSymbolTable = sonarComponents.symbolizableFor(file);
+    assertThat(newSymbolTable ).isNotNull();
+    verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(file)).isEqualTo(fileLinesContext);
 
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     List<File> list = mock(List.class);
     when(javaClasspath.getElements()).thenReturn(list);
-    sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory);
+    sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
     assertThat(sonarComponents.getJavaClasspath()).isEqualTo(list);
   }
 
@@ -148,7 +139,7 @@ public class SonarComponentsTest {
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
-    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null, null, this.checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
@@ -168,7 +159,7 @@ public class SonarComponentsTest {
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     when(checks.all()).thenReturn(new ArrayList<JavaCheck>()).thenReturn(Lists.newArrayList(expectedCheck));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null, checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
@@ -192,7 +183,7 @@ public class SonarComponentsTest {
       Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class));
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(Lists.newArrayList(expectedTestCheck));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null, checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
@@ -217,7 +208,7 @@ public class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null, checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
@@ -236,7 +227,7 @@ public class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fileSystem, null, null, checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
@@ -274,7 +265,7 @@ public class SonarComponentsTest {
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fileSystem, null, null, checkFactory, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
     sonarComponents.setSensorContext(context);
