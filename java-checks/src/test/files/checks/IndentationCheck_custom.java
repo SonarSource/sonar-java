@@ -140,7 +140,7 @@ class Lambsa {
             .range(1, 5)
             .map((
                 a -> {
-                    return a + 1;
+                    return a + 1; // Compliant
                 }));
     }
 }

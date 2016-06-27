@@ -47,15 +47,53 @@ if (0) {                          // Compliant - already reported
 
     IntStream.range(1, 5).map(
       a -> {
-        return a + 1;
+        return a + 1; // Compliant
       });
+
+    IntStream.range(1, 5)
+      .map(
+        a -> {
+          return a + 1;
+        })
+      .close();
+
+    IntStream.range(1, 5)
+      .map(
+        a -> {
+                return a + 1; // Noncompliant
+        })
+      .close();
+
+    IntStream
+      .range(1, 5)
+      .map(a -> {
+        return a + 1; // Compliant
+      }).close();
+
+    IntStream
+      .range(1, 5)
+      .map(a -> {
+         return a + 1; // Noncompliant
+      }).close();
+
+    IntStream
+      .range(1, 5)
+      .map(a ->
+        a + 1
+      ).close();
+
+    IntStream
+      .range(1, 5)
+      .map(a -> a + 1) // Compliant
+      .close();
 
     IntStream.range(1, 5).map(a -> a + 1);
 
     IntStream
       .range(1, 5)
       .map(
-        a -> a + 1);
+        a ->
+          a + 1); // Compliant
 
     IntStream
       .range(1, 5)
