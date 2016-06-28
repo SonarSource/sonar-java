@@ -90,7 +90,7 @@ public class SonarSymbolTableVisitorTest {
     //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 5)));
 
     // Example list constructor
-    verifyUsages(componentKey, 9, 2);
+    verifyUsages(componentKey, 9, 2, reference(7, 4));
 
     // list local var
     verifyUsages(componentKey, 9, 23, reference(10, 16));
@@ -104,7 +104,7 @@ public class SonarSymbolTableVisitorTest {
     // Do not reference constructor of enum as it can leads to failure in analysis as long as SONAR-5894 is not fixed
     //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(14, 5)));
 
-    verifyUsages(componentKey, 18, 4);
+    verifyUsages(componentKey, 18, 4, reference(17, 4));
     verifyUsages(componentKey, 21, 3, reference(21, 19));
     verifyUsages(componentKey, 21, 11);
     verifyUsages(componentKey, 21, 21);

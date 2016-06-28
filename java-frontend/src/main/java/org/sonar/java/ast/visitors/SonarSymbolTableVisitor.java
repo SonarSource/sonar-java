@@ -19,9 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.api.batch.sensor.symbol.NewSymbol;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.java.resolve.SemanticModel;
@@ -40,7 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
@@ -93,20 +89,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   @Override
   public void visitMethod(MethodTree tree) {
     List<IdentifierTree> usages = tree.symbol().usages();
-    if (tree.symbol().returnType() == null) {
-      if (tree.symbol().owner().isEnum()) {
-        // as long as SONAR-5894 is not fixed, do not provide references to enum constructors
-        createSymbol(tree.simpleName(), Lists.<IdentifierTree>newArrayList());
-      } else {
-        // as long as SONAR-5894 is not fixed, only provides references to constructors using direct call (with same name), and consequently
-        // discard usages of this()/super()
-        String constructorName = tree.simpleName().name();
-        ArrayList<IdentifierTree> filteredUsages = Lists.newArrayList(Iterables.filter(usages, new SameNameFilter(constructorName)));
-        createSymbol(tree.simpleName(), filteredUsages);
-      }
-    } else {
-      createSymbol(tree.simpleName(), usages);
-    }
+    createSymbol(tree.simpleName(), usages);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
       createSymbol(typeParameterTree.identifier(), typeParameterTree);
     }
@@ -149,21 +132,6 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
       syntaxToken = usage.identifierToken();
       newSymbol.newReference(syntaxToken.line(), syntaxToken.column(), syntaxToken.line(), syntaxToken.text().length() + syntaxToken.column());
     }
-  }
-
-  private static class SameNameFilter implements Predicate<IdentifierTree> {
-
-    private final String constructorName;
-
-    public SameNameFilter(String constructorName) {
-      this.constructorName = constructorName;
-    }
-
-    @Override
-    public boolean apply(IdentifierTree input) {
-      return constructorName.equals(input.name());
-    }
-
   }
 
 }
