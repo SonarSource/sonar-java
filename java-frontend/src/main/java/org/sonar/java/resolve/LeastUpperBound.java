@@ -185,7 +185,7 @@ public class LeastUpperBound {
    * @return the set of known parameterizations for each generic type G of MEC 
    */
   private static Multimap<Type, Type> relevantParameterizations(List<Type> minimalErasedCandidates, List<Set<Type>> supertypes) {
-    Multimap<Type, Type> result = Multimaps.newSetMultimap(new HashMap<>(), () -> new LinkedHashSet<>());
+    Multimap<Type, Type> result = Multimaps.newSetMultimap(new HashMap<>(), LinkedHashSet::new);
     for (Set<Type> supertypesSet : supertypes) {
       for (Type supertype : supertypesSet) {
         Type erasedSupertype = supertype.erasure();

@@ -23,14 +23,12 @@ import org.sonar.maven.model.LocatedAttribute;
 
 import javax.annotation.Nullable;
 
+@FunctionalInterface
 public interface LocatedAttributeMatcher {
 
   boolean matches(@Nullable LocatedAttribute tree);
 
-  public static class AlwaysMatchingMatcher implements LocatedAttributeMatcher {
-    @Override
-    public boolean matches(@Nullable LocatedAttribute tree) {
-      return true;
-    }
+  static LocatedAttributeMatcher any() {
+    return tree -> true;
   }
 }
