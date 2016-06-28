@@ -65,7 +65,7 @@ public class JaCoCoOverallSensor implements Sensor {
       File reportOverall = new File(fileSystem.workDir(), JACOCO_OVERALL);
       reportOverall.getParentFile().mkdirs();
       JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
-      new OverallAnalyzer(reportOverall, perspectives).analyse(context);
+      new OverallAnalyzer(reportOverall).analyse(context);
     }
   }
 
@@ -83,7 +83,7 @@ public class JaCoCoOverallSensor implements Sensor {
   class OverallAnalyzer extends AbstractAnalyzer {
     private final File report;
 
-    OverallAnalyzer(File report, ResourcePerspectives perspectives) {
+    OverallAnalyzer(File report) {
       super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, false);
       this.report = report;
     }

@@ -102,10 +102,9 @@ public class JavaRulesDefinition implements RulesDefinition {
       rule.setName(metatada.title);
       rule.addTags(metatada.tags);
       rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase()));
-      rule.setDebtSubCharacteristic(metatada.sqaleSubCharac);
       if(metatada.remediation != null) {
         rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
-        rule.setEffortToFixDescription(metatada.remediation.linearDesc);
+        rule.setGapDescription(metatada.remediation.linearDesc);
       }
     }
   }
@@ -131,7 +130,6 @@ public class JavaRulesDefinition implements RulesDefinition {
     @Nullable
     Remediation remediation;
 
-    String sqaleSubCharac;
     String[] tags;
     String defaultSeverity;
   }

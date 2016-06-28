@@ -58,7 +58,7 @@ public class JaCoCoItSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     if(shouldExecuteOnProject()) {
-      new ITAnalyzer(perspectives).analyse(context);
+      new ITAnalyzer().analyse(context);
     }
   }
 
@@ -73,7 +73,7 @@ public class JaCoCoItSensor implements Sensor {
   }
 
   class ITAnalyzer extends AbstractAnalyzer {
-    public ITAnalyzer(ResourcePerspectives perspectives) {
+    public ITAnalyzer() {
       super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     }
 
