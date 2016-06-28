@@ -19,6 +19,9 @@
 'com.google.guava:guava:src/com/google/common/collect/Multimaps.java':[
 68,
 ],
+'com.google.guava:guava:src/com/google/common/collect/Multisets.java':[
+57,
+],
 'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
 65,
 ],
