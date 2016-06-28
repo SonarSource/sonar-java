@@ -20,19 +20,27 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S818")
 public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<Character> LITERAL_SUFFIXES = ImmutableSet.of('f', 'd', 'l');
+  @RuleProperty(
+    key = "checkOnlyLong",
+    description = "Set to \"true\" to ignore \"float\" and \"double\" declarations.",
+    defaultValue = "false")
+  public boolean checkOnlyLong = false;
+
+  private static final char LONG = 'l';
+  private static final char DOUBLE = 'd';
+  private static final char FLOAT = 'f';
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -43,8 +51,17 @@ public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     String value = ((LiteralTree) tree).value();
     char suffix = value.charAt(value.length() - 1);
-    if (LITERAL_SUFFIXES.contains(suffix)) {
-      reportIssue(tree, "Upper-case this literal \"" + suffix + "\" suffix.");
+    switch (suffix) {
+      case DOUBLE:
+      case FLOAT:
+        if (checkOnlyLong) {
+          return;
+        }
+      case LONG:
+        reportIssue(tree, "Upper-case this literal \"" + suffix + "\" suffix.");
+        break;
+      default:
+        // do nothing
     }
   }
 }
