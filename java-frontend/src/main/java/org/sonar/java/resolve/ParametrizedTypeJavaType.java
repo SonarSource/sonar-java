@@ -66,30 +66,24 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     if (((JavaType) superType).isTagged(TYPEVAR)) {
       return false;
     }
-    if(erasure() == superType.erasure()) {
-      if (((JavaType) superType).isParameterized()) {
-        return checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
-      }
+    if (erasure() == superType.erasure()) {
+      return !((JavaType) superType).isParameterized() || checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
+    }
+    if (verifySuperTypes(superType)) {
       return true;
     }
+    return ((JavaType) superType).isTagged(WILDCARD) && ((WildCardType) superType).isSubtypeOfBound(this);
+  }
 
+  private boolean verifySuperTypes(Type superType) {
     JavaType superclass = symbol.getSuperclass();
-    if(superclass != null) {
+    if (superclass != null) {
       superclass = typeSubstitutionSolver.applySubstitution(superclass, this.typeSubstitution);
-      if(superclass.isSubtypeOf(superType)) {
+      if (superclass.isSubtypeOf(superType)) {
         return true;
       }
     }
-    for (JavaType superInterface : symbol.getInterfaces()) {
-      superclass = typeSubstitutionSolver.applySubstitution(superInterface, this.typeSubstitution);
-      if(superclass.isSubtypeOf(superType)) {
-        return true;
-      }
-    }
-    if (((JavaType) superType).isTagged(WILDCARD)) {
-      return ((WildCardType) superType).isSubtypeOfBound(this);
-    }
-    return false;
+    return symbol.getInterfaces().stream().map(si -> typeSubstitutionSolver.applySubstitution(si, this.typeSubstitution)).anyMatch(si -> si.isSubtypeOf(superType));
   }
 
   private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
