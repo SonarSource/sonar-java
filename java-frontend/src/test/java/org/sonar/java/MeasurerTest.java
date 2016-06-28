@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 15;
+  private static final int NB_OF_METRICS = 14;
   private SensorContextTester context;
   private JavaSquid squid;
   private File baseDir;
@@ -83,24 +83,14 @@ public class MeasurerTest {
   }
 
   @Test
-  public void verify_accessors_metric() {
-    checkMetric("Accessors.java", "accessors", 3);
-  }
-
-  @Test
   public void verify_complexity_metric() {
-    checkMetric("Complexity.java", "complexity", 13);
-    checkMetric("Complexity.java", "complexity_in_classes", 13);
+    checkMetric("Complexity.java", "complexity", 15);
+    checkMetric("Complexity.java", "complexity_in_classes", 15);
   }
 
   @Test
-  public void verify_function_metric_not_analysing_accessors() {
-    checkMetric(false, "Complexity.java", "functions", 7);
-  }
-
-  @Test
-  public void verify_accessors_set_to_0_when_not_analysing_accessors() {
-    checkMetric(false, "Complexity.java", "accessors", 0);
+  public void verify_function_metric() {
+    checkMetric("Complexity.java", "functions", 7);
   }
 
   @Test
@@ -120,26 +110,16 @@ public class MeasurerTest {
     checkMetric("EmptyFile.java", "ncloc", 0);
   }
 
-  @Test
-  public void verify_complexity_metric_not_analysing_accessor() {
-    checkMetric(false, "Complexity.java", "complexity", 15);
-  }
-
-  private void checkMetric(String filename, String metric, Number expectedValue) {
-    checkMetric(true, filename, metric, expectedValue);
-  }
-
   /**
    * Utility method to quickly get metric out of a file.
    */
-  private void checkMetric(boolean separateAccessorsFromMethods, String filename, String metric, Number expectedValue) {
+  private void checkMetric(String filename, String metric, Number expectedValue) {
     String relativePath = new File(baseDir, filename).getPath();
     DefaultInputFile inputFile = new DefaultInputFile(context.module().key(), relativePath);
     inputFile.setModuleBaseDir(fs.baseDirPath());
     fs.add(inputFile);
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
+    Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);

@@ -1,6 +1,6 @@
 package complexity;
 
-// class complexity: 6
+// class complexity: 7
 public class Helloworld {
 
   private String field = null;
@@ -19,14 +19,14 @@ public class Helloworld {
     this.field = s;
   }
 
-  // accessor
-  // complexity: 0
+  // accessor handled as other method (SONARJAVA-398)
+  // complexity: 1
   public String getField() {
     return field;
   }
 
-  // accessor
-  // complexity: 0
+  // accessor handled as other method (SONARJAVA-398)
+  // complexity: 1
   public void setField(String s) {
     this.field = s;
   }

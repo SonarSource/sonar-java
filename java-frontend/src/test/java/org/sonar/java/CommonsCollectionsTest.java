@@ -43,25 +43,24 @@ import java.util.Map;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class SquidUserGuideTest {
+public class CommonsCollectionsTest {
 
   private static JavaSquid squid;
   private static SensorContextTester context;
 
-  private void initAndScan(boolean separateAccessorsFromMethods) {
+  private void initAndScan() {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = SensorContextTester.create(srcDir);
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
       fs.add(new DefaultInputFile("", file.getPath()));
     }
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
+    Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 
@@ -132,7 +131,11 @@ public class SquidUserGuideTest {
     return metrics;
   }
 
-  private void verifySameResults(Map<String, Double> metrics) {
+  @Test
+  public void measures_on_project() throws Exception {
+    initAndScan();
+    Map<String, Double> metrics = getMetrics();
+
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
     assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
@@ -143,27 +146,6 @@ public class SquidUserGuideTest {
       density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
     }
     assertThat(density).isEqualTo(0.64, Delta.delta(0.01));
-  }
-
-  @Test
-  public void measures_on_project_accessors_separated_from_methods() throws Exception {
-    initAndScan(true);
-    Map<String, Double> metrics = getMetrics();
-
-    verifySameResults(metrics);
-
-    // 69: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
-    assertThat(metrics.get("functions").intValue()).isEqualTo(3762 - 69);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69 - 23);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(8462 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */+ 13 /* SONARJAVA-861 */);
-  }
-
-  @Test
-  public void measures_on_project_accessors_handled_as_methods() throws Exception {
-    initAndScan(false);
-    Map<String, Double> metrics = getMetrics();
-
-    verifySameResults(metrics);
 
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 23);

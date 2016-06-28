@@ -117,7 +117,6 @@ public class JavaSquid {
       Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
     visitorsBridge.setCharset(conf.getCharset());
-    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     visitorsBridge.setJavaVersion(conf.javaVersion());
     return visitorsBridge;
   }

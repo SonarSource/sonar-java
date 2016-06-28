@@ -88,7 +88,7 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
+    Measurer measurer = new Measurer(fs, context, noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
   }
@@ -117,10 +117,8 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private JavaConfiguration createConfiguration() {
-    boolean analyzePropertyAccessors = settings.getBoolean(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY);
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
-    conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
     JavaVersion javaVersion = getJavaVersion();
     LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
     conf.setJavaVersion(javaVersion);

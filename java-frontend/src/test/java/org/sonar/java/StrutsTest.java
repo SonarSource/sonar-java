@@ -44,20 +44,19 @@ public class StrutsTest {
 
   private static SensorContextTester context;
 
-  private void initAndScan(boolean separateAccessorsFromMethods) {
+  private static void initAndScan() {
     File prjDir = new File("target/test-projects/struts-core-1.3.9");
     File srcDir = new File(prjDir, "src");
     File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = SensorContextTester.create(prjDir);
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
       fs.add(new DefaultInputFile("",file.getPath()));
     }
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
+    Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
     JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
@@ -86,34 +85,16 @@ public class StrutsTest {
     return metrics;
   }
 
-  private void verifySameResults(Map<String, Double> metrics) {
+  @Test
+  public void measures_on_project() throws Exception {
+    initAndScan();
+    Map<String, Double> metrics = getMetrics();
+
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403 /* empty statements between members of class */+ 3);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
-  }
-
-  @Test
-  public void measures_on_project_accessors_separated_from_methods() throws Exception {
-    initAndScan(true);
-    Map<String, Double> metrics = getMetrics();
-
-    verifySameResults(metrics);
-
-    // 48: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48-12);
-    // 56 methods in anonymous classes: not part of metric but part of number of methods in project.
-    assertThat(metrics.get("functions").intValue()).isEqualTo(1429 - 56 + 8);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(3859 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */+ 98 /* SONARJAVA-861 */);
-  }
-
-  @Test
-  public void measures_on_project_accessors_handled_as_methods() throws Exception {
-    initAndScan(false);
-    Map<String, Double> metrics = getMetrics();
-
-    verifySameResults(metrics);
 
     assertThat(metrics.get("public_api").intValue()).isEqualTo(1340-12);
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
