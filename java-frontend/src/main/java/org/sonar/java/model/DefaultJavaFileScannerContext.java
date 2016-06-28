@@ -76,7 +76,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
+  public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
     sonarComponents.addIssue(file, javaCheck, line, message, cost);
   }
 

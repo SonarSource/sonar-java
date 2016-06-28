@@ -41,7 +41,7 @@ public interface JavaFileScannerContext {
 
   void addIssue(int line, JavaCheck check, String message);
 
-  void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost);
+  void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost);
 
   void addIssue(File file, JavaCheck check, int line, String message);
 

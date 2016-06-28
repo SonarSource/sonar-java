@@ -91,7 +91,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     }
 
     @Override
-    public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
+    public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
       issues.add(new AnalyzerMessage(javaCheck, getFile(), line, message, cost != null ? cost.intValue() : 0));
     }
 

@@ -23,7 +23,6 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {

@@ -173,7 +173,7 @@ public class SonarComponents {
     return null;
   }
 
-  public void addIssue(File file, JavaCheck check, int line, String message, @Nullable Double cost) {
+  public void addIssue(File file, JavaCheck check, int line, String message, @Nullable Integer cost) {
     reportIssue(new AnalyzerMessage(check, file, line, message, cost != null ? cost.intValue() : 0));
   }
 
