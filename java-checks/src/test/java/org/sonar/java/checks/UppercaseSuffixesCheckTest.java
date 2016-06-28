@@ -29,4 +29,11 @@ public class UppercaseSuffixesCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/UppercaseSuffixesCheck.java", new UppercaseSuffixesCheck());
   }
 
+  @Test
+  public void test_only_long() {
+    UppercaseSuffixesCheck check = new UppercaseSuffixesCheck();
+    check.checkOnlyLong = true;
+    JavaCheckVerifier.verify("src/test/files/checks/UppercaseSuffixesCheckOnlyLong.java", check);
+  }
+
 }
