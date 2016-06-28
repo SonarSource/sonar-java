@@ -19,12 +19,8 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import org.sonar.api.source.Symbol;
-import org.sonar.api.source.Symbolizable;
-import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.api.batch.sensor.symbol.NewSymbol;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,24 +32,22 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
+  private final NewSymbolTable newSymbolTable;
   private final SemanticModel semanticModel;
-  private final Symbolizable symbolizable;
-  private final Symbolizable.SymbolTableBuilder symbolTableBuilder;
   private CompilationUnitTree outerClass;
 
-  public SonarSymbolTableVisitor(Symbolizable symbolizable, SemanticModel semanticModel) {
-    this.symbolizable = symbolizable;
+  public SonarSymbolTableVisitor(NewSymbolTable newSymbolTable, SemanticModel semanticModel) {
+    this.newSymbolTable = newSymbolTable;
     this.semanticModel = semanticModel;
-    this.symbolTableBuilder = symbolizable.newSymbolTableBuilder();
   }
 
   @Override
@@ -64,7 +58,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     super.visitCompilationUnit(tree);
 
     if (tree.equals(outerClass)) {
-      symbolizable.setSymbolTable(symbolTableBuilder.build());
+      newSymbolTable.save();
     }
   }
 
@@ -95,20 +89,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   @Override
   public void visitMethod(MethodTree tree) {
     List<IdentifierTree> usages = tree.symbol().usages();
-    if (tree.symbol().returnType() == null) {
-      if (tree.symbol().owner().isEnum()) {
-        // as long as SONAR-5894 is not fixed, do not provide references to enum constructors
-        createSymbol(tree.simpleName(), Lists.<IdentifierTree>newArrayList());
-      } else {
-        // as long as SONAR-5894 is not fixed, only provides references to constructors using direct call (with same name), and consequently
-        // discard usages of this()/super()
-        String constructorName = tree.simpleName().name();
-        ArrayList<IdentifierTree> filteredUsages = Lists.newArrayList(Iterables.filter(usages, new SameNameFilter(constructorName)));
-        createSymbol(tree.simpleName(), filteredUsages);
-      }
-    } else {
-      createSymbol(tree.simpleName(), usages);
-    }
+    createSymbol(tree.simpleName(), usages);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
       createSymbol(typeParameterTree.identifier(), typeParameterTree);
     }
@@ -145,33 +126,12 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {
-    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
+    SyntaxToken syntaxToken = declaration.identifierToken();
+    NewSymbol newSymbol = newSymbolTable.newSymbol(syntaxToken.line(), syntaxToken.column(), syntaxToken.line(), syntaxToken.text().length() + syntaxToken.column());
     for (IdentifierTree usage : usages) {
-      symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
+      syntaxToken = usage.identifierToken();
+      newSymbol.newReference(syntaxToken.line(), syntaxToken.column(), syntaxToken.line(), syntaxToken.text().length() + syntaxToken.column());
     }
-  }
-
-  private static int startOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex();
-  }
-
-  private static int endOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex() + tree.identifierToken().text().length();
-  }
-
-  private static class SameNameFilter implements Predicate<IdentifierTree> {
-
-    private final String constructorName;
-
-    public SameNameFilter(String constructorName) {
-      this.constructorName = constructorName;
-    }
-
-    @Override
-    public boolean apply(IdentifierTree input) {
-      return constructorName.equals(input.name());
-    }
-
   }
 
 }

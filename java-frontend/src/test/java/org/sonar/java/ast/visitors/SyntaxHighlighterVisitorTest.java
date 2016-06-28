@@ -32,7 +32,6 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
@@ -70,7 +69,7 @@ public class SyntaxHighlighterVisitorTest {
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
-    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), mock(ResourcePerspectives.class), fs,
+    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
       mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
