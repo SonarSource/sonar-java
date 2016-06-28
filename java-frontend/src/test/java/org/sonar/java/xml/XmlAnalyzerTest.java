@@ -88,7 +88,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -102,7 +102,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -131,7 +131,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, times(2)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, times(2)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -145,7 +145,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -159,7 +159,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -173,7 +173,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -187,8 +187,8 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Double.class));
-    verify(sonarComponents, times(1)).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
+    verify(sonarComponents, times(1)).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -200,8 +200,8 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
     analyzer.scan(Lists.<File>newArrayList());
 
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Double.class));
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -213,8 +213,8 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
     analyzer.scan(Lists.<File>newArrayList());
 
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Double.class));
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -228,7 +228,7 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, JAVA_CHECK);
     analyzer.scan(Lists.newArrayList(pomFile));
 
-    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 

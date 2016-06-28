@@ -45,7 +45,6 @@ import java.util.NoSuchElementException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -168,7 +167,7 @@ public class XmlCheckContextImplTest {
         reportedMessage = "onNode:" + (String) invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(expectedLine), anyString(), eq((Double) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(expectedLine), anyString(), eq((Integer) null));
 
     context.reportIssue(CHECK, node, "message");
     assertThat(reportedMessage).isEqualTo("onNode:message");
@@ -234,7 +233,7 @@ public class XmlCheckContextImplTest {
     Node node = Iterables.get(context.evaluate(context.compile("//exclude-default-interceptors"), doc), 0);
 
     context.reportIssue(CHECK, node, "message");
-    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyDouble());
+    verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyInt());
   }
 
   @Test
@@ -280,7 +279,7 @@ public class XmlCheckContextImplTest {
   public void should_not_report_issue_on_node_text_node() throws Exception {
     Node textNode = firstNode(context, "//exclude-default-interceptors").getFirstChild();
     context.reportIssue(CHECK, textNode, "message");
-    Mockito.verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyDouble());
+    Mockito.verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyInt());
   }
 
   private static SonarComponents createSonarComponentsMock() {
@@ -291,7 +290,7 @@ public class XmlCheckContextImplTest {
         reportedMessage = "onLine:" + (String) invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq((Double) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq((Integer) null));
 
     doAnswer(new Answer<Void>() {
       @Override
@@ -299,7 +298,7 @@ public class XmlCheckContextImplTest {
         reportedMessage = "onFile:" + (String) invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq((Double) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq((Integer) null));
 
     return sonarComponents;
   }

@@ -271,9 +271,9 @@ public class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line", null);
-    sonarComponents.addIssue(file, expectedCheck, 42, "message on line", 1.0);
-    sonarComponents.addIssue(new File("."), expectedCheck, 42, "message on line", 1.0);
-    sonarComponents.addIssue(new File("unknown_file"), expectedCheck, 42, "message on line", 1.0);
+    sonarComponents.addIssue(file, expectedCheck, 42, "message on line", 1);
+    sonarComponents.addIssue(new File("."), expectedCheck, 42, "message on line", 1);
+    sonarComponents.addIssue(new File("unknown_file"), expectedCheck, 42, "message on line", 1);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, file, 35, "other message", 0));
     verify(context, times(3)).newIssue();
   }

@@ -66,16 +66,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  public void addIssue(Tree tree, JavaCheck javaCheck, String message) {
-    addIssue(((JavaTree) tree).getLine(), javaCheck, message, null);
-  }
-
-  @Override
-  public void addIssue(Tree tree, JavaCheck check, String message, @Nullable Double cost) {
-    addIssue(((JavaTree) tree).getLine(), check, message, cost);
-  }
-
-  @Override
   public void addIssueOnFile(JavaCheck javaCheck, String message) {
     addIssue(-1, javaCheck, message);
   }
@@ -86,7 +76,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
+  public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
     sonarComponents.addIssue(file, javaCheck, line, message, cost);
   }
 

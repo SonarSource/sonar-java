@@ -41,7 +41,7 @@ public class OneClassInterfacePerFileCheck extends IssuableSubscriptionVisitor {
     int types = ((CompilationUnitTree) tree).types().size();
     if (types > 1) {
       context.addIssue(
-        -1, OneClassInterfacePerFileCheck.this, "There are " + types + " top-level types in this file; move all but one of them to other files.", (double) (types - 1));
+        -1, OneClassInterfacePerFileCheck.this, "There are " + types + " top-level types in this file; move all but one of them to other files.", types - 1);
     }
   }
 
