@@ -269,6 +269,7 @@ public interface plop {
       .forMetric(metric)
       .on(inputFile)
       .save();
+    this.inclusionPredicates = new Predicate[] {s -> true};
   }
 
 }
