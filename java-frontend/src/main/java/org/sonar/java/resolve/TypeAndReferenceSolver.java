@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
@@ -82,10 +81,12 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Computes types and references of Identifier and MemberSelectExpression.
@@ -201,16 +202,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
       List<JavaType> formals = methodSymbol.parameterTypes().stream().map(t -> (JavaType) t).collect(Collectors.toList());
       List<JavaType> inferedArgTypes = resolve.resolveTypeSubstitution(formals, typeSubstitution);
-      for (int i = 0; i < argTypes.size(); i++) {
-        JavaType arg = argTypes.get(i);
-        int size = inferedArgTypes.size();
-        Type formal = inferedArgTypes.get((i < size) ? i : (size - 1));
-        if (formal != arg) {
-          AbstractTypedTree argTree = (AbstractTypedTree) mit.arguments().get(i);
-          argTree.setInferedType(formal);
-          argTree.accept(this);
+      int size = inferedArgTypes.size();
+      IntStream.range(0, argTypes.size()).forEach(
+        i -> {
+          JavaType arg = argTypes.get(i);
+          Type formal = inferedArgTypes.get(Math.min(i, size - 1));
+          if (formal != arg) {
+            AbstractTypedTree argTree = (AbstractTypedTree) mit.arguments().get(i);
+            argTree.setInferedType(formal);
+            argTree.accept(this);
+          }
         }
-      }
+      );
       return;
     }
     Tree methodSelect = tree.methodSelect();
@@ -218,10 +221,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.arguments());
     scan(tree.typeArguments());
     List<JavaType> argTypes = getParameterTypes(tree.arguments());
-    List<JavaType> typeParamTypes = Lists.newArrayList();
-    if(tree.typeArguments() != null ) {
-      typeParamTypes = getParameterTypes(tree.typeArguments());
-    }
+    List<JavaType> typeParamTypes = getParameterTypes(tree.typeArguments());
     Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes, typeParamTypes);
     JavaSymbol symbol;
     JavaType returnType;
@@ -231,12 +231,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     } else {
       symbol = resolution.symbol();
       returnType = resolution.type();
+      if(symbol.isMethodSymbol()) {
+        MethodJavaType methodType = (MethodJavaType) resolution.type();
+        returnType = methodType.resultType;
+      }
     }
     mit.setSymbol(symbol);
-    if(symbol.isMethodSymbol()) {
-      MethodJavaType methodType = (MethodJavaType) resolution.type();
-      returnType = methodType.resultType;
-    }
     if(returnType != null && returnType.isTagged(JavaType.DEFERRED)) {
       ((DeferredType) returnType).setTree(mit);
     }
@@ -271,16 +271,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     inferedExpression.accept(this);
   }
 
-  private static List<JavaType> getParameterTypes(List<? extends Tree> args) {
-    ImmutableList.Builder<JavaType> builder = ImmutableList.builder();
-    for (Tree expressionTree : args) {
-      JavaType symbolType = Symbols.unknownType;
-      if (((AbstractTypedTree) expressionTree).isTypeSet()) {
-        symbolType = (JavaType) ((AbstractTypedTree) expressionTree).symbolType();
-      }
-      builder.add(symbolType);
+  private static List<JavaType> getParameterTypes(@Nullable List<? extends Tree> args) {
+    if(args == null) {
+      return new ArrayList<>();
     }
-    return builder.build();
+    return args.stream().map(e ->
+      ((AbstractTypedTree) e).isTypeSet() ?
+        (JavaType) ((AbstractTypedTree) e).symbolType() : Symbols.unknownType).collect(Collectors.toList());
   }
 
   @CheckForNull

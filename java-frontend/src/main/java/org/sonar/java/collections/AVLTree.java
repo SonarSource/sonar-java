@@ -167,6 +167,7 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     }
   }
 
+  @FunctionalInterface
   public interface Visitor<K, V> {
     void visit(K key, V value);
   }
