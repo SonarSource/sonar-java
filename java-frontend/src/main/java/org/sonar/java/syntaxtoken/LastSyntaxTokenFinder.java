@@ -39,7 +39,7 @@ public class LastSyntaxTokenFinder {
     } else if (tree.is(Tree.Kind.TOKEN)) {
       return (SyntaxToken) tree;
     }
-    ArrayList<Tree> childrenAsList = Lists.newArrayList(((JavaTree) tree).children());
+    ArrayList<Tree> childrenAsList = Lists.newArrayList(((JavaTree) tree).getChildren());
     for (Tree next : Lists.reverse(childrenAsList)) {
       SyntaxToken syntaxToken = lastSyntaxToken(next);
       if (syntaxToken != null) {

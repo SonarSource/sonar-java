@@ -48,7 +48,7 @@ public class FirstSyntaxTokenFinder {
         }
       }
     }
-    for (Tree next : ((JavaTree) tree).children()) {
+    for (Tree next : ((JavaTree) tree).getChildren()) {
       SyntaxToken syntaxToken = firstSyntaxToken(next);
       if (syntaxToken != null) {
         return syntaxToken;
