@@ -66,7 +66,12 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   protected void scanTree(Tree tree) {
     if(nodesToVisit == null) {
-      nodesToVisit = EnumSet.copyOf(nodesToVisit());
+      List<Tree.Kind> kinds = nodesToVisit();
+      if(kinds.isEmpty()) {
+        nodesToVisit = EnumSet.noneOf(Tree.Kind.class);
+      } else {
+        nodesToVisit = EnumSet.copyOf(kinds);
+      }
     }
     visitToken = isVisitingTokens();
     visitTrivia = isVisitingTrivia();

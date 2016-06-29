@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -54,6 +53,7 @@ public class SonarComponents {
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
+  private List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
@@ -141,7 +141,12 @@ public class SonarComponents {
   }
 
   public Iterable<Checks<JavaCheck>> checks() {
-    return Iterables.concat(checks, Lists.newArrayList(testChecks));
+    if(allChecks == null) {
+      allChecks = new ArrayList<>();
+      allChecks.addAll(checks);
+      allChecks.addAll(testChecks);
+    }
+    return allChecks;
   }
 
   public void registerTestCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
