@@ -26,7 +26,7 @@ import org.sonar.maven.model.maven2.Dependency;
  * Matchers targeting maven dependencies.
  */
 public class MavenDependencyMatcher {
-  private static final LocatedAttributeMatcher ALWAYS_MATCHING_MATCHER = new LocatedAttributeMatcher.AlwaysMatchingMatcher();
+  private static final LocatedAttributeMatcher ALWAYS_MATCHING_MATCHER = LocatedAttributeMatcher.any();
 
   private final LocatedAttributeMatcher groupIdMatcher;
   private final LocatedAttributeMatcher artifactIdMatcher;
