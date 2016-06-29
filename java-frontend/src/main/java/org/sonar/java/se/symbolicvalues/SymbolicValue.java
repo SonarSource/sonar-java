@@ -120,13 +120,10 @@ public class SymbolicValue {
         return ImmutableList.of();
       }
     }
-    if (data == null) {
-      return ImmutableList.of(programState.addConstraint(this, nullConstraint));
-    }
     if (data instanceof BooleanConstraint) {
       return nullConstraint.isNull() ? ImmutableList.of() : ImmutableList.of(programState);
     }
-    if (!data.equals(nullConstraint)) {
+    if (data == null || !data.equals(nullConstraint)) {
       return ImmutableList.of(programState.addConstraint(this, nullConstraint));
     }
     return ImmutableList.of(programState);
