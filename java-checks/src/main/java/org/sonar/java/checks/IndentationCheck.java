@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -199,6 +198,9 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
         break;
       }
       previous = children;
+    }
+    if(previous == null) {
+      return getPreviousToken(tree.parent());
     }
     return LastSyntaxTokenFinder.lastSyntaxToken(previous);
   }
