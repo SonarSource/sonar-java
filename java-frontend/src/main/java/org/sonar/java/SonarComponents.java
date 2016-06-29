@@ -79,8 +79,8 @@ public class SonarComponents {
         checkClassesRegister.register(registrarContext);
         Iterable<Class<? extends JavaCheck>> checkClasses = registrarContext.checkClasses();
         Iterable<Class<? extends JavaCheck>> testCheckClasses = registrarContext.testCheckClasses();
-        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<Class<? extends JavaCheck>>()));
-        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<Class<? extends JavaCheck>>()));
+        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<>()));
+        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
       }
     }
   }
