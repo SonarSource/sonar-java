@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -588,11 +589,9 @@ public class Resolve {
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
     if(arg.isTagged(JavaType.DEFERRED)) {
       List<JavaType> samMethodArgs = findSamMethodArgs(formal);
-      if(((DeferredType) arg).tree().is(Tree.Kind.LAMBDA_EXPRESSION)) {
-        return ((LambdaExpressionTree) ((DeferredType) arg).tree()).parameters().size() == samMethodArgs.size();
-      }
-      // we accept all deferred type as we will resolve this later.
-      return true;
+      AbstractTypedTree tree = ((DeferredType) arg).tree();
+      // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
+      return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
     }
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
       return subtypeOfTypeVar(arg, (TypeVariableJavaType) formal);
