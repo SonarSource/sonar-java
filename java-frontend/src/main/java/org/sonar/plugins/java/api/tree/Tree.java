@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 @Beta
 public interface Tree {
 
-  boolean is(Kind... kind);
+  boolean is(Kind... kinds);
 
   void accept(TreeVisitor visitor);
 

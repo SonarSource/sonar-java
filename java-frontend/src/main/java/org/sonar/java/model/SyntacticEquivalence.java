@@ -71,8 +71,8 @@ public final class SyntacticEquivalence {
     } else if (leftNode.isLeaf()) {
       return areLeafsEquivalent(leftNode, rightNode);
     }
-    Iterator<Tree> iteratorA = leftNode.children().iterator();
-    Iterator<Tree> iteratorB = rightNode.children().iterator();
+    Iterator<Tree> iteratorA = leftNode.getChildren().iterator();
+    Iterator<Tree> iteratorB = rightNode.getChildren().iterator();
 
     while (iteratorA.hasNext() && iteratorB.hasNext()) {
       if (!areEquivalent(iteratorA.next(), iteratorB.next())) {

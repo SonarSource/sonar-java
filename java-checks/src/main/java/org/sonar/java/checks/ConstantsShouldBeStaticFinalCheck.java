@@ -103,7 +103,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
       return true;
     }
     if (!tree.isLeaf()) {
-      for (Tree javaTree : tree.children()) {
+      for (Tree javaTree : tree.getChildren()) {
         if (javaTree != null && containsChildrenOfKind((JavaTree) javaTree, kinds)) {
           return true;
         }

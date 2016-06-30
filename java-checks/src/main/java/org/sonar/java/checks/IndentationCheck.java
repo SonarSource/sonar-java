@@ -193,7 +193,7 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
 
   private static SyntaxToken getPreviousToken(Tree tree) {
     Tree previous = null;
-    for (Tree children : ((JavaTree) tree.parent()).children()) {
+    for (Tree children : ((JavaTree) tree.parent()).getChildren()) {
       if (children.equals(tree)) {
         break;
       }

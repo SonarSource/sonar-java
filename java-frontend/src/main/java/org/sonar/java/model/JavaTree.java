@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -60,6 +61,8 @@ public abstract class JavaTree implements Tree {
   private Tree parent;
 
   protected GrammarRuleKey grammarRuleKey;
+
+  private List<Tree> children;
 
   public JavaTree(GrammarRuleKey grammarRuleKey) {
     this.grammarRuleKey = grammarRuleKey;
@@ -73,9 +76,9 @@ public abstract class JavaTree implements Tree {
   }
 
   @Override
-  public final boolean is(Kind... kind) {
+  public final boolean is(Kind... kinds) {
     Kind treeKind = kind();
-    for (Kind kindIter : kind) {
+    for (Kind kindIter : kinds) {
       if (treeKind == kindIter) {
         return true;
       }
@@ -98,7 +101,17 @@ public abstract class JavaTree implements Tree {
    *
    * @throws java.lang.UnsupportedOperationException if {@link #isLeaf()} returns {@code true}
    */
-  public abstract Iterable<Tree> children();
+  protected abstract Iterable<Tree> children();
+
+  public List<Tree> getChildren() {
+    if(children == null) {
+      children = new ArrayList<>();
+      for (Tree tree : children()) {
+        children.add(tree);
+      }
+    }
+    return children;
+  }
 
   public boolean isLeaf() {
     return false;

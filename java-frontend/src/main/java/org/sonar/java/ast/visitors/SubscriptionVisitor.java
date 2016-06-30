@@ -27,14 +27,14 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 public abstract class SubscriptionVisitor implements JavaFileScanner {
 
 
   protected JavaFileScannerContext context;
-  private Collection<Tree.Kind> nodesToVisit;
+  private EnumSet<Tree.Kind> nodesToVisit;
   private boolean visitToken;
   private boolean visitTrivia;
   private SemanticModel semanticModel;
@@ -65,7 +65,14 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   }
 
   protected void scanTree(Tree tree) {
-    nodesToVisit = nodesToVisit();
+    if(nodesToVisit == null) {
+      List<Tree.Kind> kinds = nodesToVisit();
+      if(kinds.isEmpty()) {
+        nodesToVisit = EnumSet.noneOf(Tree.Kind.class);
+      } else {
+        nodesToVisit = EnumSet.copyOf(kinds);
+      }
+    }
     visitToken = isVisitingTokens();
     visitTrivia = isVisitingTrivia();
     visit(tree);
@@ -108,7 +115,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private void visitChildren(Tree tree) {
     JavaTree javaTree = (JavaTree) tree;
     if (!javaTree.isLeaf()) {
-      for (Tree next : javaTree.children()) {
+      for (Tree next : javaTree.getChildren()) {
         if (next != null) {
           visit(next);
         }

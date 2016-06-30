@@ -180,7 +180,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
     private void visitChildren(Tree tree) {
       JavaTree javaTree = (JavaTree) tree;
       if (!javaTree.isLeaf()) {
-        for (Tree next : javaTree.children()) {
+        for (Tree next : javaTree.getChildren()) {
           if (next != null && !isExcluded(next)) {
             visit(next);
           }

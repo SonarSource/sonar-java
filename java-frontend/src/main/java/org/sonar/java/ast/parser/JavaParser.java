@@ -56,7 +56,7 @@ public class JavaParser extends ActionParser<Tree> {
 
   private static Tree createParentLink(JavaTree parent) {
     if (!parent.isLeaf()) {
-      for (Tree nextTree : parent.children()) {
+      for (Tree nextTree : parent.getChildren()) {
         JavaTree next = (JavaTree) nextTree;
         if (next != null) {
           next.setParent(parent);
