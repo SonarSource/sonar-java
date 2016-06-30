@@ -4,6 +4,11 @@ echo "Running $TEST with SQ=$SQ_VERSION"
 
 case "$TEST" in
   ruling)
+    if [[ $GITHUB_BRANCH == "PULLREQUEST-"* && $SLAVE != "windows" ]]
+    then
+      #No ruling on PR: those have been run on travis, just keep ruling on windows for safety
+      exit 0;
+    fi
     #fetch submodule containing sources of ruling projects
     git submodule update --init --recursive
     #ruling requires java 8
