@@ -76,7 +76,7 @@ public abstract class JavaTree implements Tree {
   }
 
   @Override
-  public boolean is(Kind... kinds) {
+  public final boolean is(Kind... kinds) {
     Kind treeKind = kind();
     for (Kind kindIter : kinds) {
       if (treeKind == kindIter) {
