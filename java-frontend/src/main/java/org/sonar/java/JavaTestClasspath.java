@@ -41,6 +41,7 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
   @Override
   protected void init() {
     if (!initialized) {
+      validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");
       initialized = true;
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);

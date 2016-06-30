@@ -43,6 +43,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
   @Override
   protected void init() {
     if (!initialized) {
+      validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES);

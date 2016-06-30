@@ -29,7 +29,8 @@ public class JavaExtensionPlugin extends SonarPlugin {
   public List getExtensions() {
     return ImmutableList.of(
       JavaExtensionRulesDefinition.class,
-      JavaExtensionsCheckRegistrar.class);
+      JavaExtensionsCheckRegistrar.class,
+      StartableExtension.class);
   }
 
 }

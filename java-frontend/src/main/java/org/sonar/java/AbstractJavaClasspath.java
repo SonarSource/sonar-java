@@ -65,7 +65,6 @@ public abstract class AbstractJavaClasspath {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;
-    validateLibraries = fs.hasFiles(fs.predicates().all());
     initialized = false;
   }
 
