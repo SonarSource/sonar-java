@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -45,6 +46,18 @@ public class JavaTestClasspathTest {
     inputFile.setType(InputFile.Type.TEST);
     fs.add(inputFile);
     settings = new Settings();
+  }
+
+  /**
+   * See SONARJAVA-1764
+   * The fileSystem should not be used in initialization phase, as it will fail the analysis if other plugins are used.
+   * Accessing the filesystem before the Sensor phase is not supported by SonarQube.
+   */
+  @Test
+  public void no_interaction_with_FileSystem_at_initialization() {
+    fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
+    javaTestClasspath = new JavaTestClasspath(settings, fs);
+    Mockito.verifyZeroInteractions(fs);
   }
 
   @Test
