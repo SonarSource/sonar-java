@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 @Rule(key = "S3577")
 public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
 
-  private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*Test$";
+  private static final String DEFAULT_FORMAT = "^((Test|IT)[a-zA-Z0-9]*|[A-Z][a-zA-Z0-9]*(Test|IT|TestCase|ITCase))$";
 
   @RuleProperty(
     key = "format",
