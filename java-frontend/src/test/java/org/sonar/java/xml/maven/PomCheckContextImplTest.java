@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.xml.maven.PomCheckContext.Location;
 import org.sonar.maven.model.LocatedTree;
@@ -96,11 +97,27 @@ public class PomCheckContextImplTest {
   @Test
   public void should_report_issue_on_lines_of_all_locations() {
     ArrayList<Location> secondaries = new ArrayList<Location>();
-    secondaries.add(new Location("msg1", fakeLocatedTree(LINE, 42)));
-    // ignore unknown column
-    secondaries.add(new Location("msg2", fakeLocatedTreeWithUnknownColumn(LINE)));
-    context.reportIssue(CHECK, LINE, "message", secondaries);
-    assertThat(reportedMessage).isEqualTo("analyzerMessage:message;msg1;msg2");
+
+    // secondary on located tree
+    int secondary1Line = 42;
+    int secondary1Column = 3;
+    int secondary1Size = 5;
+    String msg1 = "msg1";
+    secondaries.add(new Location(msg1, fakeLocatedTree(secondary1Line, secondary1Column, secondary1Size)));
+
+    // secondary on located tree with unknown column
+    int secondary2Line = 43;
+    String msg2 = "msg2";
+    secondaries.add(new Location(msg2, fakeLocatedTreeWithUnknownColumn(secondary2Line)));
+
+    String msg = "message";
+    context.reportIssue(CHECK, LINE, msg, secondaries);
+
+    String expected = "analyzerMessage:" + msg;
+    expected += ";" + msg1 + "[" + secondary1Line + ";" + (secondary1Column - 1) + "/" + secondary1Line + ";" + (secondary1Column + secondary1Size - 1) + "]";
+    expected += ";" + msg2 + "[" + secondary2Line + ";0/" + secondary2Line + ";0]";
+
+    assertThat(reportedMessage).isEqualTo(expected);
   }
 
   private static SonarComponents createSonarComponentsMock() {
@@ -125,7 +142,10 @@ public class PomCheckContextImplTest {
         AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
         reportedMessage = "analyzerMessage:" + analyzerMessage.getMessage();
         for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
-          reportedMessage += ";" + secondary.getMessage();
+          TextSpan location = secondary.primaryLocation();
+          reportedMessage += ";" + secondary.getMessage() + "[" +
+            location.startLine + ";" + location.startCharacter + "/" +
+            location.endLine + ";" + location.endCharacter + "]";
         }
         return null;
       }
@@ -142,11 +162,11 @@ public class PomCheckContextImplTest {
     return tree;
   }
 
-  private static LocatedTree fakeLocatedTree(int line, int column) {
+  private static LocatedTree fakeLocatedTree(int line, int column, int size) {
     LocatedTreeImpl tree = new LocatedTreeImpl() {
     };
     tree.setStartLocation(new XmlLocation(line, column, 0));
-    tree.setEndLocation(new XmlLocation(line, column+2, 2));
+    tree.setEndLocation(new XmlLocation(line, column + size, size));
     return tree;
   }
 }

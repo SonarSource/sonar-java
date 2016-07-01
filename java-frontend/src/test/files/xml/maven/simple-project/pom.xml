@@ -16,12 +16,24 @@
   <!-- 
     Comment on multiple line 
   -->
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <myProperty>HelloWorld</myProperty>
-    <!-- next property is empty! -->
-    <emptyProperty></emptyProperty>
-  </properties>
+<properties>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <myProperty>HelloWorld</myProperty>
+  <!-- next property is empty! -->
+  <emptyProperty></emptyProperty>
+</properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>fake</groupId>
+        <artifactId>mock</artifactId>
+        <version>4.0</version>
+        <scope>system</scope>
+        <systemPath>hello</systemPath>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <!-- simple comment -->
   <dependencies>
