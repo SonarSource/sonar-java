@@ -4,14 +4,25 @@
 <pre>
 /**
  * @deprecated  As of release 1.3, replaced by {@link #Fee}
- */@Deprecated
-class Fum { ... }
+ */
+@Deprecated
+public class Fum { ... }
+
+public class Foo {
+  /**
+   * @deprecated  As of release 1.7, replaced by {@link #doTheThingBetter()}
+   */
+  @Deprecated
+  public void doTheThing() { ... }
+
+  public void doTheThingBetter() { ... }
+}
 
 public class Bar extends Fum {  // Noncompliant; Fum is deprecated
 
   public void myMethod() {
     Foo foo = new Foo();  // okay; the class isn't deprecated
-    foo.doTheThing();  // Noncompliant
+    foo.doTheThing();  // Noncompliant; doTheThing method is deprecated
   }
 }
 </pre>
