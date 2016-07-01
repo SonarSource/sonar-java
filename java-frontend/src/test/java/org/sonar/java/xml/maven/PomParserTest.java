@@ -22,6 +22,8 @@ package org.sonar.java.xml.maven;
 import org.junit.Test;
 import org.sonar.maven.model.LocatedAttribute;
 import org.sonar.maven.model.LocatedTree;
+import org.sonar.maven.model.maven2.Dependency;
+import org.sonar.maven.model.maven2.DependencyManagement;
 import org.sonar.maven.model.maven2.MavenProject;
 import org.sonar.maven.model.maven2.MavenProject.Properties;
 import org.sonar.maven.model.maven2.Plugin;
@@ -103,9 +105,22 @@ public class PomParserTest {
     MavenProject project = PomParser.parseXML(SIMPLE_POM_FILE);
 
     Properties properties = project.getProperties();
-    checkPosition(properties, 19, 3, 24, 3);
+    checkPosition(properties, 19, 1, 24, 1);
     List<Element> values = properties.getElements();
     assertThat(values).hasSize(3);
+  }
+
+  @Test
+  public void should_retrieve_dependencies_from_dependency_management() {
+    MavenProject project = PomParser.parseXML(SIMPLE_POM_FILE);
+    DependencyManagement dependencyManagement = project.getDependencyManagement();
+    checkPosition(dependencyManagement, 26, 3, 36, 3);
+    Dependency dependency = dependencyManagement.getDependencies().getDependencies().get(0);
+    checkAttribute(dependency.getGroupId(), "fake", 29, 18, 29, 22);
+    checkAttribute(dependency.getArtifactId(), "mock", 30, 21, 30, 25);
+    checkAttribute(dependency.getVersion(), "4.0", 31, 18, 31, 21);
+    checkAttribute(dependency.getScope(), "system", 32, 16, 32, 22);
+    checkAttribute(dependency.getSystemPath(), "hello", 33, 21, 33, 26);
   }
 
   @Test
@@ -113,27 +128,27 @@ public class PomParserTest {
     MavenProject project = PomParser.parseXML(SIMPLE_POM_FILE);
     List<Plugin> plugins = project.getBuild().getPlugins().getPlugins();
     Configuration configuration = plugins.get(0).getExecutions().getExecutions().get(0).getConfiguration();
-    checkPosition(configuration, 76, 13, 78, 13);
+    checkPosition(configuration, 88, 13, 90, 13);
     List<Element> values = configuration.getElements();
     assertThat(values).hasSize(1);
   }
 
-  private static void checkAttribute(LocatedAttribute attribute, @Nullable String value, int... coordinates) {
+  private static void checkAttribute(LocatedAttribute attribute, @Nullable String value, int startLine, int startColumn, int endLine, int endColumn) {
     String attributeValue = attribute.getValue();
     if (value == null) {
       assertThat(attributeValue).isNull();
     } else {
       assertThat(attributeValue.trim()).isEqualTo(value);
     }
-    checkPosition(attribute, coordinates);
+    checkPosition(attribute, startLine, startColumn, endLine, endColumn);
   }
 
-  private static void checkPosition(LocatedTree tree, int... coordinates) {
+  private static void checkPosition(LocatedTree tree, int startLine, int startColumn, int endLine, int endColumn) {
     assertThat(tree.startLocation()).overridingErrorMessage("start location should have been correctly parsed").isNotNull();
-    assertThat(tree.startLocation().line()).isEqualTo(coordinates[0]);
-    assertThat(tree.startLocation().column()).isEqualTo(coordinates[1]);
+    assertThat(tree.startLocation().line()).isEqualTo(startLine);
+    assertThat(tree.startLocation().column()).isEqualTo(startColumn);
     assertThat(tree.endLocation()).overridingErrorMessage("end location should have been correctly parsed").isNotNull();
-    assertThat(tree.endLocation().line()).isEqualTo(coordinates[2]);
-    assertThat(tree.endLocation().column()).isEqualTo(coordinates[3]);
+    assertThat(tree.endLocation().line()).isEqualTo(endLine);
+    assertThat(tree.endLocation().column()).isEqualTo(endColumn);
   }
 }

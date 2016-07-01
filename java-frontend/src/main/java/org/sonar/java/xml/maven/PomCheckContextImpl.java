@@ -68,13 +68,16 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
   @VisibleForTesting
   static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, Location location) {
     XmlLocation startLocation = location.tree.startLocation();
-    int startLine = startLocation.line();
-    int startColumn = startLocation.column();
-    if (startColumn == -1) {
-      // in case of unknown start column
-      startColumn = 0;
-    }
-    TextSpan ts = new TextSpan(startLine, startColumn, location.tree.endLocation().line(), location.tree.endLocation().column());
+    XmlLocation endLocation = location.tree.endLocation();
+    TextSpan ts = new TextSpan(
+      startLocation.line(), offsetFromColumn(startLocation.column()),
+      endLocation.line(), offsetFromColumn(endLocation.column()));
     return new AnalyzerMessage(check, file, ts, location.msg, 0);
+  }
+
+  private static int offsetFromColumn(int column) {
+    // unknown column are marked as -1,
+    // first column is equivalent to an offset of 0
+    return column > 0 ? (column - 1) : 0;
   }
 }
