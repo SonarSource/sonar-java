@@ -3,10 +3,12 @@
 set -euo pipefail
 
 function configureTravis {
-  mkdir -p ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v25 | tar zx --strip-components 1 -C ~/.local
+  mkdir ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/latest | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
+configureTravis
+. installJDK8
 
 function strongEcho {
   echo ""
@@ -15,7 +17,6 @@ function strongEcho {
 case "$TEST" in
 
 CI)
-  configureTravis
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     strongEcho "Build and analyze commit in master"
     SONAR_PROJECT_VERSION=`maven_expression "project.version"`
@@ -92,7 +93,6 @@ plugin|ruling)
    exit 0;
   fi
 
-  configureTravis
   [ "$TEST" = "ruling" ] && git submodule update --init --recursive
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
