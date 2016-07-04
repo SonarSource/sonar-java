@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.helpers;
 
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -57,7 +56,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     if (usages.size() != 1) {
       List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
 
-      SyntaxToken startPointToken = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint);
+      SyntaxToken startPointToken = startingPoint.firstToken();
       Tree lastReassignment = getClosestReassignment(startPointToken, reassignments);
       if (lastReassignment != null) {
         result = lastReassignment;
@@ -91,7 +90,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
   private static Tree getClosestReassignment(SyntaxToken startToken, List<Tree> reassignments) {
     Tree result = null;
     for (Tree reassignment : reassignments) {
-      SyntaxToken reassignmentFirstToken = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment);
+      SyntaxToken reassignmentFirstToken = reassignment.firstToken();
       int reassignmentLine = reassignmentFirstToken.line();
       int startLine = startToken.line();
       if (startLine > reassignmentLine ||

@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -109,7 +108,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null && !isInStaticInnerClass(hiddenVariable, variableTree)) {
-        int line = FirstSyntaxTokenFinder.firstSyntaxToken(hiddenVariable).line();
+        int line = hiddenVariable.firstToken().line();
         reportIssue(variableTree.simpleName(), "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }

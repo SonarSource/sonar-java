@@ -24,7 +24,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -75,7 +74,7 @@ public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
 
   private void checkForEachExpression(Tree forEachIterable, ExpressionTree expressionTree) {
     if (SyntacticEquivalence.areEquivalent(expressionTree, forEachIterable)) {
-      addIssue(expressionTree, FirstSyntaxTokenFinder.firstSyntaxToken(forEachIterable).line());
+      addIssue(expressionTree, forEachIterable.firstToken().line());
     }
   }
 

@@ -28,8 +28,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -91,8 +89,8 @@ public class DataStoredInSessionCheck extends AbstractMethodDetection {
   }
 
   private boolean usedBetween(Symbol variable, Tree start, Tree end) {
-    SyntaxToken startToken = LastSyntaxTokenFinder.lastSyntaxToken(start);
-    SyntaxToken endToken = FirstSyntaxTokenFinder.firstSyntaxToken(end);
+    SyntaxToken startToken = start.lastToken();
+    SyntaxToken endToken = end.firstToken();
 
     for (IdentifierTree identifier : variable.usages()) {
       SyntaxToken identifierToken = identifier.identifierToken();

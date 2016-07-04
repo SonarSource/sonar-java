@@ -25,7 +25,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -117,7 +116,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitExpressionStatement(ExpressionStatementTree tree) {
-      SyntaxToken firstToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+      SyntaxToken firstToken = tree.firstToken();
       if (firstToken != null) {
         addLines(firstToken, tree.semicolonToken());
       } else {

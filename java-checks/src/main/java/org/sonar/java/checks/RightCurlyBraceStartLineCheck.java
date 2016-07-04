@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -62,8 +61,7 @@ public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
   private void checkBlockBody(SyntaxToken openBraceToken, SyntaxToken closeBraceToken, List<? extends Tree> trees) {
     if (openBraceToken.line() != closeBraceToken.line() && !trees.isEmpty()) {
       Tree lastTree = trees.get(trees.size() - 1);
-      SyntaxToken lastToken = LastSyntaxTokenFinder.lastSyntaxToken(lastTree);
-      if (lastToken.line() == closeBraceToken.line()) {
+      if (lastTree.lastToken().line() == closeBraceToken.line()) {
         reportIssue(closeBraceToken, "Move this closing curly brace to the next line.");
       }
     }

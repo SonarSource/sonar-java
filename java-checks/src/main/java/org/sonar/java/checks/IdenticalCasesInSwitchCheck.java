@@ -24,7 +24,6 @@ import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -106,7 +105,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String issueMessage(String type, Tree node) {
-    return "This " + type + "'s code block is the same as the block for the " + type + " on line " + FirstSyntaxTokenFinder.firstSyntaxToken(node).line() + ".";
+    return "This " + type + "'s code block is the same as the block for the " + type + " on line " + node.firstToken().line() + ".";
   }
 
   private void checkConditionalExpression(ConditionalExpressionTree node) {
