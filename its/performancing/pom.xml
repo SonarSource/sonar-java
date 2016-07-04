@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-its</artifactId>
-    <version>4.0</version>
+    <version>4.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-performancing</artifactId>
