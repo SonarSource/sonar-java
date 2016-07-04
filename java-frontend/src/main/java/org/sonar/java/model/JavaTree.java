@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -67,8 +66,34 @@ public abstract class JavaTree implements Tree {
   public JavaTree(GrammarRuleKey grammarRuleKey) {
     this.grammarRuleKey = grammarRuleKey;
   }
+
+  @Override
+  @Nullable
+  public SyntaxToken firstToken() {
+    for (Tree child : getChildren()) {
+      SyntaxToken first = child.firstToken();
+      if (first != null) {
+        return first;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  @Nullable
+  public SyntaxToken lastToken() {
+    List<Tree> trees = getChildren();
+    for (int index = trees.size() - 1; index >= 0; index--) {
+      SyntaxToken last = trees.get(index).lastToken();
+      if (last != null) {
+        return last;
+      }
+    }
+    return null;
+  }
+
   public int getLine() {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
+    SyntaxToken firstSyntaxToken = firstToken();
     if (firstSyntaxToken == null) {
       return -1;
     }
@@ -106,9 +131,12 @@ public abstract class JavaTree implements Tree {
   public List<Tree> getChildren() {
     if(children == null) {
       children = new ArrayList<>();
-      for (Tree tree : children()) {
-        children.add(tree);
-      }
+      children().forEach(child -> {
+        // null children are ignored
+        if (child != null) {
+          children.add(child);
+        }
+      });
     }
     return children;
   }

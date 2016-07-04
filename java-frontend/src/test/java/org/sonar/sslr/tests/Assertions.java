@@ -32,7 +32,6 @@ import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -65,7 +64,7 @@ public class Assertions {
 
     private void parseTillEof(String input) {
       JavaTree tree = (JavaTree) actual.parse(input);
-      InternalSyntaxToken syntaxToken = (InternalSyntaxToken) LastSyntaxTokenFinder.lastSyntaxToken(tree);
+      InternalSyntaxToken syntaxToken = (InternalSyntaxToken) tree.lastToken();
       //FIXME ugly hack to get closing parenthesis of formal parameter list
       if(tree instanceof FormalParametersListTreeImpl && ((FormalParametersListTreeImpl) tree).closeParenToken() != null) {
         syntaxToken = ((FormalParametersListTreeImpl) tree).closeParenToken();

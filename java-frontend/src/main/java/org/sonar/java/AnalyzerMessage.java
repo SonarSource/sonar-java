@@ -19,8 +19,6 @@
  */
 package org.sonar.java;
 
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -108,14 +106,14 @@ public class AnalyzerMessage {
   }
 
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
-    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
+    SyntaxToken firstSyntaxToken = syntaxNode.firstToken();
+    SyntaxToken lastSyntaxToken = syntaxNode.lastToken();
     return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
   public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, Tree endTree) {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(startTree);
-    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(endTree);
+    SyntaxToken firstSyntaxToken = startTree.firstToken();
+    SyntaxToken lastSyntaxToken = endTree.lastToken();
     return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
