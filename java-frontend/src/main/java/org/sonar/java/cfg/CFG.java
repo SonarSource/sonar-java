@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -96,9 +97,7 @@ public class CFG {
     methodSymbol = symbol;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
-    for (StatementTree statementTree : Lists.reverse(tree.body())) {
-      build(statementTree);
-    }
+    build(tree.body());
     prune();
     computePredecessors(blocks);
   }
@@ -300,10 +299,11 @@ public class CFG {
     return new CFG(block, tree.symbol());
   }
 
+  private void build(ListTree<? extends Tree> trees) {
+    build((List<? extends Tree>) trees);
+  }
   private void build(List<? extends Tree> trees) {
-    for (Tree tree : Lists.reverse(trees)) {
-      build(tree);
-    }
+    Lists.reverse(trees).forEach(this::build);
   }
 
   private void build(Tree tree) {
@@ -480,9 +480,7 @@ public class CFG {
     } else {
       build(mit.methodSelect());
     }
-    for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
-      build(arg);
-    }
+    build(mit.arguments());
   }
 
   private void buildIfStatement(IfStatementTree ifStatementTree) {
@@ -731,9 +729,7 @@ public class CFG {
     // process step
     currentBlock = createBlock();
     Block updateBlock = currentBlock;
-    for (StatementTree updateTree : Lists.reverse(tree.update())) {
-      build(updateTree);
-    }
+    build(tree.update());
     addContinueTarget(currentBlock);
     // process body
     currentBlock = createBlock(currentBlock);
@@ -753,9 +749,7 @@ public class CFG {
     updateBlock.addSuccessor(currentBlock);
     // process init
     currentBlock = createBlock(currentBlock);
-    for (StatementTree init : Lists.reverse(tree.initializer())) {
-      build(init);
-    }
+    build(tree.initializer());
   }
 
   private void buildTryStatement(TryStatementTree tryStatementTree) {
