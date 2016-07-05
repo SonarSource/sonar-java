@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -458,6 +457,7 @@ public final class CheckList {
       .add(UnusedTestRuleCheck.class)
       .add(BadTestClassNameCheck.class)
       .add(BadTestMethodNameCheck.class)
+      .add(AssertionFailInCatchBlockCheck.class)
       .build();
   }
 

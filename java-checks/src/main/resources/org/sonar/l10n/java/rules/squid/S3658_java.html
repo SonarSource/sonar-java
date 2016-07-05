@@ -1,0 +1,22 @@
+<p>When the code under test in a unit test throws an exception, the test itself fails. Therefore, there is no need to surround the tested code with a <code>try-catch</code> structure to detect failure. Instead, you can simply move the exception type to the method signature.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void testMethod() {
+  try {
+    // Some code
+  } catch (MyException e) {
+    Assert.fail(e.getMessage());  // Noncompliant
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void testMethod() throws MyException {
+    // Some code
+}
+</pre>
+
