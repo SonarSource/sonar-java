@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -111,7 +110,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
         if (field.equals(((IdentifierTree) variable).symbol())) {
           reportIssue(
             synchronizedStatement,
-            String.format("Don't synchronize on \"%s\" or remove its reassignment on line %d.", field.name(), FirstSyntaxTokenFinder.firstSyntaxToken(variable).line()));
+            String.format("Don't synchronize on \"%s\" or remove its reassignment on line %d.", field.name(), variable.firstToken().line()));
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         checkSymbolAssignment(((MemberSelectExpressionTree) variable).identifier());

@@ -39,6 +39,12 @@ public interface Tree {
   @Nullable
   Tree parent();
 
+  @Nullable
+  SyntaxToken firstToken();
+
+  @Nullable
+  SyntaxToken lastToken();
+
   enum Kind implements GrammarRuleKey {
     /**
      * {@link CompilationUnitTree}

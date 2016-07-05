@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -76,7 +75,7 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
       StatementTree firstStatement = body.get(0);
       int firstStatementLine = line(body.get(0));
 
-      List<SyntaxTrivia> trivias = FirstSyntaxTokenFinder.firstSyntaxToken(firstStatement).trivias();
+      List<SyntaxTrivia> trivias = firstStatement.firstToken().trivias();
       if (!trivias.isEmpty()) {
         int firstLineTrivia = firstLineTrivia(trivias);
         if (firstLineTrivia == lastLabelLine) {
@@ -113,6 +112,6 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
   }
 
   private static int line(Tree tree) {
-    return FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+    return tree.firstToken().line();
   }
 }

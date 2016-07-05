@@ -25,8 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -146,14 +144,14 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     }
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
-    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
+    lastCheckedLine = tree.lastToken().line();
     if (isClassTree(tree)) {
       isInAnonymousClass.pop();
     }
   }
 
   private void adjustMethodInvocation(MethodInvocationTree tree) {
-    SyntaxToken firstToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+    SyntaxToken firstToken = tree.firstToken();
     methodInvocationFirstToken.push(firstToken);
     int parenthesisLine = tree.arguments().openParenToken().line();
     if (firstToken.line() != parenthesisLine) {
@@ -172,7 +170,7 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
   private void adjustLambdaExpression(LambdaExpressionTree lambda) {
     SyntaxToken previousToken = getPreviousToken(lambda);
     lambdaPreviousToken.push(previousToken);
-    int lambdaFirstTokenLine = FirstSyntaxTokenFinder.firstSyntaxToken(lambda).line();
+    int lambdaFirstTokenLine = lambda.firstToken().line();
     if (previousToken.line() != lambdaFirstTokenLine) {
       expectedLevel += indentationLevel;
     }
@@ -202,12 +200,12 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     if(previous == null) {
       return getPreviousToken(tree.parent());
     }
-    return LastSyntaxTokenFinder.lastSyntaxToken(previous);
+    return previous.lastToken();
   }
 
   private void restoreLambdaExpression(LambdaExpressionTree lambda) {
     int previousTokenLine = lambdaPreviousToken.pop().line();
-    int lambdaFirstTokenLine = FirstSyntaxTokenFinder.firstSyntaxToken(lambda).line();
+    int lambdaFirstTokenLine = lambda.firstToken().line();
     if (previousTokenLine != lambdaFirstTokenLine) {
       expectedLevel -= indentationLevel;
     }
@@ -233,7 +231,7 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
     List<CaseLabelTree> labels = tree.labels();
     if (labels.size() >= 2) {
       CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
-      lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(previousCaseLabelTree).line();
+      lastCheckedLine = previousCaseLabelTree.lastToken().line();
     }
     List<StatementTree> body = tree.body();
     List<StatementTree> newBody = body;
@@ -268,12 +266,12 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIndentation(Tree tree, int expectedLevel) {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+    SyntaxToken firstSyntaxToken = tree.firstToken();
     if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
       addIssue(((JavaTree) tree).getLine(), "Make this line start at column " + (expectedLevel + 1) + ".");
       isBlockAlreadyReported = true;
     }
-    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
+    lastCheckedLine = tree.lastToken().line();
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {

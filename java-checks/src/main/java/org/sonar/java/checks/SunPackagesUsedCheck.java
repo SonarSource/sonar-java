@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -58,7 +57,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     String reference = ExpressionsHelper.concatenate(tree);
     if (!isExcluded(reference)) {
-      int line = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+      int line = tree.firstToken().line();
       if (!reportedLines.contains(line) && isSunClass(reference)) {
         context.addIssue(line, this, "Replace this usage of Sun classes by ones from the Java API.");
         reportedLines.add(line);

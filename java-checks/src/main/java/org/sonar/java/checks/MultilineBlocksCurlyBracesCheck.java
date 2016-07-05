@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -74,10 +73,10 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       condition = true;
     }
     if (block != null && !block.is(Tree.Kind.BLOCK)) {
-      SyntaxToken previousToken = FirstSyntaxTokenFinder.firstSyntaxToken(block);
+      SyntaxToken previousToken = block.firstToken();
       int previousColumn = previousToken.column();
       int previousLine = previousToken.line();
-      SyntaxToken currentToken = FirstSyntaxTokenFinder.firstSyntaxToken(current);
+      SyntaxToken currentToken = current.firstToken();
       int currentColumn = currentToken.column();
       int currentLine = currentToken.line();
       if (previousColumn == currentColumn) {

@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
@@ -38,6 +39,18 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
   @Override
   public boolean isLeaf() {
     return true;
+  }
+
+  @Override
+  @Nullable
+  public SyntaxToken firstToken() {
+    return null;
+  }
+
+  @Override
+  @Nullable
+  public SyntaxToken lastToken() {
+    return null;
   }
 
   @Override

@@ -34,7 +34,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -138,7 +137,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     }
 
     if (startLine != -1) {
-      int endLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
+      int endLine = tree.lastToken().line();
       Set<Integer> filteredlines = ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
       for (String rule : rules) {
         excludeLines(filteredlines, rule);

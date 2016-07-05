@@ -22,7 +22,6 @@ package org.sonar.java.ast.visitors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -92,7 +91,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
       case RETURN_STATEMENT:
       case THROW_STATEMENT:
       case CATCH:
-        blame.add(FirstSyntaxTokenFinder.firstSyntaxToken(tree));
+        blame.add(tree.firstToken());
         break;
       case CONDITIONAL_EXPRESSION:
         blame.add(((ConditionalExpressionTree) tree).questionToken());
@@ -131,7 +130,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
       StatementTree last = Iterables.getLast(block.body());
       if (last.is(Tree.Kind.RETURN_STATEMENT)) {
         // minus one because we are going to count the return with +1
-        blame.remove(FirstSyntaxTokenFinder.firstSyntaxToken(last));
+        blame.remove(last.firstToken());
       }
     }
   }

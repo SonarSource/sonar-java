@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -120,7 +119,7 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
-    return FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.leftOperand()).line() == FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.rightOperand()).line();
+    return formatStringTree.leftOperand().firstToken().line() == formatStringTree.rightOperand().firstToken().line();
   }
 
   private static void cleanupLineSeparator(List<String> params) {

@@ -29,13 +29,13 @@ import com.google.common.collect.Range;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -86,17 +86,17 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return excludedLinesByRule;
   }
 
-  public void acceptLines(Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
+  public void acceptLines(@Nullable Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
     for (Class<? extends JavaCheck> rule : rules) {
       acceptLines(tree, rule);
     }
   }
 
-  public void acceptLines(Tree tree, Class<? extends JavaCheck> rule) {
+  public void acceptLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
     computeFilteredLinesForRule(tree, rule, false);
   }
 
-  public void excludeLines(Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
+  public void excludeLines(@Nullable Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
     for (Class<? extends JavaCheck> rule : rules) {
       excludeLines(tree, rule);
     }
@@ -106,13 +106,16 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     computeFilteredLinesForRule(lines, ruleKey, true);
   }
 
-  public void excludeLines(Tree tree, Class<? extends JavaCheck> rule) {
+  public void excludeLines(@Nullable Tree tree, Class<? extends JavaCheck> rule) {
     computeFilteredLinesForRule(tree, rule, true);
   }
 
-  private void computeFilteredLinesForRule(Tree tree, Class<? extends JavaCheck> filteredRule, boolean excludeLine) {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
-    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(tree);
+  private void computeFilteredLinesForRule(@Nullable Tree tree, Class<? extends JavaCheck> filteredRule, boolean excludeLine) {
+    if (tree == null) {
+      return;
+    }
+    SyntaxToken firstSyntaxToken = tree.firstToken();
+    SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
       Set<Integer> filteredlines = ContiguousSet.create(Range.closed(firstSyntaxToken.line(), lastSyntaxToken.line()), DiscreteDomain.integers());
       computeFilteredLinesForRule(filteredlines, rulesKeysByRulesClass.get(filteredRule), excludeLine);

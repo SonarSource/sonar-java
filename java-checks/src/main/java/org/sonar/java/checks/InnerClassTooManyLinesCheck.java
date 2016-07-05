@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -57,8 +55,8 @@ public class InnerClassTooManyLinesCheck extends IssuableSubscriptionVisitor {
     Type ownerType = owner.type();
     if (ownerType != null && ownerType.isClass() && owner.owner().isPackageSymbol()) {
       // raise only one issue for the first level of nesting when multiple nesting
-      int first = FirstSyntaxTokenFinder.firstSyntaxToken(node).line();
-      int last = LastSyntaxTokenFinder.lastSyntaxToken(node).line();
+      int first = node.firstToken().line();
+      int last = node.lastToken().line();
       int length = last - first + 1;
       if (length > max) {
         reportIssue(ExpressionsHelper.reportOnClassTree(node), "Reduce this class from " + length + " to the maximum allowed " + max + " or externalize it in a public class.");

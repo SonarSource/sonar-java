@@ -23,8 +23,6 @@ import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -81,8 +79,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     int lines = getNumberOfLines(lambdaExpressionTree);
     if (lines > max) {
-      SyntaxToken firstToken = FirstSyntaxTokenFinder.firstSyntaxToken(lambdaExpressionTree);
-      SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(lambdaExpressionTree);
+      SyntaxToken firstToken = lambdaExpressionTree.firstToken();
+      SyntaxToken lastSyntaxToken = lambdaExpressionTree.lastToken();
       JavaFileScannerContext.Location lastTokenLocation = new JavaFileScannerContext.Location(lines + " lines", lastSyntaxToken);
       context.reportIssue(this, firstToken, lambdaExpressionTree.arrowToken(),
         "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Lists.newArrayList(lastTokenLocation), null);
@@ -98,8 +96,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
 
   private static int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
     Tree body = lambdaExpressionTree.body();
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(body);
-    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(body);
+    SyntaxToken firstSyntaxToken = body.firstToken();
+    SyntaxToken lastSyntaxToken = body.lastToken();
     if (firstSyntaxToken == null || lastSyntaxToken == null) {
       // Only happen if the body of the lambda expression is a Tree.Kind.OTHER
       return 0;

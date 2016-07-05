@@ -22,7 +22,6 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Preconditions;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -237,7 +236,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   private static String getCommentFromTree(Tree tokenTree) {
-    return getCommentFromSyntaxToken(FirstSyntaxTokenFinder.firstSyntaxToken(tokenTree));
+    return getCommentFromSyntaxToken(tokenTree.firstToken());
   }
 
   private static ModifiersTree getModifierTrees(Tree tree) {

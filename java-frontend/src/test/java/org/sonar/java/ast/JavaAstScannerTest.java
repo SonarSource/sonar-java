@@ -43,6 +43,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
@@ -249,6 +250,16 @@ public class JavaAstScannerTest {
 
         @Override
         public Tree parent() {
+          return null;
+        }
+
+        @Override
+        public SyntaxToken firstToken() {
+          return null;
+        }
+
+        @Override
+        public SyntaxToken lastToken() {
           return null;
         }
       };

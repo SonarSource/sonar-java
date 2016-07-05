@@ -33,8 +33,11 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import java.io.File;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodInvocationTreeImplTest {
 
@@ -47,10 +50,39 @@ public class MethodInvocationTreeImplTest {
     Symbol.MethodSymbol declaration = ((MethodTree) classTree.members().get(0)).symbol();
     StatementTree statementTree = ((MethodTree) classTree.members().get(1)).block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree)statementTree).expression();
-    Assertions.assertThat(mit.symbol()).isSameAs(declaration);
-    Assertions.assertThat(mit.arguments()).isNotNull();
-    Assertions.assertThat(mit.arguments().openParenToken()).isNotNull();
-    Assertions.assertThat(mit.arguments().closeParenToken()).isNotNull();
+    assertThat(mit.symbol()).isSameAs(declaration);
+    assertThat(mit.arguments()).isNotNull();
+    assertThat(mit.arguments().openParenToken()).isNotNull();
+    assertThat(mit.arguments().closeParenToken()).isNotNull();
+  }
+
+  @Test
+  public void first_token() {
+    CompilationUnitTree cut = createTree("class A {\n"
+      + "  void bar(){\n"
+      + "    foo();\n"
+      + "  }"
+      + "}");
+
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) ((MethodTree) (classTree.members().get(0))).block().body().get(0)).expression();
+    SyntaxToken firstToken = mit.firstToken();
+    assertThat(firstToken.text()).isEqualTo("foo");
+  }
+
+  @Test
+  public void first_token_with_type_arguments() {
+    CompilationUnitTree cut = createTree("class A {\n"
+      + "  void bar(){\n"
+      + "    new A().<String>foo();\n"
+      + "  }"
+      + "  <T> void foo() {}"
+      + "}");
+
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) ((MethodTree) (classTree.members().get(0))).block().body().get(0)).expression();
+    SyntaxToken firstToken = mit.firstToken();
+    assertThat(firstToken.text()).isEqualTo("new");
   }
 
   private CompilationUnitTree createTree(String code) {

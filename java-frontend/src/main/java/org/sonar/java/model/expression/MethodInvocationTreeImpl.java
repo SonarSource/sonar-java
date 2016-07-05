@@ -28,7 +28,9 @@ import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -60,6 +62,18 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   @Override
   public TypeArguments typeArguments() {
     return typeArguments;
+  }
+
+  @Override
+  public SyntaxToken firstToken() {
+    if (typeArguments() != null && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+      SyntaxToken firstToken = expression.firstToken();
+      if (firstToken != null) {
+        return firstToken;
+      }
+    }
+    return super.firstToken();
   }
 
   @Override
