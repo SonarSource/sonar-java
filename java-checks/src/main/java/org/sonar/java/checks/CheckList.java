@@ -70,6 +70,7 @@ import org.sonar.java.checks.xml.web.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
@@ -439,6 +440,7 @@ public final class CheckList {
       .add(OptionalAsParameterCheck.class)
       .add(DoubleBraceInitializationCheck.class)
       .add(ArraysAsListOfPrimitiveToStreamCheck.class)
+      .add(DivisionByZeroCheck.class)
       .build();
   }
 

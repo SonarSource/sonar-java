@@ -57,11 +57,11 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
       BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
       return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
     } else if (constraintLeft instanceof ObjectConstraint) {
-      ObjectConstraint nullConstraint = (ObjectConstraint) constraintLeft;
-      if (nullConstraint.isNull()) {
-        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+      ObjectConstraint objectConstraint = (ObjectConstraint) constraintLeft;
+      if (objectConstraint.isInversible()) {
+        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse());
       } else if (shouldNotInverse().equals(booleanConstraint)) {
-        return to.setConstraint(programState, nullConstraint);
+        return to.setConstraint(programState, objectConstraint);
       }
     }
     return ImmutableList.of(programState);

@@ -1,0 +1,16 @@
+{
+  "title": "Zero should not be a possible denominator",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "cwe",
+    "security",
+    "denial-of-service",
+    "bug",
+    "cert"
+  ],
+  "defaultSeverity": "Critical"
+}

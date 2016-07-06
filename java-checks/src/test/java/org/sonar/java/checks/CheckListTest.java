@@ -47,13 +47,14 @@ public class CheckListTest {
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
   private static final List<String> SE_CHEKS = ImmutableList.of(
-      "NullDereferenceCheck",
+    "NullDereferenceCheck",
     "ConditionAlwaysTrueOrFalseCheck",
     "UnclosedResourcesCheck",
     "CustomUnclosedResourcesCheck",
     "LocksNotUnlockedCheck",
     "NonNullSetToNullCheck",
-    "NoWayOutLoopCheck"
+    "NoWayOutLoopCheck",
+    "DivisionByZeroCheck"
   );
 
   /**

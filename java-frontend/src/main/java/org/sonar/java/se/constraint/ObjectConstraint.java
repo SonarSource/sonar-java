@@ -65,6 +65,10 @@ public class ObjectConstraint implements Constraint {
     return isNull;
   }
 
+  public boolean isInversible() {
+    return isNull;
+  }
+
   public boolean isDisposable() {
     return disposable;
   }
