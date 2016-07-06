@@ -9,7 +9,7 @@ void doSomething(int a, int b) {     // "b" is unused
 
 <h2>Compliant Solution</h2>
 <pre>
-void doSomething(int a) { 
+void doSomething(int a) {
   compute(a);
 }
 </pre>
@@ -17,7 +17,7 @@ void doSomething(int a) {
 <h2>Exceptions</h2>
 <p>Override and implementation methods are excluded, as are parameters annotated with <code>@Observes</code>, and methods that are intended to be overridden.</p>
 <pre>
-@override
+@Override
 void doSomething(int a, int b) {     // no issue reported on b
   compute(a);
 }

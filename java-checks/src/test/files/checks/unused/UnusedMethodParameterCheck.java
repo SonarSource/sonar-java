@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 class A extends B{
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
@@ -41,7 +42,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=44]]
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=45]]
     System.out.println("");
   }
 }
@@ -130,6 +131,25 @@ class Annotations {
   @MyAnnotation
   void qix(int a, int b) { // Compliant
     compute(a);
+  }
+
+  @SuppressWarnings("proprietary")
+  void unknownWarning(int unused) { // Compliant
+  }
+
+  @SuppressWarnings({"rawtypes", "proprietary"})
+  void unknownWarningCombinedWithKnown(List list, int unused) { // Compliant
+    List<String> strings = (List<String>) list;
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  void foobar(List list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}} [[sc=30;ec=36]]
+    List<String> strings = (List<String>) list;
+  }
+
+  @SuppressWarnings("unchecked")
+  void uncheckedFoobar(List<?> list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}} [[sc=42;ec=48]]
+    List<String> strings = (List<String>) list;
   }
 }
 

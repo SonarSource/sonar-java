@@ -30,20 +30,26 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
+  private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
+  private static final Collection<String> EXCLUDED_WARNINGS_SUPPRESSIONS = ImmutableList.of("\"rawtypes\"", "\"unchecked\"");
   private static final MethodMatcherCollection SERIALIZABLE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
     MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
@@ -80,7 +86,23 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isAnnotated(MethodTree tree) {
-    return !tree.modifiers().annotations().isEmpty();
+    // If any annotation doesn't match the @SuppressWarning then mark the method as annotated.
+    return tree.modifiers().annotations().stream().anyMatch(annotation -> !isExcludedLiteral(annotation));
+  }
+
+  private static boolean isExcludedLiteral(Tree tree) {
+    if (tree.is(Tree.Kind.ANNOTATION)) {
+      AnnotationTree annotationTree = (AnnotationTree) tree;
+      return annotationTree.annotationType().symbolType().is(SUPPRESS_WARNINGS_ANNOTATION)
+        && annotationTree.arguments().stream().allMatch(UnusedMethodParameterCheck::isExcludedLiteral);
+    } else if (tree.is(Tree.Kind.STRING_LITERAL)) {
+      return EXCLUDED_WARNINGS_SUPPRESSIONS.contains(((LiteralTree) tree).value());
+    } else if (tree.is(Tree.Kind.NEW_ARRAY)) {
+      return ((NewArrayTree) tree).initializers().stream().allMatch(UnusedMethodParameterCheck::isExcludedLiteral);
+    }
+
+    // If it is some type we don't expect, then return false to avoid FP.
+    return false;
   }
 
   private static boolean isDesignedForExtension(MethodTree tree) {
