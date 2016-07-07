@@ -859,6 +859,27 @@ public class CFG {
   }
 
   private void buildNewClass(NewClassTree tree) {
+    TryStatement tryStatement = enclosingTry.peek();
+    if(tryStatement != outerTry) {
+      currentBlock = createBlock(currentBlock);
+      currentBlock.addExitSuccessor(exitBlocks.peek());
+    }
+    if (tree.constructorSymbol().isMethodSymbol()) {
+      List<Type> thrownTypes = ((Symbol.MethodSymbol) tree.constructorSymbol()).thrownTypes();
+      if (!thrownTypes.isEmpty()) {
+        thrownTypes.forEach(thrownType -> {
+          for (Type caughtType : tryStatement.catches.keySet()) {
+            if (thrownType.isSubtypeOf(caughtType)) {
+              currentBlock.addSuccessor(tryStatement.catches.get(caughtType));
+              break;
+            }
+          }
+        });
+      }
+    }
+    for (Block runtimeCatch : tryStatement.runtimeCatches) {
+      currentBlock.addSuccessor(runtimeCatch);
+    }
     currentBlock.elements.add(tree);
     ExpressionTree enclosingExpression = tree.enclosingExpression();
     if (enclosingExpression != null) {

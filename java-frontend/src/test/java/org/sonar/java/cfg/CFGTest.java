@@ -1042,9 +1042,11 @@ public class CFGTest {
       block(
         element(Kind.VARIABLE, "bar"),
         element(Kind.TRY_STATEMENT)
-      ).successors(5),
+      ).successors(6),
       block(
-        element(Kind.NEW_CLASS),
+        element(Kind.NEW_CLASS)
+      ).successors(4, 5),
+      block(
         element(Kind.IDENTIFIER, "bar"),
         element(Kind.ASSIGNMENT)
       ).successors(4),
@@ -1082,10 +1084,12 @@ public class CFGTest {
     CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.TRY_STATEMENT)
-      ).successors(3),
+      ).successors(4),
       block(
         element(Tree.Kind.IDENTIFIER, "fileName"),
-        element(Kind.NEW_CLASS),
+        element(Kind.NEW_CLASS)
+      ).successors(0, 1, 3), // successor 1 is a bit weird here... probably something odd in pruning.
+      block(
         element(Kind.VARIABLE, "file"),
         element(Kind.TRY_STATEMENT)
       ).successors(2),
@@ -1280,11 +1284,13 @@ public class CFGTest {
       block(
         element(Kind.CHAR_LITERAL, "''"),
         element(Kind.VARIABLE, "path"),
-        element(Kind.TRY_STATEMENT)).successors(1),
+        element(Kind.TRY_STATEMENT)).successors(3),
       block(
         element(Kind.IDENTIFIER, "path"),
-        element(Kind.NEW_CLASS),
-        element(Kind.NEW_CLASS),
+        element(Kind.NEW_CLASS)).successors(0, 2),
+      block(
+          element(Kind.NEW_CLASS)).successors(0, 1),
+      block(
         element(Kind.VARIABLE, "br")).successors(0));
     cfgChecker.check(cfg);
   }
