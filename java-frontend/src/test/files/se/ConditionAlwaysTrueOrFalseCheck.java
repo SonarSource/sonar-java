@@ -1075,9 +1075,12 @@ public static class Class extends SuperClass {
   public void try_catch() {
     boolean a = false, b = false, c = false, d = false;
     try {
+      foo();
       b = true;
+      foo();
       c = true;
-    } catch (Exception e) {
+      foo();
+    } catch (IllegalArgumentException e) {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (b) {
@@ -1106,6 +1109,7 @@ public static class Class extends SuperClass {
     boolean b = false;
     boolean c = false;
     try {
+      foo();
       b = true;
       c = true;
     } finally {

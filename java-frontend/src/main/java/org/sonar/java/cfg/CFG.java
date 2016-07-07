@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -68,6 +69,8 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +90,22 @@ public class CFG {
   private final Deque<Block> breakTargets = new LinkedList<>();
   private final Deque<Block> continueTargets = new LinkedList<>();
   private final Deque<Block> exitBlocks = new LinkedList<>();
+  private final Deque<TryStatement> enclosingTry = new LinkedList<>();
+  private final TryStatement outerTry;
+
+  private static class TryStatement {
+    Map<Type, Block> catches = new LinkedHashMap<>();
+    List<Block> runtimeCatches = new ArrayList<>();
+
+    Block successorBlock;
+
+    public void addCatch(Type type, Block catchBlock) {
+      if (type.is("java.lang.Exception") || type.isSubtypeOf("java.lang.RuntimeException")) {
+        runtimeCatches.add(catchBlock);
+      }
+      catches.put(type, catchBlock);
+    }
+  }
 
   private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
@@ -97,6 +116,9 @@ public class CFG {
     methodSymbol = symbol;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
+    outerTry = new TryStatement();
+    outerTry.successorBlock = exitBlocks.peek();
+    enclosingTry.add(outerTry);
     build(tree.body());
     prune();
     computePredecessors(blocks);
@@ -473,6 +495,27 @@ public class CFG {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
+    TryStatement tryStatement = enclosingTry.peek();
+    if(tryStatement != outerTry) {
+      currentBlock = createBlock(currentBlock);
+      currentBlock.addExitSuccessor(exitBlocks.peek());
+    }
+    if (mit.symbol().isMethodSymbol()) {
+      List<Type> thrownTypes = ((Symbol.MethodSymbol) mit.symbol()).thrownTypes();
+      if (!thrownTypes.isEmpty()) {
+        thrownTypes.forEach(thrownType -> {
+          for (Type caughtType : tryStatement.catches.keySet()) {
+            if (thrownType.isSubtypeOf(caughtType)) {
+              currentBlock.addSuccessor(tryStatement.catches.get(caughtType));
+              break;
+            }
+          }
+        });
+      }
+    }
+    for (Block runtimeCatch : tryStatement.runtimeCatches) {
+      currentBlock.addSuccessor(runtimeCatch);
+    }
     currentBlock.elements.add(mit);
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
@@ -765,41 +808,26 @@ public class CFG {
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
-    List<Block> catches = new ArrayList<>();
+    Map<Type, Block> catches = new HashMap<>();
+    TryStatement tryStatement = new TryStatement();
+    tryStatement.successorBlock = finallyOrEndBlock;
+    enclosingTry.push(tryStatement);
     for (CatchTree catchTree : tryStatementTree.catches()) {
       currentBlock = createBlock(finallyOrEndBlock);
       build(catchTree.block());
-      catches.add(currentBlock);
+      catches.put(catchTree.parameter().type().symbolType(), currentBlock);
     }
+    catches.forEach(tryStatement::addCatch);
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
-    linkToCatchBlocks(beforeFinally, catches);
     build((List<? extends Tree>) tryStatementTree.resources());
+    enclosingTry.pop();
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
-    if (finallyBlockTree != null) {
-      exitBlocks.pop();
-      if (catches.isEmpty()) {
-        currentBlock.addExitSuccessor(finallyOrEndBlock);
-      }
-    }
-    for (Block catchBlock : catches) {
-      currentBlock.addSuccessor(catchBlock);
-    }
-  }
-
-  protected void linkToCatchBlocks(Block block, List<Block> catches) {
-    Block blockForSuccessor = block;
-    if (block.exitBlock != null && block.exitBlock.isFinallyBlock) {
-      blockForSuccessor = block.exitBlock;
-    }
-    for (Block catchBlock : catches) {
-      blockForSuccessor.addSuccessor(catchBlock);
-    }
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
-    // FIXME this won't work if it is intended to be caught by a try statement.
+    // TODO check enclosing try to determine jump target
     currentBlock = createUnconditionalJump(throwStatementTree, exitBlock());
     build(throwStatementTree.expression());
   }
