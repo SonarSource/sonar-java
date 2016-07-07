@@ -495,27 +495,7 @@ public class CFG {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
-    TryStatement tryStatement = enclosingTry.peek();
-    if(tryStatement != outerTry) {
-      currentBlock = createBlock(currentBlock);
-      currentBlock.addExitSuccessor(exitBlocks.peek());
-    }
-    if (mit.symbol().isMethodSymbol()) {
-      List<Type> thrownTypes = ((Symbol.MethodSymbol) mit.symbol()).thrownTypes();
-      if (!thrownTypes.isEmpty()) {
-        thrownTypes.forEach(thrownType -> {
-          for (Type caughtType : tryStatement.catches.keySet()) {
-            if (thrownType.isSubtypeOf(caughtType)) {
-              currentBlock.addSuccessor(tryStatement.catches.get(caughtType));
-              break;
-            }
-          }
-        });
-      }
-    }
-    for (Block runtimeCatch : tryStatement.runtimeCatches) {
-      currentBlock.addSuccessor(runtimeCatch);
-    }
+    handleExceptionalPaths(mit.symbol());
     currentBlock.elements.add(mit);
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
@@ -859,13 +839,23 @@ public class CFG {
   }
 
   private void buildNewClass(NewClassTree tree) {
+    handleExceptionalPaths(tree.constructorSymbol());
+    currentBlock.elements.add(tree);
+    ExpressionTree enclosingExpression = tree.enclosingExpression();
+    if (enclosingExpression != null) {
+      build(enclosingExpression);
+    }
+    build(Lists.reverse(tree.arguments()));
+  }
+
+  private void handleExceptionalPaths(Symbol symbol) {
     TryStatement tryStatement = enclosingTry.peek();
     if(tryStatement != outerTry) {
       currentBlock = createBlock(currentBlock);
       currentBlock.addExitSuccessor(exitBlocks.peek());
     }
-    if (tree.constructorSymbol().isMethodSymbol()) {
-      List<Type> thrownTypes = ((Symbol.MethodSymbol) tree.constructorSymbol()).thrownTypes();
+    if (symbol.isMethodSymbol()) {
+      List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
       if (!thrownTypes.isEmpty()) {
         thrownTypes.forEach(thrownType -> {
           for (Type caughtType : tryStatement.catches.keySet()) {
@@ -880,12 +870,6 @@ public class CFG {
     for (Block runtimeCatch : tryStatement.runtimeCatches) {
       currentBlock.addSuccessor(runtimeCatch);
     }
-    currentBlock.elements.add(tree);
-    ExpressionTree enclosingExpression = tree.enclosingExpression();
-    if (enclosingExpression != null) {
-      build(enclosingExpression);
-    }
-    build(Lists.reverse(tree.arguments()));
   }
 
   private void buildTypeCast(Tree tree) {
