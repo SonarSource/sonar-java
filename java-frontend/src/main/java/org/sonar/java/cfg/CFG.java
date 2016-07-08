@@ -149,6 +149,7 @@ public class CFG {
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new LinkedHashSet<>();
     private final Set<Block> predecessors = new LinkedHashSet<>();
+    private final Set<Block> exceptions = new LinkedHashSet<>();
     private Block trueBlock;
     private Block falseBlock;
     private Block exitBlock;
@@ -218,6 +219,10 @@ public class CFG {
       return successors;
     }
 
+    public Set<Block> exceptions() {
+      return exceptions;
+    }
+
     @CheckForNull
     public Tree terminator() {
       return terminator;
@@ -243,6 +248,10 @@ public class CFG {
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
       }
+      if (exceptions.remove(inactiveBlock)) {
+        exceptions.addAll(inactiveBlock.exceptions);
+        exceptions.addAll(inactiveBlock.successors);
+      }
       if (inactiveBlock.equals(exitBlock)) {
         exitBlock = inactiveBlock.successors.iterator().next();
       }
@@ -256,6 +265,9 @@ public class CFG {
   private static void computePredecessors(List<Block> blocks) {
     for (Block b : blocks) {
       for (Block successor : b.successors) {
+        successor.predecessors.add(b);
+      }
+      for (Block successor : b.exceptions) {
         successor.predecessors.add(b);
       }
     }
@@ -852,7 +864,7 @@ public class CFG {
     TryStatement tryStatement = enclosingTry.peek();
     if(tryStatement != outerTry) {
       currentBlock = createBlock(currentBlock);
-      currentBlock.addExitSuccessor(exitBlocks.peek());
+      currentBlock.exceptions.add(exitBlocks.peek());
     }
     if (symbol.isMethodSymbol()) {
       List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
@@ -860,16 +872,14 @@ public class CFG {
         thrownTypes.forEach(thrownType -> {
           for (Type caughtType : tryStatement.catches.keySet()) {
             if (thrownType.isSubtypeOf(caughtType)) {
-              currentBlock.addSuccessor(tryStatement.catches.get(caughtType));
+              currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
               break;
             }
           }
         });
       }
     }
-    for (Block runtimeCatch : tryStatement.runtimeCatches) {
-      currentBlock.addSuccessor(runtimeCatch);
-    }
+    currentBlock.exceptions.addAll(tryStatement.runtimeCatches);
   }
 
   private void buildTypeCast(Tree tree) {

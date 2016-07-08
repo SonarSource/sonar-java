@@ -1707,6 +1707,25 @@ class VolatileFields {
       if (volatileField) {} // Compliant as this field is volatile, it can be modified by another thread
     }
   }
+class DITO {
+  DITO() throws MyExceptionFoo {}
+}
+  class MyExceptionFoo {}
+  void plop(Object result) {
+    if (result == null) {
+      // not found, try to create it
+      try {
+        result = new DITO();
+      } catch (final MyExceptionFoo ie) {
+                /* Swallow IntrospectionException
+                 * TODO: Why?
+                 */
+      }
+      if (result != null) {
+        mappedDescriptors.put(name, result);
+      }
+    }
+  }
 }
 
 class UsingLong {

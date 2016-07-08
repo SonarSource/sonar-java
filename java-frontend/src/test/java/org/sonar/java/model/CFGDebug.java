@@ -87,6 +87,18 @@ public class CFGDebug {
       }
 
     }
+    first = true;
+    for (Block exception : block.exceptions()) {
+      if (first) {
+        first = false;
+        buffer.append('\n');
+        buffer.append("\texceptions to: ");
+      } else {
+        buffer.append(' ');
+      }
+      buffer.append('B');
+      buffer.append(exception.id());
+    }
     buffer.append('\n');
     buffer.append('\n');
     return buffer.toString();

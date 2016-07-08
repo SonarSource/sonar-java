@@ -255,7 +255,7 @@ public class A {
   public void getDirectivesFromFile(File aFile) {
     BufferedReader reader = null;
     try {
-      reader = new BufferedReader(new FileReader(aFile));
+      reader = new BufferedReader(new FileReader(aFile)); // Noncompliant {{Close this "FileReader".}}
       reader.read();
     } finally {
       IOUtils.closeQuietly(reader);

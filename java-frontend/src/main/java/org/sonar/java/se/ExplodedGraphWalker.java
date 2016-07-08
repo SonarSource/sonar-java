@@ -462,6 +462,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
     programState = unstack.state;
     logState(mit);
+    // Enqueue exceptional paths
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, true));
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     programState = programState.stackValue(resultValue);
     if (isNonNullMethod(mit.symbol())) {
@@ -550,6 +552,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private void executeNewClass(NewClassTree tree) {
     NewClassTree newClassTree = tree;
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
+    // Enqueue exceptional paths
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, true));
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
     programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);

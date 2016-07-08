@@ -111,6 +111,7 @@ public class CFGTest {
   private static class BlockChecker {
 
     private int[] successorIDs = new int[] {};
+    private int[] exceptionsIDs = new int[] {};
     private final List<ElementChecker> checkers = new ArrayList<>();
     private TerminatorChecker terminatorChecker;
     private int ifTrue = -1;
@@ -146,6 +147,16 @@ public class CFGTest {
         successorIDs[n++] = i;
       }
       Arrays.sort(successorIDs);
+      return this;
+    }
+
+    BlockChecker exceptions(final int... ids) {
+      exceptionsIDs = new int[ids.length];
+      int n = 0;
+      for (int i : ids) {
+        exceptionsIDs[n++] = i;
+      }
+      Arrays.sort(exceptionsIDs);
       return this;
     }
 
@@ -196,6 +207,7 @@ public class CFGTest {
         Arrays.sort(actualSuccessorIDs);
         assertThat(actualSuccessorIDs).as("Expected successors in block " + block.id()).isEqualTo(successorIDs);
       }
+      assertThat(block.exceptions().stream().mapToInt(Block::id).sorted().toArray()).as("Expected exceptions in block " + block.id()).isEqualTo(exceptionsIDs);
       if (terminatorChecker != null) {
         terminatorChecker.check(block.terminator());
       }
@@ -1045,7 +1057,7 @@ public class CFGTest {
       ).successors(6),
       block(
         element(Kind.NEW_CLASS)
-      ).successors(4, 5),
+      ).successors(5).exceptions(4),
       block(
         element(Kind.IDENTIFIER, "bar"),
         element(Kind.ASSIGNMENT)
@@ -1088,7 +1100,7 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "fileName"),
         element(Kind.NEW_CLASS)
-      ).successors(0, 1, 3), // successor 1 is a bit weird here... probably something odd in pruning.
+      ).successors(3).exceptions(0, 1),
       block(
         element(Kind.VARIABLE, "file"),
         element(Kind.TRY_STATEMENT)
@@ -1096,11 +1108,11 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "file"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(1),
+      ).successors(1).exceptions(1),
       block(
         element(Tree.Kind.IDENTIFIER, "file"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(0)
+      ).successors(0).exceptions(0)
       );
     cfgChecker.check(cfg);
 
@@ -1118,7 +1130,7 @@ public class CFGTest {
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(1),
+        ).successors(1).exceptions(1),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -1137,17 +1149,17 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(1, 2, 3),
+      ).successors(1).exceptions(1, 2, 3),
       block(
-          element(Tree.Kind.CHAR_LITERAL, "'e'"),
+        element(Tree.Kind.CHAR_LITERAL, "'e'"),
           element(Tree.Kind.IDENTIFIER, "foo"),
           element(Tree.Kind.METHOD_INVOCATION)
-          ).successors(1),
+          ).successors(1).exceptions(1),
       block(
           element(Tree.Kind.CHAR_LITERAL, "'iae'"),
           element(Tree.Kind.IDENTIFIER, "foo"),
           element(Tree.Kind.METHOD_INVOCATION)
-          ).successors(1),
+          ).successors(1).exceptions(1),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'finally'"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -1287,9 +1299,9 @@ public class CFGTest {
         element(Kind.TRY_STATEMENT)).successors(3),
       block(
         element(Kind.IDENTIFIER, "path"),
-        element(Kind.NEW_CLASS)).successors(0, 2),
+        element(Kind.NEW_CLASS)).successors(2).exceptions(0),
       block(
-          element(Kind.NEW_CLASS)).successors(0, 1),
+          element(Kind.NEW_CLASS)).successors(1).exceptions(0),
       block(
         element(Kind.VARIABLE, "br")).successors(0));
     cfgChecker.check(cfg);
@@ -1369,13 +1381,13 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
       block(
         element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 2, 3).exit(0),
+        element(Kind.METHOD_INVOCATION)).successors(3).exceptions(0, 2).exit(0),
       block(
         element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1, 2).exit(0),
+        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2).exit(0),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1).exit(0),
+        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0).exit(0),
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
@@ -1393,15 +1405,15 @@ public class CFGTest {
         element(Tree.Kind.TRY_STATEMENT)).successors(5),
       block(
         element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 2, 4).exit(0),
+        element(Kind.METHOD_INVOCATION)).successors(4).exceptions(0, 2).exit(0),
       block(
         element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(1, 3),
       block(
         element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1, 2),
+        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1),
+        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0),
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
@@ -1421,10 +1433,10 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
       block(
         element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(2, 3),
+        element(Kind.METHOD_INVOCATION)).successors(3).exceptions(2),
       block(
         element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(2),
+        element(Kind.METHOD_INVOCATION)).successors(2).exceptions(2),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)).successors(0, 1),
@@ -1437,12 +1449,26 @@ public class CFGTest {
   @Test
   public void try_statement_with_checked_exceptions() {
     CFG cfg = buildCFG(
-        "private void f(boolean action) throws MyException {\n" +
-        "    try {\n" +
-        "    f(action);\n" +
-          "System.out.println('');\n" +
-        "} catch(MyException e) {\n foo();\n} bar();  } "+
-        "class MyException extends Exception{} ");
+      "  void plop(Object result) {\n" +
+      "    if (result == null) {\n" +
+      "      // not found, try to create it\n" +
+      "      try {\n" +
+      "        result = new DITO();\n" +
+      "      } catch (final MyExceptionFoo ie) {\n" +
+      "                /* Swallow IntrospectionException\n" +
+      "                 * TODO: Why?\n" +
+      "                 */\n" +
+      "      }\n" +
+      "      if (result != null) {\n" +
+      "        mappedDescriptors.put(name, result);\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }"+
+        "class DITO {\n" +
+        "  DITO() throws MyExceptionFoo {}\n" +
+        "}\n" +
+        "  class MyExceptionFoo {}\n" );
+
     CFGChecker cfgChecker = checker();
 //    cfgChecker.check(cfg);
   }
