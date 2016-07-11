@@ -1,0 +1,13 @@
+{
+  "title": "\"null\" should not be used with \"Optional\"",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "bug",
+    "java8"
+  ],
+  "defaultSeverity": "Critical"
+}
