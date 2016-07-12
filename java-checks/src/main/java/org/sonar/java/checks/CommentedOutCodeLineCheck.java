@@ -38,6 +38,8 @@ import java.util.List;
 public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private static final double THRESHOLD = 0.9;
+  private static final String START_JSNI = "/*-{";
+  private static final String END_JSNI = "}-*/";
 
   private final CodeRecognizer codeRecognizer;
 
@@ -127,8 +129,5 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private static boolean isJSNI(String comment) {
     return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
   }
-
-  private static final String START_JSNI = "/*-{";
-  private static final String END_JSNI = "}-*/";
 
 }

@@ -27,12 +27,12 @@ import java.util.List;
 
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public static QualifiedIdentifierListTreeImpl emptyList() {
-    return new QualifiedIdentifierListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
-  }
-
   public QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
     super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, qualifiedIdentifiers, separators);
+  }
+
+  public static QualifiedIdentifierListTreeImpl emptyList() {
+    return new QualifiedIdentifierListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
   }
 
 }

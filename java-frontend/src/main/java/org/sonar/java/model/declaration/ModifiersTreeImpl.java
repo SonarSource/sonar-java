@@ -32,10 +32,6 @@ import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
 
-  public static ModifiersTreeImpl emptyModifiers() {
-    return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
-  }
-
   private final List<ModifierKeywordTree> modifiers;
   private final List<AnnotationTree> annotations;
 
@@ -54,6 +50,9 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
     this.modifiers = modifierBuilder.build();
   }
 
+  public static ModifiersTreeImpl emptyModifiers() {
+    return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
+  }
 
   @Override
   public Kind kind() {

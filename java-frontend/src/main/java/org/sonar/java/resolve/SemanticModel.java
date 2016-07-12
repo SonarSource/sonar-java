@@ -50,6 +50,9 @@ public class SemanticModel {
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
   private BytecodeCompleter bytecodeCompleter;
 
+  private SemanticModel() {
+  }
+
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath, parametrizedTypeCache);
@@ -97,10 +100,6 @@ public class SemanticModel {
         }
       }
     });
-  }
-
-  @VisibleForTesting
-  SemanticModel() {
   }
 
   public void saveEnv(Symbol symbol, Resolve.Env env) {

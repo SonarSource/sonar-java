@@ -63,14 +63,6 @@ public class SymbolicValue {
     FALSE_LITERAL
   );
 
-  public static boolean isDisposable(SymbolicValue symbolicValue) {
-    if (symbolicValue instanceof NotSymbolicValue) {
-      NotSymbolicValue notSV = (NotSymbolicValue) symbolicValue;
-      return !(notSV.operand instanceof RelationalSymbolicValue);
-    }
-    return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue) && !(symbolicValue instanceof RelationalSymbolicValue);
-  }
-
   private final int id;
 
   public SymbolicValue(int id) {
@@ -79,6 +71,14 @@ public class SymbolicValue {
 
   public int id() {
     return id;
+  }
+
+  public static boolean isDisposable(SymbolicValue symbolicValue) {
+    if (symbolicValue instanceof NotSymbolicValue) {
+      NotSymbolicValue notSV = (NotSymbolicValue) symbolicValue;
+      return !(notSV.operand instanceof RelationalSymbolicValue);
+    }
+    return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue) && !(symbolicValue instanceof RelationalSymbolicValue);
   }
 
   public boolean references(SymbolicValue other) {

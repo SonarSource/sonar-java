@@ -36,12 +36,12 @@ import java.util.List;
 @RspecKey("S1111")
 public class ObjectFinalizeCheck extends IssuableSubscriptionVisitor {
 
+  private boolean isInFinalizeMethod = false;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
   }
-
-  private boolean isInFinalizeMethod = false;
 
   @Override
   public void visitNode(Tree tree) {

@@ -43,6 +43,18 @@ import java.util.Objects;
 public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
 
   /**
+   * Not total ordering, but stable.
+   */
+  private static final Comparator KEY_COMPARATOR = (o1, o2) -> {
+    int h1 = o1.hashCode();
+    int h2 = o2.hashCode();
+    if (h1 == h2) {
+      return o1.equals(o2) ? 0 : 1;
+    }
+    return h1 - h2;
+  };
+
+  /**
    * @return empty tree
    */
   @SuppressWarnings("unchecked")
@@ -435,15 +447,4 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     }
   };
 
-  /**
-   * Not total ordering, but stable.
-   */
-  private static final Comparator KEY_COMPARATOR = (o1, o2) -> {
-    int h1 = o1.hashCode();
-    int h2 = o2.hashCode();
-    if (h1 == h2) {
-      return o1.equals(o2) ? 0 : 1;
-    }
-    return h1 - h2;
-  };
 }

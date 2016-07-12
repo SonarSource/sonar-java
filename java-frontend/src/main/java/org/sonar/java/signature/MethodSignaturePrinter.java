@@ -21,6 +21,9 @@ package org.sonar.java.signature;
 
 public final class MethodSignaturePrinter {
 
+  private MethodSignaturePrinter() {
+  }
+
   public static String print(MethodSignature methodSignature) {
     StringBuilder builder = new StringBuilder();
     builder.append(methodSignature.getMethodName());
@@ -32,8 +35,4 @@ public final class MethodSignaturePrinter {
     builder.append(ParameterSignaturePrinter.print(methodSignature.getReturnType()));
     return builder.toString();
   }
-
-  private MethodSignaturePrinter() {
-  }
-
 }

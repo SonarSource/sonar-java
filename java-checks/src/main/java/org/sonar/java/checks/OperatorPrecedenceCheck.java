@@ -81,14 +81,6 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
       Tree.Kind.ARRAY_ACCESS_EXPRESSION
   };
 
-  private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
-    for (Tree.Kind first : firstSet) {
-      for (Tree.Kind second : secondSet) {
-        OPERATORS_RELATION_TABLE.put(first, second, true);
-      }
-    }
-  }
-
   static {
     OPERATORS_RELATION_TABLE = HashBasedTable.create();
     put(ARITHMETIC_OPERATORS, Iterables.concat(SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
@@ -103,6 +95,14 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
   private Set<Integer> reportedLines = new HashSet<>();
+
+  private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
+    for (Tree.Kind first : firstSet) {
+      for (Tree.Kind second : secondSet) {
+        OPERATORS_RELATION_TABLE.put(first, second, true);
+      }
+    }
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

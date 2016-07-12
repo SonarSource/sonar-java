@@ -54,9 +54,6 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     assertThatOnType("org.assertj.core.api.StrictAssertions")
   );
 
-  private static MethodMatcher assertThatOnType(String type) {
-    return MethodMatcher.create().typeDefinition(type).name("assertThat").addParameter(TypeCriteria.anyType());
-  }
   private static final MethodMatcherCollection FEST_LIKE_EXCLUSIONS = MethodMatcherCollection.create(
     methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.startsWith("as")),
     methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.startsWith("using")),
@@ -70,12 +67,16 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("overridingErrorMessage"))
   );
 
+  private Boolean chainedToAnyMethodButFestExclusions = null;
+  private JavaFileScannerContext context;
+
+  private static MethodMatcher assertThatOnType(String type) {
+    return MethodMatcher.create().typeDefinition(type).name("assertThat").addParameter(TypeCriteria.anyType());
+  }
+
   private static MethodMatcher methodWithName(String superType, NameCriteria nameCriteria) {
     return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(superType)).name(nameCriteria).withNoParameterConstraint();
   }
-
-  private Boolean chainedToAnyMethodButFestExclusions = null;
-  private JavaFileScannerContext context;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {

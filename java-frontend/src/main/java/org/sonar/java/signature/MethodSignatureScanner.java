@@ -56,7 +56,12 @@ public final class MethodSignatureScanner {
 
   public MethodSignatureScanner(MethodTree methodTree) {
     this.methodTree = methodTree;
-    bytecodeMethodSignature = null;
+    this.bytecodeMethodSignature = null;
+  }
+
+  private MethodSignatureScanner(String bytecodeMethodSignature) {
+    this.methodTree = null;
+    this.bytecodeMethodSignature = bytecodeMethodSignature;
   }
 
   public static MethodSignature scan(MethodTree methodTree) {
@@ -121,11 +126,6 @@ public final class MethodSignatureScanner {
       return JAVA_TYPE_MAPPING.get(((PrimitiveTypeTree) type).keyword().text());
     }
     return JvmJavaType.L;
-  }
-
-  private MethodSignatureScanner(String bytecodeMethodSignature) {
-    this.bytecodeMethodSignature = bytecodeMethodSignature;
-    methodTree = null;
   }
 
   public static MethodSignature scan(String bytecodeMethodSignature) {

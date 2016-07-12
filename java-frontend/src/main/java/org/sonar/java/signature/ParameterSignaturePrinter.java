@@ -23,6 +23,9 @@ public final class ParameterSignaturePrinter {
 
   private static final char ARRAY = '[';
 
+  private ParameterSignaturePrinter() {
+  }
+
   public static String print(Parameter parameter) {
     StringBuilder signature = new StringBuilder();
     if (parameter.isArray()) {
@@ -35,8 +38,4 @@ public final class ParameterSignaturePrinter {
     }
     return signature.toString();
   }
-
-  private ParameterSignaturePrinter() {
-  }
-
 }

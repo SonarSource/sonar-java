@@ -35,6 +35,19 @@ import java.util.Set;
 
 public abstract class BinaryRelation {
 
+  protected final Kind kind;
+  protected final SymbolicValue leftOp;
+  protected final SymbolicValue rightOp;
+  protected BinaryRelation symmetric;
+  protected BinaryRelation inverse;
+  private final int hashcode;
+
+  protected BinaryRelation(Kind kind, SymbolicValue v1, SymbolicValue v2) {
+    this.kind = kind;
+    leftOp = v1;
+    rightOp = v2;
+    hashcode = Objects.hash(kind, leftOp, rightOp);
+  }
 
   public static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     BinaryRelation relation;
@@ -82,20 +95,6 @@ public abstract class BinaryRelation {
     public TransitiveRelationExceededException() {
       super("Number of transitive relations exceeded!");
     }
-  }
-
-  protected final Kind kind;
-  protected final SymbolicValue leftOp;
-  protected final SymbolicValue rightOp;
-  protected BinaryRelation symmetric;
-  protected BinaryRelation inverse;
-  private final int hashcode;
-
-  protected BinaryRelation(Kind kind, SymbolicValue v1, SymbolicValue v2) {
-    this.kind = kind;
-    leftOp = v1;
-    rightOp = v2;
-    hashcode = Objects.hash(kind, leftOp, rightOp);
   }
 
   @Override

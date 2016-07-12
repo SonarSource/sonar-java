@@ -271,6 +271,27 @@ public enum JavaLexer implements GrammarRuleKey {
 
   ANNOTATED_PARAMETERIZED_IDENTIFIER;
 
+  private static final String EXP_REGEXP = "(?:[Ee][+-]?+[0-9_]++)";
+  private static final String BINARY_EXP_REGEXP = "(?:[Pp][+-]?+[0-9_]++)";
+  private static final String FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP = "(?:" +
+  // Decimal
+    "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP_REGEXP + "?+" +
+    "|" + "\\.[0-9][0-9_]*+" + EXP_REGEXP + "?+" +
+    "|" + "[0-9][0-9_]*+" + EXP_REGEXP +
+    // Hexadecimal
+    "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + BINARY_EXP_REGEXP +
+    "|" + "0[xX][0-9_a-fA-F]++" + BINARY_EXP_REGEXP +
+    ")";
+
+  private static final String INTEGER_LITERAL_REGEXP = "(?:" +
+  // Hexadecimal
+    "0[xX][0-9_a-fA-F]++" +
+    // Binary (Java 7)
+    "|" + "0[bB][01_]++" +
+    // Decimal and Octal
+    "|" + "[0-9][0-9_]*+" +
+    ")";
+
   public static LexerlessGrammarBuilder createGrammarBuilder() {
     LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
 
@@ -364,27 +385,6 @@ public enum JavaLexer implements GrammarRuleKey {
   private static void punctuator(LexerlessGrammarBuilder b, GrammarRuleKey ruleKey, String value, Object element) {
     b.rule(ruleKey).is(value, element, SPACING);
   }
-
-  private static final String EXP_REGEXP = "(?:[Ee][+-]?+[0-9_]++)";
-  private static final String BINARY_EXP_REGEXP = "(?:[Pp][+-]?+[0-9_]++)";
-  private static final String FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP = "(?:" +
-    // Decimal
-    "[0-9][0-9_]*+\\.([0-9_]++)?+" + EXP_REGEXP + "?+" +
-    "|" + "\\.[0-9][0-9_]*+" + EXP_REGEXP + "?+" +
-    "|" + "[0-9][0-9_]*+" + EXP_REGEXP +
-    // Hexadecimal
-    "|" + "0[xX][0-9_a-fA-F]++\\.[0-9_a-fA-F]*+" + BINARY_EXP_REGEXP +
-    "|" + "0[xX][0-9_a-fA-F]++" + BINARY_EXP_REGEXP +
-    ")";
-
-  private static final String INTEGER_LITERAL_REGEXP = "(?:" +
-    // Hexadecimal
-    "0[xX][0-9_a-fA-F]++" +
-    // Binary (Java 7)
-    "|" + "0[bB][01_]++" +
-    // Decimal and Octal
-    "|" + "[0-9][0-9_]*+" +
-    ")";
 
   /**
    * 3.10. Literals

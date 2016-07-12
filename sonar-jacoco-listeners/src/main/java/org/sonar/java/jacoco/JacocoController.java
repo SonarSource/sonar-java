@@ -34,13 +34,6 @@ class JacocoController {
 
   private static JacocoController singleton;
 
-  public static synchronized JacocoController getInstance() {
-    if (singleton == null) {
-      singleton = new JacocoController();
-    }
-    return singleton;
-  }
-
   private JacocoController() {
     try {
       this.agent = RT.getAgent();
@@ -51,6 +44,13 @@ class JacocoController {
 
   JacocoController(IAgent agent) {
     this.agent = agent;
+  }
+
+  public static synchronized JacocoController getInstance() {
+    if (singleton == null) {
+      singleton = new JacocoController();
+    }
+    return singleton;
   }
 
   public synchronized void onTestStart(String name) {
