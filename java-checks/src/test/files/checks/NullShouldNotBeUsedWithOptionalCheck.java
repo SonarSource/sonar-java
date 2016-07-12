@@ -10,6 +10,9 @@ interface A {
 
 class ClassA {
   
+  public ClassA() {
+  }
+  
   @Nullable                     // Noncompliant [[sc=3;ec=12]] {{Methods with an "Optional" return type should not be "@Nullable".}}
   public Optional<String> getOptionalKo() {
     return null;                // Noncompliant [[sc=12;ec=16]] {{Methods with an "Optional" return type should never return null.}}
@@ -48,6 +51,25 @@ class ClassA {
     }
   }
   
+  public Optional<String> doSomething4(List<String> myList) {
+    myList.stream().map(s -> {
+      if (s.length() > 0) {
+        return null;
+      }
+      return s;
+    });
+    return Optional.of("hello");
+  }
+  
+  public Optional<String> doSomething5(List<String> myList) {
+    return myList.isEmpty() ? Optional.of("hello") : null;     // Noncompliant [[sc=54;ec=58]] {{Methods with an "Optional" return type should never return null.}}
+  }
+  
+  @Deprecated
+  public Optional<String> doSomething6() {
+    return Optional.of("hello");
+  }
+
   interface Worker {
     String work();
   }
