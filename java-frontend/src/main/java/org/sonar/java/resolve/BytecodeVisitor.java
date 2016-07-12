@@ -33,8 +33,9 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import javax.annotation.Nullable;
-
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BytecodeVisitor extends ClassVisitor {
 
@@ -305,11 +306,7 @@ public class BytecodeVisitor extends ClassVisitor {
     if (bytecodeNames == null) {
       return ImmutableList.of();
     }
-    ImmutableList.Builder<JavaType> types = ImmutableList.builder();
-    for (String bytecodeName : bytecodeNames) {
-      types.add(getClassSymbol(bytecodeName).type);
-    }
-    return types.build();
+    return Arrays.stream(bytecodeNames).map(bName -> getClassSymbol(bName).type).collect(Collectors.toList());
   }
 
   private class ReadGenericSignature extends SignatureVisitor {
@@ -433,6 +430,7 @@ public class BytecodeVisitor extends ClassVisitor {
   private class ReadMethodSignature extends SignatureVisitor {
 
     private final JavaSymbol.MethodJavaSymbol methodSymbol;
+    private int exceptionRead = 0;
 
     JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol;
     List<JavaType> bounds;
@@ -441,8 +439,6 @@ public class BytecodeVisitor extends ClassVisitor {
       super(Opcodes.ASM5);
       this.methodSymbol = methodSymbol;
       ((MethodJavaType) methodSymbol.type).argTypes = Lists.newArrayList();
-      ((MethodJavaType) methodSymbol.type).thrown = Lists.newArrayList();
-
     }
 
     @Override
@@ -504,7 +500,9 @@ public class BytecodeVisitor extends ClassVisitor {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ((MethodJavaType)methodSymbol.type).thrown.add(typeRead);
+          ((MethodJavaType)methodSymbol.type).thrown.remove(exceptionRead);
+          ((MethodJavaType)methodSymbol.type).thrown.add(exceptionRead, typeRead);
+          exceptionRead++;
 
         }
       };
