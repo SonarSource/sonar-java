@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import org.junit.Test;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -142,6 +143,7 @@ public class ExplodedGraphWalkerTest {
   private static SECheck[] seChecks() {
     return new SECheck[]{
       new NullDereferenceCheck(),
+      new DivisionByZeroCheck(),
       new ConditionAlwaysTrueOrFalseCheck(),
       new UnclosedResourcesCheck(),
       new CustomUnclosedResourcesCheck(),

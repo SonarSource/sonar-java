@@ -31,6 +31,7 @@ import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
@@ -130,8 +131,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @VisibleForTesting
   ExplodedGraphWalker() {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    this.checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(),
-      new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck()));
+    this.checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
+      new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck()));
   }
 
   @VisibleForTesting
@@ -692,6 +693,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
       seChecks.add(alwaysTrueOrFalseChecker);
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));
+      seChecks.add(removeOrDefault(checks, new DivisionByZeroCheck()));
       seChecks.add(removeOrDefault(checks, new UnclosedResourcesCheck()));
       seChecks.add(removeOrDefault(checks, new LocksNotUnlockedCheck()));
       seChecks.add(removeOrDefault(checks, new NonNullSetToNullCheck()));
