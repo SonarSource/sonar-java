@@ -229,10 +229,6 @@
 'jdk6:java/util/concurrent/CopyOnWriteArrayList.java':[
 1288,
 ],
-'jdk6:java/util/concurrent/Executors.java':[
-464,
-507,
-],
 'jdk6:java/util/concurrent/atomic/AtomicBoolean.java':[
 32,
 ],

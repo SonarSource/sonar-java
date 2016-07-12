@@ -28,6 +28,9 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -54,6 +57,32 @@ public class MethodJavaSymbolTest {
   public void test_unknowns() {
     MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(16, 21), Sets.newHashSet(7, 15, 17, 31));
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/resolve/MethodSymbols.java"), new VisitorsBridge(methodVisitor));
+  }
+
+  @Test
+  public void test_throws() {
+    File bytecodeDir = new File("target/test-classes");
+    JavaAstScanner.scanSingleFileForTests(
+      new File("src/test/java/org/sonar/java/resolve/targets/MethodThrowingExceptionsUsage.java"),
+      new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
+        @Override
+        public List<Tree.Kind> nodesToVisit() {
+          return Lists.newArrayList(Tree.Kind.METHOD_INVOCATION);
+        }
+
+        @Override
+        public void visitNode(Tree tree) {
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) ((MethodInvocationTree) tree).symbol();
+          List<Type> thrownTypes = methodSymbol.thrownTypes();
+          assertThat(thrownTypes).hasSize(2);
+          if("test".equals(methodSymbol.name())) {
+            assertThat(((JavaType) thrownTypes.get(0)).isTagged(JavaType.TYPEVAR)).isTrue(); // FIXME substitution should be done
+          } else {
+            assertThat(thrownTypes.get(0).is("java.sql.SQLException")).isTrue();
+          }
+          assertThat(thrownTypes.get(1).is("java.io.IOException")).isTrue();
+        }
+      }), Lists.newArrayList(bytecodeDir), null));
   }
 
   private static class MethodVisitor extends SubscriptionVisitor {
