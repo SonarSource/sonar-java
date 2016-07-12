@@ -221,4 +221,14 @@ class A {
       return (short) (order &= 12);
     }
   }
+
+  private void foo(int y) {
+    final int x = 1;
+    switch (y) {
+      case x:
+        System.out.println("1");
+      default:
+        System.out.println("2");
+    }
+  }
 }

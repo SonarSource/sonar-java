@@ -219,6 +219,7 @@ public class CFGTest {
         case IDENTIFIER:
         case CHAR_LITERAL:
         case STRING_LITERAL:
+        case INT_LITERAL:
         case METHOD_INVOCATION:
           break;
         default:
@@ -518,12 +519,14 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break; default: System.out.println(baz);} }");
     CFGChecker cfgChecker = checker(
       block(
+        element(Kind.INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(3),
       block(
+        element(Kind.INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
@@ -548,16 +551,20 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break; case 3: case 4: default: System.out.println(baz);} }");
     final CFGChecker cfgChecker = checker(
       block(
+        element(Kind.INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(3),
       block(
+        element(Kind.INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
       block(
+        element(Kind.INT_LITERAL, "4"),
+        element(Kind.INT_LITERAL, "3"),
         element(Tree.Kind.IDENTIFIER, "baz"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
@@ -574,11 +581,13 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break;} Integer.toString(foo); }");
     final CFGChecker cfgChecker = checker(
       block(
+        element(Kind.INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(3),
       block(
+        element(Kind.INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
@@ -590,6 +599,32 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.IDENTIFIER, "Integer"),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void switch_statement_with_expression_in_case() {
+    final CFG cfg = buildCFG(
+      "void fun() { int a; switch(b) { case c : System.out.println(1);break; case d || e: System.out.println(2);break;} }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Kind.IDENTIFIER, "c"),
+        element(Kind.INT_LITERAL, "1"),
+        element(Kind.IDENTIFIER, "System"),
+        element(Kind.MEMBER_SELECT),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+      block(
+        element(Kind.IDENTIFIER, "d")).terminator(Kind.CONDITIONAL_OR).successors(2, 3),
+      block(
+        element(Kind.IDENTIFIER, "e")).successors(2),
+      block(
+        element(Kind.INT_LITERAL, "2"),
+        element(Tree.Kind.IDENTIFIER, "System"),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+      block(
+        element(Tree.Kind.VARIABLE, "a"),
+        element(Tree.Kind.IDENTIFIER, "b")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(0, 4, 5));
     cfgChecker.check(cfg);
   }
 

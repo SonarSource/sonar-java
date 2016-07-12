@@ -603,6 +603,11 @@ public class CFG {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
+        caseGroupTree.labels().forEach(l -> {
+          if (l.expression() != null) {
+            build(l.expression());
+          }
+        });
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
