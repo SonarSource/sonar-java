@@ -506,15 +506,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void executeAssignement(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      // FIXME restricted to identifiers for now.
+    ProgramState.Pop unstack = programState.unstackValue(2);
 
-      ProgramState.Pop unstack = programState.unstackValue(2);
-      SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(1) : constraintManager.createSymbolicValue(tree);
-      programState = unstack.state;
+    SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(1) : constraintManager.createSymbolicValue(tree);
+    programState = unstack.state;
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      // only local variables or fields are added to table of values
+      // FIXME SONARJAVA-1776 fields accessing using "this." should be handled
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
-      programState = programState.stackValue(value);
     }
+    programState = programState.stackValue(value);
   }
 
   private void executeLogicalAssignement(AssignmentExpressionTree tree) {
