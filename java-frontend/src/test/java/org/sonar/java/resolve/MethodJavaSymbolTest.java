@@ -76,7 +76,7 @@ public class MethodJavaSymbolTest {
           List<Type> thrownTypes = methodSymbol.thrownTypes();
           assertThat(thrownTypes).hasSize(2);
           if("test".equals(methodSymbol.name())) {
-            assertThat(((JavaType) thrownTypes.get(0)).isTagged(JavaType.TYPEVAR)).isTrue(); // FIXME substitution should be done
+            assertThat(((JavaType) thrownTypes.get(0)).isTagged(JavaType.TYPEVAR)).isTrue(); // FIXME substitution should be done : see SONARJAVA-1778
           } else {
             assertThat(thrownTypes.get(0).is("java.sql.SQLException")).isTrue();
           }

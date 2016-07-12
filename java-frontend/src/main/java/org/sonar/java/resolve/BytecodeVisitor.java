@@ -33,9 +33,9 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BytecodeVisitor extends ClassVisitor {
 
@@ -306,14 +306,7 @@ public class BytecodeVisitor extends ClassVisitor {
     if (bytecodeNames == null) {
       return ImmutableList.of();
     }
-    List<JavaType> types = new ArrayList<>();
-    for (String bytecodeName : bytecodeNames) {
-      JavaSymbol.TypeJavaSymbol completedClassSymbol = getClassSymbol(bytecodeName);
-      if(!completedClassSymbol.isUnknown()) {
-        types.add(completedClassSymbol.type);
-      }
-    }
-    return types;
+    return Arrays.stream(bytecodeNames).map(bName -> getClassSymbol(bName).type).collect(Collectors.toList());
   }
 
   private class ReadGenericSignature extends SignatureVisitor {
