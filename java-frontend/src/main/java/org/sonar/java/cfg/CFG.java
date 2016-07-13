@@ -881,7 +881,7 @@ public class CFG {
       if (!thrownTypes.isEmpty()) {
         thrownTypes.forEach(thrownType -> {
           for (Type caughtType : tryStatement.catches.keySet()) {
-            if (thrownType.isSubtypeOf(caughtType)) {
+            if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
               currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
               break;
             }
