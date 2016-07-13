@@ -1,0 +1,13 @@
+{
+  "title": "Optional value should only be accessed after calling isPresent()",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}
