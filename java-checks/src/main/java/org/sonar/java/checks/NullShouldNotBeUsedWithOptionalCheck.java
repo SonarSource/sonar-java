@@ -34,13 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind; 
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
-  
+
   private static final String NULLABLE = "javax.annotation.Nullable";
-  
+
   private static final String OPTIONAL = "java.util.Optional";
 
   private JavaFileScannerContext context;
@@ -56,13 +56,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     if (!method.is(Tree.Kind.CONSTRUCTOR) && returnsOptional(method)) {
 
       // check that the method is not annotated with @Nullable
-      ModifiersTree modifiers = method.modifiers();
-      for (AnnotationTree annotation : modifiers.annotations()) {
-        Type type = annotation.annotationType().symbolType();
-        if (type.is(NULLABLE)) {
-          context.reportIssue(this, annotation, "Methods with an \"Optional\" return type should not be \"@Nullable\".");
-        }
-      }
+      checkNullableOptionalAnnotation(method.modifiers(), "Methods with an \"Optional\" return type should not be \"@Nullable\".");
 
       // check that the method does not return "null"
       method.accept(new ReturnNullVisitor());
@@ -73,33 +67,47 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree binaryExpression) {
-    String message = "Remove this null-check of an \"Optional\".";
+    // check that an @Optional is not compared to "null"
     if (binaryExpression.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       ExpressionTree left = binaryExpression.leftOperand();
       ExpressionTree right = binaryExpression.rightOperand();
       if ((isOptional(left) && isNull(right)) || (isNull(left) && isOptional(right))) {
-        context.reportIssue(this, binaryExpression, message);
+        context.reportIssue(this, binaryExpression, "Remove this null-check of an \"Optional\".");
       }
     }
 
     super.visitBinaryExpression(binaryExpression);
   }
 
+  @Override
+  public void visitVariable(VariableTree variable) {
+    if (variable.type().symbolType().is(OPTIONAL)) {
+      checkNullableOptionalAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"@Nullable\".");
+    }
+
+    super.visitVariable(variable);
+  }
+
   private class ReturnNullVisitor extends BaseTreeVisitor {
 
     @Override
     public void visitReturnStatement(ReturnStatementTree returnStatement) {
-      ExpressionTree expression = returnStatement.expression();
-      if (!checkNull(expression) && expression.is(Kind.CONDITIONAL_EXPRESSION)) {
-        ConditionalExpressionTree conditionalExpression = (ConditionalExpressionTree)expression; 
-        checkNull(conditionalExpression.trueExpression());
-        checkNull(conditionalExpression.falseExpression());
-      }
+      checkNull(returnStatement.expression());
+
+      super.visitReturnStatement(returnStatement);
     }
-    
+
+    @Override
+    public void visitConditionalExpression(ConditionalExpressionTree conditionalExpression) {
+      checkNull(conditionalExpression.trueExpression());
+      checkNull(conditionalExpression.falseExpression());
+
+      super.visitConditionalExpression(conditionalExpression);
+    }
+
     private boolean checkNull(ExpressionTree expression) {
-      if (expression.is(Kind.NULL_LITERAL)) {
-        context.reportIssue(NullShouldNotBeUsedWithOptionalCheck.this, expression.firstToken(), "Methods with an \"Optional\" return type should never return null.");
+      if (isNull(expression)) {
+        context.reportIssue(NullShouldNotBeUsedWithOptionalCheck.this, expression, "Methods with an \"Optional\" return type should never return null.");
         return true;
       }
       return false;
@@ -112,7 +120,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
     @Override
     public void visitClass(ClassTree tree) {
-      // don't visit subclasstree, as methods in there will be visited by outer class
+      // don't visit inner class tree, as methods in there will be visited by outer class
     }
 
   }
@@ -122,11 +130,20 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
   }
 
   private static boolean isOptional(ExpressionTree expression) {
-    return expression.symbolType().is(OPTIONAL) && !expression.is(Tree.Kind.NULL_LITERAL);
+    return expression.symbolType().is(OPTIONAL) && !isNull(expression);
   }
 
   private static boolean isNull(ExpressionTree expression) {
     return expression.is(Tree.Kind.NULL_LITERAL);
+  }
+
+  private void checkNullableOptionalAnnotation(ModifiersTree modifiers, String message) {
+    for (AnnotationTree annotation : modifiers.annotations()) {
+      Type type = annotation.annotationType().symbolType();
+      if (type.is(NULLABLE)) {
+        context.reportIssue(this, annotation, message);
+      }
+    }
   }
 
 }
