@@ -91,6 +91,7 @@ public class CFG {
   private final Deque<Block> continueTargets = new LinkedList<>();
   private final Deque<Block> exitBlocks = new LinkedList<>();
   private final Deque<TryStatement> enclosingTry = new LinkedList<>();
+  private int nestedCatchLevel = 0;
   private final TryStatement outerTry;
 
   private static class TryStatement {
@@ -806,7 +807,9 @@ public class CFG {
     enclosingTry.push(tryStatement);
     for (CatchTree catchTree : tryStatementTree.catches()) {
       currentBlock = createBlock(finallyOrEndBlock);
+      nestedCatchLevel++;
       build(catchTree.block());
+      nestedCatchLevel--;
       catches.put(catchTree.parameter().type().symbolType(), currentBlock);
     }
     catches.forEach(tryStatement::addCatch);
@@ -861,8 +864,15 @@ public class CFG {
   }
 
   private void handleExceptionalPaths(Symbol symbol) {
-    TryStatement tryStatement = enclosingTry.peek();
-    if(tryStatement != outerTry) {
+    TryStatement pop = enclosingTry.pop();
+    TryStatement tryStatement;
+    if(nestedCatchLevel == 0) {
+      tryStatement = pop;
+    } else {
+      tryStatement = enclosingTry.peek();
+    }
+    enclosingTry.push(pop);
+    if(pop != outerTry) {
       currentBlock = createBlock(currentBlock);
       currentBlock.exceptions.add(exitBlocks.peek());
     }

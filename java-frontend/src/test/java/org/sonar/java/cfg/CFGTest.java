@@ -1078,6 +1078,46 @@ public class CFGTest {
     cfgChecker.check(cfg);
 
   }
+
+  @Test
+  public void catch_thrown_in_exception() throws Exception {
+    CFG cfg = buildCFG("  void  foo() throws MyException {\n"+
+      "    try {\n"+
+      "      try {\n"+
+      "        foo();      \n"+
+      "      } catch (MyException e) {\n"+
+      "        foo();      \n"+
+      "      }\n"+
+      "    } catch (MyException e) {\n"+
+      "      System.out.println('outercatch');\n"+
+      "    }\n"+
+      "   }" +
+      " class MyException{}");
+    CFGChecker checker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)
+      ).successors(4),
+      block(
+        element(Tree.Kind.TRY_STATEMENT)
+      ).successors(3),
+      block(
+        element(Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)
+      ).successors(0).exceptions(0,2),
+      block(
+        element(Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)
+      ).successors(0).exceptions(0, 1),
+      block(
+        element(Kind.CHAR_LITERAL, "'outercatch'"),
+        element(Kind.IDENTIFIER, "System"),
+        element(Kind.MEMBER_SELECT),
+        element(Kind.METHOD_INVOCATION)
+      ).successors(0).exceptions(0)
+    );
+    checker.check(cfg);
+  }
+
   @Test
   public void nested_try_finally() throws Exception {
 
