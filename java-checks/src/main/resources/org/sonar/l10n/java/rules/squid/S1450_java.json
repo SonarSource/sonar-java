@@ -1,0 +1,12 @@
+{
+  "title": "Private fields only used as local variables in methods should become local variables",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

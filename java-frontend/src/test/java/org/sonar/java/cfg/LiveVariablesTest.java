@@ -21,16 +21,18 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -39,9 +41,9 @@ public class LiveVariablesTest {
   public static final ActionParser<Tree> PARSER = JavaParser.createParser(Charsets.UTF_8);
 
   private static CFG buildCFG(String methodCode) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field; " + methodCode + " }");
+    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; " + methodCode + " }");
     SemanticModel.createFor(cut, Collections.<File>emptyList());
-    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(1));
+    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(2));
     return CFG.build(tree);
   }
 
@@ -126,6 +128,16 @@ public class LiveVariablesTest {
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
 
+  @Test
+  public void test_fields_live() {
+    CFG cfg = buildCFG("void foo(int a) {  foo(field1); this.foo(); field2 = 1; }");
+    LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
+    List<Symbol> out = new ArrayList<>(liveVariables.getOut(cfg.entry()));
+    List<Symbol> in = new ArrayList<>(liveVariables.getIn(cfg.entry()));
 
+    assertThat(out).isEmpty();
 
+    assertThat(in).hasSize(1);
+    assertThat(in.get(0).name()).isEqualTo("field1");
+  }
 }

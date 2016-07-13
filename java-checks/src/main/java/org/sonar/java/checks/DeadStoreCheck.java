@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
-import org.sonar.java.cfg.LocalVariableReadExtractor;
+import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -207,8 +207,8 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     return out;
   }
 
-  private static List<Symbol> getUsedLocalVarInSubTree(Tree tree, Symbol.MethodSymbol methodSymbol) {
-    LocalVariableReadExtractor localVarExtractor = new LocalVariableReadExtractor(methodSymbol);
+  private static Set<Symbol> getUsedLocalVarInSubTree(Tree tree, Symbol.MethodSymbol methodSymbol) {
+    VariableReadExtractor localVarExtractor = new VariableReadExtractor(methodSymbol, false);
     tree.accept(localVarExtractor);
     return localVarExtractor.usedVariables();
   }

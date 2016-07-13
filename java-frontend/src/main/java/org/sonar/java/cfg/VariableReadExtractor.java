@@ -19,33 +19,36 @@
  */
 package org.sonar.java.cfg;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class LocalVariableReadExtractor extends BaseTreeVisitor {
+public class VariableReadExtractor extends BaseTreeVisitor {
 
   private final Symbol.MethodSymbol methodSymbol;
-  private final List<Symbol> used;
+  private final Set<Symbol> used;
+  private final boolean includeFields;
 
-  public LocalVariableReadExtractor(Symbol.MethodSymbol methodSymbol) {
+  public VariableReadExtractor(MethodSymbol methodSymbol, boolean includeFields) {
     this.methodSymbol = methodSymbol;
-    used = new ArrayList<>();
+    this.includeFields = includeFields;
+    used = new HashSet<>();
   }
 
-  public List<Symbol> usedVariables() {
+  public Set<Symbol> usedVariables() {
     return used;
   }
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    //skip writing to a variable.
-    if(!tree.variable().is(Tree.Kind.IDENTIFIER)) {
+    //skip writing to a variable or field.
+    if(!tree.variable().is(Tree.Kind.IDENTIFIER) && !tree.variable().is(Kind.MEMBER_SELECT)) {
       scan(tree.variable());
     }
     scan(tree.expression());
@@ -53,10 +56,15 @@ public class LocalVariableReadExtractor extends BaseTreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    if(methodSymbol.equals(tree.symbol().owner())) {
+    Symbol owner = tree.symbol().owner();
+    if(methodSymbol.equals(owner) || (includeFields && isField(tree.symbol(), methodSymbol.owner()))) {
       used.add(tree.symbol());
     }
     super.visitIdentifier(tree);
+  }
+
+  private static boolean isField(Symbol identifierSymbol, Symbol methodOwnerSymbol) {
+    return methodOwnerSymbol.equals(identifierSymbol.owner()) && !"this".equals(identifierSymbol.name());
   }
 
 }

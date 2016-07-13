@@ -22,43 +22,64 @@ package org.sonar.java.cfg;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodReferenceTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class
     LiveVariables {
 
   private final CFG cfg;
   private final Map<CFG.Block, Set<Symbol>> out = new HashMap<>();
+  private final Map<CFG.Block, Set<Symbol>> in = new HashMap<>();
+  private final boolean includeFields;
 
-  private LiveVariables(CFG cfg) {
+  private LiveVariables(CFG cfg, boolean includeFields) {
     this.cfg = cfg;
+    this.includeFields = includeFields;
   }
 
   public Set<Symbol> getOut(CFG.Block block) {
     return out.get(block);
   }
 
+  public Set<Symbol> getIn(CFG.Block block) {
+    return in.get(block);
+  }
+
+  /**
+   * Returns LiveVariables object with information concerning local variables and parameters
+   */
   public static LiveVariables analyze(CFG cfg) {
-    LiveVariables liveVariables = new LiveVariables(cfg);
-    final Map<CFG.Block, Set<Symbol>> in = new HashMap<>();
+    return analyze(cfg, false);
+  }
+
+  /**
+   * Returns LiveVariables object with information concerning local variables, parameters and fields
+   */
+  public static LiveVariables analyzeWithFields(CFG cfg) {
+    return analyze(cfg, true);
+  }
+
+  private static LiveVariables analyze(CFG cfg, boolean includeFields) {
+    LiveVariables liveVariables = new LiveVariables(cfg, includeFields);
     // Generate kill/gen for each block in isolation
     Map<CFG.Block, Set<Symbol>> kill = new HashMap<>();
     Map<CFG.Block, Set<Symbol>> gen = new HashMap<>();
@@ -69,7 +90,7 @@ public class
       kill.put(block, blockKill);
       gen.put(block, blockGen);
     }
-    liveVariables.analyzeCFG(in, kill, gen);
+    liveVariables.analyzeCFG(liveVariables.in, kill, gen);
     // out of exit block are empty by definition.
     if (!liveVariables.out.get(liveVariables.cfg.reversedBlocks().get(0)).isEmpty()) {
       throw new IllegalStateException("Out of exit block should be empty");
@@ -118,24 +139,15 @@ public class
     // process elements from bottom to top
     Set<Tree> assignmentLHS = new HashSet<>();
     for (Tree element : Lists.reverse(block.elements())) {
-      Symbol symbol;
       switch (element.kind()) {
         case ASSIGNMENT:
-          ExpressionTree lhs = ((AssignmentExpressionTree) element).variable();
-          if (lhs.is(Tree.Kind.IDENTIFIER)) {
-            symbol = ((IdentifierTree) lhs).symbol();
-            if (isLocalVariable(symbol)) {
-              assignmentLHS.add(lhs);
-              blockGen.remove(symbol);
-              blockKill.add(symbol);
-            }
-          }
+          processAssignment((AssignmentExpressionTree) element, blockKill, blockGen, assignmentLHS);
           break;
         case IDENTIFIER:
-          symbol = ((IdentifierTree) element).symbol();
-          if (!assignmentLHS.contains(element) && isLocalVariable(symbol)) {
-            blockGen.add(symbol);
-          }
+          processIdentifier((IdentifierTree) element, blockGen, assignmentLHS);
+          break;
+        case MEMBER_SELECT:
+          processMemberSelect((MemberSelectExpressionTree) element, assignmentLHS, blockGen);
           break;
         case VARIABLE:
           blockKill.add(((VariableTree) element).symbol());
@@ -156,15 +168,71 @@ public class
     }
   }
 
+  private void processIdentifier(IdentifierTree element, Set<Symbol> blockGen, Set<Tree> assignmentLHS) {
+    Symbol symbol = element.symbol();
+    if (!assignmentLHS.contains(element) && includeSymbol(symbol)) {
+      blockGen.add(symbol);
+    }
+  }
+
+  private void processMemberSelect(MemberSelectExpressionTree element, Set<Tree> assignmentLHS, Set<Symbol> blockGen) {
+    Symbol symbol;
+    if (!assignmentLHS.contains(element) && includeFields) {
+      symbol = getField(element);
+      if (symbol != null) {
+        blockGen.add(symbol);
+      }
+    }
+  }
+
+  private void processAssignment(AssignmentExpressionTree element, Set<Symbol> blockKill, Set<Symbol> blockGen, Set<Tree> assignmentLHS) {
+    Symbol symbol = null;
+    ExpressionTree lhs = element.variable();
+    if (lhs.is(Kind.IDENTIFIER)) {
+      symbol = ((IdentifierTree) lhs).symbol();
+
+    } else if (includeFields && lhs.is(Kind.MEMBER_SELECT)) {
+      symbol = getField((MemberSelectExpressionTree) lhs);
+    }
+
+    if (symbol != null && includeSymbol(symbol)) {
+      assignmentLHS.add(lhs);
+      blockGen.remove(symbol);
+      blockKill.add(symbol);
+    }
+  }
+
+  private boolean includeSymbol(Symbol symbol) {
+    return isLocalVariable(symbol) || (includeFields && isField(symbol));
+  }
+
   private static boolean isLocalVariable(Symbol symbol) {
     return symbol.owner().isMethodSymbol();
   }
 
-  private static List<Symbol> getUsedVariables(@Nullable Tree syntaxNode, Symbol.MethodSymbol owner) {
-    if(syntaxNode == null) {
-      return Collections.emptyList();
+  private static boolean isField(Symbol symbol) {
+    return symbol.owner().isTypeSymbol() && !"this".equals(symbol.name()) && symbol.isVariableSymbol();
+  }
+
+  @CheckForNull
+  private static Symbol getField(MemberSelectExpressionTree memberSelect) {
+    if (memberSelect.expression().is(Kind.IDENTIFIER)) {
+      String objectName = ((IdentifierTree) memberSelect.expression()).name();
+      Symbol symbol = memberSelect.identifier().symbol();
+
+      if ((symbol.isStatic() || "this".equals(objectName)) && isField(symbol)) {
+        return symbol;
+      }
     }
-    LocalVariableReadExtractor extractorFromClass = new LocalVariableReadExtractor(owner);
+
+    return null;
+  }
+
+  private Set<Symbol> getUsedVariables(@Nullable Tree syntaxNode, Symbol.MethodSymbol owner) {
+    if(syntaxNode == null) {
+      return Collections.emptySet();
+    }
+    VariableReadExtractor extractorFromClass = new VariableReadExtractor(owner, includeFields);
     syntaxNode.accept(extractorFromClass);
     return extractorFromClass.usedVariables();
   }

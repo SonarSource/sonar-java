@@ -442,6 +442,7 @@ public final class CheckList {
       .add(ArraysAsListOfPrimitiveToStreamCheck.class)
       .add(DivisionByZeroCheck.class)
       .add(NullShouldNotBeUsedWithOptionalCheck.class)
+      .add(PrivateFieldUsedLocallyCheck.class)
       .build();
   }
 
