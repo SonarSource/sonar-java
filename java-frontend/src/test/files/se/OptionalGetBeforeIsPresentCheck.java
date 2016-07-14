@@ -9,14 +9,14 @@ class A {
   }
 
   A(Optional<String> s) {
-    s.get();  // Noncompliant {{call "s.isPresent()" before accessing the value.}}
+    s.get();  // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
     if (s.isPresent()) {
       s.get(); // Compliant
     }
   }
 
   void foo() {
-    getOptional().get(); // Noncompliant {{call "isPresent()" before accessing the value.}}
+    getOptional().get(); // Noncompliant {{Call "isPresent()" before accessing the value.}}
   }
 
   void bar() {
