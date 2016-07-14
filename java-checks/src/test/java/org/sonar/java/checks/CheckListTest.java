@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -54,7 +55,8 @@ public class CheckListTest {
     "LocksNotUnlockedCheck",
     "NonNullSetToNullCheck",
     "NoWayOutLoopCheck",
-    "DivisionByZeroCheck"
+    "DivisionByZeroCheck",
+    "OptionalGetBeforeIsPresentCheck"
   );
 
   /**

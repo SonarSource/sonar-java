@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -75,6 +76,7 @@ import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -443,6 +445,7 @@ public final class CheckList {
       .add(DivisionByZeroCheck.class)
       .add(NullShouldNotBeUsedWithOptionalCheck.class)
       .add(PrivateFieldUsedLocallyCheck.class)
+      .add(OptionalGetBeforeIsPresentCheck.class)
       .build();
   }
 
