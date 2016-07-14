@@ -1,0 +1,14 @@
+{
+  "title": "Value-based objects should not be serialized",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "serialization",
+    "bug",
+    "java8"
+  ],
+  "defaultSeverity": "Critical"
+}
