@@ -1,0 +1,12 @@
+{
+  "title": "Simple class names should be used",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Minor"
+}
