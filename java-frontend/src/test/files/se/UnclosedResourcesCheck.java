@@ -408,4 +408,23 @@ public class A {
   private static void close(FileInputStream fis) {
     // supposedly close the input stream
   }
+
+  void activateDeferredProfile(File file) throws Exception {
+    FileInputStream fis1, fis2;
+
+    if ((fis1 = new FileInputStream(file)) == null) { // Compliant - fis is closed...
+      throw new Exception();
+    }
+    fis1.close(); // close the file
+
+    if ((fis2 = new FileInputStream(file)) == null) { // Noncompliant - fis2 not closed if close() fails
+      throw new Exception();
+    }
+    try {
+      fis2.close();  // try to close the file
+    } catch (IOException e) {
+      // fis2 is not closed
+      throw new Exception();
+    }
+  }
 }

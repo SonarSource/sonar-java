@@ -1704,3 +1704,15 @@ class VolatileFields {
     }
   }
 }
+
+class UsingLong {
+  Long woo(boolean b) {
+    Long myLong = null;
+    if (b) {
+      myLong = 0L;
+    }
+    if (myLong != null) { // Compliant
+    }
+    return myLong;
+  }
+}
