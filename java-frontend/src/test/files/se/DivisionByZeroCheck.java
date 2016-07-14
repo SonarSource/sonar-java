@@ -264,4 +264,14 @@ class A {
     }
     r %= z1; // Noncompliant {{Make sure 'z1' can't be zero before doing this modulation.}}
   }
+
+  void woo(boolean b) {
+    Long myLong = null;
+    if (b) {
+      myLong = 0L;
+    }
+    if (myLong != null) {
+      int x = 42 / myLong; // Noncompliant
+    }
+  }
 }

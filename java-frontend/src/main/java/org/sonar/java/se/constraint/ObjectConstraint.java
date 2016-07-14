@@ -65,7 +65,7 @@ public class ObjectConstraint implements Constraint {
     return isNull;
   }
 
-  public boolean isInversible() {
+  public boolean isInversible(@Nullable Constraint otherConstraint) {
     return isNull;
   }
 
