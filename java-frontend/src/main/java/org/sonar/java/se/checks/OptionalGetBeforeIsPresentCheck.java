@@ -40,17 +40,13 @@ import java.util.List;
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
-  private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
-  private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withNoParameterConstraint();
-  private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withNoParameterConstraint();
-
   private enum Status {
     PRESENT, NOT_PRESENT
   }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    final PreStatementVisitor visitor = new PreStatementVisitor(context);
+    PreStatementVisitor visitor = new PreStatementVisitor(this, context);
     syntaxNode.accept(visitor);
     return visitor.programState;
   }
@@ -70,65 +66,61 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       ObjectConstraint optionalConstraint = (ObjectConstraint) programState.getConstraint(optionalSV);
-      if (optionalConstraint == null) {
+      if (optionalConstraint == null || isImpossibleState(booleanConstraint, optionalConstraint)) {
         return ImmutableList.of();
       }
-      boolean isknownAsNotPresent = optionalConstraint.hasStatus(Status.NOT_PRESENT);
-      boolean isKnownAsPresent = optionalConstraint.hasStatus(Status.PRESENT);
-      if (isknownAsNotPresent || isKnownAsPresent) {
-        if (isImpossibleState(booleanConstraint, isknownAsNotPresent, isKnownAsPresent)) {
-          return ImmutableList.of();
-        }
+      if (optionalConstraint.hasStatus(Status.NOT_PRESENT) || optionalConstraint.hasStatus(Status.PRESENT)) {
         return ImmutableList.of(programState);
       }
       ObjectConstraint newConstraint = booleanConstraint.isTrue() ? optionalConstraint.withStatus(Status.PRESENT) : optionalConstraint.withStatus(Status.NOT_PRESENT);
       return ImmutableList.of(programState.addConstraint(optionalSV, newConstraint));
     }
 
-    private static boolean isImpossibleState(BooleanConstraint booleanConstraint, boolean isknownAsNotPresent, boolean isKnownAsPresent) {
-      return (isKnownAsPresent && booleanConstraint.isFalse()) || (isknownAsNotPresent && booleanConstraint.isTrue());
+    private static boolean isImpossibleState(BooleanConstraint booleanConstraint, ObjectConstraint optionalConstraint) {
+      return (optionalConstraint.hasStatus(Status.PRESENT) && booleanConstraint.isFalse())
+        || (optionalConstraint.hasStatus(Status.NOT_PRESENT) && booleanConstraint.isTrue());
     }
   }
 
-  private class PreStatementVisitor extends CheckerTreeNodeVisitor {
+  private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
+
+    private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
+    private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withNoParameterConstraint();
+    private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withNoParameterConstraint();
 
     private final CheckerContext context;
     private final ConstraintManager constraintManager;
+    private final SECheck check;
 
-    protected PreStatementVisitor(CheckerContext context) {
+    private PreStatementVisitor(SECheck check, CheckerContext context) {
       super(context.getState());
       this.context = context;
       this.constraintManager = context.getConstraintManager();
+      this.check = check;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
         constraintManager.setValueFactory((id, node) -> new OptionalSymbolicValue(id, programState.peekValue()));
-      } else if (OPTIONAL_GET.matches(tree)) {
-        SymbolicValue sv = programState.peekValue();
-        if (!isPresent(sv)) {
-          reportIssue(tree);
-          programState = null;
-        }
+      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
+        context.reportIssue(tree, check, "call \"" + getIdentifierPart(tree.methodSelect()) + "isPresent()\" before accessing the value.");
+        programState = null;
       }
     }
 
-    private boolean isPresent(SymbolicValue sv) {
-      return programState.getConstraintWithStatus(sv, Status.PRESENT) != null;
+    private boolean presenceHasNotBeenChecked(SymbolicValue sv) {
+      return programState.getConstraintWithStatus(sv, Status.PRESENT) == null;
     }
 
-    private void reportIssue(MethodInvocationTree tree) {
-      String identifierPart = "";
-      ExpressionTree methodSelect = tree.methodSelect();
+    private static String getIdentifierPart(ExpressionTree methodSelect) {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
-        ExpressionTree expression = mset.expression();
+        ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          identifierPart = ((IdentifierTree) expression).name() + ".";
+          return ((IdentifierTree) expression).name() + ".";
         }
       }
-      context.reportIssue(tree, OptionalGetBeforeIsPresentCheck.this, "call \"" + identifierPart + "isPresent()\" before accessing the value.");
+      return "";
     }
 
   }
