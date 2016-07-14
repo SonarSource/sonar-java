@@ -1,6 +1,9 @@
 {
-'jdk6:java/awt/color/ICC_Profile.java':[
-1085,
+'jdk6:java/awt/Font.java':[
+850,
+],
+'jdk6:java/security/Security.java':[
+68,
 ],
 'jdk6:java/sql/SQLException.java':[
 56,
@@ -11,9 +14,6 @@
 172,
 197,
 223,
-],
-'jdk6:java/util/ResourceBundle.java':[
-2308,
 ],
 'jdk6:java/util/Scanner.java':[
 636,

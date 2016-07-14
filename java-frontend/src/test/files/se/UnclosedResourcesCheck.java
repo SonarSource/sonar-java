@@ -417,7 +417,7 @@ public class A {
     }
     fis1.close(); // close the file
 
-    if ((fis2 = new FileInputStream(file)) == null) { // Noncompliant - fis2 not closed if close() fails
+    if ((fis2 = new FileInputStream(file)) == null) { // compliant, fis2 is closed, no exceptions in between open and close
       throw new Exception();
     }
     try {
