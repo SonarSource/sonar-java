@@ -346,7 +346,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (!checkerDispatcher.executeCheckPreStatement(tree)) {
       // Some of the check pre statement sink the execution on this node.
       return;
-    }
+    } 
     switch (tree.kind()) {
       case METHOD_INVOCATION:
         MethodInvocationTree mit = (MethodInvocationTree) tree;
@@ -463,7 +463,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = unstack.state;
     logState(mit);
     // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, true));
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, !b.isCatchBlock()));
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     programState = programState.stackValue(resultValue);
     if (isNonNullMethod(mit.symbol())) {

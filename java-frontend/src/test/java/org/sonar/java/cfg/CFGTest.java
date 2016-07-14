@@ -1159,6 +1159,32 @@ public class CFGTest {
   }
 
   @Test
+  public void catch_throwable() throws Exception {
+    CFG cfg = buildCFG(" public void reschedule() {\n" +
+      "        try {\n" +
+      "          getNextSchedule();\n" +
+      "        } catch (Throwable t) {\n" +
+      "          notifyFailed();\n" +
+      "        }\n" +
+      "      }");
+      CFGChecker cfgChecker = checker(
+        block(
+          element(Kind.TRY_STATEMENT)
+        ).successors(2),
+        block(
+          element(Kind.IDENTIFIER, "getNextSchedule"),
+          element(Kind.METHOD_INVOCATION)
+          ).successors(0).exceptions(0, 1),
+        block(
+          element(Kind.IDENTIFIER, "notifyFailed"),
+          element(Kind.METHOD_INVOCATION)
+        ).successors(0).exceptions(0)
+      );
+    cfgChecker.check(cfg);
+
+  }
+
+  @Test
   public void try_statement() {
     CFG cfg = buildCFG("void fun() {try {System.out.println('');} finally { System.out.println(''); }}");
     CFGChecker cfgChecker = checker(

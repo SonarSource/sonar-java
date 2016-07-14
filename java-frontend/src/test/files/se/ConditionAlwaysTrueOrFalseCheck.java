@@ -1726,6 +1726,19 @@ class DITO {
       }
     }
   }
+
+  public void reschedule() {
+    Throwable scheduleFailure = null;
+    try {
+      executor.schedule(this, schedule.delay, schedule.unit);
+    } catch (java.lang.Throwable e) {
+      scheduleFailure = e;
+    } finally {
+      System.out.println("");
+    }
+    if (scheduleFailure != null) {
+    }
+  }
 }
 
 class UsingLong {

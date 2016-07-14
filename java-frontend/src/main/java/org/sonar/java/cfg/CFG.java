@@ -101,7 +101,7 @@ public class CFG {
     Block successorBlock;
 
     public void addCatch(Type type, Block catchBlock) {
-      if (type.is("java.lang.Exception") || type.isSubtypeOf("java.lang.RuntimeException")) {
+      if (type.is("java.lang.Exception") || type.is("java.lang.Throwable") || type.isSubtypeOf("java.lang.RuntimeException")) {
         runtimeCatches.add(catchBlock);
       }
       catches.put(type, catchBlock);
@@ -158,6 +158,7 @@ public class CFG {
     private Tree terminator;
 
     private boolean isFinallyBlock;
+    private boolean isCatchBlock = false;
 
     public Block(int id) {
       this.id = id;
@@ -185,6 +186,9 @@ public class CFG {
 
     public boolean isFinallyBlock() {
       return isFinallyBlock;
+    }
+    public boolean isCatchBlock() {
+      return isCatchBlock;
     }
 
     void addSuccessor(Block successor) {
@@ -807,6 +811,7 @@ public class CFG {
     enclosingTry.push(tryStatement);
     for (CatchTree catchTree : tryStatementTree.catches()) {
       currentBlock = createBlock(finallyOrEndBlock);
+      currentBlock.isCatchBlock = true;
       nestedCatchLevel++;
       build(catchTree.block());
       nestedCatchLevel--;
