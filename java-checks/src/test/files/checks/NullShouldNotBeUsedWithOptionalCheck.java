@@ -85,6 +85,11 @@ class ClassA {
     @Nullable // Noncompliant [[sc=5;ec=14]] {{"Optional" variables should not be "@Nullable".}}
     Optional<String> var;
   }
+  
+  public Optional<String> doSomething8(boolean b) {
+    Object obj = b ? null : new Object();
+    return Optional.of("hello");
+  }
 
   interface Worker {
     String work();
