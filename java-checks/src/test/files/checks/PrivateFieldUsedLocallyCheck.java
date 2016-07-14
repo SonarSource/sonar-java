@@ -20,11 +20,6 @@ class Container {
       foo(privateField2);
     }
 
-    void method2() {
-      privateField1 = 42;
-      foo(privateField1);
-    }
-
     void method3() {
       publicField = 42;
       foo(publicField);
@@ -49,10 +44,6 @@ class Container {
       }
 
       foo(privateField1);
-    }
-
-    void method2() {
-      privateField1 = 42;
     }
   }
 
@@ -84,9 +75,6 @@ class Container {
     private int privateField1;
     private int privateField3;
     private int privateField2; // Noncompliant
-    private void method1() {
-      privateField1 = 42;
-    }
 
     private void method2(int value) {
       this.privateField1 = value;
@@ -214,6 +202,26 @@ class Container {
     void method() {
       foo(i -> bar(i, privateField));
     }
+  }
+
+  class Class16 {
+
+    private int privateField;  // OK
+
+    void method1() {
+      privateField = 42;
+
+      method2();
+
+      if (privateField) {
+      }
+
+    }
+
+    void method2() {
+      privateField = 1;
+    }
+
   }
 
 }

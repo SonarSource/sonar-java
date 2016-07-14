@@ -40,6 +40,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.se.ProgramState.isField;
 
+/**
+ * Current implementation raises the issue only for the fields used in one method
+ */
 @Rule(key = "S1450")
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
@@ -64,7 +67,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
       .filter(memberSymbol -> !memberSymbol.usages().isEmpty())
-      .filter(memberSymbol -> !isUsedOutsideMethods(memberSymbol, classSymbol))
+      .filter(memberSymbol -> isUsedInOneMethodOnly(memberSymbol, classSymbol))
       .forEach(this::checkPrivateField);
 
     fieldsReadOnAnotherInstance.clear();
@@ -75,17 +78,24 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return memberSymbol.isPrivate() && memberSymbol.isVariableSymbol();
   }
 
-  private static boolean isUsedOutsideMethods(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
+  private static boolean isUsedInOneMethodOnly(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
+    Set<Tree> methods = new HashSet<>();
+
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
       Tree containingClassOrMethod = containingClassOrMethod(usageIdentifier);
 
       if (containingClassOrMethod.is(Kind.CLASS)
-        || (containingClassOrMethod.is(Kind.METHOD) && !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol))) {
-        return true;
+        || !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol)
+        || (methods.size() == 1 && !methods.contains(containingClassOrMethod))) {
+        return false;
+
+      } else {
+        methods.add(containingClassOrMethod);
+
       }
     }
 
-    return false;
+    return true;
   }
 
   private void checkPrivateField(Symbol privateFieldSymbol) {
