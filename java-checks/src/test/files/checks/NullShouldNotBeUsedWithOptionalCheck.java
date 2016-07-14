@@ -70,15 +70,13 @@ class ClassA {
 
   @Deprecated
   public Optional<String> doSomething5(List<String> myList) {
-    return myList.isEmpty() ? Optional.of("hello") : null; // Noncompliant [[sc=54;ec=58]] {{Methods with an "Optional" return type should
-                                                           // never return null.}}
+    return myList.isEmpty() ? Optional.of("hello") : null; // Noncompliant [[sc=54;ec=58]] {{Methods with an "Optional" return type should never return null.}}
   }
 
   @Nullable // Noncompliant [[sc=3;ec=12]] {{"Optional" variables should not be "@Nullable".}}
   private Optional<String> field;
 
-  public void doSomething6(@Nullable Optional<String> arg) { // Noncompliant [[sc=28;ec=37]] {{"Optional" variables should not be
-                                                             // "@Nullable".}}
+  public void doSomething6(@Nullable Optional<String> arg) { // Noncompliant [[sc=28;ec=37]] {{"Optional" variables should not be "@Nullable".}}
   }
 
   public void doSomething7() {
