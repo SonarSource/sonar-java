@@ -41,9 +41,9 @@ public class LiveVariablesTest {
   public static final ActionParser<Tree> PARSER = JavaParser.createParser(Charsets.UTF_8);
 
   private static CFG buildCFG(String methodCode) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; " + methodCode + " }");
+    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
     SemanticModel.createFor(cut, Collections.<File>emptyList());
-    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(2));
+    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(3));
     return CFG.build(tree);
   }
 
@@ -130,14 +130,20 @@ public class LiveVariablesTest {
 
   @Test
   public void test_fields_live() {
-    CFG cfg = buildCFG("void foo(int a) {  foo(field1); this.foo(); field2 = 1; }");
+    assertFieldsByMethodEntry("void foo(int a) {  foo(field1); foo(); field2 = 1;}", "field1");
+    assertFieldsByMethodEntry("void foo(int a) {  foo(this.field1); this.foo(); this.field2 = 1; }", "field1");
+    assertFieldsByMethodEntry("void foo(int a) { A that = new A(); foo(that.field1); foo(that.staticField); }", "staticField");
+    assertFieldsByMethodEntry("void foo(int a) { foo(new A().staticField);  foo(new A().field1); }", "staticField");
+    assertFieldsByMethodEntry("void foo(int a) { B that = new B(); foo(that.field1); }");
+  }
+
+  private void assertFieldsByMethodEntry(String methodCode, String ...inEntryNames) {
+    CFG cfg = buildCFG(methodCode);
     LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
-    List<Symbol> out = new ArrayList<>(liveVariables.getOut(cfg.entry()));
+    assertThat(liveVariables.getOut(cfg.entry())).isEmpty();
+
     List<Symbol> in = new ArrayList<>(liveVariables.getIn(cfg.entry()));
-
-    assertThat(out).isEmpty();
-
-    assertThat(in).hasSize(1);
-    assertThat(in.get(0).name()).isEqualTo("field1");
+    assertThat(in).hasSize(inEntryNames.length);
+    in.forEach(symbol -> assertThat(symbol.name()).isIn(inEntryNames));
   }
 }

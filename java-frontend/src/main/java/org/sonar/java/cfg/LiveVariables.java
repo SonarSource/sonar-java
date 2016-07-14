@@ -216,13 +216,17 @@ public class
 
   @CheckForNull
   private static Symbol getField(MemberSelectExpressionTree memberSelect) {
+    Symbol symbol = memberSelect.identifier().symbol();
+
     if (memberSelect.expression().is(Kind.IDENTIFIER)) {
       String objectName = ((IdentifierTree) memberSelect.expression()).name();
-      Symbol symbol = memberSelect.identifier().symbol();
 
-      if ((symbol.isStatic() || "this".equals(objectName)) && isField(symbol)) {
+      if (symbol.isStatic() || "this".equals(objectName)) {
         return symbol;
       }
+
+    } else if (symbol.isStatic()) {
+      return symbol;
     }
 
     return null;
