@@ -1140,7 +1140,7 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "fileName"),
         element(Kind.NEW_CLASS)
-      ).successors(3).exceptions(0, 1),
+      ).successors(3).exceptions(0),
       block(
         element(Kind.VARIABLE, "file"),
         element(Kind.TRY_STATEMENT)

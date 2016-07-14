@@ -819,6 +819,9 @@ public class CFG {
     enclosingTry.pop();
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
+    if (finallyBlockTree != null) {
+      exitBlocks.pop();
+    }
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
