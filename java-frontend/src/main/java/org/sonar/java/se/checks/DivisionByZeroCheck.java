@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -34,6 +35,8 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -66,14 +69,8 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     @Override
-    public boolean isInversible() {
-      return hasStatus(Status.ZERO);
-    }
-
-    @Override
-    public String toString() {
-      // For debugging purpose
-      return "" + (hasStatus(Status.ZERO) ? Status.ZERO : (hasStatus(Status.NON_ZERO) ? Status.NON_ZERO : Status.UNDETERMINED));
+    public boolean isInversible(@Nullable Constraint otherConstraint) {
+      return hasStatus(Status.ZERO) && (otherConstraint == null || !otherConstraint.isNull());
     }
   }
 
