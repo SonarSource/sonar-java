@@ -20,11 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,19 +37,22 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Replace this fully qualified name with \"%s\"";
-  private Set<Tree> hasIssue = new HashSet<>();
-  private Set<Tree> importedWithWildcardNames = new HashSet<>();
+  private List<ImportTree> importTrees = new ArrayList<>();
+  private boolean fileContainsWildcardImport = false;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.IMPORT, Kind.MEMBER_SELECT);
+    return ImmutableList.of(Kind.IMPORT);
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    hasIssue.clear();
-    importedWithWildcardNames.clear();
+    if (!fileContainsWildcardImport) {
+      checkImports();
+    }
+    fileContainsWildcardImport = false;
+    importTrees.clear();
   }
 
   @Override
@@ -60,50 +61,28 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (tree.is(Kind.IMPORT)) {
-      visitImport((ImportTree)tree);
+    ImportTree importTree = (ImportTree)tree;
 
-    } else {
-      visitMemberSelect((MemberSelectExpressionTree)tree);
-    }
-  }
+    if (importTree.qualifiedIdentifier().is(Kind.MEMBER_SELECT)) {
 
-  private void visitMemberSelect(MemberSelectExpressionTree tree) {
-    if (!isInImport(tree) && !hasIssue.contains(tree) && !tree.identifier().symbol().isPackageSymbol()) {
-
-      for (Tree importedWildcard : importedWithWildcardNames) {
-        if (SyntacticEquivalence.areEquivalent(importedWildcard, tree.expression())) {
-          reportIssue(tree, String.format(MESSAGE, tree.identifier().name()));
-          return;
-        }
-
+      IdentifierTree identifier = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
+      if ("*".equals(identifier.name())) {
+        fileContainsWildcardImport = true;
+        return;
       }
     }
 
+    importTrees.add(importTree);
   }
 
-  private static boolean isInImport(Tree tree) {
-    Tree parent = tree.parent();
-
-    while (parent != null) {
-      if (parent.is(Kind.IMPORT)) {
-        return true;
-      }
-      parent = parent.parent();
-    }
-
-    return false;
-  }
-
-  private void visitImport(ImportTree tree) {
+  private void checkImports() {
     SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-    Symbol symbol = semanticModel.getSymbol(tree);
+    for (ImportTree importTree : importTrees) {
+      Symbol symbol = semanticModel.getSymbol(importTree);
 
-    if (symbol != null) {
-      checkImportedSymbol(symbol);
-
-    } else {
-      importedWithWildcardNames.add(((MemberSelectExpressionTree)tree.qualifiedIdentifier()).expression());
+      if (symbol != null) {
+        checkImportedSymbol(symbol);
+      }
     }
   }
 
@@ -113,7 +92,6 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
       if (parent.is(Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).expression().is(Kind.MEMBER_SELECT)) {
         reportIssue(parent, String.format(MESSAGE, symbol.name()));
-        hasIssue.add(parent);
       }
     }
   }

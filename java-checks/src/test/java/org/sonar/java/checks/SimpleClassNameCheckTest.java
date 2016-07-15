@@ -26,8 +26,12 @@ public class SimpleClassNameCheckTest {
 
   @Test
   public void test() {
-
     JavaCheckVerifier.verify("src/test/files/checks/SimpleClassNameCheck.java", new SimpleClassNameCheck());
+  }
+
+  @Test
+  public void test_file_with_wildcard_import() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/SimpleClassNameCheckWithWildCard.java", new SimpleClassNameCheck());
   }
 
   @Test
