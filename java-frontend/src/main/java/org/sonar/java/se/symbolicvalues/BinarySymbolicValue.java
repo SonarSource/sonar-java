@@ -26,8 +26,6 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 
-import javax.annotation.Nullable;
-
 import java.util.List;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
@@ -55,43 +53,18 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     Constraint constraintLeft = programState.getConstraint(from);
-    Constraint constraintRight = programState.getConstraint(to);
     if (constraintLeft instanceof BooleanConstraint) {
       BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
       return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
     } else if (constraintLeft instanceof ObjectConstraint) {
       ObjectConstraint objectConstraint = (ObjectConstraint) constraintLeft;
-      if (objectConstraint.isInversible(constraintRight)) {
-        ObjectConstraint newConstraint = shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse();
-        if (knowledgeLostWithNewConstraint(newConstraint, constraintRight)) {
-          return ImmutableList.of(programState);
-        }
-        return to.setConstraint(programState, newConstraint);
+      if (objectConstraint.isInversible(programState.getConstraint(to))) {
+        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse());
       } else if (shouldNotInverse().equals(booleanConstraint)) {
         return to.setConstraint(programState, objectConstraint);
       }
     }
     return ImmutableList.of(programState);
-  }
-
-  private static boolean knowledgeLostWithNewConstraint(ObjectConstraint newConstraint, @Nullable Constraint knownConstraint) {
-    return knownConstraint != null && haveSameNullness(newConstraint, knownConstraint) && knownStatusLost(newConstraint, knownConstraint);
-  }
-
-  private static boolean haveSameNullness(ObjectConstraint newConstraint, Constraint knownConstsraint) {
-    return !(newConstraint.isNull() ^ knownConstsraint.isNull());
-  }
-
-  private static boolean knownStatusLost(ObjectConstraint newConstraint, Constraint knownConstraint) {
-    return hasNoStatus(newConstraint) && knownConstraint instanceof ObjectConstraint && hasAnyStatus((ObjectConstraint) knownConstraint);
-  }
-
-  private static boolean hasNoStatus(ObjectConstraint constraint) {
-    return constraint.hasStatus(null);
-  }
-
-  private static boolean hasAnyStatus(ObjectConstraint constraint) {
-    return !hasNoStatus(constraint);
   }
 
 }

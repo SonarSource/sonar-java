@@ -118,6 +118,8 @@ public class SymbolicValue {
       if (nc.isNull() ^ nullConstraint.isNull()) {
         // setting null where value is known to be non null or the contrary
         return ImmutableList.of();
+      } else if (hasAnyStatus(nc) && hasNoStatus(nullConstraint)) {
+        return ImmutableList.of(programState);
       }
     }
     if (data instanceof BooleanConstraint) {
@@ -127,6 +129,14 @@ public class SymbolicValue {
       return ImmutableList.of(programState.addConstraint(this, nullConstraint));
     }
     return ImmutableList.of(programState);
+  }
+
+  private static boolean hasAnyStatus(ObjectConstraint constraint) {
+    return !hasNoStatus(constraint);
+  }
+
+  private static boolean hasNoStatus(ObjectConstraint constraint) {
+    return constraint.hasStatus(null);
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {

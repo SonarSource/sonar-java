@@ -70,7 +70,7 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public boolean isInversible(@Nullable Constraint otherConstraint) {
-      return hasStatus(Status.ZERO) && otherConstraint == null;
+      return hasStatus(Status.ZERO) && (otherConstraint == null || !otherConstraint.isNull());
     }
   }
 
