@@ -57,7 +57,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TypeSymbol classSymbol = ((ClassTree) tree).symbol();
-    Set<Symbol> fieldsReadOnAnotherInstance = FieldsReadOnAnotherInstanceVisitor.getFrom(classSymbol);
+    Set<Symbol> fieldsReadOnAnotherInstance = FieldsReadOnAnotherInstanceVisitor.getFrom(tree);
 
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
@@ -91,23 +91,23 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
    */
   @CheckForNull
   private static MethodTree usedInOneMethodOnly(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
-    Set<MethodTree> methods = new HashSet<>();
+    MethodTree method = null;
 
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
       Tree containingClassOrMethod = containingClassOrMethod(usageIdentifier);
 
       if (containingClassOrMethod.is(Kind.CLASS)
         || !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol)
-        || (methods.size() == 1 && !methods.contains(containingClassOrMethod))) {
+        || (method != null && !method.equals(containingClassOrMethod))) {
         return null;
 
       } else {
-        methods.add((MethodTree)containingClassOrMethod);
+        method = (MethodTree)containingClassOrMethod;
 
       }
     }
 
-    return methods.iterator().next();
+    return method;
   }
 
   private static Tree containingClassOrMethod(IdentifierTree usageIdentifier) {
@@ -123,9 +123,9 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
     private Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
 
-    static Set<Symbol> getFrom(TypeSymbol classSymbol) {
+    static Set<Symbol> getFrom(Tree classTree) {
       FieldsReadOnAnotherInstanceVisitor fieldsReadOnAnotherInstanceVisitor = new FieldsReadOnAnotherInstanceVisitor();
-      fieldsReadOnAnotherInstanceVisitor.scan(classSymbol.declaration());
+      fieldsReadOnAnotherInstanceVisitor.scan(classTree);
       return fieldsReadOnAnotherInstanceVisitor.fieldsReadOnAnotherInstance;
     }
 
