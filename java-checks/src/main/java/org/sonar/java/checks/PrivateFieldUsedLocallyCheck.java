@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
@@ -40,16 +41,13 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.se.ProgramState.isField;
 
+/**
+ * Current implementation raises the issue only for the fields used in one method
+ */
 @Rule(key = "S1450")
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
-
-  // set of fields which are live by entering at least one method
-  private Set<Symbol> fieldsLiveInMethodEntry = new HashSet<>();
-
-  private Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
-
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -59,41 +57,57 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TypeSymbol classSymbol = ((ClassTree) tree).symbol();
-    initFieldsMetaData(classSymbol);
+    Set<Symbol> fieldsReadOnAnotherInstance = FieldsReadOnAnotherInstanceVisitor.getFrom(tree);
 
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
-      .filter(memberSymbol -> !memberSymbol.usages().isEmpty())
-      .filter(memberSymbol -> !isUsedOutsideMethods(memberSymbol, classSymbol))
-      .forEach(this::checkPrivateField);
+      .filter(s -> !s.usages().isEmpty())
+      .filter(s -> !fieldsReadOnAnotherInstance.contains(s))
+      .forEach(s -> checkPrivateField(s, classSymbol));
+  }
 
-    fieldsReadOnAnotherInstance.clear();
-    fieldsLiveInMethodEntry.clear();
+  private void checkPrivateField(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
+    MethodTree methodWhereUsed = usedInOneMethodOnly(privateFieldSymbol, classSymbol);
+
+    if (methodWhereUsed != null && !isLiveInMethodEntry(privateFieldSymbol, methodWhereUsed)) {
+      IdentifierTree declarationIdentifier = ((VariableTree) privateFieldSymbol.declaration()).simpleName();
+      String message = String.format(MESSAGE, privateFieldSymbol.name());
+      reportIssue(declarationIdentifier, message);
+    }
+  }
+
+  private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {
+    CFG cfg = CFG.build(methodTree);
+    LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
+    return liveVariables.getIn(cfg.entry()).contains(privateFieldSymbol);
   }
 
   private static boolean isPrivateField(Symbol memberSymbol) {
     return memberSymbol.isPrivate() && memberSymbol.isVariableSymbol();
   }
 
-  private static boolean isUsedOutsideMethods(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
+  /**
+   * If private field used in several methods then returns null, otherwise returns the method where it's used
+   */
+  @CheckForNull
+  private static MethodTree usedInOneMethodOnly(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
+    MethodTree method = null;
+
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
       Tree containingClassOrMethod = containingClassOrMethod(usageIdentifier);
 
       if (containingClassOrMethod.is(Kind.CLASS)
-        || (containingClassOrMethod.is(Kind.METHOD) && !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol))) {
-        return true;
+        || !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol)
+        || (method != null && !method.equals(containingClassOrMethod))) {
+        return null;
+
+      } else {
+        method = (MethodTree)containingClassOrMethod;
+
       }
     }
 
-    return false;
-  }
-
-  private void checkPrivateField(Symbol privateFieldSymbol) {
-    if (!fieldsReadOnAnotherInstance.contains(privateFieldSymbol) && !fieldsLiveInMethodEntry.contains(privateFieldSymbol)) {
-      IdentifierTree declarationIdentifier = ((VariableTree) privateFieldSymbol.declaration()).simpleName();
-      String message = String.format(MESSAGE, privateFieldSymbol.name());
-      reportIssue(declarationIdentifier, message);
-    }
+    return method;
   }
 
   private static Tree containingClassOrMethod(IdentifierTree usageIdentifier) {
@@ -105,30 +119,13 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return parent;
   }
 
-  private void initFieldsMetaData(TypeSymbol classSymbol) {
-    fieldsReadOnAnotherInstance = FieldsReadOnAnotherInstanceVisitor.getFrom(classSymbol);
-
-    for (Symbol memberSymbol : classSymbol.memberSymbols()) {
-
-      if (memberSymbol.isMethodSymbol() && memberSymbol.declaration() != null) {
-        MethodTree methodTree = (MethodTree) memberSymbol.declaration();
-
-        if (methodTree.block() != null) {
-          CFG cfg = CFG.build(methodTree);
-          LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
-          fieldsLiveInMethodEntry.addAll(liveVariables.getIn(cfg.entry()));
-        }
-      }
-    }
-  }
-
   private static class FieldsReadOnAnotherInstanceVisitor extends BaseTreeVisitor {
 
     private Set<Symbol> fieldsReadOnAnotherInstance = new HashSet<>();
 
-    static Set<Symbol> getFrom(TypeSymbol classSymbol) {
+    static Set<Symbol> getFrom(Tree classTree) {
       FieldsReadOnAnotherInstanceVisitor fieldsReadOnAnotherInstanceVisitor = new FieldsReadOnAnotherInstanceVisitor();
-      fieldsReadOnAnotherInstanceVisitor.scan(classSymbol.declaration());
+      fieldsReadOnAnotherInstanceVisitor.scan(classTree);
       return fieldsReadOnAnotherInstanceVisitor.fieldsReadOnAnotherInstance;
     }
 
