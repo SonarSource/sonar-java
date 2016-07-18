@@ -346,7 +346,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (!checkerDispatcher.executeCheckPreStatement(tree)) {
       // Some of the check pre statement sink the execution on this node.
       return;
-    } 
+    }
     switch (tree.kind()) {
       case METHOD_INVOCATION:
         MethodInvocationTree mit = (MethodInvocationTree) tree;

@@ -1740,16 +1740,12 @@ class DITO {
   class MyExceptionFoo {}
   void plop(Object result) {
     if (result == null) {
-      // not found, try to create it
       try {
         result = new DITO();
       } catch (final MyExceptionFoo ie) {
-                /* Swallow IntrospectionException
-                 * TODO: Why?
-                 */
       }
-      if (result != null) {
-        mappedDescriptors.put(name, result);
+      if (result != null) { // compliant : constructor can throw an exception and so result is null
+        System.out.println("");;
       }
     }
   }
@@ -1781,6 +1777,7 @@ class UsingLong {
 }
 class KeyboardFocusManager {
 
+  // This huge method requires more than 10_000 steps to be analyzed after introduction of try catch flow modelization.
   static void processCurrentLightweightRequests() {
     KeyboardFocusManager manager = getCurrentKeyboardFocusManager();
     LinkedList localLightweightRequests = null;
