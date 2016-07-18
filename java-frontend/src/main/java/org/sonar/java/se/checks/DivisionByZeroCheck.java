@@ -64,13 +64,8 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     @Override
-    public ZeroConstraint inverse() {
-      return new ZeroConstraint(syntaxNode(), Status.NON_ZERO);
-    }
-
-    @Override
-    public boolean isInversible(@Nullable Constraint otherConstraint) {
-      return hasStatus(Status.ZERO) && (otherConstraint == null || !otherConstraint.isNull());
+    public boolean isInvalidWith(@Nullable Constraint constraint) {
+      return hasStatus(Status.ZERO) && constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(Status.ZERO);
     }
   }
 
@@ -262,7 +257,6 @@ public class DivisionByZeroCheck extends SECheck {
         programState = programState.addConstraint(sv, constraint);
       }
     }
-
 
     private static boolean isNumberZero(String literalValue) {
       return isNullCharacter(literalValue)

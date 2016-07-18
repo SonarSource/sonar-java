@@ -274,4 +274,72 @@ class A {
       int x = 42 / myLong; // Noncompliant
     }
   }
+
+  void roo(boolean b) {
+    Long myLong = 14;
+    if (b) {
+      myLong = null;
+    }
+    if (myLong != null) {
+      int x = 42 / myLong; // Compliant
+    }
+  }
+
+  long avgSize() {
+    int count = 0;
+    if (count == 0) {
+      return -1L;
+    } else {
+      return 14 / count; // Compliant
+    }
+  }
+
+  long avgSize2() {
+    int count = 0;
+    if (count != 0) {
+      return 14 / count; // Compliant
+    } else {
+      return -1L;
+    }
+  }
+
+  long avgSize3() {
+    int count = 0;
+    if (count != 0) {
+      return -1L;
+    } else {
+      return 14 / count; // Noncompliant
+    }
+  }
+
+  long avgSize4(boolean b) {
+    int count = 0;
+    if (b) {
+      count = 14;
+    }
+    if (count != 0) {
+      return 14 / count; // Compliant
+    } else {
+      return -1L;
+    }
+  }
+
+  long avgSize5(int[] values) {
+    long sum = 0;
+    int count = 0;
+    for (int value : values) {
+      sum += value;
+      count++;
+    }
+    if (count == 0) {
+      return -1L;
+    } else {
+      return sum / count; // Compliant
+    }
+  }
+
+  double i93(int sum) {
+    int count = 0;
+    return count == 0 ? Double.NaN : (sum / count); // Compliant
+  }
 }
