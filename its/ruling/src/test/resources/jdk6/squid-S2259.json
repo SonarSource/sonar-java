@@ -39,6 +39,9 @@
 129,
 131,
 ],
+'jdk6:java/beans/Introspector.java':[
+1350,
+],
 'jdk6:java/beans/MetaData.java':[
 738,
 ],
@@ -74,15 +77,8 @@
 'jdk6:java/security/UnresolvedPermission.java':[
 558,
 ],
-'jdk6:java/security/cert/X509CertSelector.java':[
-2173,
-2190,
-],
 'jdk6:java/sql/DriverManager.java':[
 331,
-],
-'jdk6:java/text/Collator.java':[
-267,
 ],
 'jdk6:java/util/Calendar.java':[
 1867,

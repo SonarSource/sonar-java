@@ -1515,28 +1515,45 @@ public class CFGTest {
   @Test
   public void try_statement_with_checked_exceptions() {
     CFG cfg = buildCFG(
-      "  void plop(Object result) {\n" +
-      "    if (result == null) {\n" +
-      "      // not found, try to create it\n" +
-      "      try {\n" +
-      "        result = new DITO();\n" +
-      "      } catch (final MyExceptionFoo ie) {\n" +
-      "                /* Swallow IntrospectionException\n" +
-      "                 * TODO: Why?\n" +
-      "                 */\n" +
-      "      }\n" +
-      "      if (result != null) {\n" +
-      "        mappedDescriptors.put(name, result);\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }"+
-        "class DITO {\n" +
-        "  DITO() throws MyExceptionFoo {}\n" +
-        "}\n" +
-        "  class MyExceptionFoo {}\n" );
+      " void foo(Object result) {" +
+        "  try { " +
+        "       result = new Plop();" +
+        "   } catch(IllegalAccessException iae) {" +
+        "        try{ " +
+        "            result = new Plop();" +
+        "        } catch(IllegalAccessException iae) {" +
+        "        }" +
+        "      result.toString();   " +
+        "    }" +
+        "}" +
+        "" +
+        "class Plop{" +
+        "   Plop() throws IllegalAccessException{}" +
+        "}" );
 
-    CFGChecker cfgChecker = checker();
-//    cfgChecker.check(cfg);
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(6),
+      block(
+          element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(4),
+      block(
+        element(Kind.NEW_CLASS)).successors(3).exceptions(0, 2),
+      block(
+        element(Kind.IDENTIFIER, "result"),
+        element(Kind.ASSIGNMENT)
+      ).successors(2),
+      block(
+        element(Kind.IDENTIFIER, "result"),
+        element(Kind.METHOD_INVOCATION)
+        ).successors(0).exceptions(0),
+      block(
+        element(Kind.IDENTIFIER, "result"),
+        element(Kind.ASSIGNMENT)
+      ).successors(0)
+      );
+    cfgChecker.check(cfg);
+
   }
-
 }
