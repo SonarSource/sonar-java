@@ -29,9 +29,11 @@ public class UndocumentedApiCheckTest {
   @Test
   public void test() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
-    assertThat(check.forClasses).isEqualTo("**");
+    assertThat(check.forClasses).isEqualTo("**.api.**");
     JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApi.java", check);
   }
+
+
 
   @Test
   public void custom() {
