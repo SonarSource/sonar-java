@@ -2,25 +2,23 @@
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-import java.util.*;
+import java.util.List;
 import java.sql.Timestamp;
 
 //...
 
-java.util.List myList &lt;String&gt; =   // Noncompliant; covered by java.util.* import
-    new java.util.ArrayList &lt;String&gt; (); // Noncompliant; covered by java.util.* import
-
+java.util.List&lt;String&gt; myList;  // Noncompliant
 java.sql.Timestamp tStamp; // Noncompliant
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-import java.util.*;
+import java.util.List;
 import java.sql.Timestamp;
 
 //...
 
-List myList &lt;String&gt; =  new ArrayList &lt;String&gt; ();
+List&lt;String&gt; myList;
 Timestamp tStamp;
 </pre>
 
