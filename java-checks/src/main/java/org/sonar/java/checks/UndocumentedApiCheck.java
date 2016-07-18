@@ -54,7 +54,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
-  private static final String DEFAULT_FOR_CLASSES = "**";
+  private static final String DEFAULT_FOR_CLASSES = "**.api.**";
 
   @RuleProperty(
     key = "forClasses",
@@ -85,7 +85,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    packageName = PackageUtils.packageName(tree.packageDeclaration(), "/");
+    packageName = PackageUtils.packageName(tree.packageDeclaration(), ".");
     super.visitCompilationUnit(tree);
   }
 
@@ -193,14 +193,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     String className = packageName;
     IdentifierTree identifierTree = classTrees.peek().simpleName();
     if (identifierTree != null) {
-      className += "/" + identifierTree.name();
+      className += "." + identifierTree.name();
     }
     return className;
   }
 
   private WildcardPattern[] getPatterns() {
     if (patterns == null) {
-      patterns = PatternUtils.createPatterns(forClasses.replace('.', '/'));
+      patterns = PatternUtils.createPatterns(forClasses);
     }
     return patterns;
   }

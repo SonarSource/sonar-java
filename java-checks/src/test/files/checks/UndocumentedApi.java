@@ -1,3 +1,4 @@
+package org.foo.api.mypackage;
 /**
  * some documentation
  */
