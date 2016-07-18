@@ -38,7 +38,7 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Replace this fully qualified name with \"%s\"";
   private List<ImportTree> importTrees = new ArrayList<>();
-  private boolean fileContainsWildcardImport = false;
+  private boolean fileContainsStarImport = false;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,10 +48,10 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    if (!fileContainsWildcardImport) {
+    if (!fileContainsStarImport) {
       checkImports();
     }
-    fileContainsWildcardImport = false;
+    fileContainsStarImport = false;
     importTrees.clear();
   }
 
@@ -67,7 +67,7 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
       IdentifierTree identifier = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
       if ("*".equals(identifier.name())) {
-        fileContainsWildcardImport = true;
+        fileContainsStarImport = true;
         return;
       }
     }
