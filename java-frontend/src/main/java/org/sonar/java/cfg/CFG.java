@@ -66,10 +66,8 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -806,7 +804,6 @@ public class CFG {
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
-    Map<Type, Block> catches = new HashMap<>();
     TryStatement tryStatement = new TryStatement();
     tryStatement.successorBlock = finallyOrEndBlock;
     enclosingTry.push(tryStatement);
@@ -817,9 +814,8 @@ public class CFG {
       enclosedByCatch.push(true);
       build(catchTree.block());
       enclosedByCatch.pop();
-      catches.put(catchTree.parameter().type().symbolType(), currentBlock);
+      tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
     }
-    catches.forEach(tryStatement::addCatch);
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
     build((List<? extends Tree>) tryStatementTree.resources());
@@ -877,10 +873,10 @@ public class CFG {
   private void handleExceptionalPaths(Symbol symbol) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
-    if(!enclosedByCatch.peek()) {
-      tryStatement = pop;
-    } else {
+    if (enclosedByCatch.peek()) {
       tryStatement = enclosingTry.peek();
+    } else {
+      tryStatement = pop;
     }
     enclosingTry.push(pop);
     if(pop != outerTry) {
@@ -889,16 +885,14 @@ public class CFG {
     }
     if (symbol.isMethodSymbol()) {
       List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
-      if (!thrownTypes.isEmpty()) {
-        thrownTypes.forEach(thrownType -> {
-          for (Type caughtType : tryStatement.catches.keySet()) {
-            if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
-              currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
-              break;
-            }
+      thrownTypes.forEach(thrownType -> {
+        for (Type caughtType : tryStatement.catches.keySet()) {
+          if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
+            currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
+            break;
           }
-        });
-      }
+        }
+      });
     }
     currentBlock.exceptions.addAll(tryStatement.runtimeCatches);
   }

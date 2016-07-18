@@ -106,7 +106,7 @@ public class LocksNotUnlockedCheck extends SECheck {
       if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) syntaxNode.methodSelect();
         final ExpressionTree expression = memberSelect.expression();
-        if (expression.is(Tree.Kind.IDENTIFIER) && expression.symbolType().isSubtypeOf("java.util.concurrent.locks.Lock")) {
+        if (expression.is(Tree.Kind.IDENTIFIER) && expression.symbolType().isSubtypeOf(LOCK)) {
           final String methodName = memberSelect.identifier().name();
           IdentifierTree target = (IdentifierTree) expression;
           if (!isMemberSelectActingOnField(target) && TRY_LOCK_METHOD_NAME.equals(methodName)) {
