@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -44,6 +45,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -64,9 +66,9 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,6 +88,23 @@ public class CFG {
   private final Deque<Block> breakTargets = new LinkedList<>();
   private final Deque<Block> continueTargets = new LinkedList<>();
   private final Deque<Block> exitBlocks = new LinkedList<>();
+  private final Deque<TryStatement> enclosingTry = new LinkedList<>();
+  private final Deque<Boolean> enclosedByCatch = new LinkedList<>();
+  private final TryStatement outerTry;
+
+  private static class TryStatement {
+    Map<Type, Block> catches = new LinkedHashMap<>();
+    List<Block> runtimeCatches = new ArrayList<>();
+
+    Block successorBlock;
+
+    public void addCatch(Type type, Block catchBlock) {
+      if (type.is("java.lang.Exception") || type.is("java.lang.Throwable") || type.isSubtypeOf("java.lang.RuntimeException")) {
+        runtimeCatches.add(catchBlock);
+      }
+      catches.put(type, catchBlock);
+    }
+  }
 
   private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
@@ -96,9 +115,11 @@ public class CFG {
     methodSymbol = symbol;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
-    for (StatementTree statementTree : Lists.reverse(tree.body())) {
-      build(statementTree);
-    }
+    outerTry = new TryStatement();
+    outerTry.successorBlock = exitBlocks.peek();
+    enclosingTry.add(outerTry);
+    enclosedByCatch.push(false);
+    build(tree.body());
     prune();
     computePredecessors(blocks);
   }
@@ -128,6 +149,7 @@ public class CFG {
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new LinkedHashSet<>();
     private final Set<Block> predecessors = new LinkedHashSet<>();
+    private final Set<Block> exceptions = new LinkedHashSet<>();
     private Block trueBlock;
     private Block falseBlock;
     private Block exitBlock;
@@ -135,6 +157,7 @@ public class CFG {
     private Tree terminator;
 
     private boolean isFinallyBlock;
+    private boolean isCatchBlock = false;
 
     public Block(int id) {
       this.id = id;
@@ -162,6 +185,9 @@ public class CFG {
 
     public boolean isFinallyBlock() {
       return isFinallyBlock;
+    }
+    public boolean isCatchBlock() {
+      return isCatchBlock;
     }
 
     void addSuccessor(Block successor) {
@@ -197,6 +223,10 @@ public class CFG {
       return successors;
     }
 
+    public Set<Block> exceptions() {
+      return exceptions;
+    }
+
     @CheckForNull
     public Tree terminator() {
       return terminator;
@@ -222,6 +252,10 @@ public class CFG {
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
       }
+      if (exceptions.remove(inactiveBlock)) {
+        exceptions.addAll(inactiveBlock.exceptions);
+        exceptions.addAll(inactiveBlock.successors);
+      }
       if (inactiveBlock.equals(exitBlock)) {
         exitBlock = inactiveBlock.successors.iterator().next();
       }
@@ -235,6 +269,9 @@ public class CFG {
   private static void computePredecessors(List<Block> blocks) {
     for (Block b : blocks) {
       for (Block successor : b.successors) {
+        successor.predecessors.add(b);
+      }
+      for (Block successor : b.exceptions) {
         successor.predecessors.add(b);
       }
     }
@@ -300,10 +337,11 @@ public class CFG {
     return new CFG(block, tree.symbol());
   }
 
+  private void build(ListTree<? extends Tree> trees) {
+    build((List<? extends Tree>) trees);
+  }
   private void build(List<? extends Tree> trees) {
-    for (Tree tree : Lists.reverse(trees)) {
-      build(tree);
-    }
+    Lists.reverse(trees).forEach(this::build);
   }
 
   private void build(Tree tree) {
@@ -473,6 +511,7 @@ public class CFG {
   }
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
+    handleExceptionalPaths(mit.symbol());
     currentBlock.elements.add(mit);
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
@@ -480,9 +519,7 @@ public class CFG {
     } else {
       build(mit.methodSelect());
     }
-    for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
-      build(arg);
-    }
+    build(mit.arguments());
   }
 
   private void buildIfStatement(IfStatementTree ifStatementTree) {
@@ -731,9 +768,7 @@ public class CFG {
     // process step
     currentBlock = createBlock();
     Block updateBlock = currentBlock;
-    for (StatementTree updateTree : Lists.reverse(tree.update())) {
-      build(updateTree);
-    }
+    build(tree.update());
     addContinueTarget(currentBlock);
     // process body
     currentBlock = createBlock(currentBlock);
@@ -753,9 +788,7 @@ public class CFG {
     updateBlock.addSuccessor(currentBlock);
     // process init
     currentBlock = createBlock(currentBlock);
-    for (StatementTree init : Lists.reverse(tree.initializer())) {
-      build(init);
-    }
+    build(tree.initializer());
   }
 
   private void buildTryStatement(TryStatementTree tryStatementTree) {
@@ -771,41 +804,32 @@ public class CFG {
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
-    List<Block> catches = new ArrayList<>();
+    TryStatement tryStatement = new TryStatement();
+    tryStatement.successorBlock = finallyOrEndBlock;
+    enclosingTry.push(tryStatement);
+    enclosedByCatch.push(false);
     for (CatchTree catchTree : tryStatementTree.catches()) {
       currentBlock = createBlock(finallyOrEndBlock);
+      currentBlock.isCatchBlock = true;
+      enclosedByCatch.push(true);
       build(catchTree.block());
-      catches.add(currentBlock);
+      enclosedByCatch.pop();
+      tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
-    linkToCatchBlocks(beforeFinally, catches);
     build((List<? extends Tree>) tryStatementTree.resources());
+    enclosingTry.pop();
+    enclosedByCatch.pop();
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
     if (finallyBlockTree != null) {
       exitBlocks.pop();
-      if (catches.isEmpty()) {
-        currentBlock.addExitSuccessor(finallyOrEndBlock);
-      }
-    }
-    for (Block catchBlock : catches) {
-      currentBlock.addSuccessor(catchBlock);
-    }
-  }
-
-  protected void linkToCatchBlocks(Block block, List<Block> catches) {
-    Block blockForSuccessor = block;
-    if (block.exitBlock != null && block.exitBlock.isFinallyBlock) {
-      blockForSuccessor = block.exitBlock;
-    }
-    for (Block catchBlock : catches) {
-      blockForSuccessor.addSuccessor(catchBlock);
     }
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
-    // FIXME this won't work if it is intended to be caught by a try statement.
+    // TODO check enclosing try to determine jump target
     currentBlock = createUnconditionalJump(throwStatementTree, exitBlock());
     build(throwStatementTree.expression());
   }
@@ -837,12 +861,40 @@ public class CFG {
   }
 
   private void buildNewClass(NewClassTree tree) {
+    handleExceptionalPaths(tree.constructorSymbol());
     currentBlock.elements.add(tree);
     ExpressionTree enclosingExpression = tree.enclosingExpression();
     if (enclosingExpression != null) {
       build(enclosingExpression);
     }
     build(Lists.reverse(tree.arguments()));
+  }
+
+  private void handleExceptionalPaths(Symbol symbol) {
+    TryStatement pop = enclosingTry.pop();
+    TryStatement tryStatement;
+    if (enclosedByCatch.peek()) {
+      tryStatement = enclosingTry.peek();
+    } else {
+      tryStatement = pop;
+    }
+    enclosingTry.push(pop);
+    if(pop != outerTry) {
+      currentBlock = createBlock(currentBlock);
+      currentBlock.exceptions.add(exitBlocks.peek());
+    }
+    if (symbol.isMethodSymbol()) {
+      List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
+      thrownTypes.forEach(thrownType -> {
+        for (Type caughtType : tryStatement.catches.keySet()) {
+          if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
+            currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
+            break;
+          }
+        }
+      });
+    }
+    currentBlock.exceptions.addAll(tryStatement.runtimeCatches);
   }
 
   private void buildTypeCast(Tree tree) {

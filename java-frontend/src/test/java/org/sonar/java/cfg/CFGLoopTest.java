@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,12 +37,9 @@ public class CFGLoopTest {
 
   private static List<CFG.Block> sorted(Collection<CFG.Block> collection) {
     List<CFG.Block> answer = new ArrayList<>(collection);
-    Collections.sort(answer, new Comparator<CFG.Block>() {
-      @Override
-      public int compare(CFG.Block o1, CFG.Block o2) {
-        // Use order of IDs
-        return Integer.compare(o1.id(), o2.id());
-      }
+    Collections.sort(answer, (o1, o2) -> {
+      // Use order of IDs
+      return Integer.compare(o1.id(), o2.id());
     });
     return answer;
   }

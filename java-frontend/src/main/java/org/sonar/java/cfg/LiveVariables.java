@@ -121,6 +121,12 @@ public class
           blockOut.addAll(inOfSuccessor);
         }
       }
+      for (CFG.Block successor : block.exceptions()) {
+        Set<Symbol> inOfSuccessor = in.get(successor);
+        if (inOfSuccessor != null) {
+          blockOut.addAll(inOfSuccessor);
+        }
+      }
       // in = gen and (out - kill)
       Set<Symbol> newIn = new HashSet<>(gen.get(block));
       newIn.addAll(Sets.difference(blockOut, kill.get(block)));

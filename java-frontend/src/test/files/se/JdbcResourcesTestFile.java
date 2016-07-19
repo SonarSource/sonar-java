@@ -54,7 +54,7 @@ public class JdbcSample {
       try (Statement statement = connection.createStatement();) {
         boolean hasResultSets = statement.execute(query);
         while (hasResultSets) {
-          ResultSet result = statement.getResultSet();
+          ResultSet result = statement.getResultSet(); // Noncompliant {{Close this "ResultSet".}}
           String name = result.getString(0);
           hasResultSets = statement.getMoreResults();
         }

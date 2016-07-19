@@ -56,6 +56,20 @@ public class LiveVariablesTest {
   }
 
   @Test
+  public void test_try_finally_liveness() throws Exception {
+    CFG cfg = buildCFG("void foo() {   Object object = null;\n" +
+      "    try {\n" +
+      "      object = new Object();\n" +
+      "    } catch (Exception e) {\n" +
+      "      object.hashCode(); // Noncompliant\n" +
+      "    } finally {\n" +
+      "      object.hashCode();// Noncompliant\n" +
+      "    } }");
+    LiveVariables liveVariables = LiveVariables.analyze(cfg);
+    cfg.reversedBlocks().stream().filter(block -> block.id() > 1).forEach(block -> assertThat(liveVariables.getOut(block)).as("Issue with block B" + block.id()).hasSize(1));
+  }
+
+  @Test
   public void test_simple_death()  {
     CFG cfg = buildCFG("void foo(int a) {  int i; /* should not be live here */ if (false) ; i = 0; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);

@@ -28,7 +28,6 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -43,6 +42,11 @@ public class LocksNotUnlockedCheck extends SECheck {
   private enum Status {
     LOCKED, UNLOCKED;
   }
+
+  private static final String LOCK = "java.util.concurrent.locks.Lock";
+  private static final String LOCK_METHOD_NAME = "lock";
+  private static final String TRY_LOCK_METHOD_NAME = "tryLock";
+  private static final String UNLOCK_METHOD_NAME = "unlock";
 
   private static class TryLockSymbolicValue extends SymbolicValue {
 
@@ -91,17 +95,34 @@ public class LocksNotUnlockedCheck extends SECheck {
   }
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
-
-    private static final String LOCK = "java.util.concurrent.locks.Lock";
-    private static final String LOCK_METHOD_NAME = "lock";
-    private static final String TRY_LOCK_METHOD_NAME = "tryLock";
-    private static final String UNLOCK_METHOD_NAME = "unlock";
-
     private final ConstraintManager constraintManager;
-
     public PreStatementVisitor(CheckerContext context) {
       super(context.getState());
       constraintManager = context.getConstraintManager();
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
+      if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) syntaxNode.methodSelect();
+        final ExpressionTree expression = memberSelect.expression();
+        if (expression.is(Tree.Kind.IDENTIFIER) && expression.symbolType().isSubtypeOf(LOCK)) {
+          final String methodName = memberSelect.identifier().name();
+          IdentifierTree target = (IdentifierTree) expression;
+          if (!isMemberSelectActingOnField(target) && TRY_LOCK_METHOD_NAME.equals(methodName)) {
+            final SymbolicValue symbolicValue = programState.getValue(target.symbol());
+            constraintManager.setValueFactory(new TryLockSymbolicValueFactory(symbolicValue));
+          }
+        }
+      }
+    }
+
+  }
+
+  private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
+
+    public PostStatementVisitor(CheckerContext context) {
+      super(context.getState());
     }
 
     @Override
@@ -119,26 +140,29 @@ public class LocksNotUnlockedCheck extends SECheck {
     private void visitMethodInvocationWithIdentifierTarget(final String methodName, final IdentifierTree target) {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
-        if (LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, target, Status.LOCKED));
-        } else if (TRY_LOCK_METHOD_NAME.equals(methodName)) {
-          constraintManager.setValueFactory(new TryLockSymbolicValueFactory(symbolicValue));
+        if (LOCK_METHOD_NAME.equals(methodName) || TRY_LOCK_METHOD_NAME.equals(methodName)) {
           programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, target, Status.LOCKED));
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
           programState = programState.addConstraint(symbolicValue, new ObjectConstraint(target, Status.UNLOCKED));
         }
       }
     }
+  }
 
-    private static boolean isMemberSelectActingOnField(IdentifierTree expression) {
-      final Symbol symbol = expression.symbol();
-      return ProgramState.isField(symbol);
-    }
+  private static boolean isMemberSelectActingOnField(IdentifierTree expression) {
+    return ProgramState.isField(expression.symbol());
   }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     final PreStatementVisitor visitor = new PreStatementVisitor(context);
+    syntaxNode.accept(visitor);
+    return visitor.programState;
+  }
+
+  @Override
+  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    final PostStatementVisitor visitor = new PostStatementVisitor(context);
     syntaxNode.accept(visitor);
     return visitor.programState;
   }

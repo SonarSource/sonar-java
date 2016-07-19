@@ -2,6 +2,33 @@ package javax.annotation;
 
 import java.util.List;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+
+import java.awt.peer.KeyboardFocusManagerPeer;
+import java.awt.peer.LightweightPeer;
+import java.awt.peer.WindowPeer;
+import java.beans.*;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.WeakHashMap;
+import java.util.logging.*;
+import sun.awt.AppContext;
+import sun.awt.DebugHelper;
+import sun.awt.HeadlessToolkit;
+import sun.awt.SunToolkit;
+import sun.awt.CausedFocusEvent;
 import static java.lang.Boolean.TRUE;
 
 @interface CheckForNull {}
@@ -1075,9 +1102,12 @@ public static class Class extends SuperClass {
   public void try_catch() {
     boolean a = false, b = false, c = false, d = false;
     try {
+      foo();
       b = true;
+      foo();
       c = true;
-    } catch (Exception e) {
+      foo();
+    } catch (IllegalArgumentException e) {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (b) {
@@ -1106,6 +1136,7 @@ public static class Class extends SuperClass {
     boolean b = false;
     boolean c = false;
     try {
+      foo();
       b = true;
       c = true;
     } finally {
@@ -1703,6 +1734,34 @@ class VolatileFields {
       if (volatileField) {} // Compliant as this field is volatile, it can be modified by another thread
     }
   }
+class DITO {
+  DITO() throws MyExceptionFoo {}
+}
+  class MyExceptionFoo {}
+  void plop(Object result) {
+    if (result == null) {
+      try {
+        result = new DITO();
+      } catch (final MyExceptionFoo ie) {
+      }
+      if (result != null) { // compliant : constructor can throw an exception and so result is null
+        System.out.println("");;
+      }
+    }
+  }
+
+  public void reschedule() {
+    Throwable scheduleFailure = null;
+    try {
+      executor.schedule(this, schedule.delay, schedule.unit);
+    } catch (java.lang.Throwable e) {
+      scheduleFailure = e;
+    } finally {
+      System.out.println("");
+    }
+    if (scheduleFailure != null) {
+    }
+  }
 }
 
 class UsingLong {
@@ -1714,5 +1773,84 @@ class UsingLong {
     if (myLong != null) { // Compliant
     }
     return myLong;
+  }
+}
+class KeyboardFocusManager {
+
+  // This huge method requires more than 10_000 steps to be analyzed after introduction of try catch flow modelization.
+  static void processCurrentLightweightRequests() {
+    KeyboardFocusManager manager = getCurrentKeyboardFocusManager();
+    LinkedList localLightweightRequests = null;
+
+    Component globalFocusOwner = manager.getGlobalFocusOwner();
+    if ((globalFocusOwner != null) &&
+      (globalFocusOwner.appContext != AppContext.getAppContext())) {
+      return;
+    }
+
+    synchronized (heavyweightRequests) {
+      if (currentLightweightRequests != null) {
+        clearingCurrentLightweightRequests = true;
+        disableRestoreFocus = true;
+        localLightweightRequests = currentLightweightRequests;
+        allowSyncFocusRequests = (localLightweightRequests.size() < 2);
+        currentLightweightRequests = null;
+      } else {
+        return;
+      }
+    }
+
+    Throwable caughtEx = null;
+    try {
+      if (localLightweightRequests != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}} this big method requires more than 10000 steps
+        Component lastFocusOwner = null;
+        Component currentFocusOwner = null;
+
+        for (Iterator iter = localLightweightRequests.iterator(); iter.hasNext(); ) {
+          currentFocusOwner = manager.getGlobalFocusOwner();
+          LightweightFocusRequest lwFocusRequest = (LightweightFocusRequest) iter.next();
+          if (!iter.hasNext()) {
+            disableRestoreFocus = false;
+          }
+
+          FocusEvent currentFocusOwnerEvent = null;
+          if (currentFocusOwner != null) {
+            currentFocusOwnerEvent = new CausedFocusEvent(currentFocusOwner,
+              FocusEvent.FOCUS_LOST,
+              lwFocusRequest.temporary,
+              lwFocusRequest.component, lwFocusRequest.cause);
+          }
+
+          FocusEvent newFocusOwnerEvent =
+            new CausedFocusEvent(lwFocusRequest.component,
+              FocusEvent.FOCUS_GAINED,
+              lwFocusRequest.temporary,
+              currentFocusOwner == null ? lastFocusOwner : currentFocusOwner, lwFocusRequest.cause);
+
+          if (currentFocusOwner != null) {
+            ((AWTEvent) currentFocusOwnerEvent).isPosted = true;
+            caughtEx = dispatchAndCatchException(caughtEx, currentFocusOwner, currentFocusOwnerEvent);
+          }
+          ((AWTEvent) newFocusOwnerEvent).isPosted = true;
+          caughtEx = dispatchAndCatchException(caughtEx, lwFocusRequest.component, newFocusOwnerEvent);
+
+          if (manager.getGlobalFocusOwner() == lwFocusRequest.component) {
+            lastFocusOwner = lwFocusRequest.component;
+          }
+        }
+      }
+    } finally {
+      clearingCurrentLightweightRequests = false;
+      disableRestoreFocus = false;
+      localLightweightRequests = null;
+      allowSyncFocusRequests = true;
+    }
+
+    if (caughtEx instanceof RuntimeException) {
+      throw (RuntimeException) caughtEx;
+    } else if (caughtEx instanceof Error) {
+      throw (Error) caughtEx;
+    }
+
   }
 }

@@ -245,7 +245,7 @@ class NullPointerTest {
     } catch (Exception e) {
       object.hashCode(); // Noncompliant
     } finally {
-      object.hashCode();
+      object.hashCode();// Noncompliant
     }
     Object object2;
     try{
