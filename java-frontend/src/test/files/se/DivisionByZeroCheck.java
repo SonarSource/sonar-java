@@ -19,6 +19,13 @@ class A {
     r = 1 / '4'; // Compliant
   }
 
+  void chaloo(char c, int r) {
+    if (c != '0') {
+      return r / c; // Compliant - code of char '0' is 48
+    }
+    return r / c; // Compliant - we know nothing about zero-ness of c
+  }
+
   void goo(int r) {
     r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
   }

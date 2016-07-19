@@ -55,7 +55,6 @@ public class DivisionByZeroCheck extends SECheck {
       super(id);
       this.initialStatus = initialStatus;
     }
-
   }
 
   private static class ZeroConstraint extends ObjectConstraint {
@@ -251,22 +250,22 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
-      if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.CHAR_LITERAL)) {
-        SymbolicValue sv = programState.peekValue();
-        ZeroConstraint constraint = isNumberZero(tree.value()) ? new ZeroConstraint(tree, Status.ZERO) : new ZeroConstraint(tree, Status.NON_ZERO);
-        programState = programState.addConstraint(sv, constraint);
+      String value = tree.value();
+      SymbolicValue sv = programState.peekValue();
+      if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
+        addConstraint(sv, tree, Status.ZERO);
+      } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
+        addConstraint(sv, tree, isNumberZero(value) ? Status.ZERO : Status.NON_ZERO);
       }
     }
 
     private static boolean isNumberZero(String literalValue) {
-      return isNullCharacter(literalValue)
-        || !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
+      return !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
     }
 
     private static boolean isNullCharacter(String literalValue) {
-      return "'\0'".equals(literalValue) || "'\u0000'".equals(literalValue);
+      return "'\\0'".equals(literalValue) || "'\\u0000'".equals(literalValue);
     }
-
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
@@ -291,8 +290,12 @@ public class DivisionByZeroCheck extends SECheck {
     private void checkDeferredConstraint(Tree tree) {
       SymbolicValue sv = programState.peekValue();
       if (sv instanceof ZeroSymbolicValue) {
-        programState = programState.addConstraint(sv, new ZeroConstraint(tree, ((ZeroSymbolicValue) sv).initialStatus));
+        addConstraint(sv, tree, ((ZeroSymbolicValue) sv).initialStatus);
       }
+    }
+
+    private void addConstraint(SymbolicValue sv, Tree tree, Status status) {
+      programState = programState.addConstraint(sv, new ZeroConstraint(tree, status));
     }
   }
 }
