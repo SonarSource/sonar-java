@@ -20,9 +20,9 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,17 +32,12 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
 
 @Rule(key = "S1948")
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
@@ -58,7 +53,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return;
     }
     ClassTree classTree = (ClassTree) tree;
-    if (isSerializable(classTree) && !hasSpecialHandlingSerializationMethods(classTree)) {
+    if (isSerializable(classTree) && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)) {
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
           checkVariableMember((VariableTree) member);
@@ -134,43 +129,6 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
 
   private static boolean isStatic(VariableTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.STATIC);
-  }
-
-  private static boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
-    boolean hasWriteObject = false;
-    boolean hasReadObject = false;
-    String classFullyQualifiedName = classTree.symbol().type().fullyQualifiedName();
-    for (Tree member : classTree.members()) {
-
-      MethodMatcher writeObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
-      MethodMatcher readObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
-
-      if (member.is(Tree.Kind.METHOD)) {
-        MethodTree methodTree = (MethodTree) member;
-        if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE)) {
-          hasWriteObject |= writeObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException");
-          hasReadObject |= readObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException", "java.lang.ClassNotFoundException");
-        }
-      }
-    }
-    return hasReadObject && hasWriteObject;
-  }
-
-  private static boolean methodThrows(MethodTree methodTree, String... throwClauseFullyQualifiedNames) {
-    List<Type> thrownTypes = methodTree.symbol().thrownTypes();
-    if (thrownTypes.isEmpty() || thrownTypes.size() != throwClauseFullyQualifiedNames.length) {
-      return false;
-    }
-    for (Type thrownType : thrownTypes) {
-      boolean match = false;
-      for (String fullyQualifiedName : throwClauseFullyQualifiedNames) {
-        match |= thrownType.is(fullyQualifiedName);
-      }
-      if (!match) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private static boolean isTransientSerializableOrInjected(VariableTree member) {

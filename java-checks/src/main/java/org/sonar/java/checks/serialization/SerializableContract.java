@@ -21,7 +21,14 @@ package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableSet;
 import org.sonar.java.bytecode.asm.AsmMethod;
-
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
+import java.util.List;
 import java.util.Set;
 
 public final class SerializableContract {
@@ -41,6 +48,43 @@ public final class SerializableContract {
 
   public static boolean methodMatch(AsmMethod method) {
     return SERIALIZABLE_CONTRACT_METHODS.contains(method.getName());
+  }
+  
+  public static boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
+    boolean hasWriteObject = false;
+    boolean hasReadObject = false;
+    String classFullyQualifiedName = classTree.symbol().type().fullyQualifiedName();
+    for (Tree member : classTree.members()) {
+
+      MethodMatcher writeObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
+      MethodMatcher readObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
+
+      if (member.is(Tree.Kind.METHOD)) {
+        MethodTree methodTree = (MethodTree) member;
+        if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE)) {
+          hasWriteObject |= writeObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException");
+          hasReadObject |= readObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException", "java.lang.ClassNotFoundException");
+        }
+      }
+    }
+    return hasReadObject && hasWriteObject;
+  }
+
+  private static boolean methodThrows(MethodTree methodTree, String... throwClauseFullyQualifiedNames) {
+    List<Type> thrownTypes = methodTree.symbol().thrownTypes();
+    if (thrownTypes.isEmpty() || thrownTypes.size() != throwClauseFullyQualifiedNames.length) {
+      return false;
+    }
+    for (Type thrownType : thrownTypes) {
+      boolean match = false;
+      for (String fullyQualifiedName : throwClauseFullyQualifiedNames) {
+        match |= thrownType.is(fullyQualifiedName);
+      }
+      if (!match) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
