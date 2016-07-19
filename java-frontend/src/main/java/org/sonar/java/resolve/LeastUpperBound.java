@@ -157,7 +157,11 @@ public class LeastUpperBound {
   }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
-    return new ArrayList<>(supertypes.stream().reduce(Sets::intersection).get());
+    return new ArrayList<>(supertypes.stream().reduce(union(supertypes), Sets::intersection));
+  }
+
+  private static Set<Type> union(List<Set<Type>> supertypes) {
+    return supertypes.stream().flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   /**
