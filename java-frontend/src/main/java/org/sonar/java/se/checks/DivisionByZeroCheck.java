@@ -50,10 +50,23 @@ public class DivisionByZeroCheck extends SECheck {
   private static class ZeroSymbolicValue extends SymbolicValue {
 
     private final Status initialStatus;
+    private final SymbolicValue wrappedValue;
 
     public ZeroSymbolicValue(int id, Status initialStatus) {
       super(id);
       this.initialStatus = initialStatus;
+      this.wrappedValue = null;
+    }
+
+    public ZeroSymbolicValue(int id, SymbolicValue wrappedValue, Status initialStatus) {
+      super(id);
+      this.initialStatus = initialStatus;
+      this.wrappedValue = wrappedValue;
+    }
+
+    @Override
+    public SymbolicValue wrappedValue() {
+      return wrappedValue != null ? wrappedValue.wrappedValue() : this;
     }
   }
 
@@ -188,7 +201,8 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory((id, node) -> sv);
+      Status status = isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED);
+      constraintManager.setValueFactory((id, node) -> new ZeroSymbolicValue(id, sv, status));
     }
 
     private void reportIssue(Tree tree) {

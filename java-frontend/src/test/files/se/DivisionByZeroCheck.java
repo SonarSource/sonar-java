@@ -349,4 +349,21 @@ class A {
     int count = 0;
     return count == 0 ? Double.NaN : (sum / count); // Compliant
   }
+
+  void fdsf(double x, double y, double a) {
+    if (x * 0.0 + y * 0.0 == a) {
+      return 14 / a; // Noncompliant
+    }
+  }
+
+  long hashSymbol(byte[] buf) {
+    long h = 0;
+    int s = 0;
+    int len = buf.length;
+    while (len-- > 0) {
+      h = 31*h + (0xFFL & buf[s]);
+      s++;
+    }
+    return h & 0xFFFFFFFFL;
+  }
 }
