@@ -16,6 +16,13 @@
 365,
 410,
 ],
+'jdk6:java/awt/geom/CubicCurve2D.java':[
+1227,
+],
+'jdk6:java/awt/geom/Path2D.java':[
+1953,
+1993,
+],
 'jdk6:java/awt/geom/QuadCurve2D.java':[
 986,
 ],
