@@ -79,6 +79,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     methodWithoutParameter("org.assertj.core.api.Assertions", "shouldHaveThrown"),
     // hamcrest
     methodWithParameters("org.hamcrest.MatcherAssert", "assertThat").addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    methodWithParameters("org.hamcrest.MatcherAssert", "assertThat").addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
     // Mockito
     methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions"),
     methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions"),
