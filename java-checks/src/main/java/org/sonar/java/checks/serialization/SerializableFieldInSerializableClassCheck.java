@@ -112,12 +112,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       ParameterizedTypeTree typeTree = (ParameterizedTypeTree) tree;
       if (isSubtypeOfCollectionApi(typeTree.symbolType())) {
-        for (Tree t : typeTree.typeArguments()) {
-          if (!isCollectionOfSerializable(t)) {
-            return false;
-          }
-        }
-        return true;
+        return typeTree.typeArguments().stream().allMatch(SerializableFieldInSerializableClassCheck::isCollectionOfSerializable);
       }
     }
     return isSerializable(tree);
