@@ -19,6 +19,13 @@ class A {
     r = 1 / '4'; // Compliant
   }
 
+  void chaloo(char c, int r) {
+    if (c != '0') {
+      return r / c; // Compliant - code of char '0' is 48
+    }
+    return r / c; // Compliant - we know nothing about zero-ness of c
+  }
+
   void goo(int r) {
     r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
   }
@@ -273,5 +280,95 @@ class A {
     if (myLong != null) {
       int x = 42 / myLong; // Noncompliant
     }
+  }
+
+  void roo(boolean b) {
+    Long myLong = 14;
+    if (b) {
+      myLong = null;
+    }
+    if (myLong != null) {
+      int x = 42 / myLong; // Compliant
+    }
+  }
+
+  long avgSize() {
+    int count = 0;
+    if (count == 0) {
+      return -1L;
+    } else {
+      return 14 / count; // Compliant
+    }
+  }
+
+  long avgSize2() {
+    int count = 0;
+    if (count != 0) {
+      return 14 / count; // Compliant
+    } else {
+      return -1L;
+    }
+  }
+
+  long avgSize3() {
+    int count = 0;
+    if (count != 0) {
+      return -1L;
+    } else {
+      return 14 / count; // Noncompliant
+    }
+  }
+
+  long avgSize4(boolean b) {
+    int count = 0;
+    if (b) {
+      count = 14;
+    }
+    if (count != 0) {
+      return 14 / count; // Compliant
+    } else {
+      return -1L;
+    }
+  }
+
+  long avgSize5(int[] values) {
+    long sum = 0;
+    int count = 0;
+    for (int value : values) {
+      sum += value;
+      count++;
+    }
+    if (count == 0) {
+      return -1L;
+    } else {
+      return sum / count; // Compliant
+    }
+  }
+
+  double i93(int sum) {
+    int count = 0;
+    return count == 0 ? Double.NaN : (sum / count); // Compliant
+  }
+
+  void fdsf(double x, double y, double a) {
+    if (x * 0.0 + y * 0.0 == a) {
+      return 14 / a; // Noncompliant
+    }
+  }
+
+  void dsdf(int a, int b) {
+    int c = 0;
+    int d = c + b + (a*c);
+  }
+
+  long hashSymbol(byte[] buf) {
+    long h = 0;
+    int s = 0;
+    int len = buf.length;
+    while (len-- > 0) {
+      h = 31*h + (0xFFL & buf[s]);
+      s++;
+    }
+    return h & 0xFFFFFFFFL;
   }
 }

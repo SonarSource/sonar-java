@@ -47,8 +47,11 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   @Override
   public void computedFrom(List<SymbolicValue> symbolicValues) {
     Preconditions.checkArgument(symbolicValues.size() == 2);
-    rightOp = symbolicValues.get(0);
-    leftOp = symbolicValues.get(1);
+    // if operands are already known, the symbolic value is reused and operands should not be recomputed
+    if (rightOp == null && leftOp == null) {
+      rightOp = symbolicValues.get(0);
+      leftOp = symbolicValues.get(1);
+    }
   }
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -58,10 +61,12 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
       return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
     } else if (constraintLeft instanceof ObjectConstraint) {
       ObjectConstraint objectConstraint = (ObjectConstraint) constraintLeft;
-      if (objectConstraint.isInversible(programState.getConstraint(to))) {
+      if (objectConstraint.isNull()) {
         return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse());
       } else if (shouldNotInverse().equals(booleanConstraint)) {
         return to.setConstraint(programState, objectConstraint);
+      } else if (objectConstraint.isInvalidWith(programState.getConstraint(to))) {
+        return ImmutableList.of();
       }
     }
     return ImmutableList.of(programState);

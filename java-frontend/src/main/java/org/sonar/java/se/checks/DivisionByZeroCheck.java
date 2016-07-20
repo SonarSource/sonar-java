@@ -47,15 +47,17 @@ public class DivisionByZeroCheck extends SECheck {
     ZERO, NON_ZERO, UNDETERMINED;
   }
 
-  private static class ZeroSymbolicValue extends SymbolicValue {
+  /**
+   * This SV is only used to hold the Status to set alongside an initial object constraint in the PostStatementVisitor
+   */
+  private static class DeferredStatusHolderSV extends SymbolicValue {
 
-    private final Status initialStatus;
+    private final Status deferredStatus;
 
-    public ZeroSymbolicValue(int id, Status initialStatus) {
+    public DeferredStatusHolderSV(int id, Status deferredStatus) {
       super(id);
-      this.initialStatus = initialStatus;
+      this.deferredStatus = deferredStatus;
     }
-
   }
 
   private static class ZeroConstraint extends ObjectConstraint {
@@ -64,13 +66,8 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     @Override
-    public ZeroConstraint inverse() {
-      return new ZeroConstraint(syntaxNode(), Status.NON_ZERO);
-    }
-
-    @Override
-    public boolean isInversible(@Nullable Constraint otherConstraint) {
-      return hasStatus(Status.ZERO) && (otherConstraint == null || !otherConstraint.isNull());
+    public boolean isInvalidWith(@Nullable Constraint constraint) {
+      return hasStatus(Status.ZERO) && constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(Status.ZERO);
     }
   }
 
@@ -190,7 +187,7 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void deferConstraint(Status status) {
-      constraintManager.setValueFactory((id, node) -> new ZeroSymbolicValue(id, status));
+      constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, status));
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
@@ -256,23 +253,22 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
-      if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.CHAR_LITERAL)) {
-        SymbolicValue sv = programState.peekValue();
-        ZeroConstraint constraint = isNumberZero(tree.value()) ? new ZeroConstraint(tree, Status.ZERO) : new ZeroConstraint(tree, Status.NON_ZERO);
-        programState = programState.addConstraint(sv, constraint);
+      String value = tree.value();
+      SymbolicValue sv = programState.peekValue();
+      if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
+        addZeroConstraint(sv, tree, Status.ZERO);
+      } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
+        addZeroConstraint(sv, tree, isNumberZero(value) ? Status.ZERO : Status.NON_ZERO);
       }
     }
 
-
     private static boolean isNumberZero(String literalValue) {
-      return isNullCharacter(literalValue)
-        || !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
+      return !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
     }
 
     private static boolean isNullCharacter(String literalValue) {
-      return "'\0'".equals(literalValue) || "'\u0000'".equals(literalValue);
+      return "'\\0'".equals(literalValue) || "'\\u0000'".equals(literalValue);
     }
-
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
@@ -296,9 +292,13 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void checkDeferredConstraint(Tree tree) {
       SymbolicValue sv = programState.peekValue();
-      if (sv instanceof ZeroSymbolicValue) {
-        programState = programState.addConstraint(sv, new ZeroConstraint(tree, ((ZeroSymbolicValue) sv).initialStatus));
+      if (sv instanceof DeferredStatusHolderSV) {
+        addZeroConstraint(sv, tree, ((DeferredStatusHolderSV) sv).deferredStatus);
       }
+    }
+
+    private void addZeroConstraint(SymbolicValue sv, Tree tree, Status status) {
+      programState = programState.addConstraint(sv, new ZeroConstraint(tree, status));
     }
   }
 }
