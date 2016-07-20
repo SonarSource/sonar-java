@@ -85,15 +85,19 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
           reportIssue(reportTree, "Rename this method or make it \"static\".");
           reportStaticIssue = true;
         } else if (confusingOverload(methodSymbol, (MethodSymbol) methodWithSameName)) {
-          String message = "Rename this method or correct the type of the argument(s) to override the parent class method.";
-          if(methodWithSameName.isPrivate()) {
-            message = "Rename this method; there is a \"private\" method in the parent class with the same name.";
-          }
-          reportIssue(reportTree, message);
+          reportIssue(reportTree, getMessage(methodWithSameName));
         }
       }
     }
     return reportStaticIssue;
+  }
+
+  private static String getMessage(Symbol methodWithSameName) {
+    String message = "Rename this method or correct the type of the argument(s) to override the parent class method.";
+    if(methodWithSameName.isPrivate()) {
+      message = "Rename this method; there is a \"private\" method in the parent class with the same name.";
+    }
+    return message;
   }
 
   private static boolean hideStaticMethod(MethodSymbol methodSymbol, Type superClass, Symbol symbolWithSameName) {

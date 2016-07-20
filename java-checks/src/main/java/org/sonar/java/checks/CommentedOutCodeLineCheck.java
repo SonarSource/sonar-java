@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.recognizer.CodeRecognizer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -83,30 +84,35 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private void leaveFile() {
     List<Integer> commentedOutCodeLines = Lists.newArrayList();
     for (SyntaxTrivia syntaxTrivia : comments) {
-      String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
-      for (int i = 0; i < lines.length; i++) {
-        if (codeRecognizer.isLineOfCode(lines[i])) {
-          // Mark all remaining lines from this comment as a commented out lines of code
-          for (int j = i; j < lines.length; j++) {
-            commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
-          }
-          break;
-        }
-      }
+      commentedOutCodeLines.addAll(handleCommentsForTrivia(syntaxTrivia));
     }
 
     // Greedy algorithm to split lines on blocks and to report only one violation per block
     Collections.sort(commentedOutCodeLines);
     int prev = Integer.MIN_VALUE;
-    for (int i = 0; i < commentedOutCodeLines.size(); i++) {
-      int current = commentedOutCodeLines.get(i);
-      if (prev + 1 < current) {
-        addIssue(current, "This block of commented-out lines of code should be removed.");
+    for (Integer commentedOutCodeLine : commentedOutCodeLines) {
+      if (prev + 1 < commentedOutCodeLine) {
+        addIssue(commentedOutCodeLine, "This block of commented-out lines of code should be removed.");
       }
-      prev = current;
+      prev = commentedOutCodeLine;
     }
 
     comments = null;
+  }
+
+  private List<Integer> handleCommentsForTrivia(SyntaxTrivia syntaxTrivia) {
+    List<Integer> commentedOutCodeLines = new ArrayList<>();
+    String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
+    for (int i = 0; i < lines.length; i++) {
+      if (codeRecognizer.isLineOfCode(lines[i])) {
+        // Mark all remaining lines from this comment as a commented out lines of code
+        for (int j = i; j < lines.length; j++) {
+          commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
+        }
+        break;
+      }
+    }
+    return commentedOutCodeLines;
   }
 
   /**
