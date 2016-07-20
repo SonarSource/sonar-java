@@ -21,11 +21,9 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -56,12 +54,6 @@ public class ComplexityVisitor extends SubscriptionVisitor {
         .add(Tree.Kind.CONDITIONAL_AND)
         .add(Tree.Kind.CONDITIONAL_OR)
         .build();
-  }
-
-  public List<Tree> scan(ClassTree classTree, MethodTree tree) {
-    blame.clear();
-    super.scanTree(tree);
-    return blame;
   }
 
   public List<Tree> scan(Tree tree) {
