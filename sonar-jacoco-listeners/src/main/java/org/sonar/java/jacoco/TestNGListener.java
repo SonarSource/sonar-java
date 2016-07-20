@@ -38,7 +38,7 @@ public class TestNGListener extends JUnitListener implements ITestListener {
 
   @Override
   public void onTestStart(ITestResult result) {
-    jacoco.onTestStart(getName(result));
+    jacoco.onTestStart();
   }
 
   private static String getName(ITestResult result) {

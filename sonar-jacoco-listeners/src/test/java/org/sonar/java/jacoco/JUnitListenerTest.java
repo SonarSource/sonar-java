@@ -61,7 +61,7 @@ public class JUnitListenerTest {
     execute(Success.class);
     String testName = getClass().getCanonicalName() + "$Success test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestStart();
     orderedExecution.verify(jacoco).onTestFinish(testName);
   }
 
@@ -70,7 +70,7 @@ public class JUnitListenerTest {
     execute(Failure.class);
     String testName = getClass().getCanonicalName() + "$Failure test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestStart();
     orderedExecution.verify(jacoco).onTestFinish(testName);
   }
 

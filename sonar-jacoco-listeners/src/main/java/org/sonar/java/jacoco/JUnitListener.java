@@ -39,7 +39,7 @@ public class JUnitListener extends RunListener {
 
   @Override
   public void testStarted(Description description) {
-    jacoco.onTestStart(getName(description));
+    jacoco.onTestStart();
   }
 
   @Override
