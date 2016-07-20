@@ -49,10 +49,7 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
     Tree typeTree = tree.parameter().type();
 
     if (typeTree.is(Kind.UNION_TYPE)) {
-      UnionTypeTree unionTypeTree = (UnionTypeTree) typeTree;
-      for (Tree typeAlternativeTree : unionTypeTree.typeAlternatives()) {
-        checkType(typeAlternativeTree);
-      }
+      ((UnionTypeTree) typeTree).typeAlternatives().forEach(this::checkType);
     } else {
       checkType(typeTree);
     }
@@ -66,19 +63,18 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
-
       if (isNPE(memberSelectTree.identifier().name())) {
-        ExpressionTree tree2 = memberSelectTree.expression();
+        checkJavaLangNPE(memberSelectTree);
+      }
+    }
+  }
 
-        if (tree2.is(Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree memberSelectTree2 = (MemberSelectExpressionTree) tree2;
-
-          if ("lang".equals(memberSelectTree2.identifier().name()) &&
-              memberSelectTree2.expression().is(Kind.IDENTIFIER) &&
-              "java".equals(((IdentifierTree) memberSelectTree2.expression()).name())) {
-            addIssue(memberSelectTree.identifier());
-          }
-        }
+  private void checkJavaLangNPE(MemberSelectExpressionTree memberSelectTree) {
+    ExpressionTree expression = memberSelectTree.expression();
+    if (expression.is(Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expression;
+      if ("lang".equals(mse.identifier().name()) && mse.expression().is(Kind.IDENTIFIER) && "java".equals(((IdentifierTree) mse.expression()).name())) {
+        addIssue(memberSelectTree.identifier());
       }
     }
   }

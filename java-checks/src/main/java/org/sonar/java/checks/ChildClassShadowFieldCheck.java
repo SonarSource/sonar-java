@@ -28,9 +28,11 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -46,36 +48,43 @@ public class ChildClassShadowFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTree classTree = (ClassTree) tree;
-    if (classTree.superClass() != null) {
-      Symbol.TypeSymbol superclassSymbol = classTree.superClass().symbolType().symbol();
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          VariableTree variableTree = (VariableTree) member;
-          String fieldName = variableTree.simpleName().name();
+    TypeTree superClass = ((ClassTree) tree).superClass();
+    if (superClass != null) {
+      Symbol.TypeSymbol superclassSymbol = superClass.symbolType().symbol();
+      ((ClassTree) tree).members().stream()
+        .filter(m -> m.is(Kind.VARIABLE))
+        .map(m -> (VariableTree) m)
+        .forEach(v -> {
+          String fieldName = v.simpleName().name();
           if (!IGNORED_FIELDS.contains(fieldName)) {
-            checkForIssue(superclassSymbol, variableTree, fieldName);
+            checkForIssue(superclassSymbol, v, fieldName);
           }
-        }
-      }
+        });
     }
   }
 
   private void checkForIssue(Symbol.TypeSymbol classSymbol, VariableTree variableTree, String fieldName) {
     for (Symbol.TypeSymbol symbol = classSymbol; symbol != null; symbol = getSuperclass(symbol)) {
-      for (Symbol member : symbol.memberSymbols()) {
-        if (member.isVariableSymbol() && !member.isPrivate()) {
-          if (member.name().equals(fieldName)) {
-            reportIssue(variableTree.simpleName(), String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
-            return;
-          }
-          if (member.name().equalsIgnoreCase(fieldName)) {
-            reportIssue(variableTree.simpleName(), String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
-            return;
-          }
+      if (checkMembers(variableTree, fieldName, symbol)) {
+        return;
+      }
+    }
+  }
+
+  private boolean checkMembers(VariableTree variableTree, String fieldName, Symbol.TypeSymbol symbol) {
+    for (Symbol member : symbol.memberSymbols()) {
+      if (member.isVariableSymbol() && !member.isPrivate()) {
+        if (member.name().equals(fieldName)) {
+          reportIssue(variableTree.simpleName(), String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
+          return true;
+        }
+        if (member.name().equalsIgnoreCase(fieldName)) {
+          reportIssue(variableTree.simpleName(), String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
+          return true;
         }
       }
     }
+    return false;
   }
 
   @CheckForNull

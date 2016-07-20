@@ -53,22 +53,25 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
   public void visitToken(SyntaxToken syntaxToken) {
     for (SyntaxTrivia trivia : syntaxToken.trivias()) {
       if (seenFirstToken) {
-        String[] commentLines = commentAnalyser.getContents(trivia.comment())
-            .split("(\r)?\n|\r", -1);
-        int line = trivia.startLine();
-        for (String commentLine : commentLines) {
-          if(commentLine.contains("NOSONAR")) {
-            noSonarLines.add(line);
-          } else if (!commentAnalyser.isBlank(commentLine)) {
-            comments.add(line);
-          }
-          line++;
-        }
+        handleCommentsForTrivia(trivia);
       } else {
         seenFirstToken = true;
       }
     }
     seenFirstToken = true;
+  }
+
+  private void handleCommentsForTrivia(SyntaxTrivia trivia) {
+    String[] commentLines = commentAnalyser.getContents(trivia.comment()).split("(\r)?\n|\r", -1);
+    int line = trivia.startLine();
+    for (String commentLine : commentLines) {
+      if(commentLine.contains("NOSONAR")) {
+        noSonarLines.add(line);
+      } else if (!commentAnalyser.isBlank(commentLine)) {
+        comments.add(line);
+      }
+      line++;
+    }
   }
 
   public Set<Integer> noSonarLines() {
