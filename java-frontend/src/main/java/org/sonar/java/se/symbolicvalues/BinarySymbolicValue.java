@@ -47,8 +47,12 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   @Override
   public void computedFrom(List<SymbolicValue> symbolicValues) {
     Preconditions.checkArgument(symbolicValues.size() == 2);
-    rightOp = symbolicValues.get(0);
-    leftOp = symbolicValues.get(1);
+    if (rightOp == null && leftOp == null) {
+      rightOp = symbolicValues.get(0);
+      leftOp = symbolicValues.get(1);
+    } else {
+      // no op - symbolic value has been reused and should not be recomputed
+    }
   }
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {

@@ -356,6 +356,11 @@ class A {
     }
   }
 
+  void dsdf(int a, int b) {
+    int c = 0;
+    int d = c + b + (a*c);
+  }
+
   long hashSymbol(byte[] buf) {
     long h = 0;
     int s = 0;

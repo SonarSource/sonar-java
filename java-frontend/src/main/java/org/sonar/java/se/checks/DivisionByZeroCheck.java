@@ -163,16 +163,16 @@ public class DivisionByZeroCheck extends SECheck {
     private void handleMultiply(SymbolicValue left, SymbolicValue right) {
       boolean leftIsZero = isZero(left);
       if (leftIsZero || isZero(right)) {
-        reuseZeroConstraintFromSV(leftIsZero ? left : right);
+        reuseSymbolicValue(leftIsZero ? left : right);
       } else if (isNonZero(left) && isNonZero(right)) {
-        deferZeroConstraint(Status.NON_ZERO);
+        deferConstraint(Status.NON_ZERO);
       }
     }
 
     private void handlePlusMinus(SymbolicValue left, SymbolicValue right) {
       boolean leftIsZero = isZero(left);
       if (leftIsZero || isZero(right)) {
-        reuseZeroConstraintFromSV(leftIsZero ? right : left);
+        reuseSymbolicValue(leftIsZero ? right : left);
       }
     }
 
@@ -180,19 +180,18 @@ public class DivisionByZeroCheck extends SECheck {
       if (isZero(rightOp)) {
         reportIssue(tree);
       } else if (isZero(leftOp)) {
-        reuseZeroConstraintFromSV(leftOp);
+        reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
-        deferZeroConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? Status.NON_ZERO : Status.UNDETERMINED);
+        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? Status.NON_ZERO : Status.UNDETERMINED);
       }
     }
 
-    private void deferZeroConstraint(Status status) {
+    private void deferConstraint(Status status) {
       constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, status));
     }
 
-    private void reuseZeroConstraintFromSV(SymbolicValue sv) {
-      Status status = isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED);
-      constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, status));
+    private void reuseSymbolicValue(SymbolicValue sv) {
+      constraintManager.setValueFactory((id, node) -> sv);
     }
 
     private void reportIssue(Tree tree) {
@@ -215,9 +214,9 @@ public class DivisionByZeroCheck extends SECheck {
       if (type.isPrimitive()) {
         SymbolicValue sv = programState.peekValue();
         if (isZero(sv)) {
-          reuseZeroConstraintFromSV(sv);
+          reuseSymbolicValue(sv);
         } else if (isNonZero(sv)) {
-          deferZeroConstraint(Status.NON_ZERO);
+          deferConstraint(Status.NON_ZERO);
         }
       }
     }
@@ -228,12 +227,12 @@ public class DivisionByZeroCheck extends SECheck {
         SymbolicValue sv = programState.peekValue();
         if (isZero(sv)) {
           if (tree.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
-            reuseZeroConstraintFromSV(sv);
+            reuseSymbolicValue(sv);
           } else {
-            deferZeroConstraint(Status.NON_ZERO);
+            deferConstraint(Status.NON_ZERO);
           }
         } else {
-          deferZeroConstraint(Status.UNDETERMINED);
+          deferConstraint(Status.UNDETERMINED);
         }
       }
     }
