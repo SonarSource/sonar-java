@@ -53,7 +53,7 @@ class JacocoController {
     return singleton;
   }
 
-  public synchronized void onTestStart(String name) {
+  public synchronized void onTestStart() {
     if (testStarted) {
       throw new JacocoControllerError("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
     }

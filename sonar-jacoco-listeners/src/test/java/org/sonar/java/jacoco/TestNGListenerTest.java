@@ -74,7 +74,7 @@ public class TestNGListenerTest {
     execute(Success.class);
     String testName = getClass().getCanonicalName() + "$Success test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestStart();
     orderedExecution.verify(jacoco).onTestFinish(testName);
   }
 
@@ -83,7 +83,7 @@ public class TestNGListenerTest {
     execute(Failure.class);
     String testName = getClass().getCanonicalName() + "$Failure test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestStart();
     orderedExecution.verify(jacoco).onTestFinish(testName);
   }
 
@@ -92,7 +92,7 @@ public class TestNGListenerTest {
     execute(Skip.class);
     String testName = getClass().getCanonicalName() + "$Skip test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestStart();
     orderedExecution.verify(jacoco).onTestFinish(testName);
   }
 
@@ -108,7 +108,7 @@ public class TestNGListenerTest {
   @Test
   public void testStarted() {
     listener.testStarted(mockDescription());
-    verify(jacoco).onTestStart("class method");
+    verify(jacoco).onTestStart();
   }
 
   @Test
@@ -122,7 +122,7 @@ public class TestNGListenerTest {
   @Test
   public void onTestStart() {
     listener.onTestStart(mockTestResult());
-    verify(jacoco).onTestStart("class method");
+    verify(jacoco).onTestStart();
   }
 
   @Test
