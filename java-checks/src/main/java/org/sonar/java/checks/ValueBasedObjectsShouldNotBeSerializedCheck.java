@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ValueBasedUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
@@ -35,6 +34,8 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.List;
 
 @Rule(key = "S3437")
 public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscriptionVisitor {
@@ -52,6 +53,7 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
 
     if (classTree.is(Tree.Kind.ANNOTATION_TYPE)) {
       classTree.members().stream()
+        .filter(member -> member.is(Kind.METHOD))
         .map(member -> (MethodTree) member)
         .filter(meth -> isReturnTypeValueBased(meth))
         .forEach(meth -> reportIssue(meth.simpleName(), MESSAGE));

@@ -105,6 +105,8 @@ enum MyEnum implements Serializable {
 
 public @interface MyAnnotation {
 
+  String CONSTANT = "";
+
   String elem1();
 
   HijrahDate elem2();       // Noncompliant [[sc=14;ec=19]] {{Make this value-based field transient so it is not included in the serialization of this class.}}
