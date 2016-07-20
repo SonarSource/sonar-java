@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -63,7 +62,6 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   private Deque<Collection<IdentifierTree>> validUsagesStack;
   private Iterable<String> exceptions;
   private List<String> exceptionIdentifiers;
-  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -74,8 +72,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     for (String exception : exceptions) {
       exceptionIdentifiers.add(exception.substring(exception.lastIndexOf('.') + 1));
     }
-    semanticModel = (SemanticModel) context.getSemanticModel();
-    if (semanticModel != null) {
+    if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
   }
