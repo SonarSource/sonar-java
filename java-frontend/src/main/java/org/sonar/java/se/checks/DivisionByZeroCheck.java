@@ -52,11 +52,11 @@ public class DivisionByZeroCheck extends SECheck {
    */
   private static class DeferredStatusHolderSV extends SymbolicValue {
 
-    private final Status deferedStatus;
+    private final Status deferredStatus;
 
     public DeferredStatusHolderSV(int id, Status deferredStatus) {
       super(id);
-      this.deferedStatus = deferredStatus;
+      this.deferredStatus = deferredStatus;
     }
   }
 
@@ -293,7 +293,7 @@ public class DivisionByZeroCheck extends SECheck {
     private void checkDeferredConstraint(Tree tree) {
       SymbolicValue sv = programState.peekValue();
       if (sv instanceof DeferredStatusHolderSV) {
-        addZeroConstraint(sv, tree, ((DeferredStatusHolderSV) sv).deferedStatus);
+        addZeroConstraint(sv, tree, ((DeferredStatusHolderSV) sv).deferredStatus);
       }
     }
 
