@@ -32,9 +32,16 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Context injected in check classes and used to report issues.
+ */
 @Beta
 public interface JavaFileScannerContext {
 
+  /**
+   * Parsed tree of the current file.
+   * @return CompilationUnitTree ready for scan by checks.
+   */
   CompilationUnitTree getTree();
 
   void addIssueOnFile(JavaCheck check, String message);
@@ -48,32 +55,96 @@ public interface JavaFileScannerContext {
   @Nullable
   Object getSemanticModel();
 
+  /**
+   * FileKey of currently analyzed file.
+   * @return the fileKey of the file currently analyzed.
+   */
   String getFileKey();
 
+  /**
+   * File under analysis.
+   * @return the currently analysed file.
+   */
   File getFile();
 
+  /**
+   * Java version defined for the analysis using sonar.java.version parameter.
+   * @return JavaVersion object with API to act on it.
+   */
   JavaVersion getJavaVersion();
 
+  /**
+   * Checks if file has been parsed correctly.
+   * @return true if parsing was successful
+   */
   boolean fileParsed();
 
+  /**
+   * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
+   * @param tree the tree to compute the complexity.
+   * @return the list of syntax nodes incrementing the complexity.
+   */
   List<Tree> getComplexityNodes(Tree tree);
 
   /**
-   * @deprecated use getComplexityNodes instead
+   * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
+   * @deprecated use {@link #getComplexityNodes(Tree)} instead
+   * @param enclosingClass not used.
+   * @param methodTree the methodTree to compute the complexity.
+   * @return the list of syntax nodes incrementing the complexity.
    */
   @Deprecated
   List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree);
 
+  /**
+   * Report an issue.
+   * @param javaCheck check raising the issue
+   * @param tree syntax node on which to raise the issue.
+   * @param message Message to display to the user.
+   */
   void reportIssue(JavaCheck javaCheck, Tree tree, String message);
 
+  /**
+   * Report an issue.
+   * @param javaCheck check raising the issue
+   * @param tree syntax node on which to raise the issue.
+   * @param message Message to display to the user.
+   * @param secondaryLocations List of {@link Location} to display secondary location for the issue.
+   * @param cost computed remediation cost if applicable, null if not.
+   */
   void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+  /**
+   * Report an issue.
+   * @param javaCheck check raising the issue
+   * @param startTree syntax node on which to start the highlighting of the issue.
+   * @param endTree syntax node on which to end the highlighting of the issue.
+   * @param message Message to display to the user.
+   */
   void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message);
 
+  /**
+   * Report an issue.
+   * @param javaCheck check raising the issue
+   * @param startTree syntax node on which to start the highlighting of the issue.
+   * @param endTree syntax node on which to end the highlighting of the issue.
+   * @param message Message to display to the user.
+   * @param secondaryLocations List of {@link Location} to display secondary location for the issue.
+   * @param cost computed remediation cost if applicable, null if not.
+   */
   void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+  /**
+   * Message and syntaxNode for a secondary location.
+   */
   class Location {
+    /**
+     * Message of the secondary location.
+     */
     public final String msg;
+    /**
+     * Syntax node on which to raise the secondary location.
+     */
     public final Tree syntaxNode;
 
     public Location(String msg, Tree syntaxNode) {
