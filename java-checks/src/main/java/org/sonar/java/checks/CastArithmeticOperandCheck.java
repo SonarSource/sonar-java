@@ -103,8 +103,7 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean expressionIsOperationToInt(ExpressionTree expr) {
-    return expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS)
-      && expr.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
+    return expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS) && expr.symbolType().isPrimitive(Type.Primitives.INT);
   }
 
   private static boolean isVarTypeErrorProne(Type varType) {

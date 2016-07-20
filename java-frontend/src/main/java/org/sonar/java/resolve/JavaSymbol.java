@@ -158,7 +158,7 @@ public class JavaSymbol implements Symbol {
   }
 
   @Override
-  public org.sonar.plugins.java.api.semantic.Type type() {
+  public Type type() {
     return type;
   }
 
@@ -407,7 +407,7 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public org.sonar.plugins.java.api.semantic.Type superClass() {
+    public Type superClass() {
       return getSuperclass();
     }
 
@@ -417,13 +417,13 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public Collection<org.sonar.plugins.java.api.semantic.Symbol> memberSymbols() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().scopeSymbols());
+    public Collection<Symbol> memberSymbols() {
+      return Lists.<Symbol>newArrayList(members().scopeSymbols());
     }
 
     @Override
-    public Collection<org.sonar.plugins.java.api.semantic.Symbol> lookupSymbols(String name) {
-      return Lists.<org.sonar.plugins.java.api.semantic.Symbol>newArrayList(members().lookup(name));
+    public Collection<Symbol> lookupSymbols(String name) {
+      return Lists.<Symbol>newArrayList(members().lookup(name));
     }
 
     @Override
@@ -609,8 +609,8 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public List<org.sonar.plugins.java.api.semantic.Type> parameterTypes() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getParametersTypes());
+    public List<Type> parameterTypes() {
+      return Lists.<Type>newArrayList(getParametersTypes());
     }
 
     @Override
@@ -619,8 +619,8 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((MethodJavaType) super.type).thrown);
+    public List<Type> thrownTypes() {
+      return Lists.<Type>newArrayList(((MethodJavaType) super.type).thrown);
     }
 
     @Override

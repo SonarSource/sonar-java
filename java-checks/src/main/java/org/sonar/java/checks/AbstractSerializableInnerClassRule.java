@@ -74,12 +74,7 @@ public abstract class AbstractSerializableInnerClassRule extends IssuableSubscri
   }
 
   private static boolean directlyImplementsSerializable(Symbol.TypeSymbol symbol) {
-    for (org.sonar.plugins.java.api.semantic.Type type : symbol.interfaces()) {
-      if (type.is("java.io.Serializable")) {
-        return true;
-      }
-    }
-    return false;
+    return symbol.interfaces().stream().anyMatch(t ->  t.is("java.io.Serializable"));
   }
 
   protected abstract boolean isMatchingOuterClass(Type outerClass);

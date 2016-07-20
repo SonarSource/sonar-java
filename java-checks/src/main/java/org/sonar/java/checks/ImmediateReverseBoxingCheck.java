@@ -88,7 +88,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkExpression(ExpressionTree expression, org.sonar.plugins.java.api.semantic.Type implicitType) {
+  private void checkExpression(ExpressionTree expression, Type implicitType) {
     if (implicitType.isPrimitive()) {
       checkForBoxing(expression);
     } else {
