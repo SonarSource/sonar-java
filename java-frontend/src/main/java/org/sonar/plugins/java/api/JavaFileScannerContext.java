@@ -58,6 +58,10 @@ public interface JavaFileScannerContext {
 
   List<Tree> getComplexityNodes(Tree tree);
 
+  /**
+   * @deprecated use getComplexityNodes instead
+   */
+  @Deprecated
   List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree);
 
   void reportIssue(JavaCheck javaCheck, Tree tree, String message);

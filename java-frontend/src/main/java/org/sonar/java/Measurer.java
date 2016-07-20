@@ -149,7 +149,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
       methods++;
-      int methodComplexity = context.getMethodComplexityNodes(classTrees.peek(), methodTree).size();
+      int methodComplexity = context.getComplexityNodes(methodTree).size();
       methodComplexityDistribution.add(methodComplexity);
       complexityInMethods += methodComplexity;
     }
