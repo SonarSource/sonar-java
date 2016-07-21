@@ -99,13 +99,14 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleConstructor(NewClassTree tree) {
-    if (PASSWORD_AUTHENTICATION_CONSTRUCTOR.matches(tree)) {
-      ExpressionTree secondArg = tree.arguments().get(1);
-      if (secondArg.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) secondArg;
-        if (isCallOnStringLiteral(mit.methodSelect()) && STRING_TO_CHAR_ARRAY.matches(mit)) {
-          reportIssue(secondArg);
-        }
+    if (!PASSWORD_AUTHENTICATION_CONSTRUCTOR.matches(tree)) {
+      return;
+    }
+    ExpressionTree secondArg = tree.arguments().get(1);
+    if (secondArg.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) secondArg;
+      if (isCallOnStringLiteral(mit.methodSelect()) && STRING_TO_CHAR_ARRAY.matches(mit)) {
+        reportIssue(secondArg);
       }
     }
   }

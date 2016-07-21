@@ -40,6 +40,9 @@ class A {
     pa = new PasswordAuthentication("userName", pwd); // Compliant
     pa = new PasswordAuthentication("userName", getPwd(var)); // Compliant
     pa = new PasswordAuthentication("userName", var.toCharArray()); // Compliant
+
+    OtherPasswordAuthentication opa;
+    opa = new OtherPasswordAuthentication("userName", "1234".toCharArray()); // Compliant
   }
 
   private char[] getPwd(String s) {
@@ -51,6 +54,10 @@ class A {
   }
 
   private void setProperty(Object property, Object Value) {
+  }
+
+  private static class OtherPasswordAuthentication {
+    OtherPasswordAuthentication(String username, char[] pwd) {}
   }
 
 }
