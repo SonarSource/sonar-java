@@ -26,5 +26,6 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
   }
 }

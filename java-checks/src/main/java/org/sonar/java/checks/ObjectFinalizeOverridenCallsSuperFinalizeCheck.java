@@ -55,18 +55,19 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-        if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
-          if (FINALIZE.equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
-            lastStatementTree = methodInvocationTree;
-          }
+    if (!hasSemantic()) {
+      return;
+    }
+    if (tree.is(Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+      if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
+        if (FINALIZE.equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
+          lastStatementTree = methodInvocationTree;
         }
-      } else if (isFinalize(((MethodTree) tree).symbol())) {
-        lastStatementTree = null;
       }
+    } else if (isFinalize(((MethodTree) tree).symbol())) {
+      lastStatementTree = null;
     }
   }
 
@@ -86,12 +87,9 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   private static boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
     BlockTree blockTree = methodTree.block();
-    if (blockTree != null) {
-      for (StatementTree statementTree : blockTree.body()) {
-        if (statementTree.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statementTree).finallyBlock(), lastStatementTree)) {
-          return true;
-        }
-      }
+    if (blockTree != null
+      && blockTree.body().stream().anyMatch(statement -> statement.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statement).finallyBlock(), lastStatementTree))) {
+      return true;
     }
     return isLastStatement(blockTree, lastStatementTree);
   }
@@ -111,9 +109,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static boolean isFinalize(Symbol symbol) {
     if (FINALIZE.equals(symbol.name()) && symbol.isMethodSymbol()) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-      if ("void".equals(methodSymbol.returnType().name()) && methodSymbol.parameterTypes().isEmpty()) {
-        return true;
-      }
+      return "void".equals(methodSymbol.returnType().name()) && methodSymbol.parameterTypes().isEmpty();
     }
     return false;
   }
@@ -123,10 +119,8 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
       Type superClassType = ((Symbol.TypeSymbol) classSymbol).superClass();
       while (superClassType != null && !superClassType.is("java.lang.Object")) {
         Symbol.TypeSymbol currentClass = superClassType.symbol();
-        for (Symbol symbol : currentClass.lookupSymbols(FINALIZE)) {
-          if (isFinalize(symbol)) {
-            return true;
-          }
+        if (currentClass.lookupSymbols(FINALIZE).stream().anyMatch(ObjectFinalizeOverridenCallsSuperFinalizeCheck::isFinalize)) {
+          return true;
         }
         superClassType = currentClass.superClass();
       }
