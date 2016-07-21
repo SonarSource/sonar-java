@@ -1,6 +1,7 @@
 <p>Declaring a variable only to immediately return or throw it is a bad practice.</p>
-<p>Some developers argue that the practice improves code readability, because it enables them to explicitly name what is being returned. However, this variable is an internal implementation detail that is not exposed to the callers of the method. The method name should be sufficient for callers to know exactly what will be returned.</p>
-
+<p>Some developers argue that the practice improves code readability, because it enables them to explicitly name what is being returned. However, this
+variable is an internal implementation detail that is not exposed to the callers of the method. The method name should be sufficient for callers to
+know exactly what will be returned.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public long computeDurationInMilliseconds() {
@@ -13,7 +14,6 @@ public void doSomething() {
   throw myException;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public long computeDurationInMilliseconds() {

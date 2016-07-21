@@ -1,5 +1,5 @@
-<p>When the value of a private field is always assigned to in a class' methods before being read, then it is not being used to store class information. Therefore, it should become a local variable in the relevant methods to prevent any misunderstanding.</p>
-
+<p>When the value of a private field is always assigned to in a class' methods before being read, then it is not being used to store class
+information. Therefore, it should become a local variable in the relevant methods to prevent any misunderstanding.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Foo {
@@ -18,11 +18,10 @@ public class Foo {
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class Foo {
-  
+
   public void doSomething(int y) {
     int singularField = y + 5;
     ...

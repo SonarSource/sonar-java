@@ -1,5 +1,5 @@
-<p>Specifying a validation filter for all input in your <code>web.xml</code> allows you to scrub all your HTTP parameters in one central place. To do so, you'll need to define a validator, and a filtering class that uses it, then set up the filter's use in <code>web.xml</code>.</p>
-
+<p>Specifying a validation filter for all input in your <code>web.xml</code> allows you to scrub all your HTTP parameters in one central place. To do
+so, you'll need to define a validator, and a filtering class that uses it, then set up the filter's use in <code>web.xml</code>.</p>
 <h2>Compliant Solution</h2>
 <pre>
 public class ValidatingHttpRequest extends HttpServletRequestWrapper {
@@ -18,16 +18,16 @@ public class ValidationFilter implements javax.servlet.Filter {
      &lt;filter-name&gt;ValidationFilter&lt;/filter-name&gt;
      &lt;filter-class&gt;com.myco.servlet.ValidationFilter&lt;/filter-class&gt;
   &lt;/filter&gt;
-       
+
   &lt;filter-mapping&gt;
      &lt;filter-name&gt;ValidationFilter&lt;/filter-name&gt;
      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
   &lt;/filter-mapping&gt;
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection
-</li><li> <a href="https://www.owasp.org/index.php/How_to_add_validation_logic_to_HttpServletRequest">OWASP, How to add validation logic to HttpServletRequest</a>
-</li></ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection </li>
+  <li> <a href="https://www.owasp.org/index.php/How_to_add_validation_logic_to_HttpServletRequest">OWASP, How to add validation logic to
+  HttpServletRequest</a> </li>
+</ul>
 

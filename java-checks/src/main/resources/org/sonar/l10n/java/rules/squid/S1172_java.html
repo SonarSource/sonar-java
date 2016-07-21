@@ -1,21 +1,19 @@
 <p>Unused parameters are misleading. Whatever the value passed to such parameters is, the behavior will be the same.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 void doSomething(int a, int b) {     // "b" is unused
   compute(a);
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 void doSomething(int a) {
   compute(a);
 }
 </pre>
-
 <h2>Exceptions</h2>
-<p>Override and implementation methods are excluded, as are parameters annotated with <code>@Observes</code>, and methods that are intended to be overridden.</p>
+<p>Override and implementation methods are excluded, as are parameters annotated with <code>@Observes</code>, and methods that are intended to be
+overridden.</p>
 <pre>
 @Override
 void doSomething(int a, int b) {     // no issue reported on b
@@ -34,12 +32,12 @@ public void qix(String s) {
   throw new UnsupportedOperationException("This method should be implemented in subclasses");
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> MISRA C++:2008, 0-1-11 - There shall be no unused parameters (named or unnamed) in nonvirtual functions.
-</li><li> MISRA C:2012, 2.7 - There should be no unused parameters in functions
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/NYA5">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/SIIyAQ">CERT, MSC12-CPP.</a> - Detect and remove code that has no effect
-</li></ul>
+  <li> MISRA C++:2008, 0-1-11 - There shall be no unused parameters (named or unnamed) in nonvirtual functions. </li>
+  <li> MISRA C:2012, 2.7 - There should be no unused parameters in functions </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/NYA5">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never
+  executed </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/SIIyAQ">CERT, MSC12-CPP.</a> - Detect and remove code that has no effect </li>
+</ul>
 

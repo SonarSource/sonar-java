@@ -1,6 +1,5 @@
 <p>Method/constructor references are more compact and readable than using lambdas, and are therefore preferred.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>8</code>.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
   List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
@@ -10,7 +9,6 @@
 
   list.forEach(n -&gt; { System.out.println(n); });
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
   List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();

@@ -1,5 +1,5 @@
-<p><code>transient</code> is used to mark fields in a <code>Serializable</code> class which will not be written out to file (or stream). In a class that does not implement <code>Serializable</code>, this modifier is simply wasted keystrokes, and should be removed.</p>
-
+<p><code>transient</code> is used to mark fields in a <code>Serializable</code> class which will not be written out to file (or stream). In a class
+that does not implement <code>Serializable</code>, this modifier is simply wasted keystrokes, and should be removed.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class Vegetable {  // does not implement Serializable
@@ -7,7 +7,6 @@ class Vegetable {  // does not implement Serializable
   // ...
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class Vegetable {

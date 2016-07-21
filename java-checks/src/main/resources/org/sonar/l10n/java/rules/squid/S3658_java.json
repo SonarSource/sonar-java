@@ -6,8 +6,8 @@
     "constantCost": "2min"
   },
   "tags": [
-    "clumsy",
-    "tests"
+    "tests",
+    "clumsy"
   ],
   "defaultSeverity": "Major"
 }

@@ -1,10 +1,12 @@
-<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up the method's state - or the method should be reinterrupted. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted - probably without finishing its task.</p>
-
+<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring".
+Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up the method's state - or the method should be
+reinterrupted. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted - probably without
+finishing its task.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void run () {
   try {
-    while (true) { 
+    while (true) {
       // do stuff
     }
   }catch (InterruptedException e) { // Noncompliant; logging is not enough
@@ -12,12 +14,11 @@ public void run () {
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public void run () throws InterruptedException{
   try {
-    while (true) { 
+    while (true) {
       // do stuff
     }
   }catch (InterruptedException e) {
@@ -31,7 +32,7 @@ public void run () throws InterruptedException{
 <pre>
 public void run () {
   try {
-    while (true) { 
+    while (true) {
       // do stuff
     }
   }catch (InterruptedException e) {
@@ -41,9 +42,8 @@ public void run () {
   }
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/391.html">MITRE, CWE-391</a> - Unchecked Error Condition
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/391.html">MITRE, CWE-391</a> - Unchecked Error Condition </li>
+</ul>
 

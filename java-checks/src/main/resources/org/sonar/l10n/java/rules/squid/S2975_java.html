@@ -1,8 +1,14 @@
-<p>Many consider <code>clone</code> and <code>Cloneable</code> broken in Java, largely because the rules for overriding <code>clone</code> are tricky and difficult to get right, according to Joshua Bloch:</p>
-<blockquote>Object's clone method is very tricky. It's based on field copies, and it's "extra-linguistic." It creates an object without calling a constructor. There are no guarantees that it preserves the invariants established by the constructors. There have been lots of bugs over the years, both in and outside Sun, stemming from the fact that if you just call super.clone repeatedly up the chain until you have cloned an object, you have a shallow copy of the object.  The clone generally shares state with the object being cloned. If that state is mutable, you don't have two independent objects. If you modify one, the other changes as well. And all of a sudden, you get random behavior. </blockquote>
+<p>Many consider <code>clone</code> and <code>Cloneable</code> broken in Java, largely because the rules for overriding <code>clone</code> are tricky
+and difficult to get right, according to Joshua Bloch:</p>
+<blockquote>
+  Object's clone method is very tricky. It's based on field copies, and it's "extra-linguistic." It creates an object without calling a constructor.
+  There are no guarantees that it preserves the invariants established by the constructors. There have been lots of bugs over the years, both in and
+  outside Sun, stemming from the fact that if you just call super.clone repeatedly up the chain until you have cloned an object, you have a shallow
+  copy of the object. The clone generally shares state with the object being cloned. If that state is mutable, you don't have two independent objects.
+  If you modify one, the other changes as well. And all of a sudden, you get random behavior.
+</blockquote>
 <p>A copy constructor or copy factory should be used instead.</p>
 <p>This rule raises an issue when <code>clone</code> is overridden, whether or not <code>Cloneable</code> is implemented.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
@@ -13,7 +19,6 @@ public class MyClass {
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class MyClass {
@@ -24,15 +29,13 @@ public class MyClass {
   }
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://www.artima.com/intv/bloch13.html">Copy Constructor versus Cloning</a>
-</li></ul>
-
+  <li> <a href="http://www.artima.com/intv/bloch13.html">Copy Constructor versus Cloning</a> </li>
+</ul>
 <h3>See Also</h3>
 <ul>
-<li> {rule:squid:S2157} - "Cloneables" should implement "clone"
-</li><li> {rule:squid:S1182} - Classes that override "clone" should be "Cloneable" and call "super.clone()"
-</li></ul>
+  <li> {rule:squid:S2157} - "Cloneables" should implement "clone" </li>
+  <li> {rule:squid:S1182} - Classes that override "clone" should be "Cloneable" and call "super.clone()" </li>
+</ul>
 

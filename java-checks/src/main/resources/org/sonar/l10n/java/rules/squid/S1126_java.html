@@ -1,16 +1,14 @@
 <p>Return of boolean literal statements wrapped into <code>if-then-else</code> ones should be simplified.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
-if (expression) {  
+if (expression) {
   return true;
 } else {
   return false;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
-return expression; 
+return expression;
 </pre>
 

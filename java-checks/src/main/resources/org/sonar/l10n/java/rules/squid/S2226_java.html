@@ -1,6 +1,7 @@
-<p>By contract, a servlet container creates one instance of each servlet and then a dedicated thread is attached to each new incoming HTTP request to process this request. So all threads are sharing the servlet instances and by extension instance fields.  To prevent any misunderstanding and unexpected behavior at runtime, all servlet fields should then be either <code>static</code> and/or <code>final</code>, or simply removed.</p>
+<p>By contract, a servlet container creates one instance of each servlet and then a dedicated thread is attached to each new incoming HTTP request to
+process this request. So all threads are sharing the servlet instances and by extension instance fields. To prevent any misunderstanding and
+unexpected behavior at runtime, all servlet fields should then be either <code>static</code> and/or <code>final</code>, or simply removed.</p>
 <p>With Struts 1.X, the same constraint exists on <code>org.apache.struts.action.Action</code>.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyServlet extends HttpServlet {
@@ -15,9 +16,8 @@ public class MyAction extends Action {
   ...
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/EYBUC">CERT, MSC11-J.</a> - Do not let session information leak within a servlet
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/EYBUC">CERT, MSC11-J.</a> - Do not let session information leak within a servlet </li>
+</ul>
 

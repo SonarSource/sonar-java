@@ -1,16 +1,18 @@
 <p>Comparisons of dissimilar types will always return false. The comparison and all its dependent code can simply be removed. This includes:</p>
 <ul>
-<li> comparing an object with null
-</li><li> comparing an object with an unrelated primitive (E.G. a string with an int)
-</li><li> comparing unrelated classes
-</li><li> comparing an unrelated <code>class</code> and <code>interface</code>
-</li><li> comparing unrelated <code>interface</code> types
-</li><li> comparing an array to a non-array
-</li><li> comparing two arrays
-</li></ul>
-<p>Specifically in the case of arrays, since arrays don't override <code>Object.equals()</code>, calling <code>equals</code> on two arrays is the same as comparing their addresses. This means that <code>array1.equals(array2)</code> is equivalent to <code>array1==array2</code>.</p>
-<p>However, some developers might expect <code>Array.equals(Object obj)</code> to do more than a simple memory address comparison, comparing for instance the size and content of the two arrays. Instead, the <code>==</code> operator or <code>Arrays.equals(array1, array2)</code> should always be used with arrays.</p>
-
+  <li> comparing an object with null </li>
+  <li> comparing an object with an unrelated primitive (E.G. a string with an int) </li>
+  <li> comparing unrelated classes </li>
+  <li> comparing an unrelated <code>class</code> and <code>interface</code> </li>
+  <li> comparing unrelated <code>interface</code> types </li>
+  <li> comparing an array to a non-array </li>
+  <li> comparing two arrays </li>
+</ul>
+<p>Specifically in the case of arrays, since arrays don't override <code>Object.equals()</code>, calling <code>equals</code> on two arrays is the same
+as comparing their addresses. This means that <code>array1.equals(array2)</code> is equivalent to <code>array1==array2</code>.</p>
+<p>However, some developers might expect <code>Array.equals(Object obj)</code> to do more than a simple memory address comparison, comparing for
+instance the size and content of the two arrays. Instead, the <code>==</code> operator or <code>Arrays.equals(array1, array2)</code> should always be
+used with arrays.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 interface KitchenTool { ... };
@@ -48,9 +50,9 @@ else if (tree.equals(null)) {  // Noncompliant
   // ...
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/IQAlAg">CERT, EXP02-J.</a> - Do not use the Object.equals() method to compare two arrays
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/IQAlAg">CERT, EXP02-J.</a> - Do not use the Object.equals() method to compare two
+  arrays </li>
+</ul>
 

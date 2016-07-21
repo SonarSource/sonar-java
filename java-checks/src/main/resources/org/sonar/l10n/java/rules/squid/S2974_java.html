@@ -1,5 +1,4 @@
 <p>Classes with only <code>private</code> constructors should be marked <code>final</code> to prevent any mistaken extension attempts.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class PrivateConstructorClass {  // Noncompliant
@@ -12,7 +11,6 @@ public class PrivateConstructorClass {  // Noncompliant
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public final class PrivateConstructorClass {  // Compliant

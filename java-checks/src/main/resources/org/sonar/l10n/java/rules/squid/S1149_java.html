@@ -1,23 +1,21 @@
-<p>Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them thread-safe.</p>
+<p>Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them
+thread-safe.</p>
 <p>Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.</p>
 <p>It is better to use their new unsynchronized replacements:</p>
 <ul>
-<li> <code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code>
-</li><li> <code>Deque</code> instead of <code>Stack</code>
-</li><li> <code>HashMap</code> instead of <code>Hashtable</code>
-</li><li> <code>StringBuilder</code> instead of <code>StringBuffer</code>
-</li></ul>
-
+  <li> <code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code> </li>
+  <li> <code>Deque</code> instead of <code>Stack</code> </li>
+  <li> <code>HashMap</code> instead of <code>Hashtable</code> </li>
+  <li> <code>StringBuilder</code> instead of <code>StringBuffer</code> </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
-Vector cats = new Vector(); 
+Vector cats = new Vector();
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 ArrayList cats = new ArrayList();
 </pre>
-
 <h2>Exceptions</h2>
 <p>Use of those synchronized classes is allowed in method signatures when overriding an existing method.</p>
 <pre>

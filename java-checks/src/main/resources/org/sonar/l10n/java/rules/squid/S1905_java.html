@@ -1,5 +1,4 @@
 <p>Unnecessary casting expressions make the code harder to read and understand.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void example() {
@@ -12,7 +11,6 @@ public List&lt;Foo&gt; getFoos() {
   return this.foos;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public void example() {
@@ -25,7 +23,6 @@ public List&lt;Foo&gt; getFoos() {
   return this.foos;
 }
 </pre>
-
 <h2>Exceptions</h2>
 <p>Casting may be required to distinguish the method to call in the case of overloading:</p>
 <pre>
@@ -34,7 +31,7 @@ class B extends A{}
 class C {
   void fun(A a){}
   void fun(B b){}
-  
+
   void foo() {
     B b = new B();
     fun(b);

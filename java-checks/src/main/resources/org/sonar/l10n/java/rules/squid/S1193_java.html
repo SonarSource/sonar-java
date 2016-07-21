@@ -1,5 +1,4 @@
 <p>Multiple catch blocks of the appropriate type should be used instead of catching a general exception, and then testing on the type.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 try {
@@ -9,7 +8,6 @@ try {
   if(e instanceof NullPointerException{ /* ... */ }  // Noncompliant
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 try {
@@ -17,9 +15,9 @@ try {
 } catch (IOException e) { /* ... */ }                // Compliant
 } catch (NullPointerException e) { /* ... */ }       // Compliant
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/5gFFB">CERT, ERR51-J.</a> - Prefer user-defined exceptions over more general exception types
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/5gFFB">CERT, ERR51-J.</a> - Prefer user-defined exceptions over more general exception
+  types </li>
+</ul>
 

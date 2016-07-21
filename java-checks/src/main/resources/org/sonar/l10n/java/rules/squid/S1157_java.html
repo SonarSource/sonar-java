@@ -1,12 +1,11 @@
-<p>Using <code>toLowerCase()</code> or <code>toUpperCase()</code> to make case insensitive comparisons is inefficient because it requires the creation of temporary, intermediate <code>String</code> objects.</p>
-
+<p>Using <code>toLowerCase()</code> or <code>toUpperCase()</code> to make case insensitive comparisons is inefficient because it requires the creation
+of temporary, intermediate <code>String</code> objects.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 boolean result1 = foo.toUpperCase().equals(bar);             // Noncompliant
 boolean result2 = foo.equals(bar.toUpperCase());             // Noncompliant
 boolean result3 = foo.toLowerCase().equals(bar.LowerCase()); // Noncompliant
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 boolean result = foo.equalsIgnoreCase(bar);                  // Compliant

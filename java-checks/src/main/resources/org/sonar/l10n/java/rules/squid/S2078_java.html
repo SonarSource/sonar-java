@@ -1,5 +1,6 @@
-<p>Applications that execute LDAP queries should neutralize any externally-provided values in those commands. Failure to do so could allow an attacker to include input that changes the query so that unintended commands are executed, or sensitive data is exposed. Unhappily LDAP doesn't provide any prepared statement interfaces like SQL to easily remove this risk. So each time a LDAP query is built dynamically this rule logs an issue.</p>
-
+<p>Applications that execute LDAP queries should neutralize any externally-provided values in those commands. Failure to do so could allow an attacker
+to include input that changes the query so that unintended commands are executed, or sensitive data is exposed. Unhappily LDAP doesn't provide any
+prepared statement interfaces like SQL to easily remove this risk. So each time a LDAP query is built dynamically this rule logs an issue.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public User lookupUser(String username, String base, String [] requestedAttrs) {
@@ -17,7 +18,6 @@ public User lookupUser(String username, String base, String [] requestedAttrs) {
         filter,  // Noncompliant; parameter concatenated directly into string
         sc);
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public User lookupUser(String username, String base, String [] requestedAttrs) {
@@ -28,24 +28,24 @@ public User lookupUser(String username, String base, String [] requestedAttrs) {
   SearchControls sc = new SearchControls();
   sc.setReturningAttributes(buildAttrFilter(requestedAttrs));  // Compliant; method presumably scrubs input
   sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-  
+
   String useBase = "ou=People";
   if (! base.startsWith(useBase)) {
     useBase = base;
   }
-  
+
   String filter = "(&amp;(objectClass=user)(sAMAccountName=" + username.replaceAll("[()| ]","") + "))";
 
   NamingEnumeration results = dctx.search(useBase,  // Compliant; originally value used conditionally
         filter,  // Compliant; parameter NOT concatenated directly into string
         sc);
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/90">MITRE CWE-90</a> - Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')
-</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/CgLEAw">CERT, IDS54-J.</a> - Prevent LDAP injection
-</li><li> Derived from FindSecBugs rule <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#LDAP_INJECTION">Potential LDAP Injection</a>
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/90">MITRE CWE-90</a> - Improper Neutralization of Special Elements used in an LDAP Query ('LDAP
+  Injection') </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/CgLEAw">CERT, IDS54-J.</a> - Prevent LDAP injection </li>
+  <li> Derived from FindSecBugs rule <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#LDAP_INJECTION">Potential LDAP Injection</a> </li>
+</ul>
 

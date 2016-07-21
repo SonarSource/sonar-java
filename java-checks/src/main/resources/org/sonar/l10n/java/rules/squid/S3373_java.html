@@ -1,6 +1,8 @@
-<p>It makes sense to handle all related actions in the same place. Thus, the same <code>&lt;action&gt;</code> might logically handle all facets of CRUD on an entity, with no confusion in the naming about which <code>&lt;forward/&gt;</code> handles which facet. But go very far beyond that, and it becomes difficult to maintain a transparent naming convention. </p>
-<p>So to ease maintenance, this rule raises an issue when an <code>&lt;action&gt;</code> has more than the allowed number of <code>&lt;forward/&gt;</code> tags.</p>
-
+<p>It makes sense to handle all related actions in the same place. Thus, the same <code>&lt;action&gt;</code> might logically handle all facets of
+CRUD on an entity, with no confusion in the naming about which <code>&lt;forward/&gt;</code> handles which facet. But go very far beyond that, and it
+becomes difficult to maintain a transparent naming convention. </p>
+<p>So to ease maintenance, this rule raises an issue when an <code>&lt;action&gt;</code> has more than the allowed number of
+<code>&lt;forward/&gt;</code> tags.</p>
 <h2>Noncompliant Code Example</h2>
 <p>With the default threshold of 4:</p>
 <pre>
@@ -12,7 +14,6 @@
   &lt;forward name='authorRead' path='WEB-INF/jsp/AuthorDetails' redirect='false'/&gt;  &lt;!-- Noncompliant --&gt;
 &lt;/action&gt;
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 &lt;action path='/book' type='myapp.BookDispatchAction' name='bookForm' parameter='method'&gt;

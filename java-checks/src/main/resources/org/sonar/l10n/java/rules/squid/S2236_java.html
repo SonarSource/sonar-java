@@ -1,9 +1,12 @@
-<p>On a Thread instance, the methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available only because all classes in Java extend <code>Object</code> and therefore automatically inherit the methods. But there are two very good reasons to not call these methods on a Thread instance:</p>
+<p>On a Thread instance, the methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available only because all classes
+in Java extend <code>Object</code> and therefore automatically inherit the methods. But there are two very good reasons to not call these methods on a
+Thread instance:</p>
 <ul>
-<li> Doing so is really confusing. What is really expected when calling, for instance, the <code>wait(...)</code> method on a Thread? That the execution of the Thread is suspended, or that acquisition of the object monitor is waited for?
-</li><li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, ...), so calling them will corrupt the behavior of the JVM.
-</li></ul>
-
+  <li> Doing so is really confusing. What is really expected when calling, for instance, the <code>wait(...)</code> method on a Thread? That the
+  execution of the Thread is suspended, or that acquisition of the object monitor is waited for? </li>
+  <li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, ...), so calling
+  them will corrupt the behavior of the JVM. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Thread myThread = new Thread(new RunnableJob());

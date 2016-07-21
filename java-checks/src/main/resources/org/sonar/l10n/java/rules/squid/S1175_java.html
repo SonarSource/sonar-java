@@ -1,18 +1,16 @@
 <p><code>Object.finalize()</code> is called by the Garbage Collector sometime after the object becomes unreferenced.</p>
 <p>Overloading this method is misleading:</p>
 <ul>
-<li> The overload will not be called by the Garbage Collector.
-</li><li> Users are not expected to call <code>Object.finalize()</code> and will get confused.
-</li></ul>
+  <li> The overload will not be called by the Garbage Collector. </li>
+  <li> Users are not expected to call <code>Object.finalize()</code> and will get confused. </li>
+</ul>
 <p>Another name should be picked for the method.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public int finalize(int someParameter) {        // Noncompliant
   /* ... */
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public int someBetterName(int someParameter) {  // Compliant

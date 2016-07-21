@@ -1,9 +1,8 @@
 <p>Using the <code>@Override</code> annotation is useful for two reasons :</p>
 <ul>
-<li> It elicits a warning from the compiler if the annotated method doesn't actually override anything, as in the case of a misspelling.
-</li><li> It improves the readability of the source code by making it obvious that methods are overridden.
-</li></ul>
-
+  <li> It elicits a warning from the compiler if the annotated method doesn't actually override anything, as in the case of a misspelling. </li>
+  <li> It improves the readability of the source code by making it obvious that methods are overridden. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class ParentClass {
@@ -13,7 +12,6 @@ class FirstChildClass extends ParentClass {
   public boolean doSomething(){...}  // Noncompliant
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class ParentClass {

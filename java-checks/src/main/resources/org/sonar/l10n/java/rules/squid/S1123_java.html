@@ -1,5 +1,6 @@
-<p>Deprecation should be marked with both the <code>@Deprecated</code> annotation and @deprecated Javadoc tag. The annotation enables tools such as IDEs to warn about referencing deprecated elements, and the tag can be used to explain when it was deprecated, why, and how references should be refactored.</p>
-
+<p>Deprecation should be marked with both the <code>@Deprecated</code> annotation and @deprecated Javadoc tag. The annotation enables tools such as
+IDEs to warn about referencing deprecated elements, and the tag can be used to explain when it was deprecated, why, and how references should be
+refactored.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class MyClass {
@@ -16,7 +17,6 @@ class MyClass {
 
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class MyClass {
@@ -37,9 +37,9 @@ class MyClass {
 
 }
 </pre>
-
 <h2>Exceptions</h2>
-<p>The members and methods of a deprecated class or interface are ignored by this rule. The classes and interfaces themselves are still subject to it.</p>
+<p>The members and methods of a deprecated class or interface are ignored by this rule. The classes and interfaces themselves are still subject to
+it.</p>
 <pre>
 /**
  * @deprecated (when, why, etc...)

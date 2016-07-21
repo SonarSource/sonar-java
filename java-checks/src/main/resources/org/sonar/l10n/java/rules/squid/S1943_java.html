@@ -1,50 +1,54 @@
-<p>Using classes and methods that rely on the default system encoding can result in code that works fine in its "home" environment. But that code may break for customers who use different encodings in ways that are extremely difficult to diagnose and nearly, if not completely, impossible to reproduce when it's time to fix them.</p>
+<p>Using classes and methods that rely on the default system encoding can result in code that works fine in its "home" environment. But that code may
+break for customers who use different encodings in ways that are extremely difficult to diagnose and nearly, if not completely, impossible to
+reproduce when it's time to fix them.</p>
 <p>This rule detects uses of the following classes and methods:</p>
 <ul>
-<li> <code>FileReader</code>
-</li><li> <code>FileWriter</code>
-</li><li> String constructors with a <code>byte[]</code> argument but no <code>Charset</code> argument
-<ul>
-<li> <code>String(byte[] bytes)</code>
-</li><li> <code>String(byte[] bytes, int offset, int length)</code> 
-</li></ul>
-</li><li> <code>String.getBytes()</code>
-</li><li> <code>String.getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin)</code>
-</li><li> <code>InputStreamReader(InputStream in)</code>
-</li><li> <code>OutputStreamWriter(OutputStream out)</code>
-</li><li> <code>ByteArrayOutputStream.toString()</code>
-</li><li> Some <code>Formatter</code> constructors
-<ul>
-<li> <code>Formatter(String fileName)</code>
-</li><li> <code>Formatter(File file)</code>
-</li><li> <code>Formatter(OutputStream os)</code>
-</li></ul>
-</li><li> Some <code>Scanner</code> constructors
-<ul>
-<li> <code>Scanner(File source)</code>
-</li><li> <code>Scanner(Path source)</code>
-</li><li> <code>Scanner(InputStream source)</code>
-</li></ul>
-</li><li> Some <code>PrintStream</code> constructors
-<ul>
-<li> <code>PrintStream(File file)</code>
-</li><li> <code>PrintStream(OutputStream out)</code>
-</li><li> <code>PrintStream(OutputStream out, boolean autoFlush)</code>
-</li><li> <code>PrintStream(String fileName)</code>
-</li></ul>
-</li><li> Some <code>PrintWriter</code> constructors
-<ul>
-<li> <code>PrintWriter(File file)</code>
-</li><li> <code>PrintWriter(OutputStream out)</code>
-</li><li> <code>PrintWriter(OutputStream out, boolean autoFlush)</code>
-</li><li> <code>PrintWriter(String fileName)</code>
-</li></ul>
-</li><li> <code>IOUtils</code> methods which accept an encoding argument when that argument is null, and overloads of those methods that omit the encoding argument
-</li></ul>
-
+  <li> <code>FileReader</code> </li>
+  <li> <code>FileWriter</code> </li>
+  <li> String constructors with a <code>byte[]</code> argument but no <code>Charset</code> argument
+    <ul>
+      <li> <code>String(byte[] bytes)</code> </li>
+      <li> <code>String(byte[] bytes, int offset, int length)</code> </li>
+    </ul> </li>
+  <li> <code>String.getBytes()</code> </li>
+  <li> <code>String.getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin)</code> </li>
+  <li> <code>InputStreamReader(InputStream in)</code> </li>
+  <li> <code>OutputStreamWriter(OutputStream out)</code> </li>
+  <li> <code>ByteArrayOutputStream.toString()</code> </li>
+  <li> Some <code>Formatter</code> constructors
+    <ul>
+      <li> <code>Formatter(String fileName)</code> </li>
+      <li> <code>Formatter(File file)</code> </li>
+      <li> <code>Formatter(OutputStream os)</code> </li>
+    </ul> </li>
+  <li> Some <code>Scanner</code> constructors
+    <ul>
+      <li> <code>Scanner(File source)</code> </li>
+      <li> <code>Scanner(Path source)</code> </li>
+      <li> <code>Scanner(InputStream source)</code> </li>
+    </ul> </li>
+  <li> Some <code>PrintStream</code> constructors
+    <ul>
+      <li> <code>PrintStream(File file)</code> </li>
+      <li> <code>PrintStream(OutputStream out)</code> </li>
+      <li> <code>PrintStream(OutputStream out, boolean autoFlush)</code> </li>
+      <li> <code>PrintStream(String fileName)</code> </li>
+    </ul> </li>
+  <li> Some <code>PrintWriter</code> constructors
+    <ul>
+      <li> <code>PrintWriter(File file)</code> </li>
+      <li> <code>PrintWriter(OutputStream out)</code> </li>
+      <li> <code>PrintWriter(OutputStream out, boolean autoFlush)</code> </li>
+      <li> <code>PrintWriter(String fileName)</code> </li>
+    </ul> </li>
+  <li> <code>IOUtils</code> methods which accept an encoding argument when that argument is null, and overloads of those methods that omit the
+  encoding argument </li>
+</ul>
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/FoL5AQ">CERT, STR04-J.</a> - Use compatible character encodings when communicating string data between JVMs
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/JgAWCQ">CERT, STR50-J.</a> - Use the appropriate method for counting characters in a string
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/FoL5AQ">CERT, STR04-J.</a> - Use compatible character encodings when communicating
+  string data between JVMs </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/JgAWCQ">CERT, STR50-J.</a> - Use the appropriate method for counting characters in a
+  string </li>
+</ul>
 

@@ -7,12 +7,9 @@
   },
   "tags": [
     "cwe",
-    "owasp-a1",
     "security",
     "bug",
-    "cert",
-    "owasp-a6",
-    "owasp-a2"
+    "cert"
   ],
   "defaultSeverity": "Blocker"
 }

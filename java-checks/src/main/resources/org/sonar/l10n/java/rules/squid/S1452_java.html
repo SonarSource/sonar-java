@@ -1,6 +1,7 @@
-<p>Using a wildcard as a return type implicitly means that the return parameter should be considered as read-only but without any way to enforce this contract. </p>
-<p>Let's take the example of method returning a "List&lt;? extends Animal&gt;". Is it possible on this list to add a Dog, a Cat, ... we simply don't know. The consumer of a method should not have to deal with such disruptive questions. </p>
-
+<p>Using a wildcard as a return type implicitly means that the return parameter should be considered as read-only but without any way to enforce this
+contract. </p>
+<p>Let's take the example of method returning a "List&lt;? extends Animal&gt;". Is it possible on this list to add a Dog, a Cat, ... we simply don't
+know. The consumer of a method should not have to deal with such disruptive questions. </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 List&lt;? extends Animal&gt; getAnimals(){...}

@@ -1,23 +1,30 @@
-<p>Floating point math is imprecise because of the challenges of storing such values in a binary representation. Even worse, floating point math is not associative; push a <code>float</code> or a <code>double</code> through a series of simple mathematical operations and the answer will be different based on the order of those operation because of the rounding that takes place at each step.</p>
+<p>Floating point math is imprecise because of the challenges of storing such values in a binary representation. Even worse, floating point math is
+not associative; push a <code>float</code> or a <code>double</code> through a series of simple mathematical operations and the answer will be
+different based on the order of those operation because of the rounding that takes place at each step.</p>
 <p>Even simple floating point assignments are not simple:</p>
 <pre>
 float f = 0.1; // 0.100000001490116119384765625
 double d = 0.1; // 0.1000000000000000055511151231257827021181583404541015625
 </pre>
 <p>(Results will vary based on compiler and compiler settings);</p>
-<p>Therefore, the use of the equality (<code>==</code>) and inequality (<code>!=</code>) operators on <code>float</code> or <code>double</code> values is almost always an error, and the use of other comparison operators (<code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>) is also problematic because they don't work properly for -0 and <code>NaN</code>. </p>
-<p>Instead the best course is to avoid floating point comparisons altogether. When that is not possible, you should consider using one of Java's float-handling <code>Numbers</code> such as <code>BigDecimal</code> which can properly handle floating point comparisons. A third option is to look not for equality but for whether the value is close enough. I.e. compare the absolute value of the difference between the stored value and the expected value against a margin of acceptable error. Note that this does not cover all cases (<code>NaN</code> and <code>Infinity</code> for instance).</p>
+<p>Therefore, the use of the equality (<code>==</code>) and inequality (<code>!=</code>) operators on <code>float</code> or <code>double</code> values
+is almost always an error, and the use of other comparison operators (<code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>) is
+also problematic because they don't work properly for -0 and <code>NaN</code>. </p>
+<p>Instead the best course is to avoid floating point comparisons altogether. When that is not possible, you should consider using one of Java's
+float-handling <code>Numbers</code> such as <code>BigDecimal</code> which can properly handle floating point comparisons. A third option is to look
+not for equality but for whether the value is close enough. I.e. compare the absolute value of the difference between the stored value and the
+expected value against a margin of acceptable error. Note that this does not cover all cases (<code>NaN</code> and <code>Infinity</code> for
+instance).</p>
 <p>This rule checks for the use of direct and indirect equality/inequailty tests on floats and doubles.</p>
-
 <h2>Noncompliant Code Example</h2>
-<pre> 
-float myNumber = 3.146; 
-if ( myNumber == 3.146f ) { //Noncompliant. Because of floating point imprecision, this will be false 
-  // ... 
-} 
-if ( myNumber != 3.146f ) { //Noncompliant. Because of floating point imprecision, this will be true 
-  // ... 
-} 
+<pre>
+float myNumber = 3.146;
+if ( myNumber == 3.146f ) { //Noncompliant. Because of floating point imprecision, this will be false
+  // ...
+}
+if ( myNumber != 3.146f ) { //Noncompliant. Because of floating point imprecision, this will be true
+  // ...
+}
 
 if (myNumber &lt; 4 || myNumber &gt; 4) { // Noncompliant; indirect inequality test
   // ...
@@ -27,9 +34,9 @@ float zeroFloat = 0.0f;
 if (zeroFloat == 0) {  // Noncompliant. Computations may end up with a value close but not equal to zero.
 }
 </pre>
-
 <h2>Exceptions</h2>
-<p>Since <code>NaN</code> is not equal to itself, the specific case of testing a floating point value against itself is a valid test for <code>NaN</code> and is therefore ignored.</p>
+<p>Since <code>NaN</code> is not equal to itself, the specific case of testing a floating point value against itself is a valid test for
+<code>NaN</code> and is therefore ignored.</p>
 <pre>
 float f;
 double d;
@@ -39,10 +46,9 @@ if(f != f) { // Compliant; test for NaN value
   // ...
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> MISRA C:2004, 13.3 - Floating-point expressions shall not be tested for equality or inequality.
-</li><li> MISRA C++:2008, 6-2-2 - Floating-point expressions shall not be directly or indirectly tested for equality or inequality
-</li></ul>
+  <li> MISRA C:2004, 13.3 - Floating-point expressions shall not be tested for equality or inequality. </li>
+  <li> MISRA C++:2008, 6-2-2 - Floating-point expressions shall not be directly or indirectly tested for equality or inequality </li>
+</ul>
 

@@ -1,20 +1,18 @@
 <p>When handling a caught exception, the original exception's message and stack trace should be logged or passed forward.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
  // Noncompliant - exception is lost
-try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }   
+try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }
 
-// Noncompliant - exception is lost (only message is preserved)       
-try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }   
+// Noncompliant - exception is lost (only message is preserved)
+try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }
 
-// Noncompliant - exception is lost 
+// Noncompliant - exception is lost
 try { /* ... */ } catch (Exception e) { throw new RuntimeException("context"); }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
-try { /* ... */ } catch (Exception e) { LOGGER.info(e); }   
+try { /* ... */ } catch (Exception e) { LOGGER.info(e); }
 
 try { /* ... */ } catch (Exception e) { throw new RuntimeException(e); }
 
@@ -28,10 +26,11 @@ try {
   throw new RuntimeException(e);
 }
 </pre>
-
 <h2>Exceptions</h2>
-<p><code>InterruptedException</code>, <code>NumberFormatException</code>, <code>ParseException</code> and <code>MalformedURLException</code> exceptions are arguably used to indicate nonexceptional outcomes.</p>
-<p>Because they are part of Java, developers have no choice but to deal with them. This rule does not verify that those particular exceptions are correctly handled.</p>
+<p><code>InterruptedException</code>, <code>NumberFormatException</code>, <code>ParseException</code> and <code>MalformedURLException</code>
+exceptions are arguably used to indicate nonexceptional outcomes.</p>
+<p>Because they are part of Java, developers have no choice but to deal with them. This rule does not verify that those particular exceptions are
+correctly handled.</p>
 <pre>
 int myInteger;
 try {
@@ -41,9 +40,8 @@ try {
   myInteger = 0;
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/6gEqAQ">CERT, ERR00-J.</a> - Do not suppress or ignore checked exceptions
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/6gEqAQ">CERT, ERR00-J.</a> - Do not suppress or ignore checked exceptions </li>
+</ul>
 

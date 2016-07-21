@@ -1,6 +1,7 @@
-<p>In a multi-threaded situation, un-<code>synchronized</code> lazy initialization of non-<code>volatile</code> fields could mean that a second thread has access to a half-initialized object while the first thread is still creating it. Allowing such access could cause serious bugs. Instead. the initialization block should be <code>synchronized</code> or the variable made <code>volatile</code>.</p>
+<p>In a multi-threaded situation, un-<code>synchronized</code> lazy initialization of non-<code>volatile</code> fields could mean that a second thread
+has access to a half-initialized object while the first thread is still creating it. Allowing such access could cause serious bugs. Instead. the
+initialization block should be <code>synchronized</code> or the variable made <code>volatile</code>.</p>
 <p>Similarly, updates of such fields should also be <code>synchronized</code>.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 protected static Object instance = null;
@@ -14,7 +15,6 @@ public static Object getInstance() {
     return instance;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 protected static volatile Object instance = null;

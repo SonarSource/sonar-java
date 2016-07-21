@@ -1,15 +1,14 @@
-<p>According to the official javadoc documentation, this Object.finalize() is called by the garbage collector on an object when garbage collection determines that there are no more references to the object. Calling this method explicitly breaks this contract and so is misleading. </p>
-
+<p>According to the official javadoc documentation, this Object.finalize() is called by the garbage collector on an object when garbage collection
+determines that there are no more references to the object. Calling this method explicitly breaks this contract and so is misleading. </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void dispose() throws Throwable {
   this.finalize();                       // Noncompliant
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/586.html">MITRE, CWE-586</a> - Explicit Call to Finalize()
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/H4cbAQ">CERT, MET12-J.</a> - Do not use finalizers
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/586.html">MITRE, CWE-586</a> - Explicit Call to Finalize() </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/H4cbAQ">CERT, MET12-J.</a> - Do not use finalizers </li>
+</ul>
 

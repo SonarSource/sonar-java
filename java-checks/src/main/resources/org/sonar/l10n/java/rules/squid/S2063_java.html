@@ -1,5 +1,5 @@
-<p>A non-serializable <code>Comparator</code> can prevent an otherwise-<code>Serializable</code> ordered collection from being serializable. Since the overhead to make a <code>Comparator</code> serializable is usually low, doing so can be considered good defensive programming.</p>
-
+<p>A non-serializable <code>Comparator</code> can prevent an otherwise-<code>Serializable</code> ordered collection from being serializable. Since the
+overhead to make a <code>Comparator</code> serializable is usually low, doing so can be considered good defensive programming.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class FruitComparator implements Comparator&lt;Fruit&gt; {  // Noncompliant
@@ -7,7 +7,6 @@ public class FruitComparator implements Comparator&lt;Fruit&gt; {  // Noncomplia
   boolean equals(Object obj) {...}
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class FruitComparator implements Comparator&lt;Fruit&gt;, Serializable {

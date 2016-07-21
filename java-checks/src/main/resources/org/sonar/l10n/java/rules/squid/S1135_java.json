@@ -2,7 +2,7 @@
   "title": "\"TODO\" tags should be handled",
   "status": "ready",
   "tags": [
-    
+    "cwe"
   ],
   "defaultSeverity": "Info"
 }
