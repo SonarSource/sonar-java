@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,6 +30,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Rule(key = "S1206")
 public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisitor {
@@ -43,26 +46,18 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTree classTree = (ClassTree) tree;
-    if (classTree.is(Tree.Kind.CLASS)) {
-      MethodTree equalsMethod = null;
-      MethodTree hashCodeMethod = null;
-      for (Tree memberTree : classTree.members()) {
-        if (memberTree.is(Tree.Kind.METHOD)) {
-          MethodTree methodTree = (MethodTree) memberTree;
-          if (isEquals(methodTree)) {
-            equalsMethod = methodTree;
-          } else if (isHashCode(methodTree)) {
-            hashCodeMethod = methodTree;
-          }
-        }
-      }
+    List<MethodTree> methods = ((ClassTree) tree).members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(member -> (MethodTree) member)
+      .collect(Collectors.toList());
 
-      if (equalsMethod != null && hashCodeMethod == null) {
-        reportIssue(equalsMethod.simpleName(), getMessage(EQUALS, HASHCODE));
-      } else if (hashCodeMethod != null && equalsMethod == null) {
-        reportIssue(hashCodeMethod.simpleName(), getMessage(HASHCODE, EQUALS));
-      }
+    Optional<MethodTree> equalsMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isEquals).findAny();
+    Optional<MethodTree> hashCodeMethod = methods.stream().filter(EqualsOverridenWithHashCodeCheck::isHashCode).findAny();
+
+    if (equalsMethod.isPresent() && !hashCodeMethod.isPresent()) {
+      reportIssue(equalsMethod.get().simpleName(), getMessage(EQUALS, HASHCODE));
+    } else if (hashCodeMethod.isPresent() && !equalsMethod.isPresent()) {
+      reportIssue(hashCodeMethod.get().simpleName(), getMessage(HASHCODE, EQUALS));
     }
   }
 
