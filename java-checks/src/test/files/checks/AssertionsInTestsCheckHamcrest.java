@@ -16,4 +16,9 @@ public class AssertionsInTestsCheckTest {
     org.hamcrest.MatcherAssert.assertThat(1, org.hamcrest.CoreMatchers.is(1));
   }
 
+  @Test
+  public void fakeTest2() {
+    org.hamcrest.MatcherAssert.assertThat("message", 1, org.hamcrest.CoreMatchers.is(1));
+  }
+
 }
