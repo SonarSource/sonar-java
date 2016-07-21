@@ -43,6 +43,10 @@ public interface SymbolMetadata {
   @CheckForNull
   List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation);
 
+  /**
+   * The list of annotations found on this symbol.
+   * @return A list of {@link AnnotationInstance}
+   */
   List<AnnotationInstance> annotations();
 
   /**
@@ -78,6 +82,7 @@ public interface SymbolMetadata {
 
     /**
      * Stored value of the annotation property.
+     * @return the value of the annotation that has been found.
      */
     Object value();
 

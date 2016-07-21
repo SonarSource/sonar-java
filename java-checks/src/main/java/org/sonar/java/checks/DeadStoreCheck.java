@@ -88,7 +88,8 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     Lists.reverse(block.elements()).forEach(element -> checkElement(methodSymbol, out, assignmentLHS, element));
   }
 
-  private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> out, Set<Tree> assignmentLHS, Tree element) {
+  private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> outVar, Set<Tree> assignmentLHS, Tree element) {
+    Set<Symbol> out = outVar;
     Symbol symbol;
     switch (element.kind()) {
       case PLUS_ASSIGNMENT:

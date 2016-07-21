@@ -24,6 +24,9 @@ package org.sonar.plugins.java.api.semantic;
  */
 public interface Type {
 
+  /**
+   * Primitive java types.
+   */
   enum Primitives {
     BYTE,
     CHAR,
@@ -152,6 +155,7 @@ public interface Type {
 
   /**
    *Erasure of this type.
+   * @return erased type.
    */
   Type erasure();
 
@@ -162,6 +166,7 @@ public interface Type {
 
     /**
      * Type of elements in this array.
+     * @return type of an element.
      */
     Type elementType();
 

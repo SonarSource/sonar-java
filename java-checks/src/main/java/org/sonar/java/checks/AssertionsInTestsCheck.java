@@ -45,6 +45,7 @@ import java.util.List;
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String VERIFY = "verify";
+  private static final String ASSERT_THAT_NAME = "assertThat";
   private static final String ORG_MOCKITO_MOCKITO = "org.mockito.Mockito";
 
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
@@ -53,7 +54,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static final MethodMatcher MOCKITO_VERIFY = methodWithoutParameter(ORG_MOCKITO_MOCKITO, VERIFY);
   private static final MethodMatcher ASSERTJ_ASSERT_ALL = methodWithParameters("org.assertj.core.api.SoftAssertions", "assertAll");
-  private static final MethodMatcher ASSERT_THAT = methodWithParameters(ANY_TYPE, "assertThat").addParameter(ANY_TYPE);
+  private static final MethodMatcher ASSERT_THAT = methodWithParameters(ANY_TYPE, ASSERT_THAT_NAME).addParameter(ANY_TYPE);
   private static final MethodMatcher FEST_AS_METHOD = methodWithoutParameter(ANY_TYPE, "as");
   private static final MethodMatcher FEST_DESCRIBED_AS_METHOD = methodWithoutParameter(ANY_TYPE, "describedAs");
   private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = methodWithoutParameter(ANY_TYPE, "overridingErrorMessage");
@@ -78,8 +79,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     methodWithoutParameter("org.assertj.core.api.Assertions", STARTS_WITH_FAIL),
     methodWithoutParameter("org.assertj.core.api.Assertions", "shouldHaveThrown"),
     // hamcrest
-    methodWithParameters("org.hamcrest.MatcherAssert", "assertThat").addParameter(ANY_TYPE).addParameter(ANY_TYPE),
-    methodWithParameters("org.hamcrest.MatcherAssert", "assertThat").addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    methodWithParameters("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    methodWithParameters("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
     // Mockito
     methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions"),
     methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions"),

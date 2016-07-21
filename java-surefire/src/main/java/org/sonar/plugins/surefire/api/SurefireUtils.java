@@ -40,6 +40,13 @@ public final class SurefireUtils {
   private SurefireUtils() {
   }
 
+  /**
+   * Find the directory containing the surefire reports.
+   * @param settings Analysis settings.
+   * @param fs FileSystem containing indexed files.
+   * @param pathResolver Path solver.
+   * @return The directory containing the surefire reports or default one (target/surefire-reports) if not found (not configured or not found).
+   */
   public static File getReportsDirectory(Settings settings, FileSystem fs, PathResolver pathResolver) {
     File dir = getReportsDirectoryFromProperty(settings, fs, pathResolver);
     if (dir == null) {
