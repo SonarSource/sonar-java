@@ -31,8 +31,8 @@ class A {
     new PrintStream(outputStream, true); // Noncompliant
     new PrintStream("fileName"); // Noncompliant
     new PrintWriter(file); // Noncompliant
-    new PrintWriter(outputStream); // Noncompliant
-    new PrintWriter(outputStream, true); // Noncompliant
+    new PrintWriter(outputStream); // Compliant - Responsability of the underlying stream to define the correct encoding
+    new PrintWriter(outputStream, true); // Compliant - Responsability of the underlying stream to define the correct encoding
     new PrintWriter("fileName"); // Noncompliant
     new Formatter(""); // Noncompliant
     new Formatter(file); // Noncompliant

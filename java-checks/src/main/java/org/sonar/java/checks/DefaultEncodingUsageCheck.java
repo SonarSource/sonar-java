@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -117,8 +118,6 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
       constructor(JAVA_IO_PRINTSTREAM, JAVA_LANG_STRING),
       constructor(JAVA_IO_PRINTWRITER, JAVA_IO_FILE),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
       constructor(JAVA_IO_PRINTWRITER, JAVA_LANG_STRING),
       constructor(JAVA_UTIL_FORMATTER, JAVA_LANG_STRING),
       constructor(JAVA_UTIL_FORMATTER, JAVA_IO_FILE),
