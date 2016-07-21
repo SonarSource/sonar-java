@@ -21,6 +21,9 @@ package org.sonar.java.ast.api;
 
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+/**
+ * Punctuators for java grammar.
+ */
 public enum JavaPunctuator implements GrammarRuleKey {
 
   AT("@"),

@@ -46,7 +46,7 @@ public class KindMapsTest {
     assertThat(kindMaps.getLiteral(JavaKeyword.TRUE)).isSameAs(Tree.Kind.BOOLEAN_LITERAL);
     assertThat(kindMaps.getLiteral(JavaKeyword.FALSE)).isSameAs(Tree.Kind.BOOLEAN_LITERAL);
     assertThat(kindMaps.getLiteral(JavaTokenType.CHARACTER_LITERAL)).isSameAs(Tree.Kind.CHAR_LITERAL);
-    assertThat(kindMaps.getLiteral(JavaTokenType.LITERAL)).isSameAs(Tree.Kind.STRING_LITERAL);
+    assertThat(kindMaps.getLiteral(JavaTokenType.STRING_LITERAL)).isSameAs(Tree.Kind.STRING_LITERAL);
     assertThat(kindMaps.getLiteral(JavaKeyword.NULL)).isSameAs(Tree.Kind.NULL_LITERAL);
 
     thrown.expect(NullPointerException.class);

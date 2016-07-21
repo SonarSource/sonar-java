@@ -399,7 +399,7 @@ public enum JavaLexer implements GrammarRuleKey {
     b.rule(EOF).is(b.token(GenericTokenType.EOF, b.endOfInput()));
 
     b.rule(CHARACTER_LITERAL).is(characterLiteral(b), SPACING);
-    b.rule(JavaTokenType.LITERAL).is(stringLiteral(b), SPACING);
+    b.rule(JavaTokenType.STRING_LITERAL).is(stringLiteral(b), SPACING);
 
     b.rule(FLOAT_LITERAL).is(b.regexp(FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP + "[fF]|[0-9][0-9_]*+[fF]"), SPACING);
     b.rule(DOUBLE_LITERAL).is(b.regexp(FLOATING_LITERAL_WITHOUT_SUFFIX_REGEXP + "[dD]?+|[0-9][0-9_]*+[dD]"), SPACING);

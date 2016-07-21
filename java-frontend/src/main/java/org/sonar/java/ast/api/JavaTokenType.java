@@ -21,16 +21,16 @@ package org.sonar.java.ast.api;
 
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+/**
+ * Type of tokens for java grammar.
+ */
 public enum JavaTokenType implements GrammarRuleKey {
   CHARACTER_LITERAL,
   INTEGER_LITERAL,
   FLOAT_LITERAL,
   LONG_LITERAL,
   DOUBLE_LITERAL,
-
-  // TODO in fact it's STRING_LITERAL, but we need to keep compatibility of XPath expressions
-  LITERAL,
-
+  STRING_LITERAL,
   IDENTIFIER;
 
   public String getName() {

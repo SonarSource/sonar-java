@@ -28,7 +28,7 @@ public class StringLiteralTest {
 
   @Test
   public void ok() {
-    assertThat(JavaTokenType.LITERAL)
+    assertThat(JavaTokenType.STRING_LITERAL)
       .as("regular string").matches("\"string\"")
       .as("empty string").matches("\"\"")
       .as("escaped LF").matches("\"\\n\"")
@@ -39,7 +39,7 @@ public class StringLiteralTest {
 
   @Test
   public void nok() {
-    assertThat(JavaTokenType.LITERAL)
+    assertThat(JavaTokenType.STRING_LITERAL)
       .notMatches("\"");
   }
 

@@ -125,7 +125,7 @@ public class JavaGrammar {
             b.token(JavaKeyword.FALSE),
             b.token(JavaKeyword.NULL),
             b.token(JavaTokenType.CHARACTER_LITERAL),
-            b.token(JavaTokenType.LITERAL),
+            b.token(JavaTokenType.STRING_LITERAL),
             b.token(JavaTokenType.FLOAT_LITERAL),
             b.token(JavaTokenType.DOUBLE_LITERAL),
             b.token(JavaTokenType.LONG_LITERAL),

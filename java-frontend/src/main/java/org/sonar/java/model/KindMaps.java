@@ -49,7 +49,7 @@ public final class KindMaps {
     literalsBuilder.put(JavaKeyword.TRUE, Tree.Kind.BOOLEAN_LITERAL);
     literalsBuilder.put(JavaKeyword.FALSE, Tree.Kind.BOOLEAN_LITERAL);
     literalsBuilder.put(JavaTokenType.CHARACTER_LITERAL, Tree.Kind.CHAR_LITERAL);
-    literalsBuilder.put(JavaTokenType.LITERAL, Tree.Kind.STRING_LITERAL);
+    literalsBuilder.put(JavaTokenType.STRING_LITERAL, Tree.Kind.STRING_LITERAL);
     literalsBuilder.put(JavaKeyword.NULL, Tree.Kind.NULL_LITERAL);
     this.literals = literalsBuilder.build();
 

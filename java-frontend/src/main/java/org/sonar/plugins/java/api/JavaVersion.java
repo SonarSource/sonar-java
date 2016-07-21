@@ -21,18 +21,46 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 
+/**
+ * Represents the java version used by the project under analysis.
+ * Destinated to be used by checks to determine if they should report issue depending on java version.
+ */
 @Beta
 public interface JavaVersion {
 
+  /**
+   * Test if java version of the project is greater than or equal to 7.
+   * @return true if java version used is >= 7
+   */
   boolean isJava7Compatible();
 
+  /**
+   * Test if java version of the project is greater than or equal to 8.
+   * @return true if java version used is >= 8
+   */
   boolean isJava8Compatible();
 
+  /**
+   * get java version as integer
+   * @return an int representing the java version
+   */
   int asInt();
 
+  /**
+   * Test if java version has been set for the analysis.
+   * @return false if set, true otherwise.
+   */
   boolean isNotSet();
 
+  /**
+   * Default compatibility message with java 7
+   * @return empty string if java version is properly set, default message otherwise.
+   */
   String java7CompatibilityMessage();
 
+  /**
+   * Default compatibility message with java 8
+   * @return empty string if java version is properly set, default message otherwise.
+   */
   String java8CompatibilityMessage();
 }

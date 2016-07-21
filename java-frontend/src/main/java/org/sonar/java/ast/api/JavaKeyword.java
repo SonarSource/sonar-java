@@ -21,6 +21,9 @@ package org.sonar.java.ast.api;
 
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+/**
+ * Keywords for java grammar.
+ */
 public enum JavaKeyword implements GrammarRuleKey {
 
   ASSERT("assert"),
@@ -89,6 +92,10 @@ public enum JavaKeyword implements GrammarRuleKey {
     return value;
   }
 
+  /**
+   * keywords as String.
+   * @return an array containing all keywords as typed in Java
+   */
   public static String[] keywordValues() {
     JavaKeyword[] keywordsEnum = JavaKeyword.values();
     String[] keywords = new String[keywordsEnum.length];
