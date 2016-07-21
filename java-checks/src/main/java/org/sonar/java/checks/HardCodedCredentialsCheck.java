@@ -20,7 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -29,11 +31,13 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -43,35 +47,77 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("(password|passwd|pwd)=..", Pattern.CASE_INSENSITIVE);
   private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("(password|passwd|pwd)", Pattern.CASE_INSENSITIVE);
 
+  private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
+    .typeDefinition("java.net.PasswordAuthentication")
+    .name("<init>")
+    .addParameter("java.lang.String")
+    .addParameter("char[]");
+
+  private static final MethodMatcher STRING_TO_CHAR_ARRAY = MethodMatcher.create()
+    .typeDefinition("java.lang.String")
+    .name("toCharArray")
+    .withNoParameterConstraint();
+
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
+    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
-      String literalValue = ((LiteralTree) tree).value();
-      if (PASSWORD_LITERAL_PATTERN.matcher(literalValue).find()) {
-        reportIssue(tree);
-      }
+      handleStringLiteral((LiteralTree) tree);
     } else if (tree.is(Tree.Kind.VARIABLE)) {
-      VariableTree variable = (VariableTree) tree;
-      IdentifierTree simpleName = variable.simpleName();
-      if (isStringLiteral(variable.initializer()) && isPasswordVariableName(simpleName)) {
-        reportIssue(simpleName);
-      }
+      handleVariable((VariableTree) tree);
     } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree assignmentExpression = (AssignmentExpressionTree) tree;
-      ExpressionTree variable = assignmentExpression.variable();
-      if (isStringLiteral(assignmentExpression.expression()) && isPasswordVariable(variable)) {
-        reportIssue(variable);
-      }
+      handleAssignement((AssignmentExpressionTree) tree);
+    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
+      handleConstructor((NewClassTree) tree);
     } else {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (isSettingPassword(mit)) {
-        reportIssue((mit).methodSelect());
+      handleMethodInvocation((MethodInvocationTree) tree);
+    }
+  }
+
+  private void handleStringLiteral(LiteralTree tree) {
+    if (PASSWORD_LITERAL_PATTERN.matcher(tree.value()).find()) {
+      reportIssue(tree);
+    }
+  }
+
+  private void handleVariable(VariableTree tree) {
+    IdentifierTree simpleName = tree.simpleName();
+    if (isStringLiteral(tree.initializer()) && isPasswordVariableName(simpleName)) {
+      reportIssue(simpleName);
+    }
+  }
+
+  private void handleAssignement(AssignmentExpressionTree tree) {
+    ExpressionTree variable = tree.variable();
+    if (isStringLiteral(tree.expression()) && isPasswordVariable(variable)) {
+      reportIssue(variable);
+    }
+  }
+
+  private void handleConstructor(NewClassTree tree) {
+    if (!PASSWORD_AUTHENTICATION_CONSTRUCTOR.matches(tree)) {
+      return;
+    }
+    ExpressionTree secondArg = tree.arguments().get(1);
+    if (secondArg.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) secondArg;
+      if (isCallOnStringLiteral(mit.methodSelect()) && STRING_TO_CHAR_ARRAY.matches(mit)) {
+        reportIssue(secondArg);
       }
+    }
+  }
+
+  private static boolean isCallOnStringLiteral(ExpressionTree expr) {
+    return expr.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) expr).expression().is(Tree.Kind.STRING_LITERAL);
+  }
+
+  private void handleMethodInvocation(MethodInvocationTree tree) {
+    if (isSettingPassword(tree)) {
+      reportIssue(tree.methodSelect());
     }
   }
 
