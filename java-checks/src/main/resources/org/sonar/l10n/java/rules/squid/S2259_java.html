@@ -1,7 +1,10 @@
-<p>A reference to <code>null</code> should never be dereferenced/accessed. Doing so will cause a <code>NullPointerException</code> to be thrown. At best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or it could allow an attacker to bypass security measures.</p>
-<p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable.</p>
-<p><code>@Nullable</code> denotes that, under some unspecified circumstances, the value might be null. To keep false positives low, this annotation is ignored. Whether an explicit test is required or not is left to the developer's discretion.</p>
-
+<p>A reference to <code>null</code> should never be dereferenced/accessed. Doing so will cause a <code>NullPointerException</code> to be thrown. At
+best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or
+it could allow an attacker to bypass security measures.</p>
+<p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a
+href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable.</p>
+<p><code>@Nullable</code> denotes that, under some unspecified circumstances, the value might be null. To keep false positives low, this annotation is
+ignored. Whether an explicit test is required or not is left to the developer's discretion.</p>
 <h2>Noncompliant Code Example</h2>
 <p>Here are some examples of null pointer dereferences detected by this rule:</p>
 <pre>
@@ -24,7 +27,7 @@ try{
   e.printStackTrace();
 }finally{
   stmt.close();   // Noncompliant; stmt could be null if an exception was thrown in the try{} block
-  conn.close();  // Noncompliant; conn could be null if an exception was thrown 
+  conn.close();  // Noncompliant; conn could be null if an exception was thrown
 }
 </pre>
 <pre>
@@ -43,14 +46,11 @@ void paint(Color color) {
   ...
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/476.html">MITRE, CWE-476</a> - NULL Pointer Dereference
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/PAw">CERT, EXP34-C.</a> - Do not dereference null pointers
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/ZwDOAQ">CERT, EXP01-J.</a> - Do not use a null in a case where an object is required
-</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection
-</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A2-Broken_Authentication_and_Session_Management">OWASP Top Ten 2013 Category A2</a> - Broken Authentication and Session Management
-</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten 2013 Category A6</a> - Sensitive Data Exposure
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/476.html">MITRE, CWE-476</a> - NULL Pointer Dereference </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/PAw">CERT, EXP34-C.</a> - Do not dereference null pointers </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/ZwDOAQ">CERT, EXP01-J.</a> - Do not use a null in a case where an object is required
+  </li>
+</ul>
 

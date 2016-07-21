@@ -1,5 +1,5 @@
-<p>A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many things.</p>
-
+<p>A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many
+things.</p>
 <h2>Noncompliant Code Example</h2>
 <p>With a maximum number of 4 parameters:</p>
 <pre>
@@ -7,14 +7,13 @@ public void doSomething(int param1, int param2, int param3, String param4, long 
 ...
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public void doSomething(int param1, int param2, int param3, String param4) {
 ...
 }
 </pre>
-
 <h2>Exceptions</h2>
-<p>Methods annotated with Spring's <code>@RequestMapping</code> may have a lot of parameters, encapsulation being possible. Such methods are therefore ignored.</p>
+<p>Methods annotated with Spring's <code>@RequestMapping</code> may have a lot of parameters, encapsulation being possible. Such methods are therefore
+ignored.</p>
 

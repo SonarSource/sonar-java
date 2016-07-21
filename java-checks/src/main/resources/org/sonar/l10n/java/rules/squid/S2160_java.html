@@ -1,11 +1,11 @@
-<p>Extend a class that overrides <code>equals</code> and add fields without overriding <code>equals</code> in the subclass, and you run the risk of non-equivalent instances of your subclass being seen as equal, because only the superclass fields will be considered in the equality test.</p>
+<p>Extend a class that overrides <code>equals</code> and add fields without overriding <code>equals</code> in the subclass, and you run the risk of
+non-equivalent instances of your subclass being seen as equal, because only the superclass fields will be considered in the equality test.</p>
 <p>This rule looks for classes that do all of the following:</p>
 <ul>
-<li> extend classes that override <code>equals</code>.
-</li><li> do not themselves override <code>equals</code>.
-</li><li> add fields.
-</li></ul>
-
+  <li> extend classes that override <code>equals</code>. </li>
+  <li> do not themselves override <code>equals</code>. </li>
+  <li> add fields. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Fruit {
@@ -30,7 +30,6 @@ public class Raspberry extends Fruit {  // Noncompliant; instances will use Frui
   private Color ripeColor;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class Fruit {

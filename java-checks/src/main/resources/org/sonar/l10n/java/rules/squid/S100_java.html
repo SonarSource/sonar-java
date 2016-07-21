@@ -1,20 +1,17 @@
 <p>Shared naming conventions allow teams to collaborate efficiently. This rule checks that all method names match a provided regular expression.</p>
-
 <h2>Noncompliant Code Example</h2>
 <p>With default provided regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
 <pre>
 public int DoSomething(){...}
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public int doSomething(){...}
 </pre>
-
 <h2>Exceptions</h2>
 <p>Overriding methods are excluded. </p>
-<pre> 
-@Override 
-public int Do_Something(){...} 
+<pre>
+@Override
+public int Do_Something(){...}
 </pre>
 

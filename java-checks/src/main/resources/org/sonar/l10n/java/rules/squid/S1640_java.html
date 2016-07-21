@@ -1,9 +1,9 @@
-<p>When all the keys of a Map are values from the same enum, the <code>Map</code> can be replaced with an <code>EnumMap</code>, which can be much more efficient than other sets because the underlying data structure is a simple array.</p>
-
+<p>When all the keys of a Map are values from the same enum, the <code>Map</code> can be replaced with an <code>EnumMap</code>, which can be much more
+efficient than other sets because the underlying data structure is a simple array.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
-  
+
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
   }
@@ -13,11 +13,10 @@ public class MyClass {
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class MyClass {
-  
+
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
   }

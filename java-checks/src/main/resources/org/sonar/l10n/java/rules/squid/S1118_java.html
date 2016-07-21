@@ -2,7 +2,6 @@
 <p>Even abstract utility classes, which can be extended, should not have public constructors.</p>
 <p>Java adds an implicit public constructor to every class which does not define at least one explicitly.</p>
 <p>Hence, at least one non-public constructor should be defined.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 class StringUtils { // Noncompliant
@@ -13,7 +12,6 @@ class StringUtils { // Noncompliant
 
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class StringUtils { // Compliant

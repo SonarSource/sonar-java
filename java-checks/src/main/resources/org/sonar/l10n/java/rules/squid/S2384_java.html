@@ -1,7 +1,8 @@
-<p>Mutable objects are those whose state can be changed. For instance, an array is mutable, but a String is not. Mutable class members should never be returned to a caller or accepted and stored directly. Doing so leaves you vulnerable to unexpected changes in your class state.</p>
-<p>Instead use an unmodifiable <code>Collection</code> (via <code>Collections.unmodifiableCollection</code>, <code>Collections.unmodifiableList</code>, ...) or make a copy of the mutable object, and store or return copy instead.</p>
+<p>Mutable objects are those whose state can be changed. For instance, an array is mutable, but a String is not. Mutable class members should never be
+returned to a caller or accepted and stored directly. Doing so leaves you vulnerable to unexpected changes in your class state.</p>
+<p>Instead use an unmodifiable <code>Collection</code> (via <code>Collections.unmodifiableCollection</code>,
+<code>Collections.unmodifiableList</code>, ...) or make a copy of the mutable object, and store or return copy instead.</p>
 <p>This rule checks that arrays, collections and Dates are not stored or returned directly.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 class A {
@@ -29,7 +30,6 @@ public class B {
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class A {
@@ -58,14 +58,16 @@ public class B {
 }
 
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/374">MITRE, CWE-374</a> - Passing Mutable Objects to an Untrusted Method
-</li><li> <a href="http://cwe.mitre.org/data/definitions/375">MITRE, CWE-375</a> - Returning a Mutable Object to an Untrusted Caller
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/zQCuAQ">CERT, OBJ05-J.</a> - Do not return references to private mutable class members
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/QIEVAQ">CERT, OBJ06-J.</a> - Defensively copy mutable inputs and mutable internal components
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/JQLEAw">CERT, OBJ13-J.</a> - Ensure that references to mutable objects are not exposed
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/kwCuAQ">CERT, OOP08-CPP.</a> - Do not return references to private data
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/374">MITRE, CWE-374</a> - Passing Mutable Objects to an Untrusted Method </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/375">MITRE, CWE-375</a> - Returning a Mutable Object to an Untrusted Caller </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/zQCuAQ">CERT, OBJ05-J.</a> - Do not return references to private mutable class members
+  </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/QIEVAQ">CERT, OBJ06-J.</a> - Defensively copy mutable inputs and mutable internal
+  components </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/JQLEAw">CERT, OBJ13-J.</a> - Ensure that references to mutable objects are not exposed
+  </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/kwCuAQ">CERT, OOP08-CPP.</a> - Do not return references to private data </li>
+</ul>
 

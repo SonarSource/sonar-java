@@ -1,12 +1,12 @@
-<p>The concept of <code>Optional</code> is that it will be used when <code>null</code> could cause errors. In a way, it replaces <code>null</code>, and when <code>Optional</code> is in use, there should never be a question of returning or receiving <code>null</code> from a call.</p>
-
+<p>The concept of <code>Optional</code> is that it will be used when <code>null</code> could cause errors. In a way, it replaces <code>null</code>,
+and when <code>Optional</code> is in use, there should never be a question of returning or receiving <code>null</code> from a call.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomething () {
   Optional&lt;String&gt; optional = getOptional();
   if (optional != null) {  // Noncompliant
     // do something with optional...
-  } 
+  }
 }
 
 @Nullable // Noncompliant
@@ -15,7 +15,6 @@ public Optional&lt;String&gt; getOptional() {
   return null;  // Noncompliant
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public void doSomething () {

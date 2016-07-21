@@ -1,5 +1,6 @@
-<p>Synchronizing on a class field synchronizes not on the field itself, but on the object assigned to it. So synchronizing on a non-<code>final</code> field makes it possible for the field's value to change while a thread is in a block synchronized on the old value. That would allow a second thread, synchronized on the new value, to enter the block at the same time.</p>
-
+<p>Synchronizing on a class field synchronizes not on the field itself, but on the object assigned to it. So synchronizing on a non-<code>final</code>
+field makes it possible for the field's value to change while a thread is in a block synchronized on the old value. That would allow a second thread,
+synchronized on the new value, to enter the block at the same time.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 private String color = "red";
@@ -12,7 +13,6 @@ private void doSomething(){
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 private String color = "red";
@@ -26,11 +26,11 @@ private void doSomething(){
   }
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/412.html">MITRE, CWE-412</a> - Unrestricted Externally Accessible Lock
-</li><li> <a href="http://cwe.mitre.org/data/definitions/413">MITRE, CWE-413</a> - Improper Resource Locking
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/6IEzAg">CERT, LCK00-J.</a> - Use private final lock objects to synchronize classes that may interact with untrusted code
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/412.html">MITRE, CWE-412</a> - Unrestricted Externally Accessible Lock </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/413">MITRE, CWE-413</a> - Improper Resource Locking </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/6IEzAg">CERT, LCK00-J.</a> - Use private final lock objects to synchronize classes that
+  may interact with untrusted code </li>
+</ul>
 

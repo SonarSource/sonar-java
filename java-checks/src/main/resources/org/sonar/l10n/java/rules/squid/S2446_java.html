@@ -1,5 +1,5 @@
-<p><code>notify</code> and <code>notifyAll</code> both wake up sleeping threads, but <code>notify</code> only rouses one, while <code>notifyAll</code> rouses all of them. Since <code>notify</code> might not wake up the right thread, <code>notifyAll</code> should be used instead.</p>
-
+<p><code>notify</code> and <code>notifyAll</code> both wake up sleeping threads, but <code>notify</code> only rouses one, while <code>notifyAll</code>
+rouses all of them. Since <code>notify</code> might not wake up the right thread, <code>notifyAll</code> should be used instead.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class MyThread extends Thread{
@@ -13,7 +13,6 @@ class MyThread extends Thread{
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class MyThread extends Thread{
@@ -27,9 +26,9 @@ class MyThread extends Thread{
   }
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/OoAlAQ">CERT, THI02-J.</a> - Notify all waiting threads rather than a single thread
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/OoAlAQ">CERT, THI02-J.</a> - Notify all waiting threads rather than a single thread
+  </li>
+</ul>
 

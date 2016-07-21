@@ -1,7 +1,9 @@
 <p>According to the Common Weakness Enumeration,</p>
-<blockquote>If two validation forms have the same name, the Struts Validator arbitrarily chooses one of the forms to use for input validation and discards the other. This decision might not correspond to the programmer's expectations...</blockquote>
+<blockquote>
+  If two validation forms have the same name, the Struts Validator arbitrarily chooses one of the forms to use for input validation and discards the
+  other. This decision might not correspond to the programmer's expectations...
+</blockquote>
 <p>In such a case, it is likely that the two forms should be combined. At the very least, one should be removed.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 &lt;form-validation&gt;
@@ -11,7 +13,6 @@
   &lt;/formset&gt;
 &lt;/form-validation&gt;
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 &lt;form-validation&gt;
@@ -20,10 +21,10 @@
   &lt;/formset&gt;
 &lt;/form-validation&gt;
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/102.html">MITRE, CWE-102</a> - Struts: Duplicate Validation Forms
-</li><li> <a href="https://www.owasp.org/index.php/Struts:_Duplicate_Validation_Forms#Struts:_Duplicate_Validation_Forms">OWASP, Improper Data Validation</a> - Struts: Duplicate Validation Forms
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/102.html">MITRE, CWE-102</a> - Struts: Duplicate Validation Forms </li>
+  <li> <a href="https://www.owasp.org/index.php/Struts:_Duplicate_Validation_Forms#Struts:_Duplicate_Validation_Forms">OWASP, Improper Data
+  Validation</a> - Struts: Duplicate Validation Forms </li>
+</ul>
 

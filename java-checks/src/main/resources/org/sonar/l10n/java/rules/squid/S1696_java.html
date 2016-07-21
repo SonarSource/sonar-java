@@ -1,5 +1,6 @@
-<p><code>NullPointerException</code> should be avoided, not caught. Any situation in which <code>NullPointerException</code> is explicitly caught can easily be converted to a <code>null</code> test, and any behavior being carried out in the catch block can easily be moved to the "is null" branch of the conditional.</p>
-
+<p><code>NullPointerException</code> should be avoided, not caught. Any situation in which <code>NullPointerException</code> is explicitly caught can
+easily be converted to a <code>null</code> test, and any behavior being carried out in the catch block can easily be moved to the "is null" branch of
+the conditional.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public int lengthPlus(String str) {
@@ -13,7 +14,6 @@ public int lengthPlus(String str) {
   return len;
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public int lengthPlus(String str) {
@@ -28,10 +28,11 @@ public int lengthPlus(String str) {
   return len;
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/395.html">MITRE, CWE-395</a> - Use of NullPointerException Catch to Detect NULL Pointer Dereference
-</li><li> <a href="https://www.securecoding.cert.org/confluence/x/BIB3AQ">CERT, ERR08-J.</a> - Do not catch NullPointerException or any of its ancestors
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/395.html">MITRE, CWE-395</a> - Use of NullPointerException Catch to Detect NULL Pointer
+  Dereference </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/BIB3AQ">CERT, ERR08-J.</a> - Do not catch NullPointerException or any of its ancestors
+  </li>
+</ul>
 

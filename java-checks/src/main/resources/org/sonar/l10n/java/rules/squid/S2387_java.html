@@ -1,5 +1,5 @@
-<p>Having a variable with the same name in two unrelated classes is fine, but do the same thing within a class hierarchy and you'll get confusion at best, chaos at worst. Perhaps even worse is the case where a child class field varies from the name of a parent class only by case.</p>
-
+<p>Having a variable with the same name in two unrelated classes is fine, but do the same thing within a class hierarchy and you'll get confusion at
+best, chaos at worst. Perhaps even worse is the case where a child class field varies from the name of a parent class only by case.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Fruit {
@@ -14,7 +14,6 @@ public class Raspberry extends Fruit {
   private static Color FLESH; // Noncompliant
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class Fruit {
@@ -30,7 +29,6 @@ public class Raspberry extends Fruit {
 
 }
 </pre>
-
 <h2>Exceptions</h2>
 <p>This rule ignores <code>private</code> parent class fields, but in all other such cases, the child class field should be renamed.</p>
 <pre>

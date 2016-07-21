@@ -1,29 +1,29 @@
-<p><code>for</code> loop stop conditions must be invariant (i.e. true at both the beginning and ending of every loop iteration). Ideally, this means that the stop condition is set to a local variable just before the loop begins. </p>
-<p>Stop conditions that are not invariant are difficult to understand and maintain, and will likely lead to the introduction of errors in the future.</p>
+<p><code>for</code> loop stop conditions must be invariant (i.e. true at both the beginning and ending of every loop iteration). Ideally, this means
+that the stop condition is set to a local variable just before the loop begins. </p>
+<p>Stop conditions that are not invariant are difficult to understand and maintain, and will likely lead to the introduction of errors in the
+future.</p>
 <p>This rule tracks three types of non-invariant stop conditions:</p>
 <ul>
-<li> When the loop counters are updated in the body of the <code>for</code> loop
-</li><li> When the stop condition depend upon a method call
-</li><li> When the stop condition depends on an object property, since such properties could change during the execution of the loop.
-</li></ul>
-
+  <li> When the loop counters are updated in the body of the <code>for</code> loop </li>
+  <li> When the stop condition depend upon a method call </li>
+  <li> When the stop condition depends on an object property, since such properties could change during the execution of the loop. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
-<pre> 
+<pre>
 for (int i = 0; i &lt; 10; i++) {
   ...
   i = i - 1; // Noncompliant; counter updated in the body of the loop
   ...
-} 
+}
 </pre>
-
 <h2>Compliant Solution</h2>
-<pre> 
-for (int i = 0; i &lt; 10; i++) {...} 
+<pre>
+for (int i = 0; i &lt; 10; i++) {...}
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> MISRA C:2004, 13.6 - Numeric variables being used within a <em>for</em> loop for iteration counting shall not be modified in the body of the loop.
-</li><li> MISRA C++:2008, 6-5-3 - The <em>loop-counter</em> shall not be modified within <em>condition</em> or <em>statement</em>.
-</li></ul>
+  <li> MISRA C:2004, 13.6 - Numeric variables being used within a <em>for</em> loop for iteration counting shall not be modified in the body of the
+  loop. </li>
+  <li> MISRA C++:2008, 6-5-3 - The <em>loop-counter</em> shall not be modified within <em>condition</em> or <em>statement</em>. </li>
+</ul>
 

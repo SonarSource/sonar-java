@@ -1,5 +1,6 @@
-<p>Adding messages to JUnit assertions is an investment in your future productivity. Spend a few seconds writing them now, and you'll save a lot of time on the other end when either the tests fail and you need to quickly diagnose the problem, or when you need to maintain the tests and the assertion messages work as a sort of documentation.</p>
-
+<p>Adding messages to JUnit assertions is an investment in your future productivity. Spend a few seconds writing them now, and you'll save a lot of
+time on the other end when either the tests fail and you need to quickly diagnose the problem, or when you need to maintain the tests and the
+assertion messages work as a sort of documentation.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 assertEquals(4, list.size());  // Noncompliant
@@ -10,7 +11,6 @@ try {
   assertThat(list.get(0)).isEqualTo("pear");  // Noncompliant
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 assertEquals("There should have been 4 Fruits in the list", 4, list.size());
@@ -18,7 +18,7 @@ assertEquals("There should have been 4 Fruits in the list", 4, list.size());
 try {
   fail("And exception is expected here");
 } catch (Exception e) {
-  assertThat(list.get(0)).as("check first element").overridingErrorMessage("The first element should be a pear, not a %s", list.get(0)).isEqualTo("pear"); 
+  assertThat(list.get(0)).as("check first element").overridingErrorMessage("The first element should be a pear, not a %s", list.get(0)).isEqualTo("pear");
 }
 </pre>
 

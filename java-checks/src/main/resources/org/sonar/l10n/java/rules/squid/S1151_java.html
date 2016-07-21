@@ -1,5 +1,6 @@
-<p>The <code>switch</code> statement should be used only to clearly define some new branches in the control flow. As soon as a <code>case</code> clause contains too many statements this highly decreases the readability of the overall control flow statement. In such case, the content of <code>case</code> clause should be extracted in a dedicated method.</p>
-
+<p>The <code>switch</code> statement should be used only to clearly define some new branches in the control flow. As soon as a <code>case</code>
+clause contains too many statements this highly decreases the readability of the overall control flow statement. In such case, the content of
+<code>case</code> clause should be extracted in a dedicated method.</p>
 <h2>Noncompliant Code Example</h2>
 <p>With the default threshold of 5:</p>
 <pre>
@@ -13,12 +14,11 @@ switch (myVariable) {
   case 1:
   ...
 }
-</pre> 
-
+</pre>
 <h2>Compliant Solution</h2>
 <pre>
 switch (myVariable) {
-  case 0:                  
+  case 0:
     doSomething()
     break;
   case 1:
@@ -31,5 +31,5 @@ private void doSomething(){
     methodCall3("");
     methodCall4("");
 }
-</pre> 
+</pre>
 

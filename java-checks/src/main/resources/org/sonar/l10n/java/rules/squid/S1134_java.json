@@ -2,7 +2,7 @@
   "title": "\"FIXME\" tags should be handled",
   "status": "ready",
   "tags": [
-    
+    "cwe"
   ],
   "defaultSeverity": "Major"
 }

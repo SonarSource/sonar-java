@@ -1,5 +1,8 @@
-<p>Objects which are pooled and potentially reused should not be used for synchronization. If they are, it can cause unrelated threads to deadlock with unhelpful stacktraces. Specifically, <code>String</code> literals, and boxed primitives such as Integers should not be used as lock objects because they are pooled and reused. The story is even worse for <code>Boolean</code> objects, because there are only two instances of <code>Boolean</code>, <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> and every class that uses a Boolean will be referring to one of the two.</p>
-
+<p>Objects which are pooled and potentially reused should not be used for synchronization. If they are, it can cause unrelated threads to deadlock
+with unhelpful stacktraces. Specifically, <code>String</code> literals, and boxed primitives such as Integers should not be used as lock objects
+because they are pooled and reused. The story is even worse for <code>Boolean</code> objects, because there are only two instances of
+<code>Boolean</code>, <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> and every class that uses a Boolean will be referring to one of the
+two.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 private static final Boolean bLock = Boolean.FALSE;
@@ -18,7 +21,6 @@ public void doSomething() {
     // ...
   }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 private static final Object lock1 = new Object();
@@ -37,9 +39,8 @@ public void doSomething() {
     // ...
   }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/rQGeAQ">CERT, LCK01-J.</a> - Do not synchronize on objects that may be reused
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/rQGeAQ">CERT, LCK01-J.</a> - Do not synchronize on objects that may be reused </li>
+</ul>
 

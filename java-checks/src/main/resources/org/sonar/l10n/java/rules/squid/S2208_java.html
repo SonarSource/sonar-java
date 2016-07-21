@@ -1,5 +1,5 @@
-<p>Blindly importing all the classes in a package clutters the class namespace and could lead to conflicts between classes in different packages with the same name. On the other hand, specifically listing the necessary classes avoids that problem and makes clear which versions were wanted.</p>
-
+<p>Blindly importing all the classes in a package clutters the class namespace and could lead to conflicts between classes in different packages with
+the same name. On the other hand, specifically listing the necessary classes avoids that problem and makes clear which versions were wanted.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 import java.sql.*; // Noncompliant
@@ -7,7 +7,6 @@ import java.util.*; // Noncompliant
 
 private Date date; // Date class exists in java.sql and java.util. Which one is this?
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 import java.sql.Date;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 
 private Date date;
 </pre>
-
 <h2>Exceptions</h2>
 <p>Static imports are ignored by this rule. E.G.</p>
 <pre>

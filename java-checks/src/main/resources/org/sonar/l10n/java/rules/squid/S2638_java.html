@@ -1,5 +1,7 @@
-<p>Because a subclass instance may be cast to and treated as an instance of the superclass, overriding methods should uphold the aspects of the superclass contract that relate to the Liskov Substitution Principle. Specifically, if the parameters or return type of the superclass method are marked with any of the following: <code>@Nullable</code>, <code>@CheckForNull</code>, <code>@NotNull</code>, <code>@NonNull</code>, and <code>@Nonnull</code>, then subclass parameters are not allowed to tightened the contract, and return values are not allowed to loosen it.</p>
-
+<p>Because a subclass instance may be cast to and treated as an instance of the superclass, overriding methods should uphold the aspects of the
+superclass contract that relate to the Liskov Substitution Principle. Specifically, if the parameters or return type of the superclass method are
+marked with any of the following: <code>@Nullable</code>, <code>@CheckForNull</code>, <code>@NotNull</code>, <code>@NonNull</code>, and
+<code>@Nonnull</code>, then subclass parameters are not allowed to tightened the contract, and return values are not allowed to loosen it.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Fruit {
@@ -27,7 +29,6 @@ public class Raspberry extends Fruit {
   }
 }
 </pre>
-
 <h2>See also</h2>
 <p>https://en.wikipedia.org/wiki/Liskov_substitution_principle</p>
 

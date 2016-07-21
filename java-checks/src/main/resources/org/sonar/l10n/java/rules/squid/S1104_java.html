@@ -1,11 +1,10 @@
 <p>Public class variable fields do not respect the encapsulation principle and has three main disadvantages:</p>
 <ul>
-<li> Additional behavior such as validation cannot be added.
-</li><li> The internal representation is exposed, and cannot be changed afterwards.
-</li><li> Member values are subject to change from anywhere in the code and may not meet the programmer's assumptions.
-</li></ul>
+  <li> Additional behavior such as validation cannot be added. </li>
+  <li> The internal representation is exposed, and cannot be changed afterwards. </li>
+  <li> Member values are subject to change from anywhere in the code and may not meet the programmer's assumptions. </li>
+</ul>
 <p>By using private attributes and accessor methods (set and get), unauthorized modifications are prevented.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
@@ -16,7 +15,6 @@ public class MyClass {
 
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public class MyClass {
@@ -35,12 +33,10 @@ public class MyClass {
 
 }
 </pre>
-
 <h2>Exceptions</h2>
 <p>Because they are not modifiable, this rule ignores <code>public final</code> fields.</p>
-
 <h2>See</h2>
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/493.html">MITRE, CWE-493</a> - Critical Public Variable Without Final Modifier
-</li></ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/493.html">MITRE, CWE-493</a> - Critical Public Variable Without Final Modifier </li>
+</ul>
 

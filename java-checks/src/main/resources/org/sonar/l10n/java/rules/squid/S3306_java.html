@@ -1,25 +1,25 @@
-<p>Field injection seems like a tidy way to get your classes what they need to do their jobs, but it's really a <code>NullPointerException</code> waiting to happen unless all your class constructors are <code>private</code>. That's because any class instances that are constructed by callers, rather than instantiated by the Spring framework, won't have the ability to perform the field injection.</p>
+<p>Field injection seems like a tidy way to get your classes what they need to do their jobs, but it's really a <code>NullPointerException</code>
+waiting to happen unless all your class constructors are <code>private</code>. That's because any class instances that are constructed by callers,
+rather than instantiated by the Spring framework, won't have the ability to perform the field injection.</p>
 <p>Instead <code>@Inject</code> should be moved to the constructor and the fields required as constructor parameters.</p>
 <p>This rule raises an issue when classes with non-<code>private</code> constructors (including the default constructor) use field injection.</p>
-
 <h2>Noncompliant Code Example</h2>
 <pre>
-class MyComponent {  // Anyone can call the default constructor 
- 
+class MyComponent {  // Anyone can call the default constructor
+
   @Inject MyCollaborator collaborator;  // Noncompliant
-  
+
   public void myBusinessMethod() {
     collaborator.doSomething();  // this will fail in classes new-ed by a caller
   }
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 class MyComponent {
- 
+
   private final MyCollaborator collaborator;
-  
+
   @Inject
   public MyComponent(MyCollaborator collaborator) {
     Assert.notNull(collaborator, "MyCollaborator must not be null!");

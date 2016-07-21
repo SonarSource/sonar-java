@@ -1,5 +1,6 @@
-<p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance, and scalability issues, or even worse to deadlocks because the execution of the thread holding the lock is frozen. It's better to call <code>wait(...)</code> on the monitor object to temporarily release the lock and allow other threads to run.</p>
-
+<p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance, and scalability issues, or even
+worse to deadlocks because the execution of the thread holding the lock is frozen. It's better to call <code>wait(...)</code> on the monitor object to
+temporarily release the lock and allow other threads to run.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomething(){
@@ -12,7 +13,6 @@ public void doSomething(){
   ...
 }
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 public void doSomething(){
@@ -25,9 +25,9 @@ public void doSomething(){
   ...
 }
 </pre>
-
 <h2>See</h2>
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/x/FgG7AQ">CERT, LCK09-J.</a> - Do not perform operations that can block while holding a lock
-</li></ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/FgG7AQ">CERT, LCK09-J.</a> - Do not perform operations that can block while holding a
+  lock </li>
+</ul>
 

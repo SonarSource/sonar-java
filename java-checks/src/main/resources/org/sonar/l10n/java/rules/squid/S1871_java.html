@@ -1,19 +1,21 @@
-<p>Having two <code>cases</code> in the same <code>switch</code> statement or branches in the same <code>if</code> structure  with the same implementation is at best duplicate code, and at worst a coding error. If the same logic is truly needed for both instances, then in an <code>if</code> structure they should be combined, or for a <code>switch</code>, one should fall through to the other. </p>
-<p>Moreover when the second and third operands of a ternary operator are the same, the operator will always return the same value regardless of the condition. Either the operator itself is pointless, or a mistake was made in coding it.</p>
-
+<p>Having two <code>cases</code> in the same <code>switch</code> statement or branches in the same <code>if</code> structure with the same
+implementation is at best duplicate code, and at worst a coding error. If the same logic is truly needed for both instances, then in an
+<code>if</code> structure they should be combined, or for a <code>switch</code>, one should fall through to the other. </p>
+<p>Moreover when the second and third operands of a ternary operator are the same, the operator will always return the same value regardless of the
+condition. Either the operator itself is pointless, or a mistake was made in coding it.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 switch (i) {
-  case 1: 
+  case 1:
     doSomething();
     break;
-  case 2: 
+  case 2:
     doSomethingDifferent();
     break;
   case 3:  // Noncompliant; duplicates case 1's implementation
-    doSomething(); 
+    doSomething();
     break;
-  default: 
+  default:
     doTheRest();
 }
 
@@ -27,7 +29,7 @@ else if (a &gt;= 20 &amp;&amp; a &lt; 50) {
   doTheThing();  // Noncompliant; duplicates first condition
 }
 else {
-  doTheRest(); 
+  doTheRest();
 }
 
 if (b == 0) {
@@ -39,18 +41,17 @@ else {
 
 int b = a &gt; 12 ? 4 : 4;  // Noncompliant; always results in the same value
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 switch (i) {
-  case 1: 
+  case 1:
   case 3:
     doSomething();
     break;
-  case 2: 
+  case 2:
     doSomethingDifferent();
     break;
-  default: 
+  default:
     doTheRest();
 }
 
@@ -61,7 +62,7 @@ else if (a &gt;= 10 &amp;&amp; a &lt; 20) {
   doTheOtherThing();
 }
 else {
-  doTheRest(); 
+  doTheRest();
 }
 
 doOneMoreThing();
@@ -71,16 +72,16 @@ int b = 4;
 <p>or </p>
 <pre>
 switch (i) {
-  case 1: 
+  case 1:
     doSomething();
     break;
-  case 2: 
+  case 2:
     doSomethingDifferent();
     break;
   case 3:
-    doThirdThing(); 
+    doThirdThing();
     break;
-  default: 
+  default:
     doTheRest();
 }
 
@@ -94,7 +95,7 @@ else if (a &gt;= 20 &amp;&amp; a &lt; 50) {
   doTheThirdThing();
 }
 else {
-  doTheRest(); 
+  doTheRest();
 }
 
 if (b == 0) {

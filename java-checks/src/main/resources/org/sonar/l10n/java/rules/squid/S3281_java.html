@@ -1,6 +1,7 @@
-<p>Default interceptors, such as application security interceptors, must be listed in the <code>ejb-jar.xml</code> file, or they will not be treated as default. </p>
-<p>This rule applies to projects that contain JEE Beans  (any one of <code>javax.ejb.Singleton</code>, <code>MessageDriven</code>, <code>Stateless</code> or <code>Stateful</code>).</p>
-
+<p>Default interceptors, such as application security interceptors, must be listed in the <code>ejb-jar.xml</code> file, or they will not be treated
+as default. </p>
+<p>This rule applies to projects that contain JEE Beans (any one of <code>javax.ejb.Singleton</code>, <code>MessageDriven</code>,
+<code>Stateless</code> or <code>Stateful</code>).</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 // file: ejb-interceptors.xml
@@ -11,7 +12,6 @@
    &lt;/interceptor-binding&gt;
 &lt;/assembly-descriptor&gt;
 </pre>
-
 <h2>Compliant Solution</h2>
 <pre>
 // file: ejb-jar.xml
