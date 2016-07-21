@@ -77,10 +77,10 @@ public class JavaSquid {
           codeVisitors,
           Arrays.asList(
               new FileLinesVisitor(sonarComponents, conf.getCharset()),
-              new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset())
+              new SyntaxHighlighterVisitor(sonarComponents)
           )
       );
-      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
+      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
