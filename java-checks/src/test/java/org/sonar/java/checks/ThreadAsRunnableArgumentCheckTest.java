@@ -27,5 +27,6 @@ public class ThreadAsRunnableArgumentCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ThreadAsRunnableArgumentCheck.java", new ThreadAsRunnableArgumentCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ThreadAsRunnableArgumentCheck.java", new ThreadAsRunnableArgumentCheck());
   }
 }

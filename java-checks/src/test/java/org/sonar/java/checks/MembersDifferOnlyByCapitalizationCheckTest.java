@@ -27,6 +27,7 @@ public class MembersDifferOnlyByCapitalizationCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/MembersDifferOnlyByCapitalizationCheck.java", new MembersDifferOnlyByCapitalizationCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/MembersDifferOnlyByCapitalizationCheck.java", new MembersDifferOnlyByCapitalizationCheck());
   }
 
 }

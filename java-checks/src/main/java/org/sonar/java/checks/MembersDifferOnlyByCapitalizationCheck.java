@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S1845")
 public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscriptionVisitor {
@@ -68,18 +70,17 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     String name = symbol.name();
     for (String knownMemberName : membersByName.keySet()) {
       if (name.equalsIgnoreCase(knownMemberName)) {
-        for (Symbol knownMemberSymbol : membersByName.get(knownMemberName)) {
-          if (!symbol.equals(knownMemberSymbol)
-            && isValidIssueLocation(symbol, knownMemberSymbol)
-            && isInvalidMember(symbol, knownMemberSymbol)) {
-            reportIssue(reportTree,
-              "Rename "
-                + getSymbolTypeName(symbol) + " \"" + name + "\" "
-                + "to prevent any misunderstanding/clash with "
-                + getSymbolTypeName(knownMemberSymbol) + " \"" + knownMemberName + "\""
-                + getDefinitionPlace(symbol, knownMemberSymbol) + ".");
-            break;
-          }
+        Optional<Symbol> conflictingMember = membersByName.get(knownMemberName).stream()
+          .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
+          .findFirst();
+        if (conflictingMember.isPresent()) {
+          Symbol conflictingSymbol = conflictingMember.get();
+          reportIssue(reportTree,
+            "Rename "
+              + getSymbolTypeName(symbol) + " \"" + name + "\" "
+              + "to prevent any misunderstanding/clash with "
+              + getSymbolTypeName(conflictingSymbol) + " \"" + knownMemberName + "\""
+              + getDefinitionPlace(symbol, conflictingSymbol) + ".");
         }
       }
     }

@@ -71,16 +71,18 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
     if (!parametersTypes.isEmpty()) {
       for (int index = 0; index < arguments.size(); index++) {
         ExpressionTree argument = arguments.get(index);
-        if (!argument.is(Kind.NULL_LITERAL)) {
-          Type providedType = argument.symbolType();
-          Type expectedType = getExpectedType(providedType, parametersTypes, index, methodSymbol.isVarArgs());
-          if ((expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread"))
-            || (expectedType.is("java.lang.Runnable[]") && (providedType.isSubtypeOf("java.lang.Thread[]")))) {
-            reportIssue(argument, getMessage(argument, providedType, index));
-          }
+        Type providedType = argument.symbolType();
+        if (!argument.is(Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, methodSymbol.isVarArgs())) {
+          reportIssue(argument, getMessage(argument, providedType, index));
         }
       }
     }
+  }
+
+  private static boolean isThreadAsRunnable(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
+    Type expectedType = getExpectedType(providedType, parametersTypes, index, varargs);
+    return (expectedType.is("java.lang.Runnable") && providedType.isSubtypeOf("java.lang.Thread"))
+      || (expectedType.is("java.lang.Runnable[]") && providedType.isSubtypeOf("java.lang.Thread[]"));
   }
 
   private static Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
