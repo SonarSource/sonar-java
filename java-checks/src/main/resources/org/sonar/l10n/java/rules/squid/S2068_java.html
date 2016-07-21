@@ -11,6 +11,8 @@ try {
   String password = "blue";
   conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
         "user=" + uname + "&amp;password=" + password); // Noncompliant
+
+  java.net.PasswordAuthentication pa = new java.net.PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
