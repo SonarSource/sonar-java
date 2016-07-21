@@ -44,14 +44,46 @@ public interface JavaFileScannerContext {
    */
   CompilationUnitTree getTree();
 
+  /**
+   * Report an issue at file level.
+   * @param check The check raising the issue.
+   * @param message Message to display to the user
+   */
   void addIssueOnFile(JavaCheck check, String message);
 
+  /**
+   * Report an issue on a specific line.
+   * @see {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String)} which should be prefered as reporting will be more precise.
+   * @param line line on which to report the issue
+   * @param check The check raising the issue.
+   * @param message Message to display to the user
+   */
   void addIssue(int line, JavaCheck check, String message);
 
-  void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost);
+  /**
+   * Report an issue on a specific line.
+   * @see {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String, List, Integer)} which should be prefered as reporting will be more precise.
+   * @param line line on which to report the issue
+   * @param check The check raising the issue.
+   * @param message Message to display to the user
+   * @param cost computed remediation cost if applicable, null if not.
+   */
+  void addIssue(int line, JavaCheck check, String message, @Nullable Integer cost);
 
+  /**
+   * Report an issue at a specific line of a given file.
+   * This method is used for one
+   * @param file File on which to report
+   * @param check The check raising the issue.
+   * @param line line on which to report the issue
+   * @param message Message to display to the user
+   */
   void addIssue(File file, JavaCheck check, int line, String message);
 
+  /**
+   * Get semantic analysis.
+   * @return SemanticModel if semantic analysis was successful, null otherwise.
+   */
   @Nullable
   Object getSemanticModel();
 

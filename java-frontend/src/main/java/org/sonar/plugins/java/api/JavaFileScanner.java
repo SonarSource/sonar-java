@@ -21,9 +21,16 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 
+/**
+ * Common interface for all checks analyzing a java file.
+ */
 @Beta
 public interface JavaFileScanner extends JavaCheck {
 
+  /**
+   * Method called after parsing and semantic analysis has been done on file.
+   * @param context Context of analysis containing the parsed tree.
+   */
   void scanFile(JavaFileScannerContext context);
 
 }
