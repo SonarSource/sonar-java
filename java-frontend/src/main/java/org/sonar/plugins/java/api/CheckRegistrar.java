@@ -46,11 +46,20 @@ public interface CheckRegistrar {
    */
   void register(RegistrarContext registrarContext);
 
+  /**
+   * Context for checks registration.
+   */
   class RegistrarContext {
     private String repositoryKey;
     private Iterable<Class<? extends JavaCheck>> checkClasses;
     private Iterable<Class<? extends JavaCheck>> testCheckClasses;
 
+    /**
+     * Registers java checks for a given repository.
+     * @param repositoryKey key of rule repository
+     * @param checkClasses classes of checks for main sources
+     * @param testCheckClasses classes of checks for test sources
+     */
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
@@ -58,14 +67,26 @@ public interface CheckRegistrar {
       this.testCheckClasses = testCheckClasses;
     }
 
+    /**
+     * getter for repository key.
+     * @return the repository key.
+     */
     public String repositoryKey() {
       return repositoryKey;
     }
 
+    /**
+     * get main source check classes
+     * @return iterable of main checks classes
+     */
     public Iterable<Class<? extends JavaCheck>> checkClasses() {
       return checkClasses;
     }
 
+    /**
+     * get test source check classes
+     * @return iterable of test checks classes
+     */
     public Iterable<Class<? extends JavaCheck>> testCheckClasses() {
       return testCheckClasses;
     }
