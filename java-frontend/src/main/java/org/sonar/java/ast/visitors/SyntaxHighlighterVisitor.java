@@ -19,29 +19,21 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,14 +43,11 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   private final SonarComponents sonarComponents;
   private final Map<Tree.Kind, TypeOfText> typesByKind;
   private final Set<String> keywords;
-  private final Charset charset;
 
   private NewHighlighting highlighting;
-  private List<Integer> lineStart;
 
-  public SyntaxHighlighterVisitor(SonarComponents sonarComponents, Charset charset) {
+  public SyntaxHighlighterVisitor(SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
-    this.charset = charset;
 
     ImmutableSet.Builder<String> keywordsBuilder = ImmutableSet.builder();
     keywordsBuilder.add(JavaKeyword.keywordValues());
@@ -88,96 +77,50 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   public void scanFile(JavaFileScannerContext context) {
     File file = context.getFile();
     highlighting = sonarComponents.highlightableFor(file);
-    lineStart = startLines(file, this.charset);
 
     super.scanFile(context);
 
     highlighting.save();
-    lineStart.clear();
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.ANNOTATION)) {
       AnnotationTree annotationTree = (AnnotationTree) tree;
-      highlighting.highlight(start(annotationTree), end(annotationTree), typesByKind.get(Tree.Kind.ANNOTATION));
+      highlight(annotationTree.atToken(), annotationTree.annotationType(), typesByKind.get(Tree.Kind.ANNOTATION));
     } else {
-      Tree.Kind kind = tree.kind();
-      if (typesByKind.containsKey(kind)) {
-        SyntaxToken token = ((LiteralTree) tree).token();
-        highlighting.highlight(start(token), end(token), typesByKind.get(kind));
-      }
+      highlight(tree, typesByKind.get(tree.kind()));
     }
+  }
+
+  private void highlight(Tree tree, TypeOfText typeOfText) {
+    highlight(tree, tree, typeOfText);
+  }
+
+  private void highlight(Tree from, Tree to, TypeOfText typeOfText) {
+    SyntaxToken firstToken = from.firstToken();
+    SyntaxToken lastToken = to.lastToken();
+    highlighting.highlight(firstToken.line(), firstToken.column(), lastToken.line(), lastToken.column() + lastToken.text().length(), typeOfText);
   }
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    String text = syntaxToken.text();
-    if (keywords.contains(text)) {
-      highlighting.highlight(start(syntaxToken), end(syntaxToken), TypeOfText.KEYWORD);
+    if (keywords.contains(syntaxToken.text())) {
+      highlight(syntaxToken, TypeOfText.KEYWORD);
     }
   }
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    highlighting.highlight(start(syntaxTrivia), end(syntaxTrivia), TypeOfText.COMMENT);
-  }
+    String comment = syntaxTrivia.comment();
+    int startLine = syntaxTrivia.startLine();
+    int startColumn = syntaxTrivia.column();
 
-  private int start(AnnotationTree annotationTree) {
-    return start(annotationTree.atToken());
-  }
+    String[] lines = comment.split("\\r\\n|\\n|\\r");
+    int numberLines = lines.length;
 
-  private int start(SyntaxToken token) {
-    return getOffset(token.line(), token.column());
-  }
-
-  private int start(SyntaxTrivia syntaxTrivia) {
-    return getOffset(syntaxTrivia.startLine(), syntaxTrivia.column());
-  }
-
-  /**
-   * @param line starts from 1
-   * @param column starts from 0
-   */
-  private int getOffset(int line, int column) {
-    return lineStart.get(line - 1) + column;
-  }
-
-  private int end(AnnotationTree annotationTree) {
-    TypeTree annotationType = annotationTree.annotationType();
-    SyntaxToken token;
-    if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
-      token = ((MemberSelectExpressionTree) annotationType).identifier().identifierToken();
-    } else {
-      token = ((IdentifierTree) annotationType).identifierToken();
-    }
-    return end(token);
-  }
-
-  private int end(SyntaxToken token) {
-    return getOffset(token.line(), token.column()) + token.text().length();
-  }
-
-  private int end(SyntaxTrivia trivia) {
-    return getOffset(trivia.startLine(), trivia.column()) + trivia.comment().length();
-  }
-
-  private static List<Integer> startLines(File file, Charset charset) {
-    List<Integer> startLines = Lists.newArrayList();
-    final String content;
-    try {
-      content = Files.toString(file, charset);
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    }
-    startLines.add(0);
-    int contentLength = content.length();
-    for (int i = 0; i < contentLength; i++) {
-      char currentChar = content.charAt(i);
-      if (currentChar == '\n' || (currentChar == '\r' && i + 1 < contentLength && content.charAt(i + 1) != '\n')) {
-        startLines.add(i + 1);
-      }
-    }
-    return startLines;
+    int endLine = startLine + numberLines - 1;
+    int endColumn = numberLines == 1 ? (startColumn + comment.length()) : lines[numberLines - 1].length();
+    highlighting.highlight(startLine, startColumn, endLine, endColumn, TypeOfText.COMMENT);
   }
 }

@@ -15,6 +15,7 @@ class Example {
 
 }
 
+// inline comment
 @interface Example2 {
   Example3 method() default 0;
 }

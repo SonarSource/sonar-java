@@ -72,7 +72,7 @@ public class SyntaxHighlighterVisitorTest {
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
       mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
+    syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }
 
   @Test
@@ -134,9 +134,10 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 12, 3, 12, 6, TypeOfText.KEYWORD);
     assertThatHasBeenHighlighted(componentKey, 13, 5, 13, 11, TypeOfText.KEYWORD);
     assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 14, TypeOfText.CONSTANT);
-    assertThatHasBeenHighlighted(componentKey, 18, 2, 18, 11, TypeOfText.KEYWORD);
-    assertThatHasBeenHighlighted(componentKey, 19, 21, 19, 28, TypeOfText.KEYWORD);
-    assertThatHasBeenHighlighted(componentKey, 19, 29, 19, 30, TypeOfText.CONSTANT);
+    assertThatHasBeenHighlighted(componentKey, 18, 1, 18, 18, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 19, 2, 19, 11, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 20, 21, 20, 28, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 20, 29, 20, 30, TypeOfText.CONSTANT);
   }
 
   private void assertThatHasBeenHighlighted(String componentKey, int startLine, int startColumn, int endLine, int endColumn, TypeOfText expected) {
