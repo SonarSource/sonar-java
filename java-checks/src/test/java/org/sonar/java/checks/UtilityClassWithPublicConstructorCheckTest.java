@@ -27,6 +27,7 @@ public class UtilityClassWithPublicConstructorCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java", new UtilityClassWithPublicConstructorCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java", new UtilityClassWithPublicConstructorCheck());
   }
 
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,17 +44,18 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!anonymousClass(classTree) && !extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
-      boolean hasImplicitPublicConstructor = true;
-      for (MethodTree explicitConstructor : getExplicitConstructors(classTree)) {
-        hasImplicitPublicConstructor = false;
-        if (isPublicConstructor(explicitConstructor)) {
-          reportIssue(explicitConstructor.simpleName(), "Hide this public constructor.");
-        }
+    if (!hasSemantic() || anonymousClass(classTree) || extendsAnotherClassOrImplementsSerializable(classTree) || !hasOnlyStaticMembers(classTree)) {
+      return;
+    }
+    boolean hasImplicitPublicConstructor = true;
+    for (MethodTree explicitConstructor : getExplicitConstructors(classTree)) {
+      hasImplicitPublicConstructor = false;
+      if (isPublicConstructor(explicitConstructor)) {
+        reportIssue(explicitConstructor.simpleName(), "Hide this public constructor.");
       }
-      if (hasImplicitPublicConstructor) {
-        reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
-      }
+    }
+    if (hasImplicitPublicConstructor) {
+      reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
     }
   }
 
@@ -61,8 +63,8 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     return classTree.simpleName() == null;
   }
 
-  private static boolean extendsAnotherClass(ClassTree classTree) {
-    return classTree.superClass() != null;
+  private static boolean extendsAnotherClassOrImplementsSerializable(ClassTree classTree) {
+    return classTree.superClass() != null || classTree.symbol().type().isSubtypeOf("java.io.Serializable");
   }
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {
