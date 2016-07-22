@@ -34,6 +34,17 @@ public class A {
   public static final Map h2 = new Hashtable(); // Noncompliant
 
   public static final int[] data = new int[5]; // Noncompliant
+  public static final int[] data_unknown_size = new int[getDim()]; // Noncompliant
+
+  public static int getDim() {
+    return 42;
+  }
+
+  public static final int[] EMPTY_DATA_1 = new int[0]; // Compliant
+  public static final int[] EMPTY_DATA_2 = {}; // Compliant
+  public static final int[] EMPTY_DATA_3 = new int[]{}; // Compliant
+  public static final int[] NON_EMPTY_DATA_1 = new int[]{ 0 }; // Noncompliant - dim 1 array
+  public static final int[][] NON_EMPTY_DATA_2 = {new int[0], {}}; // Noncompliant - you can still modify sub array
 
   public static int[] data2 = new int[5]; // Noncompliant
 
