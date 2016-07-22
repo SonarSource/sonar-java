@@ -23,6 +23,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
@@ -33,16 +34,20 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -117,7 +122,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   private void preCheckVariable(Tree owner, VariableTree variableTree) {
     Symbol symbol = variableTree.symbol();
     if (symbol != null && isPublicStatic(symbol) && isForbiddenType(symbol.type())) {
-      if (isMutable(variableTree.initializer(), symbol.type())) {
+      if (isMutable(variableTree.initializer(), symbol)) {
         String message = "Make this member \"protected\".";
         if (owner.is(Tree.Kind.INTERFACE)) {
           message = MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name());
@@ -138,7 +143,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) variable;
       Symbol symbol = identifierTree.symbol();
-      if (IMMUTABLE_CANDIDATES.contains(symbol) && isMutable(node.expression(), symbol.type())) {
+      if (IMMUTABLE_CANDIDATES.contains(symbol) && isMutable(node.expression(), symbol)) {
         reportIssue(identifierTree, "Make member \"" + symbol.name() + "\" \"protected\".");
         IMMUTABLE_CANDIDATES.remove(symbol);
       }
@@ -153,20 +158,41 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     }
   }
 
-  static boolean isMutable(@Nullable ExpressionTree initializer, Type type) {
+  static boolean isMutable(@Nullable ExpressionTree initializer, Symbol symbol) {
+    Type type = symbol.type();
     if (initializer == null) {
       return ALWAYS_MUTABLE_TYPES.stream().anyMatch(type::isSubtypeOf);
     }
+    if (symbol.isFinal() && isEmptyArray(initializer)) {
+      return false;
+    }
     ExpressionTree expression = ExpressionsHelper.skipParentheses(initializer);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) expression;
-      if (isAcceptedTypeOrUnmodifiableMethodCall(mit)) {
-        return false;
-      } else if (ARRAYS_AS_LIST.matches(mit)) {
-        return !mit.arguments().isEmpty();
-      }
+      return returnValueIsMutable((MethodInvocationTree) expression);
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
       return !isAcceptedType(expression.symbolType(), ACCEPTED_NEW_TYPES);
+    }
+    return true;
+  }
+
+  private static boolean isEmptyArray(ExpressionTree expression) {
+    if (!expression.is(Tree.Kind.NEW_ARRAY)) {
+      return false;
+    }
+    NewArrayTree nat = (NewArrayTree) expression;
+    return nat.dimensions().stream().allMatch(PublicStaticMutableMembersCheck::isZeroDimension) && nat.initializers().isEmpty();
+  }
+
+  private static boolean isZeroDimension(ArrayDimensionTree dim) {
+    ExpressionTree expression = dim.expression();
+    return expression == null || (expression.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) expression).value()));
+  }
+
+  private static boolean returnValueIsMutable(MethodInvocationTree mit) {
+    if (isAcceptedTypeOrUnmodifiableMethodCall(mit)) {
+      return false;
+    } else if (ARRAYS_AS_LIST.matches(mit)) {
+      return !mit.arguments().isEmpty();
     }
     return true;
   }
