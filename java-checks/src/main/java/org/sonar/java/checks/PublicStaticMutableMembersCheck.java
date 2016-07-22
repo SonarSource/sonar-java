@@ -180,12 +180,20 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
       return false;
     }
     NewArrayTree nat = (NewArrayTree) expression;
-    return nat.dimensions().stream().allMatch(PublicStaticMutableMembersCheck::isZeroDimension) && nat.initializers().isEmpty();
+    return hasEmptyInitializer(nat) || hasOnlyZeroDimensions(nat.dimensions());
+  }
+
+  private static boolean hasEmptyInitializer(NewArrayTree newArrayTree) {
+    return newArrayTree.openBraceToken() != null && newArrayTree.initializers().isEmpty();
+  }
+
+  private static boolean hasOnlyZeroDimensions(List<ArrayDimensionTree> dimensions) {
+    return !dimensions.isEmpty() && dimensions.stream().allMatch(PublicStaticMutableMembersCheck::isZeroDimension);
   }
 
   private static boolean isZeroDimension(ArrayDimensionTree dim) {
     ExpressionTree expression = dim.expression();
-    return expression == null || (expression.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) expression).value()));
+    return expression != null && expression.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) expression).value());
   }
 
   private static boolean returnValueIsMutable(MethodInvocationTree mit) {
