@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.lang.Object;
 
 class Foo1 {
@@ -91,10 +92,10 @@ class Foo12 { // Noncompliant
 }
 
 class Foo13 {
-  
+
   private Foo13() {
   }
-  
+
   ;
 }
 
@@ -107,4 +108,8 @@ class Foo15 {
   public Object o = new Object() {
     public static void foo() {}
   };
+}
+
+class Foo16 implements Serializable { // Compliant
+  private static final long serialVersionUID = 1L;
 }
