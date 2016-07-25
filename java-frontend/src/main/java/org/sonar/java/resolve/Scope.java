@@ -127,13 +127,11 @@ public class Scope {
         // site is a type, try to find a matching type or field
         if ((site.kind & JavaSymbol.TYP) != 0 && site.kind < JavaSymbol.ERRONEOUS) {
           List<JavaSymbol> resolved = ((JavaSymbol.TypeJavaSymbol) site).members().lookup(name);
-          for (JavaSymbol symbol : resolved) {
+          resolved.stream()
             // TODO check accessibility
             // TODO factorize with static named import ?
-            if (symbol.kind < JavaSymbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0) {
-              symbolsList.add(symbol);
-            }
-          }
+            .filter(symbol -> symbol.kind < JavaSymbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0)
+            .forEach(symbolsList::add);
         }
 
       }

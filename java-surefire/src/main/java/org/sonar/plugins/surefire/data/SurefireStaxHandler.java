@@ -49,15 +49,17 @@ public class SurefireStaxHandler {
           // test suites for inner classes are ignored
           return;
         }
-        SMInputCursor testCase = testSuite.childCursor(new ElementFilter("testcase"));
-        SMEvent event;
-        for (event = testCase.getNext(); event != null; event = testCase.getNext()) {
-          if (event.compareTo(SMEvent.START_ELEMENT) == 0) {
-            String testClassName = getClassname(testCase, testSuiteClassName);
-            UnitTestClassReport classReport = index.index(testClassName);
-            parseTestCase(testCase, classReport);
-          }
-        }
+        parseTestCase(testSuiteClassName, testSuite.childCursor(new ElementFilter("testcase")));
+      }
+    }
+  }
+
+  private void parseTestCase(String testSuiteClassName, SMInputCursor testCase) throws XMLStreamException {
+    for (SMEvent event = testCase.getNext(); event != null; event = testCase.getNext()) {
+      if (event.compareTo(SMEvent.START_ELEMENT) == 0) {
+        String testClassName = getClassname(testCase, testSuiteClassName);
+        UnitTestClassReport classReport = index.index(testClassName);
+        parseTestCase(testCase, classReport);
       }
     }
   }

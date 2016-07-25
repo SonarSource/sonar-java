@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Routines for name resolution.
@@ -897,17 +898,13 @@ public class Resolve {
         JavaSymbol.MethodJavaSymbol target = (JavaSymbol.MethodJavaSymbol) member;
         List<JavaType> argTypes = ((MethodJavaType) target.type).argTypes;
         argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
-        List<JavaType> result = new ArrayList();
-        for (JavaType argType : argTypes) {
-          if(argType.isTagged(JavaType.WILDCARD)) {
+        return argTypes.stream().map(argType -> {
+          if (argType.isTagged(JavaType.WILDCARD)) {
             // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
-            result.add(((WildCardType) argType).bound);
-          } else {
-            result.add(argType);
+            return ((WildCardType) argType).bound;
           }
-
-        }
-        return result;
+          return argType;
+        }).collect(Collectors.toList());
       }
     }
     return new ArrayList<>();

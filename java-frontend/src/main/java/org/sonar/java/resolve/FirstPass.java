@@ -162,17 +162,13 @@ public class FirstPass extends BaseTreeVisitor {
       //Associate symbol only if found.
       if (currentSymbol.kind < JavaSymbol.ERRONEOUS) {
         enterSymbol(currentSymbol, tree);
-      } else {
-        if (isStatic) {
-          for (JavaSymbol symbol : resolved) {
-            //add only static fields
-            //TODO accessibility should be checked : package/public
-            if ((symbol.flags & Flags.STATIC) != 0) {
-              //TODO only the first symbol found will be associated with the tree.
-              enterSymbol(symbol, tree);
-            }
-          }
-        }
+      } else if (isStatic) {
+        resolved.stream()
+          //add only static fields
+          //TODO accessibility should be checked : package/public
+          .filter(symbol -> (symbol.flags & Flags.STATIC) != 0)
+          //TODO only the first symbol found will be associated with the tree.
+          .forEach(symbol -> enterSymbol(symbol, tree));
       }
     }
 
