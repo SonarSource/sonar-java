@@ -64,14 +64,17 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
       for (int i = index; i < cases.size(); i++) {
-        CaseGroupTree current = cases.get(i);
-        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), current.body())) {
-          CaseLabelTree labelToReport = getLastLabel(current);
-          if (!reportedLabels.contains(labelToReport)) {
-            reportedLabels.add(labelToReport);
-            createIssue(current, issueMessage("case", caseGroupTree), caseGroupTree);
-          }
-        }
+        checkCaseEquivalence(reportedLabels, caseGroupTree, cases.get(i));
+      }
+    }
+  }
+
+  private void checkCaseEquivalence(Set<CaseLabelTree> reportedLabels, CaseGroupTree caseGroupTree, CaseGroupTree current) {
+    if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), current.body())) {
+      CaseLabelTree labelToReport = getLastLabel(current);
+      if (!reportedLabels.contains(labelToReport)) {
+        reportedLabels.add(labelToReport);
+        createIssue(current, issueMessage("case", caseGroupTree), caseGroupTree);
       }
     }
   }

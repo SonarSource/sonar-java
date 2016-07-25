@@ -95,15 +95,12 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
       // Synchronized getter, lookup the setter.
       Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodTree.symbol().owner();
       Collection<Symbol> pairedMethods = owner.lookupSymbols(pairPredicate.getStartName() + methodTree.symbol().name().substring(ownPredicate.getStartName().length()));
-      for (Symbol symbol : pairedMethods) {
-        if (symbol.isMethodSymbol()) {
-          MethodTree pairMethod = (MethodTree) symbol.declaration();
-          if (pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod)) {
-            reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
-              Lists.newArrayList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null);
-          }
-        }
-      }
+      pairedMethods.stream()
+        .filter(symbol -> symbol.isMethodSymbol())
+        .map(symbol -> (MethodTree) symbol.declaration())
+        .filter(pairMethod -> pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod))
+        .forEach(pairMethod -> reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
+          Lists.newArrayList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
     }
   }
 

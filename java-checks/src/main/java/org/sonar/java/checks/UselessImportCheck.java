@@ -72,21 +72,23 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
         importTree = (ImportTree) importClauseTree;
       }
 
-      if (importTree != null && !importTree.isStatic()) {
-        String importName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-        if ("java.lang.*".equals(importName)) {
+      if (importTree == null || importTree.isStatic()) {
+        continue;
+      }
+
+      String importName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+      if ("java.lang.*".equals(importName)) {
+        context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+      } else if (isImportFromSamePackage(importName)) {
+        context.reportIssue(this, importTree, "Remove this unnecessary import: same package classes are always implicitly imported.");
+      } else if (!isImportOnDemand(importName)) {
+        if (isJavaLangImport(importName)) {
           context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
-        } else if (isImportFromSamePackage(importName)) {
-          context.reportIssue(this, importTree, "Remove this unnecessary import: same package classes are always implicitly imported.");
-        } else if (!isImportOnDemand(importName)) {
-          if (isJavaLangImport(importName)) {
-            context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
-          } else if (isDuplicatedImport(importName)) {
-            context.reportIssue(this, importTree, "Remove this duplicated import.");
-          } else {
-            lineByImportReference.put(importName, importTree);
-            pendingImports.add(importName);
-          }
+        } else if (isDuplicatedImport(importName)) {
+          context.reportIssue(this, importTree, "Remove this duplicated import.");
+        } else {
+          lineByImportReference.put(importName, importTree);
+          pendingImports.add(importName);
         }
       }
     }

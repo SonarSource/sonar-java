@@ -102,16 +102,19 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
       String name = getMethodName(mit);
       for (MethodMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
         if (methodInvocationMatcher.matches(mit)) {
-          if ("get".equals(name)) {
-            // Calendar
-            return getReferencedCalendarName(mit.arguments().get(0));
-          } else {
-            return name;
-          }
+          return getName(mit, name);
         }
       }
     }
     return null;
+  }
+
+  @CheckForNull
+  private static String getName(MethodInvocationTree mit, String name) {
+    if ("get".equals(name)) {
+      return getReferencedCalendarName(mit.arguments().get(0));
+    }
+    return name;
   }
 
   @CheckForNull
@@ -169,8 +172,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    Arguments arguments = newClassTree.arguments();
-    checkConstructorArguments(arguments);
+    checkConstructorArguments(newClassTree.arguments());
   }
 
   private void checkConstructorArguments(Arguments arguments) {

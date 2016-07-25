@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Rule(key = "S1309")
 public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
@@ -63,12 +64,9 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
         reportIssue(annotationTree.annotationType(), "Suppressing warnings is not allowed");
       } else {
         List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
-        List<String> issues = Lists.newArrayList();
-        for (String currentWarning : suppressedWarnings) {
-          if (!ruleWarnings.contains(currentWarning)) {
-            issues.add(currentWarning);
-          }
-        }
+        List<String> issues = suppressedWarnings.stream()
+          .filter(currentWarning -> !ruleWarnings.contains(currentWarning))
+          .collect(Collectors.toList());
         if (!issues.isEmpty()) {
           StringBuilder sb = new StringBuilder("Suppressing the '").append(Joiner.on(", ").join(issues))
             .append("' warning").append(issues.size() > 1 ? "s" : "").append(" is not allowed");
