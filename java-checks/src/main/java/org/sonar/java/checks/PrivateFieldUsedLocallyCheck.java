@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,7 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
+  private static final List<String> ANNOTATION_WHITE_LIST = Arrays.asList("javax.inject.Inject", "org.jboss.seam.annotations.Out");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -61,9 +63,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
+      .filter(s -> !(s.isFinal() && s.isStatic()))
+      .filter(s -> !useAllowedAnnotation(s))
       .filter(s -> !s.usages().isEmpty())
       .filter(s -> !fieldsReadOnAnotherInstance.contains(s))
       .forEach(s -> checkPrivateField(s, classSymbol));
+  }
+
+  private static boolean useAllowedAnnotation(Symbol s) {
+    return ANNOTATION_WHITE_LIST.stream().anyMatch(s.metadata()::isAnnotatedWith);
   }
 
   private void checkPrivateField(Symbol privateFieldSymbol, TypeSymbol classSymbol) {
