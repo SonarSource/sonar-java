@@ -6,7 +6,6 @@
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
     "misra",
     "pitfall"
   ],
