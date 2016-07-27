@@ -19,6 +19,8 @@
  */
 package org.sonar.java.collections;
 
+import java.util.function.Consumer;
+
 /**
  * Persistent (functional) Set.
  *
@@ -53,13 +55,12 @@ public interface PSet<E> {
   boolean isEmpty();
 
   /**
-   * Represents an operation that accepts a single input argument and returns no result.
+   * The string representation consists of a list of elements in the ascending order of hash codes.
+   * If two elements have same hash code, then their relative order is arbitrary, but stable.
+   *
+   * @return a string representation of this set
    */
-  @FunctionalInterface
-  interface Consumer<E> {
-
-    void accept(E e);
-
-  }
+  @Override
+  String toString();
 
 }

@@ -19,19 +19,13 @@
  */
 package org.sonar.java.collections;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
 
 import javax.annotation.Nullable;
-
-import java.util.AbstractMap;
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * AVL Tree.
@@ -40,19 +34,7 @@ import java.util.Objects;
  *
  * @author Evgeny Mandrikov
  */
-public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
-
-  /**
-   * Not total ordering, but stable.
-   */
-  private static final Comparator KEY_COMPARATOR = (o1, o2) -> {
-    int h1 = o1.hashCode();
-    int h2 = o2.hashCode();
-    if (h1 == h2) {
-      return o1.equals(o2) ? 0 : 1;
-    }
-    return h1 - h2;
-  };
+abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
 
   /**
    * @return empty tree
@@ -93,12 +75,14 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
   @Override
   public V get(K key) {
     Preconditions.checkNotNull(key);
+    final int h = key.hashCode();
     AVLTree t = this;
     while (!t.isEmpty()) {
-      int c = KEY_COMPARATOR.compare(key, t.key());
-      if (c == 0) {
-        return (V) t.value();
-      } else if (c < 0) {
+      final int c = t.key().hashCode();
+      if (h == c) {
+        t = searchInBucket(key, t);
+        return t == null ? null : (V) t.value();
+      } else if (h < c) {
         t = t.left();
       } else {
         t = t.right();
@@ -108,85 +92,47 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
   }
 
   @Override
-  public void forEach(PSet.Consumer<K> action) {
+  public void forEach(Consumer<K> action) {
     forEach(this, action);
   }
 
   @SuppressWarnings("unchecked")
-  private void forEach(AVLTree t, PSet.Consumer<K> action) {
+  private void forEach(AVLTree t, Consumer<K> action) {
     if (t.isEmpty()) {
       return;
     }
     forEach(t.left(), action);
-    action.accept((K) t.key());
     forEach(t.right(), action);
+    while (t != null) {
+      action.accept((K) t.key());
+      t = t.nextInBucket();
+    }
   }
 
   @Override
-  public void forEach(PMap.Consumer<K, V> consumer) {
+  public void forEach(BiConsumer<K, V> consumer) {
     forEach(this, consumer);
   }
 
   @SuppressWarnings("unchecked")
-  private void forEach(AVLTree t, PMap.Consumer<K, V> action) {
+  private void forEach(AVLTree t, BiConsumer<K, V> action) {
     if (t.isEmpty()) {
       return;
     }
     forEach(t.left(), action);
-    action.accept((K) t.key(), (V) t.value());
     forEach(t.right(), action);
-  }
-
-  @Override
-  public Iterator<Map.Entry<K, V>> entriesIterator() {
-    return new NodeIterator(this);
-  }
-
-  private class NodeIterator implements Iterator<Map.Entry<K, V>> {
-    private Deque<AVLTree> stack = new ArrayDeque<>();
-
-    public NodeIterator(AVLTree<K, V> node) {
-      descendLeft(node);
+    while (t != null) {
+      action.accept((K) t.key(), (V) t.value());
+      t = t.nextInBucket();
     }
-
-    @Override
-    public boolean hasNext() {
-      return !stack.isEmpty();
-    }
-
-    private void descendLeft(AVLTree node) {
-      if (node != EMPTY) {
-        stack.addLast(node);
-        descendLeft(node.left());
-      }
-    }
-
-    @Override
-    public Map.Entry<K, V> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException();
-      }
-      AVLTree node = stack.removeLast();
-      if (node.right() != EMPTY) {
-        descendLeft(node.right());
-      }
-      return new AbstractMap.SimpleImmutableEntry<>((K) node.key(), (V) node.value());
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  @FunctionalInterface
-  public interface Visitor<K, V> {
-    void visit(K key, V value);
   }
 
   protected abstract AVLTree left();
 
   protected abstract AVLTree right();
+
+  @Nullable
+  protected abstract AVLTree nextInBucket();
 
   protected abstract Object key();
 
@@ -196,26 +142,35 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
 
   private static AVLTree put(Object key, Object value, AVLTree t) {
     if (t.isEmpty()) {
-      return createNode(t, key, value, t);
+      return createNode(t, key, value, null, t);
     }
-    int result = KEY_COMPARATOR.compare(key, t.key());
-    if (result == 0) {
-      if (value.equals(t.value())) {
+    final int h = key.hashCode();
+    final int c = t.key().hashCode();
+    if (h == c) {
+      final AVLTree nextInBucket = t.nextInBucket();
+      if (key.equals(t.key())) {
+        if (value.equals(t.value())) {
+          return t;
+        }
+        return createNode(t.left(), key, value, nextInBucket, t.right());
+      }
+      final AVLTree nodeToReplace = searchInBucket(key, nextInBucket);
+      if (nodeToReplace != null && value.equals(nodeToReplace.value())) {
         return t;
       }
-      return createNode(t.left(), key, value, t.right());
-    } else if (result < 0) {
+      return createNode(t.left(), key, value, createBucket(t.key(), t.value(), removeFromBucket(nextInBucket, nodeToReplace)), t.right());
+    } else if (h < c) {
       AVLTree left = put(key, value, t.left());
       if (left == t.left()) {
         return t;
       }
-      return balance(left, t.key(), t.value(), t.right());
+      return balance(left, t, t.right());
     } else {
       AVLTree right = put(key, value, t.right());
       if (right == t.right()) {
         return t;
       }
-      return balance(t.left(), t.key(), t.value(), right);
+      return balance(t.left(), t, right);
     }
   }
 
@@ -223,21 +178,33 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     if (t.isEmpty()) {
       return t;
     }
-    int result = KEY_COMPARATOR.compare(key, t.key());
-    if (result == 0) {
-      return combineTrees(t.left(), t.right());
-    } else if (result < 0) {
+    final int h = key.hashCode();
+    final int c = t.key().hashCode();
+    if (h == c) {
+      final AVLTree nextInBucket = t.nextInBucket();
+      if (key.equals(t.key())) {
+        if (nextInBucket != null) {
+          return createNode(t.left(), nextInBucket.key(), nextInBucket.value(), nextInBucket.nextInBucket(), t.right());
+        }
+        return combineTrees(t.left(), t.right());
+      }
+      final AVLTree nodeToRemove = searchInBucket(key, nextInBucket);
+      if (nodeToRemove == null) {
+        return t;
+      }
+      return createNode(t.left(), t.key(), t.value(), removeFromBucket(nextInBucket, nodeToRemove), t.right());
+    } else if (h < c) {
       AVLTree left = remove(key, t.left());
       if (left == t.left()) {
         return t;
       }
-      return balance(left, t.key(), t.value(), t.right());
+      return balance(left, t, t.right());
     } else {
       AVLTree right = remove(key, t.right());
       if (right == t.right()) {
         return t;
       }
-      return balance(t.left(), t.key(), t.value(), right);
+      return balance(t.left(), t, right);
     }
   }
 
@@ -250,7 +217,7 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     }
     NodeRef oldNode = new NodeRef();
     AVLTree newRight = removeMinBinding(r, oldNode);
-    return balance(l, oldNode.node.key(), oldNode.node.value(), newRight);
+    return balance(l, oldNode.node, newRight);
   }
 
   private static class NodeRef {
@@ -263,63 +230,105 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
       noderemoved.node = t;
       return t.right();
     }
-    return balance(removeMinBinding(t.left(), noderemoved), t.key(), t.value(), t.right());
+    return balance(removeMinBinding(t.left(), noderemoved), t, t.right());
   }
 
-  private static AVLTree balance(AVLTree l, Object key, Object value, AVLTree r) {
+  private static AVLTree balance(AVLTree l, AVLTree oldNode, AVLTree r) {
     if (l.height() > r.height() + 2) {
       assert !l.isEmpty();
       AVLTree ll = l.left();
       AVLTree lr = l.right();
       if (ll.height() >= lr.height()) {
-        return createNode(ll, l, createNode(lr, key, value, r));
+        return createNode(ll, l, createNode(lr, oldNode, r));
       }
       assert !lr.isEmpty();
       AVLTree lrl = lr.left();
       AVLTree lrr = lr.right();
-      return createNode(createNode(ll, l, lrl), lr, createNode(lrr, key, value, r));
+      return createNode(createNode(ll, l, lrl), lr, createNode(lrr, oldNode, r));
     }
     if (r.height() > l.height() + 2) {
       assert !r.isEmpty();
       AVLTree rl = r.left();
       AVLTree rr = r.right();
       if (rr.height() >= rl.height()) {
-        return createNode(createNode(l, key, value, rl), r, rr);
+        return createNode(createNode(l, oldNode, rl), r, rr);
       }
       assert !rl.isEmpty();
       AVLTree rll = rl.left();
       AVLTree rlr = rl.right();
-      return createNode(createNode(l, key, value, rll), rl, createNode(rlr, r, rr));
+      return createNode(createNode(l, oldNode, rll), rl, createNode(rlr, r, rr));
     }
-    return createNode(l, key, value, r);
+    return createNode(l, oldNode, r);
   }
 
   private static AVLTree createNode(AVLTree newLeft, AVLTree oldTree, AVLTree newRight) {
-    return createNode(newLeft, oldTree.key(), oldTree.value(), newRight);
+    return new Node(newLeft, newRight, oldTree.key(), oldTree.value(), oldTree.nextInBucket(), incrementHeight(newLeft, newRight));
   }
 
-  private static AVLTree createNode(AVLTree l, Object key, Object value, AVLTree r) {
-    return new Node(l, r, key, value, incrementHeight(l, r));
+  private static Node createNode(AVLTree l, Object key, Object value, @Nullable AVLTree nextInBucket, AVLTree r) {
+    return new Node(l, r, key, value, nextInBucket, incrementHeight(l, r));
   }
 
   private static int incrementHeight(AVLTree l, AVLTree r) {
     return (l.height() > r.height() ? l.height() : r.height()) + 1;
   }
 
-  private static class Node extends AVLTree {
+  /**
+   * @return node from the given bucket, which contains given key, null if not found
+   */
+  @Nullable
+  private static AVLTree searchInBucket(Object key, @Nullable AVLTree bucketStart) {
+    AVLTree n = bucketStart;
+    while (n != null) {
+      if (key.equals(n.key())) {
+        return n;
+      }
+      n = n.nextInBucket();
+    }
+    return null;
+  }
+
+  /**
+   * Given "b" as a node to remove and bucket "a -> b -> c" result will be "c -> a".
+   *
+   * @return null if bucket is null
+   */
+  @Nullable
+  private static AVLTree removeFromBucket(@Nullable AVLTree bucketStart, @Nullable AVLTree nodeToRemove) {
+    AVLTree c = bucketStart;
+    AVLTree result = null;
+    while (c != null) {
+      if (/* not the instance to remove: */ c != nodeToRemove) {
+        result = createBucket(c.key(), c.value(), result);
+      }
+      c = c.nextInBucket();
+    }
+    return result;
+  }
+
+  private static Node createBucket(Object key, Object value, @Nullable AVLTree bucket) {
+    return new Node(AVLTree.EMPTY, AVLTree.EMPTY, key, value, bucket, 0);
+  }
+
+  @VisibleForTesting
+  static class Node extends AVLTree {
     private final AVLTree left;
     private final AVLTree right;
     private final int height;
 
     private final Object key;
     private final Object value;
+    @Nullable
+    private final AVLTree nextInBucket;
+
     private int hashCode;
 
-    public Node(AVLTree left, AVLTree right, Object key, Object value, int height) {
+    public Node(AVLTree left, AVLTree right, Object key, Object value, @Nullable AVLTree nextInBucket, int height) {
       this.left = left;
       this.right = right;
       this.key = key;
       this.value = value;
+      this.nextInBucket = nextInBucket;
       this.height = height;
     }
 
@@ -331,6 +340,11 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     @Override
     protected AVLTree right() {
       return right;
+    }
+
+    @Override
+    protected AVLTree nextInBucket() {
+      return nextInBucket;
     }
 
     @Override
@@ -353,22 +367,11 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
       return false;
     }
 
-    private static class Hasher implements PMap.Consumer<Object, Object> {
-      int result = 0;
-
-      @Override
-      public void accept(Object key, Object value) {
-        // the key is multiplied by 31 to avoid K ^ V == 0 when K and V are the same element
-        result += (31 * key.hashCode()) ^ value.hashCode();
-      }
-    }
-
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        Hasher hasher = new Hasher();
-        forEach(hasher);
-        hashCode = hasher.result;
+        // the key is multiplied by 31 to avoid K ^ V == 0 when K == V in case of set
+        this.hashCode = left.hashCode() + ((31 * key.hashCode()) ^ value.hashCode()) + right.hashCode() + (nextInBucket == null ? 0 : nextInBucket.hashCode());
       }
       return hashCode;
     }
@@ -379,24 +382,16 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
         return true;
       }
       if (obj instanceof Node) {
-        Node other = (Node) obj;
-        int c = 0;
-        for (Iterator<Map.Entry> iter = entriesIterator(); iter.hasNext();) {
-          Map.Entry next = iter.next();
-          Object otherValue = other.get(next.getKey());
-          if (otherValue == null || !Objects.equals(next.getValue(), otherValue)) {
-            return false;
-          }
-          c++;
-        }
-        return c == Iterators.size(other.entriesIterator());
+        final Node other = (Node) obj;
+        return this.hashCode() == other.hashCode()
+          && Equals.compute(this, other);
       }
       return false;
     }
 
     @Override
     public String toString() {
-      return left.toString() + " " + key + "->" + value + right.toString();
+      return left.toString() + " " + key + "->" + value + (nextInBucket == null ? "" : nextInBucket.toString()) + right.toString();
     }
   }
 
@@ -408,6 +403,11 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
 
     @Override
     protected AVLTree right() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected AVLTree nextInBucket() {
       throw new UnsupportedOperationException();
     }
 
@@ -446,5 +446,42 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
       return "";
     }
   };
+
+  private static class Equals implements BiConsumer {
+    private final AVLTree tree;
+    private int sizeDifference;
+
+    public static boolean compute(AVLTree first, AVLTree second) {
+      Equals state = new Equals(first);
+      if (!state.supersetOf(second)) {
+        return false;
+      }
+      first.forEach(state);
+      return state.sizeDifference == 0;
+    }
+
+    private Equals(AVLTree tree) {
+      this.tree = tree;
+    }
+
+    /**
+     * @return true if {@link #tree} is superset of given tree
+     */
+    private boolean supersetOf(@Nullable AVLTree node) {
+      if (node == null || node.isEmpty()) {
+        return true;
+      }
+      sizeDifference++;
+      return Objects.equals(node.value(), tree.get(node.key()))
+        && supersetOf(node.nextInBucket())
+        && supersetOf(node.left())
+        && supersetOf(node.right());
+    }
+
+    @Override
+    public void accept(Object key, Object value) {
+      sizeDifference--;
+    }
+  }
 
 }
