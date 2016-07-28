@@ -1,10 +1,13 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.IOException;
+
 class Container {
 
   private static void foo(int p) {
   }
 
   class Class1 {
-
     private int privateField1;            // Noncompliant {{Remove the "privateField1" field and declare it as a local variable in the relevant methods.}}
     private static int staticPrivateField; // Noncompliant [[startColumn=24;endLine=+0;endColumn=42]]
     private int privateField2 = 42;
@@ -223,5 +226,33 @@ class Container {
     }
 
   }
+}
 
+class UsageOfLogger {
+  private static final Logger LOGGER = LoggerFactory.getLogger(UsageOfLogger.class); // Compliant - constants
+  private final int value = 42; // Noncompliant
+
+  private void runRunRun(Runnable runnable) {
+    try {
+      runnable.run();
+    } catch (IOException e) {
+      LOGGER.error("boom", e);
+      System.out.println(value);
+      throw new RuntimeException("bye bye", e);
+    }
+  }
+}
+
+class AnnotatedPrivateFields {
+  @javax.inject.Inject
+  private Object injectedService; // Compliant
+
+  @Deprecated
+  private String deprecated; // Noncompliant
+
+  public String doRandomStuff(String s) {
+    injectedService = s;
+    deprecated = injectedService.toString();
+    return deprecated + injectedService.toString();
+  }
 }
