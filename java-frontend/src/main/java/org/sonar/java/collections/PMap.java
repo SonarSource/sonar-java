@@ -20,9 +20,7 @@
 package org.sonar.java.collections;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Persistent (functional) Map.
@@ -34,7 +32,7 @@ import java.util.Map;
 public interface PMap<K, V> {
 
   /**
-   * @return new map with added key-value pair
+   * @return new map with added key-value pair, or this if map already contains given key-value pair
    */
   PMap<K, V> put(K key, V value);
 
@@ -52,12 +50,7 @@ public interface PMap<K, V> {
   /**
    * Performs the given action for each entry in this map until all entries have been processed or the action throws an exception.
    */
-  void forEach(Consumer<K, V> action);
-
-  /**
-   * Iterates over all elements.
-   */
-  Iterator<Map.Entry<K, V>> entriesIterator();
+  void forEach(BiConsumer<K, V> action);
 
   /**
    * @return true if this map contains no elements
@@ -65,13 +58,12 @@ public interface PMap<K, V> {
   boolean isEmpty();
 
   /**
-   * Represents an operation that accepts two input arguments and returns no result.
+   * The string representation consists of a list of key-value mappings in the ascending order of hash codes of keys.
+   * If two keys have same hash code, then their relative order is arbitrary, but stable.
+   *
+   * @return a string representation of this map
    */
-  @FunctionalInterface
-  interface Consumer<K, V> {
-
-    void accept(K key, V value);
-
-  }
+  @Override
+  String toString();
 
 }

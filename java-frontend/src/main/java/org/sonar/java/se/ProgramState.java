@@ -22,8 +22,7 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
-import org.sonar.java.collections.AVLTree;
+import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -36,18 +35,17 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class ProgramState {
 
@@ -67,13 +65,13 @@ public class ProgramState {
 
   private final int constraintSize;
   public static final ProgramState EMPTY_STATE = new ProgramState(
-    AVLTree.<Symbol, SymbolicValue>create(),
-    AVLTree.<SymbolicValue, Integer>create(),
-    AVLTree.<SymbolicValue, Constraint>create()
+    PCollections.emptyMap(),
+    PCollections.emptyMap(),
+    PCollections.<SymbolicValue, Constraint>emptyMap()
       .put(SymbolicValue.NULL_LITERAL, ObjectConstraint.nullConstraint())
       .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
-    AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
+    PCollections.emptyMap(),
     Lists.<SymbolicValue>newLinkedList());
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
@@ -240,45 +238,48 @@ public class ProgramState {
   }
 
   public ProgramState cleanupDeadSymbols(Set<Symbol> liveVariables) {
-    PMap<Symbol, SymbolicValue> newValues = values;
-    PMap<SymbolicValue, Integer> newReferences = references;
-    PMap<SymbolicValue, Constraint> newConstraints = constraints;
-    boolean newProgramState = false;
-    for (Iterator<Map.Entry<Symbol, SymbolicValue>> iter = newValues.entriesIterator(); iter.hasNext();) {
-      Map.Entry<Symbol, SymbolicValue> next = iter.next();
-      Symbol symbol = next.getKey();
-      if (isLocalVariable(symbol) && !liveVariables.contains(symbol)) {
-        if (!newProgramState) {
+    class CleanAction implements BiConsumer<Symbol, SymbolicValue> {
+      boolean newProgramState = false;
+      PMap<Symbol, SymbolicValue> newValues = values;
+      PMap<SymbolicValue, Integer> newReferences = references;
+      PMap<SymbolicValue, Constraint> newConstraints = constraints;
+
+      @Override
+      public void accept(Symbol symbol, SymbolicValue symbolicValue) {
+        if (isLocalVariable(symbol) && !liveVariables.contains(symbol)) {
           newProgramState = true;
+          newValues = newValues.remove(symbol);
+          newReferences = decreaseReference(newReferences, symbolicValue);
+          if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, newConstraints.get(symbolicValue)) && !inStack(stack, symbolicValue)) {
+            newConstraints = newConstraints.remove(symbolicValue);
+            newReferences = newReferences.remove(symbolicValue);
+          }
         }
-        SymbolicValue symbolicValue = next.getValue();
-        newValues = newValues.remove(symbol);
-        newReferences = decreaseReference(newReferences, symbolicValue);
-        if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, newConstraints.get(symbolicValue)) && !inStack(stack, symbolicValue)) {
+      }
+    }
+    CleanAction cleanAction = new CleanAction();
+    values.forEach(cleanAction);
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack) : this;
+  }
+
+  public ProgramState cleanupConstraints() {
+    class CleanAction implements BiConsumer<SymbolicValue, Constraint> {
+      boolean newProgramState = false;
+      PMap<SymbolicValue, Constraint> newConstraints = constraints;
+      PMap<SymbolicValue, Integer> newReferences = references;
+
+      @Override
+      public void accept(SymbolicValue symbolicValue, Constraint constraint) {
+        if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, constraint) && !inStack(stack, symbolicValue)) {
+          newProgramState = true;
           newConstraints = newConstraints.remove(symbolicValue);
           newReferences = newReferences.remove(symbolicValue);
         }
       }
     }
-    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack) : this;
-  }
-
-  public ProgramState cleanupConstraints() {
-    PMap<SymbolicValue, Constraint> newConstraints = constraints;
-    PMap<SymbolicValue, Integer> newReferences = references;
-    boolean newProgramState = false;
-    for (Iterator<Map.Entry<SymbolicValue, Constraint>> iter = newConstraints.entriesIterator(); iter.hasNext();) {
-      Map.Entry<SymbolicValue, Constraint> next = iter.next();
-      SymbolicValue symbolicValue = next.getKey();
-      if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, next.getValue()) && !inStack(stack, symbolicValue)) {
-        if (!newProgramState) {
-          newProgramState = true;
-        }
-        newConstraints = newConstraints.remove(symbolicValue);
-        newReferences = newReferences.remove(symbolicValue);
-      }
-    }
-    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack) : this;
+    CleanAction cleanAction = new CleanAction();
+    constraints.forEach(cleanAction);
+    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
