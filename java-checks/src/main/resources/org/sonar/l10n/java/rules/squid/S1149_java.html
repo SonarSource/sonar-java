@@ -1,6 +1,5 @@
 <p>Early classes of the Java API, such as <code>Vector</code>, <code>Hashtable</code> and <code>StringBuffer</code>, were synchronized to make them
-thread-safe.</p>
-<p>Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.</p>
+thread-safe. Unfortunately, synchronization has a big negative impact on performance, even when using these collections from a single thread.</p>
 <p>It is better to use their new unsynchronized replacements:</p>
 <ul>
   <li> <code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code> </li>
@@ -17,7 +16,7 @@ Vector cats = new Vector();
 ArrayList cats = new ArrayList();
 </pre>
 <h2>Exceptions</h2>
-<p>Use of those synchronized classes is allowed in method signatures when overriding an existing method.</p>
+<p>Use of those synchronized classes is ignored in the signatures of overriding methods.</p>
 <pre>
 @Override
 public Vector getCats() {...}

@@ -10,5 +10,5 @@
     "error-handling",
     "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

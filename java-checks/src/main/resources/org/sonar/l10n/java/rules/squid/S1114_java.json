@@ -1,5 +1,5 @@
 {
-  "title": "super.finalize() should be called at the end of Object.finalize() implementations",
+  "title": "\"super.finalize()\" should be called at the end of \"Object.finalize()\" implementations",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,5 +10,5 @@
     "bug",
     "cert"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Critical"
 }

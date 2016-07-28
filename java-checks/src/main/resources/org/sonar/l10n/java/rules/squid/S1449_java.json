@@ -10,5 +10,5 @@
     "unpredictable",
     "cert"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

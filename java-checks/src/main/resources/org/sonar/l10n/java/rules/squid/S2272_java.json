@@ -9,5 +9,5 @@
     "bug",
     "unpredictable"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

@@ -7,8 +7,7 @@
   },
   "tags": [
     "multi-threading",
-    "bug",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

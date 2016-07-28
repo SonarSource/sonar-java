@@ -9,5 +9,5 @@
     "spring",
     "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

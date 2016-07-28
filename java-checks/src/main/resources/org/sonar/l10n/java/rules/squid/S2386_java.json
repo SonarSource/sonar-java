@@ -12,5 +12,5 @@
     "unpredictable",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

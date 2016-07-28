@@ -1,6 +1,6 @@
 <p>When one part of a getter/setter pair is <code>synchronized</code> the other part should be too. Failure to synchronize both sides of a pair may
 result in inconsistent behavior at runtime as callers access an inconsistent method state.</p>
-<p>This rule raises an issue when either the method of the contents of one method in a getter/setter pair are synchrnoized but the other is not.</p>
+<p>This rule raises an issue when either the method or the contents of one method in a getter/setter pair are synchrnoized but the other is not.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Person {

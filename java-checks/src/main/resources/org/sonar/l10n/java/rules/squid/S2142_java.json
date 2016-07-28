@@ -10,5 +10,5 @@
     "multi-threading",
     "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

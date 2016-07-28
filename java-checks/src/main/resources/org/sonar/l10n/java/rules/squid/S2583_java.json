@@ -11,5 +11,5 @@
     "misra",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

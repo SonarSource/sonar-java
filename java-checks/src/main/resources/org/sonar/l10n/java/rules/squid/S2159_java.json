@@ -10,5 +10,5 @@
     "cert",
     "unused"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

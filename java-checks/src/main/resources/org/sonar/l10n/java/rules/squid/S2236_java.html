@@ -1,11 +1,11 @@
-<p>On a Thread instance, the methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available only because all classes
-in Java extend <code>Object</code> and therefore automatically inherit the methods. But there are two very good reasons to not call these methods on a
-Thread instance:</p>
+<p>The methods <code>wait(...)</code>, <code>notify()</code> and <code>notifyAll()</code> are available on a <code>Thread</code> instance, but only
+because all classes in Java extend <code>Object</code> and therefore automatically inherit those methods. But there are two very good reasons for not
+calling them on a <code>Thread</code>:</p>
 <ul>
-  <li> Doing so is really confusing. What is really expected when calling, for instance, the <code>wait(...)</code> method on a Thread? That the
-  execution of the Thread is suspended, or that acquisition of the object monitor is waited for? </li>
   <li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, ...), so calling
   them will corrupt the behavior of the JVM. </li>
+  <li> It is not clear (perhaps even to the original coder) what is really expected. For instance, it is waiting for the execution of the Thread to
+  suspended, or is it the acquisition of the object monitor that is waited for? </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>

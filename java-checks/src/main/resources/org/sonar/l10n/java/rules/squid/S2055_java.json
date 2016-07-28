@@ -9,5 +9,5 @@
     "serialization",
     "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

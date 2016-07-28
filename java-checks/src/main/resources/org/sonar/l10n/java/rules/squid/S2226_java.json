@@ -11,5 +11,5 @@
     "struts",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

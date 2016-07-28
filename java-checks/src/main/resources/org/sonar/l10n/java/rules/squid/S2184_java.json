@@ -11,5 +11,5 @@
     "sans-top25-risky",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

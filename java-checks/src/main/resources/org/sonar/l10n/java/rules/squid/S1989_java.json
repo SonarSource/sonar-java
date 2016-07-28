@@ -9,9 +9,8 @@
     "cwe",
     "error-handling",
     "security",
-    "bug",
     "cert",
     "owasp-a6"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

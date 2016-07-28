@@ -9,5 +9,5 @@
     "tests",
     "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

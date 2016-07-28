@@ -9,5 +9,5 @@
     "multi-threading",
     "bug"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Major"
 }

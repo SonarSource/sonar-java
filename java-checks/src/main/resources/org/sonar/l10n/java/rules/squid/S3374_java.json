@@ -7,8 +7,9 @@
   },
   "tags": [
     "cwe",
+    "security",
     "bug",
     "struts"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

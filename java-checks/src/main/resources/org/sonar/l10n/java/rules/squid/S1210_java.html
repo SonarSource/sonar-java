@@ -5,7 +5,7 @@
   <p>The recommended language is "Note: this class has a natural ordering that is inconsistent with equals." </p>
 </blockquote>
 <p>If this rule is violated, weird and unpredictable failures can occur.</p>
-<p>For example, in Java 5 the <code>PriorityQueue.remove()</code> method relied on <code>compareTo()</code>, but since Java 6 it relies on
+<p>For example, in Java 5 the <code>PriorityQueue.remove()</code> method relied on <code>compareTo()</code>, but since Java 6 it has relied on
 <code>equals()</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

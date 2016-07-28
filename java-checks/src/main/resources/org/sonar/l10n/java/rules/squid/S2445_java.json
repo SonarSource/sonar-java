@@ -7,10 +7,9 @@
   },
   "tags": [
     "cwe",
-    "security",
     "multi-threading",
     "bug",
     "cert"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Major"
 }

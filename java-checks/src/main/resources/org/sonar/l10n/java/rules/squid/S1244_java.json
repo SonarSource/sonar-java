@@ -9,5 +9,5 @@
     "bug",
     "misra"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

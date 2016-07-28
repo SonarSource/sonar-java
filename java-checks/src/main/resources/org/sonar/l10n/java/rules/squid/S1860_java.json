@@ -10,5 +10,5 @@
     "bug",
     "cert"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Major"
 }

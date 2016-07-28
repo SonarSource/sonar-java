@@ -10,5 +10,5 @@
     "bug",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

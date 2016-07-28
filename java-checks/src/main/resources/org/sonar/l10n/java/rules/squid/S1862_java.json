@@ -11,5 +11,5 @@
     "unused",
     "pitfall"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }
