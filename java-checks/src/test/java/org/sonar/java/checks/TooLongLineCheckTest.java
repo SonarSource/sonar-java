@@ -43,4 +43,16 @@ public class TooLongLineCheckTest {
     check.maximumLineLength = 20;
     JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthNoImport.java", check);
   }
+
+  @Test
+  public void test_link_within_block_comment_noncompliant() {
+    check.maximumLineLength = 100;
+    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinBlockCommentNoncompliant.java", check);
+  }
+
+  @Test
+  public void test_link_within_block_comment() {
+    check.maximumLineLength = 20;
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinBlockComment.java", check);
+  }
 }
