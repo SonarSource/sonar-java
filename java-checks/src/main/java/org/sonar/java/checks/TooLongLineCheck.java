@@ -106,13 +106,16 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
     }
     for (int i = 0; i < lines.size(); i++) {
       if (!ignoredLines.contains(i + 1)) {
-        String line = lines.get(i);
+        String origLine = lines.get(i);
+        String line = removeIgnoredPatterns(origLine);
         if (line.length() > maximumLineLength) {
-          addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", line.length(), maximumLineLength));
+          addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", origLine.length(), maximumLineLength));
         }
       }
     }
   }
 
-
+  private String removeIgnoredPatterns(String line) {
+    return line.replaceAll("^(\\s*\\*.*?)\\s*\\{@link [^}]+\\}\\s*", "$1");
+  }
 }
