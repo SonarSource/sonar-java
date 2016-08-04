@@ -24,47 +24,49 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TooLongLineCheckTest {
 
+  private static final String BASEDIR = "src/test/files/checks/TooLongLine_S00103_Check";
+
   TooLongLineCheck check = new TooLongLineCheck();
 
   @Test
   public void test() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLength.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLength.java", check);
   }
 
   @Test
   public void test_with_empty_import_on_first_line() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthEmptyStatementInImport.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthEmptyStatementInImport.java", check);
   }
 
   @Test
   public void test_with_no_import() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthNoImport.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthNoImport.java", check);
   }
 
   @Test
   public void test_link_within_block_comment_noncompliant() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinBlockCommentNoncompliant.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkWithinBlockCommentNoncompliant.java", check);
   }
 
   @Test
   public void test_link_within_block_comment() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinBlockComment.java", check);
+    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkWithinBlockComment.java", check);
   }
 
   @Test
   public void test_link_within_inline_comment_noncompliant() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinInlineCommentNoncompliant.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkWithinInlineCommentNoncompliant.java", check);
   }
 
   @Test
   public void test_link_within_inline_comment() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/TooLongLine_S00103_Check/LineLengthLinkWithinInlineComment.java", check);
+    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkWithinInlineComment.java", check);
   }
 }
