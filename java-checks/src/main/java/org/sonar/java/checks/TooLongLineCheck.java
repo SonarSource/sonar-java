@@ -116,6 +116,9 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
   }
 
   private String removeIgnoredPatterns(String line) {
-    return line.replaceAll("^(\\s*\\*.*?)\\s*\\{@link [^}]+\\}\\s*", "$1");
+    return line
+      .replaceAll("^(\\s*\\*.*?)\\s*\\{@link [^}]+\\}\\s*", "$1")
+      .replaceAll("^(\\s*//.*?)\\s*\\{@link [^}]+\\}\\s*", "$1")
+      ;
   }
 }
