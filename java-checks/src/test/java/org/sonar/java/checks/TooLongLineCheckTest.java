@@ -69,4 +69,28 @@ public class TooLongLineCheckTest {
     check.maximumLineLength = 20;
     JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkWithinInlineComment.java", check);
   }
+
+  @Test
+  public void test_see_within_block_comment_noncompliant() {
+    check.maximumLineLength = 100;
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthSeeWithinBlockCommentNoncompliant.java", check);
+  }
+
+  @Test
+  public void test_see_within_block_comment() {
+    check.maximumLineLength = 20;
+    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthSeeWithinBlockComment.java", check);
+  }
+
+  @Test
+  public void test_see_within_inline_comment_noncompliant() {
+    check.maximumLineLength = 100;
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthSeeWithinInlineCommentNoncompliant.java", check);
+  }
+
+  @Test
+  public void test_see_within_inline_comment() {
+    check.maximumLineLength = 20;
+    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthSeeWithinInlineComment.java", check);
+  }
 }
