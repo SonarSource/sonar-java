@@ -45,13 +45,13 @@ import java.util.Set;
 @RspecKey("S103")
 public class TooLongLineCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
 
-  private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 120;
+  private static final int DEFAULT_MAXIMUM_LINE_LENGTH = 120;
 
   @RuleProperty(
       key = "maximumLineLength",
       description = "The maximum authorized line length.",
-      defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
-  public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENHGTH;
+      defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENGTH)
+  public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
 
   private Charset charset;
   private Set<Integer> ignoredLines = Sets.newHashSet();
