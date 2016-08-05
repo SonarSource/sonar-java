@@ -75,7 +75,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
     visitFile(context.getFile());
   }
 
-  public void ignoreLines(CompilationUnitTree tree) {
+  private void ignoreLines(CompilationUnitTree tree) {
     List<ImportClauseTree> imports = tree.imports();
     if (!imports.isEmpty()) {
       int start = getLine(imports.get(0), true);
