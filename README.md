@@ -46,12 +46,17 @@ mvn clean install
 ```
 
 ### Integration Tests
-To run integration tests, you will need to create a properties file like the one shown below, and set its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
+To run integration tests, you will need to create a properties file like the one shown below, and set the url pointing to its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
 ```
 # version of SonarQube Server
 sonar.runtimeVersion=5.6
 
 orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
+```
+
+With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as: 
+```
+ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
 ```
 
 #### Plugin Test
