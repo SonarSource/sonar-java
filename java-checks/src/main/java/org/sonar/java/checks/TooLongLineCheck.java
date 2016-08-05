@@ -51,7 +51,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
       key = "maximumLineLength",
       description = "The maximum authorized line length.",
       defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENGTH)
-  public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
+  int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
 
   private Charset charset;
   private Set<Integer> ignoredLines = Sets.newHashSet();
