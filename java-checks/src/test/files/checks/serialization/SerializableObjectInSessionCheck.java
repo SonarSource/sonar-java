@@ -7,6 +7,7 @@ class A {
     session.setAttribute("person", 1);
     session.setAttribute("person", new Integer(1));
     session.setAttribute("addressString", "address");
+    session.setAttribute("intArray", new int[] { 1, 2 });
     session.setAttribute("stringArray", new String[] { "one", "two" });
     session.setAttribute("stringList", java.util.Arrays.asList("one", "two"));
     session.setAttribute("personArray", new Person[] { new Person() }); // Noncompliant
