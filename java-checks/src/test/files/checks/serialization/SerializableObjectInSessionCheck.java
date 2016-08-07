@@ -10,7 +10,7 @@ class A {
 
     session.setAttribute("intArray", new int[] { 1, 2 });
     session.setAttribute("stringArray", new String[] { "one", "two" });
-    session.setAttribute("personArray", new Person[] { new Person() }); // Noncompliant
+    session.setAttribute("personArray", new Person[] { new Person() }); // Noncompliant {{Make "Person[]" serializable or don't store it in the session.}}
 
     session.setAttribute("stringList", new java.util.ArrayList<>(java.util.Arrays.asList("one", "two")));
     session.setAttribute("personList", new java.util.ArrayList<>(java.util.Arrays.asList(new Person(), new Person()))); // Noncompliant
