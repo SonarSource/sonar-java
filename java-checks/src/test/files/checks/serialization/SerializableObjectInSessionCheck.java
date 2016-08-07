@@ -7,6 +7,8 @@ class A {
     session.setAttribute("person", 1);
     session.setAttribute("person", new Integer(1));
     session.setAttribute("addressString", "address");
+    session.setAttribute("stringArray", new String[] { "one", "two" });
+    session.setAttribute("stringList", java.util.Arrays.asList("one", "two"));
   }
 
   public class Address {
