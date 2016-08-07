@@ -9,6 +9,8 @@ class A {
     session.setAttribute("addressString", "address");
     session.setAttribute("stringArray", new String[] { "one", "two" });
     session.setAttribute("stringList", java.util.Arrays.asList("one", "two"));
+    session.setAttribute("personArray", new Person[] { new Person() }); // Noncompliant
+    session.setAttribute("personList", java.util.Arrays.asList(new Person(), new Person())); // Noncompliant
   }
 
   public class Address {
