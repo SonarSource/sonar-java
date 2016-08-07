@@ -25,6 +25,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.resolve.ArrayJavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -54,6 +55,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     return type.isPrimitive()
       || type.isSubtypeOf("java.io.Serializable")
       || isSerializableArray(type)
+      || isSerializableParameterized(type)
       ;
   }
 
@@ -61,6 +63,16 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     if (type instanceof ArrayJavaType) {
       ArrayJavaType arrayJavaType = (ArrayJavaType) type;
       return isSerializable(arrayJavaType.elementType());
+    }
+    return false;
+  }
+
+  private boolean isSerializableParameterized(Type type) {
+    if (type instanceof ParametrizedTypeJavaType) {
+      ParametrizedTypeJavaType parameterized = (ParametrizedTypeJavaType) type;
+      //noinspection ConstantConditions
+      return parameterized.typeParameters().stream()
+        .allMatch(t -> isSerializable(parameterized.substitution(t)));
     }
     return false;
   }
