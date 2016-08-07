@@ -25,6 +25,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.resolve.ArrayJavaType;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -52,11 +53,16 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   }
 
   private boolean isSerializable(Type type) {
-    return type.isPrimitive()
-      || type.isSubtypeOf("java.io.Serializable")
-      || isSerializableArray(type)
-      || isSerializableParameterized(type)
-      ;
+    if (type.isPrimitive()) {
+      return true;
+    }
+    if (isSerializableArray(type)) {
+      return true;
+    }
+    if (isParametrized(type)) {
+      return isSerializableParametrized((ParametrizedTypeJavaType) type);
+    }
+    return type.isSubtypeOf("java.io.Serializable");
   }
 
   private boolean isSerializableArray(Type type) {
@@ -67,13 +73,16 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private boolean isSerializableParameterized(Type type) {
-    if (type instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parameterized = (ParametrizedTypeJavaType) type;
-      //noinspection ConstantConditions
-      return parameterized.typeParameters().stream()
-        .allMatch(t -> isSerializable(parameterized.substitution(t)));
-    }
-    return false;
+  private boolean isParametrized(Type type) {
+    return type instanceof ParametrizedTypeJavaType;
+  }
+
+  private boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
+    return type.isSubtypeOf("java.io.Serializable")
+      && type.typeParameters().stream().allMatch(t -> {
+      JavaType javaType = type.substitution(t);
+      assert javaType != null;
+      return isSerializable(javaType);
+    });
   }
 }
