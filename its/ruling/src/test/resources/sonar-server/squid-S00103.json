@@ -140,9 +140,6 @@
 96,
 97,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationContainer.java':[
-58,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationService.java':[
 135,
 136,
@@ -181,9 +178,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/AddColumnsBuilder.java':[
 125,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DatabaseMigration.java':[
-25,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DatabaseMigrator.java':[
 48,
@@ -266,7 +260,6 @@
 102,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/AddNewCharacteristics.java':[
-44,
 46,
 78,
 79,
@@ -455,7 +448,6 @@
 171,
 244,
 321,
-343,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/SetSeverityAction.java':[
 65,
@@ -954,7 +946,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdate.java':[
 40,
 41,
-94,
 223,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java':[
@@ -1145,9 +1136,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/DatabaseSessionFilter.java':[
 35,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/DoPrivileged.java':[
-27,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/NewUserNotifier.java':[
 42,
 ],
@@ -1161,10 +1149,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/UserSession.java':[
 76,
-143,
-179,
-189,
-227,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/UserSessionFilter.java':[
 40,
