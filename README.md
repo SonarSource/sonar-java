@@ -87,9 +87,9 @@ INFO  - Light HTML Issues Report generated: /path/to/project/sonar-java/its/sour
 ```
 If everything looks good to you, you can copy the file with the actual issues located at
 ```
-sonar-java/its/ruling/target/actual/
+its/ruling/target/actual/
 ``` 
 into the directory with the expected issues
 ```
-sonar-java/its/ruling/src/test/resources/
+its/ruling/src/test/resources/
 ```
