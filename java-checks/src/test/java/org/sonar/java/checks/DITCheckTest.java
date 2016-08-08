@@ -30,10 +30,11 @@ public class DITCheckTest {
   }
 
   @Test
-  public void test() {
+  public void max_level_is_2() {
     DITCheck check = new DITCheck();
     check.setMax(2);
     JavaCheckVerifier.verify("src/test/files/checks/Dit.java", check);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/Dit.java", check);
   }
 
 }

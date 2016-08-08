@@ -13,3 +13,14 @@ class One extends Two {
 class Two {
 
 }
+
+enum Any {
+  enumConst { // Compliant - enum constant are not considered (level=3: enumConst -> Any -> Enum<Any> -> Object)
+    @Override
+    public String getString() {
+      return "string";
+    }
+  };
+
+  public abstract String getString();
+}

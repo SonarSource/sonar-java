@@ -58,21 +58,28 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitClass(ClassTree tree) {
-    Type superClass = tree.symbol().superClass();
-    int dit = 0;
-    while(superClass != null ){
-      dit++;
-      superClass = superClass.symbol().superClass();
-    }
-    if(dit > max) {
-      Tree reportTree = tree.simpleName();
-      if(tree.parent().is(Tree.Kind.NEW_CLASS)) {
-        reportTree = ((NewClassTree) tree.parent()).newKeyword();
+    if (!isBodyOfEnumConstantTree(tree)) {
+      Type superClass = tree.symbol().superClass();
+      int dit = 0;
+      while (superClass != null) {
+        dit++;
+        superClass = superClass.symbol().superClass();
       }
-      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.",
-        new ArrayList<JavaFileScannerContext.Location>(), dit - max);
+      if (dit > max) {
+        Tree reportTree = tree.simpleName();
+        if (tree.parent().is(Tree.Kind.NEW_CLASS)) {
+          reportTree = ((NewClassTree) tree.parent()).newKeyword();
+        }
+        context.reportIssue(this, reportTree, "This class has " + dit + " parents which is greater than " + max + " authorized.",
+          new ArrayList<JavaFileScannerContext.Location>(), dit - max);
+      }
     }
     super.visitClass(tree);
+  }
+
+  private static boolean isBodyOfEnumConstantTree(ClassTree tree) {
+    Tree parent = tree.parent();
+    return parent.is(Tree.Kind.NEW_CLASS) && parent.parent().is(Tree.Kind.ENUM_CONSTANT);
   }
 
   @VisibleForTesting
