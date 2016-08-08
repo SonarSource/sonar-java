@@ -93,3 +93,7 @@ into the directory with the expected issues
 ```
 its/ruling/src/test/resources/
 ```
+
+For example using the command:
+
+    cp its/ruling/target/actual/* its/ruling/src/test/resources/
