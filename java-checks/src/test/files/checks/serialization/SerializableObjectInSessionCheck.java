@@ -12,8 +12,10 @@ class A {
     session.setAttribute("stringArray", new String[] { "one", "two" });
     session.setAttribute("personArray", new Person[] { new Person() }); // Noncompliant {{Make "Person[]" serializable or don't store it in the session.}}
 
-    session.setAttribute("stringList", new java.util.ArrayList<>(java.util.Arrays.asList("one", "two")));
-    session.setAttribute("personList", new java.util.ArrayList<>(java.util.Arrays.asList(new Person(), new Person()))); // Noncompliant {{Make "ArrayList" and its parameters serializable or don't store it in the session.}}
+    session.setAttribute("stringArrayList", new java.util.ArrayList<>(java.util.Arrays.asList("one", "two")));
+    session.setAttribute("personArrayList", new java.util.ArrayList<>(java.util.Arrays.asList(new Person(), new Person()))); // Noncompliant {{Make "ArrayList" and its parameters serializable or don't store it in the session.}}
+
+    session.setAttribute("stringList", java.util.Arrays.asList("one", "two"));
 
     session.setAttribute("nonSerializableParameterized", new CustomStack<String>()); // Noncompliant {{Make "CustomStack" and its parameters serializable or don't store it in the session.}}
   }

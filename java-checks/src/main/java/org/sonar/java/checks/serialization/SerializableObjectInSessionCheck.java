@@ -79,7 +79,9 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   }
 
   private boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
-    return type.isSubtypeOf("java.io.Serializable")
+    // note: this is assuming that custom implementors of Collection
+    // have the good sense to make it serializable just like all implementations in the JDK
+    return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
       && type.typeParameters().stream().allMatch(t -> {
       JavaType javaType = type.substitution(t);
       assert javaType != null;
