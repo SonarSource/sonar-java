@@ -43,7 +43,7 @@ If you have an idea for a rule but you are not sure that everyone needs it you c
 
 ## <a name="testing"></a>Testing
 
-To run tests locally follow these instructions
+To run tests locally follow these instructions.
 
 ### Build the Project and Run Unit Tests
 
