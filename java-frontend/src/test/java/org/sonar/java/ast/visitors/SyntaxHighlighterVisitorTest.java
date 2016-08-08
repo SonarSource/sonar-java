@@ -111,7 +111,7 @@ public class SyntaxHighlighterVisitorTest {
 
   private void scan(File file) {
     JavaSquid squid = new JavaSquid(new JavaConfiguration(Charsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
-    squid.scan(Lists.newArrayList(file), Collections.<File>emptyList(), Collections.<File>emptyList());
+    squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 
   private File generateTestFile() throws IOException {

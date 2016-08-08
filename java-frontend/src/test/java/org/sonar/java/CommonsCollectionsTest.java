@@ -51,7 +51,6 @@ public class CommonsCollectionsTest {
   private void initAndScan() {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
-    File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     context = SensorContextTester.create(srcDir);
@@ -76,22 +75,12 @@ public class CommonsCollectionsTest {
       }
 
       @Override
-      public Collection<String> classKeys() {
-        return sourceFileCache.keySet();
-      }
-
-      @Override
       public Collection<File> classFilesToAnalyze() {
         return Collections.emptyList();
       }
 
       @Override
       public Collection<File> classpath() {
-        return null;
-      }
-
-      @Override
-      public Integer getMethodStartLine(String fullyQualifiedMethodName) {
         return null;
       }
 
@@ -105,7 +94,7 @@ public class CommonsCollectionsTest {
       }
     };
     squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
-    squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
+    squid.scan(files, Collections.<File>emptyList());
   }
 
   private Map<String, Double> getMetrics() {

@@ -67,11 +67,6 @@ public class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  public void class_keys() throws Exception {
-    assertThat(javaResourceLocator.classKeys()).hasSize(5);
-  }
-
-  @Test
   public void source_file_key_by_class_name() throws Exception {
     assertThat(javaResourceLocator.findSourceFileKeyByClassName("org/sonar/java/DefaultJavaResourceLocatorTest")).endsWith("DefaultJavaResourceLocatorTest.java");
     assertThat(javaResourceLocator.findSourceFileKeyByClassName("org.sonar.java.DefaultJavaResourceLocatorTest")).endsWith("DefaultJavaResourceLocatorTest.java");

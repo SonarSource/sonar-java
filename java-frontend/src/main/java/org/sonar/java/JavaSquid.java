@@ -19,10 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -30,9 +28,6 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
-import org.sonar.java.bytecode.BytecodeScanner;
-import org.sonar.java.bytecode.visitor.BytecodeContext;
-import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
@@ -52,7 +47,6 @@ public class JavaSquid {
 
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
-  private final BytecodeScanner bytecodeScanner;
 
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
@@ -95,13 +89,6 @@ public class JavaSquid {
     astScannerForTests = new JavaAstScanner(astScanner);
     astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents, false));
 
-    //Bytecode scanner
-    BytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
-    bytecodeScanner = new BytecodeScanner(bytecodeContext);
-    for (CodeVisitor visitor : visitors) {
-      bytecodeScanner.accept(visitor);
-    }
-
   }
 
   private static boolean hasASymbolicExecutionCheck(CodeVisitor[] visitors) {
@@ -122,9 +109,8 @@ public class JavaSquid {
   }
 
 
-  public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles, Collection<File> bytecodeFilesOrDirectories) {
+  public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles) {
     scanSources(sourceFiles);
-    scanBytecode(bytecodeFilesOrDirectories);
     scanTests(testFiles);
   }
 
@@ -138,31 +124,6 @@ public class JavaSquid {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
     profiler.stopInfo();
-  }
-
-  private void scanBytecode(Collection<File> bytecodeFilesOrDirectories) {
-    if (hasBytecode(bytecodeFilesOrDirectories)) {
-      Profiler profiler = Profiler.create(LOG).startInfo("Java bytecode scan");
-
-      bytecodeScanner.scan(bytecodeFilesOrDirectories);
-      profiler.stopInfo();
-    } else {
-      LOG.warn("Java bytecode has not been made available to the analyzer. The " + Joiner.on(", ").join(bytecodeScanner.getVisitors()) + " are disabled.");
-    }
-  }
-
-  static boolean hasBytecode(Collection<File> bytecodeFilesOrDirectories) {
-    if (bytecodeFilesOrDirectories == null) {
-      return false;
-    }
-    for (File bytecodeFilesOrDirectory : bytecodeFilesOrDirectories) {
-      if (bytecodeFilesOrDirectory.exists() &&
-          (bytecodeFilesOrDirectory.isFile() ||
-              !FileUtils.listFiles(bytecodeFilesOrDirectory, new String[]{"class"}, true).isEmpty())) {
-        return true;
-      }
-    }
-    return false;
   }
 
 }

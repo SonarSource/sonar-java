@@ -121,7 +121,7 @@ public class MeasurerTest {
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
     assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);
     assertThat(context.measure("projectKey:"+relativePath, metric).value()).isEqualTo(expectedValue);
   }

@@ -46,7 +46,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   @VisibleForTesting
   Map<String, InputFile> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
-  private final Map<String, Integer> methodStartLines;
   private SensorContext sensorContext;
 
   public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath) {
@@ -54,7 +53,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     this.javaClasspath = javaClasspath;
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
-    methodStartLines = Maps.newHashMap();
   }
 
   public void setSensorContext(SensorContext sensorContext) {
@@ -77,8 +75,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     return sourceFileByClass.get(name);
   }
 
-  @Override
-  public Collection<String> classKeys() {
+  private Collection<String> classKeys() {
     return ImmutableSortedSet.<String>naturalOrder().addAll(resourcesByClass.keySet()).build();
   }
 
@@ -104,11 +101,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   @Override
-  public Integer getMethodStartLine(String fullyQualifiedMethodName) {
-    return methodStartLines.get(fullyQualifiedMethodName);
-  }
-
-  @Override
   public void scanFile(JavaFileScannerContext context) {
     Preconditions.checkNotNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
@@ -123,6 +115,5 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
         sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
       }
     }
-    methodStartLines.putAll(javaFilesCache.getMethodStartLines());
   }
 }

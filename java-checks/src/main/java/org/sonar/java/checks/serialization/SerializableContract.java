@@ -20,7 +20,6 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableSet;
-import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+
 import java.util.List;
 import java.util.Set;
 
@@ -46,10 +46,6 @@ public final class SerializableContract {
   private SerializableContract() {
   }
 
-  public static boolean methodMatch(AsmMethod method) {
-    return SERIALIZABLE_CONTRACT_METHODS.contains(method.getName());
-  }
-  
   public static boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
     boolean hasWriteObject = false;
     boolean hasReadObject = false;
