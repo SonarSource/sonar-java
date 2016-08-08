@@ -91,5 +91,5 @@ sonar-java/its/ruling/target/actual/
 ``` 
 into the directory with the expected issues
 ```
-sonar-java/its/ruling/src/test/resources/expected/
+sonar-java/its/ruling/src/test/resources/
 ```
