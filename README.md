@@ -51,68 +51,53 @@ To run tests locally follow these instructions
 
 To build the plugin and run its unit tests, execute this command from the project's root directory:
 
-```
-mvn clean install
-```
+    mvn clean install
 
 ### Integration Tests
 
 To run integration tests, you will need to create a properties file like the one shown below, and set the url pointing to its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
 
-```
-# version of SonarQube Server
-sonar.runtimeVersion=5.6
+    # version of SonarQube Server
+    sonar.runtimeVersion=5.6
 
-orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
-```
+    orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
 
 With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as: 
 
-```
-ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
-```
+    ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
 
 #### Plugin Test
 
 The "Plugin Test" is an additional integration test which verifies plugin features such as metric calculation, coverage etc. To launch it:
 
-```
-mvn clean install -Pit-plugin
-```  
+    mvn clean install -Pit-plugin
 
 #### Ruling Test
 
 The "Ruling Test" is a special integration test which launches the analysis of a large code base, saves the issues created by the plugin in report files, and then compares those results to the set of expected issues (stored as JSON files).
 
-* To run the test, first make sure the submodules are checked out:
-```
-  git submodule init 
-  git submodule update
-```  
-* Launch ruling test 
-```
-cd its/ruling
-mvn clean install -DskipTests=false
-```  
+To run the test, first make sure the submodules are checked out:
+
+    git submodule init 
+    git submodule update
+
+Launch ruling test:
+
+    cd its/ruling
+    mvn clean install -DskipTests=false
 
 This test gives you the opportunity to examine the issues created by each rule and make sure they're what you expect. You can inspect new/lost issues checking web-pages mentioned in the logs at the end of analysis:
 
-```
-INFO  - HTML Issues Report generated: /path/to/project/sonar-java/its/sources/src/.sonar/issues-report/issues-report.html
-INFO  - Light HTML Issues Report generated: /path/to/project/sonar-java/its/sources/src/.sonar/issues-report/issues-report-light.html
-```
+    INFO  - HTML Issues Report generated: /path/to/project/sonar-java/its/sources/src/.sonar/issues-report/issues-report.html
+    INFO  - Light HTML Issues Report generated: /path/to/project/sonar-java/its/sources/src/.sonar/issues-report/issues-report-light.html
 
-If everything looks good to you, you can copy the file with the actual issues located at
+If everything looks good to you, you can copy the file with the actual issues located at:
 
-```
-its/ruling/target/actual/
-``` 
+    its/ruling/target/actual/
 
-into the directory with the expected issues
+Into the directory with the expected issues:
 
-```
-its/ruling/src/test/resources/
-```
+    its/ruling/src/test/resources/
 
 For example using the command:
 
