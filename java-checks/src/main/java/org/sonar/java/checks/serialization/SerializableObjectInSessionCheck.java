@@ -82,7 +82,6 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     // have the good sense to make it serializable just like all implementations in the JDK
     //
     // note: type.substitution(t) should never be null
-    //noinspection ConstantConditions
     return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
       && type.typeParameters().stream().allMatch(t -> isSerializable(type.substitution(t)));
   }
