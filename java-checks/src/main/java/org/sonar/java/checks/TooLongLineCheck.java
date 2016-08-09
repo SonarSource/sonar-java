@@ -115,12 +115,11 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
     }
   }
 
-  private String removeIgnoredPatterns(String line) {
+  private static String removeIgnoredPatterns(String line) {
     return line
       // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#link">@link ...</a>
       .replaceAll("^(\\s*(\\*|//).*?)\\s*\\{@link [^}]+\\}\\s*", "$1")
       // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#see">@see reference</a>
-      .replaceAll("^(\\s*(\\*|//).*?)\\s*@see .+\\s*", "$1")
-      ;
+      .replaceAll("^(\\s*(\\*|//).*?)\\s*@see .+\\s*", "$1");
   }
 }
