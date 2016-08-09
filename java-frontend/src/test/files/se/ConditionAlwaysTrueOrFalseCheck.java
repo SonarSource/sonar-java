@@ -1854,3 +1854,51 @@ class KeyboardFocusManager {
 
   }
 }
+
+public class MyConstantsTestClass {
+
+  private final Object finalObject = new Object();
+
+  private final Object finalNullObject = null;
+
+  private final Object myUncertainObject;
+
+  public MyConstantsTestClass() {
+    myUncertainObject = new Object();
+  }
+
+  public MyConstantsTestClass(int a) {
+    myUncertainObject = null;
+  }
+
+  public void constant(boolean parameter) {
+    if (finalObject != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (finalObject == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (finalNullObject != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (finalNullObject == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (myUncertainObject == null) { // Compliant we can't be sure how we reached this path
+    }
+    if (myUncertainObject != null) { // Compliant we can't be sure how we reached this path
+    }
+  }
+}
+
+public class Squid2583 {
+    private final transient ByteArrayOutputStream trasientBaos = new ByteArrayOutputStream();
+
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    public void raiseIssue() {
+        if (trasientBaos != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+            trasientBaos.reset();
+        }
+
+        if (baos != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+            baos.reset();
+        }
+    }
+}

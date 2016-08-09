@@ -600,8 +600,32 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
       programState = programState.put(symbol, value);
+      learnIdentifierNullConstraints(tree, value);
     }
     programState = programState.stackValue(value);
+  }
+
+  private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {
+    Tree declaration = tree.symbol().declaration();
+    if (!isFinalField(tree.symbol()) || declaration == null) {
+      return;
+    }
+    ExpressionTree initializer = ((VariableTree) declaration).initializer();
+    if (initializer == null) {
+      return;
+    }
+    // only check final field with an initializer
+    if (initializer.is(Tree.Kind.NULL_LITERAL)) {
+      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint(initializer));
+    } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
+      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+    }
+  }
+
+  private static boolean isFinalField(Symbol symbol) {
+    return symbol.isVariableSymbol()
+      && symbol.isFinal()
+      && symbol.owner().isTypeSymbol();
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
