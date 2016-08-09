@@ -47,50 +47,14 @@ public class TooLongLineCheckTest {
   }
 
   @Test
-  public void test_link_within_block_comment_noncompliant() {
+  public void test_with_noncompliant_link_or_see() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkWithinBlockCommentNoncompliant.java", check);
+    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkOrSee.java", check);
   }
 
   @Test
-  public void test_link_within_block_comment() {
+  public void test_with_false_positive_link_or_see() {
     check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkWithinBlockComment.java", check);
-  }
-
-  @Test
-  public void test_link_within_inline_comment_noncompliant() {
-    check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkWithinInlineCommentNoncompliant.java", check);
-  }
-
-  @Test
-  public void test_link_within_inline_comment() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkWithinInlineComment.java", check);
-  }
-
-  @Test
-  public void test_see_within_block_comment_noncompliant() {
-    check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthSeeWithinBlockCommentNoncompliant.java", check);
-  }
-
-  @Test
-  public void test_see_within_block_comment() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthSeeWithinBlockComment.java", check);
-  }
-
-  @Test
-  public void test_see_within_inline_comment_noncompliant() {
-    check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthSeeWithinInlineCommentNoncompliant.java", check);
-  }
-
-  @Test
-  public void test_see_within_inline_comment() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthSeeWithinInlineComment.java", check);
+    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java", check);
   }
 }
