@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Map;
 
 class Result {
 
@@ -70,12 +71,12 @@ class Result {
 
   public JavaSymbol symbol(String name, int line) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
-      if (name.equals(symbol.name()) && ((JavaTree) semanticModel.getTree(symbol)).getLine() == line) {
+    for (Map.Entry<Tree, Symbol> entry : semanticModel.getSymbolsTree().entrySet()) {
+      if (name.equals(entry.getValue().name()) && ((JavaTree) entry.getKey()).getLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
-        result = symbol;
+        result = entry.getValue();
       }
     }
     if (result == null) {
@@ -117,8 +118,4 @@ class Result {
     throw new IllegalArgumentException("Reference Tree not found "+line);
   }
 
-
-  public Tree getTree(Symbol symbol) {
-    return semanticModel.getTree(symbol);
-  }
 }

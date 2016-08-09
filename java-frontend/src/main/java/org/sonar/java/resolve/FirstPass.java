@@ -178,7 +178,7 @@ public class FirstPass extends BaseTreeVisitor {
       //FIXME That is why we only add the first symbol so we resolve references at best for now.
       //add to semantic model only the first symbol.
       //twice the same import : ignore the duplication JLS8 7.5.1.
-      if (semanticModel.getSymbol(tree) == null && semanticModel.getTree(symbol) == null) {
+      if (semanticModel.getSymbol(tree) == null) {
         semanticModel.associateSymbol(tree, symbol);
       }
     }

@@ -35,15 +35,17 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SemanticModel {
 
-  private final BiMap<Tree, Symbol> symbolsTree = HashBiMap.create();
+  private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
   private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
@@ -141,12 +143,6 @@ public class SemanticModel {
   public Symbol getSymbol(Tree tree) {
     return symbolsTree.get(tree);
   }
-
-  @Nullable
-  public Tree getTree(Symbol symbol) {
-    return symbolsTree.inverse().get(symbol);
-  }
-
 
   public void associateReference(IdentifierTree tree, Symbol symbol) {
     usagesTree.put(symbol, tree);
