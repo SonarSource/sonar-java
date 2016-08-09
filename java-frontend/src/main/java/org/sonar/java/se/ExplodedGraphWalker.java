@@ -30,6 +30,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -60,6 +61,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -591,8 +593,49 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
       programState = programState.put(symbol, value);
+
+      learnIdentifierNullConstraints(tree, value);
     }
     programState = programState.stackValue(value);
+  }
+
+  private static boolean isFinalVariable(@Nullable Tree declaration) {
+    if (declaration == null) {
+      return false;
+    }
+
+    if (!declaration.is(Tree.Kind.VARIABLE)) {
+      return false;
+    }
+
+    VariableTree declarationVariable = (VariableTree) declaration;
+
+    return ModifiersUtils.hasModifier(declarationVariable.modifiers(), Modifier.FINAL);
+  }
+
+  private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue value) {
+    Tree declaration = tree.symbol().declaration();
+
+    if (!isFinalVariable(declaration)) {
+      // Not safe to learn anything about this variable.
+      return;
+    }
+
+    ExpressionTree initializer = ((VariableTree) declaration).initializer();
+    if (initializer == null) {
+      // Null initializer means either these things:
+      // - There is no initializer, the code won't compile.
+      // - There are multiple initializers
+      // In either case we don't want to add known constrains.
+      return;
+    }
+
+    // At this point it's safe to assume that we've found a consistent and constant declaration.
+    if (initializer.is(Tree.Kind.NULL_LITERAL)) {
+      programState = programState.addConstraint(value, ObjectConstraint.NOT_NULL.inverse());
+    } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
+      programState = programState.addConstraint(value, ObjectConstraint.NOT_NULL);
+    }
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
