@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -71,7 +72,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
           reportTree = ((NewClassTree) tree.parent()).newKeyword();
         }
         context.reportIssue(this, reportTree, "This class has " + dit + " parents which is greater than " + max + " authorized.",
-          new ArrayList<JavaFileScannerContext.Location>(), dit - max);
+          new ArrayList<>(), dit - max);
       }
     }
     super.visitClass(tree);
