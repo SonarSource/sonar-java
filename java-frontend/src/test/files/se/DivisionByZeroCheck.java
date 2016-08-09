@@ -371,4 +371,27 @@ class A {
     }
     return h & 0xFFFFFFFFL;
   }
+
+  private void decodeBigInteger(int value) throws Exception {
+    boolean done = false;
+    while (!done) {
+      long lowBits = 0;
+      while (value > 0 && !done) {
+        int b = value & 0xFF;
+        if (b == 0) {
+          done = true;
+          if (lowBits == 0) {
+            // do something
+          }
+        } else if (b != 0xFF) {
+          if (value == 1) {
+            int digit = (b >>> 4) & 0x0F;
+            lowBits = lowBits * 10 + digit;
+          }
+        }
+        value++;
+      }
+        lowBits = -lowBits;
+    }
+  }
 }
