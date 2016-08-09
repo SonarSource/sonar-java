@@ -24,6 +24,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.resolve.ArrayJavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -44,8 +46,43 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(1);
     Type type = argument.symbolType();
-    if (!type.isPrimitive() && !type.isSubtypeOf("java.io.Serializable")) {
-      reportIssue(argument, "Make \"" + type + "\" serializable or don't store it in the session.");
+    if (!isSerializable(type)) {
+      String andParameters = isParametrized(type) ? " and its parameters" : "";
+      reportIssue(argument, "Make \"" + type + "\"" + andParameters + " serializable or don't store it in the session.");
     }
+  }
+
+  private static boolean isSerializable(Type type) {
+    if (type.isPrimitive()) {
+      return true;
+    }
+    if (isSerializableArray(type)) {
+      return true;
+    }
+    if (isParametrized(type)) {
+      return isSerializableParametrized((ParametrizedTypeJavaType) type);
+    }
+    return type.isSubtypeOf("java.io.Serializable");
+  }
+
+  private static boolean isSerializableArray(Type type) {
+    if (type instanceof ArrayJavaType) {
+      ArrayJavaType arrayJavaType = (ArrayJavaType) type;
+      return isSerializable(arrayJavaType.elementType());
+    }
+    return false;
+  }
+
+  private static boolean isParametrized(Type type) {
+    return type instanceof ParametrizedTypeJavaType;
+  }
+
+  private static boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
+    // note: this is assuming that custom implementors of Collection
+    // have the good sense to make it serializable just like all implementations in the JDK
+    //
+    // note: type.substitution(t) should never be null
+    return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
+      && type.typeParameters().stream().allMatch(t -> isSerializable(type.substitution(t)));
   }
 }
