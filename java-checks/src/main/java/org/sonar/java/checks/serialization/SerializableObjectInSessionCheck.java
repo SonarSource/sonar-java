@@ -53,7 +53,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean isSerializable(Type type) {
+  private static boolean isSerializable(Type type) {
     if (type.isPrimitive()) {
       return true;
     }
@@ -66,7 +66,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isSerializableArray(Type type) {
+  private static boolean isSerializableArray(Type type) {
     if (type instanceof ArrayJavaType) {
       ArrayJavaType arrayJavaType = (ArrayJavaType) type;
       return isSerializable(arrayJavaType.elementType());
@@ -74,11 +74,11 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private boolean isParametrized(Type type) {
+  private static boolean isParametrized(Type type) {
     return type instanceof ParametrizedTypeJavaType;
   }
 
-  private boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
+  private static boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
     // note: this is assuming that custom implementors of Collection
     // have the good sense to make it serializable just like all implementations in the JDK
     return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
