@@ -66,7 +66,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(new JavaClasspath(new Settings(), fileSystem), mock(SonarComponents.class), fileSystem,
+    sensor = new JavaSquidSensor(mock(SonarComponents.class), fileSystem,
       mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
   }
 
@@ -90,13 +90,12 @@ public class JavaSquidSensorTest {
     File file = new File(fs.baseDir(), effectiveKey);
     DefaultInputFile inputFile = new DefaultInputFile("", effectiveKey).setLanguage("java").setType(onType).initMetadata(new String(Files.readAllBytes(file.toPath()), "UTF-8"));
     fs.add(inputFile);
-    JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
 
     SonarComponents sonarComponents = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(effectiveKey);
     resource.setEffectiveKey(effectiveKey);

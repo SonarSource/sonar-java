@@ -47,7 +47,6 @@ public class StrutsTest {
   private static void initAndScan() {
     File prjDir = new File("target/test-projects/struts-core-1.3.9");
     File srcDir = new File(prjDir, "src");
-    File binDir = new File(prjDir, "bin");
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     context = SensorContextTester.create(prjDir);
@@ -59,7 +58,7 @@ public class StrutsTest {
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
     JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
-    squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
+    squid.scan(files, Collections.<File>emptyList());
   }
 
   private Map<String, Double> getMetrics() {

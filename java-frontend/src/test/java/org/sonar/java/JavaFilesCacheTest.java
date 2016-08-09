@@ -45,18 +45,4 @@ public class JavaFilesCacheTest {
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$3");
   }
 
-  @Test
-  public void method_start_lines_mapping() {
-    JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/JavaFilesCacheTestFile.java"), new VisitorsBridge(javaFilesCache));
-    assertThat(javaFilesCache.methodStartLines.keySet()).hasSize(8);
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$I#foo()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B$1#foo()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile#foo()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A#method()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile#bar()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$2#foo()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A#foo(I)V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$3#foo()V");
-  }
 }

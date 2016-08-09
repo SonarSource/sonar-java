@@ -93,7 +93,7 @@ public class JavaVersionAwareVisitorTest {
     ArrayList<File> files = Lists.newArrayList(new File("src/test/files/JavaVersionAwareChecks.java"));
 
     JavaSquid squid = new JavaSquid(conf, null, null, null, null, javaChecks);
-    squid.scan(files, Collections.<File>emptyList(), Collections.<File>emptyList());
+    squid.scan(files, Collections.<File>emptyList());
   }
 
   private static class SimpleCheck extends IssuableSubscriptionVisitor {

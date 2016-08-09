@@ -20,27 +20,12 @@
 package org.sonar.java.checks.serialization;
 
 import org.junit.Test;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.checks.serialization.SerializableContract;
 
 import java.lang.reflect.Constructor;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SerializableContractTest {
-
-  @Test
-  public void testMethodMatch() {
-    AsmMethod method = mock(AsmMethod.class);
-    when(method.getName()).thenReturn("writeObject", "readObject", "writeReplace", "readResolve", "getParameter");
-    assertThat(SerializableContract.methodMatch(method)).isTrue();
-    assertThat(SerializableContract.methodMatch(method)).isTrue();
-    assertThat(SerializableContract.methodMatch(method)).isTrue();
-    assertThat(SerializableContract.methodMatch(method)).isTrue();
-    assertThat(SerializableContract.methodMatch(method)).isFalse();
-  }
 
   @Test
   public void private_constructor() throws Exception {

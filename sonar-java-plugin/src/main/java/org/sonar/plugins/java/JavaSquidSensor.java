@@ -20,8 +20,6 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
-
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -35,7 +33,6 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
-import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
@@ -47,7 +44,6 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.List;
 
 @Phase(name = Phase.Name.PRE)
@@ -57,7 +53,6 @@ public class JavaSquidSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(JavaSquidSensor.class);
 
-  private final JavaClasspath javaClasspath;
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
@@ -65,10 +60,9 @@ public class JavaSquidSensor implements Sensor {
   private final NoSonarFilter noSonarFilter;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
-  public JavaSquidSensor(JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
+  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
     DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
     this.noSonarFilter = noSonarFilter;
-    this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
@@ -90,7 +84,7 @@ public class JavaSquidSensor implements Sensor {
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
-    squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
+    squid.scan(getSourceFiles(), getTestFiles());
   }
 
   private Iterable<File> getSourceFiles() {
@@ -107,13 +101,6 @@ public class JavaSquidSensor implements Sensor {
       files.add(inputFile.file());
     }
     return files;
-  }
-
-  private List<File> getBytecodeFiles() {
-    if (settings.getBoolean(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)) {
-      return Collections.emptyList();
-    }
-    return javaClasspath.getElements();
   }
 
   private JavaConfiguration createConfiguration() {

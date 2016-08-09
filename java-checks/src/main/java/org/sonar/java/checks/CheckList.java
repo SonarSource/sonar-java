@@ -51,7 +51,6 @@ import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
-import org.sonar.java.checks.unused.UnusedProtectedMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
@@ -222,7 +221,6 @@ public final class CheckList {
       .add(ArchitectureCheck.class)
       .add(CallToDeprecatedMethodCheck.class)
       .add(CallToFileDeleteOnExitMethodCheck.class)
-      .add(UnusedProtectedMethodCheck.class)
       .add(UnusedPrivateMethodCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
       .add(ThrowsSeveralCheckedExceptionCheck.class)

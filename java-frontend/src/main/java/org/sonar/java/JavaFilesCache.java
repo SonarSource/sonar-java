@@ -21,12 +21,9 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
-
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
-import org.sonar.java.signature.MethodSignaturePrinter;
-import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -45,9 +42,6 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @VisibleForTesting
   Map<String, File> resourcesCache = Maps.newHashMap();
 
-  @VisibleForTesting
-  Map<String, Integer> methodStartLines = Maps.newHashMap();
-
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<>();
   private Deque<Tree> parent = new LinkedList<>();
@@ -56,10 +50,6 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   public Map<String, File> getResourcesCache() {
     return resourcesCache;
-  }
-
-  public Map<String, Integer> getMethodStartLines() {
-    return methodStartLines;
   }
 
   @Override
@@ -110,8 +100,6 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitMethod(MethodTree tree) {
     parent.push(tree);
-    String methodKey = currentClassKey.peek() + "#" + MethodSignaturePrinter.print(MethodSignatureScanner.scan(tree));
-    methodStartLines.put(methodKey, tree.simpleName().identifierToken().line());
     super.visitMethod(tree);
     parent.pop();
   }
