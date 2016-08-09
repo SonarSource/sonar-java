@@ -45,13 +45,13 @@ import java.util.Set;
 @RspecKey("S103")
 public class TooLongLineCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
 
-  private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 120;
+  private static final int DEFAULT_MAXIMUM_LINE_LENGTH = 120;
 
   @RuleProperty(
       key = "maximumLineLength",
       description = "The maximum authorized line length.",
-      defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENHGTH)
-  public int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENHGTH;
+      defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENGTH)
+  int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
 
   private Charset charset;
   private Set<Integer> ignoredLines = Sets.newHashSet();
@@ -75,7 +75,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
     visitFile(context.getFile());
   }
 
-  public void ignoreLines(CompilationUnitTree tree) {
+  private void ignoreLines(CompilationUnitTree tree) {
     List<ImportClauseTree> imports = tree.imports();
     if (!imports.isEmpty()) {
       int start = getLine(imports.get(0), true);
@@ -106,13 +106,21 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor implements Cha
     }
     for (int i = 0; i < lines.size(); i++) {
       if (!ignoredLines.contains(i + 1)) {
-        String line = lines.get(i);
+        String origLine = lines.get(i);
+        String line = removeIgnoredPatterns(origLine);
         if (line.length() > maximumLineLength) {
-          addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", line.length(), maximumLineLength));
+          addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", origLine.length(), maximumLineLength));
         }
       }
     }
   }
 
-
+  private String removeIgnoredPatterns(String line) {
+    return line
+      // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#link">@link ...</a>
+      .replaceAll("^(\\s*(\\*|//).*?)\\s*\\{@link [^}]+\\}\\s*", "$1")
+      // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#see">@see reference</a>
+      .replaceAll("^(\\s*(\\*|//).*?)\\s*@see .+\\s*", "$1")
+      ;
+  }
 }

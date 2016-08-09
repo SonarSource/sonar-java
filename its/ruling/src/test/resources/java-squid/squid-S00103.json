@@ -396,7 +396,6 @@
 149,
 164,
 190,
-194,
 ],
 'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/resolve/BytecodeMethodVisitor.java':[
 33,
@@ -410,7 +409,6 @@
 71,
 72,
 83,
-111,
 166,
 174,
 178,
@@ -419,7 +417,6 @@
 204,
 208,
 216,
-285,
 592,
 603,
 ],
