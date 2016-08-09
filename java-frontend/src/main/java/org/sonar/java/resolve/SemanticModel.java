@@ -23,21 +23,16 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +41,6 @@ import java.util.Map;
 public class SemanticModel {
 
   private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
-  private Multimap<Symbol, IdentifierTree> usagesTree = HashMultimap.create();
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
@@ -144,18 +138,9 @@ public class SemanticModel {
     return symbolsTree.get(tree);
   }
 
-  public void associateReference(IdentifierTree tree, Symbol symbol) {
-    usagesTree.put(symbol, tree);
-  }
-
   @VisibleForTesting
   Map<Tree, Symbol> getSymbolsTree() {
     return Collections.unmodifiableMap(symbolsTree);
-  }
-
-  @VisibleForTesting
-  Collection<Symbol> getSymbolUsed() {
-    return usagesTree.keySet();
   }
 
 }

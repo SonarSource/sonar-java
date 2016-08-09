@@ -1,4 +1,4 @@
-package references; import java.util.List;import java.util.Collection;import java.util.stream.Stream;
+package references; import java.util.List;import java.util.Collection;
 
 @SuppressWarnings("all")
 class MethodCall extends Parent {
@@ -340,25 +340,5 @@ class MostSpecificArgType {
 
   void plop() {
     myMethod(new Child<String>());
-  }
-}
-
-class StreamAPI {
-  private int foo = 42; // FP on Unused private field
-
-  private void staticPrint(String s) { /* do something */ } // FP on Unused private method
-  public void bar(java.util.Collection<String> data) {
-
-    int myVar = 42 * 2; // FP on Unused local variable
-
-    Stream<String[]> stream = data.stream()
-      .map(line -> line.split("\\s"));
-    stream
-      .forEach(words -> {
-        staticPrint(words[0]);
-        if (foo > words.length || myVar < words.length) {
-          // do something
-        }
-      });
   }
 }

@@ -907,9 +907,6 @@ public class SymbolTableTest {
     assertThat(result.reference(342, 5)).isSameAs(result.symbol("myMethod", 339));
     assertThat(result.symbol("myMethod", 338).usages()).isEmpty();
 
-    Type streamType = ((VariableTree) result.symbol("stream").declaration()).initializer().symbolType();
-    System.out.println(streamType.name());
-
   }
 
   @Test

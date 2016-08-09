@@ -73,7 +73,6 @@ public class LabelsVisitor extends BaseTreeVisitor {
     LabeledStatementTree labelTree = labelTrees.get(label.name());
     if (labelTree != null) {
       JavaSymbol symbol = (JavaSymbol) labelTree.symbol();
-      semanticModel.associateReference(label, symbol);
       ((IdentifierTreeImpl) label).setSymbol(symbol);
       symbol.addUsage(label);
     }
