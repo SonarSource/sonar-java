@@ -25,7 +25,6 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.resolve.ArrayJavaType;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -81,11 +80,10 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   private static boolean isSerializableParametrized(ParametrizedTypeJavaType type) {
     // note: this is assuming that custom implementors of Collection
     // have the good sense to make it serializable just like all implementations in the JDK
+    //
+    // note: type.substitution(t) should never be null
+    //noinspection ConstantConditions
     return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
-      && type.typeParameters().stream().allMatch(t -> {
-      JavaType javaType = type.substitution(t);
-      assert javaType != null;
-      return isSerializable(javaType);
-    });
+      && type.typeParameters().stream().allMatch(t -> isSerializable(type.substitution(t)));
   }
 }
