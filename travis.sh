@@ -78,7 +78,6 @@ CI)
     else
       strongEcho "External pull request"
       # external PR : no deployment to repox
-      set_maven_build_version $TRAVIS_BUILD_NUMBER
       mvn package sonar:sonar -B -e -V \
         -Dsonar.analysis.mode=issues \
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
