@@ -881,9 +881,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     types.put(tree, type);
   }
 
-  private void associateReference(IdentifierTree tree, JavaSymbol symbol) {
+  private static void associateReference(IdentifierTree tree, JavaSymbol symbol) {
     if (symbol.kind < JavaSymbol.ERRONEOUS) {
-      semanticModel.associateReference(tree, symbol);
       ((IdentifierTreeImpl) tree).setSymbol(symbol);
       symbol.addUsage(tree);
     }

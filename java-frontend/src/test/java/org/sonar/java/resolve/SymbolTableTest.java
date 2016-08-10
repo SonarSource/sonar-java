@@ -95,7 +95,7 @@ public class SymbolTableTest {
     assertThat(innerClassField.type).isSameAs(STypeVariableType);
 
     // Unknown parametrized type should be tagged as unknown
-    MethodTree methodTree = (MethodTree) result.getTree(result.symbol("unknownSymbol"));
+    MethodTree methodTree = (MethodTree) result.symbol("unknownSymbol").declaration();
     VariableTree variableTree = (VariableTree) methodTree.block().body().get(0);
     assertThat(variableTree.type().symbolType().isUnknown()).isTrue();
 
@@ -114,11 +114,11 @@ public class SymbolTableTest {
   @Test
   public void parameterized_method_type() throws Exception {
     Result result = Result.createFor("Generics");
-    MethodTree method3 = (MethodTree) result.getTree(result.symbol("method3"));
+    MethodTree method3 = (MethodTree) result.symbol("method3").declaration();
     VariableTree variable = (VariableTree) method3.block().body().get(0);
     assertThat(variable.initializer().symbolType().symbol().name()).isEqualTo("String");
 
-    MethodTree method4 = (MethodTree) result.getTree(result.symbol("method4"));
+    MethodTree method4 = (MethodTree) result.symbol("method4").declaration();
     variable = (VariableTree) method4.block().body().get(0);
     Type symbolType = variable.initializer().symbolType();
     assertThat(symbolType).isInstanceOf(ParametrizedTypeJavaType.class);
@@ -156,7 +156,7 @@ public class SymbolTableTest {
   @Test
   public void recursive_type_substitution() {
     Result result = Result.createFor("Generics");
-    MethodTree ddt_method = (MethodTree) result.getTree(result.symbol("ddt_method"));
+    MethodTree ddt_method = (MethodTree) result.symbol("ddt_method").declaration();
     VariableTree variable = (VariableTree) ddt_method.block().body().get(0);
     assertThat(variable.initializer().symbolType().name()).isEqualTo("String");
   }
@@ -906,6 +906,7 @@ public class SymbolTableTest {
 
     assertThat(result.reference(342, 5)).isSameAs(result.symbol("myMethod", 339));
     assertThat(result.symbol("myMethod", 338).usages()).isEmpty();
+
   }
 
   @Test
