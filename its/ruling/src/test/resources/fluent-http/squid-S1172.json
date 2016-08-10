@@ -1,17 +1,8 @@
 {
-'net.code-story:http:src/main/java/net/codestory/http/extensions/Extensions.java':[
-37,
-],
-'net.code-story:http:src/main/java/net/codestory/http/filters/Filter.java':[
-27,
-],
 'net.code-story:http:src/main/java/net/codestory/http/filters/auth/CookieAuthFilter.java':[
 115,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/payload/PayloadWriter.java':[
 217,
-],
-'net.code-story:http:src/main/java/net/codestory/http/routes/Route.java':[
-24,
 ],
 }

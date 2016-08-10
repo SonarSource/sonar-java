@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -82,7 +83,11 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isMainMethod() || isAnnotated(tree) || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
+    return ((MethodTreeImpl) tree).isMainMethod()
+      || isAnnotated(tree)
+      || isOverriding(tree)
+      || isSerializableMethod(tree)
+      || isDesignedForExtension(tree);
   }
 
   private static boolean isAnnotated(MethodTree tree) {
@@ -106,7 +111,9 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDesignedForExtension(MethodTree tree) {
-    return !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block());
+    ModifiersTree modifiers = tree.modifiers();
+    return ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT)
+      || (!ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block()));
   }
 
   private static boolean isEmptyOrThrowStatement(BlockTree block) {

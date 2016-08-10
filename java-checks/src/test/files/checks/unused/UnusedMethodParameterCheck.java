@@ -55,7 +55,7 @@ interface inter {
   default void foo(int a) {
     compute(a);
   }
-  default void bar(int a) { System.out.println("");} // Noncompliant
+  default void bar(int a) { System.out.println("");} // Compliant - designed for extension
   void qix(int a);
 }
 class F {
