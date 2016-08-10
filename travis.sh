@@ -58,24 +58,37 @@ CI)
         -Pdeploy-sonarsource,release \
         -B -e -V $*
 
-  elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN-}" ]; then
-    # For security reasons environment variables are not available on the pull requests
-    # coming from outside repositories
-    # http://docs.travis-ci.com/user/pull-requests/#Security-Restrictions-when-testing-Pull-Requests
-    # That's why the analysis does not need to be executed if the variable GITHUB_TOKEN is not defined.
+  elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
     strongEcho "Build and analyze pull request"
-    SONAR_PROJECT_VERSION=`maven_expression "project.version"`
-    # Do not deploy a SNAPSHOT version but the release version related to this build
-    set_maven_build_version $TRAVIS_BUILD_NUMBER
     export MAVEN_OPTS="-Xmx1G -Xms128m"
-    mvn deploy sonar:sonar -B -e -V \
-        -Pdeploy-sonarsource \
+
+    if [ -n "${GITHUB_TOKEN-}" ]; then
+      strongEcho "External pull request"
+      # external PR : no deployment to repox
+      SONAR_PROJECT_VERSION=`maven_expression "project.version"`
+      set_maven_build_version $TRAVIS_BUILD_NUMBER
+      mvn package sonar:sonar -B -e -V \
         -Dsonar.analysis.mode=issues \
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
         -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
-        -Dsonar.github.oauth=$GITHUB_TOKEN \
-        -Dsonar.host.url=$SONAR_HOST_URL \
-        -Dsonar.login=$SONAR_TOKEN
+        -Dsonar.github.oauth=$GITHUB_TOKEN_EXTERNAL_PR \
+        -Dsonar.host.url=$SONAR_HOST_URL_EXTERNAL_PR \
+    else
+      strongEcho "SonarSource pull request"
+      SONAR_PROJECT_VERSION=`maven_expression "project.version"`
+      # Do not deploy a SNAPSHOT version but the release version related to this build
+      set_maven_build_version $TRAVIS_BUILD_NUMBER
+      export MAVEN_OPTS="-Xmx1G -Xms128m"
+      mvn deploy sonar:sonar -B -e -V \
+          -Pdeploy-sonarsource \
+          -Dsonar.analysis.mode=issues \
+          -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
+          -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
+          -Dsonar.github.oauth=$GITHUB_TOKEN \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN
+    fi
+
 
   else
     strongEcho 'Build, no analysis'
