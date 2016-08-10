@@ -27,6 +27,7 @@ public class UnusedMethodParameterCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedMethodParameterCheck.java", new UnusedMethodParameterCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedMethodParameterCheck.java", new UnusedMethodParameterCheck());
   }
 
 }
