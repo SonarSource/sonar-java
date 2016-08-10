@@ -371,4 +371,19 @@ class A {
     }
     return h & 0xFFFFFFFFL;
   }
+
+  private void decodeBigInteger(int value) throws Exception {
+    long lowBits = 0;
+    while (value > 0) {
+      int b = value & 1;
+      if (b == 0) {
+        if (lowBits == 0) {
+          // do something
+        }
+      } else {
+        lowBits += b;
+      }
+    }
+    lowBits = -lowBits;
+  }
 }

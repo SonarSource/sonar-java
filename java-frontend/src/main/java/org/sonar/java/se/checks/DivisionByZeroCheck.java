@@ -191,7 +191,12 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory((id, node) -> sv);
+      constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED)) {
+        @Override
+        public SymbolicValue wrappedValue() {
+          return sv.wrappedValue();
+        }
+      });
     }
 
     private void reportIssue(Tree tree) {
