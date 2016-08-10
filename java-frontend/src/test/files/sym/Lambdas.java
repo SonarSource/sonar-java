@@ -1,4 +1,4 @@
-import java.util.Stream;
+import java.util.stream.Stream;
 import java.util.List;
 class A {
   void foo(){

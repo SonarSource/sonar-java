@@ -477,7 +477,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     LambdaExpressionTreeImpl lambdaExpressionTree = (LambdaExpressionTreeImpl) tree;
     if (lambdaExpressionTree.isTypeSet()) {
       // type should be tied to a SAM interface
-      List<JavaType> samMethodArgs = resolve.findSamMethodArgs(lambdaExpressionTree.symbolType());
+      JavaType lambdaType = (JavaType) lambdaExpressionTree.symbolType();
+      List<JavaType> samMethodArgs = resolve.findSamMethodArgs(lambdaType);
       for (int i = 0; i < samMethodArgs.size(); i++) {
         VariableTree param = lambdaExpressionTree.parameters().get(i);
         if (param.type().is(Tree.Kind.INFERED_TYPE)) {
@@ -491,9 +492,44 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
       }
       super.visitLambdaExpression(tree);
+      if(lambdaType.isUnknown() || lambdaType.isTagged(JavaType.DEFERRED)) {
+        return;
+      }
+      refineLambdaType(lambdaExpressionTree, lambdaType);
     } else {
       registerType(tree, symbols.deferedType(lambdaExpressionTree));
     }
+  }
+
+  private void refineLambdaType(LambdaExpressionTreeImpl lambdaExpressionTree, JavaType lambdaType) {
+    JavaType samReturnType = (JavaType) getSamMethod(lambdaType).returnType().type();
+    JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, lambdaType);
+    if (lambdaExpressionTree.body().is(Tree.Kind.BLOCK) || capturedReturnType.is("void")) {
+      // TODO compute return type for lambda with block and return statements
+      return;
+    }
+    JavaType refinedReturnType = (JavaType) ((AbstractTypedTree) lambdaExpressionTree.body()).symbolType();
+    if (refinedReturnType != capturedReturnType && lambdaType.isParameterized()) {
+      // found a lambda return type different from the one infered : update infered type
+      TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
+      for (Map.Entry<TypeVariableJavaType, JavaType> entry : typeSubstitution.substitutionEntries()) {
+        if (entry.getValue() == capturedReturnType) {
+          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(entry.getKey(), refinedReturnType);
+          JavaType refinedLambdaType = parametrizedTypeCache.getParametrizedTypeType(lambdaType.symbol, refinedSubstitution);
+          lambdaExpressionTree.setType(refinedLambdaType);
+          break;
+        }
+      }
+    }
+  }
+
+  private static JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
+    for (Symbol member : lambdaType.symbol().memberSymbols()) {
+      if (member.isMethodSymbol() && member.isAbstract()) {
+        return (JavaSymbol.MethodJavaSymbol) member;
+      }
+    }
+    throw new IllegalStateException("Method not found in SAM Interface : "+lambdaType.fullyQualifiedName());
   }
 
   @Override

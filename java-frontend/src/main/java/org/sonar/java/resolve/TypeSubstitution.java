@@ -86,12 +86,7 @@ public class TypeSubstitution {
   }
 
   public boolean isIdentity() {
-    for (Map.Entry<TypeVariableJavaType, JavaType> substitution : this.substitutionEntries()) {
-      if (substitution.getKey() != substitution.getValue()) {
-        return false;
-      }
-    }
-    return true;
+    return substitutionEntries().stream().noneMatch(s -> s.getKey() != s.getValue());
   }
 
   /**

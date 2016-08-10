@@ -1127,4 +1127,24 @@ public class SymbolTableTest {
     //Lack of resolution when target type is deduced, we should be able to redo the lookup
     assertThat(reverse.usages()).isEmpty();
   }
+
+  @Test
+  public void infer_fully_lambda_types() {
+    Result result = Result.createFor("InferLambdaType");
+    LambdaExpressionTree lambda = ((LambdaExpressionTree) result.symbol("line").declaration().parent());
+    JavaType lambdaType = (JavaType) lambda.symbolType();
+    assertThat(lambdaType.isParameterized()).isTrue();
+    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
+    TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
+    assertThat(typeSubstitution.size()).isEqualTo(2);
+    JavaType Tsubstitution = typeSubstitution.substitutedTypes().get(0);
+    // check that T -> ? super String
+    assertThat(Tsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) Tsubstitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
+    assertThat(((WildCardType) Tsubstitution).bound.is("java.lang.String")).isTrue();
+    // check that R -> String[]
+    JavaType Rsubstitution = typeSubstitution.substitutedTypes().get(1);
+    assertThat(Rsubstitution.is("java.lang.String[]")).isTrue();
+  }
+
 }
