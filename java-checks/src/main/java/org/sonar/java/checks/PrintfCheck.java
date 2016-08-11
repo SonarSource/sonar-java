@@ -20,11 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -34,6 +35,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +56,10 @@ public class PrintfCheck extends AbstractMethodDetection {
     );
   private static final String FORMAT_METHOD_NAME = "format";
 
+  private static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withNoParameterConstraint();
+  private static final MethodMatcher TO_STRING = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("toString");
+  private static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,.*)?\\}");
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
@@ -59,7 +68,8 @@ public class PrintfCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint(),
+      MESSAGE_FORMAT
       );
   }
 
@@ -67,6 +77,11 @@ public class PrintfCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
+    boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
+    if (isMessageFormat && !mit.symbol().isStatic()) {
+      // only consider the static method
+      return;
+    }
     // Check type of first argument:
     if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);
@@ -78,31 +93,139 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
     if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatStringTree).value());
-      checkLineFeed(formatString, mit);
-
-      List<String> params = getParameters(formatString, mit);
-      if (usesMessageFormat(formatString, params)) {
-        reportIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
-        return;
+      if (!isMessageFormat) {
+        handlePrintfFormat(mit, formatString, args);
+      } else {
+        handleMessageFormat(mit, formatString, args);
       }
-      if (params.isEmpty()) {
-        reportIssue(mit, "String contains no format specifiers.");
-        return;
-      }
-      cleanupLineSeparator(params);
-      if (argIndexes(params).size() > args.size()) {
-        reportIssue(mit, "Not enough arguments.");
-        return;
-      }
-      verifyParameters(mit, args, params);
     } else if (isConcatenationOnSameLine(formatStringTree)) {
       reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
   }
 
+  private void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    List<String> params = getParameters(formatString, mit);
+    if (usesMessageFormat(formatString, params)) {
+      reportIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
+      return;
+    }
+    checkLineFeed(formatString, mit);
+    cleanupLineSeparator(params);
+    if (checkEmptyParams(mit, params)
+      || checkArgumentNumber(mit, argIndexes(params).size(), args.size())) {
+      return;
+    }
+    verifyParameters(mit, args, params);
+  }
+
+  private void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    String newFormatString = cleanupDoubleQuote(formatString);
+    Set<Integer> indexes = getMessageFormatIndexes(newFormatString);
+    if (checkEmptyParams(mit, indexes)
+      || checkArgumentNumber(mit, indexes.size(), args.size())
+      || checkUnbalancedQuotes(mit, newFormatString)
+      || checkUnbalancedBraces(mit, newFormatString)) {
+      return;
+    }
+    checkToStringInvocation(args);
+    verifyParameters(mit, args, indexes);
+  }
+
+  private static String cleanupDoubleQuote(String formatString) {
+    return formatString.replaceAll("\'\'", "");
+  }
+
+  private boolean checkEmptyParams(MethodInvocationTree mit, Collection<?> params) {
+    return checkAndReport(mit, params.isEmpty(), "String contains no format specifiers.");
+  }
+
+  private boolean checkArgumentNumber(MethodInvocationTree mit, int nbReadParams, int nbArgs) {
+    return checkAndReport(mit, nbReadParams > nbArgs, "Not enough arguments.");
+  }
+
+  private boolean checkAndReport(MethodInvocationTree mit, boolean shouldReport, String message) {
+    if (shouldReport) {
+      reportIssue(mit, message);
+    }
+    return shouldReport;
+  }
+
+  private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
+    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
+    int numberQuote = 0;
+    for (int i = 0; i < withoutParam.length(); ++i) {
+      if (withoutParam.charAt(i) == '\'') {
+        numberQuote++;
+      }
+    }
+    boolean unbalancedQuotes = (numberQuote % 2) != 0;
+    if (unbalancedQuotes) {
+      reportIssue(mit.arguments().get(0), "Single quote \"'\" must be escaped.");
+    }
+    return unbalancedQuotes;
+  }
+
+  private boolean checkUnbalancedBraces(MethodInvocationTree mit, String formatString) {
+    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
+    int numberOpenBrace = 0;
+    for (int i = 0; i < withoutParam.length(); ++i) {
+      char ch = withoutParam.charAt(i);
+      switch (ch) {
+        case '{':
+          numberOpenBrace++;
+          break;
+        case '}':
+          numberOpenBrace--;
+          break;
+        default:
+          break;
+      }
+    }
+    boolean unbalancedBraces = numberOpenBrace > 0;
+    if (unbalancedBraces) {
+      reportIssue(mit.arguments().get(0), "Single left curly braces \"{\" must be escaped.");
+    }
+    return unbalancedBraces;
+  }
+
+  private void checkToStringInvocation(List<ExpressionTree> args) {
+    args.stream()
+      .filter(arg -> arg.is(Tree.Kind.METHOD_INVOCATION) && TO_STRING.matches((MethodInvocationTree) arg))
+      .forEach(arg -> reportIssue(arg, "No need to call toString \"method()\" as formatting and string conversion is done by the Formatter."));
+  }
+
+  private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, Set<Integer> indexes) {
+    List<ExpressionTree> unusedArgs = new ArrayList<>(args);
+
+    for (int index : indexes) {
+      if (index >= args.size()) {
+        reportIssue(mit, "Not enough arguments.");
+        return;
+      }
+      unusedArgs.remove(args.get(index));
+    }
+
+    reportUnusedArgs(mit, args, unusedArgs);
+  }
+
+  private static Set<Integer> getMessageFormatIndexes(String formatString) {
+    Matcher matcher = MESSAGE_FORMAT_PATTERN.matcher(formatString);
+    Set<Integer> result = new HashSet<>();
+    while (matcher.find()) {
+      if (isMessageFormatPattern(formatString, matcher.start())) {
+        result.add(Integer.parseInt(matcher.group("index")));
+      }
+    }
+    return result;
+  }
+
+  private static boolean isMessageFormatPattern(String formatString, int start) {
+    return start == 0 || formatString.charAt(start - 1) != '\'';
+  }
+
   private static Set<Integer> argIndexes(List<String> params) {
     int index = 0;
-    Set<Integer> result = Sets.newHashSet();
+    Set<Integer> result = new HashSet<>();
     for (String rawParam : params) {
       if (rawParam.contains("$")) {
         result.add(getIndex(rawParam));
@@ -141,7 +264,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
-    List<ExpressionTree> unusedArgs = Lists.newArrayList(args);
+    List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (String rawParam : params) {
       String param = rawParam;
       int argIndex = index;
@@ -248,7 +371,7 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private List<String> getParameters(String formatString, MethodInvocationTree mit) {
-    List<String> params = Lists.newArrayList();
+    List<String> params = new ArrayList<>();
     Matcher matcher = PRINTF_PARAM_PATTERN.matcher(formatString);
     while (matcher.find()) {
       if (firstArgumentIsLT(params, matcher.group(2))) {
