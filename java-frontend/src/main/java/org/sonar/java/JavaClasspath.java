@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -30,7 +29,8 @@ import org.sonar.api.utils.log.Profiler;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class JavaClasspath extends AbstractJavaClasspath {
 
@@ -46,16 +46,16 @@ public class JavaClasspath extends AbstractJavaClasspath {
       validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
-      binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES);
-      List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
+      binaries = new ArrayList<>(getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES));
+      Set<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
-      elements = Lists.newArrayList(binaries);
-      if(libraries.isEmpty()) {
+      elements = new ArrayList<>(binaries);
+      if (libraries.isEmpty()) {
         LOG.warn("Bytecode of dependencies was not provided for analysis of source files, " +
-            "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
+          "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
       }
       elements.addAll(libraries);
       profiler.stopInfo();
