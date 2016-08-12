@@ -8,9 +8,9 @@
   "tags": [
     "cwe",
     "error-handling",
-    "security",
+    "bug",
     "misra",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

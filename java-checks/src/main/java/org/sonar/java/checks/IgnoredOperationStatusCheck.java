@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,11 +35,38 @@ import java.util.List;
 @Rule(key = "S899")
 public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
 
+  private static final String FILE = "java.io.File";
+  private static final TypeCriteria SUBTYPE_OF_CONDITION = TypeCriteria.subtypeOf("java.util.concurrent.locks.Condition");
+  private static final TypeCriteria SUBTYPE_OF_BLOCKING_QUEUE = TypeCriteria.subtypeOf("java.util.concurrent.BlockingQueue");
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodMatcher.create().typeDefinition("java.io.File").name("delete"),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.locks.Lock")).name("tryLock"));
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.locks.Lock")).name("tryLock"),
+
+      MethodMatcher.create().typeDefinition(FILE).name("delete"),
+      MethodMatcher.create().typeDefinition(FILE).name("exists"),
+      MethodMatcher.create().typeDefinition(FILE).name("createNewFile"),
+      MethodMatcher.create().typeDefinition(FILE).name("mkdir"),
+      MethodMatcher.create().typeDefinition(FILE).name("mkdirs"),
+      MethodMatcher.create().typeDefinition(FILE).name("renameTo").addParameter(FILE),
+      MethodMatcher.create().typeDefinition(FILE).name(NameCriteria.startsWith("can")),
+      MethodMatcher.create().typeDefinition(FILE).name(NameCriteria.startsWith("is")),
+      MethodMatcher.create().typeDefinition(FILE).name(NameCriteria.startsWith("set")).withNoParameterConstraint(),
+
+      MethodMatcher.create().callSite(TypeCriteria.subtypeOf("java.util.Iterator")).name("hasNext"),
+      MethodMatcher.create().callSite(TypeCriteria.subtypeOf("java.util.Enumeration")).name("hasMoreElements"),
+
+      MethodMatcher.create().callSite(SUBTYPE_OF_CONDITION).name("await").addParameter("long").addParameter("java.util.concurrent.TimeUnit"),
+      MethodMatcher.create().callSite(SUBTYPE_OF_CONDITION).name("awaitUntil").addParameter("java.util.Date"),
+      MethodMatcher.create().callSite(SUBTYPE_OF_CONDITION).name("awaitNanos").addParameter("long"),
+
+      MethodMatcher.create().typeDefinition("java.util.concurrent.CountDownLatch").name("await").addParameter("long").addParameter("java.util.concurrent.TimeUnit"),
+      MethodMatcher.create().typeDefinition("java.util.concurrent.Semaphore").name("tryAcquire").withNoParameterConstraint(),
+
+      MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("offer").withNoParameterConstraint(),
+      MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("drainTo").withNoParameterConstraint(),
+      MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("remove").withNoParameterConstraint());
   }
 
   @Override
@@ -46,7 +74,7 @@ public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
     Tree parent = mit.parent();
     if (parent.is(Tree.Kind.EXPRESSION_STATEMENT)
       || (parent.is(Tree.Kind.VARIABLE) && ((VariableTree) parent).symbol().usages().isEmpty())) {
-      reportIssue(parent, "Do something with the \"boolean\" value returned by \"" + mit.symbol().name() + "\".");
+      reportIssue(parent, "Do something with the \"" + mit.symbolType().name() + "\" value returned by \"" + mit.symbol().name() + "\".");
     }
   }
 
