@@ -23,6 +23,7 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -60,7 +61,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    * Report an issue.
    * @param tree syntax node on which to raise the issue.
    * @param message Message to display to the user.
-   * @param flow List of {@link JavaFileScannerContext.Location} to display secondary location for the issue.
+   * @param flow List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
+   *   Empty list if the issue does not requires secondary location.
    * @param cost computed remediation cost if applicable, null if not.
    */
   public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
