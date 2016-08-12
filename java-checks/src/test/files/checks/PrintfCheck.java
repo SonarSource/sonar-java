@@ -1,5 +1,7 @@
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.text.FieldPosition;
+import java.text.MessageFormat;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -57,7 +59,7 @@ class A {
     ps.printf(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
     formatter.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
     formatter.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
-    
+
     pr.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     pr.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     pr.printf("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
@@ -75,9 +77,27 @@ class A {
     String.format("value is %d", value); // Compliant
 
     String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
-    
+
     String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
     String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
     String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
+
+    MessageFormat messageFormat = new MessageFormat("{0}");
+    messageFormat.format(new Object(), new StringBuffer(), new FieldPosition(0)); // Compliant - Not considered
+    messageFormat.format(new Object()); // Compliant - Not considered
+    messageFormat.format("");  // Compliant - Not considered
+
+    MessageFormat.format("{0,number,$'#',##}", value); // Compliant
+    MessageFormat.format("Result ''{0}''.", 14); // Compliant
+    MessageFormat.format("Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
+    MessageFormat.format("Result ' {0}", 14); // Noncompliant {{Single quote "'" must be escaped.}}
+    MessageFormat.format("Result {{{0}}.", 14); // Noncompliant {{Single left curly braces "{" must be escaped.}}
+    MessageFormat.format("Result {0}!", myObject.toString()); // Noncompliant {{No need to call toString "method()" as formatting and string conversion is done by the Formatter.}}
+    MessageFormat.format("Result {0}!", myObject.hashCode()); // Compliant
+    MessageFormat.format("Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
+    MessageFormat.format("Result {1}!", 14); // Noncompliant {{Not enough arguments.}}
+    MessageFormat.format("Result {0} and {1}!", 14); // Noncompliant {{Not enough arguments.}}
+    MessageFormat.format("Result {0} and {0}!", 14, 42); // Noncompliant {{2nd argument is not used.}}
+    MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
   }
 }
