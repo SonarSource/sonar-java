@@ -243,6 +243,28 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, returnType);
     if(resolution != null) {
       inferArgumentTypes(argTypes, resolution);
+      List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
+      if(parameterTypes != argTypes) {
+        IdentifierTree identifier;
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
+          JavaType type = getType(mset.expression());
+          if(type.isTagged(JavaType.DEFERRED)) {
+            throw new IllegalStateException("type of arg should not be defered anymore ??");
+          }
+          identifier = mset.identifier();
+          resolution = resolve.findMethod(methodEnv, type, identifier.name(), parameterTypes, typeParamTypes);
+        } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+          identifier = (IdentifierTree) methodSelect;
+          resolution = resolve.findMethod(methodEnv, identifier.name(), parameterTypes, typeParamTypes);
+        }
+        if(resolution != null && returnType != resolution.type() && resolution.symbol().isMethodSymbol()) {
+          MethodJavaType methodType = (MethodJavaType) resolution.type();
+          if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
+            registerType(tree, methodType.resultType);
+          }
+        }
+      }
     }
   }
 

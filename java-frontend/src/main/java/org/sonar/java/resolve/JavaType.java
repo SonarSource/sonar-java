@@ -108,6 +108,9 @@ public class JavaType implements Type {
       if(supType.isTagged(ARRAY)) {
         return ((ArrayType) this).elementType().isSubtypeOf(((ArrayType) supType).elementType());
       }
+      if(supType.isTagged(WILDCARD)) {
+        return ((WildCardType) superType).isSubtypeOfBound(this);
+      }
       //Only possibility to be supertype of array without being an array is to be Object.
       return "java.lang.Object".equals(supType.fullyQualifiedName());
     }

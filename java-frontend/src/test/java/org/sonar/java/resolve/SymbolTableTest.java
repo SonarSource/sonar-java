@@ -1145,6 +1145,14 @@ public class SymbolTableTest {
     // check that R -> String[]
     JavaType Rsubstitution = typeSubstitution.substitutedTypes().get(1);
     assertThat(Rsubstitution.is("java.lang.String[]")).isTrue();
+
+    MethodInvocationTree mapMethod = (MethodInvocationTree) lambda.parent().parent();
+    Type mapType = mapMethod.symbolType();
+    assertThat(mapType.is("java.util.stream.Stream")).as("Found "+ mapType +" instead of Stream").isTrue();
+    assertThat(((JavaType) mapType).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String[]")).isTrue();
+
   }
 
 }
