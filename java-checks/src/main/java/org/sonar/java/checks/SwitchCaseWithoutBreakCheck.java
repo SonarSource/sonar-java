@@ -19,27 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BreakStatementTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.ThrowStatementTree;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 @Rule(key = "S128")
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-
-  private final Deque<CaseGroupTree> invalidCaseGroups = new ArrayDeque<>();
-  private CaseGroupTree currentTree = null;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -48,46 +44,79 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
   }
 
   @Override
-  public void visitSwitchStatement(SwitchStatementTree tree) {
-    scan(tree.expression());
-    if (!tree.cases().isEmpty()){
-      scan(tree.cases().subList(0, tree.cases().size() - 1));
+  public void visitSwitchStatement(SwitchStatementTree switchStatement) {
+      switchStatement.cases().stream()
+          // Exclude the last case as stated in RSPEC. This also excludes switches with no or a single case group.
+          .limit(Math.max(0, switchStatement.cases().size() - 1))
+          .forEach(caseGroup -> {
+            // Assign issues to the last label in the group
+            CaseLabelTree caseLabel = caseGroup.labels().get(caseGroup.labels().size() - 1);
+
+            // Reserve the body as commonly the unconditional exit will be at the end of the body.
+            if (Lists.reverse(caseGroup.body()).stream().noneMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit)) {
+              context.reportIssue(this, caseLabel, "End this switch case with an unconditional break, return or throw statement.");
+            }
+          });
+
+    super.visitSwitchStatement(switchStatement);
+  }
+
+  private static boolean isUnconditionalExit(Tree syntaxNode) {
+    if (syntaxNode.is(
+        Tree.Kind.BREAK_STATEMENT,
+        Tree.Kind.THROW_STATEMENT,
+        Tree.Kind.RETURN_STATEMENT,
+        // The continue statement also unconditionally exits the switch-statement.
+        Tree.Kind.CONTINUE_STATEMENT)) {
+      // Exit found
+      return true;
+    }
+
+    if (!syntaxNode.is(Tree.Kind.BLOCK, Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT)) {
+      // Not a block of code or a condition, not a possible exit.
+      return false;
+    }
+
+    if (syntaxNode.is(Tree.Kind.BLOCK)) {
+      // Tests if the block contains an unconditional statement.
+      BlockTree block = (BlockTree) syntaxNode;
+      return block.body().stream().anyMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit);
+    } else if (syntaxNode.is(Tree.Kind.TRY_STATEMENT)) {
+      return isUnconditionalExitInTryCatchConstruct((TryStatementTree) syntaxNode);
+    } else {
+      return isUnconditionalExitInIfStatement((IfStatementTree) syntaxNode);
     }
   }
 
-  @Override
-  public void visitCaseGroup(CaseGroupTree tree) {
-    currentTree = tree;
-    invalidCaseGroups.push(tree);
-
-    super.visitCaseGroup(tree);
-
-    if (invalidCaseGroups.remove(tree)) {
-      context.reportIssue(this, Iterables.getLast(tree.labels()), "End this switch case with an unconditional break, return or throw statement.");
+  private static boolean isUnconditionalExitInTryCatchConstruct(TryStatementTree tryStatement) {
+    if (!isUnconditionalExit(tryStatement.block())) {
+      return false;
     }
-    currentTree = invalidCaseGroups.peek();
+
+    // If the try-block exits unconditionally then all catch blocks must do so as well.
+    // When they don't the try-catch block is not a valid unconditional exit.
+    return tryStatement.catches().stream().allMatch(catchTree -> isUnconditionalExit(catchTree.block()));
   }
 
-  @Override
-  public void visitBreakStatement(BreakStatementTree tree) {
-    super.visitBreakStatement(tree);
-    markSwitchCasesAsCompliant();
+  private static boolean isUnconditionalExitInIfStatement(IfStatementTree ifStatement) {
+    if (!isUnconditionalExitInStatement(ifStatement.thenStatement())) {
+      return false;
+    }
+
+    StatementTree elseStatement = ifStatement.elseStatement();
+    if (elseStatement == null) {
+      // Without else this is a conditional exit.
+      return false;
+    }
+
+    return isUnconditionalExitInStatement(elseStatement);
   }
 
-  @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    super.visitReturnStatement(tree);
-    markSwitchCasesAsCompliant();
+  private static boolean isUnconditionalExitInStatement(StatementTree statementTree) {
+    if (statementTree.is(Tree.Kind.IF_STATEMENT)) {
+      return isUnconditionalExitInIfStatement((IfStatementTree) statementTree);
+    } else {
+      return isUnconditionalExit(statementTree);
+    }
   }
-
-  @Override
-  public void visitThrowStatement(ThrowStatementTree tree) {
-    super.visitThrowStatement(tree);
-    markSwitchCasesAsCompliant();
-  }
-
-  private void markSwitchCasesAsCompliant() {
-    invalidCaseGroups.remove(currentTree);
-  }
-
 }

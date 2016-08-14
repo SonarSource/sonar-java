@@ -45,6 +45,10 @@
 3660,
 3735,
 ],
+'jdk6:java/awt/geom/Path2D.java':[
+641,
+1366,
+],
 'jdk6:java/io/FilePermission.java':[
 482,
 ],
@@ -55,12 +59,11 @@
 115,
 157,
 ],
+'jdk6:java/net/PlainDatagramSocketImpl.java':[
+335,
+],
 'jdk6:java/net/SocketPermission.java':[
 557,
-],
-'jdk6:java/text/DecimalFormat.java':[
-1998,
-2048,
 ],
 'jdk6:java/text/MessageFormat.java':[
 465,
@@ -69,8 +72,8 @@
 289,
 ],
 'jdk6:java/util/regex/Pattern.java':[
-1803,
-2208,
+1879,
+1967,
 2643,
 ],
 }
