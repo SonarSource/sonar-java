@@ -37,6 +37,7 @@ import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
@@ -108,7 +109,7 @@ public abstract class AbstractJavaClasspath {
       if (Files.isDirectory(filePath)) {
         return getMatchesInDir(filePath, libraryProperty);
       }
-    } catch (IOException e) {
+    } catch (IOException | InvalidPathException e) {
       // continue
     }
 
@@ -149,7 +150,7 @@ public abstract class AbstractJavaClasspath {
   private static Set<File> getMatchingDirs(String pattern, Path dir) throws IOException {
     if (!StringUtils.isEmpty(pattern)) {
       // find all dirs and subdirs that match the pattern
-      PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + dir + File.separator + FilenameUtils.separatorsToSystem(pattern));
+      PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern));
       return new DirFinder().find(dir, matcher);
     } else {
       // no pattern, so we just return dir
@@ -172,12 +173,17 @@ public abstract class AbstractJavaClasspath {
       return Collections.singleton(dirPath.toFile());
     }
   }
+  
+  private static String getGlob(Path dir, String pattern) {
+    // globs work with unix separators
+    return "glob:" + FilenameUtils.separatorsToUnix(dir.toString()) + "/" + FilenameUtils.separatorsToUnix(pattern);
+  }
 
   private static Set<File> getMatchingLibraries(String pattern, Path dir) throws IOException {
     Set<File> matches = new HashSet<>();
     Set<File> dirs = getMatchingDirs(pattern, dir);
 
-    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + dir + File.separator + FilenameUtils.separatorsToSystem(pattern));
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern));
     for (File d : dirs) {
       matches.addAll(getLibs(d.toPath()));
     }
