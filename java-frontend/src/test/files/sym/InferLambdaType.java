@@ -2,7 +2,7 @@ class InferedLambdaType {
 
     private int foo = 42; // FP on Unused private field
 
-    private static void staticPrint(String s) { /* do something */ } // FP on Unused private method
+    private static String staticPrint(String s) { return s+"  "+s; } // FP on Unused private method
 
     public void bar(java.util.Collection<String> data) {
 
@@ -17,5 +17,9 @@ class InferedLambdaType {
             // do something
           }
         });
+
+      data.stream()
+        .map(InferedLambdaType::staticPrint)
+        .forEach(s2 -> System.out.println(s2.length()));
     }
 }
