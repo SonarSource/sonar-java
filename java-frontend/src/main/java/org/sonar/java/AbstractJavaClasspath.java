@@ -20,32 +20,33 @@
 package org.sonar.java;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.OrFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.utils.WildcardPattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.util.Collection;
-import java.util.Iterator;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.DirectoryStream.Filter;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-
-import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
+import java.util.Set;
 
 @BatchSide
 public abstract class AbstractJavaClasspath {
@@ -55,6 +56,7 @@ public abstract class AbstractJavaClasspath {
   protected final Settings settings;
   protected final FileSystem fs;
   private final InputFile.Type fileType;
+  private static final Path[] STANDARD_CLASSES_DIRS = {Paths.get("target", "classes"), Paths.get("target", "test-classes")};
 
   protected List<File> binaries;
   protected List<File> elements;
@@ -70,8 +72,8 @@ public abstract class AbstractJavaClasspath {
 
   protected abstract void init();
 
-  protected List<File> getFilesFromProperty(String property) {
-    List<File> result = Lists.newArrayList();
+  protected Set<File> getFilesFromProperty(String property) {
+    Set<File> result = new HashSet<>();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
@@ -79,7 +81,7 @@ public abstract class AbstractJavaClasspath {
       boolean hasJavaSources = hasJavaSources();
       boolean isLibraryProperty = property.endsWith("libraries");
       for (String pathPattern : fileNames) {
-        List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, isLibraryProperty);
+        Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
           LOG.error("Invalid value for " + property);
           String message = "No files nor directories matching '" + pathPattern + "'";
@@ -95,79 +97,150 @@ public abstract class AbstractJavaClasspath {
     return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
   }
 
+  private static Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {
 
-  private static List<File> getFilesForPattern(File baseDir, String pathPattern, boolean libraryProperty) {
-    String dirPath = pathPattern;
-    String filePattern;
-    if(pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip")) {
-      File file = resolvePath(baseDir, pathPattern);
-      if (file.isFile()) {
-        return Lists.newArrayList(file);
+    try {
+      Path filePath = resolvePath(baseDir, pathPattern);
+
+      if ((pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip")) && Files.isRegularFile(filePath)) {
+        return Collections.singleton(filePath.toFile());
       }
+      if (Files.isDirectory(filePath)) {
+        return getMatchesInDir(filePath, libraryProperty);
+      }
+    } catch (IOException e) {
+      // continue
     }
+
+    String dirPath;
+    String fileNamePattern;
+
     int wildcardIndex = pathPattern.indexOf('*');
     if (wildcardIndex >= 0) {
       dirPath = pathPattern.substring(0, wildcardIndex);
+    } else {
+      dirPath = pathPattern;
     }
+
     int lastPathSeparator = Math.max(dirPath.lastIndexOf('/'), dirPath.lastIndexOf('\\'));
     if (lastPathSeparator == -1) {
       dirPath = ".";
-      filePattern = pathPattern;
+      fileNamePattern = pathPattern;
     } else {
       dirPath = pathPattern.substring(0, lastPathSeparator);
-      filePattern = pathPattern.substring(lastPathSeparator + 1);
+      fileNamePattern = pathPattern.substring(lastPathSeparator + 1);
     }
-    File dir = resolvePath(baseDir, dirPath);
-    if (!dir.isDirectory()) {
-      return Lists.newArrayList();
+
+    Path dir = resolvePath(baseDir, dirPath);
+    if (!Files.isDirectory(dir)) {
+      return Collections.emptySet();
     }
-    return getMatchingFiles(filePattern, dir, libraryProperty);
+    try {
+      if (libraryProperty) {
+        return getMatchingLibraries(fileNamePattern, dir);
+      } else {
+        return getMatchingDirs(fileNamePattern, dir);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
-  private static List<File> getMatchingFiles(String pattern, File dir, boolean libraryProperty) {
-    WilcardPatternFileFilter wilcardPatternFileFilter = new WilcardPatternFileFilter(dir, pattern);
-    FileFilter fileFilter = wilcardPatternFileFilter;
-    List<File> files = Lists.newArrayList();
-    if (libraryProperty) {
-      if (pattern.endsWith("*")) {
-        fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
-            new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
-      }
-      //find jar and zip files
-      files.addAll(Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE)));
+  private static Set<File> getMatchingDirs(String pattern, Path dir) throws IOException {
+    if (!StringUtils.isEmpty(pattern)) {
+      // find all dirs and subdirs that match the pattern
+      PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + dir + File.separator + FilenameUtils.separatorsToSystem(pattern));
+      return new DirFinder().find(dir, matcher);
+    } else {
+      // no pattern, so we just return dir
+      return Collections.singleton(dir.toFile());
     }
-    //find directories matching pattern.
-    IOFileFilter subdirectories = pattern.isEmpty() ? FalseFileFilter.FALSE : TrueFileFilter.TRUE;
-    Collection<File> dirs = FileUtils.listFilesAndDirs(dir, new AndFileFilter(wilcardPatternFileFilter, DirectoryFileFilter.DIRECTORY), subdirectories);
-    //remove searching dir from matching as listFilesAndDirs always includes it in the list see https://issues.apache.org/jira/browse/IO-328
-    if (!pattern.isEmpty()) {
-      dirs.remove(dir);
-      //remove subdirectories that were included during search
-      Iterator<File> iterator = dirs.iterator();
-      while (iterator.hasNext()) {
-        File matchingDir = iterator.next();
-        if (!wilcardPatternFileFilter.accept(matchingDir)) {
-          iterator.remove();
+  }
+
+  private static Set<File> getMatchesInDir(Path dirPath, boolean isLibraryProperty) throws IOException {
+    if (isLibraryProperty) {
+      for (Path end : STANDARD_CLASSES_DIRS) {
+        if (dirPath.endsWith(end)) {
+          // don't scan these, as they should only contain .classes with paths starting from the root
+          return Collections.singleton(dirPath.toFile());
         }
       }
+      Set<File> matches = new LibraryFinder().find(dirPath, p -> true);
+      matches.add(dirPath.toFile());
+      return matches;
+    } else {
+      return Collections.singleton(dirPath.toFile());
+    }
+  }
+
+  private static Set<File> getMatchingLibraries(String pattern, Path dir) throws IOException {
+    Set<File> matches = new HashSet<>();
+    Set<File> dirs = getMatchingDirs(pattern, dir);
+
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + dir + File.separator + FilenameUtils.separatorsToSystem(pattern));
+    for (File d : dirs) {
+      matches.addAll(getLibs(d.toPath()));
     }
 
-    if (libraryProperty) {
-      for (File directory : dirs) {
-        files.addAll(getMatchingFiles("**/*.jar", directory, true));
-        files.addAll(getMatchingFiles("**/*.zip", directory, true));
-      }
+    matches.addAll(dirs);
+    matches.addAll(new LibraryFinder().find(dir, matcher));
+
+    return matches;
+  }
+
+  private static List<File> getLibs(Path dir) throws IOException {
+    Filter<Path> filter = path -> {
+      String name = path.getFileName().toString();
+      return name.endsWith(".jar") || name.endsWith(".zip");
+    };
+
+    List<File> files = new ArrayList<>();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, filter)) {
+      stream.forEach(p -> files.add(p.toFile()));
     }
-    files.addAll(dirs);
     return files;
   }
 
-  private static File resolvePath(File baseDir, String fileName) {
-    File file = new File(fileName);
-    if (!file.isAbsolute()) {
-      file = new File(baseDir, fileName);
+  private abstract static class AbstractFileFinder extends SimpleFileVisitor<Path> {
+    protected Set<File> matchedFiles = new HashSet<>();
+    protected PathMatcher matcher;
+
+    Set<File> find(Path dir, PathMatcher matcher) throws IOException {
+      this.matcher = matcher;
+      Files.walkFileTree(dir, this);
+      return matchedFiles;
     }
-    return file;
+  }
+
+  private static class DirFinder extends AbstractFileFinder {
+    @Override
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+      if (matcher.matches(dir)) {
+        matchedFiles.add(dir.toFile());
+      }
+
+      return FileVisitResult.CONTINUE;
+    }
+  }
+
+  private static class LibraryFinder extends AbstractFileFinder {
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
+      String name = file.getFileName().toString();
+      if ((name.endsWith(".jar") || name.endsWith(".zip")) && matcher.matches(file)) {
+        matchedFiles.add(file.toFile());
+      }
+
+      return FileVisitResult.CONTINUE;
+    }
+  }
+
+  private static Path resolvePath(Path baseDir, String fileName) {
+    Path filePath = Paths.get(fileName);
+    if (!filePath.isAbsolute()) {
+      filePath = baseDir.resolve(fileName);
+    }
+    return filePath.normalize();
   }
 
   public List<File> getElements() {
@@ -178,27 +251,5 @@ public abstract class AbstractJavaClasspath {
   public List<File> getBinaryDirs() {
     init();
     return binaries;
-  }
-
-  private static class WilcardPatternFileFilter implements IOFileFilter {
-    private File baseDir;
-    private WildcardPattern wildcardPattern;
-
-    public WilcardPatternFileFilter(File baseDir, String wildcardPattern) {
-      this.baseDir = baseDir;
-      this.wildcardPattern = WildcardPattern.create(FilenameUtils.separatorsToSystem(wildcardPattern), File.separator);
-    }
-
-    @Override
-    public boolean accept(File dir, String name) {
-      return accept(new File(dir, name));
-    }
-
-    @Override
-    public boolean accept(File file) {
-      String path = file.getAbsolutePath();
-      path = path.substring(baseDir.getAbsolutePath().length() + 1);
-      return wildcardPattern.match(path);
-    }
   }
 }

@@ -64,10 +64,11 @@ public class JavaTestClasspathTest {
   public void libraries_should_accept_path_ending_with_wildcard() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "lib/*");
     javaTestClasspath = createJavaClasspath();
-    assertThat(javaTestClasspath.getElements()).hasSize(2);
+    assertThat(javaTestClasspath.getElements()).hasSize(3);
     assertThat(javaTestClasspath.getElements().get(0)).exists();
     assertThat(javaTestClasspath.getElements().get(1)).exists();
-    assertThat(javaTestClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar");
+    assertThat(javaTestClasspath.getElements().get(2)).exists();
+    assertThat(javaTestClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "target");
   }
 
   @Test
