@@ -1,6 +1,16 @@
-<p>When the return value of a function call contain the operation status code, this value should be tested to make sure the operation completed successfully.</p>
-<p>This rule raises an issue when the return values of <code>java.io.File.delete()</code> or <code>java.util.concurrent.locks.Lock.tryLock()</code> are ignored.</p>
-
+<p>When the return value of a function call contain the operation status code, this value should be tested to make sure the operation completed
+successfully.</p>
+<p>This rule raises an issue when the return values of the following are ignored:</p>
+<ul>
+  <li> <code>java.io.File</code> operations that return a status code </li>
+  <li> <code>Iterator.hasNext()</code> </li>
+  <li> <code>Enumeration.hasMoreElements()</code> </li>
+  <li> <code>Lock.tryLock()</code> </li>
+  <li> non-void <code>Condition.await*</code> methods </li>
+  <li> <code>CountDownLatch.await(long, TimeUnit)</code> </li>
+  <li> <code>Semaphore.tryAcquire</code> </li>
+  <li> <code>BlockingQueue</code>: <code>offer</code>, <code>remove</code>, <code>drainTo</code>, </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomething(File file, Lock lock) {
