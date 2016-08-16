@@ -37,7 +37,7 @@ public class JavaRulesDefinitionTest {
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
 
-    assertThat(repository.name()).isEqualTo("SonarQube");
+    assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
 
