@@ -1153,6 +1153,8 @@ public class SymbolTableTest {
     assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String[]")).isTrue();
 
+    JavaSymbol s2 = result.symbol("s2");
+    assertThat(s2.type.is("java.lang.String")).isTrue();
   }
 
 }

@@ -81,6 +81,7 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -524,34 +525,49 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private void refineLambdaType(LambdaExpressionTreeImpl lambdaExpressionTree, JavaType lambdaType) {
-    JavaType samReturnType = (JavaType) getSamMethod(lambdaType).returnType().type();
+    JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(lambdaType);
+    if(samMethod == null) {
+      return;
+    }
+    JavaType samReturnType = (JavaType) samMethod.returnType().type();
     JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, lambdaType);
     if (lambdaExpressionTree.body().is(Tree.Kind.BLOCK) || capturedReturnType.is("void")) {
       // TODO compute return type for lambda with block and return statements
       return;
     }
     JavaType refinedReturnType = (JavaType) ((AbstractTypedTree) lambdaExpressionTree.body()).symbolType();
-    if (refinedReturnType != capturedReturnType && lambdaType.isParameterized()) {
+    refineType(lambdaExpressionTree, lambdaType, capturedReturnType, refinedReturnType);
+  }
+
+  private void refineType(AbstractTypedTree expression, JavaType expressionType, JavaType capturedReturnType, JavaType refinedReturnType) {
+    if (refinedReturnType != capturedReturnType && expressionType.isParameterized()) {
       // found a lambda return type different from the one infered : update infered type
-      TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
-      for (Map.Entry<TypeVariableJavaType, JavaType> entry : typeSubstitution.substitutionEntries()) {
-        if (entry.getValue() == capturedReturnType) {
-          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(entry.getKey(), refinedReturnType);
-          JavaType refinedLambdaType = parametrizedTypeCache.getParametrizedTypeType(lambdaType.symbol, refinedSubstitution);
-          lambdaExpressionTree.setType(refinedLambdaType);
-          break;
-        }
-      }
+      TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) expressionType).typeSubstitution;
+      typeSubstitution.substitutionEntries().stream()
+        .filter(e -> e.getValue() == capturedReturnType)
+        .findFirst()
+        .ifPresent(e -> {
+          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
+          JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
+          expression.setType(refinedType);
+        });
     }
   }
 
+  @CheckForNull
   private static JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
     for (Symbol member : lambdaType.symbol().memberSymbols()) {
       if (member.isMethodSymbol() && member.isAbstract()) {
         return (JavaSymbol.MethodJavaSymbol) member;
       }
     }
-    throw new IllegalStateException("Method not found in SAM Interface : "+lambdaType.fullyQualifiedName());
+    for (ClassJavaType type : lambdaType.symbol.superTypes()) {
+      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(type);
+      if (samMethod != null) {
+        return samMethod;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -914,13 +930,29 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if("new".equals(methodReferenceTree.method().name())) {
         resolution = resolve.findMethod(methodEnv, getType(methodReferenceTree.expression()), "<init>", samMethodArgs);
         associateReference(methodReferenceTree.method(), resolution.symbol());
-      } else {
-        resolveMethodSymbol(methodReferenceTree.method(), methodEnv, samMethodArgs, ImmutableList.<JavaType>of());
+        return;
+      }
+      resolveMethodSymbol(methodReferenceTree.method(), methodEnv, samMethodArgs, ImmutableList.<JavaType>of());
+      JavaType methodRefType = (JavaType) methodRefTree.symbolType();
+      if (methodRefType.isUnknown() || methodRefType.isTagged(JavaType.DEFERRED)) {
+        return;
+      }
+      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(methodRefType);
+      if(samMethod == null) {
+        return;
+      }
+      JavaType samReturnType = (JavaType) samMethod.returnType().type();
+      JavaType methodType = (JavaType) methodRefTree.method().symbolType();
+      if(methodType.isTagged(JavaType.METHOD)) {
+        JavaType refinedReturnType = ((MethodJavaType) methodType).resultType;
+        JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
+        refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
       }
     } else {
       registerType(methodRefTree, symbols.deferedType(methodRefTree));
     }
   }
+
 
   @Override
   public void visitOther(Tree tree) {
