@@ -51,7 +51,7 @@ public class JavaRulesDefinition implements RulesDefinition {
   public void define(Context context) {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
-      .setName("SonarQube");
+      .setName("SonarAnalyzer");
     List<Class> checks = CheckList.getChecks();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
     for (Class ruleClass : checks) {
