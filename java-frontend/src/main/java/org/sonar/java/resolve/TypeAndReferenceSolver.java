@@ -993,6 +993,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     final Set<Type> types = new HashSet<>();
 
     @Override
+    public void visitClass(ClassTree tree) {
+      // skip visiting inner classes : only first level returns are interesting
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip visiting lambdas : only first level returns are interesting
+    }
+
+    @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       ExpressionTree expression = tree.expression();
       if(expression != null && !expression.symbolType().isUnknown()) {

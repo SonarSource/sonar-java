@@ -1132,7 +1132,31 @@ public class SymbolTableTest {
   public void infer_fully_lambda_types() {
     Result result = Result.createFor("InferLambdaType");
 
-    LambdaExpressionTree lambda = ((LambdaExpressionTree) result.symbol("line0").declaration().parent());
+    // Check lambda with a block return type.
+    assertThat(getRSubstitution(result, "line0").is("java.lang.String[]")).isTrue();
+    // Check lambda with a block with multiple return (using lub).
+    assertThat(getRSubstitution(result, "line1").is("java.lang.Number")).isTrue();
+    // Check lambda with a block only throwing.
+    assertThat(getRSubstitution(result, "line2").isTagged(JavaType.WILDCARD)).isTrue();
+    // Check lambda with nested returns
+    assertThat(getRSubstitution(result, "line3").is("java.lang.Integer")).isTrue();
+    // Check one liner lambdas
+    assertThat(getRSubstitution(result, "line").is("java.lang.String[]")).isTrue();
+
+
+    MethodInvocationTree mapMethod = (MethodInvocationTree) result.symbol("line").declaration().parent().parent().parent();
+    Type mapType = mapMethod.symbolType();
+    assertThat(mapType.is("java.util.stream.Stream")).as("Found "+ mapType +" instead of Stream").isTrue();
+    assertThat(((JavaType) mapType).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String[]")).isTrue();
+
+    JavaSymbol sx = result.symbol("sx");
+    assertThat(sx.type.is("java.lang.String")).isTrue();
+  }
+
+  private JavaType getRSubstitution(Result result, String symbolName) {
+    LambdaExpressionTree lambda = ((LambdaExpressionTree) result.symbol(symbolName).declaration().parent());
     JavaType lambdaType = (JavaType) lambda.symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
     assertThat(lambdaType.is("java.util.function.Function")).isTrue();
@@ -1143,65 +1167,7 @@ public class SymbolTableTest {
     assertThat(Tsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
     assertThat(((WildCardType) Tsubstitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
     assertThat(((WildCardType) Tsubstitution).bound.is("java.lang.String")).isTrue();
-    // check that R -> String[]
-    JavaType Rsubstitution = typeSubstitution.substitutedTypes().get(1);
-    assertThat(Rsubstitution.is("java.lang.String[]")).isTrue();
-
-    lambda = ((LambdaExpressionTree) result.symbol("line1").declaration().parent());
-    lambdaType = (JavaType) lambda.symbolType();
-    assertThat(lambdaType.isParameterized()).isTrue();
-    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
-    typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
-    assertThat(typeSubstitution.size()).isEqualTo(2);
-    Tsubstitution = typeSubstitution.substitutedTypes().get(0);
-    // check that T -> ? super String
-    assertThat(Tsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
-    assertThat(((WildCardType) Tsubstitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
-    assertThat(((WildCardType) Tsubstitution).bound.is("java.lang.String")).isTrue();
-    // check that R -> Number
-    Rsubstitution = typeSubstitution.substitutedTypes().get(1);
-    assertThat(Rsubstitution.is("java.lang.Number")).isTrue();
-
-    lambda = ((LambdaExpressionTree) result.symbol("line2").declaration().parent());
-    lambdaType = (JavaType) lambda.symbolType();
-    assertThat(lambdaType.isParameterized()).isTrue();
-    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
-    typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
-    assertThat(typeSubstitution.size()).isEqualTo(2);
-    Tsubstitution = typeSubstitution.substitutedTypes().get(0);
-    // check that T -> ? super String
-    assertThat(Tsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
-    assertThat(((WildCardType) Tsubstitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
-    assertThat(((WildCardType) Tsubstitution).bound.is("java.lang.String")).isTrue();
-    // check that R cannot be infered from thrown exceptions
-    Rsubstitution = typeSubstitution.substitutedTypes().get(1);
-    assertThat(Rsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
-
-
-    lambda = ((LambdaExpressionTree) result.symbol("line").declaration().parent());
-    lambdaType = (JavaType) lambda.symbolType();
-    assertThat(lambdaType.isParameterized()).isTrue();
-    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
-    typeSubstitution = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution;
-    assertThat(typeSubstitution.size()).isEqualTo(2);
-    Tsubstitution = typeSubstitution.substitutedTypes().get(0);
-    // check that T -> ? super String
-    assertThat(Tsubstitution.isTagged(JavaType.WILDCARD)).isTrue();
-    assertThat(((WildCardType) Tsubstitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
-    assertThat(((WildCardType) Tsubstitution).bound.is("java.lang.String")).isTrue();
-    // check that R -> String[]
-    Rsubstitution = typeSubstitution.substitutedTypes().get(1);
-    assertThat(Rsubstitution.is("java.lang.String[]")).isTrue();
-
-    MethodInvocationTree mapMethod = (MethodInvocationTree) lambda.parent().parent();
-    Type mapType = mapMethod.symbolType();
-    assertThat(mapType.is("java.util.stream.Stream")).as("Found "+ mapType +" instead of Stream").isTrue();
-    assertThat(((JavaType) mapType).isParameterized()).isTrue();
-    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes()).hasSize(1);
-    assertThat(((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String[]")).isTrue();
-
-    JavaSymbol s3 = result.symbol("s3");
-    assertThat(s3.type.is("java.lang.String")).isTrue();
+    return typeSubstitution.substitutedTypes().get(1);
   }
 
 }

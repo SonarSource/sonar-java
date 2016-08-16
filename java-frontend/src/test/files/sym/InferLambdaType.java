@@ -27,7 +27,17 @@ class InferedLambdaType {
         .map(line2 -> { throw new IllegalStateException(); })
         .forEach(words -> System.out.println(words));
 
-
+      data.stream()
+        .filter( s3 -> !s3.isEmpty())
+        .map(line3 -> {
+          new Object() {
+            Long foo() {
+              return new Long(0);
+            }
+          };
+          data.stream().map( s -> {return s.split("");});
+          return new Integer(1);
+        }).forEach(words -> System.out.println(words));
 
       data.stream()
         .filter( s -> !s.isEmpty())
@@ -41,6 +51,6 @@ class InferedLambdaType {
 
       data.stream()
         .map(InferedLambdaType::staticPrint)
-        .forEach(s3 -> System.out.println(s3.length()));
+        .forEach(sx -> System.out.println(sx.length()));
     }
 }
