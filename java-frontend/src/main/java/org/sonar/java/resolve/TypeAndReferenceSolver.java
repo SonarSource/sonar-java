@@ -84,8 +84,10 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -531,16 +533,24 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     JavaType samReturnType = (JavaType) samMethod.returnType().type();
     JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, lambdaType);
-    if (lambdaExpressionTree.body().is(Tree.Kind.BLOCK) || capturedReturnType.is("void")) {
-      // TODO compute return type for lambda with block and return statements
+    if (capturedReturnType.is("void") || !lambdaType.isParameterized()) {
       return;
     }
-    JavaType refinedReturnType = (JavaType) ((AbstractTypedTree) lambdaExpressionTree.body()).symbolType();
+    JavaType refinedReturnType = capturedReturnType;
+    if (lambdaExpressionTree.body().is(Tree.Kind.BLOCK)) {
+      LambdaBlockReturnVisitor lambdaBlockReturnVisitor = new LambdaBlockReturnVisitor();
+      lambdaExpressionTree.body().accept(lambdaBlockReturnVisitor);
+      if(!lambdaBlockReturnVisitor.types.isEmpty()) {
+        refinedReturnType = (JavaType) resolve.leastUpperBound(lambdaBlockReturnVisitor.types);
+      }
+    } else {
+      refinedReturnType = (JavaType) ((AbstractTypedTree) lambdaExpressionTree.body()).symbolType();
+    }
     refineType(lambdaExpressionTree, lambdaType, capturedReturnType, refinedReturnType);
   }
 
   private void refineType(AbstractTypedTree expression, JavaType expressionType, JavaType capturedReturnType, JavaType refinedReturnType) {
-    if (refinedReturnType != capturedReturnType && expressionType.isParameterized()) {
+    if (refinedReturnType != capturedReturnType) {
       // found a lambda return type different from the one infered : update infered type
       TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) expressionType).typeSubstitution;
       typeSubstitution.substitutionEntries().stream()
@@ -978,4 +988,26 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
+  private static class LambdaBlockReturnVisitor extends BaseTreeVisitor {
+
+    final Set<Type> types = new HashSet<>();
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip visiting inner classes : only first level returns are interesting
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip visiting lambdas : only first level returns are interesting
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      ExpressionTree expression = tree.expression();
+      if(expression != null && !expression.symbolType().isUnknown()) {
+        types.add(expression.symbolType());
+      }
+    }
+  }
 }
