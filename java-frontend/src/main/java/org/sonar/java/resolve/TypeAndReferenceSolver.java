@@ -543,14 +543,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (refinedReturnType != capturedReturnType && expressionType.isParameterized()) {
       // found a lambda return type different from the one infered : update infered type
       TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) expressionType).typeSubstitution;
-      for (Map.Entry<TypeVariableJavaType, JavaType> entry : typeSubstitution.substitutionEntries()) {
-        if (entry.getValue() == capturedReturnType) {
-          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(entry.getKey(), refinedReturnType);
+      typeSubstitution.substitutionEntries().stream()
+        .filter(e -> e.getValue() == capturedReturnType)
+        .findFirst()
+        .ifPresent(e -> {
+          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
           JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
           expression.setType(refinedType);
-          break;
-        }
-      }
+        });
     }
   }
 
@@ -562,10 +562,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       }
     }
     for (ClassJavaType type : lambdaType.symbol.superTypes()) {
-      for (Symbol member : type.symbol().memberSymbols()) {
-        if (member.isMethodSymbol() && member.isAbstract()) {
-          return (JavaSymbol.MethodJavaSymbol) member;
-        }
+      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(type);
+      if (samMethod != null) {
+        return samMethod;
       }
     }
     return null;
@@ -932,11 +931,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         resolution = resolve.findMethod(methodEnv, getType(methodReferenceTree.expression()), "<init>", samMethodArgs);
         associateReference(methodReferenceTree.method(), resolution.symbol());
         return;
-      } else {
-        resolveMethodSymbol(methodReferenceTree.method(), methodEnv, samMethodArgs, ImmutableList.<JavaType>of());
       }
+      resolveMethodSymbol(methodReferenceTree.method(), methodEnv, samMethodArgs, ImmutableList.<JavaType>of());
       JavaType methodRefType = (JavaType) methodRefTree.symbolType();
-      if (methodRefTree.symbolType().isUnknown() || methodRefType.isTagged(JavaType.DEFERRED)) {
+      if (methodRefType.isUnknown() || methodRefType.isTagged(JavaType.DEFERRED)) {
         return;
       }
       JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(methodRefType);
@@ -944,10 +942,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         return;
       }
       JavaType samReturnType = (JavaType) samMethod.returnType().type();
-      JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
       JavaType methodType = (JavaType) methodRefTree.method().symbolType();
       if(methodType.isTagged(JavaType.METHOD)) {
         JavaType refinedReturnType = ((MethodJavaType) methodType).resultType;
+        JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
         refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
       }
     } else {
