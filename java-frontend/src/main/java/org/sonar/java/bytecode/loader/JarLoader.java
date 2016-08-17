@@ -19,8 +19,7 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,20 +65,25 @@ class JarLoader implements Loader {
 
   @Override
   public byte[] loadBytes(String name) {
-    InputStream is = null;
     try {
       ZipEntry entry = jarFile.getEntry(name);
       if (entry == null) {
         return new byte[0];
       }
-      is = jarFile.getInputStream(entry);
-      return IOUtils.toByteArray(is);
+
+      try (InputStream is = jarFile.getInputStream(entry)) {
+        byte[] buffer = new byte[8192];
+        ByteArrayOutputStream array = new ByteArrayOutputStream((int) entry.getSize());
+        int i;
+        while ((i = is.read(buffer)) >= 0) {
+          array.write(buffer, 0, i);
+        }
+        return array.toByteArray();
+      }
     } catch (IOException e) {
       // TODO Godin: not sure that we should silently ignore exception here,
       // e.g. it can be thrown if file corrupted
       return new byte[0];
-    } finally {
-      IOUtils.closeQuietly(is);
     }
   }
 

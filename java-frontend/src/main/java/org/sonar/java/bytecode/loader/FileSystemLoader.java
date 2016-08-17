@@ -19,35 +19,33 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 class FileSystemLoader implements Loader {
 
-  private File baseDir;
+  private Path baseDirPath;
 
   public FileSystemLoader(File baseDir) {
     if (baseDir == null) {
       throw new IllegalArgumentException("baseDir can't be null");
     }
-    this.baseDir = baseDir;
+    this.baseDirPath = baseDir.toPath();
   }
 
   @Override
   public URL findResource(String name) {
-    if (baseDir == null) {
+    if (baseDirPath == null) {
       throw new IllegalStateException("Loader closed");
     }
-    File file = new File(baseDir, name);
-    if (file.exists() && file.isFile()) {
+    Path filePath = baseDirPath.resolve(name);
+    if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
       try {
-        return file.toURI().toURL();
+        return filePath.toUri().toURL();
       } catch (MalformedURLException e) {
         return null;
       }
@@ -57,15 +55,16 @@ class FileSystemLoader implements Loader {
 
   @Override
   public byte[] loadBytes(String name) {
-    if (baseDir == null) {
+    if (baseDirPath == null) {
       throw new IllegalStateException("Loader closed");
     }
-    File file = new File(baseDir, name);
-    if (!file.exists()) {
+    Path filePath = baseDirPath.resolve(name);
+    if (!Files.exists(baseDirPath)) {
       return new byte[0];
     }
-    try (InputStream is = new FileInputStream(file)) {
-      return IOUtils.toByteArray(is);
+
+    try {
+      return Files.readAllBytes(filePath);
     } catch (IOException e) {
       return new byte[0];
     }
@@ -73,7 +72,7 @@ class FileSystemLoader implements Loader {
 
   @Override
   public void close() {
-    baseDir = null;
+    baseDirPath = null;
   }
 
 }

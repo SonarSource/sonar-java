@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.base.Splitter;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -53,6 +52,8 @@ import java.util.Set;
 public abstract class AbstractJavaClasspath {
 
   private static final char SEPARATOR = ',';
+  private static final char UNIX_SEPARATOR = '/';
+  private static final char WINDOWS_SEPARATOR = '\\';
   private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);
   protected final Settings settings;
   protected final FileSystem fs;
@@ -123,7 +124,7 @@ public abstract class AbstractJavaClasspath {
       dirPath = pathPattern;
     }
 
-    int lastPathSeparator = Math.max(dirPath.lastIndexOf('/'), dirPath.lastIndexOf('\\'));
+    int lastPathSeparator = Math.max(dirPath.lastIndexOf(UNIX_SEPARATOR), dirPath.lastIndexOf(WINDOWS_SEPARATOR));
     if (lastPathSeparator == -1) {
       dirPath = ".";
       fileNamePattern = pathPattern;
@@ -173,10 +174,14 @@ public abstract class AbstractJavaClasspath {
       return Collections.singleton(dirPath.toFile());
     }
   }
-  
+
+  private static String separatorsToUnix(final String path) {
+    return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR);
+  }
+
   private static String getGlob(Path dir, String pattern) {
     // globs work with unix separators
-    return "glob:" + FilenameUtils.separatorsToUnix(dir.toString()) + "/" + FilenameUtils.separatorsToUnix(pattern);
+    return "glob:" + separatorsToUnix(dir.toString()) + UNIX_SEPARATOR + separatorsToUnix(pattern);
   }
 
   private static Set<File> getMatchingLibraries(String pattern, Path dir) throws IOException {
