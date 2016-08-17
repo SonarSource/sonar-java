@@ -51,6 +51,7 @@ public class JavaClasspathTest {
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
   private String guavaJarPath;
+  private String fakeGuavaJarPath;
 
   @BeforeClass
   public static void setUp() {
@@ -65,6 +66,7 @@ public class JavaClasspathTest {
     new MavenLocator(ORCHESTRATOR.getConfiguration()).copyToDirectory(guava, subSubFolder);
 
     guavaJarPath = new File(subSubFolder.getAbsolutePath(), guava.getFilename()).getAbsolutePath();
+    fakeGuavaJarPath = new File(new File(TestUtils.projectDir("dit-check"), "lib"), "fake-guava-1.0.jar").getAbsolutePath();
   }
 
   @Before
@@ -105,7 +107,25 @@ public class JavaClasspathTest {
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(2);
   }
-
+  
+  @Test
+  public void should_keep_order_libs() {
+    SonarScanner runner = ditProjectSonarRunner();
+    runner.setProperty("sonar.java.binaries", "target/classes");
+    runner.setProperty("sonar.java.libraries", guavaJarPath + "," + fakeGuavaJarPath);
+    runner.setProperty("sonar.verbose", "true");
+    ORCHESTRATOR.executeBuild(runner);
+    assertThat(getNumberOfViolations()).isEqualTo(2);
+    
+    ORCHESTRATOR.resetData();
+    
+    runner = ditProjectSonarRunner();
+    runner.setProperty("sonar.java.binaries", "target/classes");
+    runner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPath);
+    runner.setProperty("sonar.verbose", "true");
+    ORCHESTRATOR.executeBuild(runner);
+    assertThat(getNumberOfViolations()).isEqualTo(1);
+  }
 
   @Test
   public void should_support_the_old_binaries_and_libraries_properties() {

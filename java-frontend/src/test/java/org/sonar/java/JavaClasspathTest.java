@@ -120,6 +120,17 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(2)).exists();
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "target");
   }
+  
+  @Test
+  public void libraries_should_keep_order() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/world.jar,lib/hello.jar,lib/target/classes/*");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+    assertThat(javaClasspath.getElements().get(1)).exists();
+    assertThat(javaClasspath.getElements().get(2)).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").containsExactly("world.jar", "hello.jar", "foo.jar");
+  }
 
   @Test
   public void libraries_should_accept_relative_paths() throws Exception {
