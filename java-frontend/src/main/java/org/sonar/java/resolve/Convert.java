@@ -53,7 +53,10 @@ public class Convert {
   public static String innerClassName(String enclosingClassName, String shortName) {
     Preconditions.checkArgument(!enclosingClassName.isEmpty(), "Enclosing class name should not be empty : " + shortName);
     int indexEnclosing = shortName.indexOf(enclosingClassName);
-    Preconditions.checkState(indexEnclosing > -1, "Error short name does not include outerclass name : " + shortName + " -- " + enclosingClassName);
+    if (indexEnclosing == -1) {
+      // short name does not contain enclosing class name, might happen when a library is obfuscated
+      return shortName;
+    }
     Preconditions.checkState(shortName.substring(indexEnclosing + enclosingClassName.length()).charAt(0) == '$');
     return shortName.substring(indexEnclosing + enclosingClassName.length() + 1);
   }
