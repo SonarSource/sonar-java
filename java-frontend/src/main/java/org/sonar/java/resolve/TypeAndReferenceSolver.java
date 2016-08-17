@@ -247,7 +247,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if(resolution != null) {
       inferArgumentTypes(argTypes, resolution);
       List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
-      if(parameterTypes != argTypes) {
+      if(!parameterTypes.equals(argTypes)) {
         IdentifierTree identifier;
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
