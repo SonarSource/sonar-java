@@ -502,4 +502,10 @@ public class BytecodeCompleterTest {
     assertThat(resultType).isInstanceOf(ParametrizedTypeJavaType.class);
 
   }
+
+  @Test
+  public void inner_class_obfuscated() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("ChartDirector.Layer");
+    assertThat(clazz.memberSymbols().stream().anyMatch(s-> s.name().equals("fj"))).isTrue();
+  }
 }
