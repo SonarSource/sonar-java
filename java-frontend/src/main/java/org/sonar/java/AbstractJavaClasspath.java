@@ -45,7 +45,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public abstract class AbstractJavaClasspath {
   protected abstract void init();
 
   protected Set<File> getFilesFromProperty(String property) {
-    Set<File> result = new HashSet<>();
+    Set<File> result = new LinkedHashSet<>();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
@@ -180,7 +180,7 @@ public abstract class AbstractJavaClasspath {
   }
 
   private static Set<File> getMatchingLibraries(String pattern, Path dir) throws IOException {
-    Set<File> matches = new HashSet<>();
+    Set<File> matches = new LinkedHashSet<>();
     Set<File> dirs = getMatchingDirs(pattern, dir);
 
     PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern));
@@ -208,7 +208,7 @@ public abstract class AbstractJavaClasspath {
   }
 
   private abstract static class AbstractFileFinder extends SimpleFileVisitor<Path> {
-    protected Set<File> matchedFiles = new HashSet<>();
+    protected Set<File> matchedFiles = new LinkedHashSet<>();
     protected PathMatcher matcher;
 
     Set<File> find(Path dir, PathMatcher matcher) throws IOException {
