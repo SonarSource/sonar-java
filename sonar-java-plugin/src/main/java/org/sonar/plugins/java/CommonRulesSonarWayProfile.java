@@ -20,12 +20,12 @@
 package org.sonar.plugins.java;
 
 import com.google.common.base.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.profiles.XMLProfileParser;
 import org.sonar.api.utils.ValidationMessages;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -39,13 +39,16 @@ public class CommonRulesSonarWayProfile extends ProfileDefinition {
 
   @Override
   public RulesProfile createProfile(ValidationMessages validationMessages) {
-    InputStream input = getClass().getResourceAsStream("/org/sonar/plugins/java/common_rules_sonar_way.xml");
-    InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8);
-    try {
-      return parser.parse(reader, validationMessages);
-    } finally {
-      IOUtils.closeQuietly(reader);
+    RulesProfile rulesProfile = null;
+    
+    try (InputStream input = getClass().getResourceAsStream("/org/sonar/plugins/java/common_rules_sonar_way.xml");
+      InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8)) {
+      rulesProfile = parser.parse(reader, validationMessages);
+    } catch (IOException e) {
+      // close Quietly
     }
+    
+    return rulesProfile;
   }
 
 }

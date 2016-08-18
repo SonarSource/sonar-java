@@ -51,7 +51,7 @@ public class SquidClassLoaderTest {
    */
   @Test
   public void shouldBeIsolated() throws Exception {
-    classLoader = new SquidClassLoader(Collections.EMPTY_LIST);
+    classLoader = new SquidClassLoader(Collections.emptyList());
     assertThat(classLoader.loadClass("java.lang.Integer")).isNotNull();
     assertThat(classLoader.getResource("java/lang/Integer.class")).isNotNull();
     thrown.expect(ClassNotFoundException.class);

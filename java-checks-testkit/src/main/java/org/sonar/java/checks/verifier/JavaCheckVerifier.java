@@ -23,7 +23,6 @@ import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Fail;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
@@ -36,11 +35,19 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 
 /**
  * It is possible to specify the absolute line number on which the issue should appear by appending {@literal "@<line>"} to "Noncompliant".
@@ -206,23 +213,54 @@ public class JavaCheckVerifier extends CheckVerifier {
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
     Collection<File> classpath = Lists.newLinkedList();
-    File testJars = new File(javaCheckVerifier.testJarsDirectory);
-    if (testJars.exists()) {
-      classpath = FileUtils.listFiles(testJars, new String[]{"jar", "zip"}, true);
+    Path testJars = Paths.get(javaCheckVerifier.testJarsDirectory);
+    if (Files.exists(testJars)) {
+      classpath = getFilesRecursively(testJars, new String[] {"jar", "zip"});
     } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(javaCheckVerifier.testJarsDirectory)) {
-      Fail.fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
+      Fail.fail("The directory to be used to extend class path does not exists (" + testJars.toAbsolutePath() + ").");
     }
     classpath.add(new File("target/test-classes"));
     scanFile(filename, check, javaCheckVerifier, classpath);
   }
 
+  private static List<File> getFilesRecursively(Path root, final String[] extensions) {
+    final List<File> files = new ArrayList<>();
+
+    FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
+        for (String extension : extensions) {
+          if (filePath.toString().endsWith("." + extension)) {
+            files.add(filePath.toFile());
+            break;
+          }
+        }
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        return FileVisitResult.CONTINUE;
+      }
+    };
+
+    try {
+      Files.walkFileTree(root, visitor);
+    } catch (IOException e) {
+      // we already ignore errors in the visitor
+    }
+
+    return files;
+  }
+
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
     scanFile(filename, check, javaCheckVerifier, classpath, true);
   }
+
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath, boolean withSemantic) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
     VisitorsBridgeForTests visitorsBridge;
-    if(withSemantic) {
+    if (withSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
     } else {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector));
