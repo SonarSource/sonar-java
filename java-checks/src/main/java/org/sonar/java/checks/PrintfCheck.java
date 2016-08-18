@@ -58,7 +58,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withNoParameterConstraint();
   private static final MethodMatcher TO_STRING = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("toString");
-  private static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,.*)?\\}");
+  private static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -93,10 +93,10 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
     if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatStringTree).value());
-      if (!isMessageFormat) {
-        handlePrintfFormat(mit, formatString, args);
-      } else {
+      if (isMessageFormat) {
         handleMessageFormat(mit, formatString, args);
+      } else {
+        handlePrintfFormat(mit, formatString, args);
       }
     } else if (isConcatenationOnSameLine(formatStringTree)) {
       reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
