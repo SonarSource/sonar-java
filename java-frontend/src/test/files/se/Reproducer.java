@@ -163,4 +163,9 @@ class A {
       default:;
     }
   }
+
+  boolean foo(boolean foo) {
+    boolean identifier = true;
+    return (boolean) !identifier && foo; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+  }
 }
