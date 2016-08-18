@@ -6,6 +6,7 @@
     "constantCost": "2min"
   },
   "tags": [
+    "redundant",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

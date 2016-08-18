@@ -9,5 +9,5 @@
     "tests",
     "clumsy"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

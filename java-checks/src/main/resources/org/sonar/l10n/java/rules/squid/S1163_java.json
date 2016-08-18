@@ -11,5 +11,5 @@
     "cert",
     "suspicious"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Major"
 }

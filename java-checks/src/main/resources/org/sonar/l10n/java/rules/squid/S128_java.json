@@ -7,6 +7,7 @@
   },
   "tags": [
     "cwe",
+    "bug",
     "misra",
     "cert",
     "suspicious"

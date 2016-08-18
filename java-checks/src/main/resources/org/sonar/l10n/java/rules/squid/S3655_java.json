@@ -9,5 +9,5 @@
     "cwe",
     "bug"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Major"
 }

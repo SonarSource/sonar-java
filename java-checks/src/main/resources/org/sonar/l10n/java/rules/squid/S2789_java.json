@@ -9,5 +9,5 @@
     "bug",
     "java8"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

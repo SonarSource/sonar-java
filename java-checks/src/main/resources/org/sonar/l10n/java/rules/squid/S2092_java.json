@@ -11,5 +11,5 @@
     "owasp-a6",
     "owasp-a2"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

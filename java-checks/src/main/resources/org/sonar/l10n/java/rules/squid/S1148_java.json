@@ -9,5 +9,5 @@
     "error-handling",
     "security"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

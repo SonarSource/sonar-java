@@ -6,7 +6,8 @@
     "constantCost": "20min"
   },
   "tags": [
-    "performance"
+    "performance",
+    "bug"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

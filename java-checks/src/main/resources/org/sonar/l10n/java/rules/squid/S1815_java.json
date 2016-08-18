@@ -1,6 +1,6 @@
 {
   "title": "Unused protected methods should be removed",
-  "status": "deprecated",
+  "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
@@ -8,5 +8,5 @@
   "tags": [
     "unused"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

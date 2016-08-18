@@ -6,6 +6,7 @@
     "constantCost": "20min"
   },
   "tags": [
+    "bug",
     "suspicious"
   ],
   "defaultSeverity": "Major"

@@ -7,8 +7,8 @@
   },
   "tags": [
     "cwe",
-    "security",
+    "bug",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

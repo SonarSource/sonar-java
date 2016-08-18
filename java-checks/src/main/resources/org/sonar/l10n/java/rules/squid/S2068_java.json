@@ -12,5 +12,5 @@
     "sans-top25-porous",
     "owasp-a2"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

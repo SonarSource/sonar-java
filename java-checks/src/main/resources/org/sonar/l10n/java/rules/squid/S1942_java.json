@@ -6,7 +6,8 @@
     "constantCost": "2min"
   },
   "tags": [
-    "confusing"
+    "confusing",
+    "redundant"
   ],
   "defaultSeverity": "Minor"
 }

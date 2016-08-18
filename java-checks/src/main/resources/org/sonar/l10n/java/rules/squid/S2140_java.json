@@ -6,7 +6,8 @@
     "constantCost": "5min"
   },
   "tags": [
+    "bug",
     "clumsy"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

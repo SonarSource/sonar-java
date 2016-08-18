@@ -6,7 +6,8 @@
     "constantCost": "5min"
   },
   "tags": [
-    "leak"
+    "leak",
+    "bug"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

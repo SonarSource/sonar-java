@@ -9,5 +9,5 @@
     "cwe",
     "cert"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

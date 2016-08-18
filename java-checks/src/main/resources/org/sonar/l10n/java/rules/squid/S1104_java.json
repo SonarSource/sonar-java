@@ -6,7 +6,8 @@
     "constantCost": "10min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "security"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

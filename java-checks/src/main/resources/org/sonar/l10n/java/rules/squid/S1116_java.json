@@ -6,6 +6,7 @@
     "constantCost": "2min"
   },
   "tags": [
+    "bug",
     "misra",
     "cert",
     "unused"

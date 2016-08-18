@@ -2,7 +2,7 @@
 successfully.</p>
 <p>This rule raises an issue when the return values of the following are ignored:</p>
 <ul>
-  <li> <code>java.io.File</code> operations that return a status code </li>
+  <li> <code>java.io.File</code> operations that return a status code (except <code>mkdirs</code>) </li>
   <li> <code>Iterator.hasNext()</code> </li>
   <li> <code>Enumeration.hasMoreElements()</code> </li>
   <li> <code>Lock.tryLock()</code> </li>

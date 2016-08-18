@@ -3,7 +3,8 @@
   "status": "ready",
   "tags": [
     "security",
-    "denial-of-service"
+    "denial-of-service",
+    "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }
