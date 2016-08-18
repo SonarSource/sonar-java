@@ -80,6 +80,15 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
+  
+  @Test
+  public void setting_binary_dir_prop_should_fill_elements() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin/");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
+    assertThat(javaClasspath.getElements()).hasSize(1);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+  }
 
   @Test
   public void setting_library_prop_should_fill_elements() {

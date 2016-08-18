@@ -26,6 +26,7 @@ import com.google.common.collect.Multimap;
 
 import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
@@ -38,12 +39,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaCheckVerifierTest {
+  @org.junit.Rule
+  public TemporaryFolder temp = new TemporaryFolder();
 
   private static final String FILENAME_ISSUES = "src/test/files/JavaCheckVerifier.java";
   private static final String FILENAME_NO_ISSUE = "src/test/files/JavaCheckVerifierNoIssue.java";
@@ -64,6 +69,21 @@ public class JavaCheckVerifierTest {
   public void verify_line_issues_with_java_version() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     JavaCheckVerifier.verify(FILENAME_ISSUES, visitor, 7);
+  }
+
+  @Test
+  public void verify_get_classpath_files() throws IOException {
+    Path tmp = temp.newFolder().toPath();
+    Path jar = tmp.resolve("test.jar");
+    Path zip = tmp.resolve("test.zip");
+    Path invalid = tmp.resolve("test.txt");
+
+    Files.createFile(jar);
+    Files.createFile(zip);
+    Files.createFile(invalid);
+
+    List<File> list = JavaCheckVerifier.getFilesRecursively(temp.getRoot().toPath(), new String[] {"zip", "jar"});
+    assertThat(list).containsOnly(jar.toFile(), zip.toFile());
   }
 
   @Test
@@ -127,6 +147,11 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_no_issue() {
     JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
+  }
+
+  @Test
+  public void verify_no_issue_with_version() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR, 8);
   }
 
   @Test
@@ -291,11 +316,12 @@ public class JavaCheckVerifierTest {
   }
 
   @RspecKey("Dummy_fake_JSON")
-  private static class NoJsonVisitor extends FakeVisitor {}
-
+  private static class NoJsonVisitor extends FakeVisitor {
+  }
 
   @Rule(key = "LinearJSON")
-  private static class LinearFakeVisitor extends FakeVisitor {}
+  private static class LinearFakeVisitor extends FakeVisitor {
+  }
 
   @Rule(key = "ConstantJSON")
   private static class FakeVisitor extends IssuableSubscriptionVisitor {

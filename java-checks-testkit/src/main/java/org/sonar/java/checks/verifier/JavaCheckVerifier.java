@@ -223,7 +223,7 @@ public class JavaCheckVerifier extends CheckVerifier {
     scanFile(filename, check, javaCheckVerifier, classpath);
   }
 
-  private static List<File> getFilesRecursively(Path root, final String[] extensions) {
+  static List<File> getFilesRecursively(Path root, final String[] extensions) {
     final List<File> files = new ArrayList<>();
 
     FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
