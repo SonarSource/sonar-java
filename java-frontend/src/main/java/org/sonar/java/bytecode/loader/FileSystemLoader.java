@@ -59,7 +59,7 @@ class FileSystemLoader implements Loader {
       throw new IllegalStateException("Loader closed");
     }
     Path filePath = baseDirPath.resolve(name);
-    if (!Files.exists(baseDirPath)) {
+    if (!Files.exists(filePath)) {
       return new byte[0];
     }
 
