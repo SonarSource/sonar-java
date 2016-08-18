@@ -47,8 +47,6 @@ public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition(FILE).name("delete"),
       MethodMatcher.create().typeDefinition(FILE).name("exists"),
       MethodMatcher.create().typeDefinition(FILE).name("createNewFile"),
-      MethodMatcher.create().typeDefinition(FILE).name("mkdir"),
-      MethodMatcher.create().typeDefinition(FILE).name("mkdirs"),
       MethodMatcher.create().typeDefinition(FILE).name("renameTo").addParameter(FILE),
       MethodMatcher.create().typeDefinition(FILE).name(NameCriteria.startsWith("can")),
       MethodMatcher.create().typeDefinition(FILE).name(NameCriteria.startsWith("is")),

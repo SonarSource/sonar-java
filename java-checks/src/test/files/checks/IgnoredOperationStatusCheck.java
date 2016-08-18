@@ -24,7 +24,7 @@ class A {
     f.exists(); // Noncompliant
     f.renameTo(new File("")); // Noncompliant
     f.createNewFile(); // Noncompliant
-    f.mkdir(); // Noncompliant
+    f.mkdir(); // Compliant : true if it was created, false if it existed, using it just to make sure we created the dir is a common idiom
 
     f.canWrite(); // Noncompliant
     f.isHidden(); // Noncompliant
