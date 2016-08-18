@@ -7,7 +7,7 @@
   },
   "tags": [
     "error-handling",
-    "security"
+    "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

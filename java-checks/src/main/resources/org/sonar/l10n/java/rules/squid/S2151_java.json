@@ -6,7 +6,6 @@
     "constantCost": "20min"
   },
   "tags": [
-    "security",
     "bug",
     "cert"
   ],

@@ -9,5 +9,5 @@
     "obsolete",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

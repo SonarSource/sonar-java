@@ -9,5 +9,5 @@
     "security",
     "bad-practice"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

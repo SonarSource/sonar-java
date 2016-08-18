@@ -8,5 +8,5 @@
   "tags": [
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

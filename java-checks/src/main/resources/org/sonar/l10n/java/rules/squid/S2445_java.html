@@ -6,9 +6,9 @@ synchronized on the new value, to enter the block at the same time.</p>
 private String color = "red";
 
 private void doSomething(){
-  synchronized(color) {  // lock is actually on object instance "red" referred to by the color variable
+  synchronized(color) {  // Noncompliant; lock is actually on object instance "red" referred to by the color variable
     //...
-    color = "green"; // Noncompliant; other threads now allowed into this block
+    color = "green"; // other threads now allowed into this block
     // ...
   }
 }

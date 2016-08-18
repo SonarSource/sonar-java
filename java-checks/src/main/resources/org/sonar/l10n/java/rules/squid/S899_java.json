@@ -8,7 +8,7 @@
   "tags": [
     "cwe",
     "error-handling",
-    "bug",
+    "security",
     "misra",
     "cert"
   ],

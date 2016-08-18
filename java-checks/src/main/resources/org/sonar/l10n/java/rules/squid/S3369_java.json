@@ -12,5 +12,5 @@
     "jee",
     "owasp-a7"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

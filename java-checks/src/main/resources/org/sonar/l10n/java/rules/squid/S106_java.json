@@ -6,6 +6,7 @@
     "constantCost": "10min"
   },
   "tags": [
+    "bug",
     "bad-practice",
     "cert"
   ],

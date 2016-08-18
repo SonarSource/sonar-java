@@ -6,7 +6,8 @@
     "constantCost": "5min"
   },
   "tags": [
-    "junit"
+    "junit",
+    "tests"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

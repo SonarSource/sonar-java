@@ -9,5 +9,5 @@
     "serialization",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

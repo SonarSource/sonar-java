@@ -6,7 +6,6 @@
     "constantCost": "30min"
   },
   "tags": [
-    "bug",
     "unpredictable",
     "bad-practice"
   ],

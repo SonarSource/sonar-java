@@ -10,5 +10,5 @@
     "brain-overload",
     "struts"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

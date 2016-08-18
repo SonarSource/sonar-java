@@ -1,5 +1,5 @@
 {
-  "title": "Throws declarations should not be superfluous",
+  "title": "\"throws\" declarations should not be superfluous",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -7,6 +7,7 @@
   },
   "tags": [
     "unused",
+    "redundant",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

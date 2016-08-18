@@ -6,8 +6,8 @@
     "constantCost": "15min"
   },
   "tags": [
-    "security",
-    "performance"
+    "performance",
+    "bug"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

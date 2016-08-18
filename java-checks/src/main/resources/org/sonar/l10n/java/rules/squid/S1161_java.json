@@ -1,5 +1,5 @@
 {
-  "title": "\"@Override\" annotation should be used on any method overriding (since Java 5) or implementing (since Java 6) another one",
+  "title": "\"@Override\" should be used on overriding and implementing methods",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

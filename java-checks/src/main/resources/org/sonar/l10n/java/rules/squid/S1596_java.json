@@ -1,5 +1,5 @@
 {
-  "title": "Collections.emptyList(), emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
+  "title": "\"Collections.EMPTY_LIST\", \"EMPTY_MAP\", and \"EMPTY_SET\" should not be used",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,5 +9,5 @@
     "obsolete",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

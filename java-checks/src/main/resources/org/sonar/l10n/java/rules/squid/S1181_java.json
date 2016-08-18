@@ -8,8 +8,8 @@
   "tags": [
     "cwe",
     "error-handling",
-    "security",
+    "bug",
     "cert"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Major"
 }

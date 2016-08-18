@@ -10,5 +10,5 @@
     "security",
     "cert"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

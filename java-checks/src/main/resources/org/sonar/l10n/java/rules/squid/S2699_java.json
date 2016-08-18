@@ -8,5 +8,5 @@
   "tags": [
     "tests"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Blocker"
 }

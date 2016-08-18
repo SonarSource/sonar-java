@@ -9,5 +9,5 @@
     "maven",
     "obsolete"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

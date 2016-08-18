@@ -7,8 +7,9 @@
   },
   "tags": [
     "cwe",
+    "bug",
     "cert",
     "suspicious"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

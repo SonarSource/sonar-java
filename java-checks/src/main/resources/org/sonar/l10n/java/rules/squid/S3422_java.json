@@ -6,8 +6,9 @@
     "constantCost": "5min"
   },
   "tags": [
+    "bug",
     "maven",
     "lock-in"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

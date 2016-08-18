@@ -10,5 +10,5 @@
     "unused",
     "confusing"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

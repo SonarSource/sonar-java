@@ -82,7 +82,7 @@ public class SonarLintTest {
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S106", 4, inputFile.getPath(), "MAJOR"),
       tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 3, inputFile.getPath(), "MAJOR"));
+      tuple("squid:S1481", 3, inputFile.getPath(), "MINOR"));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class SonarLintTest {
     sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S3421", 7, inputFile.getPath(), "MAJOR"));
+      tuple("squid:S3421", 7, inputFile.getPath(), "MINOR"));
   }
 
   @Test
@@ -127,7 +127,7 @@ public class SonarLintTest {
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 4, inputFile.getPath(), "MAJOR"));
+      tuple("squid:S1481", 4, inputFile.getPath(), "MINOR"));
   }
 
   private ClientInputFile prepareInputFile(String relativePath, String content, final boolean isTest) throws IOException {
