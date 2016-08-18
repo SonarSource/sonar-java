@@ -98,6 +98,7 @@ class A {
     MessageFormat.format("Result {1}!", 14); // Noncompliant {{Not enough arguments.}}
     MessageFormat.format("Result {0} and {1}!", 14); // Noncompliant {{Not enough arguments.}}
     MessageFormat.format("Result {0} and {0}!", 14, 42); // Noncompliant {{2nd argument is not used.}}
+    MessageFormat.format("Result {0, number, integer} and {1, number, integer}!", 14, 42); // compliant
     MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
   }
 }
