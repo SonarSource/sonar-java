@@ -6,8 +6,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "security",
-    "bug"
+    "security"
   ],
   "defaultSeverity": "Blocker"
 }
