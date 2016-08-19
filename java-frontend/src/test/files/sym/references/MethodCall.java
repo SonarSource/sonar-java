@@ -342,3 +342,21 @@ class MostSpecificArgType {
     myMethod(new Child<String>());
   }
 }
+class OUTER {
+  class A {
+
+    void bar() {
+      B<Integer> b = new B<>();
+      b.foo(this::add);
+    }
+
+    private Integer add(Integer a, Integer b) {
+      return a + b;
+    }
+  }
+
+  class B<U> {
+    void foo(java.util.function.BinaryOperator<U> op) {
+    }
+  }
+}
