@@ -55,6 +55,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
   private static final String DEFAULT_FOR_CLASSES = "**.api.**";
+  private static final String DEFAULT_EXCLUSION = "**.internal.**";
 
   @RuleProperty(
     key = "forClasses",
@@ -62,7 +63,15 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     defaultValue = DEFAULT_FOR_CLASSES)
   public String forClasses = DEFAULT_FOR_CLASSES;
 
-  private WildcardPattern[] patterns;
+  @RuleProperty(
+    key = "exclusion",
+    description = "Pattern of classes which are excluded from adhering to this constraint.",
+    defaultValue = DEFAULT_EXCLUSION)
+  public String exclusion = DEFAULT_EXCLUSION;
+
+  private WildcardPattern[] inclusionPatterns;
+  private WildcardPattern[] exclusionPatterns;
+
   private final Deque<ClassTree> classTrees = Lists.newLinkedList();
   private final Deque<Tree> currentParents = Lists.newLinkedList();
 
@@ -160,7 +169,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean isExcluded(Tree tree) {
-    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingPattern();
+    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingInclusionPattern() || isMatchingExclusionPattern();
   }
 
   private boolean isAccessor(Tree tree) {
@@ -185,8 +194,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return publicApiChecker.isPublicApi(currentParent, tree);
   }
 
-  private boolean isMatchingPattern() {
-    return WildcardPattern.match(getPatterns(), className());
+  private boolean isMatchingInclusionPattern() {
+    return WildcardPattern.match(getInclusionPatterns(), className());
+  }
+
+  private boolean isMatchingExclusionPattern() {
+    return WildcardPattern.match(getExclusionPatterns(), className());
   }
 
   private String className() {
@@ -198,11 +211,26 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return className;
   }
 
-  private WildcardPattern[] getPatterns() {
-    if (patterns == null) {
-      patterns = PatternUtils.createPatterns(forClasses);
+  private WildcardPattern[] getInclusionPatterns() {
+    if (inclusionPatterns == null) {
+      if (StringUtils.isEmpty(forClasses)) {
+        forClasses = "**";
+      }
+
+      inclusionPatterns = PatternUtils.createPatterns(forClasses);
     }
-    return patterns;
+    return inclusionPatterns;
+  }
+
+  private WildcardPattern[] getExclusionPatterns() {
+    if (exclusionPatterns == null) {
+      if (StringUtils.isEmpty(exclusion)) {
+        exclusionPatterns = new WildcardPattern[0];
+      } else {
+        exclusionPatterns = PatternUtils.createPatterns(exclusion);
+      }
+    }
+    return exclusionPatterns;
   }
 
   private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
