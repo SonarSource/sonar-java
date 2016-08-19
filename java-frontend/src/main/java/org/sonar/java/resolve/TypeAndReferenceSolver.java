@@ -527,7 +527,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private void refineLambdaType(LambdaExpressionTreeImpl lambdaExpressionTree, JavaType lambdaType) {
-    JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(lambdaType);
+    JavaSymbol.MethodJavaSymbol samMethod = resolve.getSamMethod(lambdaType);
     if(samMethod == null) {
       return;
     }
@@ -562,22 +562,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           expression.setType(refinedType);
         });
     }
-  }
-
-  @CheckForNull
-  private static JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
-    for (Symbol member : lambdaType.symbol().memberSymbols()) {
-      if (member.isMethodSymbol() && member.isAbstract()) {
-        return (JavaSymbol.MethodJavaSymbol) member;
-      }
-    }
-    for (ClassJavaType type : lambdaType.symbol.superTypes()) {
-      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(type);
-      if (samMethod != null) {
-        return samMethod;
-      }
-    }
-    return null;
   }
 
   @Override
@@ -947,7 +931,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (methodRefType.isUnknown() || methodRefType.isTagged(JavaType.DEFERRED)) {
         return;
       }
-      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(methodRefType);
+      JavaSymbol.MethodJavaSymbol samMethod = resolve.getSamMethod(methodRefType);
       if(samMethod == null) {
         return;
       }

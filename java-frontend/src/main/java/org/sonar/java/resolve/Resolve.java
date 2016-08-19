@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -893,21 +892,63 @@ public class Resolve {
   }
 
   public List<JavaType> findSamMethodArgs(Type type) {
+    List<JavaType> args = findSamMethodArgsRecursively(type);
+    if(args == null) {
+      return new ArrayList<>();
+    }
+    return args;
+  }
+  
+  @CheckForNull
+  private List<JavaType> findSamMethodArgsRecursively(@Nullable Type type) {
+    if(type == null) {
+      return null;
+    }
+    List<JavaType> argTypes = null;
     for (Symbol member : type.symbol().memberSymbols()) {
       if(member.isMethodSymbol() && member.isAbstract()) {
-        JavaSymbol.MethodJavaSymbol target = (JavaSymbol.MethodJavaSymbol) member;
-        List<JavaType> argTypes = ((MethodJavaType) target.type).argTypes;
-        argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
-        return argTypes.stream().map(argType -> {
-          if (argType.isTagged(JavaType.WILDCARD)) {
-            // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
-            return ((WildCardType) argType).bound;
-          }
-          return argType;
-        }).collect(Collectors.toList());
+        argTypes = ((MethodJavaType)  ((JavaSymbol.MethodJavaSymbol) member).type).argTypes;
+        break;
       }
     }
-    return new ArrayList<>();
+    if(argTypes == null) {
+      argTypes = findSamMethodArgsRecursively(type.symbol().superClass());
+      if(argTypes == null) {
+        for (Type interfazz : type.symbol().interfaces()) {
+          argTypes = findSamMethodArgsRecursively(interfazz);
+          if(argTypes != null) {
+            break;
+          }
+        }
+      }
+    }
+    if(argTypes != null) {
+      argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
+      return argTypes.stream().map(argType -> {
+      if (argType.isTagged(JavaType.WILDCARD)) {
+        // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
+        return ((WildCardType) argType).bound;
+      }
+        return argType;
+      }).collect(Collectors.toList());
+    }
+    return null;
+  }
+
+  @CheckForNull
+  public JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
+    for (Symbol member : lambdaType.symbol().memberSymbols()) {
+      if (member.isMethodSymbol() && member.isAbstract()) {
+        return (JavaSymbol.MethodJavaSymbol) member;
+      }
+    }
+    for (ClassJavaType type : lambdaType.symbol.superTypes()) {
+      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(type);
+      if (samMethod != null) {
+        return samMethod;
+      }
+    }
+    return null;
   }
 
   /**
