@@ -900,17 +900,21 @@ public class Resolve {
     if(type == null) {
       return Optional.empty();
     }
-    Optional<List<JavaType>> javaTypes = type.symbol().memberSymbols().stream()
+    Optional<List<JavaType>> result = type.symbol().memberSymbols().stream()
       .filter(Resolve::isAbstractMethod).findFirst()
       .map(s -> ((MethodJavaType) ((JavaSymbol.MethodJavaSymbol) s).type).argTypes);
 
-    if(!javaTypes.isPresent()) {
-      javaTypes = findSamMethodArgsRecursively(type.symbol().superClass());
-      if(!javaTypes.isPresent()) {
-        javaTypes = type.symbol().interfaces().stream().map(this::findSamMethodArgsRecursively).filter(Optional::isPresent).map(Optional::get).findFirst();
+    if(!result.isPresent()) {
+      result = findSamMethodArgsRecursively(type.symbol().superClass());
+      if(!result.isPresent()) {
+        result = type.symbol().interfaces().stream()
+          .map(this::findSamMethodArgsRecursively)
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .findFirst();
       }
     }
-    return javaTypes.map(samTypes -> applySamSubstitution(type, samTypes));
+    return result.map(samTypes -> applySamSubstitution(type, samTypes));
   }
 
   private List<JavaType> applySamSubstitution(Type type, List<JavaType> samTypes) {

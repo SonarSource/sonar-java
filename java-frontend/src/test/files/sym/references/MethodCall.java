@@ -350,7 +350,7 @@ class OUTER {
       b.foo(this::add);
     }
 
-    private Integer add(Integer a, Integer b) { // The method is not resolved
+    private Integer add(Integer a, Integer b) {
       return a + b;
     }
   }
