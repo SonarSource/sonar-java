@@ -35,6 +35,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -892,53 +893,41 @@ public class Resolve {
   }
 
   public List<JavaType> findSamMethodArgs(Type type) {
-    List<JavaType> args = findSamMethodArgsRecursively(type);
-    if(args == null) {
-      return new ArrayList<>();
-    }
-    return args;
+    return findSamMethodArgsRecursively(type).orElse(new ArrayList<>());
   }
   
-  @CheckForNull
-  private List<JavaType> findSamMethodArgsRecursively(@Nullable Type type) {
+  private Optional<List<JavaType>> findSamMethodArgsRecursively(@Nullable Type type) {
     if(type == null) {
-      return null;
+      return Optional.empty();
     }
-    List<JavaType> argTypes = null;
-    for (Symbol member : type.symbol().memberSymbols()) {
-      if(member.isMethodSymbol() && member.isAbstract()) {
-        argTypes = ((MethodJavaType)  ((JavaSymbol.MethodJavaSymbol) member).type).argTypes;
-        break;
+    Optional<List<JavaType>> javaTypes = type.symbol().memberSymbols().stream()
+      .filter(Resolve::isAbstractMethod).findFirst()
+      .map(s -> ((MethodJavaType) ((JavaSymbol.MethodJavaSymbol) s).type).argTypes);
+
+    if(!javaTypes.isPresent()) {
+      javaTypes = findSamMethodArgsRecursively(type.symbol().superClass());
+      if(!javaTypes.isPresent()) {
+        javaTypes = type.symbol().interfaces().stream().map(this::findSamMethodArgsRecursively).filter(Optional::isPresent).map(Optional::get).findFirst();
       }
     }
-    if(argTypes == null) {
-      argTypes = findSamMethodArgsRecursively(type.symbol().superClass());
-      if(argTypes == null) {
-        for (Type interfazz : type.symbol().interfaces()) {
-          argTypes = findSamMethodArgsRecursively(interfazz);
-          if(argTypes != null) {
-            break;
-          }
-        }
-      }
-    }
-    if(argTypes != null) {
-      argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
-      return argTypes.stream().map(argType -> {
+    return javaTypes.map(samTypes -> applySamSubstitution(type, samTypes));
+  }
+
+  private List<JavaType> applySamSubstitution(Type type, List<JavaType> samTypes) {
+    List<JavaType> argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(samTypes, (JavaType) type);
+    return argTypes.stream().map(argType -> {
       if (argType.isTagged(JavaType.WILDCARD)) {
         // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
         return ((WildCardType) argType).bound;
       }
-        return argType;
-      }).collect(Collectors.toList());
-    }
-    return null;
+      return argType;
+    }).collect(Collectors.toList());
   }
 
   @CheckForNull
   public JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
     for (Symbol member : lambdaType.symbol().memberSymbols()) {
-      if (member.isMethodSymbol() && member.isAbstract()) {
+      if (isAbstractMethod(member)) {
         return (JavaSymbol.MethodJavaSymbol) member;
       }
     }
@@ -949,6 +938,10 @@ public class Resolve {
       }
     }
     return null;
+  }
+
+  private static boolean isAbstractMethod(Symbol member) {
+    return member.isMethodSymbol() && member.isAbstract();
   }
 
   /**
