@@ -106,6 +106,14 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
+  
+  @Test
+  public void absolute_aar_file_name_should_be_resolved() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/oklog-1.0.1.aar").getAbsolutePath());
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(1);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+  }
 
   @Test
   public void directory_specified_for_library_should_find_jars() {
@@ -155,10 +163,10 @@ public class JavaClasspathTest {
   public void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(5);
+    assertThat(javaClasspath.getElements()).hasSize(6);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar");
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar", "oklog-1.0.1.aar");
   }
   
   @Test

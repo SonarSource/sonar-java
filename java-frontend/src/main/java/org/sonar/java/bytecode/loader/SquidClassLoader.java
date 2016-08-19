@@ -49,6 +49,8 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
           loaders.add(new FileSystemLoader(file));
         } else if (file.getName().endsWith(".jar")) {
           loaders.add(new JarLoader(file));
+        } else if (file.getName().endsWith(".aar")) {
+          loaders.add(new AarLoader(file));
         }
       }
     }
