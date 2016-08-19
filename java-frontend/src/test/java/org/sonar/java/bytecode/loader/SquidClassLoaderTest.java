@@ -69,6 +69,18 @@ public class SquidClassLoaderTest {
     thrown.expect(ClassNotFoundException.class);
     classLoader.loadClass("foo.Unknown");
   }
+  
+  @Test
+  public void createFromAar() throws Exception {
+    File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
+    classLoader = new SquidClassLoader(Arrays.asList(jar));
+
+    assertThat(classLoader.loadClass("com.github.simonpercic.oklog.BuildConfig")).isNotNull();
+    assertThat(classLoader.getResource("com/github/simonpercic/oklog/BuildConfig.class")).isNotNull();
+    assertThat(Iterators.forEnumeration(classLoader.findResources("com/github/simonpercic/oklog/BuildConfig.class"))).hasSize(1);
+    thrown.expect(ClassNotFoundException.class);
+    classLoader.loadClass("foo.Unknown");
+  }
 
   @Test
   public void unknownJarIsIgnored() throws Exception {

@@ -104,7 +104,7 @@ public abstract class AbstractJavaClasspath {
     try {
       Path filePath = resolvePath(baseDir, pathPattern);
 
-      if ((pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip")) && Files.isRegularFile(filePath)) {
+      if ((pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) && Files.isRegularFile(filePath)) {
         return Collections.singleton(filePath.toFile());
       }
       if (Files.isDirectory(filePath)) {
@@ -202,7 +202,7 @@ public abstract class AbstractJavaClasspath {
   private static List<File> getLibs(Path dir) throws IOException {
     Filter<Path> filter = path -> {
       String name = path.getFileName().toString();
-      return name.endsWith(".jar") || name.endsWith(".zip");
+      return name.endsWith(".jar") || name.endsWith(".zip") || name.endsWith(".aar");
     };
 
     List<File> files = new ArrayList<>();
