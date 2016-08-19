@@ -48,7 +48,16 @@ public class AarLoaderTest {
     thrown.expectMessage("Unable to open " + aar.getAbsolutePath());
     new AarLoader(aar);
   }
+  
+  @Test
+  public void testAarWithoutClasses() {
+    File jar = new File("src/test/files/bytecode/lib/hello.jar");
+    AarLoader loader = new AarLoader(jar);
 
+    assertThat(loader.findResource("notfound")).isNull();
+    assertThat(loader.loadBytes("notfound")).isEqualTo(new byte[0]);
+  }
+  
   @Test
   public void testFindResource() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
