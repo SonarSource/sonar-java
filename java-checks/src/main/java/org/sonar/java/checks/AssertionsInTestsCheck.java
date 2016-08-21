@@ -89,7 +89,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // EasyMock
     methodWithoutParameter("org.easymock.EasyMock", VERIFY),
     methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY),
-    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll")
+    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll"),
+    // Truth Framework
+    methodWithoutParameter("com.google.common.truth.Truth", NameCriteria.startsWith("assert"))
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
