@@ -45,6 +45,7 @@ import java.util.List;
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String VERIFY = "verify";
+  private static final String ASSERT_NAME = "assert";
   private static final String ASSERT_THAT_NAME = "assertThat";
   private static final String ORG_MOCKITO_MOCKITO = "org.mockito.Mockito";
 
@@ -61,10 +62,10 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
     // junit
-    methodWithoutParameter("org.junit.Assert", NameCriteria.startsWith("assert")),
+    methodWithoutParameter("org.junit.Assert", NameCriteria.startsWith(ASSERT_NAME)),
     methodWithoutParameter("org.junit.Assert", "fail"),
     methodWithoutParameter("org.junit.rules.ExpectedException", NameCriteria.startsWith("expect")),
-    methodWithoutParameter(TypeCriteria.subtypeOf("junit.framework.Assert"), NameCriteria.startsWith("assert")),
+    methodWithoutParameter(TypeCriteria.subtypeOf("junit.framework.Assert"), NameCriteria.startsWith(ASSERT_NAME)),
     methodWithoutParameter(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_FAIL),
     // fest 1.x
     methodWithoutParameter(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME),
@@ -89,7 +90,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // EasyMock
     methodWithoutParameter("org.easymock.EasyMock", VERIFY),
     methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY),
-    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll")
+    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll"),
+    // Truth Framework
+    methodWithoutParameter("com.google.common.truth.Truth", NameCriteria.startsWith(ASSERT_NAME))
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
