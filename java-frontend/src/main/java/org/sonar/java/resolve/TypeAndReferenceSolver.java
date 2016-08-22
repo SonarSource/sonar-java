@@ -84,10 +84,8 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -219,13 +217,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       );
       return;
     }
-    Tree methodSelect = tree.methodSelect();
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
     scan(tree.typeArguments());
     List<JavaType> argTypes = getParameterTypes(tree.arguments());
     List<JavaType> typeParamTypes = getParameterTypes(tree.typeArguments());
-    Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes, typeParamTypes);
+    Resolve.Resolution resolution = resolveMethodSymbol(tree.methodSelect(), methodEnv, argTypes, typeParamTypes);
     JavaSymbol symbol;
     JavaType returnType;
     if(resolution == null) {
@@ -246,26 +243,32 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, returnType);
     if(resolution != null) {
       inferArgumentTypes(argTypes, resolution);
-      List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
-      if(!parameterTypes.equals(argTypes)) {
-        IdentifierTree identifier;
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
-          JavaType type = getType(mset.expression());
-          if(type.isTagged(JavaType.DEFERRED)) {
-            throw new IllegalStateException("type of arg should not be defered anymore ??");
-          }
-          identifier = mset.identifier();
-          resolution = resolve.findMethod(methodEnv, type, identifier.name(), parameterTypes, typeParamTypes);
-        } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-          identifier = (IdentifierTree) methodSelect;
-          resolution = resolve.findMethod(methodEnv, identifier.name(), parameterTypes, typeParamTypes);
+      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, returnType);
+    }
+  }
+
+  private void inferReturnTypeFromInferedArgs(MethodInvocationTree tree, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes, JavaType returnType) {
+    List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
+    Resolution resolution = null;
+    Tree methodSelect = tree.methodSelect();
+    if(!parameterTypes.equals(argTypes)) {
+      IdentifierTree identifier;
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
+        JavaType type = getType(mset.expression());
+        if(type.isTagged(JavaType.DEFERRED)) {
+          throw new IllegalStateException("type of arg should not be defered anymore ??");
         }
-        if(resolution != null && returnType != resolution.type() && resolution.symbol().isMethodSymbol()) {
-          MethodJavaType methodType = (MethodJavaType) resolution.type();
-          if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
-            registerType(tree, methodType.resultType);
-          }
+        identifier = mset.identifier();
+        resolution = resolve.findMethod(methodEnv, type, identifier.name(), parameterTypes, typeParamTypes);
+      } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+        identifier = (IdentifierTree) methodSelect;
+        resolution = resolve.findMethod(methodEnv, identifier.name(), parameterTypes, typeParamTypes);
+      }
+      if(resolution != null && returnType != resolution.type() && resolution.symbol().isMethodSymbol()) {
+        MethodJavaType methodType = (MethodJavaType) resolution.type();
+        if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
+          registerType(tree, methodType.resultType);
         }
       }
     }
@@ -972,26 +975,4 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private static class LambdaBlockReturnVisitor extends BaseTreeVisitor {
-
-    final Set<Type> types = new HashSet<>();
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // skip visiting inner classes : only first level returns are interesting
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // skip visiting lambdas : only first level returns are interesting
-    }
-
-    @Override
-    public void visitReturnStatement(ReturnStatementTree tree) {
-      ExpressionTree expression = tree.expression();
-      if(expression != null && !expression.symbolType().isUnknown()) {
-        types.add(expression.symbolType());
-      }
-    }
-  }
 }
