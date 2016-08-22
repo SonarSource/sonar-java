@@ -29,6 +29,7 @@ public class TooManyMethodsCheckTest {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     JavaCheckVerifier.verify("src/test/files/checks/TooManyMethodsCheck.java", check);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TooManyMethodsCheck.java", check);
   }
 
   @Test
@@ -37,6 +38,8 @@ public class TooManyMethodsCheckTest {
     check.maximumMethodThreshold = 4;
     check.countNonPublic = false;
     JavaCheckVerifier.verify("src/test/files/checks/TooManyMethodsCheckOnlyPublic.java", check);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TooManyMethodsCheck.java", check);
+
   }
 
 }

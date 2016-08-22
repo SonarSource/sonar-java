@@ -35,7 +35,20 @@ interface C { // Noncompliant {{interface "C" has 5 methods, which is greater th
 }
 
 class E {
-  C c = new C() { // Noncompliant {{Anonymous class "C" has 5 methods, which is greater than the 4 authorized. Split it into smaller classes.}}
+  C c = new C() { // Noncompliant {{Anonymous class "C" has 10 methods, which is greater than the 4 authorized. Split it into smaller classes.}}
+    public void method1() {}
+    public void method2() {}
+    public void method3() {}
+    public void method4() {}
+    public void method5() {}
+    public void method6() {}
+    public void method7() {}
+    public void method8() {}
+    public void method9() {}
+    public void method10() {}
+  };
+
+  C c2 = new C() { // compliant : only overriden methods
     public void method1() {}
     public void method2() {}
     public void method3() {}
