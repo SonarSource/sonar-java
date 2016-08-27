@@ -614,9 +614,14 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     if (variable.is(Tree.Kind.IDENTIFIER)) {
-      // only local variables or fields are added to table of values
-      // FIXME SONARJAVA-1776 fields accessing using "this." should be handled
+      // local variables or fields are added to table of values
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
+    } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      // Handle this. fields
+      Symbol symbol = ((MemberSelectExpressionTree) variable).identifier().symbol();
+      if (symbol.owner().isTypeSymbol()) {
+        programState = programState.put(symbol, value);
+      }
     }
     programState = programState.stackValue(value);
   }
