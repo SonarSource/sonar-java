@@ -135,16 +135,9 @@ public class JavaCheckVerifierTest {
 
   @Test
   public void verify_with_default_test_jar() throws IOException {
-    File file = new File("target/test-jars");
-    if (file.exists()) {
-      file.delete();
-    }
-    if (file.mkdir()) {
-      JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
-      file.delete();
-    } else {
-      Fail.fail();
-    }
+    // This path is the actual test-jars path for this project, as the currently supplied jar doesn't cause any issues in the test file
+    // retain the actual folder with contents. This will prevent other tests to fail which rely on the supplied bytecode.
+    JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
   }
 
   @Test

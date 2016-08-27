@@ -49,6 +49,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -56,6 +57,11 @@ public class NonNullSetToNullCheck extends SECheck {
   private static final String[] ANNOTATIONS = {"javax.annotation.Nonnull", "javax.validation.constraints.NotNull",
     "edu.umd.cs.findbugs.annotations.NonNull", "org.jetbrains.annotations.NotNull", "lombok.NonNull",
     "android.support.annotation.NonNull"};
+
+  private static final String[] JPA_ANNOTATIONS = {
+    "javax.persistence.Entity",
+    "javax.persistence.Embeddable"
+  };
 
   private MethodTree methodTree;
 
@@ -80,7 +86,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    if (methodTree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
@@ -88,6 +94,18 @@ public class NonNullSetToNullCheck extends SECheck {
         }
       }
     }
+  }
+
+  private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {
+    if (!methodTree.block().body().isEmpty()) {
+      // Constructor does something.
+      return false;
+    }
+
+    ClassTree classTree = (ClassTree) methodTree.parent();
+    return classTree.modifiers().annotations().stream()
+      .map(annotationTree -> annotationTree.annotationType().symbolType())
+      .anyMatch(symbol -> Stream.of(JPA_ANNOTATIONS).anyMatch(symbol::is));
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
