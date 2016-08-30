@@ -28,12 +28,15 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
@@ -60,13 +63,13 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
-    if (isSingleMethodInvocationUsingLambdaParamAsArg(tree) || isBodyBlockInvokingMethod(tree)) {
+    if (isReplaceableSingleMethodInvocation(tree) || isBodyBlockInvokingMethod(tree)) {
       context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     }
     super.visitLambdaExpression(tree);
   }
 
-  private static boolean isSingleMethodInvocationUsingLambdaParamAsArg(LambdaExpressionTree lambdaTree) {
+  private static boolean isReplaceableSingleMethodInvocation(LambdaExpressionTree lambdaTree) {
     return isMethodInvocation(lambdaTree.body(), lambdaTree);
   }
 
@@ -102,13 +105,29 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
       } else {
         arguments = ((MethodInvocationTree) tree).arguments();
       }
-      return arguments.size() == lambdaTree.parameters().size() &&
-        IntStream.range(0, arguments.size()).allMatch(i -> {
-          List<IdentifierTree> usages = lambdaTree.parameters().get(i).symbol().usages();
-          return usages.size() == 1 && usages.get(0).equals(arguments.get(i));
-        });
+      List<VariableTree> parameters = lambdaTree.parameters();
+      return matchingParameters(parameters, arguments) || (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters));
     }
     return false;
   }
 
+  private static boolean matchingParameters(List<VariableTree> parameters, Arguments arguments) {
+    return arguments.size() == parameters.size() &&
+      IntStream.range(0, arguments.size()).allMatch(i -> {
+        List<IdentifierTree> usages = parameters.get(i).symbol().usages();
+        return usages.size() == 1 && usages.get(0).equals(arguments.get(i));
+      });
+  }
+
+  private static boolean isNoArgMethodInvocationFromLambdaParam(Tree tree, List<VariableTree> parameters) {
+    if (!tree.is(Tree.Kind.METHOD_INVOCATION) || parameters.size() != 1) {
+      return false;
+    }
+    ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+      return expression.is(Tree.Kind.IDENTIFIER) && parameters.get(0).symbol().equals(((IdentifierTree) expression).symbol());
+    }
+    return false;
+  }
 }

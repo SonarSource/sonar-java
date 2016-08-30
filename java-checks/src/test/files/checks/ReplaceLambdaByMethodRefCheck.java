@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.*;
 import java.util.stream.Collectors;
 class A {
@@ -22,6 +21,19 @@ class A {
     foo((x, y) -> x * y);
     foo((x, y) -> { ; });
     foo((x, y) -> { ;; });
+  }
+
+  void foo(List<String> list, String a) {
+    list.stream().map(String::toLowerCase).close();
+
+    list.stream().map(s -> s.toLowerCase()).close(); // Noncompliant
+    list.stream().map(s -> { return s.toLowerCase(); }).close(); // Noncompliant
+
+    list.stream().map(s -> new String()).close(); // Compliant
+    list.stream().map(s -> a.toLowerCase()).close(); // Compliant
+    list.stream().map(s -> s.toLowerCase().toUpperCase()).close(); // Compliant
+    list.stream().forEach(s -> fun()); // Compliant
+    list.stream().reduce((x, y) -> x.toLowerCase()); // Compliant
   }
 
   int square(int x) {
