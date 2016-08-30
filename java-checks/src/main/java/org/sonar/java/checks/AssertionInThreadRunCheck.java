@@ -62,9 +62,11 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
   private class AssertionsVisitor extends BaseTreeVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      Type type = tree.symbol().owner().type();
-      if (isCheckedType(type)) {
-        reportIssue(MethodsHelper.methodName(tree), "Remove this assertion.");
+      if(tree.symbol().isMethodSymbol()) {
+        Type type = tree.symbol().owner().type();
+        if (isCheckedType(type)) {
+          reportIssue(MethodsHelper.methodName(tree), "Remove this assertion.");
+        }
       }
       super.visitMethodInvocation(tree);
     }

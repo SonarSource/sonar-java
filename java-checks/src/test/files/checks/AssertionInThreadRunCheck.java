@@ -1,6 +1,8 @@
 import java.lang.Override;
 import java.lang.Thread;
+import static org.easymock.EasyMock.expectLastCall;
 
+import org.easymock.EasyMockSupport;
 class A extends Thread {
   @Override
   public void run() {
@@ -37,4 +39,19 @@ class D extends Thread {
     foo();
   }
   
+}
+
+
+public class ThreadStopperTest extends EasyMockSupport {
+
+  public void failsToScan() {
+
+    new Thread("testFailsToScan") {
+      @Override
+      public void run() {
+        expectLastCall().once();
+      }
+    };
+
+  }
 }
