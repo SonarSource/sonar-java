@@ -620,6 +620,7 @@ public class CFG {
     String name = labeledStatement.label().name();
     labelsBreakTarget.put(name, currentBlock);
     pendingLabel = name;
+    currentBlock = createBlock(currentBlock);
     build(labeledStatement.statement());
     currentBlock = createBlock(currentBlock);
   }
