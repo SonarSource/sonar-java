@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -121,14 +122,30 @@ public class PrintfCheck extends AbstractMethodDetection {
   private void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString);
+    List<ExpressionTree> newArgs = args;
+    if (newArgs.size() == 1) {
+      ExpressionTree firstArg = newArgs.get(0);
+      if (firstArg.symbolType().isArray()) {
+        if (isNewArrayWithInitializers(firstArg)) {
+          newArgs = ((NewArrayTree) firstArg).initializers();
+        } else {
+          // size is unknown
+          return;
+        }
+      }
+    }
     if (checkEmptyParams(mit, indexes)
-      || checkArgumentNumber(mit, indexes.size(), args.size())
+      || checkArgumentNumber(mit, indexes.size(), newArgs.size())
       || checkUnbalancedQuotes(mit, newFormatString)
       || checkUnbalancedBraces(mit, newFormatString)) {
       return;
     }
-    checkToStringInvocation(args);
-    verifyParameters(mit, args, indexes);
+    checkToStringInvocation(newArgs);
+    verifyParameters(mit, newArgs, indexes);
+  }
+
+  private static boolean isNewArrayWithInitializers(ExpressionTree expression) {
+    return expression.is(Tree.Kind.NEW_ARRAY) && ((NewArrayTree) expression).openBraceToken() != null;
   }
 
   private static String cleanupDoubleQuote(String formatString) {

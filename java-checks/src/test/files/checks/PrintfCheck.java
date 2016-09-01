@@ -87,6 +87,7 @@ class A {
     messageFormat.format(new Object()); // Compliant - Not considered
     messageFormat.format("");  // Compliant - Not considered
 
+    Object[] objs;
     MessageFormat.format("{0,number,$'#',##}", value); // Compliant
     MessageFormat.format("Result ''{0}''.", 14); // Compliant
     MessageFormat.format("Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
@@ -100,5 +101,9 @@ class A {
     MessageFormat.format("Result {0} and {0}!", 14, 42); // Noncompliant {{2nd argument is not used.}}
     MessageFormat.format("Result {0, number, integer} and {1, number, integer}!", 14, 42); // compliant
     MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
+    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
+    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Not enough arguments.}}
+    MessageFormat.format("{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
+    MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
   }
 }
