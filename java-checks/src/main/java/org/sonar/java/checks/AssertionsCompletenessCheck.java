@@ -37,6 +37,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private static final String FEST_ASSERT_SUPERTYPE = "org.fest.assertions.Assert";
   private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
+  private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
 
@@ -51,7 +52,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     assertThatOnType("org.assertj.core.api.Assertions"),
     assertThatOnType("org.assertj.core.api.AbstractStandardSoftAssertions"),
     // AssertJ 3.X
-    assertThatOnType("org.assertj.core.api.StrictAssertions")
+    assertThatOnType("org.assertj.core.api.StrictAssertions"),
+    // Truth 0.29
+    methodWithName("com.google.common.truth.Truth", NameCriteria.startsWith("assert"))
   );
 
   private static final MethodMatcherCollection FEST_LIKE_EXCLUSIONS = MethodMatcherCollection.create(
@@ -64,7 +67,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("using")),
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("with")),
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("describedAs")),
-    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("overridingErrorMessage"))
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("overridingErrorMessage")),
+    methodWithName(TRUTH_SUPERTYPE, NameCriteria.is("that"))
   );
 
   private Boolean chainedToAnyMethodButFestExclusions = null;

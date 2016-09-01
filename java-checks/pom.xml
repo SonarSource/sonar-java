@@ -18,7 +18,7 @@
       <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-checks-testkit</artifactId>
@@ -192,6 +192,11 @@
                   <groupId>org.easymock</groupId>
                   <artifactId>easymock</artifactId>
                   <version>3.4</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.google.truth</groupId>
+                  <artifactId>truth</artifactId>
+                  <version>0.29</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
