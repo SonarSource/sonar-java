@@ -19,18 +19,27 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
+
+  @VisibleForTesting
+  final Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = new LinkedHashMap<>();
 
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
@@ -45,11 +54,25 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    execute((MethodTree) tree);
+  }
+
+  @CheckForNull
+  public MethodBehavior execute(MethodTree methodTree) {
     try {
-      tree.accept(egwFactory.createWalker());
+      MethodBehavior methodBehavior = behaviorCache.get(methodTree.symbol());
+      if(methodBehavior == null) {
+        methodBehavior = new MethodBehavior(methodTree.symbol());
+        behaviorCache.put(methodTree.symbol(), methodBehavior);
+        ExplodedGraphWalker walker = egwFactory.createWalker(this);
+        methodBehavior = walker.visitMethod(methodTree, methodBehavior);
+      }
+      return methodBehavior;
     } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
     }
-
+    return null;
   }
+
+
 }
