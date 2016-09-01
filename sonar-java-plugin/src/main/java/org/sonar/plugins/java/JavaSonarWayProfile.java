@@ -24,6 +24,7 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.ValidationMessages;
@@ -49,6 +50,10 @@ public class JavaSonarWayProfile extends ProfileDefinition {
   @Override
   public RulesProfile createProfile(ValidationMessages messages) {
     RulesProfile profile = RulesProfile.create("Sonar way", Java.KEY);
+    Rule duplicatedBlocks = ruleFinder.findByKey("common-" + Java.KEY, "DuplicatedBlocks");
+    if(duplicatedBlocks != null) {
+      profile.activateRule(duplicatedBlocks, null);
+    }
     URL resource = JavaRulesDefinition.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
     Profile jsonProfile = gson.fromJson(readResource(resource), Profile.class);
     Map<String, String> keys = legacyKeys();
