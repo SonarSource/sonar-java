@@ -32,6 +32,7 @@ import sun.awt.CausedFocusEvent;
 import static java.lang.Boolean.TRUE;
 
 @interface CheckForNull {}
+@interface Nullable {}
 
 public static class Class extends SuperClass {
 
@@ -1901,4 +1902,76 @@ public class Squid2583 {
             baos.reset();
         }
     }
+}
+
+class NestedMax {
+  boolean a,b,c,d,e,f,g,h;
+  void foo() {
+    plop(new Object());
+    if(a) {
+
+    } else {
+
+    }
+  }
+  // Method wich requires more than the max step for the first path of execution
+  void plop(@Nullable Object param) {
+    if(param == null) { // should not raise an issue.
+
+    }
+    if(a) {
+      System.out.println("");
+    } else {
+      System.out.println("");
+    }
+    if (b) {
+      System.out.println("");
+    }else {
+      System.out.println("");
+    }
+    if(c) {
+      System.out.println("");
+    }else {
+      System.out.println("");
+    }
+    if(d) {
+      System.out.println("");
+    } else {
+      System.out.println("");
+    }
+    if(e) {
+      System.out.println("");
+    } else {
+      System.out.println("");
+    }
+    if (f) {
+      System.out.println("");
+    }else {
+      System.out.println("");
+    }
+    if(g) {
+      System.out.println("");
+    }else {
+      System.out.println("");
+    }
+    if(h) {
+      System.out.println("");
+    } else {
+      System.out.println("");
+    }
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+    System.out.println("");
+  }
+
+
 }

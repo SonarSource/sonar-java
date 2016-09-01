@@ -69,6 +69,10 @@ public abstract class SECheck implements JavaFileScanner {
     issues.add(new SEIssue(tree, message, secondary));
   }
 
+  public void interruptedExecution(CheckerContext context) {
+    // By default do nothing
+  }
+
   private static class SEIssue {
     private final Tree tree;
     private final String message;
