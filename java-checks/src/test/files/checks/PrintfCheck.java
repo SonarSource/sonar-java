@@ -6,6 +6,7 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Calendar;
+import java.time.LocalDate;
 
 class A {
   void foo(Calendar c){
@@ -42,12 +43,13 @@ class A {
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  // Noncompliant {{4th argument is not used.}}
     String.format("normal %d%% ", 1);  //Compliant
     String.format("Duke's Birthday year is %t", 12l);  // Noncompliant {{Time conversion requires a second character.}}
-    String.format("Duke's Birthday year is %tH", loc);  // Noncompliant {{Time argument is expected (long, Long, Date or Calendar).}}
+    String.format("Duke's Birthday year is %tH", loc);  // Noncompliant {{Time argument is expected (long, Long, LocalDate, Date or Calendar).}}
     String.format("%08d%n", 1);
     GregorianCalendar gc;
     String.format("Duke's Birthday year is %tH", gc);
     // Noncompliant@+1
     String.format("Duke's Birthday year is %t", loc);  // Noncompliant
+    String.format("Accessed before %tF%n", LocalDate.now()); // Compliant
 
     pr.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
     pr.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}

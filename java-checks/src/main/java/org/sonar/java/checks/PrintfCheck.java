@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -341,14 +342,16 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private void checkTimeTypeArgument(MethodInvocationTree mit, Type argType) {
-    if (!(argType.isNumerical() || argType.is("java.lang.Long") || argType.isSubtypeOf("java.util.Date") || argType.isSubtypeOf("java.util.Calendar"))) {
-      reportIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
+    if (!(argType.isNumerical()
+      || isTypeOfAny(argType, "java.lang.Long", "java.time.LocalDate")
+      || isSubtypeOfAny(argType, "java.util.Date", "java.util.Calendar"))) {
+      reportIssue(mit, "Time argument is expected (long, Long, LocalDate, Date or Calendar).");
     }
   }
 
   private static boolean isNumerical(Type argType) {
     return argType.isNumerical()
-      || isOneOf(argType,
+      || isTypeOfAny(argType,
         "java.math.BigInteger",
         "java.math.BigDecimal",
         "java.lang.Byte",
@@ -359,13 +362,12 @@ public class PrintfCheck extends AbstractMethodDetection {
         "java.lang.Double");
   }
 
-  private static boolean isOneOf(Type argType, String... fullyQualifiedNames) {
-    for (String fullyQualifiedName : fullyQualifiedNames) {
-      if (argType.is(fullyQualifiedName)) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean isTypeOfAny(Type argType, String... fullyQualifiedNames) {
+    return Arrays.stream(fullyQualifiedNames).anyMatch(argType::is);
+  }
+
+  private static boolean isSubtypeOfAny(Type argType, String... fullyQualifiedNames) {
+    return Arrays.stream(fullyQualifiedNames).anyMatch(argType::isSubtypeOf);
   }
 
   private static boolean usesMessageFormat(String formatString, List<String> params) {
