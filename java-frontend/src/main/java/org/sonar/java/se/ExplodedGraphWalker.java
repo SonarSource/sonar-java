@@ -49,7 +49,6 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -70,6 +69,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ExplodedGraphWalker extends BaseTreeVisitor {
+public class ExplodedGraphWalker {
 
   private static final String EQUALS_METHOD_NAME = "equals";
   /**
@@ -106,11 +106,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private LiveVariables liveVariables;
 
   private CheckerDispatcher checkerDispatcher;
+  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
 
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
   private boolean cleanup = true;
+  MethodBehavior methodBehavior;
 
   public static class ExplodedGraphTooBigException extends RuntimeException {
     public ExplodedGraphTooBigException(String s) {
@@ -134,8 +136,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @VisibleForTesting
   ExplodedGraphWalker() {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    this.checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
-      new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck()));
+    List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
+      new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
+    this.checkerDispatcher = new CheckerDispatcher(this, checks);
+    symbolicExecutionVisitor = new SymbolicExecutionVisitor((List) checks);
   }
 
   @VisibleForTesting
@@ -144,17 +148,22 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks) {
+  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, SymbolicExecutionVisitor symbolicExecutionVisitor) {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
+    this.symbolicExecutionVisitor = symbolicExecutionVisitor;
   }
 
-  @Override
-  public void visitMethod(MethodTree tree) {
+
+
+  @CheckForNull
+  public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
     BlockTree body = tree.block();
+    this.methodBehavior = methodBehavior;
     if (body != null) {
       execute(tree);
     }
+    return this.methodBehavior;
   }
 
   private void execute(MethodTree tree) {
@@ -202,7 +211,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator());
           handleBlockExit(programPosition);
         }
-      } catch (ExplodedGraphWalker.TooManyNestedBooleanStatesException e) {
+      } catch (TooManyNestedBooleanStatesException e) {
         throw new MaximumStepsReachedException(
           "reached maximum number of " + MAX_NESTED_BOOLEAN_STATES + " branched states for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name(), e);
       }
@@ -465,6 +474,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
     programState = unstack.state;
     logState(mit);
+
+    // get method behavior for method with known declaration (ie: within the same file)
+    Tree declaration = mit.symbol().declaration();
+    if(declaration != null) {
+      // (FIXME) nothing done of the invoked behavior
+      MethodBehavior methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
+    }
+
+
+
     // Enqueue exceptional paths
     node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, !b.isCatchBlock()));
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
@@ -738,8 +757,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker() {
-      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks);
+    public ExplodedGraphWalker createWalker(SymbolicExecutionVisitor symbolicExecutionVisitor) {
+      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks, symbolicExecutionVisitor);
     }
 
     @SuppressWarnings("unchecked")
