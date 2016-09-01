@@ -22,6 +22,7 @@ package org.sonar.plugins.java;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
@@ -45,12 +46,13 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(ruleFinder());
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(ruleFinder(false));
     RulesProfile profile = profileDef.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
-    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(260);
+    assertThat(profile.getActiveRulesByRepository("common-java")).hasSize(1);
+    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(270);
     assertThat(profile.getName()).isEqualTo("Sonar way");
     Set<String> keys = new HashSet<>();
     for (ActiveRule activeRule : activeRules) {
@@ -66,13 +68,32 @@ public class JavaSonarWayProfileTest {
   }
 
 
-  static RuleFinder ruleFinder() {
+  @Test
+  public void should_load_profile_in_sonar_lint_context() {
+    ProfileDefinition sonarWay = new JavaSonarWayProfile(ruleFinder(true));
+    ValidationMessages validation = ValidationMessages.create();
+    RulesProfile profile = sonarWay.createProfile(validation);
+    assertThat(profile.getActiveRules()).onProperty("repositoryKey").containsOnly(CheckList.REPOSITORY_KEY);
+    assertThat(profile.getActiveRulesByRepository("common-java")).isEmpty();
+    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY).size()).isGreaterThanOrEqualTo(269);
+    assertThat(profile.getName()).isEqualTo("Sonar way");
+
+    assertThat(validation.hasErrors()).isFalse();
+    // Check that we use severity from the read rule and not default one.
+    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY).get(0).getSeverity()).isSameAs(RulePriority.MINOR);
+
+  }
+
+  static RuleFinder ruleFinder(boolean forSonarLint) {
     return when(mock(RuleFinder.class).findByKey(anyString(), anyString())).thenAnswer(new Answer<Rule>() {
       @Override
       public Rule answer(InvocationOnMock invocation) {
         Object[] arguments = invocation.getArguments();
-        Rule rule = Rule.create((String) arguments[0], (String) arguments[1], (String) arguments[1]);
-        return rule.setSeverity(RulePriority.MINOR);
+        if(!forSonarLint || CheckList.REPOSITORY_KEY.equals(arguments[0])) {
+          Rule rule = Rule.create((String) arguments[0], (String) arguments[1], (String) arguments[1]);
+          return rule.setSeverity(RulePriority.MINOR);
+        }
+        return null;
       }
     }).getMock();
   }
