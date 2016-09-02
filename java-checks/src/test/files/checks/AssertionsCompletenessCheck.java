@@ -2,6 +2,7 @@ import org.fest.assertions.BooleanAssert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.fest.assertions.Assertions;
+import com.google.common.truth.Truth;
 
 import java.util.Comparator;
 import java.util.List;
@@ -82,5 +83,16 @@ class AssertionsCompleteness {
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
     softly.assertThat(1); // Noncompliant
     softly.assertAll();
+  }
+
+  @Test
+  public void testTruthFramework() {
+    boolean b = true;
+    Truth.assertThat(b).isTrue();
+    String s = "Hello Truth Framework World!";
+    Truth.assertThat(s).contains("Hello");
+    Truth.assertThat(b); // Noncompliant
+    Truth.assertWithMessage("Invalid option").that(b).isFalse();
+    Truth.assertWithMessage("Invalid option").that(b); // Noncompliant
   }
 }
