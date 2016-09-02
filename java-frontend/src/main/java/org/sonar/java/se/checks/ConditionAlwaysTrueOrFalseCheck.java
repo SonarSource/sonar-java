@@ -26,35 +26,51 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 @Rule(key = "S2583")
 public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
 
-  private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
-  private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
+  private Deque<EvaluatedConditions> evaluatedConditions = new LinkedList<>();
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    evaluatedToFalse.clear();
-    evaluatedToTrue.clear();
+    evaluatedConditions.push(new EvaluatedConditions());
   }
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    for (Tree condition : Sets.difference(evaluatedToFalse, evaluatedToTrue)) {
+    EvaluatedConditions ec = evaluatedConditions.pop();
+    for (Tree condition : Sets.difference(ec.evaluatedToFalse, ec.evaluatedToTrue)) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"");
     }
-    for (Tree condition : Sets.difference(evaluatedToTrue, evaluatedToFalse)) {
+    for (Tree condition : Sets.difference(ec.evaluatedToTrue, ec.evaluatedToFalse)) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"");
     }
   }
 
   public void evaluatedToFalse(Tree condition) {
-    evaluatedToFalse.add(condition);
+    evaluatedConditions.peek().evaluatedToFalse(condition);
   }
 
   public void evaluatedToTrue(Tree condition) {
-    evaluatedToTrue.add(condition);
+    evaluatedConditions.peek().evaluatedToTrue(condition);
+  }
+
+  private static class EvaluatedConditions {
+    private final Set<Tree> evaluatedToFalse = new HashSet<>();
+    private final Set<Tree> evaluatedToTrue = new HashSet<>();
+
+    void evaluatedToFalse(Tree condition) {
+      evaluatedToFalse.add(condition);
+    }
+
+    void evaluatedToTrue(Tree condition) {
+      evaluatedToTrue.add(condition);
+    }
+
   }
 }
