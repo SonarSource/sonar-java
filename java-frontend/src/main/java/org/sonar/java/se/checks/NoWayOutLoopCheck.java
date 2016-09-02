@@ -40,7 +40,9 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,24 +56,28 @@ public class NoWayOutLoopCheck extends SECheck {
     INCREMENT, DECREMENT, INDETERMINATE
   }
 
-  Map<Tree, CFGLoop> loopStarts;
-  boolean threadRunMethod;
+  private final Deque<MethodContext> contexts = new LinkedList<>();
 
   @Override
   public void init(MethodTree tree, CFG cfg) {
-    loopStarts = CFGLoop.getCFGLoops(cfg);
-    threadRunMethod = THREAD_RUN_MATCHER.matches(tree);
+    MethodContext context = new MethodContext(tree, cfg);
+    contexts.push(context);
   }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    if (threadRunMethod) {
+    if (contexts.peek().isThreadRunMethod()) {
       // It is OK to have an endless Thread run method
       return context.getState();
     }
     final PreStatementVisitor visitor = new PreStatementVisitor(context);
     syntaxNode.accept(visitor);
     return visitor.programState;
+  }
+
+  @Override
+  public void checkEndOfExecution(CheckerContext context) {
+    contexts.pop();
   }
 
   private class PreStatementVisitor extends CheckerTreeNodeVisitor {
@@ -86,8 +92,8 @@ public class NoWayOutLoopCheck extends SECheck {
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
       if (isHardCodedTrue(tree.condition())) {
-        CFGLoop loopBlocks = loopStarts.get(tree);
-        if (loopBlocks.hasNoWayOut()) {
+        CFGLoop loopBlocks = contexts.peek().getLoop(tree);
+        if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
           context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
         }
       }
@@ -95,9 +101,9 @@ public class NoWayOutLoopCheck extends SECheck {
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
-      CFGLoop loopBlocks = loopStarts.get(tree);
       if (tree.condition() == null) {
-        if (loopBlocks.hasNoWayOut()) {
+        CFGLoop loopBlocks = contexts.peek().getLoop(tree);
+        if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
           context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
         }
       } else if (isConditionUnreachable(tree)) {
@@ -230,5 +236,24 @@ public class NoWayOutLoopCheck extends SECheck {
 
   static boolean isHardCodedTrue(ExpressionTree condition) {
     return condition.is(Tree.Kind.BOOLEAN_LITERAL) && Boolean.parseBoolean(((LiteralTree) condition).value());
+  }
+
+  private static class MethodContext {
+
+    private final Map<Tree, CFGLoop> loopStarts;
+    private final boolean threadRunMethod;
+
+    MethodContext(MethodTree tree, CFG cfg) {
+      loopStarts = CFGLoop.getCFGLoops(cfg);
+      threadRunMethod = THREAD_RUN_MATCHER.matches(tree);
+    }
+
+    boolean isThreadRunMethod() {
+      return threadRunMethod;
+    }
+
+    CFGLoop getLoop(Tree tree) {
+      return loopStarts.get(tree);
+    }
   }
 }
