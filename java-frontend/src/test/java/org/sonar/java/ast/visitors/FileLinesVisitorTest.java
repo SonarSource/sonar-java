@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -38,6 +37,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class FileLinesVisitorTest {
 
   @Before
   public void setUp() throws Exception {
-    conf = new JavaConfiguration(Charsets.UTF_8);
+    conf = new JavaConfiguration(StandardCharsets.UTF_8);
     baseDir = new File("src/test/files/metrics");
   }
 
@@ -157,7 +157,7 @@ public class FileLinesVisitorTest {
       CommentsCounter counter = new CommentsCounter();
       try {
         int lineNumber = 1;
-        for (String line : Files.readLines(new File(baseDir, filename), Charsets.UTF_8)) {
+        for (String line : Files.readLines(new File(baseDir, filename), StandardCharsets.UTF_8)) {
           int commentCount = StringUtils.countMatches(line, "comment");
           for (int i = 0; i < commentCount; i++) {
             counter.commentedLines.add(lineNumber);

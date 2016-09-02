@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Before;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
@@ -46,7 +46,7 @@ public class PublicApiCheckerTest {
 
   @Before
   public void setUp() {
-    ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
     publicApiChecker = new PublicApiChecker();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }

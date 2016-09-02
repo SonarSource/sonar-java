@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
@@ -32,11 +31,12 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ClassTreeImplTest {
-  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
 
   private CompilationUnitTree createTree(String code) {
     CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);

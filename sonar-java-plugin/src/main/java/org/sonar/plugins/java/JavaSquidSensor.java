@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.Lists;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -44,7 +43,8 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Phase(name = Phase.Name.PRE)
 @DependsUpon("BEFORE_SQUID")
@@ -96,11 +96,7 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
-    List<File> files = Lists.newArrayList();
-    for (InputFile inputFile : inputFiles) {
-      files.add(inputFile.file());
-    }
-    return files;
+    return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 
   private JavaConfiguration createConfiguration() {

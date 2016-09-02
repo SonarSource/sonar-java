@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.sonar.api.profiles.ProfileDefinition;
@@ -32,6 +31,7 @@ import org.sonar.java.checks.CheckList;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class JavaSonarWayProfile extends ProfileDefinition {
 
   private static String readResource(URL resource) {
     try {
-      return Resources.toString(resource, Charsets.UTF_8);
+      return Resources.toString(resource, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read: " + resource, e);
     }

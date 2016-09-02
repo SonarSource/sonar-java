@@ -19,17 +19,18 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class PackageUtilsTest {
 
-  private static final ActionParser PARSER = JavaParser.createParser(Charsets.UTF_8);
+  private static final ActionParser PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
 
   @Test
   public void no_package_empty_string() {

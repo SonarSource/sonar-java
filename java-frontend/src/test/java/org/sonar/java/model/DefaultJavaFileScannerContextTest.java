@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Charsets;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -39,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -60,7 +59,7 @@ public class DefaultJavaFileScannerContextTest {
   @Before
   public void setup() {
     sonarComponents = createSonarComponentsMock();
-    compilationUnitTree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(JAVA_FILE);
+    compilationUnitTree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(JAVA_FILE);
     context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, sonarComponents, null, true);
   }
 

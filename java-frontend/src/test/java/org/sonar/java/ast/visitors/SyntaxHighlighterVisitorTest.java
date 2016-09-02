@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -42,6 +41,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class SyntaxHighlighterVisitorTest {
   public void parse_error() throws Exception {
     SensorContextTester spy = spy(context);
     File file = temp.newFile();
-    Files.write("ParseError", file, Charsets.UTF_8);
+    Files.write("ParseError", file, StandardCharsets.UTF_8);
     fs.add(new DefaultInputFile("", file.getName()));
     scan(file);
     verify(spy, never()).newHighlighting();
@@ -110,14 +110,14 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(File file) {
-    JavaSquid squid = new JavaSquid(new JavaConfiguration(Charsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    JavaSquid squid = new JavaSquid(new JavaConfiguration(StandardCharsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 
   private File generateTestFile() throws IOException {
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
-    lines = Files.readLines(file, Charsets.UTF_8);
+    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
+    lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(eol).join(lines);
     fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
     return file;

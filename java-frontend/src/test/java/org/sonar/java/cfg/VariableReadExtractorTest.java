@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -31,13 +30,14 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class VariableReadExtractorTest {
 
-  public static final ActionParser<Tree> PARSER = JavaParser.createParser(Charsets.UTF_8);
+  public static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
 
 
   private static MethodTree buildMethodTree(String methodCode) {
