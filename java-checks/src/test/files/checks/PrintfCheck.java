@@ -19,7 +19,9 @@ class A {
     String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);  // Noncompliant {{Not enough arguments.}}
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
-    String.format("First Line");// Noncompliant {{String contains no format specifiers.}}
+    String.format("First Line");   // Noncompliant {{String contains no format specifiers.}}
+    String.format("First Line%%"); // Noncompliant {{String contains no format specifiers.}}
+    String.format("First Line%n"); // Compliant
     String.format("%< is equals to %d", 2);   // Noncompliant {{The argument index '<' refers to the previous format specifier but there isn't one.}}
     String.format("Is myObject null ? %b", myObject);   // Noncompliant {{Directly inject the boolean value.}}
     String.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}

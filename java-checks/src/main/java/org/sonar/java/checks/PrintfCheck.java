@@ -112,12 +112,16 @@ public class PrintfCheck extends AbstractMethodDetection {
       return;
     }
     checkLineFeed(formatString, mit);
-    cleanupLineSeparator(params);
-    if (checkEmptyParams(mit, params)
-      || checkArgumentNumber(mit, argIndexes(params).size(), args.size())) {
+    if (checkEmptyParams(mit, params)) {
       return;
     }
-    verifyParameters(mit, args, params);
+    cleanupLineSeparator(params);
+    if (!params.isEmpty()) {
+      if (checkArgumentNumber(mit, argIndexes(params).size(), args.size())) {
+        return;
+      }
+      verifyParameters(mit, args, params);
+    }
   }
 
   private void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
@@ -264,11 +268,11 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private static void cleanupLineSeparator(List<String> params) {
-    // Cleanup %n and %% values
+    // Cleanup %n values
     Iterator<String> iter = params.iterator();
     while (iter.hasNext()) {
       String param = iter.next();
-      if ("n".equals(param) || "%".equals(param)) {
+      if ("n".equals(param)) {
         iter.remove();
       }
     }
@@ -403,7 +407,10 @@ public class PrintfCheck extends AbstractMethodDetection {
           param.append(matcher.group(groupIndex));
         }
       }
-      params.add(param.toString());
+      String specifier = param.toString();
+      if(!"%".equals(specifier)) {
+        params.add(specifier);
+      }
     }
     return params;
   }
