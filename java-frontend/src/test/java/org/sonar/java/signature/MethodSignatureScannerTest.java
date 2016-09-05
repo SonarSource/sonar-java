@@ -19,7 +19,6 @@
  */
 package org.sonar.java.signature;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -76,7 +76,7 @@ public class MethodSignatureScannerTest {
 
   @Test
   public void scanMethodTree() {
-    ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
     List<Tree> members = ((ClassTree) ((CompilationUnitTree) p.parse("class A { " +
       "A(){} " +
       "String[] method(int a){} " +

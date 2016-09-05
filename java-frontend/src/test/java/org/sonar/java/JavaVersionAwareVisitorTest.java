@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +42,7 @@ public class JavaVersionAwareVisitorTest {
 
   private JavaCheck[] javaChecks;
   private List<String> messages;
+  private JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
 
   @Before
   public void setUp() throws Exception {
@@ -56,13 +57,12 @@ public class JavaVersionAwareVisitorTest {
 
   @Test
   public void all_check_executed_when_no_java_version() {
-    checkIssues(new JavaConfiguration(Charsets.UTF_8));
+    checkIssues(new JavaConfiguration(StandardCharsets.UTF_8));
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck");
   }
 
   @Test
   public void all_check_executed_when_invalid_java_version() {
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setJavaVersion(new JavaVersionImpl());
     checkIssues(conf);
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck");
@@ -70,7 +70,6 @@ public class JavaVersionAwareVisitorTest {
 
   @Test
   public void only_checks_with_adequate_java_version_higher_than_configuration_version_are_executed() {
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setJavaVersion(new JavaVersionImpl(7));
     checkIssues(conf);
     assertThat(messages).containsExactly("JavaVersionCheck_7", "SimpleCheck", "ContextualCheck_7");
@@ -82,7 +81,6 @@ public class JavaVersionAwareVisitorTest {
 
   @Test
   public void no_java_version_matching() {
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setJavaVersion(new JavaVersionImpl(6));
     checkIssues(conf);
     assertThat(messages).containsExactly("SimpleCheck", "ContextualCheck_6");

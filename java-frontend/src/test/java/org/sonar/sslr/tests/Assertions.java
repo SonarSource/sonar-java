@@ -19,7 +19,6 @@
  */
 package org.sonar.sslr.tests;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
@@ -36,6 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
+import java.nio.charset.StandardCharsets;
+
 public class Assertions {
 
   public static RuleAssert assertThat(Rule actual) {
@@ -47,8 +48,8 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser<Tree>(
-      Charsets.UTF_8,
+    return new ParserAssert(new ActionParser<>(
+      StandardCharsets.UTF_8,
       b,
       JavaGrammar.class,
       new TreeFactory(),

@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class StrutsTest {
     File prjDir = new File("target/test-projects/struts-core-1.3.9");
     File srcDir = new File(prjDir, "src");
 
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     context = SensorContextTester.create(prjDir);
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);

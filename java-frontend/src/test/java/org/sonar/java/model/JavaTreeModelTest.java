@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.typed.ActionParser;
@@ -93,13 +92,14 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeModelTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
 
   @Test
   public void line_of_tree() throws Exception {

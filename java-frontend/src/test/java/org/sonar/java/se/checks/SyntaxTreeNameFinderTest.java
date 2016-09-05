@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -32,11 +31,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SyntaxTreeNameFinderTest {
 
-  public static ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
+  public static ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
 
   private static MethodTree buildSyntaxTree(String methodCode) {
     CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");

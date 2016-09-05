@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -39,6 +38,7 @@ import org.sonar.java.RspecKey;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -199,7 +199,7 @@ public abstract class CheckVerifier {
       if(resource == null) {
         throw new IOException();
       }
-      String json = Resources.toString(resource, Charsets.UTF_8);
+      String json = Resources.toString(resource, StandardCharsets.UTF_8);
       return LINEAR_FUNC_PATTERN.matcher(json).find();
     } catch (IOException e) {
       // Failed to open json file, as this is not part of API yet, we should not fail because of this

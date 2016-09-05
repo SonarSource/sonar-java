@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.RecognitionException;
@@ -53,6 +52,7 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
 import java.io.InterruptedIOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -166,7 +166,7 @@ public class JavaAstScannerTest {
   }
 
   private static JavaAstScanner defaultJavaAstScanner() {
-    return new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
+    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {

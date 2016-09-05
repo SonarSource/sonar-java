@@ -19,10 +19,8 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.fest.assertions.Fail;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
@@ -43,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -557,9 +556,13 @@ public class TypeAndReferenceSolverTest {
   private static final String STRING = "\"string\"";
 
   private CompilationUnitTree treeOf(String input) {
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(input);
+    CompilationUnitTree tree = parse(input);
     SemanticModel.createFor(tree, ImmutableList.<File>of());
     return tree;
+  }
+
+  private static CompilationUnitTree parse(String input) {
+    return (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(input);
   }
 
   private JavaType typeOf(String input) {
@@ -568,7 +571,7 @@ public class TypeAndReferenceSolverTest {
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
+    CompilationUnitTree tree = parse(p);
     tree.accept(visitor);
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(false);
@@ -581,7 +584,7 @@ public class TypeAndReferenceSolverTest {
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { Object o = " + input + "; } }";
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
+    CompilationUnitTree tree = parse(p);
     tree.accept(visitor);
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(true);

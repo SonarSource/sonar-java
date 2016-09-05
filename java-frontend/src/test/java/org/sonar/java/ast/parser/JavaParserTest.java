@@ -19,12 +19,13 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.base.Charsets;
 import org.junit.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
@@ -33,7 +34,7 @@ public class JavaParserTest {
 
   @Test
   public void parent_link_should_be_computed() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse("class A { void foo() {} }");
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse("class A { void foo() {} }");
     ClassTree classTree = (ClassTree) cut.types().get(0);
     MethodTree method = (MethodTree) classTree.members().get(0);
     assertThat(method.parent()).isSameAs(classTree);
@@ -45,7 +46,7 @@ public class JavaParserTest {
   public void receiver_type_should_be_parsed() throws Exception {
     try {
       String code = "class Main { class Inner { Inner(Main Main.this) {}};}";
-      CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(code);
+      CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(code);
       Tree constructor = ((ClassTree) ((ClassTree) cut.types().get(0)).members().get(0)).members().get(0);
       assertThat(constructor).isInstanceOf(MethodTree.class);
       assertThat(((MethodTree) constructor).parameters().get(0).simpleName().name()).isEqualTo("this");

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -354,7 +354,7 @@ public class CFGTest {
 
   }
 
-  public static final ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
+  public static final ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
 
   private static CFG buildCFG(final String methodCode) {
     final CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");

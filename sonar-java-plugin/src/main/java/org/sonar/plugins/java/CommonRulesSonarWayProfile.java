@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.base.Charsets;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.profiles.XMLProfileParser;
@@ -28,6 +27,7 @@ import org.sonar.api.utils.ValidationMessages;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class CommonRulesSonarWayProfile extends ProfileDefinition {
 
@@ -42,7 +42,7 @@ public class CommonRulesSonarWayProfile extends ProfileDefinition {
     RulesProfile rulesProfile = null;
     
     try (InputStream input = getClass().getResourceAsStream("/org/sonar/plugins/java/common_rules_sonar_way.xml");
-      InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8)) {
+      InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
       rulesProfile = parser.parse(reader, validationMessages);
     } catch (IOException e) {
       // close Quietly

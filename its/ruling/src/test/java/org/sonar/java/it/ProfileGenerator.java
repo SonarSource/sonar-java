@@ -19,7 +19,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -31,6 +30,7 @@ import org.sonar.wsclient.jsonsimple.JSONValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,7 +94,7 @@ public class ProfileGenerator {
         .append("</profile>");
 
       File file = File.createTempFile("profile", ".xml");
-      Files.write(sb, file, Charsets.UTF_8);
+      Files.write(sb, file, StandardCharsets.UTF_8);
       orchestrator.getServer().restoreProfile(FileLocation.of(file));
       file.delete();
     } catch (IOException e) {

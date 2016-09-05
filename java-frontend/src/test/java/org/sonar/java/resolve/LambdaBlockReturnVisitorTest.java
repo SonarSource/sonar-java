@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +37,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class LambdaBlockReturnVisitorTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
 
   @Test
   public void test() throws Exception {

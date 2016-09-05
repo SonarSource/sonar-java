@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class VisitorsBridgeTest {
   @Nullable
   private static CompilationUnitTree parse(String code) {
     try {
-      return (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(code);
+      return (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(code);
     } catch (RecognitionException e) {
       return null;
     }

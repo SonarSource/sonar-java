@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
@@ -42,6 +41,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,8 +71,8 @@ public class SonarSymbolTableVisitorTest {
   @Test
   public void sonar_symbol_table() throws Exception {
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, Charsets.UTF_8);
-    lines = Files.readLines(file, Charsets.UTF_8);
+    Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, StandardCharsets.UTF_8);
+    lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(EOL).join(lines);
     fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));

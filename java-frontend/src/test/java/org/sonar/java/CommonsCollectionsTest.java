@@ -19,9 +19,7 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
-
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;
@@ -35,6 +33,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class CommonsCollectionsTest {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
 
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     context = SensorContextTester.create(srcDir);
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);

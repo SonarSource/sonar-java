@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
@@ -31,13 +30,14 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SyntacticEquivalenceTest {
 
-  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
 
   @Test
   public void null_equivalence() throws Exception {

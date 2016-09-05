@@ -20,7 +20,6 @@
 package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -38,6 +37,7 @@ import org.sonar.squidbridge.rules.ExternalDescriptionLoader;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -118,7 +118,7 @@ public class JavaRulesDefinition implements RulesDefinition {
 
   private static String readResource(URL resource) {
     try {
-      return Resources.toString(resource, Charsets.UTF_8);
+      return Resources.toString(resource, StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read: " + resource, e);
     }

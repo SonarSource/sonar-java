@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
@@ -36,12 +35,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaPropertiesHelperTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
 
   @Test
   public void private_constructor() throws Exception {

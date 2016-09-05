@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +30,7 @@ import org.sonar.api.utils.PathUtils;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -120,7 +120,7 @@ public class MeasurerTest {
     inputFile.setModuleBaseDir(fs.baseDirPath());
     fs.add(inputFile);
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
-    JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
+    JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
     assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);

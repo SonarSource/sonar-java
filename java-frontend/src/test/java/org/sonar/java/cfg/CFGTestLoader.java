@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class CFGTestLoader {
@@ -41,12 +41,12 @@ public class CFGTestLoader {
   public CFGTestLoader(String fileName) {
     final File file = new File(fileName);
     try (StringWriter buffer = new StringWriter(); PrintWriter printer = new PrintWriter(buffer);) {
-      List<String> lines = FileUtils.readLines(file, Charsets.UTF_8);
+      List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
       for (String line : lines) {
         printer.println(line);
       }
       printer.flush();
-      ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
+      ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
       compiledTest = (CompilationUnitTree) parser.parse(buffer.toString());
     } catch (Exception e) {
       Assert.fail("Unable to compile file " + file.getAbsolutePath());
