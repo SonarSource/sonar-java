@@ -22,17 +22,22 @@ package org.sonar.java.se;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -49,6 +54,38 @@ public class SymbolicExecutionVisitorTest {
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList())).containsSequence("topMethod", "bar", "qix", "foo", "independent");
+  }
+
+  @Test
+  public void method_behavior_yields() {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
+    Optional<MethodSymbol> topMethod = sev.behaviorCache.keySet().stream().filter(s -> "method".equals(s.name())).findFirst();
+
+    assertThat(topMethod.isPresent()).isTrue();
+    MethodBehavior mb = sev.behaviorCache.get(topMethod.get());
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(3);
+
+    List<MethodYield> trueResults = yields.stream().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint)).collect(Collectors.toList());
+    assertThat(trueResults).hasSize(1);
+    MethodYield trueResult = trueResults.get(0);
+
+    // 'a' has constraint "null"
+    assertThat(trueResult.parametersConstraints[0].isNull()).isTrue();
+    // no constraint on 'b'
+    assertThat(trueResult.parametersConstraints[1]).isNull();
+    // result SV is a different SV than 'a' and 'b'
+    assertThat(trueResult.resultIndex).isEqualTo(-1);
+
+    List<MethodYield> falseResults = yields.stream().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint)).collect(Collectors.toList());
+    assertThat(falseResults).hasSize(2);
+    // for both "False" results, 'a' has the constraint "not null"
+    assertThat(falseResults.stream().filter(my -> !my.parametersConstraints[0].isNull()).count()).isEqualTo(2);
+    // 1) 'b' has constraint "false", result is 'b'
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints[1]) && my.resultIndex == 1).count()).isEqualTo(1);
+
+    // 2) 'b' is "true", result is a different SV than 'a' and 'b'
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints[1]) && my.resultIndex == -1).count()).isEqualTo(1);
   }
 
   @Test
