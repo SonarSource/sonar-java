@@ -24,10 +24,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -35,14 +37,14 @@ import java.util.List;
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()
-    .typeDefinition("java.lang.Runtime")
-    .name("exec")
-    .withNoParameterConstraint();
+      .typeDefinition("java.lang.Runtime")
+      .name("exec")
+      .withNoParameterConstraint();
 
   private static final MethodMatcher PROCESS_BUILDER_COMMAND_MATCHER = MethodMatcher.create()
-    .typeDefinition("java.lang.ProcessBuilder")
-    .name("command")
-    .withNoParameterConstraint();
+      .typeDefinition("java.lang.ProcessBuilder")
+      .name("command")
+      .withNoParameterConstraint();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -78,7 +80,8 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
     }
   }
 
-  private boolean isDynamicArray(ExpressionTree arg, Tree mit) {
+  private boolean isDynamicArray(ExpressionTree argument, Tree mit) {
+    ExpressionTree arg = getDeclaration(argument);
     if (arg.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree nat = (NewArrayTree) arg;
       for (ExpressionTree expressionTree : nat.initializers()) {
@@ -92,5 +95,18 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
     setParameterNameFromArgument(arg);
     boolean argIsString = arg.symbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
+  }
+
+  private static ExpressionTree getDeclaration(ExpressionTree arg) {
+    if (arg.symbolType().is("java.lang.String[]") && arg.is(Tree.Kind.IDENTIFIER)) {
+      Tree declaration = ((IdentifierTree) arg).symbol().declaration();
+      if (declaration != null) {
+        ExpressionTree result = ((VariableTree) declaration).initializer();
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+    return arg;
   }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 class A {
   public void listContent(String input) {
     Runtime rt = Runtime.getRuntime();
-    String[] cmds;
+    String[] cmds = new String[]{"" , input};
     // input could easily contain extra commands
     rt.exec("ls " + input); // Noncompliant {{Make sure "input" is properly sanitized before use in this OS command.}}
     rt.exec(cmds); // Noncompliant
@@ -39,7 +39,7 @@ class A {
     pb = new ProcessBuilder(getCommands());
     
     String[] args2 = new String[] {"echo", "alpha", "tango"};
-    pb.command(args2); // Noncompliant
+    pb.command(args2); // compliant
     pb.command(new String[] {"echo", "alpha", "tango"}); // Compliant
     pb.command("echo", "alpha", "tango"); // Compliant
     pb.command(); // Compliant
@@ -61,4 +61,14 @@ class A {
     Process p = b.start();
     new BufferedReader(new InputStreamReader(p.getInputStream())).lines().forEach(System.out::println);
   }
+
+  public void doStuff() throws IOException
+  {
+    String[] args = new String[] {
+        "arg1", "arg2", "arg3"
+    };
+    ProcessBuilder builder = new ProcessBuilder(args);
+    builder.start();
+  }
+
 }
