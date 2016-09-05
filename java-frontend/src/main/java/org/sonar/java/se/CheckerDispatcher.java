@@ -132,4 +132,8 @@ public class CheckerDispatcher implements CheckerContext {
   public ConstraintManager getConstraintManager() {
     return explodedGraphWalker.constraintManager;
   }
+
+  public void interruptedExecution() {
+    checks.forEach(c -> c.interruptedExecution(this));
+  }
 }

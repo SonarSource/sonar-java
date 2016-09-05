@@ -79,6 +79,11 @@ public class NoWayOutLoopCheck extends SECheck {
     contexts.pop();
   }
 
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    contexts.pop();
+  }
+
   private class PreStatementVisitor extends CheckerTreeNodeVisitor {
 
     private final CheckerContext context;

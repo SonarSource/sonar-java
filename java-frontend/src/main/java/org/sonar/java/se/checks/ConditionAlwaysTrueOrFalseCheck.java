@@ -60,6 +60,11 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
     evaluatedConditions.peek().evaluatedToTrue(condition);
   }
 
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    evaluatedConditions.pop();
+  }
+
   private static class EvaluatedConditions {
     private final Set<Tree> evaluatedToFalse = new HashSet<>();
     private final Set<Tree> evaluatedToTrue = new HashSet<>();

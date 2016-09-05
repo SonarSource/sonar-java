@@ -185,6 +185,7 @@ public class ExplodedGraphWalker {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
+        checkerDispatcher.interruptedExecution();
         throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name());
       }
       // LIFO:
@@ -212,6 +213,7 @@ public class ExplodedGraphWalker {
           handleBlockExit(programPosition);
         }
       } catch (TooManyNestedBooleanStatesException e) {
+        checkerDispatcher.interruptedExecution();
         throw new MaximumStepsReachedException(
           "reached maximum number of " + MAX_NESTED_BOOLEAN_STATES + " branched states for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name(), e);
       }
