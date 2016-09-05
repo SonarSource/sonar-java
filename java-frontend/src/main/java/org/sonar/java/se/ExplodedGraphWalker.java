@@ -193,7 +193,7 @@ public class ExplodedGraphWalker {
       programPosition = node.programPoint;
       programState = node.programState;
       if (programPosition.block.successors().isEmpty()) {
-        checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+        handleEndOfExecutionPath();
         continue;
       }
       try {
@@ -228,12 +228,18 @@ public class ExplodedGraphWalker {
     constraintManager = null;
   }
 
+  private void handleEndOfExecutionPath() {
+    checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+    methodBehavior.createYield(programState);
+  }
+
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name()) && tree.parameters().size() == 1;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
+      methodBehavior.addParameter(variableTree.symbol(), sv);
       stateStream = stateStream.map(ps -> ps.put(variableTree.symbol(), sv));
       if (isEqualsMethod || parameterCanBeNull(variableTree)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
@@ -253,7 +259,7 @@ public class ExplodedGraphWalker {
 
   private void cleanUpProgramState(CFG.Block block) {
     if (cleanup) {
-      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block));
+      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), methodBehavior.parameters());
       programState = programState.cleanupConstraints();
     }
   }
