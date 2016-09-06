@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -237,7 +238,7 @@ public class ProgramState {
     return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
   }
 
-  public ProgramState cleanupDeadSymbols(Set<Symbol> liveVariables) {
+  public ProgramState cleanupDeadSymbols(Set<Symbol> liveVariables, Collection<SymbolicValue> protectedSymbolicValues) {
     class CleanAction implements BiConsumer<Symbol, SymbolicValue> {
       boolean newProgramState = false;
       PMap<Symbol, SymbolicValue> newValues = values;
@@ -246,7 +247,7 @@ public class ProgramState {
 
       @Override
       public void accept(Symbol symbol, SymbolicValue symbolicValue) {
-        if (isLocalVariable(symbol) && !liveVariables.contains(symbol)) {
+        if (isLocalVariable(symbol) && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
           newProgramState = true;
           newValues = newValues.remove(symbol);
           newReferences = decreaseReference(newReferences, symbolicValue);

@@ -259,7 +259,7 @@ public class ExplodedGraphWalker {
 
   private void cleanUpProgramState(CFG.Block block) {
     if (cleanup) {
-      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block));
+      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), methodBehavior.parameters());
       programState = programState.cleanupConstraints();
     }
   }
