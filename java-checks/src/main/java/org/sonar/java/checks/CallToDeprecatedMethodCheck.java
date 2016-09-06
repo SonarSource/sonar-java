@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -54,21 +55,42 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
     if(!hasSemantic()) {
       return;
     }
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (isDeprecated(symbol) && nestedDeprecationLevel == 0) {
-        String name;
-        if (isConstructor(symbol)) {
-          name = symbol.owner().name(); 
-        } else {
-          name = symbol.name();
-        }
-        reportIssue(tree, "Remove this use of \"" + name + "\"; it is deprecated.");
+    if (nestedDeprecationLevel == 0) {
+      if (tree.is(Tree.Kind.IDENTIFIER)) {
+        checkIdentifierIssue((IdentifierTree) tree);
+      } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+        checkMethodIssue((MethodTree) tree);
       }
-    } else if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
+    }
+    if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
       nestedDeprecationLevel++;
     }
+  }
 
+  @Override
+  public void leaveNode(Tree tree) {
+    if (hasSemantic() && (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree))) {
+      nestedDeprecationLevel--;
+    }
+  }
+
+  private void checkIdentifierIssue(IdentifierTree identifierTree) {
+    Symbol symbol = identifierTree.symbol();
+    if (isDeprecated(symbol)) {
+      String name;
+      if (isConstructor(symbol)) {
+        name = symbol.owner().name();
+      } else {
+        name = symbol.name();
+      }
+      reportIssue(identifierTree, "Remove this use of \"" + name + "\"; it is deprecated.");
+    }
+  }
+
+  private void checkMethodIssue(MethodTree methodTree) {
+    if(!methodTree.symbol().isDeprecated() && isOverridingDeprecatedConcreteMethod((JavaSymbol.MethodJavaSymbol) methodTree.symbol())) {
+      reportIssue(methodTree.simpleName(), "Don't override a deprecated method or explicitly mark it as \"@Deprecated\".");
+    }
   }
 
   private static boolean isDeprecated(Symbol symbol) {
@@ -79,11 +101,18 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
     return symbol.isMethodSymbol() && "<init>".equals(symbol.name());
   }
 
-  @Override
-  public void leaveNode(Tree tree) {
-    if (hasSemantic() && (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree))) {
-      nestedDeprecationLevel--;
+  private static boolean isOverridingDeprecatedConcreteMethod(JavaSymbol.MethodJavaSymbol symbol) {
+    JavaSymbol.MethodJavaSymbol overriddenMethod = symbol.overriddenSymbol();
+    while(overriddenMethod != null && !overriddenMethod.isUnknown()) {
+      if (overriddenMethod.isAbstract()) {
+        return false;
+      }
+      if (overriddenMethod.isDeprecated()) {
+        return true;
+      }
+      overriddenMethod = overriddenMethod.overriddenSymbol();
     }
+    return false;
   }
 
   private static boolean isDeprecatedMethod(Tree tree) {
