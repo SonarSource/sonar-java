@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,10 @@ public class MethodBehavior {
 
   public void addParameter(Symbol symbol, SymbolicValue sv) {
     parameters.put(symbol, sv);
+  }
+
+  public Collection<SymbolicValue> parameters() {
+    return parameters.values();
   }
 
 }

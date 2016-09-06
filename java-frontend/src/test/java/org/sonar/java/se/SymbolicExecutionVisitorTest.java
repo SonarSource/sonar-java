@@ -73,20 +73,24 @@ public class SymbolicExecutionVisitorTest {
     assertThat(trueResults.get(0).parameters.get(0).constraint.isNull()).isTrue();
     // no constraint on 'b'
     assertThat(trueResults.get(0).parameters.get(1).constraint).isNull();
+    // result SV is a different SV than 'a' and 'b'
+    assertThat(mb.parameters().contains(trueResults.get(0).result.symbolicValue)).isFalse();
 
     List<MethodYield> falseResults = yields.stream().filter(my -> BooleanConstraint.FALSE.equals(my.result.constraint)).collect(Collectors.toList());
     assertThat(falseResults).hasSize(2);
-    // for both results, 'a' has the constraint "not null"
+    // for both "False" results, 'a' has the constraint "not null"
     assertThat(falseResults.stream().filter(my -> !my.parameters.get(0).constraint.isNull()).count()).isEqualTo(2);
-    // when 'b' has constraint "false", result is 'b'
-    assertThat(falseResults.stream()
-      .filter(my -> {
-        MethodYield.ConstrainedSymbolicValue b = my.parameters.get(1);
-        return BooleanConstraint.FALSE.equals(b.constraint) && b.symbolicValue.equals(my.result.symbolicValue);
-      }).count()).isEqualTo(1);
+    // 1) 'b' has constraint "false", result is 'b'
+    assertThat(falseResults.stream().filter(my -> {
+      MethodYield.ConstrainedSymbolicValue b = my.parameters.get(1);
+      return BooleanConstraint.FALSE.equals(b.constraint) && b.symbolicValue.equals(my.result.symbolicValue);
+    }).count()).isEqualTo(1);
 
-    // FIXME SV associated to 'b' is cleaned in the true branch, so the constraint is lost when it should be 'true'
-    assertThat(falseResults.stream().filter(my -> my.parameters.get(1).constraint == null).count()).isEqualTo(1);
+    // 2) 'b' is "true", result is a different SV than 'a' and 'b'
+    assertThat(falseResults.stream().filter(my -> {
+      MethodYield.ConstrainedSymbolicValue b = my.parameters.get(1);
+      return BooleanConstraint.TRUE.equals(b.constraint) && !mb.parameters().contains(my.result.symbolicValue);
+    }).count()).isEqualTo(1);
   }
 
   @Test
