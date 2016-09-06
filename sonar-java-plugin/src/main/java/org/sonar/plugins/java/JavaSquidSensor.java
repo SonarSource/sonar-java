@@ -78,6 +78,7 @@ public class JavaSquidSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     System.out.println("EXECUTE DA SENSOR");
+    System.out.println("EXECUTE DA SENSOR, FOR REAL");
     javaResourceLocator.setSensorContext(context);
     sonarComponents.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
