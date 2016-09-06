@@ -78,7 +78,7 @@ CI)
     else
       strongEcho "External pull request"
       # external PR : no deployment to repox
-      mvn package sonar:sonar -B -e -V \
+      mvn install sonar:sonar -B -e -V \
         -Dsonar.analysis.mode=issues \
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
         -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
