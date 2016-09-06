@@ -278,6 +278,18 @@ public class JavaClasspathTest {
   }
 
   @Test
+  public void name() throws Exception {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
+    DefaultInputFile inputFile = new DefaultInputFile("", "plop.java");
+    inputFile.setType(InputFile.Type.MAIN);
+    inputFile.setLanguage("java");
+    fs.add(inputFile);
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).isEmpty();
+  }
+
+  @Test
   public void invalid_sonar_java_binaries_should_fail_analysis() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");

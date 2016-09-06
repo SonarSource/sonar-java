@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Splitter;
-
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -81,6 +80,7 @@ public abstract class AbstractJavaClasspath {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
       File baseDir = fs.baseDir();
       boolean hasJavaSources = hasJavaSources();
+      boolean validateLibs = validateLibraries;
       boolean isLibraryProperty = property.endsWith("libraries");
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
@@ -89,6 +89,7 @@ public abstract class AbstractJavaClasspath {
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
         }
+        validateLibraries = validateLibs;
         result.addAll(libraryFilesForPattern);
       }
     }
@@ -99,13 +100,19 @@ public abstract class AbstractJavaClasspath {
     return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
   }
 
-  private static Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {
+  private Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {
 
     try {
       Path filePath = resolvePath(baseDir, pathPattern);
 
-      if ((pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) && Files.isRegularFile(filePath)) {
-        return Collections.singleton(filePath.toFile());
+      if(Files.isRegularFile(filePath)) {
+        if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
+          return Collections.singleton(filePath.toFile());
+        } else {
+          LOG.debug("File " + filePath.toFile().getAbsolutePath() + " was ignored from java classpath");
+          validateLibraries = false;
+          return Collections.emptySet();
+        }
       }
       if (Files.isDirectory(filePath)) {
         return getMatchesInDir(filePath, libraryProperty);
