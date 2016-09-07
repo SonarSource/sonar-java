@@ -24,14 +24,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
@@ -45,23 +43,24 @@ public class MethodBehavior {
   }
 
   public void createYield(ProgramState programState) {
-    List<MethodYield.ConstrainedSymbolicValue> parametersCSV = methodSymbol.declaration().parameters().stream()
-      .map(VariableTree::symbol)
-      .map(parameters::get)
-      .map(sv -> new MethodYield.ConstrainedSymbolicValue(sv, programState.getConstraint(sv)))
-      .collect(Collectors.toList());
+    MethodYield yield = new MethodYield(parameters.size());
 
-    MethodYield.ConstrainedSymbolicValue returnCSV = null;
+    List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
+
+    for (int i = 0; i < yield.parametersConstraints.length; i++) {
+      yield.parametersConstraints[i] = programState.getConstraint(parameterSymbolicValues.get(i));
+    }
+
     if (!isConstructor() && !isVoidMethod()) {
-      SymbolicValue returnSV = programState.peekValue();
-      if (returnSV != null) {
-        returnCSV = new MethodYield.ConstrainedSymbolicValue(returnSV, programState.getConstraint(returnSV));
-      } else {
-        // FIXME Handle exception path
+      SymbolicValue resultSV = programState.peekValue();
+      // FIXME Handle exception path
+      if (resultSV != null) {
+        yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
+        yield.resultConstraint = programState.getConstraint(resultSV);
       }
     }
 
-    yields.add(new MethodYield(parametersCSV, returnCSV));
+    yields.add(yield);
   }
 
   private boolean isVoidMethod() {
