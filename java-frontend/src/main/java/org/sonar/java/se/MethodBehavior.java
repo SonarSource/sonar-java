@@ -55,8 +55,11 @@ public class MethodBehavior {
 
     if (!isConstructor() && !isVoidMethod()) {
       SymbolicValue resultSV = programState.peekValue();
-      // FIXME Handle exception path
-      if (resultSV != null) {
+      if (resultSV == null) {
+        // FIXME Handle exception path: for now ignore completely output through exceptions
+        yield.exception = true;
+        return;
+      } else {
         yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
         yield.resultConstraint = programState.getConstraint(resultSV);
       }

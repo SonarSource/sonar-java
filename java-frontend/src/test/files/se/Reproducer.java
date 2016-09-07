@@ -83,7 +83,7 @@ class A {
   }
 
   private static void zip(Object dir, String s) throws IOException {
-    for (String n : dir.list(foo() ? "**" : "")) {
+    for (String n : dir.list(barqix() ? "**" : "")) {
       if (s.isEmpty()) {
         relativePath = n;
       }

@@ -86,6 +86,12 @@ public class SymbolicExecutionVisitorTest {
 
     // 2) 'b' is "true", result is a different SV than 'a' and 'b'
     assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints[1]) && my.resultIndex == -1).count()).isEqualTo(1);
+
+
+    Optional<MethodSymbol> readFile = sev.behaviorCache.keySet().stream().filter(s -> "readFile".equals(s.name())).findFirst();
+    assertThat(readFile.isPresent()).isTrue();
+    MethodBehavior mbReadFile = sev.behaviorCache.get(readFile.get());
+    System.out.println("foo");
   }
 
   @Test
