@@ -24,6 +24,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -73,6 +74,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -375,7 +377,7 @@ public class ExplodedGraphWalker {
           return;
         }
         executeMethodInvocation(mit);
-        break;
+        return;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
@@ -480,27 +482,52 @@ public class ExplodedGraphWalker {
     setSymbolicValueOnFields(mit);
     // unstack arguments and method identifier
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
-    programState = unstack.state;
     logState(mit);
 
-    // get method behavior for method with known declaration (ie: within the same file)
-    Tree declaration = mit.symbol().declaration();
-    if(declaration != null) {
-      // (FIXME) nothing done of the invoked behavior
-      MethodBehavior methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
-    }
-
-
-
+    programState = unstack.state;
     // Enqueue exceptional paths
     node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, !b.isCatchBlock()));
-    final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
-    programState = programState.stackValue(resultValue);
-    if (isNonNullMethod(mit.symbol())) {
-      programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
-    } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-      programState = programState.resetFieldValues(constraintManager);
+
+    // get method behavior for method with known declaration (ie: within the same file)
+    MethodBehavior methodInvokedBehavior = null;
+    Tree declaration = mit.symbol().declaration();
+    if(declaration != null) {
+      methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
+    if(methodInvokedBehavior != null) {
+      List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
+      methodInvokedBehavior.yields()
+        .stream()
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())
+        .forEach(ps -> {
+          ProgramState programState = ps;
+          if (isNonNullMethod(mit.symbol())) {
+            programState = programState.addConstraint(programState.peekValue(), ObjectConstraint.NOT_NULL);
+          } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
+            programState = programState.resetFieldValues(constraintManager);
+          }
+          checkerDispatcher.syntaxNode = mit;
+          checkerDispatcher.addTransition(programState);
+          clearStack(mit);
+        });
+    } else {
+      final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
+      programState = programState.stackValue(resultValue);
+      if (isNonNullMethod(mit.symbol())) {
+        programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
+      } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
+        programState = programState.resetFieldValues(constraintManager);
+      }
+      checkerDispatcher.executeCheckPostStatement(mit);
+      clearStack(mit);
+    }
+  }
+
+  private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
+    List<SymbolicValue> parameterValues = new ArrayList<>(values);
+    parameterValues.remove(0);
+    Collections.reverse(parameterValues);
+    return parameterValues;
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {

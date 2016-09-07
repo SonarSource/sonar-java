@@ -116,11 +116,16 @@ public class ExplodedGraphWalkerTest {
     });
   }
 
-
   @Test
   public void system_exit() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/SystemExit.java", seChecks());
   }
+
+  @Test
+  public void xproc_usage_of_method_behaviors() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehavior.java", seChecks());
+  }
+
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
     @Override
