@@ -28,17 +28,19 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
-  private final List<MethodYield> yields;
+  private final Set<MethodYield> yields;
   private final Map<Symbol, SymbolicValue> parameters;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
-    this.yields = new ArrayList<>();
+    this.yields = new LinkedHashSet<>();
     this.parameters = new LinkedHashMap<>();
   }
 
