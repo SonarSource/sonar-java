@@ -1607,4 +1607,18 @@ public class CFGTest {
     cfgChecker.check(cfg);
 
   }
+
+  @Test
+  public void asd() throws Exception {
+    CFG cfg = buildCFG("private static List<String> readFile(File file) {\n" +
+      "    try {\n" +
+      "      return FileUtils.readLines(file);\n" +
+      "    } catch (IOException e) {\n" +
+      "      fail(\"can not read test file\");\n" +
+      "    }\n" +
+      "    return Lists.newArrayList();\n" +
+      "  }");
+    System.out.println(CFGDebug.toString(cfg));
+
+  }
 }

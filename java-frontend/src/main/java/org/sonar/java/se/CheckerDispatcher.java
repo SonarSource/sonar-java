@@ -32,9 +32,9 @@ import java.util.List;
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
   private final List<SECheck> checks;
-  private Tree syntaxNode;
   private int currentCheckerIndex = -1;
   private boolean transition = false;
+  Tree syntaxNode;
 
   public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SECheck> checks) {
     this.explodedGraphWalker = explodedGraphWalker;
