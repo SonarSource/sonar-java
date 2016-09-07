@@ -20,38 +20,25 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
+
+import javax.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class MethodYield {
-  final List<ConstrainedSymbolicValue> parameters;
-  final ConstrainedSymbolicValue result;
+  Constraint[] parametersConstraints;
+  int resultIndex;
+  @Nullable
+  Constraint resultConstraint;
 
-  public MethodYield(List<ConstrainedSymbolicValue> parameters, ConstrainedSymbolicValue result) {
-    this.parameters = parameters;
-    this.result = result;
+  public MethodYield(int arity) {
+    this.parametersConstraints = new Constraint[arity];
+    this.resultIndex = -1;
+    this.resultConstraint = null;
   }
 
   @Override
   public String toString() {
-    return "{params: " + Arrays.toString(parameters.toArray()) + ", result: " + result + "}";
+    return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + ")}";
   }
-
-  public static class ConstrainedSymbolicValue {
-    final SymbolicValue symbolicValue;
-    final Constraint constraint;
-
-    public ConstrainedSymbolicValue(SymbolicValue symbolicValue, Constraint constraint) {
-      this.symbolicValue = symbolicValue;
-      this.constraint = constraint;
-    }
-
-    @Override
-    public String toString() {
-      return "(" + symbolicValue + " > " + constraint + ")";
-    }
-  }
-
 }
