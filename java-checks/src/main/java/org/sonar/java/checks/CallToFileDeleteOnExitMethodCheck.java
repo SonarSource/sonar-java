@@ -35,7 +35,7 @@ public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.io.File").name("deleteOnExit").withNoParameterConstraint());
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.io.File").name("deleteOnExit"));
   }
 
   @Override

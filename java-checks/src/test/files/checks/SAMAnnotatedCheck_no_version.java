@@ -26,6 +26,11 @@ interface MyFunc { // Noncompliant {{Annotate the "MyFunc" interface with the @F
   String toString();
 }
 
+interface MyFunc2 {
+  int func(Object b);
+  String toString(int x);
+}
+
 interface extendsOther extends notAnnotated {
   public int transform2(int a);
 }
