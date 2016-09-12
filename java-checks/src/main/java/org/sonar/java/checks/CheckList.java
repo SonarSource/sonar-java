@@ -384,6 +384,7 @@ public final class CheckList {
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
       .add(InnerStaticClassesCheck.class)
+      .add(StandardFunctionalInterfaceCheck.class)
       .add(WildcardImportsShouldNotBeUsedCheck.class)
       .add(FinalClassCheck.class)
       .add(OneDeclarationPerLineCheck.class)
