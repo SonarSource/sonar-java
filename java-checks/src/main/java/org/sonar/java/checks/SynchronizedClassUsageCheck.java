@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -95,6 +96,12 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       if (!reportIssueOnDeprecatedType(tree.type(), tree.symbol().type()) && initializer != null && !initializer.is(Tree.Kind.METHOD_INVOCATION)) {
         reportIssueOnDeprecatedType(initializer, initializer.symbolType());
       }
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // Skip parameter types
+      scan(lambdaExpressionTree.body());
     }
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
