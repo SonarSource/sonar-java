@@ -1,12 +1,12 @@
 class InferedLambdaType {
 
-    private int foo = 42; // FP on Unused private field
+    private int foo = 42;
 
-    private static String staticPrint(String s) { return s+"  "+s; } // FP on Unused private method
+    private static String staticPrint(String s) { return s+"  "+s; }
 
     public void bar(java.util.Collection<String> data) {
 
-      int myVar = 42 * 2; // FP on Unused local variable
+      int myVar = 42 * 2;
       data.stream()
         .filter( s0 -> !s0.isEmpty())
         .map(line0 -> { return line0.split("\\s"); })
@@ -53,4 +53,35 @@ class InferedLambdaType {
         .map(InferedLambdaType::staticPrint)
         .forEach(sx -> System.out.println(sx.length()));
     }
+}
+
+class ChainedMapOperations {
+
+  public void qix(java.util.List<String> list) {
+    list.stream()
+      .filter(s -> s.length() > 42)
+      .map(s -> stringToBoolean(s));
+
+    list.stream()
+      .filter(s -> s.length() > 42)
+      .map(s -> stringToBoolean(s))
+      .map(b -> booleanToInt(b));
+
+    list.stream()
+      .map(String::length)
+      .filter(x -> intToInt(x) > 0);
+  }
+
+  private boolean stringToBoolean(String s) {
+    return false;
+  }
+
+  private int booleanToInt(boolean b) {
+    return 0;
+  }
+
+  private int intToInt(int x) {
+    return x - 1;
+  }
+
 }

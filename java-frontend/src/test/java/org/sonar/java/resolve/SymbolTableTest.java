@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1025,7 +1026,6 @@ public class SymbolTableTest {
     assertThat(methodRefConstructor.usages()).hasSize(1);
     assertThat(methodRefConstructor.isMethodSymbol()).isTrue();
     assertThat(((Symbol.MethodSymbol) methodRefConstructor).parameterTypes().get(0)).isSameAs(result.symbol("AProducer").type);
-
   }
 
   @Test
@@ -1156,6 +1156,29 @@ public class SymbolTableTest {
 
     JavaSymbol sx = result.symbol("sx");
     assertThat(sx.type.is("java.lang.String")).isTrue();
+  }
+
+  @Test
+  public void infer_steam_types_on_chained_map() {
+    Result result = Result.createFor("InferLambdaType");
+
+    JavaSymbol stringToBoolean = result.symbol("stringToBoolean");
+    assertThat(stringToBoolean.usages()).hasSize(2);
+    assertThat(result.reference(63, 17)).isEqualTo(stringToBoolean);
+    assertThat(result.reference(67, 17)).isEqualTo(stringToBoolean);
+
+    IdentifierTree map = result.referenceTree(63, 8);
+    MethodJavaType methodJavaType = (MethodJavaType) map.symbolType();
+    // FIXME SONARJAVA-1841 result type should not be deferred, as we know the type of the lambda expression
+    assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+
+    // JavaSymbol booleanToInt = result.symbol("booleanToInt");
+    // assertThat(booleanToInt.usages()).hasSize(1);
+    // assertThat(result.reference(68, 17)).isEqualTo(booleanToInt);
+
+    // JavaSymbol intToInt = result.symbol("intToInt");
+    // assertThat(intToInt.usages()).hasSize(1);
+    // assertThat(result.reference(72, 20)).isEqualTo(intToInt);
   }
 
   private JavaType getRSubstitution(Result result, String symbolName) {
