@@ -25,19 +25,19 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.locator.FileLocation;
-import org.sonar.wsclient.internal.HttpRequestFactory;
-import org.sonar.wsclient.jsonsimple.JSONValue;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.wsclient.internal.HttpRequestFactory;
+import org.sonar.wsclient.jsonsimple.JSONValue;
 
 public class ProfileGenerator {
 
-  static void generate(Orchestrator orchestrator, String language, String repositoryKey, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters, Set<String> excluded) {
+  static void generate(Orchestrator orchestrator, String language, String repositoryKey, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+    Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       StringBuilder sb = new StringBuilder()
         .append("<profile>")
@@ -70,9 +70,10 @@ public class ProfileGenerator {
       }
 
       for (String key : ruleKeys) {
-        if (excluded.contains(key)) {
+        if (excluded.contains(key) || (!subsetOfEnabledRules.isEmpty() && !subsetOfEnabledRules.contains(key))) {
           continue;
         }
+        activatedRuleKeys.add(key);
         sb.append("<rule>")
           .append("<repositoryKey>").append(repositoryKey).append("</repositoryKey>")
           .append("<key>").append(key).append("</key>")

@@ -19,33 +19,53 @@
  */
 package org.sonar.java.it;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import no.finn.lambdacompanion.Try;
 import org.fest.assertions.Fail;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 
 public class JavaRulingTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
+
+  // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
+  // rule keys from the command line using "rules" property, i.e. mvn test -Drules=S100,S101
+  private static final ImmutableSet<String> SUBSET_OF_ENABLED_RULES = ImmutableSet.copyOf(
+      Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
+          System.getProperty("rules", "")
+      )
+  );
+
+  @ClassRule
+  public static TemporaryFolder TMP_DUMP_OLD_FOLDER = new TemporaryFolder();
+
+  private static Path effectiveDumpOldFolder;
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
@@ -74,16 +94,44 @@ public class JavaRulingTest {
       // disable because it generates too many issues, performance reasons
       "LeftCurlyBraceStartLineCheck"
       );
-    ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
-    instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"");
-    instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"");
-    instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"");
-    instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";");
-    instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"");
+    Set<String> activatedRuleKeys = new HashSet<>();
+    ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
+    instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
+    instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"", activatedRuleKeys);
+    instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
+    instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";", activatedRuleKeys);
+    instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"", activatedRuleKeys);
     instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone",
-      "factoryMethod=\"org.sonar.api.server.ws.WebService$Context#createController\";closingMethod=\"org.sonar.api.server.ws.WebService$NewController#done\"");
+      "factoryMethod=\"org.sonar.api.server.ws.WebService$Context#createController\";closingMethod=\"org.sonar.api.server.ws.WebService$NewController#done\"", activatedRuleKeys);
     instantiateTemplateRule("S3546", "JsonWriterNotClosed",
-      "factoryMethod=\"org.sonar.api.server.ws.Response#newJsonWriter\";closingMethod=\"org.sonar.api.utils.text.JsonWriter#close\"");
+      "factoryMethod=\"org.sonar.api.server.ws.Response#newJsonWriter\";closingMethod=\"org.sonar.api.utils.text.JsonWriter#close\"", activatedRuleKeys);
+
+    SUBSET_OF_ENABLED_RULES.stream()
+      .filter(ruleKey -> !activatedRuleKeys.contains(ruleKey))
+      .forEach(ruleKey -> Fail.fail("Specified rule does not exist: " + ruleKey));
+
+    prepareDumpOldFolder();
+  }
+
+  private static void prepareDumpOldFolder() {
+    Path allRulesFolder = Paths.get("src/test/resources");
+    if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
+      effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
+    } else {
+      effectiveDumpOldFolder = TMP_DUMP_OLD_FOLDER.getRoot().toPath().toAbsolutePath();
+      Try.of(() -> Files.list(allRulesFolder)).orElseThrow(Throwables::propagate)
+        .filter(Files::isDirectory)
+        .forEach(srcProjectDir -> copyDumpSubset(srcProjectDir, effectiveDumpOldFolder.resolve(srcProjectDir.getFileName())));
+    }
+  }
+
+  private static void copyDumpSubset(Path srcProjectDir, Path dstProjectDir) {
+    Try.of(() -> Files.createDirectory(dstProjectDir)).orElseThrow(Throwables::propagate);
+    SUBSET_OF_ENABLED_RULES.stream()
+      .map(ruleKey -> srcProjectDir.resolve("squid-" + ruleKey + ".json"))
+      .filter(Files::exists)
+      .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
+        .orElseThrow(Throwables::propagate));
   }
 
   @Test
@@ -144,8 +192,6 @@ public class JavaRulingTest {
       .setProperty("sonar.java.source", "1.5")
       .setProperty("sonar.inclusions", "java/**/*.java");
     executeBuildWithCommonProperties(build, projectName);
-
-
   }
 
   private static void test_project(String projectKey, String projectName) throws IOException {
@@ -172,7 +218,7 @@ public class JavaRulingTest {
       .setProperty("sonar.analysis.mode", "preview")
       .setProperty("sonar.issuesReport.html.enable", "true")
       .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
-      .setProperty("dump.old", FileLocation.of("src/test/resources/" + projectName).getFile().getAbsolutePath())
+      .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName));
     orchestrator.executeBuild(build);
@@ -188,13 +234,17 @@ public class JavaRulingTest {
   }
 
   private static void assertNoDifferences(String projectName) throws IOException {
-    String differences = Files.toString(new File(litsDifferencesPath(projectName)), StandardCharsets.UTF_8);
+    String differences = new String(Files.readAllBytes(Paths.get(litsDifferencesPath(projectName))), StandardCharsets.UTF_8);
     if (!differences.isEmpty()) {
       throw Fail.fail(differences + " -> file://" + htmlReportPath(projectName) + "/issues-report.html");
     }
   }
 
-  private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params) {
+  private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params, Set<String> activatedRuleKeys) {
+    if (!SUBSET_OF_ENABLED_RULES.isEmpty() && !SUBSET_OF_ENABLED_RULES.contains(instantiationKey)) {
+      return;
+    }
+    activatedRuleKeys.add(instantiationKey);
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();
     sonarClient.post("/api/rules/create", ImmutableMap.<String, Object>builder()
       .put("name", instantiationKey)
