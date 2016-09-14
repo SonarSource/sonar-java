@@ -52,6 +52,12 @@
       <artifactId>fest-assert</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>no.finn.lambda</groupId>
+      <artifactId>lambda-companion</artifactId>
+      <version>0.26</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
