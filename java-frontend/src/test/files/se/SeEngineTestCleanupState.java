@@ -1,7 +1,7 @@
 class A0 {
 
   boolean boolMethod() {
-    return true;
+    return new java.util.Random().nextBoolean();
   }
 
   void test_reduced_steps(Object c) {

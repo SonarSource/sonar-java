@@ -47,7 +47,7 @@ class NullPointerTest {
 
   @Nullable
   public Object[] nullableMethod() {
-    return null;
+    return nullableField;
   }
 
   public void testNotnullable(Object[] parameter) {
