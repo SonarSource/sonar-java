@@ -490,18 +490,19 @@ public class ExplodedGraphWalker {
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
-    Tree declaration = mit.symbol().declaration();
+    Symbol methodSymbol = mit.symbol();
+    Tree declaration = methodSymbol.declaration();
     if(declaration != null) {
       methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
-    if(methodInvokedBehavior != null) {
+    if (methodInvokedBehavior != null && !methodSymbol.isAbstract()) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       methodInvokedBehavior.yields()
         .stream()
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())
         .forEach(ps -> {
           ProgramState programState = ps;
-          if (isNonNullMethod(mit.symbol())) {
+          if (isNonNullMethod(methodSymbol)) {
             programState = programState.addConstraint(programState.peekValue(), ObjectConstraint.NOT_NULL);
           } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
             programState = programState.resetFieldValues(constraintManager);
@@ -513,7 +514,7 @@ public class ExplodedGraphWalker {
     } else {
       final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
       programState = programState.stackValue(resultValue);
-      if (isNonNullMethod(mit.symbol())) {
+      if (isNonNullMethod(methodSymbol)) {
         programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
       } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
         programState = programState.resetFieldValues(constraintManager);
