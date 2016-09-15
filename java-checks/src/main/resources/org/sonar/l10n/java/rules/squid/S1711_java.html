@@ -1,0 +1,43 @@
+<p>Just as there is little justification for writing your own String class, there is no good reason to re-define one of the existing, standard
+functional interfaces.</p>
+<p>Doing so may seem tempting, since it would allow you to specify a little extra context with the name. But in the long run, it will be a source of
+confusion, because maintenance programmers will wonder what is different between the custom functional interface and the standard one.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@FunctionalInterface
+public interface MyInterface { // Noncompliant
+	double toDouble(int a);
+}
+
+@FunctionalInterface
+public interface ExtendedBooleanSupplier { // Noncompliant
+  boolean get();
+  default boolean isFalse() {
+    return !get();
+  }
+}
+
+public class MyClass {
+    private int a;
+    public double myMethod(MyInterface instance){
+	return instance.toDouble(a);
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@FunctionalInterface
+public interface ExtendedBooleanSupplier extends BooleanSupplier { // Compliant, extends java.util.function.BooleanSupplier
+  default boolean isFalse() {
+    return !getAsBoolean();
+  }
+}
+
+public class MyClass {
+    private int a;
+    public double myMethod(IntToDoubleFunction instance){
+	return instance.applyAsDouble(a);
+    }
+}
+</pre>
+

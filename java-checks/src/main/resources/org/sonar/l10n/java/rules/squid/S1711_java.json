@@ -1,0 +1,12 @@
+{
+  "title": "Standard functional interfaces should not be redefined",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}
