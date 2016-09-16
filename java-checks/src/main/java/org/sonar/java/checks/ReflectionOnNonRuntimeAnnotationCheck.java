@@ -43,7 +43,7 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
-      .name("isAnnotationPresent").withNoParameterConstraint());
+      .name("isAnnotationPresent").withAnyParameters());
   }
 
   @Override

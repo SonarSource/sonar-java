@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(key = "S1217")
 public class ThreadRunCheck extends AbstractMethodDetection {
   private static final MethodMatcher THREAD_RUN_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Thread")).name("run")
-    .withNoParameterConstraint();
+    .withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {

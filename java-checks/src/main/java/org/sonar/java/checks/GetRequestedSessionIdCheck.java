@@ -35,7 +35,8 @@ public class GetRequestedSessionIdCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
       .typeDefinition("javax.servlet.http.HttpServletRequest")
-      .name("getRequestedSessionId"));
+      .name("getRequestedSessionId")
+      .withoutParameter());
   }
 
   @Override

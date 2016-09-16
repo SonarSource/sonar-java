@@ -46,17 +46,28 @@ public class AbstractMethodDetectionTest {
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).hasSize(2);
-    assertThat(visitor.lines).containsExactly(13, 15);
+    assertThat(visitor.lines).containsExactly(15, 17);
   }
 
   @Test
-  public void withNoParameterConstraint() throws Exception {
+  public void withAnyParameters() throws Exception {
     Visitor visitor = new Visitor(ImmutableList.of(
-      MethodMatcher.create().typeDefinition("A").name("method").withNoParameterConstraint()
+      MethodMatcher.create().typeDefinition("A").name("method").withAnyParameters()
       ));
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
-    assertThat(visitor.lines).containsExactly(13, 14, 15);
+    assertThat(visitor.lines).containsExactly(14, 15, 16, 17);
+
+  }
+
+  @Test
+  public void withoutParameter() throws Exception {
+    Visitor visitor = new Visitor(ImmutableList.of(
+      MethodMatcher.create().typeDefinition("A").name("method").withoutParameter()
+      ));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+
+    assertThat(visitor.lines).containsExactly(14);
 
   }
 

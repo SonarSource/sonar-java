@@ -38,8 +38,8 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(STRING).name("toUpperCase"),
-      MethodMatcher.create().typeDefinition(STRING).name("toLowerCase")
+      MethodMatcher.create().typeDefinition(STRING).name("toUpperCase").withoutParameter(),
+      MethodMatcher.create().typeDefinition(STRING).name("toLowerCase").withoutParameter()
     );
   }
 

@@ -106,7 +106,8 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
       this.message = "Use \"" + parseMethodName() + "\" for this string-to-" + primitiveName + " conversion.";
       this.unboxingInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
-        .name(primitiveName + "Value");
+        .name(primitiveName + "Value")
+        .withoutParameter();
       this.valueOfInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
         .name("valueOf")

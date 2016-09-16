@@ -42,10 +42,12 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
   private static final List<MethodMatcher> CHECKED_METHODS = ImmutableList.of(
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
-      .name("readLine"),
+      .name("readLine")
+      .withoutParameter(),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.Reader"))
-      .name("read"));
+      .name("read")
+      .withoutParameter());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

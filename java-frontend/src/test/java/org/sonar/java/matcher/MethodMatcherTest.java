@@ -27,7 +27,6 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,25 +45,40 @@ public class MethodMatcherTest {
   public ExpectedException exception = ExpectedException.none();
 
   @Test
-  public void should_fail_if_addParameter_is_called_after_withNoParameterConstraint() throws Exception {
+  public void should_fail_if_addParameter_is_called_after_withAnyParameters() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name")
-      .withNoParameterConstraint()
-      .withNoParameterConstraint();
+      .withAnyParameters();
     exception.expect(IllegalStateException.class);
     matcher.addParameter("int");
   }
 
   @Test
-  public void should_fail_if_withNoParameterConstraint_is_called_after_addParameter() throws Exception {
+  public void should_fail_if_addParameter_is_called_after_withoutParameter() throws Exception {
+    MethodMatcher matcher = MethodMatcher.create().name("name")
+      .withoutParameter();
+    exception.expect(IllegalStateException.class);
+    matcher.addParameter("int");
+  }
+
+  @Test
+  public void should_fail_if_withAnyParameters_is_called_after_addParameter() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").addParameter("int");
     exception.expect(IllegalStateException.class);
-    matcher.withNoParameterConstraint();
+    matcher.withAnyParameters();
+  }
+
+  @Test
+  public void should_fail_if_withAnyParameters_is_called_after_withoutParameter() throws Exception {
+    MethodMatcher matcher = MethodMatcher.create().name("name")
+        .withoutParameter();
+    exception.expect(IllegalStateException.class);
+    matcher.withAnyParameters();
   }
 
   @Test
   public void detected() {
-    MethodMatcher objectToString = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("toString");
-    MethodMatcher integerToString = MethodMatcher.create().typeDefinition("java.lang.Integer").name("toString");
+    MethodMatcher objectToString = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("toString").withoutParameter();
+    MethodMatcher integerToString = MethodMatcher.create().typeDefinition("java.lang.Integer").name("toString").withoutParameter();
 
     Map<MethodMatcher, List<Integer>> matches = new HashMap<>();
     matches.put(objectToString, new ArrayList<Integer>());

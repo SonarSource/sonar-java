@@ -138,12 +138,12 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
     return builder
       .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
-      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
+      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withAnyParameters())
       .build();
   }
 
   private static MethodMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
-    return MethodMatcher.create().typeDefinition(type).name(methodName);
+    return MethodMatcher.create().typeDefinition(type).name(methodName).withoutParameter();
   }
 
   private static MethodMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {

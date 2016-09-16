@@ -34,7 +34,7 @@ import java.util.List;
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG";
-  private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random");
+  private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

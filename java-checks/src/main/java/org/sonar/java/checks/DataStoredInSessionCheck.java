@@ -45,12 +45,12 @@ public class DataStoredInSessionCheck extends AbstractMethodDetection {
   private Set<IdentifierTree> identifiersUsedToSetAttribute;
 
   private static final MethodMatcherCollection REQUEST_OR_COOKIE_DATA_RETRIEVAL = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("javax.servlet.http.Cookie").name(NameCriteria.startsWith("get")).withNoParameterConstraint(),
-    MethodMatcher.create().callSite(TypeCriteria.is("javax.servlet.http.HttpServletRequest")).name(NameCriteria.startsWith("get")).withNoParameterConstraint());
+    MethodMatcher.create().typeDefinition("javax.servlet.http.Cookie").name(NameCriteria.startsWith("get")).withAnyParameters(),
+    MethodMatcher.create().callSite(TypeCriteria.is("javax.servlet.http.HttpServletRequest")).name(NameCriteria.startsWith("get")).withAnyParameters());
 
   private static final MethodMatcherCollection NO_EFFECT_OPERATION = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.net.URLDecoder").name("decode").withNoParameterConstraint(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang.StringEscapeUtils").name("escapeHtml").withNoParameterConstraint());
+    MethodMatcher.create().typeDefinition("java.net.URLDecoder").name("decode").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang.StringEscapeUtils").name("escapeHtml").withAnyParameters());
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {

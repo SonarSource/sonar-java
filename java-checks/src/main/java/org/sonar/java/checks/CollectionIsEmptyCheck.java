@@ -109,7 +109,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private static MethodMatcher getSizeMethodInvocationMatcher() {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withNoParameterConstraint();
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withoutParameter();
   }
 
 }

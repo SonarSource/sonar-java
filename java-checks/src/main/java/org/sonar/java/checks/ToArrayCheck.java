@@ -36,7 +36,8 @@ import java.util.List;
 @Rule(key = "S3020")
 public class ToArrayCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher COLLECTION_TO_ARRAY = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection")).name("toArray");
+  private static final MethodMatcher COLLECTION_TO_ARRAY = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"))
+    .name("toArray").withoutParameter();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {

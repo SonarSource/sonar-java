@@ -65,7 +65,8 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     for (String fullyQualifiedName : typeFullyQualifiedNames) {
       matchers.add(MethodMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(fullyQualifiedName))
-        .name("toString"));
+        .name("toString")
+        .withoutParameter());
     }
     return matchers;
   }

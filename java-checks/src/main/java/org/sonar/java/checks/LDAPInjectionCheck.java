@@ -32,7 +32,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodMatcher LDAP_SEARCH_MATCHER = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("javax.naming.directory.DirContext"))
-    .name("search").withNoParameterConstraint();
+    .name("search").withAnyParameters();
 
   private static final MethodMatcher SEARCH_CONTROLS_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.naming.directory.SearchControls")

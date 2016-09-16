@@ -38,9 +38,9 @@ import java.util.List;
 @Rule(key = "S1641")
 public class EnumSetCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher COLLECTIONS_UNMODIFIABLE = MethodMatcher.create().typeDefinition("java.util.Collections").name("unmodifiableSet").withNoParameterConstraint();
+  private static final MethodMatcher COLLECTIONS_UNMODIFIABLE = MethodMatcher.create().typeDefinition("java.util.Collections").name("unmodifiableSet").withAnyParameters();
   private static final MethodMatcher GUAVA_IMMUTABLE_ENUM_SET = MethodMatcher.create().typeDefinition("com.google.common.collect.Sets").name("immutableEnumSet")
-    .withNoParameterConstraint();
+    .withAnyParameters();
 
   @Override
   public List<Kind> nodesToVisit() {

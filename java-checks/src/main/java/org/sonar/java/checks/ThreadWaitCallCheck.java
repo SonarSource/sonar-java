@@ -41,10 +41,10 @@ public class ThreadWaitCallCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria subtypeOfThread = TypeCriteria.subtypeOf("java.lang.Thread");
     return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait"))
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").withoutParameter())
       .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"))
       .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"))
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notify"))
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll")).build();
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notify").withoutParameter())
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll").withoutParameter()).build();
   }
 }

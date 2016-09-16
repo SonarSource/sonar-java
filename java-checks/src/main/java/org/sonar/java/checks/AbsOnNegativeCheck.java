@@ -54,13 +54,16 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcherCollection NEGATIVE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create()
-      .name("hashCode"),
+      .name("hashCode")
+      .withoutParameter(),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
-      .name("nextInt"),
+      .name("nextInt")
+      .withoutParameter(),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
-      .name("nextLong"),
+      .name("nextLong")
+      .withoutParameter(),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.lang.Comparable"))
       .name("compareTo")
