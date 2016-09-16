@@ -328,6 +328,7 @@ public final class CheckList {
       .add(ShiftOnIntOrLongCheck.class)
       .add(CompareToReturnValueCheck.class)
       .add(FinalizeFieldsSetCheck.class)
+      .add(UnnecessarySemicolonCheck.class)
       .add(NotifyCheck.class)
       .add(ScheduledThreadPoolExecutorZeroCheck.class)
       .add(ThreadOverridesRunCheck.class)
