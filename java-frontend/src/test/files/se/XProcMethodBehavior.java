@@ -1,11 +1,19 @@
 class A {
 
-  boolean foo(boolean a) {
-    if(a) {
+  private boolean foo(boolean a) {
+    if (a) {
       return a;
     } else {
       return a;
     }
+  }
+
+  public boolean bar() {
+    return true;
+  }
+
+  public final boolean gul() {
+    return true;
   }
 
   void qix() {
@@ -15,6 +23,26 @@ class A {
     boolean c = foo(false);
     if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
+
+    boolean d = bar();
+    if (d) { // Compliant - method bar is public allowed for extension
+    }
+
+    boolean e = gul();
+    if (e) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
   }
 
+}
+
+final class B {
+  public boolean bar() {
+    return true;
+  }
+
+  private void qix() {
+    boolean b = bar();
+    if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+  }
 }
