@@ -24,5 +24,4 @@ abstract class MethodBehavior {
   private void independent(){
   }
 
-
 }

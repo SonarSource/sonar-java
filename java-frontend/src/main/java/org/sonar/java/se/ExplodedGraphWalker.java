@@ -495,7 +495,7 @@ public class ExplodedGraphWalker {
     if(declaration != null) {
       methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
-    if (methodInvokedBehavior != null && !methodSymbol.isAbstract()) {
+    if (methodInvokedBehavior != null && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       methodInvokedBehavior.yields()
         .stream()
@@ -522,6 +522,11 @@ public class ExplodedGraphWalker {
       checkerDispatcher.executeCheckPostStatement(mit);
       clearStack(mit);
     }
+  }
+
+  private static boolean methodCanNotBeOverriden(Symbol methodSymbol) {
+    return !methodSymbol.isAbstract() &&
+      (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
