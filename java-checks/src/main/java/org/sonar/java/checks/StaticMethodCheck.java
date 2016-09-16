@@ -48,7 +48,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectOutputStream")),
     MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData"));
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData").withoutParameter());
 
   private JavaFileScannerContext context;
   private Deque<MethodReference> methodReferences = new LinkedList<>();

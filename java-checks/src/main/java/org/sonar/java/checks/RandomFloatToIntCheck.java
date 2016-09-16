@@ -36,9 +36,9 @@ import java.util.List;
 public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
 
   private final MethodMatcherCollection methodMatchers  = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.Random").name("nextDouble"),
-    MethodMatcher.create().typeDefinition("java.util.Random").name("nextFloat"),
-    MethodMatcher.create().typeDefinition("java.lang.Math").name("random")
+    MethodMatcher.create().typeDefinition("java.util.Random").name("nextDouble").withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.util.Random").name("nextFloat").withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter()
   );
 
   @Override

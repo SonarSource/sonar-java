@@ -69,7 +69,7 @@ public class UnclosedResourcesCheck extends SECheck {
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
   };
   private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
-    MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault")
+    MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
   };
 
   @Override

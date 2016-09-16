@@ -65,12 +65,14 @@ public class MethodMatcherFactory {
         if (matchedLength < remainder.length()) {
           throw new IllegalArgumentException("Illegal method or constructor arguments specification: " + descriptor);
         }
+      } else {
+        methodMatcher.withoutParameter();
       }
     } else {
       if (initialMatcher.end() < descriptor.length()) {
         throw new IllegalArgumentException("Illegal method or constructor arguments specification: " + descriptor);
       }
-      methodMatcher.withNoParameterConstraint();
+      methodMatcher.withAnyParameters();
     }
   }
 }

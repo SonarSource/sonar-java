@@ -43,7 +43,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass"));
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass").withoutParameter());
   }
 
   @Override

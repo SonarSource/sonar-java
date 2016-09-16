@@ -35,7 +35,8 @@ public class ConcurrentLinkedQueueSizeCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
       .typeDefinition("java.util.concurrent.ConcurrentLinkedQueue")
-      .name("size"));
+      .name("size")
+      .withoutParameter());
   }
 
   @Override

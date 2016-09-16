@@ -57,11 +57,15 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
       invocationMatcher.typeDefinition(className);
     }
     if (allOverloads) {
-      invocationMatcher.withNoParameterConstraint();
+      invocationMatcher.withAnyParameters();
     } else {
       String[] args = StringUtils.split(argumentTypes, ",");
-      for (String arg : args) {
-        invocationMatcher.addParameter(StringUtils.trim(arg));
+      if (args.length == 0) {
+        invocationMatcher.withoutParameter();
+      } else {
+        for (String arg : args) {
+          invocationMatcher.addParameter(StringUtils.trim(arg));
+        }
       }
     }
     return ImmutableList.of(invocationMatcher);

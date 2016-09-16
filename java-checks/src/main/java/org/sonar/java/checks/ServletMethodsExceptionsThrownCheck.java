@@ -44,7 +44,7 @@ import java.util.List;
 public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher IS_SERVLET_DO_METHOD = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("javax.servlet.http.HttpServlet")).name(NameCriteria.startsWith("do")).withNoParameterConstraint();
+    .typeDefinition(TypeCriteria.subtypeOf("javax.servlet.http.HttpServlet")).name(NameCriteria.startsWith("do")).withAnyParameters();
 
   private final Deque<Boolean> shouldCheck = new ArrayDeque<>();
   private final Deque<List<Type>> tryCatches = new ArrayDeque<>();

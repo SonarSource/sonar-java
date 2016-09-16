@@ -39,7 +39,7 @@ public class InappropriateRegexpCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("replaceAll").withNoParameterConstraint()
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("replaceAll").withAnyParameters()
       );
   }
 

@@ -37,7 +37,7 @@ public class AvoidDESCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withNoParameterConstraint());
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withAnyParameters());
   }
 
   @Override

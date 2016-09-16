@@ -33,7 +33,7 @@ public class NotifyCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.Object").name("notify"));
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.Object").name("notify").withoutParameter());
   }
 
   @Override

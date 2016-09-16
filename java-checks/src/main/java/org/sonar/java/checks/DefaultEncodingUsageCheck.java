@@ -103,41 +103,37 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      method(JAVA_LANG_STRING, "getBytes"),
-      method(JAVA_LANG_STRING, "getBytes", INT, INT, BYTE_ARRAY, INT),
-      constructor(JAVA_LANG_STRING, BYTE_ARRAY),
-      constructor(JAVA_LANG_STRING, BYTE_ARRAY, INT, INT),
-      method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, "toString"),
-      constructor(JAVA_IO_FILEREADER).withNoParameterConstraint(),
-      constructor(JAVA_IO_FILEWRITER).withNoParameterConstraint(),
-      constructor(JAVA_IO_INPUTSTREAMREADER, JAVA_IO_INPUTSTREAM),
-      constructor(JAVA_IO_OUTPUTSTREAMWRITER, JAVA_IO_OUTPUTSTREAM),
-      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_FILE),
-      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_OUTPUTSTREAM),
-      constructor(JAVA_IO_PRINTSTREAM, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
-      constructor(JAVA_IO_PRINTSTREAM, JAVA_LANG_STRING),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_FILE),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_IO_OUTPUTSTREAM, BOOLEAN),
-      constructor(JAVA_IO_PRINTWRITER, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_FORMATTER, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_FORMATTER, JAVA_IO_FILE),
-      constructor(JAVA_UTIL_FORMATTER, JAVA_IO_OUTPUTSTREAM),
-      constructor(JAVA_UTIL_SCANNER, JAVA_IO_FILE),
-      constructor(JAVA_UTIL_SCANNER, JAVA_NIO_FILE_PATH),
-      constructor(JAVA_UTIL_SCANNER, JAVA_IO_INPUTSTREAM));
+      method(JAVA_LANG_STRING, "getBytes").withoutParameter(),
+      method(JAVA_LANG_STRING, "getBytes").parameters(INT, INT, BYTE_ARRAY, INT),
+      constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY),
+      constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, INT, INT),
+      method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, "toString").withoutParameter(),
+      constructor(JAVA_IO_FILEREADER).withAnyParameters(),
+      constructor(JAVA_IO_FILEWRITER).withAnyParameters(),
+      constructor(JAVA_IO_INPUTSTREAMREADER).parameters(JAVA_IO_INPUTSTREAM),
+      constructor(JAVA_IO_OUTPUTSTREAMWRITER).parameters(JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTSTREAM).parameters(JAVA_IO_FILE),
+      constructor(JAVA_IO_PRINTSTREAM).parameters(JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTSTREAM).parameters(JAVA_IO_OUTPUTSTREAM, BOOLEAN),
+      constructor(JAVA_IO_PRINTSTREAM).parameters(JAVA_LANG_STRING),
+      constructor(JAVA_IO_PRINTWRITER).parameters(JAVA_IO_FILE),
+      constructor(JAVA_IO_PRINTWRITER).parameters(JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_IO_PRINTWRITER).parameters(JAVA_IO_OUTPUTSTREAM, BOOLEAN),
+      constructor(JAVA_IO_PRINTWRITER).parameters(JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_FORMATTER).parameters(JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_FORMATTER).parameters(JAVA_IO_FILE),
+      constructor(JAVA_UTIL_FORMATTER).parameters(JAVA_IO_OUTPUTSTREAM),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM));
   }
 
-  private static MethodMatcher method(String type, String methodName, String... argTypes) {
-    MethodMatcher matcher = MethodMatcher.create().typeDefinition(type).name(methodName);
-    for (String argType : argTypes) {
-      matcher = matcher.addParameter(argType);
-    }
-    return matcher;
+  private static MethodMatcher method(String type, String methodName) {
+    return MethodMatcher.create().typeDefinition(type).name(methodName);
   }
 
-  private static MethodMatcher constructor(String type, String... argTypes) {
-    return method(type, "<init>", argTypes);
+  private static MethodMatcher constructor(String type) {
+    return method(type, "<init>");
   }
 
   @Override

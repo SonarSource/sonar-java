@@ -42,7 +42,8 @@ public class StringToStringCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
       .typeDefinition("java.lang.String")
-      .name("toString"));
+      .name("toString")
+      .withoutParameter());
   }
 
   @Override

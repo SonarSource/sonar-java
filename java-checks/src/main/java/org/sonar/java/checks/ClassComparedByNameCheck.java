@@ -38,7 +38,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("equals").withNoParameterConstraint());
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("equals").withAnyParameters());
   }
 
   @Override
@@ -64,10 +64,11 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     private boolean useStackTraceElementGetClassName = false;
 
     private final MethodMatcherCollection methodMatchers = MethodMatcherCollection.create(
-      MethodMatcher.create().typeDefinition("java.lang.Class").name("getName"),
-      MethodMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
+      MethodMatcher.create().typeDefinition("java.lang.Class").name("getName").withoutParameter(),
+      MethodMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName").withoutParameter());
 
-    private final MethodMatcher stackTraceElementMatcher = MethodMatcher.create().typeDefinition("java.lang.StackTraceElement").name("getClassName");
+    private final MethodMatcher stackTraceElementMatcher = MethodMatcher.create()
+        .typeDefinition("java.lang.StackTraceElement").name("getClassName").withoutParameter();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {

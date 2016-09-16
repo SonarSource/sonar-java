@@ -17,27 +17,38 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
-
-import com.google.common.collect.ImmutableList;
-import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+package org.sonar.java.matcher;
 
 import java.util.List;
+import org.sonar.plugins.java.api.semantic.Type;
 
-@Rule(key = "S2232")
-public class ResultSetIsLastCheck extends AbstractMethodDetection {
+@FunctionalInterface
+public interface ParametersCriteria {
 
-  @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast").withoutParameter());
+  boolean matches(List<Type> actualTypes);
+
+  static ParametersCriteria none() {
+    return parameterTypes -> parameterTypes.isEmpty();
   }
 
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "Remove this call to \"isLast()\".");
+  static ParametersCriteria any() {
+    return parameterTypes -> true;
   }
+
+  static ParametersCriteria of(List<TypeCriteria> expectedTypes) {
+    return actualTypes -> matches(expectedTypes, actualTypes);
+  }
+
+  static boolean matches(List<TypeCriteria> expectedTypes, List<Type> actualTypes) {
+    if (actualTypes.size() != expectedTypes.size()) {
+      return false;
+    }
+    for (int i = 0; i < actualTypes.size(); i++) {
+      if (!expectedTypes.get(i).matches(actualTypes.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

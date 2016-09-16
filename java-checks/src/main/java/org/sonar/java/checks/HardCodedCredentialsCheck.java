@@ -55,7 +55,8 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher STRING_TO_CHAR_ARRAY = MethodMatcher.create()
     .typeDefinition("java.lang.String")
-    .name("toCharArray");
+    .name("toCharArray")
+    .withoutParameter();
 
   @Override
   public List<Kind> nodesToVisit() {

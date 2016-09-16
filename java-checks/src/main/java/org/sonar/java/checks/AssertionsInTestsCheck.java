@@ -47,52 +47,52 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   private static final String VERIFY = "verify";
   private static final String ASSERT_NAME = "assert";
   private static final String ASSERT_THAT_NAME = "assertThat";
-  private static final String ORG_MOCKITO_MOCKITO = "org.mockito.Mockito";
 
+  private static final TypeCriteria ORG_MOCKITO_MOCKITO = TypeCriteria.is("org.mockito.Mockito");
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
   private static final NameCriteria STARTS_WITH_FAIL = NameCriteria.startsWith("fail");
 
-  private static final MethodMatcher MOCKITO_VERIFY = methodWithAnyParameters(ORG_MOCKITO_MOCKITO, VERIFY);
-  private static final MethodMatcher ASSERTJ_ASSERT_ALL = methodWithoutParameters("org.assertj.core.api.SoftAssertions", "assertAll");
-  private static final MethodMatcher ASSERT_THAT = methodWithoutParameters(ANY_TYPE, ASSERT_THAT_NAME).addParameter(ANY_TYPE);
-  private static final MethodMatcher FEST_AS_METHOD = methodWithAnyParameters(ANY_TYPE, "as");
-  private static final MethodMatcher FEST_DESCRIBED_AS_METHOD = methodWithAnyParameters(ANY_TYPE, "describedAs");
-  private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = methodWithAnyParameters(ANY_TYPE, "overridingErrorMessage");
+  private static final MethodMatcher MOCKITO_VERIFY = method(ORG_MOCKITO_MOCKITO, VERIFY).withAnyParameters();
+  private static final MethodMatcher ASSERTJ_ASSERT_ALL = method("org.assertj.core.api.SoftAssertions", "assertAll").withoutParameter();
+  private static final MethodMatcher ASSERT_THAT = method(ANY_TYPE, ASSERT_THAT_NAME).addParameter(ANY_TYPE);
+  private static final MethodMatcher FEST_AS_METHOD = method(ANY_TYPE, "as").withAnyParameters();
+  private static final MethodMatcher FEST_DESCRIBED_AS_METHOD = method(ANY_TYPE, "describedAs").withAnyParameters();
+  private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = method(ANY_TYPE, "overridingErrorMessage").withAnyParameters();
 
   private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
     // junit
-    methodWithAnyParameters("org.junit.Assert", NameCriteria.startsWith(ASSERT_NAME)),
-    methodWithAnyParameters("org.junit.Assert", "fail"),
-    methodWithAnyParameters("org.junit.rules.ExpectedException", NameCriteria.startsWith("expect")),
-    methodWithAnyParameters(TypeCriteria.subtypeOf("junit.framework.Assert"), NameCriteria.startsWith(ASSERT_NAME)),
-    methodWithAnyParameters(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_FAIL),
+    method("org.junit.Assert", NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters(),
+    method("org.junit.Assert", "fail").withAnyParameters(),
+    method("org.junit.rules.ExpectedException", NameCriteria.startsWith("expect")).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("junit.framework.Assert"), NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_FAIL).withAnyParameters(),
     // fest 1.x
-    methodWithAnyParameters(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME),
-    methodWithAnyParameters("org.fest.assertions.Fail", STARTS_WITH_FAIL),
+    method(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME).withAnyParameters(),
+    method("org.fest.assertions.Fail", STARTS_WITH_FAIL).withAnyParameters(),
     // fest 2.x
-    methodWithAnyParameters(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME),
-    methodWithAnyParameters("org.fest.assertions.api.Fail", STARTS_WITH_FAIL),
+    method(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
+    method("org.fest.assertions.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
     // assertJ
-    methodWithAnyParameters(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME),
-    methodWithAnyParameters("org.assertj.core.api.Fail", STARTS_WITH_FAIL),
-    methodWithAnyParameters("org.assertj.core.api.Fail", "shouldHaveThrown"),
-    methodWithAnyParameters("org.assertj.core.api.Assertions", STARTS_WITH_FAIL),
-    methodWithAnyParameters("org.assertj.core.api.Assertions", "shouldHaveThrown"),
+    method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
+    method("org.assertj.core.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
+    method("org.assertj.core.api.Fail", "shouldHaveThrown").withAnyParameters(),
+    method("org.assertj.core.api.Assertions", STARTS_WITH_FAIL).withAnyParameters(),
+    method("org.assertj.core.api.Assertions", "shouldHaveThrown").withAnyParameters(),
     // hamcrest
-    methodWithoutParameters("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
-    methodWithoutParameters("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    method("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    method("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
     // Mockito
-    methodWithAnyParameters(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions"),
-    methodWithAnyParameters(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions"),
+    method(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions").withAnyParameters(),
+    method(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions").withAnyParameters(),
     // spring
-    methodWithoutParameters("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
+    method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
     // EasyMock
-    methodWithAnyParameters("org.easymock.EasyMock", VERIFY),
-    methodWithAnyParameters(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY),
-    methodWithAnyParameters(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll"),
+    method("org.easymock.EasyMock", VERIFY).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll").withAnyParameters(),
     // Truth Framework
-    methodWithAnyParameters("com.google.common.truth.Truth", NameCriteria.startsWith(ASSERT_NAME))
+    method("com.google.common.truth.Truth", NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters()
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
@@ -240,28 +240,20 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
   }
 
-  private static MethodMatcher methodWithAnyParameters(String typeDefinition, String name) {
-    return methodWithAnyParameters(TypeCriteria.is(typeDefinition), NameCriteria.is(name));
+  private static MethodMatcher method(String typeDefinition, String methodName) {
+    return method(TypeCriteria.is(typeDefinition), NameCriteria.is(methodName));
   }
 
-  private static MethodMatcher methodWithAnyParameters(String typeDefinition, NameCriteria methodNameCriteria) {
-    return methodWithAnyParameters(TypeCriteria.is(typeDefinition), methodNameCriteria);
+  private static MethodMatcher method(TypeCriteria typeDefinitionCriteria, String methodName) {
+    return method(typeDefinitionCriteria, NameCriteria.is(methodName));
   }
 
-  private static MethodMatcher methodWithAnyParameters(TypeCriteria typeDefinitionCriteria, String methodName) {
-    return methodWithAnyParameters(typeDefinitionCriteria, NameCriteria.is(methodName));
+  private static MethodMatcher method(String typeDefinition, NameCriteria nameCriteria) {
+    return MethodMatcher.create().typeDefinition(TypeCriteria.is(typeDefinition)).name(nameCriteria);
   }
 
-  private static MethodMatcher methodWithAnyParameters(TypeCriteria typeDefinitionCriteria, NameCriteria nameCriteria) {
-    return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(nameCriteria).withNoParameterConstraint();
-  }
-
-  private static MethodMatcher methodWithoutParameters(String typeDefinition, String methodName) {
-    return methodWithoutParameters(TypeCriteria.is(typeDefinition), methodName);
-  }
-
-  private static MethodMatcher methodWithoutParameters(TypeCriteria typeDefinitionCriteria, String methodName) {
-    return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(methodName);
+  private static MethodMatcher method(TypeCriteria typeDefinitionCriteria, NameCriteria nameCriteria) {
+    return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(nameCriteria);
   }
 
 }

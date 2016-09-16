@@ -39,11 +39,11 @@ import java.util.stream.Collectors;
 @Rule(key = "S3631")
 public class ArraysAsListOfPrimitiveToStreamCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher ARRAYS_AS_LIST = MethodMatcher.create().typeDefinition("java.util.Arrays").name("asList").withNoParameterConstraint();
+  private static final MethodMatcher ARRAYS_AS_LIST = MethodMatcher.create().typeDefinition("java.util.Arrays").name("asList").withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().callSite(TypeCriteria.is("java.util.List")).name("stream"));
+    return ImmutableList.of(MethodMatcher.create().callSite(TypeCriteria.is("java.util.List")).name("stream").withoutParameter());
   }
 
   @Override

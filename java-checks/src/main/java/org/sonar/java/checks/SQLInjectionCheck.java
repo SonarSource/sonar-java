@@ -35,21 +35,21 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     // method from the interface org.hibernate.SharedSessionContract, implemented by org.hibernate.Session
     .callSite(TypeCriteria.subtypeOf("org.hibernate.Session"))
     .name("createQuery")
-    .withNoParameterConstraint();
+    .withAnyParameters();
 
   private static final MethodMatcher STATEMENT_EXECUTE_QUERY_MATCHER = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("java.sql.Statement"))
     .name("executeQuery")
-    .withNoParameterConstraint();
+    .withAnyParameters();
 
   private static final MethodMatcherCollection CONNECTION_MATCHERS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareStatement").withNoParameterConstraint(),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareCall").withNoParameterConstraint());
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareStatement").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareCall").withAnyParameters());
 
   private static final MethodMatcher ENTITY_MANAGER_CREATE_NATIVE_QUERY_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.persistence.EntityManager")
     .name("createNativeQuery")
-    .withNoParameterConstraint();
+    .withAnyParameters();
 
   @Override
   public void visitNode(Tree tree) {

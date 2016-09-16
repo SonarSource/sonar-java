@@ -52,10 +52,10 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().name("wait"))
+      .add(MethodMatcher.create().name("wait").withoutParameter())
       .add(MethodMatcher.create().name("wait").addParameter("long"))
       .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
-      .add(MethodMatcher.create().name("notify"))
-      .add(MethodMatcher.create().name("notifyAll")).build();
+      .add(MethodMatcher.create().name("notify").withoutParameter())
+      .add(MethodMatcher.create().name("notifyAll").withoutParameter()).build();
   }
 }

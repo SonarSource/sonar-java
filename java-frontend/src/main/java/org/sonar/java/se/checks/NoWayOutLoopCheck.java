@@ -47,7 +47,8 @@ import java.util.Map;
 @Rule(key = "S2189")
 public class NoWayOutLoopCheck extends SECheck {
 
-  private static final MethodMatcher THREAD_RUN_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Thread")).name("run");
+  private static final MethodMatcher THREAD_RUN_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Thread"))
+    .name("run").withoutParameter();
 
   private enum UpdateType {
     INCREMENT, DECREMENT, INDETERMINATE

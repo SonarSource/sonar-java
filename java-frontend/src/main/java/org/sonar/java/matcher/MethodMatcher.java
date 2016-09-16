@@ -21,6 +21,7 @@ package org.sonar.java.matcher;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -32,18 +33,14 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
-
 public class MethodMatcher {
 
   private TypeCriteria typeDefinition;
   private TypeCriteria callSite;
   private NameCriteria methodName;
-  private List<TypeCriteria> parameterTypes;
 
-  MethodMatcher() {
-    parameterTypes = Lists.newArrayList();
-  }
+  private ParametersCriteria parameters;
+  private List<TypeCriteria> parameterTypes;
 
   public static MethodMatcher create() {
     return new MethodMatcher();
@@ -78,20 +75,49 @@ public class MethodMatcher {
   }
 
   public MethodMatcher addParameter(String fullyQualifiedTypeParameterName) {
-    Preconditions.checkState(parameterTypes != null);
-    parameterTypes.add(TypeCriteria.is(fullyQualifiedTypeParameterName));
-    return this;
+    return addParameter(TypeCriteria.is(fullyQualifiedTypeParameterName));
   }
 
   public MethodMatcher addParameter(TypeCriteria parameterTypeCriteria) {
-    Preconditions.checkState(parameterTypes != null);
+    if (parameters == null) {
+      parameterTypes = Lists.newArrayList();
+      parameters = ParametersCriteria.of(parameterTypes);
+    } else {
+      Preconditions.checkState(parameterTypes != null, "parameters is already initialized and doesn't support addParameter.");
+    }
     parameterTypes.add(parameterTypeCriteria);
     return this;
   }
 
-  public MethodMatcher withNoParameterConstraint() {
-    Preconditions.checkState(parameterTypes == null || parameterTypes.isEmpty());
-    parameterTypes = null;
+  public MethodMatcher parameters(String... parameterTypes) {
+    if (parameterTypes.length == 0) {
+      return withoutParameter();
+    }
+    for (String type : parameterTypes) {
+      addParameter(type);
+    }
+    return this;
+  }
+
+  public MethodMatcher parameters(TypeCriteria... parameterTypes) {
+    if (parameterTypes.length == 0) {
+      return withoutParameter();
+    }
+    for (TypeCriteria type : parameterTypes) {
+      addParameter(type);
+    }
+    return this;
+  }
+
+  public MethodMatcher withAnyParameters() {
+    Preconditions.checkState(parameters == null);
+    parameters = ParametersCriteria.any();
+    return this;
+  }
+
+  public MethodMatcher withoutParameter() {
+    Preconditions.checkState(parameters == null);
+    parameters = ParametersCriteria.none();
     return this;
   }
 
@@ -144,23 +170,8 @@ public class MethodMatcher {
   }
 
   private boolean parametersAcceptable(MethodSymbol methodSymbol) {
-    if (parameterTypes == null) {
-      return true;
-    }
-    List<Type> parametersTypes = methodSymbol.parameterTypes();
-    List<TypeCriteria> arguments = parameterTypes;
-    if (parametersTypes.size() == arguments.size()) {
-      int i = 0;
-      for (Type parameterType : parametersTypes) {
-        if (!arguments.get(i).matches(parameterType)) {
-          return false;
-        }
-        i++;
-      }
-    } else {
-      return false;
-    }
-    return true;
+    Preconditions.checkState(parameters != null);
+    return parameters.matches(methodSymbol.parameterTypes());
   }
 
   private static IdentifierTree getIdentifier(MethodInvocationTree mit) {

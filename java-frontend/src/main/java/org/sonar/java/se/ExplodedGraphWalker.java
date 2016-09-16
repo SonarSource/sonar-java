@@ -95,7 +95,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
-  private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withNoParameterConstraint();
+  private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private MethodTree methodTree;
   private ExplodedGraph explodedGraph;

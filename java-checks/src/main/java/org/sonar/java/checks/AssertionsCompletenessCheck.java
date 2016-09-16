@@ -39,7 +39,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
   private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
-    .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
+    .typeDefinition("org.mockito.Mockito").name("verify").withAnyParameters();
 
   private static final MethodMatcherCollection FEST_LIKE_ASSERT_THAT = MethodMatcherCollection.create(
     // Fest 1.X
@@ -79,7 +79,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   }
 
   private static MethodMatcher methodWithName(String superType, NameCriteria nameCriteria) {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(superType)).name(nameCriteria).withNoParameterConstraint();
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(superType)).name(nameCriteria).withAnyParameters();
   }
 
   @Override

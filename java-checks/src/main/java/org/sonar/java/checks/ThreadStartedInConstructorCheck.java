@@ -39,7 +39,8 @@ public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor
 
   private static final MethodMatcher THREAD_START = MethodMatcher.create()
     .typeDefinition("java.lang.Thread")
-    .name("start");
+    .name("start")
+    .withoutParameter();
 
   private final Deque<Boolean> inMethodOrStaticInitializerOrFinalClass = new LinkedList<>();
 

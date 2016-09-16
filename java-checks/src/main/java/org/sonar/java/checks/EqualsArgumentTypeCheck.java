@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
@@ -39,8 +40,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
-import java.util.List;
-
 @Rule(key = "S2097")
 public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
 
@@ -49,7 +48,8 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
     .addParameter(TypeCriteria.anyType());
 
   private static final MethodMatcher GETCLASS_MATCHER = MethodMatcher.create()
-    .name("getClass");
+    .name("getClass")
+    .withoutParameter();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

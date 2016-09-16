@@ -36,7 +36,7 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(STRING).name(INIT),
+      MethodMatcher.create().typeDefinition(STRING).name(INIT).withoutParameter(),
       MethodMatcher.create().typeDefinition(STRING).name(INIT).addParameter(STRING),
       MethodMatcher.create().typeDefinition("java.lang.Byte").name(INIT).addParameter("byte"),
       MethodMatcher.create().typeDefinition("java.lang.Character").name(INIT).addParameter("char"),

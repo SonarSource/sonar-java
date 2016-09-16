@@ -85,8 +85,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
 
     private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
-    private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get");
-    private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent");
+    private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withoutParameter();
+    private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withoutParameter();
 
     private final CheckerContext context;
     private final ConstraintManager constraintManager;

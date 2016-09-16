@@ -39,12 +39,12 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
   private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()
       .typeDefinition("java.lang.Runtime")
       .name("exec")
-      .withNoParameterConstraint();
+      .withAnyParameters();
 
   private static final MethodMatcher PROCESS_BUILDER_COMMAND_MATCHER = MethodMatcher.create()
       .typeDefinition("java.lang.ProcessBuilder")
       .name("command")
-      .withNoParameterConstraint();
+      .withAnyParameters();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

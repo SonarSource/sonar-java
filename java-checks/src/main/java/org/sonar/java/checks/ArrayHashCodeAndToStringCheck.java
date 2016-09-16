@@ -42,7 +42,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
   private static MethodMatcher arrayMethodInvocation(String methodName) {
     return MethodMatcher.create()
       .callSite(type -> type.isArray())
-      .name(methodName);
+      .name(methodName).withoutParameter();
   }
 
   @Override
