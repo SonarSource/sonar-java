@@ -169,3 +169,18 @@ class A {
     return (boolean) !identifier && foo; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
   }
 }
+
+final class B {
+  Object foo(Object a) {
+    if(a ==  null) {
+      return null;
+    }
+    return a;
+  }
+
+  void bar(Object p) {
+    // check that concatenating a string literal to an object gives a non null SV.
+    Object b = foo("fpp"+p);
+    b.toString();
+  }
+}
