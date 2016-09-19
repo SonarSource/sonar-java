@@ -21,10 +21,10 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -41,6 +41,7 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -500,15 +501,15 @@ public class ExplodedGraphWalker {
       methodInvokedBehavior.yields()
         .stream()
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())
-        .forEach(ps -> {
-          ProgramState programState = ps;
+        .forEach(psYield -> {
+          ProgramState ps = psYield;
           if (isNonNullMethod(methodSymbol)) {
-            programState = programState.addConstraint(programState.peekValue(), ObjectConstraint.NOT_NULL);
+            ps = ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
           } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-            programState = programState.resetFieldValues(constraintManager);
+            ps = ps.resetFieldValues(constraintManager);
           }
           checkerDispatcher.syntaxNode = mit;
-          checkerDispatcher.addTransition(programState);
+          checkerDispatcher.addTransition(ps);
           clearStack(mit);
         });
     } else {
@@ -637,6 +638,26 @@ public class ExplodedGraphWalker {
     programState = unstackBinary.state;
     SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
     symbolicValue.computedFrom(unstackBinary.values);
+    if(tree.is(Tree.Kind.PLUS)) {
+      BinaryExpressionTree bt = (BinaryExpressionTree) tree;
+      if (bt.leftOperand().symbolType().is("java.lang.String")) {
+        Constraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1));
+        if (leftConstraint != null && !leftConstraint.isNull()) {
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
+          Preconditions.checkState(programStates.size() == 1);
+          programState = programStates.get(0);
+        }
+
+      } else if(bt.rightOperand().symbolType().is("java.lang.String")) {
+        Constraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0));
+        if (rightConstraint != null && !rightConstraint.isNull()) {
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
+          Preconditions.checkState(programStates.size() == 1);
+          programState = programStates.get(0);
+        }
+
+      }
+    }
     programState = programState.stackValue(symbolicValue);
   }
 

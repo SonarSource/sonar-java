@@ -82,10 +82,10 @@ public class MethodYield {
       results.addAll(programStates);
     }
 
-    // applied all constraints from parameters, stack return value
     if (exception) {
       return results;
     }
+    // applied all constraints from parameters, stack return value
     SymbolicValue sv;
     if (resultIndex < 0) {
       sv = svSupplier.get();
