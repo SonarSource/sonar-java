@@ -65,6 +65,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -301,6 +302,15 @@ public class ExplodedGraphWalker {
           return;
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues();
+          break;
+        case RETURN_STATEMENT:
+          ExpressionTree returnExpression = ((ReturnStatementTree) terminator).expression();
+          if (returnExpression != null) {
+            programState.storeReturnValue();
+          }
+          break;
+        case THROW_STATEMENT:
+          programState.clearReturnValue();
           break;
         default:
           // do nothing by default.
