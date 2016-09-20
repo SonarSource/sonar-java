@@ -184,3 +184,18 @@ final class B {
     b.toString();
   }
 }
+
+final class C {
+  private void bar(Object u) {
+    badRequestIfNullResult(u, "", "");
+    return u.toString();
+  }
+
+  private Object badRequestIfNullResult(@Nullable Object component, String objectType, String objectKey) {
+    if (component == null) {
+      throw new IllegalArgumentException(String.format(NOT_FOUND_FORMAT, objectType, objectKey));
+    }
+    return component;
+  }
+
+}

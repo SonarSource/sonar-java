@@ -78,6 +78,7 @@ public class ExplodedGraph {
   public static class Node {
     boolean isNew;
     boolean exitPath = false;
+    boolean happyPath = true;
 
     /**
      * Execution location. Currently only pre-statement, but tomorrow we might add post-statement.
