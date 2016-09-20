@@ -44,9 +44,9 @@ public class MethodBehavior {
     this.parameters = new LinkedHashMap<>();
   }
 
-  public void createYield(ProgramState programState) {
+  public void createYield(ProgramState programState, boolean happyPathYield) {
     MethodYield yield = new MethodYield(parameters.size());
-
+    yield.exception = !happyPathYield;
     List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
@@ -55,11 +55,7 @@ public class MethodBehavior {
 
     if (!isConstructor() && !isVoidMethod()) {
       SymbolicValue resultSV = programState.peekValue();
-      if (resultSV == null) {
-        // FIXME Handle exception path: for now ignore completely output through exceptions
-        yield.exception = true;
-        return;
-      } else {
+      if (resultSV != null) {
         yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
         yield.resultConstraint = programState.getConstraint(resultSV);
       }
