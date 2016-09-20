@@ -233,7 +233,7 @@ public class ExplodedGraphWalker {
 
   private void handleEndOfExecutionPath() {
     checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-    methodBehavior.createYield(programState);
+    methodBehavior.createYield(programState, node.happyPath);
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
@@ -271,6 +271,7 @@ public class ExplodedGraphWalker {
     CFG.Block block = programPosition.block;
     Tree terminator = block.terminator();
     cleanUpProgramState(block);
+    boolean exitPath = node.exitPath;
     if (terminator != null) {
       switch (terminator.kind()) {
         case IF_STATEMENT:
@@ -306,7 +307,7 @@ public class ExplodedGraphWalker {
       }
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
-    if (node.exitPath) {
+    if (exitPath) {
       if (block.exitBlock() != null) {
         enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
       } else {
@@ -318,6 +319,7 @@ public class ExplodedGraphWalker {
     } else {
       for (CFG.Block successor : block.successors()) {
         if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
+          node.happyPath = terminator == null || !terminator.is(Tree.Kind.THROW_STATEMENT);
           enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
         }
       }
@@ -500,6 +502,7 @@ public class ExplodedGraphWalker {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       methodInvokedBehavior.yields()
         .stream()
+        .filter(yield -> !yield.exception)
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())
         .forEach(psYield -> {
           ProgramState ps = psYield;
@@ -782,6 +785,9 @@ public class ExplodedGraphWalker {
       return;
     }
     cachedNode.exitPath = exitPath;
+    if(node != null) {
+      cachedNode.happyPath = node.happyPath;
+    }
     workList.addFirst(cachedNode);
   }
 
