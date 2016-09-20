@@ -73,7 +73,8 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     PCollections.emptyMap(),
-    Lists.<SymbolicValue>newLinkedList());
+    Lists.<SymbolicValue>newLinkedList(),
+    null);
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
 
@@ -81,15 +82,17 @@ public class ProgramState {
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
   private final PMap<SymbolicValue, Constraint> constraints;
+  private SymbolicValue returnSymbolicValue;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack) {
+    Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
+    this.returnSymbolicValue = returnSymbolicValue;
     constraintSize = 3;
   }
 
@@ -99,6 +102,7 @@ public class ProgramState {
     constraints = ps.constraints;
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
+    returnSymbolicValue = ps.returnSymbolicValue;
     stack = newStack;
   }
 
@@ -108,6 +112,7 @@ public class ProgramState {
     constraints = newConstraints;
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
+    returnSymbolicValue = ps.returnSymbolicValue;
     this.stack = ps.stack;
   }
 
@@ -197,7 +202,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
     }
     return this;
   }
@@ -260,7 +265,8 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack) : this;
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, returnSymbolicValue)
+      : this;
   }
 
   public ProgramState cleanupConstraints() {
@@ -280,7 +286,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     constraints.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack) : this;
+    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, returnSymbolicValue) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -308,7 +314,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -325,7 +331,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, returnSymbolicValue);
   }
 
   @CheckForNull
@@ -404,5 +410,18 @@ public class ProgramState {
       }
     }
     return null;
+  }
+
+  public void storeReturnValue() {
+    this.returnSymbolicValue = peekValue();
+  }
+
+  public void clearReturnValue() {
+    this.returnSymbolicValue = null;
+  }
+
+  @CheckForNull
+  public SymbolicValue returnValue() {
+    return this.returnSymbolicValue;
   }
 }

@@ -49,7 +49,7 @@ public class MethodYield {
 
   @Override
   public String toString() {
-    return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + ")}";
+    return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + "), exceptional: " + exception + "}";
   }
 
   public List<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
@@ -82,9 +82,6 @@ public class MethodYield {
       results.addAll(programStates);
     }
 
-    if (exception) {
-      return results;
-    }
     // applied all constraints from parameters, stack return value
     SymbolicValue sv;
     if (resultIndex < 0) {
@@ -119,16 +116,14 @@ public class MethodYield {
       return false;
     }
     MethodYield other = (MethodYield) obj;
-    if (!Arrays.equals(parametersConstraints, other.parametersConstraints)) {
+    if (!Arrays.equals(parametersConstraints, other.parametersConstraints)
+      || exception != other.exception
+      || resultIndex != other.resultIndex) {
       return false;
     }
-    if (resultConstraint == null) {
-      if (other.resultConstraint != null) {
-        return false;
-      }
-    } else if (!resultConstraint.equals(other.resultConstraint) || resultIndex != other.resultIndex) {
-      return false;
+    if (resultConstraint != null) {
+      return resultConstraint.equals(other.resultConstraint);
     }
-    return true;
+    return other.resultConstraint == null;
   }
 }
