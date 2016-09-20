@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -30,61 +33,53 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String VERIFY = "verify";
   private static final String ASSERT_NAME = "assert";
-  private static final String ASSERT_THAT_NAME = "assertThat";
 
   private static final TypeCriteria ORG_MOCKITO_MOCKITO = TypeCriteria.is("org.mockito.Mockito");
+  private static final TypeCriteria ORG_ASSERTJ_ASSERTIONS = TypeCriteria.is("org.assertj.core.api.Assertions");
+  private static final TypeCriteria ORG_ASSERTJ_FAIL = TypeCriteria.is("org.assertj.core.api.Fail");
+
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
   private static final NameCriteria STARTS_WITH_FAIL = NameCriteria.startsWith("fail");
-
-  private static final MethodMatcher MOCKITO_VERIFY = method(ORG_MOCKITO_MOCKITO, VERIFY).withAnyParameters();
-  private static final MethodMatcher ASSERTJ_ASSERT_ALL = method("org.assertj.core.api.SoftAssertions", "assertAll").withoutParameter();
-  private static final MethodMatcher ASSERT_THAT = method(ANY_TYPE, ASSERT_THAT_NAME).addParameter(ANY_TYPE);
-  private static final MethodMatcher FEST_AS_METHOD = method(ANY_TYPE, "as").withAnyParameters();
-  private static final MethodMatcher FEST_DESCRIBED_AS_METHOD = method(ANY_TYPE, "describedAs").withAnyParameters();
-  private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = method(ANY_TYPE, "overridingErrorMessage").withAnyParameters();
+  private static final NameCriteria STARTS_WITH_ASSERT = NameCriteria.startsWith(ASSERT_NAME);
 
   private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
     // junit
-    method("org.junit.Assert", NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters(),
-    method("org.junit.Assert", "fail").withAnyParameters(),
+    method("org.junit.Assert", STARTS_WITH_ASSERT).withAnyParameters(),
+    method("org.junit.Assert", STARTS_WITH_FAIL).withAnyParameters(),
     method("org.junit.rules.ExpectedException", NameCriteria.startsWith("expect")).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("junit.framework.Assert"), NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_ASSERT).withAnyParameters(),
     method(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_FAIL).withAnyParameters(),
+    method("org.junit.rules.ErrorCollector", "checkThat").withAnyParameters(),
     // fest 1.x
     method(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME).withAnyParameters(),
+    method("org.fest.assertions.Assertions", STARTS_WITH_ASSERT).withAnyParameters(),
     method("org.fest.assertions.Fail", STARTS_WITH_FAIL).withAnyParameters(),
     // fest 2.x
     method(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
     method("org.fest.assertions.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
     // assertJ
     method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
-    method("org.assertj.core.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
-    method("org.assertj.core.api.Fail", "shouldHaveThrown").withAnyParameters(),
-    method("org.assertj.core.api.Assertions", STARTS_WITH_FAIL).withAnyParameters(),
-    method("org.assertj.core.api.Assertions", "shouldHaveThrown").withAnyParameters(),
+    method(ORG_ASSERTJ_FAIL, STARTS_WITH_FAIL).withAnyParameters(),
+    method(ORG_ASSERTJ_FAIL, "shouldHaveThrown").withAnyParameters(),
+    method(ORG_ASSERTJ_ASSERTIONS, STARTS_WITH_FAIL).withAnyParameters(),
+    method(ORG_ASSERTJ_ASSERTIONS, "shouldHaveThrown").withAnyParameters(),
+    method(ORG_ASSERTJ_ASSERTIONS, STARTS_WITH_ASSERT).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractSoftAssertions"), STARTS_WITH_ASSERT).withAnyParameters(),
     // hamcrest
-    method("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
-    method("org.hamcrest.MatcherAssert", ASSERT_THAT_NAME).addParameter(ANY_TYPE).addParameter(ANY_TYPE).addParameter(ANY_TYPE),
+    method("org.hamcrest.MatcherAssert", STARTS_WITH_ASSERT).withAnyParameters(),
     // Mockito
-    method(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions").withAnyParameters(),
-    method(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions").withAnyParameters(),
+    method(ORG_MOCKITO_MOCKITO, NameCriteria.startsWith(VERIFY)).withAnyParameters(),
     // spring
     method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
     // EasyMock
@@ -92,27 +87,20 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY).withAnyParameters(),
     method(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll").withAnyParameters(),
     // Truth Framework
-    method("com.google.common.truth.Truth", NameCriteria.startsWith(ASSERT_NAME)).withAnyParameters()
-  );
+    method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
-  private final Deque<Boolean> methodContainsAssertjSoftAssertionUsage = new ArrayDeque<>();
-  private final Deque<Boolean> methodContainsJunitSoftAssertionUsage = new ArrayDeque<>();
-  private final Deque<Boolean> methodContainsAssertjAssertAll = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
-  private final Deque<ChainedMethods> chainedTo = new ArrayDeque<>();
   private JavaFileScannerContext context;
-
-  private enum ChainedMethods {
-    NONE,
-    ASSERT_THAT,
-    MOCKITO_VERIFY
-  }
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
+    inUnitTest.push(false);
+    methodContainsAssertion.push(false);
     scan(context.getTree());
+    methodContainsAssertion.pop();
+    inUnitTest.pop();
   }
 
   @Override
@@ -123,19 +111,20 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     boolean isUnitTest = isUnitTest(methodTree);
     inUnitTest.push(isUnitTest);
     methodContainsAssertion.push(false);
-    methodContainsAssertjSoftAssertionUsage.push(false);
-    methodContainsAssertjAssertAll.push(false);
-    methodContainsJunitSoftAssertionUsage.push(false);
     super.visitMethod(methodTree);
-    inUnitTest.pop();
     Boolean containsAssertion = methodContainsAssertion.pop();
-    Boolean containsSoftAssertionDecl = methodContainsAssertjSoftAssertionUsage.pop();
-    Boolean containsAssertjAssertAll = methodContainsAssertjAssertAll.pop();
-    Boolean containsJunitSoftAssertionUsage = methodContainsJunitSoftAssertionUsage.pop();
-    if (isUnitTest &&
-        !expectAssertion(methodTree) &&
-        (!containsAssertion || badSoftAssertionUsage(containsSoftAssertionDecl, containsAssertjAssertAll, containsJunitSoftAssertionUsage))) {
+    inUnitTest.pop();
+    if (isUnitTest && !expectAssertion(methodTree) && !containsAssertion) {
       context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
+    }
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree mit) {
+    super.visitMethodInvocation(mit);
+    if (!methodContainsAssertion.peek() && inUnitTest.peek() && ASSERTION_INVOCATION_MATCHERS.anyMatch(mit)) {
+      methodContainsAssertion.pop();
+      methodContainsAssertion.push(true);
     }
   }
 
@@ -149,83 +138,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       }
     }
     return false;
-  }
-
-  private static boolean badSoftAssertionUsage(Boolean containsSoftAssertionDecl, Boolean containsAssertjAssertAll, Boolean containsJunitSoftAssertionUsage) {
-    return containsSoftAssertionDecl && !containsJunitSoftAssertionUsage && !containsAssertjAssertAll;
-  }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree mit) {
-    if (!inUnitTest()) {
-      return;
-    }
-    checkForAssertjSoftAssertions(mit);
-    if (methodContainsAssertion.peek()) {
-      return;
-    }
-    chainedTo.push(ChainedMethods.NONE);
-    super.visitMethodInvocation(mit);
-    ChainedMethods chainedToResult = chainedTo.pop();
-    if (containsAssertion(mit, chainedToResult)) {
-      methodContainsAssertion.pop();
-      methodContainsAssertion.push(Boolean.TRUE);
-    }
-    if (!chainedTo.isEmpty()) {
-      if (ChainedMethods.ASSERT_THAT.equals(chainedToResult) || ASSERT_THAT.matches(mit)) {
-        chainedTo.pop();
-        chainedTo.push(ChainedMethods.ASSERT_THAT);
-      } else if (MOCKITO_VERIFY.matches(mit)) {
-        chainedTo.pop();
-        chainedTo.push(ChainedMethods.MOCKITO_VERIFY);
-      }
-    }
-  }
-
-  @Override
-  public void visitIdentifier(IdentifierTree tree) {
-    if (inUnitTest()) {
-      Symbol symbol = tree.symbol();
-      Type type = symbol.type();
-      if (type != null && type.isSubtypeOf("org.assertj.core.api.AbstractStandardSoftAssertions")){
-        setTrue(methodContainsAssertjSoftAssertionUsage);
-        if (symbol.metadata().isAnnotatedWith("org.junit.Rule")) {
-          setTrue(methodContainsJunitSoftAssertionUsage);
-        }
-      }
-    }
-    super.visitIdentifier(tree);
-  }
-
-  private boolean inUnitTest() {
-    return !inUnitTest.isEmpty() && inUnitTest.peek();
-  }
-
-  private static void setTrue(Deque<Boolean> collection) {
-    if (!collection.peek()) {
-      collection.pop();
-      collection.push(true);
-    }
-  }
-
-  private void checkForAssertjSoftAssertions(MethodInvocationTree mit) {
-    if (ASSERTJ_ASSERT_ALL.matches(mit)) {
-      setTrue(methodContainsAssertjAssertAll);
-    }
-  }
-
-  private static boolean containsAssertion(MethodInvocationTree mit, ChainedMethods chainedToResult) {
-    // ignore assertThat chained with bad resolution method invocations
-    boolean isChainedToAssertThatWithBadResolution = ChainedMethods.ASSERT_THAT.equals(chainedToResult) && mit.symbol().isUnknown();
-    boolean isChainedToVerify = ChainedMethods.MOCKITO_VERIFY.equals(chainedToResult);
-    return isChainedToVerify || isChainedToAssertThatWithBadResolution || isAssertion(mit);
-  }
-
-  private static boolean isAssertion(MethodInvocationTree mit) {
-    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) &&
-      !FEST_AS_METHOD.matches(mit) &&
-      !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
-      !FEST_DESCRIBED_AS_METHOD.matches(mit);
   }
 
   private static boolean isUnitTest(MethodTree methodTree) {

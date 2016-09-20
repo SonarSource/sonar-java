@@ -20,16 +20,27 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.MoreObjects;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2970")
@@ -40,6 +51,12 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withAnyParameters();
+  private static final MethodMatcher ASSERTJ_ASSERT_ALL = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.SoftAssertions")).name("assertAll").withAnyParameters();
+  private static final MethodMatcher ASSERTJ_ASSERT_THAT = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractSoftAssertions"))
+    .name(NameCriteria.startsWith("assertThat"))
+    .withAnyParameters();
 
   private static final MethodMatcherCollection FEST_LIKE_ASSERT_THAT = MethodMatcherCollection.create(
     // Fest 1.X
@@ -73,6 +90,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private Boolean chainedToAnyMethodButFestExclusions = null;
   private JavaFileScannerContext context;
+  private final Deque<Boolean> containsAssertThatWithoutAssertAll = new ArrayDeque<>();
 
   private static MethodMatcher assertThatOnType(String type) {
     return MethodMatcher.create().typeDefinition(type).name("assertThat").addParameter(TypeCriteria.anyType());
@@ -99,7 +117,20 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   }
 
   @Override
+  public void visitMethod(MethodTree methodTree) {
+    if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.ABSTRACT)) {
+      return;
+    }
+    containsAssertThatWithoutAssertAll.push(false);
+    super.visitMethod(methodTree);
+    if (Boolean.TRUE.equals(containsAssertThatWithoutAssertAll.pop())) {
+      context.reportIssue(this, methodTree.block().closeBraceToken(), "Add a call to 'assertAll' after all 'assertThat'.");
+    }
+  }
+
+  @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
+    checkForAssertJSoftAssertions(mit);
     if (incompleteAssertion(mit)) {
       return;
     }
@@ -108,6 +139,54 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     scan(mit.methodSelect());
     // skip arguments
     chainedToAnyMethodButFestExclusions = previous;
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    boolean hasAutoCloseableSoftAssertion = tree.resources().stream()
+      .map(VariableTree::symbol)
+      .map(Symbol::type)
+      .filter(type -> type != null)
+      .filter(type -> type.isSubtypeOf("org.assertj.core.api.AutoCloseableSoftAssertions"))
+      .findFirst()
+      .isPresent();
+    super.visitTryStatement(tree);
+    if (hasAutoCloseableSoftAssertion) {
+      checkAssertJAssertAll(tree.block().closeBraceToken());
+    }
+  }
+
+  private void checkForAssertJSoftAssertions(MethodInvocationTree mit) {
+    if (ASSERTJ_ASSERT_ALL.matches(mit)) {
+      checkAssertJAssertAll(mit.methodSelect());
+    } else if (ASSERTJ_ASSERT_THAT.matches(mit) && !isJUnitSoftAssertions(mit)) {
+      set(containsAssertThatWithoutAssertAll, true);
+    }
+  }
+
+  private void checkAssertJAssertAll(Tree issueLocation) {
+    if (Boolean.TRUE.equals(containsAssertThatWithoutAssertAll.peek())) {
+      set(containsAssertThatWithoutAssertAll, false);
+    } else {
+      context.reportIssue(this, issueLocation, "Add one or more 'assertThat' before 'assertAll'.");
+    }
+  }
+
+  private static boolean isJUnitSoftAssertions(MethodInvocationTree mit) {
+    ExpressionTree expressionTree = mit.methodSelect();
+    if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+      Type type = ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
+      return type.isSubtypeOf("org.assertj.core.api.JUnitSoftAssertions") ||
+        type.isSubtypeOf("org.assertj.core.api.Java6JUnitSoftAssertions");
+    }
+    return false;
+  }
+
+  private static void set(Deque<Boolean> collection, boolean value) {
+    if (Boolean.TRUE.equals(collection.peek()) != value) {
+      collection.pop();
+      collection.push(value);
+    }
   }
 
   private boolean incompleteAssertion(MethodInvocationTree mit) {

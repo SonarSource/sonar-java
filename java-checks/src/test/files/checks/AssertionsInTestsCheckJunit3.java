@@ -2,18 +2,17 @@ import junit.framework.TestCase;
 
 import javax.annotation.Nullable;
 
-public class AssertionsInTestsCheckTestJunit3 extends TestCase {
+public class AssertionsInTestsCheckJunit3 extends TestCase {
 
-  public void testCompliant() {
+  public void test_contains_no_assertions() { // Noncompliant
+  }
+
+  public void test_assert_assertTrue() {
     org.junit.Assert.assertTrue(true);
   }
 
-  public void testNoncompliant() { // Noncompliant
-  }
-
   @Nullable
-  public Test notAtest() {
-    compliant1();
+  public void not_a_test() {
   }
 
 }

@@ -1,76 +1,69 @@
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Fail;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class AssertionsInTestsCheckAssertJ {
 
-public class AssertionsInTestsCheckTest {
+  private final SoftAssertions soft_assert = new SoftAssertions();
 
   @Rule
-  public final JUnitSoftAssertions jsoftly = new JUnitSoftAssertions();
+  public final JUnitSoftAssertions soft_assert_rule = new JUnitSoftAssertions();
 
   @Test
-  public void noncompliant1() { // Noncompliant
-    assertThat("a").as("aaa");
-  }
-  @Test
-  public void noncompliant2() { // Noncompliant
-    SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(5).isLessThan(3);
-    softly.assertThat(1).isGreaterThan(2);
-  }
-  @Test
-  public void noncompliant3() { // Noncompliant
-    jsoftly.assertThat(3);
+  public void contains_no_assertions() { // Noncompliant
   }
 
   @Test
-  public void compliant1a() {
-    org.assertj.core.api.Assertions.assertThat("a").hasSize(1);
+  public void soft_assertThat() {
+    soft_assert.assertThat(5).isLessThan(3);
   }
+
   @Test
-  public void compliant1b() {
-    assertThat("a").hasSize(1);
+  public void soft_assertAll() {
+    soft_assert.assertAll();
   }
+
   @Test
-  public void compliant2() {
-    org.assertj.core.api.Assertions.fail("a");
+  public void soft_assert_rule_assertThat() {
+    soft_assert_rule.assertThat(5).isLessThan(3);
   }
+
   @Test
-  public void compliant3() {
-    org.assertj.core.api.Assertions.fail("a", new IllegalArgumentException());
+  public void assertions_assertThat() {
+    Assertions.assertThat(true);
   }
+
   @Test
-  public void compliant4() {
-    org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
+  public void assertions_fail() {
+    Assertions.fail("a");
   }
+
   @Test
-  public void compliant5() {
-    org.assertj.core.api.Fail.fail("failure");
+  public void assertions_fail_exception() {
+    Assertions.fail("a", new IllegalArgumentException());
   }
+
   @Test
-  public void compliant6() {
-    org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
+  public void assertions_fail_because() {
+    Assertions.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
   }
+
   @Test
-  public void compliant7() {
-    org.assertj.core.api.Fail.shouldHaveThrown(IllegalArgumentException.class);
+  public void fail_fail() {
+    Fail.fail("failure");
   }
+
   @Test
-  public void compliant8() {
-    SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(5).isLessThan(3);
-    softly.assertAll();
+  public void fail_fail_because() {
+    Fail.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
   }
+
   @Test
-  public void compliant9() {
-    jsoftly.assertThat(5).isLessThan(3);
-  }
-  @Test
-  public void compliant10() {
-    SoftAssertions softly = jsoftly;
-    softly.assertThat(5).isLessThan(3);
+  public void fail_shouldHaveThrown() {
+    Fail.shouldHaveThrown(IllegalArgumentException.class);
   }
 
 }
