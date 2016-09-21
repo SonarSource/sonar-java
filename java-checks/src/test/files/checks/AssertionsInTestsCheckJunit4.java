@@ -87,9 +87,8 @@ public abstract class AssertionsInTestsCheckJunit4 {
   }
 
   @Test
-  public void junit_rule_error_collector() { // Noncompliant
-    // false-positive, bellow a valid assertion using org.junit.rules.ErrorCollector
-    errorCollector.checkThat("123", org.hamcrest.Matchers.equalTo("123"));
+  public void junit_rule_error_collector() { // Compliant
+    errorCollector.checkThat("123", org.hamcrest.CoreMatchers.equalTo("123"));
   }
 
   @Test(expected = IllegalStateException.class)
