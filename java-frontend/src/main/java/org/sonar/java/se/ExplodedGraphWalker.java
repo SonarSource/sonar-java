@@ -73,7 +73,6 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -189,7 +188,8 @@ public class ExplodedGraphWalker {
       steps++;
       if (steps > MAX_STEPS) {
         checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name());
+        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name()
+          + "#" +tree.simpleName().firstToken().line()+ " in class " + tree.symbol().owner().name());
       }
       // LIFO:
       node = workList.removeFirst();
@@ -498,7 +498,7 @@ public class ExplodedGraphWalker {
     if(declaration != null) {
       methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
-    if (methodInvokedBehavior != null && methodCanNotBeOverriden(methodSymbol)) {
+    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       methodInvokedBehavior.yields()
         .stream()
