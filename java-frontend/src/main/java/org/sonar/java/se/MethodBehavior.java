@@ -37,6 +37,7 @@ public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
   private final Set<MethodYield> yields;
   private final Map<Symbol, SymbolicValue> parameters;
+  private boolean complete = false;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
@@ -84,4 +85,11 @@ public class MethodBehavior {
     return parameters.values();
   }
 
+  public boolean isComplete() {
+    return complete;
+  }
+
+  void completed() {
+    this.complete = true;
+  }
 }
