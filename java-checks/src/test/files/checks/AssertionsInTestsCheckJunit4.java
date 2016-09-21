@@ -1,199 +1,147 @@
-import javax.annotation.Nullable;
-import org.junit.Test;
-import org.junit.Rule;
-import org.fest.assertions.Assertions;
-
-import java.lang.IllegalStateException;
-import java.lang.Override;
 import java.util.List;
-import org.mockito.Mockito;
-import org.junit.rules.ExpectedException;
+import javax.annotation.Nullable;
 import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-public class AssertionsInTestsCheckTest {
+public abstract class AssertionsInTestsCheckJunit4 {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private static int staticMethod() {}
+  @Rule
+  public org.junit.rules.ErrorCollector errorCollector = new org.junit.rules.ErrorCollector();
 
-  private static int VAL = staticMethod();
+  private static int VAL = static_and_not_a_unit_test();
 
-  @Test
-  public void compliant1() {
-    org.fest.assertions.Fail.fail("foo");
+  private static int static_and_not_a_unit_test() {
+    return 0;
   }
 
   @Test
-  public void compliant2() {
+  public void contains_no_assertions() { // Noncompliant [[sc=15;ec=37]] {{Add at least one assertion to this test case.}}
+  }
+
+  @Nullable
+  public Test not_a_unit_test() {
+    contains_no_assertions();
+    return null;
+  }
+
+  @Test(timeout = 0L)
+  public void contains_no_assertions_but_exceptions() { // Noncompliant
+    throw new IllegalStateException("message");
+  }
+
+  @Test
+  public abstract void abstract_unit_test();
+
+  @Test
+  public void junit_assert_equals() {
     org.junit.Assert.assertEquals(true, true);
   }
 
   @Test
-  public void compliant3() {
+  public void junit_assert_true() {
     org.junit.Assert.assertTrue(true);
     org.junit.Assert.assertTrue(true); // Coverage
   }
 
   @Test
-  public void compliant4() {
+  public void junit_assert_that() {
     org.junit.Assert.assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
   }
 
   @Test
-  public void compliant4bis() {
+  public void junit_assert_that_generic() {
     org.junit.Assert.<String>assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
   }
 
   @Test
-  public void compliant5() {
+  public void fest_assert_fail() {
+    org.fest.assertions.Fail.fail("foo");
+  }
+
+  @Test
+  public void fest_assert_that() {
+    org.fest.assertions.Assertions.assertThat(true);
+  }
+
+  @Test
+  public void fest_assert_that_equals() {
     org.fest.assertions.Assertions.assertThat(true).isEqualTo(true);
   }
 
   @Test
-  public void compliant6() {
-    assertThat("").isEmpty();
-  }
-
-  @Test
-  public void compliant7() {
-    assertThat("").hasSize(0);
-  }
-
-  @Test
-  public void compliant8() {
-    assertThat("").as("").isEqualTo("");
-  }
-
-  @Test
-  public void compliant9() {
-    List mockedList = Mockito.mock(List.class);
-    verifyNoMoreInteractions(mockedList);
-  }
-
-  @Test
-  public void compliant10() {
-    List mockedList = Mockito.mock(List.class);
-    Mockito.verifyNoMoreInteractions(mockedList);
-  }
-
-  @Test
-  public void compliant11() {
-    List mockedList = Mockito.mock(List.class);
-    mockedList.add("one");
-    verify(mockedList).add("one");
-  }
-
-  @Test
-  public void compliant12() {
-    List mockedList = Mockito.mock(List.class);
-    mockedList.clear();
-    verify(mockedList).clear();
-  }
-
-  @Test
-  public void compliant13() {
+  public void junit_rule_expected_exception() {
     thrown.expect(IllegalStateException.class);
     throw new IllegalStateException("message");
   }
 
   @Test
-  public void compliant14() {
+  public void junit_rule_expected_exception_message() {
     thrown.expectMessage("message");
     throw new IllegalStateException("message");
   }
 
+  @Test
+  public void junit_rule_error_collector() { // Compliant
+    errorCollector.checkThat("123", org.hamcrest.CoreMatchers.equalTo("123"));
+  }
+
   @Test(expected = IllegalStateException.class)
-  public void compliant15() {
+  public void junit_test_annotated_with_expected() {
     throw new IllegalStateException("message");
   }
 
   @Test
-  public void nonCompliant1() { // Noncompliant [[sc=15;ec=28]] {{Add at least one assertion to this test case.}}
+  public void mockito_assertion_verify() {
+    Mockito.verify(Mockito.mock(List.class)).clear();
   }
 
   @Test
-  public void nonCompliant2() { // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true);  // Fest assertion stub with no checks
+  public void mockito_assertion_verify_times() {
+    Mockito.verify(Mockito.mock(List.class), Mockito.times(0));
   }
 
   @Test
-  public void nonCompliant3() { // Noncompliant
-    assertThat(true);  // Fest assertion stub with no checks
+  public void mockito_assertion_verify_zero_interactions() {
+    Mockito.verifyZeroInteractions(Mockito.mock(List.class));
   }
 
   @Test
-  public void nonCompliant4() { // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true).as("foo");  // Fest assertion stub with no checks
-  }
-
-  @Test
-  public void nonCompliant5() { // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true).describedAs("foo");  // Fest assertion stub with no checks
-  }
-
-  @Test
-  public void nonCompliant6() { // Noncompliant
-    org.fest.assertions.Assertions.assertThat(true).overridingErrorMessage("foo");  // Fest assertion stub with no checks
-  }
-
-  @Test
-  public void nonCompliant7() { // Noncompliant
-    List mockedList = Mockito.mock(List.class);
-    mockedList.add("one");
-    mockedList.clear();
-    Mockito.verify(mockedList); // verify alone is noncompliant
-  }
-
-  @Test
-  public void nonCompliant8() { // Noncompliant
-    List mockedList = Mockito.mock(List.class);
-    mockedList.add("one");
-    mockedList.clear();
-    verify(mockedList); // verify alone is noncompliant
-  }
-
-  @Test(timeout = 0L)
-  public void nonCompliant9() { // Noncompliant
-    throw new IllegalStateException("message");
-  }
-
-  @Nullable
-  public Test notAtest() {
-    compliant1();
-  }
-
-  @Test
-  public void test() { // compliant with verifyZeroInteractions
-    Mockito.verifyZeroInteractions(new Object());
+  public void mockito_assertion_verify_no_more_interactions() {
+    Mockito.verifyNoMoreInteractions(Mockito.mock(List.class));
   }
 
 
-}
-
-abstract class AbstractTest {
-  @Test
-  public abstract void nonCompliant1();
-}
-
-class ImplTest extends AbstractTest {
-  @Override
-  public void nonCompliant1() { // Noncompliant
-    // overridden test
+  static abstract class AbstractTest {
+    @Test
+    public abstract void unit_test();
   }
-}
 
-class OtherTest extends TestCase {
-  @Test
-  public void test() {
-    assertEquals(true, true);
+  static class ImplTest extends AbstractTest {
+    @Override
+    public void unit_test() { // Noncompliant
+      // overridden test
+    }
   }
-  @Test
-  public void testFail() {
-    fail("message");
+
+  static class ExtendsTestCase extends TestCase {
+
+    public void test_contains_no_assertions() { // Noncompliant
+    }
+
+    public void test_assertEquals() {
+      assertEquals(true, true);
+    }
+
+    public void test_fail() {
+      fail("message");
+    }
+
   }
+
 }

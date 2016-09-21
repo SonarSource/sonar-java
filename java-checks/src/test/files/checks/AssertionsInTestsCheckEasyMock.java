@@ -1,44 +1,41 @@
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMocksControl;
-import org.foo.ATest.Controller;
 import org.junit.Test;
 
-public class AssertionsInTestsCheckTest extends EasyMockSupport {
+public class AssertionsInTestsCheckEasyMock extends EasyMockSupport {
 
   Controller controller;
 
   @Test
-  public void test0() { // Noncompliant
+  public void contains_no_assertions() { // Noncompliant
     // do something
     replayAll();
   }
 
   @Test
-  public void test1() { // Compliant
+  public void verify_controller() { // Compliant
     // do something
     controller.verify();
   }
 
   @Test
-  public void test2() { // Compliant
+  public void super_verify_all_controls() { // Compliant
     // do something
     super.verifyAll();
   }
 
   @Test
-  public void test3() { // Compliant
+  public void verify_all_controls() { // Compliant
     // do something
     verifyAll();
   }
 
   @Test
-  public void test4() { // Compliant
+  public void static_verify() { // Compliant
     Object o1 = EasyMock.createMock(Object.class);
     String s1 = EasyMock.createMock(String.class);
-
     // do something
-
     EasyMock.verify(o1, s1);
   }
 
