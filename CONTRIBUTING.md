@@ -27,5 +27,5 @@ To run ITs locally, please follow the [README](https://github.com/SonarSource/so
 
 ### Clean commit history
 
-To ease the review, please minimize and have a clean history of commits in your pull request. Your commit should have a single purpose.
+To ease the review, please have a clean, minimal history of commits in your pull request. Your commits should have a single purpose.
 This will help to make your contribution accepted as we like to keep a clean linear history and prefer rebase over merging commits.
