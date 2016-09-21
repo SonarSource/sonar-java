@@ -111,7 +111,7 @@ public class AssertionsCompletenessCheck {
   @Test
   public void assertj_soft_assertions_try_with_resource_without_assertThat() {
     try(org.assertj.core.api.AutoCloseableSoftAssertions softly = new org.assertj.core.api.AutoCloseableSoftAssertions()) {
-    } // Noncompliant {{Add one or more 'assertThat' before 'assertAll'.}}
+    } // Noncompliant {{Add one or more 'assertThat' before the end of this try block.}}
   }
 
   @Test
@@ -119,7 +119,7 @@ public class AssertionsCompletenessCheck {
     try(org.assertj.core.api.AutoCloseableSoftAssertions softly = new org.assertj.core.api.AutoCloseableSoftAssertions()) {
       softly.assertThat(1).isLessThan(2);
       softly.assertAll();
-    } // Noncompliant {{Add one or more 'assertThat' before 'assertAll'.}}
+    } // Noncompliant {{Add one or more 'assertThat' before the end of this try block.}}
   }
 
   @Test

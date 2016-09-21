@@ -152,23 +152,23 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       .isPresent();
     super.visitTryStatement(tree);
     if (hasAutoCloseableSoftAssertion) {
-      checkAssertJAssertAll(tree.block().closeBraceToken());
+      checkAssertJAssertAll(tree.block().closeBraceToken(), "Add one or more 'assertThat' before the end of this try block.");
     }
   }
 
   private void checkForAssertJSoftAssertions(MethodInvocationTree mit) {
     if (ASSERTJ_ASSERT_ALL.matches(mit)) {
-      checkAssertJAssertAll(mit.methodSelect());
+      checkAssertJAssertAll(mit.methodSelect(), "Add one or more 'assertThat' before 'assertAll'.");
     } else if (ASSERTJ_ASSERT_THAT.matches(mit) && !isJUnitSoftAssertions(mit)) {
       set(containsAssertThatWithoutAssertAll, true);
     }
   }
 
-  private void checkAssertJAssertAll(Tree issueLocation) {
+  private void checkAssertJAssertAll(Tree issueLocation, String issueMessage) {
     if (Boolean.TRUE.equals(containsAssertThatWithoutAssertAll.peek())) {
       set(containsAssertThatWithoutAssertAll, false);
     } else {
-      context.reportIssue(this, issueLocation, "Add one or more 'assertThat' before 'assertAll'.");
+      context.reportIssue(this, issueLocation, issueMessage);
     }
   }
 
