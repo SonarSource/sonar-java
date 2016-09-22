@@ -104,17 +104,17 @@ public abstract class AbstractJavaClasspath {
 
     try {
       Path filePath = resolvePath(baseDir, pathPattern);
-
-      if(Files.isRegularFile(filePath)) {
+      File file = filePath.toFile();
+      if(file.isFile()) {
         if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
-          return Collections.singleton(filePath.toFile());
+          return Collections.singleton(file);
         } else {
-          LOG.debug("File " + filePath.toFile().getAbsolutePath() + " was ignored from java classpath");
+          LOG.debug("File " + file.getAbsolutePath() + " was ignored from java classpath");
           validateLibraries = false;
           return Collections.emptySet();
         }
       }
-      if (Files.isDirectory(filePath)) {
+      if (file.isDirectory()) {
         return getMatchesInDir(filePath, libraryProperty);
       }
     } catch (IOException | InvalidPathException e) {
@@ -141,7 +141,7 @@ public abstract class AbstractJavaClasspath {
     }
 
     Path dir = resolvePath(baseDir, dirPath);
-    if (!Files.isDirectory(dir)) {
+    if (!dir.toFile().isDirectory()) {
       return Collections.emptySet();
     }
     try {
