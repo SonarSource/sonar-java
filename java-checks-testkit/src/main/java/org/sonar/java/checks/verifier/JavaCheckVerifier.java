@@ -214,7 +214,7 @@ public class JavaCheckVerifier extends CheckVerifier {
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
     Collection<File> classpath = Lists.newLinkedList();
     Path testJars = Paths.get(javaCheckVerifier.testJarsDirectory);
-    if (Files.exists(testJars)) {
+    if (testJars.toFile().exists()) {
       classpath = getFilesRecursively(testJars, new String[] {"jar", "zip"});
     } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(javaCheckVerifier.testJarsDirectory)) {
       Fail.fail("The directory to be used to extend class path does not exists (" + testJars.toAbsolutePath() + ").");

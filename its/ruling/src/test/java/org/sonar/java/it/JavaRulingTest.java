@@ -28,6 +28,17 @@ import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
+import no.finn.lambdacompanion.Try;
+import org.fest.assertions.Fail;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.wsclient.SonarClient;
+
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,16 +50,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-import no.finn.lambdacompanion.Try;
-import org.fest.assertions.Fail;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.wsclient.SonarClient;
 
 public class JavaRulingTest {
 
@@ -120,7 +121,7 @@ public class JavaRulingTest {
     } else {
       effectiveDumpOldFolder = TMP_DUMP_OLD_FOLDER.getRoot().toPath().toAbsolutePath();
       Try.of(() -> Files.list(allRulesFolder)).orElseThrow(Throwables::propagate)
-        .filter(Files::isDirectory)
+        .filter(p -> p.toFile().isDirectory())
         .forEach(srcProjectDir -> copyDumpSubset(srcProjectDir, effectiveDumpOldFolder.resolve(srcProjectDir.getFileName())));
     }
   }
@@ -129,7 +130,7 @@ public class JavaRulingTest {
     Try.of(() -> Files.createDirectory(dstProjectDir)).orElseThrow(Throwables::propagate);
     SUBSET_OF_ENABLED_RULES.stream()
       .map(ruleKey -> srcProjectDir.resolve("squid-" + ruleKey + ".json"))
-      .filter(Files::exists)
+      .filter(p -> p.toFile().exists())
       .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
         .orElseThrow(Throwables::propagate));
   }

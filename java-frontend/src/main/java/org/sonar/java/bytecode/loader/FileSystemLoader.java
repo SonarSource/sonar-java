@@ -43,7 +43,7 @@ class FileSystemLoader implements Loader {
       throw new IllegalStateException("Loader closed");
     }
     Path filePath = baseDirPath.resolve(name);
-    if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+    if (filePath.toFile().isFile()) {
       try {
         return filePath.toUri().toURL();
       } catch (MalformedURLException e) {
@@ -59,7 +59,7 @@ class FileSystemLoader implements Loader {
       throw new IllegalStateException("Loader closed");
     }
     Path filePath = baseDirPath.resolve(name);
-    if (!Files.exists(filePath)) {
+    if (!filePath.toFile().exists()) {
       return new byte[0];
     }
 
