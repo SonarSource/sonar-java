@@ -23,16 +23,19 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -508,7 +511,7 @@ public class Resolve {
       formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, defSite);
     }
     formals = typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
-    if (!isArgumentsAcceptable(argTypes, formals, methodJavaSymbol.isVarArgs(), autoboxing)) {
+    if (!isArgumentsAcceptable(env, argTypes, formals, methodJavaSymbol.isVarArgs(), autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
@@ -517,7 +520,7 @@ public class Resolve {
       resolution.type = Symbols.unknownType;
       return resolution;
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, argTypes, substitution, callSite);
+    JavaSymbol mostSpecific = selectMostSpecific(env, candidate, bestSoFar.symbol, argTypes, substitution, callSite);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       return bestSoFar;
@@ -563,7 +566,7 @@ public class Resolve {
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing) {
+  private boolean isArgumentsAcceptable(Env env, List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
@@ -575,22 +578,27 @@ public class Resolve {
       ArrayJavaType lastFormal = (ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
       // check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !isAcceptableType(argType, lastFormal, autoboxing))) {
+      if (!isAcceptableType(env, argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !isAcceptableType(env, argType, lastFormal, autoboxing))) {
         return false;
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing)) {
+      JavaType arg = argTypes.get(i);
+      JavaType formal = formals.get(i);
+      if (!isAcceptableType(env, arg, formal, autoboxing)) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+  private boolean isAcceptableType(Env env, JavaType arg, JavaType formal, boolean autoboxing) {
     if(arg.isTagged(JavaType.DEFERRED)) {
       List<JavaType> samMethodArgs = findSamMethodArgs(formal);
       AbstractTypedTree tree = ((DeferredType) arg).tree();
+      if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+        return validMethodReference(env, (MethodReferenceTree) tree, samMethodArgs);
+      }
       // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
       return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
     }
@@ -598,7 +606,7 @@ public class Resolve {
       return subtypeOfTypeVar(arg, (TypeVariableJavaType) formal);
     }
     if (formal.isArray() && arg.isArray()) {
-      return isAcceptableType(((ArrayJavaType) arg).elementType(), ((ArrayJavaType) formal).elementType(), autoboxing);
+      return isAcceptableType(env, ((ArrayJavaType) arg).elementType(), ((ArrayJavaType) formal).elementType(), autoboxing);
     }
 
     if (arg.isParameterized() || formal.isParameterized() || isWilcardType(arg) || isWilcardType(formal)) {
@@ -606,6 +614,17 @@ public class Resolve {
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
+  }
+
+  private boolean validMethodReference(Env env, MethodReferenceTree tree, List<JavaType> samMethodArgs) {
+    Tree expression = tree.expression();
+    if (expression instanceof AbstractTypedTree) {
+      JavaType type = (JavaType) ((AbstractTypedTree) expression).symbolType();
+      String methodName = tree.method().name();
+      Resolution resolution = findMethod(env, type, "new".equals(methodName) ? "<init>" : methodName, samMethodArgs);
+      return !resolution.symbol.isUnknown();
+    }
+    return false;
   }
 
   private boolean callWithRawType(JavaType arg, JavaType formal) {
@@ -641,7 +660,7 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, JavaType callSite) {
+  private JavaSymbol selectMostSpecific(Env env, JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, JavaType callSite) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
@@ -653,8 +672,8 @@ public class Resolve {
     if (m2Substitution == null) {
       m2Substitution = new TypeSubstitution();
     }
-    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, m1Substitution, m2Substitution);
-    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, m1Substitution, m2Substitution);
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(env, m1, m2, argTypes, m1Substitution, m2Substitution);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(env, m2, m1, argTypes, m1Substitution, m2Substitution);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
       return new AmbiguityErrorJavaSymbol();
     } else if (m1SignatureMoreSpecific) {
@@ -668,7 +687,7 @@ public class Resolve {
   /**
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, TypeSubstitution m2Substitution) {
+  private boolean isSignatureMoreSpecific(Env env, JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, TypeSubstitution m2Substitution) {
     List<JavaType> m1ArgTypes = ((MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
@@ -688,7 +707,7 @@ public class Resolve {
     }
     m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, m1Substitution);
     m2ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m2ArgTypes, m2Substitution);
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, false);
+    return isArgumentsAcceptable(env, m1ArgTypes, m2ArgTypes, m2VarArity, false);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {

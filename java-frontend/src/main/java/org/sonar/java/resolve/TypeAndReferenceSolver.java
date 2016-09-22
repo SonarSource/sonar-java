@@ -919,7 +919,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
     if(methodRefTree.isTypeSet()) {
-      resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
       scan(methodReferenceTree.typeArguments());
       // TODO : SONARJAVA-1663 : consider type arguments for method resolution and substitution
       Resolve.Env methodEnv = semanticModel.getEnv(methodReferenceTree);
@@ -947,6 +946,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
       }
     } else {
+      resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
       registerType(methodRefTree, symbols.deferedType(methodRefTree));
     }
   }

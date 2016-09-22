@@ -1026,6 +1026,15 @@ public class SymbolTableTest {
     assertThat(methodRefConstructor.usages()).hasSize(1);
     assertThat(methodRefConstructor.isMethodSymbol()).isTrue();
     assertThat(((Symbol.MethodSymbol) methodRefConstructor).parameterTypes().get(0)).isSameAs(result.symbol("AProducer").type);
+
+  }
+
+  @Test
+  public void MethodReferenceUsingThis() throws Exception {
+    Result result = Result.createFor("MethodReferencesThis");
+
+    JavaSymbol bar1 = result.symbol("bar1");
+    assertThat(bar1.usages()).hasSize(2);
   }
 
   @Test
