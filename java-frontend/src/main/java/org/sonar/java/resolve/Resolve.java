@@ -26,9 +26,11 @@ import com.google.common.collect.Sets;
 
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -597,7 +599,7 @@ public class Resolve {
       List<JavaType> samMethodArgs = findSamMethodArgs(formal);
       AbstractTypedTree tree = ((DeferredType) arg).tree();
       if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-        return validMethodReference(env, (MethodReferenceTree) tree, samMethodArgs);
+        return validMethodReference(env, (MethodReferenceTree) tree, formal, samMethodArgs);
       }
       // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
       return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
@@ -616,15 +618,24 @@ public class Resolve {
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private boolean validMethodReference(Env env, MethodReferenceTree tree, List<JavaType> samMethodArgs) {
+  private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
     Tree expression = tree.expression();
     if (expression instanceof AbstractTypedTree) {
       JavaType type = (JavaType) ((AbstractTypedTree) expression).symbolType();
       String methodName = tree.method().name();
       Resolution resolution = findMethod(env, type, "new".equals(methodName) ? "<init>" : methodName, samMethodArgs);
-      return !resolution.symbol.isUnknown();
+      if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
+        associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
+        ((AbstractTypedTree) tree).setType(formal);
+        return true;
+      }
     }
     return false;
+  }
+
+  private static void associateReference(IdentifierTree identifier, JavaSymbol.MethodJavaSymbol method) {
+    ((IdentifierTreeImpl) identifier).setSymbol(method);
+    method.addUsage(identifier);
   }
 
   private boolean callWithRawType(JavaType arg, JavaType formal) {
