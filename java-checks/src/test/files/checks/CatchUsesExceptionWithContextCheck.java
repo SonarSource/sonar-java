@@ -149,4 +149,14 @@ class A {
       }
     }
   }
+
+  void bar(Class<?> clazz) {
+    try {
+      clazz.getMethod("bar", new Class[0]);
+    } catch (NoSuchMethodException e) { // Compliant
+      // do nothing
+    } catch (Exception e) { // Noncompliant
+      System.out.println("", e.getCause());
+    }
+  }
 }
