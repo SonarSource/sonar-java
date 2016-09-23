@@ -447,6 +447,7 @@ public final class CheckList {
       .add(PrivateFieldUsedLocallyCheck.class)
       .add(OptionalGetBeforeIsPresentCheck.class)
       .add(ValueBasedObjectsShouldNotBeSerializedCheck.class)
+      .add(FilesExistsJDK8Check.class)
       .build();
   }
 
