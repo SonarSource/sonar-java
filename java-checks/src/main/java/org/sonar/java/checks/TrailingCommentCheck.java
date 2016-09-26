@@ -29,6 +29,7 @@ import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -88,9 +89,9 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (tokenLine != previousTokenLine) {
       syntaxToken.trivias().stream()
         .filter(trivia -> trivia.startLine() == previousTokenLine)
-        .map(trivia -> trivia.comment())
+        .map(SyntaxTrivia::comment)
         .map(comment -> comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2))
-        .map(comment -> comment.trim())
+        .map(String::trim)
         .filter(comment -> !pattern.matcher(comment).matches() && !containsExcludedPattern(comment))
         .forEach(comment -> addIssue(previousTokenLine, "Move this trailing comment on the previous empty line."));
     }

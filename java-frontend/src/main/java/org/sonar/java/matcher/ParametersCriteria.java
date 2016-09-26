@@ -28,7 +28,7 @@ public interface ParametersCriteria {
   boolean matches(List<Type> actualTypes);
 
   static ParametersCriteria none() {
-    return parameterTypes -> parameterTypes.isEmpty();
+    return List::isEmpty;
   }
 
   static ParametersCriteria any() {

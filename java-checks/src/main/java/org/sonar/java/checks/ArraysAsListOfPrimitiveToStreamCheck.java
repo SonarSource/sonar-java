@@ -66,7 +66,7 @@ public class ArraysAsListOfPrimitiveToStreamCheck extends AbstractMethodDetectio
   }
 
   private static Set<Type> argumentTypes(Arguments arguments) {
-    return arguments.stream().map(expr -> expr.symbolType()).collect(Collectors.toSet());
+    return arguments.stream().map(ExpressionTree::symbolType).collect(Collectors.toSet());
   }
 
   private static boolean isPrimitiveTypeHandledByStream(Type type) {

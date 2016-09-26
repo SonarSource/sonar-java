@@ -153,7 +153,7 @@ public class LeastUpperBound {
   }
 
   private static List<Set<Type>> erased(List<Set<Type>> typeSets) {
-    return typeSets.stream().map(set -> set.stream().map(type -> type.erasure()).collect(Collectors.toCollection(LinkedHashSet::new))).collect(Collectors.toList());
+    return typeSets.stream().map(set -> set.stream().map(Type::erasure).collect(Collectors.toCollection(LinkedHashSet::new))).collect(Collectors.toList());
   }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {

@@ -99,7 +99,7 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
 
     Symbol.TypeSymbol interfaceSymbol = (Symbol.TypeSymbol) symbol;
     return interfaceSymbol.memberSymbols().stream()
-      .filter(member -> member.isMethodSymbol())
+      .filter(Symbol::isMethodSymbol)
       .filter(member -> {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) member;
         return isNotObjectMethod(methodSymbol) && isNonStaticNonDefaultMethod(methodSymbol);

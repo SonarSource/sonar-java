@@ -96,7 +96,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
       Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodTree.symbol().owner();
       Collection<Symbol> pairedMethods = owner.lookupSymbols(pairPredicate.getStartName() + methodTree.symbol().name().substring(ownPredicate.getStartName().length()));
       pairedMethods.stream()
-        .filter(symbol -> symbol.isMethodSymbol())
+        .filter(Symbol::isMethodSymbol)
         .map(symbol -> (MethodTree) symbol.declaration())
         .filter(pairMethod -> pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod))
         .forEach(pairMethod -> reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
