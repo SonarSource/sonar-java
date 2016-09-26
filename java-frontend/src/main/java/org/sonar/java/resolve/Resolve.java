@@ -532,7 +532,7 @@ public class Resolve {
     JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
     List<JavaType> thrownTypes = ((MethodJavaType) mostSpecific.type).thrown;
     JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
-    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && !mostSpecificMethod.isConstructor()) {
+    if(applicableWithUncheckedConversion(mostSpecificMethod, defSite, typeParams) && !mostSpecificMethod.isConstructor()) {
       returnType = returnType.erasure();
       thrownTypes = erasure(thrownTypes);
     } else {

@@ -19,6 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -33,6 +35,7 @@ public class TypeInferenceSolver {
   private final Symbols symbols;
   private final LeastUpperBound leastUpperBound;
   private final TypeSubstitutionSolver typeSubstitutionSolver;
+  private final Multimap<Type, Type> handledFormals = HashMultimap.create();
 
   public TypeInferenceSolver(LeastUpperBound leastUpperBound, Symbols symbols, TypeSubstitutionSolver typeSubstitutionSolver) {
     this.symbols = symbols;
@@ -41,6 +44,10 @@ public class TypeInferenceSolver {
   }
 
   TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
+    handledFormals.clear();
+    return inferTypeSubstitutionRec(method, formals, argTypes);
+  }
+  private TypeSubstitution inferTypeSubstitutionRec(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
     boolean isVarArgs = method.isVarArgs();
     int numberFormals = formals.size();
     int numberArgs = argTypes.size();
@@ -71,13 +78,22 @@ public class TypeInferenceSolver {
 
   private TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, TypeSubstitution substitution, JavaType formalType, JavaType argumentType,
     boolean variableArity, List<JavaType> remainingArgTypes) {
+    if(handledFormals.get(formalType).contains(argumentType)) {
+      return substitution;
+    }
     JavaType argType = argumentType;
     if (argType.isTagged(JavaType.DEFERRED) && ((DeferredType) argType).getUninferedType() != null) {
       argType = ((DeferredType) argType).getUninferedType();
     }
+    handledFormals.put(formalType, argType);
     TypeSubstitution result = substitution;
     if (formalType.isTagged(JavaType.TYPEVAR)) {
       result = completeSubstitution(substitution, formalType, argType);
+      for (JavaType bound : ((TypeVariableJavaType) formalType).bounds) {
+        if(!bound.is("java.lang.Object")) {
+          result = inferTypeSubstitution(method, result, bound, argType, variableArity, remainingArgTypes);
+        }
+      }
     } else if (formalType.isArray()) {
       result = inferTypeSubstitutionInArrayType(method, substitution, (ArrayJavaType) formalType, argType, variableArity, remainingArgTypes);
     } else if (formalType.isParameterized()) {
@@ -117,7 +133,7 @@ public class TypeInferenceSolver {
       ParametrizedTypeJavaType parametrizedArgType = (ParametrizedTypeJavaType) argType;
       if (parametrizedArgType.rawType == formalType.rawType) {
         List<JavaType> argTypeSubstitutedTypes = parametrizedArgType.typeSubstitution.substitutedTypes();
-        TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
+        TypeSubstitution newSubstitution = inferTypeSubstitutionRec(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
         return mergeTypeSubstitutions(substitution, newSubstitution);
       }
       JavaType superclass = argType.symbol.getSuperclass();

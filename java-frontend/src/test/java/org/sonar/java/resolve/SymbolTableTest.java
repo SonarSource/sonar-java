@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1205,4 +1204,10 @@ public class SymbolTableTest {
     return typeSubstitution.substitutedTypes().get(1);
   }
 
+  @Test
+  public void infer_from_type_variable_bounds() throws Exception {
+    Result result = Result.createFor("TypeVarBoundsInference");
+    assertThat(result.symbol("write1").usages()).hasSize(1);
+    assertThat(result.symbol("write2").usages()).hasSize(1);
+  }
 }
