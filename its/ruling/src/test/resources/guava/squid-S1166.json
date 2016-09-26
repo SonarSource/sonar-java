@@ -164,7 +164,6 @@
 'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
 362,
 386,
-571,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
 114,
@@ -205,7 +204,6 @@
 801,
 804,
 807,
-810,
 827,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java':[

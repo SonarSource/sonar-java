@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -48,6 +49,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
+      "java.lang.NoSuchMethodException, " +
       "java.text.ParseException, " +
       "java.net.MalformedURLException";
 

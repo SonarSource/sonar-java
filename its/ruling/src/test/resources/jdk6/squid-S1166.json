@@ -12,7 +12,6 @@
 197,
 199,
 224,
-225,
 250,
 252,
 254,
@@ -35,7 +34,6 @@
 3580,
 3928,
 3946,
-5979,
 8364,
 8365,
 ],
@@ -293,7 +291,6 @@
 563,
 ],
 'jdk6:java/beans/DefaultPersistenceDelegate.java':[
-84,
 226,
 312,
 318,
@@ -337,7 +334,6 @@
 166,
 ],
 'jdk6:java/beans/ReflectionUtils.java':[
-129,
 131,
 ],
 'jdk6:java/beans/SimpleBeanInfo.java':[
@@ -395,15 +391,9 @@
 139,
 ],
 'jdk6:java/io/ObjectInputStream.java':[
-1251,
-1256,
 2212,
 2470,
 3084,
-],
-'jdk6:java/io/ObjectOutputStream.java':[
-1059,
-1064,
 ],
 'jdk6:java/io/ObjectStreamClass.java':[
 460,
@@ -418,10 +408,6 @@
 1036,
 1057,
 1065,
-1296,
-1325,
-1346,
-1383,
 1538,
 1568,
 1611,
@@ -481,7 +467,6 @@
 'jdk6:java/lang/reflect/Proxy.java':[
 350,
 506,
-589,
 591,
 593,
 595,
@@ -565,7 +550,6 @@
 ],
 'jdk6:java/net/Socket.java':[
 396,
-418,
 622,
 645,
 662,
@@ -619,7 +603,6 @@
 269,
 271,
 476,
-598,
 ],
 'jdk6:java/net/URLConnection.java':[
 582,
@@ -779,7 +762,6 @@
 1411,
 ],
 'jdk6:java/security/SecureClassLoader.java':[
-49,
 190,
 193,
 ],
@@ -796,10 +778,6 @@
 131,
 ],
 'jdk6:java/security/UnresolvedPermission.java':[
-240,
-245,
-257,
-268,
 275,
 524,
 565,

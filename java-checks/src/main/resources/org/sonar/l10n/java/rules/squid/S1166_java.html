@@ -28,7 +28,8 @@ try {
 </pre>
 <h2>Exceptions</h2>
 <p><code>InterruptedException</code>, <code>NumberFormatException</code>, <code>ParseException</code> and <code>MalformedURLException</code>
-exceptions are arguably used to indicate nonexceptional outcomes.</p>
+exceptions are arguably used to indicate nonexceptional outcomes. Similarly, dealing with <code>NoSuchMethodException</code> is often required when
+dealing with the Java reflection API.</p>
 <p>Because they are part of Java, developers have no choice but to deal with them. This rule does not verify that those particular exceptions are
 correctly handled.</p>
 <pre>
