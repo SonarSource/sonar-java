@@ -85,8 +85,8 @@ public class MavenDependencyMatcher {
   }
 
   public boolean matches(Dependency dependency) {
-    return groupIdMatcher.matches(dependency.getGroupId())
-      && artifactIdMatcher.matches(dependency.getArtifactId())
-      && versionMatcher.matches(dependency.getVersion());
+    return groupIdMatcher.test(dependency.getGroupId())
+      && artifactIdMatcher.test(dependency.getArtifactId())
+      && versionMatcher.test(dependency.getVersion());
   }
 }

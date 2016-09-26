@@ -20,7 +20,6 @@
 package org.sonar.java.checks.xml.maven.helpers;
 
 import org.junit.Test;
-import org.sonar.java.checks.xml.maven.helpers.PatternMatcher;
 import org.sonar.maven.model.LocatedAttribute;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -32,9 +31,9 @@ public class PatternMatcherTest {
   @Test
   public void should_match_patterns() {
     matcher = new PatternMatcher("[a-z]*");
-    assertThat(matcher.matches(null)).isFalse();
-    assertThat(matcher.matches(new LocatedAttribute("test"))).isTrue();
-    assertThat(matcher.matches(new LocatedAttribute("012"))).isFalse();
+    assertThat(matcher.test(null)).isFalse();
+    assertThat(matcher.test(new LocatedAttribute("test"))).isTrue();
+    assertThat(matcher.test(new LocatedAttribute("012"))).isFalse();
   }
 
   @Test(expected = IllegalArgumentException.class)

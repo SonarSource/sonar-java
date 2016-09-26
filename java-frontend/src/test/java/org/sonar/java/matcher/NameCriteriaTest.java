@@ -28,22 +28,22 @@ public class NameCriteriaTest {
   @Test
   public void should_match_any() {
     NameCriteria nc = NameCriteria.any();
-    assertThat(nc.matches(null)).isTrue();
-    assertThat(nc.matches("equal")).isTrue();
+    assertThat(nc.test(null)).isTrue();
+    assertThat(nc.test("equal")).isTrue();
   }
 
   @Test
   public void should_match_exact_name() {
     NameCriteria nc = NameCriteria.is("equal");
-    assertThat(nc.matches("foo")).isFalse();
-    assertThat(nc.matches("equal")).isTrue();
+    assertThat(nc.test("foo")).isFalse();
+    assertThat(nc.test("equal")).isTrue();
   }
 
   @Test
   public void should_match_prefix() {
     NameCriteria nc = NameCriteria.startsWith("get");
-    assertThat(nc.matches("equal")).isFalse();
-    assertThat(nc.matches("get")).isTrue();
-    assertThat(nc.matches("getObject")).isTrue();
+    assertThat(nc.test("equal")).isFalse();
+    assertThat(nc.test("get")).isTrue();
+    assertThat(nc.test("getObject")).isTrue();
   }
 }

@@ -58,7 +58,7 @@ public class RangedVersionMatcher implements LocatedAttributeMatcher {
   }
 
   @Override
-  public boolean matches(@Nullable LocatedAttribute attribute) {
+  public boolean test(@Nullable LocatedAttribute attribute) {
     if (attribute == null) {
       return false;
     }

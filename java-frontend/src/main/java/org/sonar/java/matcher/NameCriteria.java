@@ -19,10 +19,10 @@
  */
 package org.sonar.java.matcher;
 
-@FunctionalInterface
-public interface NameCriteria {
+import java.util.function.Predicate;
 
-  boolean matches(String name);
+@FunctionalInterface
+public interface NameCriteria extends Predicate<String> {
 
   static NameCriteria any() {
     return name -> true;

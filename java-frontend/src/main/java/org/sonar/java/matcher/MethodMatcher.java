@@ -157,21 +157,21 @@ public class MethodMatcher {
   private boolean isSearchedMethod(MethodSymbol symbol, Type callSiteType) {
     boolean result = nameAcceptable(symbol) && parametersAcceptable(symbol);
     if (typeDefinition != null) {
-      result &= typeDefinition.matches(symbol.owner().type());
+      result &= typeDefinition.test(symbol.owner().type());
     }
     if (callSite != null) {
-      result &= callSiteType != null && callSite.matches(callSiteType);
+      result &= callSiteType != null && callSite.test(callSiteType);
     }
     return result;
   }
 
   private boolean nameAcceptable(MethodSymbol symbol) {
-    return methodName != null && methodName.matches(symbol.name());
+    return methodName != null && methodName.test(symbol.name());
   }
 
   private boolean parametersAcceptable(MethodSymbol methodSymbol) {
     Preconditions.checkState(parameters != null);
-    return parameters.matches(methodSymbol.parameterTypes());
+    return parameters.test(methodSymbol.parameterTypes());
   }
 
   private static IdentifierTree getIdentifier(MethodInvocationTree mit) {

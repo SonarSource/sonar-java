@@ -19,13 +19,13 @@
  */
 package org.sonar.java.matcher;
 
-import java.util.List;
 import org.sonar.plugins.java.api.semantic.Type;
 
-@FunctionalInterface
-public interface ParametersCriteria {
+import java.util.List;
+import java.util.function.Predicate;
 
-  boolean matches(List<Type> actualTypes);
+@FunctionalInterface
+public interface ParametersCriteria extends Predicate<List<Type>> {
 
   static ParametersCriteria none() {
     return List::isEmpty;
@@ -44,7 +44,7 @@ public interface ParametersCriteria {
       return false;
     }
     for (int i = 0; i < actualTypes.size(); i++) {
-      if (!expectedTypes.get(i).matches(actualTypes.get(i))) {
+      if (!expectedTypes.get(i).test(actualTypes.get(i))) {
         return false;
       }
     }

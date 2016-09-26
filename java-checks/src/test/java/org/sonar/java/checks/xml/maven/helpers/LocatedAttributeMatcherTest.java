@@ -29,7 +29,7 @@ public class LocatedAttributeMatcherTest {
   @Test
   public void matcher_always_matching_always_match() {
     LocatedAttributeMatcher matcher = LocatedAttributeMatcher.any();
-    assertThat(matcher.matches(null)).isTrue();
-    assertThat(matcher.matches(new LocatedAttribute("test"))).isTrue();
+    assertThat(matcher.test(null)).isTrue();
+    assertThat(matcher.test(new LocatedAttribute("test"))).isTrue();
   }
 }

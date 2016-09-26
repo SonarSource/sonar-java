@@ -34,7 +34,7 @@ public class PatternMatcher implements LocatedAttributeMatcher {
   }
 
   @Override
-  public boolean matches(@Nullable LocatedAttribute attribute) {
+  public boolean test(@Nullable LocatedAttribute attribute) {
     return attribute != null && pattern.matcher(attribute.getValue()).matches();
   }
 

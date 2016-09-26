@@ -21,10 +21,10 @@ package org.sonar.java.matcher;
 
 import org.sonar.plugins.java.api.semantic.Type;
 
-@FunctionalInterface
-public interface TypeCriteria {
+import java.util.function.Predicate;
 
-  boolean matches(Type type);
+@FunctionalInterface
+public interface TypeCriteria extends Predicate<Type> {
 
   static TypeCriteria subtypeOf(String fullyQualifiedName) {
     return type -> type.isSubtypeOf(fullyQualifiedName);

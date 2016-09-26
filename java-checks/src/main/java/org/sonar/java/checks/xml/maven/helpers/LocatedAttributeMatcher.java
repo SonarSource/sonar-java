@@ -21,12 +21,10 @@ package org.sonar.java.checks.xml.maven.helpers;
 
 import org.sonar.maven.model.LocatedAttribute;
 
-import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 @FunctionalInterface
-public interface LocatedAttributeMatcher {
-
-  boolean matches(@Nullable LocatedAttribute tree);
+public interface LocatedAttributeMatcher extends Predicate<LocatedAttribute> {
 
   static LocatedAttributeMatcher any() {
     return tree -> true;
