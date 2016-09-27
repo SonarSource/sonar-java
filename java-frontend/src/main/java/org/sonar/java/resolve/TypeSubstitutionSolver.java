@@ -24,6 +24,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +38,7 @@ public class TypeSubstitutionSolver {
   private final Symbols symbols;
   private final LeastUpperBound leastUpperBound;
   private final TypeInferenceSolver typeInferenceSolver;
+  private Deque<JavaSymbol.TypeVariableJavaSymbol> typevarExplored = new LinkedList<>();
 
   public TypeSubstitutionSolver(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
     this.parametrizedTypeCache = parametrizedTypeCache;
@@ -156,6 +160,9 @@ public class TypeSubstitutionSolver {
     if (substitutedType != null) {
       return substitutedType;
     }
+    if (type.isTagged(JavaType.TYPEVAR)) {
+      return substituteInTypeVar((TypeVariableJavaType) type, substitution);
+    }
     if (type.isParameterized()) {
       return substituteInParametrizedType((ParametrizedTypeJavaType) type, substitution);
     }
@@ -175,6 +182,22 @@ public class TypeSubstitutionSolver {
     }
     return parametrizedTypeCache.getParametrizedTypeType(type.rawType.getSymbol(), newSubstitution);
   }
+
+  private JavaType substituteInTypeVar(TypeVariableJavaType typevar, TypeSubstitution substitution) {
+    if(typevarExplored.contains(typevar.symbol)) {
+      return typevar;
+    }
+    typevarExplored.push((JavaSymbol.TypeVariableJavaSymbol) typevar.symbol);
+    List<JavaType> subtitutedBounds = typevar.bounds.stream().map(t -> applySubstitution(t, substitution)).collect(Collectors.toList());
+    typevarExplored.pop();
+    if(subtitutedBounds.equals(typevar.bounds)) {
+      return typevar;
+    }
+    TypeVariableJavaType typeVariableJavaType = new TypeVariableJavaType((JavaSymbol.TypeVariableJavaSymbol) typevar.symbol);
+    typeVariableJavaType.bounds = subtitutedBounds;
+    return typeVariableJavaType;
+  }
+
 
   private JavaType substituteInWildCardType(WildCardType wildcard, TypeSubstitution substitution) {
     JavaType substitutedType = applySubstitution(wildcard.bound, substitution);
