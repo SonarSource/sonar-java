@@ -1177,16 +1177,16 @@ public class SymbolTableTest {
 
     IdentifierTree map = result.referenceTree(63, 8);
     MethodJavaType methodJavaType = (MethodJavaType) map.symbolType();
-    // FIXME SONARJAVA-1841 result type should not be deferred, as we know the type of the lambda expression
+    // expression type is correctly infered but method type is not recomputed and thus is still defered
     assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
 
-    // JavaSymbol booleanToInt = result.symbol("booleanToInt");
-    // assertThat(booleanToInt.usages()).hasSize(1);
-    // assertThat(result.reference(68, 17)).isEqualTo(booleanToInt);
+     JavaSymbol booleanToInt = result.symbol("booleanToInt");
+     assertThat(booleanToInt.usages()).hasSize(1);
+     assertThat(result.reference(68, 17)).isEqualTo(booleanToInt);
 
-    // JavaSymbol intToInt = result.symbol("intToInt");
-    // assertThat(intToInt.usages()).hasSize(1);
-    // assertThat(result.reference(72, 20)).isEqualTo(intToInt);
+     JavaSymbol intToInt = result.symbol("intToInt");
+     assertThat(intToInt.usages()).hasSize(1);
+     assertThat(result.reference(72, 20)).isEqualTo(intToInt);
   }
 
   private JavaType getRSubstitution(Result result, String symbolName) {
@@ -1217,7 +1217,14 @@ public class SymbolTableTest {
     List<JavaType> substitutedTypes = ((ParametrizedTypeJavaType) type).typeSubstitution.substitutedTypes();
     assertThat(substitutedTypes).hasSize(1);
     assertThat(substitutedTypes.get(0).is("A$MyENUM")).isTrue();
+  }
 
+  @Test
+  public void return_type_of_map_method() throws Exception {
+    Result result = Result.createFor("MapMethod");
+    assertThat(result.symbol("test1").usages()).hasSize(1);
+    assertThat(result.symbol("test2").usages()).hasSize(1);
+    assertThat(result.symbol("test3").usages()).hasSize(1);
 
   }
 }

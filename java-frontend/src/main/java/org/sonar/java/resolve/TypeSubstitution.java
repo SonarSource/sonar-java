@@ -57,7 +57,7 @@ public class TypeSubstitution {
   }
 
   public TypeSubstitution add(TypeVariableJavaType typeVariableType, JavaType javaType) {
-    substitutions.put(typeVariableType, javaType);
+    substitutions.put(typeVariableType, javaType.isPrimitive() ? javaType.primitiveWrapperType() : javaType);
     return this;
   }
 
