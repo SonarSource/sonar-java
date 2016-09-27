@@ -1,7 +1,7 @@
 class Foo {
   public void foo() {
-    bar(s -> write1(get(s))); // write1 unresolved
-    bar(s -> write2(get(s))); // write2 correctly resolved
+    bar(s -> write1(get(s)));
+    bar(s -> write2(get(s)));
   }
 
   private void bar(java.util.function.Consumer<String> consumer) {

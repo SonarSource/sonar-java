@@ -1209,5 +1209,15 @@ public class SymbolTableTest {
     Result result = Result.createFor("TypeVarBoundsInference");
     assertThat(result.symbol("write1").usages()).hasSize(1);
     assertThat(result.symbol("write2").usages()).hasSize(1);
+
+    assertThat(result.symbol("noneOf").usages()).hasSize(1);
+    JavaType type = ((MethodJavaType) result.symbol("noneOf").usages().get(0).symbolType()).resultType;
+    assertThat(type.is("java.util.EnumSet")).isTrue();
+    assertThat(type.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    List<JavaType> substitutedTypes = ((ParametrizedTypeJavaType) type).typeSubstitution.substitutedTypes();
+    assertThat(substitutedTypes).hasSize(1);
+    assertThat(substitutedTypes.get(0).is("A$MyENUM")).isTrue();
+
+
   }
 }
