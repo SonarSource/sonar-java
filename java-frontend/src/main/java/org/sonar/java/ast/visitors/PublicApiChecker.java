@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
+
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -44,6 +45,7 @@ import javax.annotation.Nullable;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 public class PublicApiChecker extends BaseTreeVisitor {
 
@@ -68,6 +70,9 @@ public class PublicApiChecker extends BaseTreeVisitor {
       Tree.Kind.CONSTRUCTOR,
       Tree.Kind.VARIABLE
   };
+
+  private static final Pattern SETTER_PATTERN = Pattern.compile("set[A-Z].*");
+  private static final Pattern GETTER_PATTERN = Pattern.compile("(get|is)[A-Z].*");
 
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private final Deque<Tree> currentParents = new LinkedList<>();
@@ -131,7 +136,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
     if (isPublicApi(currentParent, tree)) {
       publicApi++;
-      if (getApiJavadoc(tree) != null) {
+      if (getApiJavadoc(tree) != null || isAccessor(tree)) {
         documentedPublicApi++;
       }
     }
@@ -215,6 +220,16 @@ public class PublicApiChecker extends BaseTreeVisitor {
       return getCommentFromMethod(methodTree);
     }
     return getCommentFromTree(tree);
+  }
+
+  private static boolean isAccessor(Tree tree) {
+    return tree.is(Tree.Kind.METHOD) && isAccessor((MethodTree) tree);
+  }
+
+  public static boolean isAccessor(MethodTree methodTree) {
+    String name = methodTree.simpleName().name();
+    return (SETTER_PATTERN.matcher(name).matches() && methodTree.parameters().size() == 1) ||
+      (GETTER_PATTERN.matcher(name).matches() && methodTree.parameters().isEmpty());
   }
 
   private static String getCommentFromMethod(MethodTree methodTree) {
