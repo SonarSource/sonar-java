@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -1034,6 +1036,15 @@ public class SymbolTableTest {
 
     JavaSymbol bar1 = result.symbol("bar1");
     assertThat(bar1.usages()).hasSize(2);
+
+    JavaSymbol bar = result.symbol("bar");
+    assertThat(bar.usages()).hasSize(1);
+
+    MethodReferenceTree methodRef = (MethodReferenceTree) bar.usages().get(0).parent();
+    assertThat(methodRef.symbolType().is("java.util.function.Consumer")).isTrue();
+
+    MethodInvocationTree foreach = (MethodInvocationTree) methodRef.parent().parent();
+    assertThat(foreach.symbol().owner().type().is("java.lang.Iterable")).isTrue();
   }
 
   @Test

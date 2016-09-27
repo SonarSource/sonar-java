@@ -400,6 +400,10 @@
 'jdk6:java/util/concurrent/ConcurrentSkipListMap.java':[
 1428,
 ],
+'jdk6:java/util/concurrent/ConcurrentSkipListSet.java':[
+101,
+114,
+],
 'jdk6:java/util/concurrent/DelayQueue.java':[
 60,
 ],
