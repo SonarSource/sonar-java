@@ -1101,16 +1101,18 @@ public class CFGTest {
       ).successors(4),
       block(
         element(Tree.Kind.TRY_STATEMENT)
-      ).successors(3),
+        ).successors(3),
       block(
         element(Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)
-      ).successors(0).exceptions(0,2),
+        ).successors(0).exceptions(0,2),
       block(
+        element(Kind.VARIABLE, "e"),
         element(Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)
-      ).successors(0).exceptions(0, 1),
+        ).successors(0).exceptions(0, 1),
       block(
+        element(Kind.VARIABLE, "e"),
         element(Kind.CHAR_LITERAL, "'outercatch'"),
         element(Kind.IDENTIFIER, "System"),
         element(Kind.MEMBER_SELECT),
@@ -1178,6 +1180,7 @@ public class CFGTest {
           element(Kind.METHOD_INVOCATION)
           ).successors(0).exceptions(0, 1),
         block(
+          element(Kind.VARIABLE, "t"),
           element(Kind.IDENTIFIER, "notifyFailed"),
           element(Kind.METHOD_INVOCATION)
         ).successors(0).exceptions(0)
@@ -1219,12 +1222,14 @@ public class CFGTest {
         element(Tree.Kind.METHOD_INVOCATION)
       ).successors(1).exceptions(1, 2, 3),
       block(
+        element(Kind.VARIABLE, "e"),
         element(Tree.Kind.CHAR_LITERAL, "'e'"),
           element(Tree.Kind.IDENTIFIER, "foo"),
           element(Tree.Kind.METHOD_INVOCATION)
           ).successors(1).exceptions(1),
       block(
-          element(Tree.Kind.CHAR_LITERAL, "'iae'"),
+        element(Kind.VARIABLE, "e"),
+        element(Tree.Kind.CHAR_LITERAL, "'iae'"),
           element(Tree.Kind.IDENTIFIER, "foo"),
           element(Tree.Kind.METHOD_INVOCATION)
           ).successors(1).exceptions(1),
@@ -1247,7 +1252,8 @@ public class CFGTest {
             element(Tree.Kind.TRY_STATEMENT)
         ).successors(0),
         block(
-            element(Tree.Kind.IDENTIFIER, "e"),
+          element(Kind.VARIABLE, "e"),
+          element(Tree.Kind.IDENTIFIER, "e"),
             element(Tree.Kind.INSTANCE_OF)
         ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0)
     );
@@ -1454,6 +1460,7 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "doSomething"),
         element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2).exit(0),
       block(
+        element(Kind.VARIABLE, "e"),
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0).exit(0),
       block(
@@ -1480,6 +1487,7 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "performAction"),
         element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2),
       block(
+        element(Kind.VARIABLE, "e"),
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0),
       block(
@@ -1539,6 +1547,7 @@ public class CFGTest {
       block(
           element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
       block(
+        element(Kind.VARIABLE, "iae"),
         element(Tree.Kind.TRY_STATEMENT)).successors(4),
       block(
         element(Kind.NEW_CLASS)).successors(3).exceptions(0, 2),

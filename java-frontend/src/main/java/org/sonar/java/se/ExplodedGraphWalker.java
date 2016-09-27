@@ -488,6 +488,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         sv = constraintManager.createSymbolicValue(variableTree);
       } else if (variableTree.type().symbolType().is("boolean")) {
         sv = SymbolicValue.FALSE_LITERAL;
+      } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
+        sv = constraintManager.createSymbolicValue(variableTree);
+        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
       } else if (!variableTree.type().symbolType().isPrimitive()) {
         sv = SymbolicValue.NULL_LITERAL;
       }
