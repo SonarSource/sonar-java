@@ -25,8 +25,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
-import java.io.File;
-import java.util.List;
 import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -39,6 +37,9 @@ import org.sonar.wsclient.issue.IssueQuery;
 import org.sonar.wsclient.services.Measure;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
+
+import java.io.File;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -214,9 +215,9 @@ public class JavaTest {
       .setCleanSonarGoals()
       .setProperty("sonar.profile", "java-version-aware-visitor");
 
-    // no java version specified. got issue on java 7 code
+    // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(0);
 
     // invalid java version. got issue on java 7 code
     build.setProperty(sonarJavaSource, "jdk_1.6");
@@ -236,5 +237,15 @@ public class JavaTest {
     build.setProperty(sonarJavaSource, "1.6");
     orchestrator.executeBuild(build);
     assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(0);
+
+    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-version-aware-visitor"))
+      .setProperty("sonar.projectKey", "org.example:example-scanner")
+      .setProperty("sonar.projectName", "example")
+      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
+      .setProperty("sonar.profile", "java-version-aware-visitor")
+      .setProperty("sonar.sources", "src/main/java");
+    orchestrator.executeBuild(scan);
+    // no java version specified, got issue on java 7 code
+    assertThat(getMeasure("org.example:example-scanner", "violations").getValue()).isEqualTo(1);
   }
 }
