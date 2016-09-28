@@ -1,4 +1,4 @@
-package org.foo;
+class A {}
 
 class B {
   void test() {
@@ -7,4 +7,12 @@ class B {
   }
 
   private void bar1() {}
+}
+
+class C {
+  private void build(java.util.List<? extends A> as) {
+    as.forEach(this::bar);
+  }
+
+  private void bar(A a) {}
 }

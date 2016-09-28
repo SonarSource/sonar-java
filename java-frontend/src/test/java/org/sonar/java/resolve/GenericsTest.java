@@ -20,7 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Assertions;
@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -42,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -801,8 +803,7 @@ public class GenericsTest {
 
   @Test
   public void test_method_resolution_of_parametrized_method_from_parametrized() throws IOException {
-    List<String> lines = FileUtils.readLines(new File("src/test/files/resolve/GenericMethods.java"));
-    List<Type> elementTypes = declaredTypes(lines.toArray(new String[lines.size()]));
+    List<Type> elementTypes = declaredTypesFromFile("src/test/files/resolve/GenericMethods.java");
 
     JavaType aType = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(aType, "cast");
@@ -853,46 +854,15 @@ public class GenericsTest {
   }
 
   @Test
-  public void test_method_resolution_for_parametrized_method_with_type_variable_inheritance2() {
-    List<Type> elementTypes = declaredTypes(
-      "class PreTest<T> {"
-        + "  <S extends T> void foo(S s) {}"
-        + "}"
-
-        + "class Test<T> extends PreTest<T> {"
-        + "  void test() {"
-        + "    new Test<A>().<A>foo(new A());"
-        + "    new Test<A>().<B>foo(new B());"
-        + "    new Test<A>().foo(new A());"
-        + "    new Test<A>().foo(new B());"
-        + "  }"
-        + "}"
-
-        + "class Test2 extends Test<A> {"
-        + "  void test2() {"
-        + "    new Test2().<A>foo(new A());"
-        + "    new Test2().<B>foo(new B());"
-        + "    new Test2().foo(new A());"
-        + "    new Test2().foo(new B());"
-        + "  }"
-        + "}"
-
-        + "class Test3 extends Test2 {"
-        + "  void test3() {"
-        + "    new Test3().<A>foo(new A());"
-        + "    new Test3().<B>foo(new B());"
-        + "    new Test3().foo(new A());"
-        + "    new Test3().foo(new B());"
-        + "  }"
-        + "}"
-
-        + "class A {}"
-        + "class B extends A {}");
+  public void parametrized_method_resolution_with_bounded_type_variable() {
+    List<Type> elementTypes = declaredTypesFromFile("src/test/files/resolve/GenericMethodsBoundedTypeVariables.java");
 
     JavaType type = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo");
-    // FIXME should be 12
-    assertThat(methodSymbol.usages()).hasSize(0);
+    // FIXME SONARJAVA-1859 should be 12 - explicit type arguments not handled
+    assertThat(methodSymbol.usages()).hasSize(6);
+    List<Integer> lines = methodSymbol.usages().stream().map(IdentifierTree::identifierToken).map(SyntaxToken::line).collect(Collectors.toList());
+    assertThat(lines).containsExactly(9, 10, 18, 19, 27, 28);
   }
 
   private static void methodHasUsagesWithSameTypeAs(JavaType type, String methodName, String... variables) {

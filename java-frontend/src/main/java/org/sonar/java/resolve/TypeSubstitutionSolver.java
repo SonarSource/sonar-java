@@ -114,16 +114,27 @@ public class TypeSubstitutionSolver {
           return false;
         }
       }
-      
     }
     return true;
   }
 
   List<JavaType> applySiteSubstitutionToFormalParameters(List<JavaType> formals, JavaType site) {
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
     if (site.isParameterized()) {
-      return applySubstitutionToFormalParameters(formals, ((ParametrizedTypeJavaType) site).typeSubstitution);
+      typeSubstitution = ((ParametrizedTypeJavaType) site).typeSubstitution;
     }
-    return formals;
+    TypeJavaSymbol siteSymbol = site.getSymbol();
+    List<JavaType> newFormals = formals;
+    Type superClass = siteSymbol.superClass();
+    if (superClass != null) {
+      JavaType newSuperClass = applySubstitution((JavaType) superClass, typeSubstitution);
+      newFormals = applySiteSubstitutionToFormalParameters(newFormals, newSuperClass);
+    }
+    for (Type interfaceType : siteSymbol.interfaces()) {
+      JavaType newInterfaceType = applySubstitution((JavaType) interfaceType, typeSubstitution);
+      newFormals = applySiteSubstitutionToFormalParameters(newFormals, newInterfaceType);
+    }
+    return applySubstitutionToFormalParameters(newFormals, typeSubstitution);
   }
 
   JavaType applySiteSubstitution(JavaType type, JavaType site) {
