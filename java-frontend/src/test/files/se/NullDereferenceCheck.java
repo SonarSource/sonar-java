@@ -664,3 +664,15 @@ class MyClass {
       });
   }
 }
+class RaisedExceptionCannotBeNull {
+  void foo() {
+    try {
+      Thread.sleep(0);
+    } catch (Exception ex) {
+      for (Throwable cause = ex; cause != null; cause = cause.getCause()) { // assigned to cause then tested agains null...
+        // do something
+      }
+      ex.getCause(); // FP on squid:S2259 as it might have been null or not because of the for loop condition
+    }
+  }
+}

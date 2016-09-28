@@ -66,6 +66,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -812,9 +813,12 @@ public class CFG {
     for (CatchTree catchTree : tryStatementTree.catches()) {
       currentBlock = createBlock(finallyOrEndBlock);
       currentBlock.isCatchBlock = true;
-      enclosedByCatch.push(true);
-      build(catchTree.block());
-      enclosedByCatch.pop();
+      if (!catchTree.block().body().isEmpty()) {
+        enclosedByCatch.push(true);
+        build(catchTree.block());
+        buildVariable(catchTree.parameter());
+        enclosedByCatch.pop();
+      }
       tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
     }
     currentBlock = beforeFinally;

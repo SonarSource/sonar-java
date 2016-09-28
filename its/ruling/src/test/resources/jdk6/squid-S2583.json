@@ -42,6 +42,9 @@
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
 ],
+'jdk6:java/net/InetAddress.java':[
+1240,
+],
 'jdk6:java/net/Socket.java':[
 374,
 ],
