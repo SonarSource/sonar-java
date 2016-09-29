@@ -94,7 +94,9 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
 
   private void check(CaseLabelTree caseLabelTree, int caseStartLine, int nextCaseStartLine) {
     int lines = Math.max(nextCaseStartLine - caseStartLine, 1);
-
+    // That number is not correct if the case statement contains empty lines.
+    // My students like to create empty lines in their code and their are caught
+    // by that too simple calculation.
     if (lines > max) {
       reportIssue(caseLabelTree, "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
     }
