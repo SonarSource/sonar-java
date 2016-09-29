@@ -629,8 +629,11 @@ public class Resolve {
       String methodName = tree.method().name();
       Resolution resolution = findMethod(env, type, "new".equals(methodName) ? "<init>" : methodName, samMethodArgs);
       if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
-        associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
-        ((AbstractTypedTree) tree).setType(formal);
+        if (tree.method().symbol().isUnknown()) {
+          associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
+          ((AbstractTypedTree) tree.method()).setType(resolution.type);
+          ((AbstractTypedTree) tree).setType(formal);
+        }
         return true;
       }
     }

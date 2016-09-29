@@ -934,7 +934,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (!"<init>".equals(methodSymbol.name) && methodSymbol.isMethodSymbol()) {
         JavaType samReturnType = (JavaType) samMethod.get().returnType().type();
         JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
-        JavaType refinedReturnType = (JavaType) ((Symbol.MethodSymbol) methodSymbol).returnType().type();
+        JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
         refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
       }
     } else {
