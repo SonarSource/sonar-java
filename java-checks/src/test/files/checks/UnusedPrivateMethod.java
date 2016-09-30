@@ -1,6 +1,8 @@
 package org.sonar.java.checks.targets;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class UnusedPrivateMethod {
 
@@ -127,5 +129,12 @@ class Lambdas {
       .map((x)-> x*x )
     ;
   }
+}
 
+class ReturnTypeInference {
+  private void foo(java.util.List<String> l) {}
+  void test() {
+    java.util.List<String> l;
+    foo(l.stream().sorted().collect(Collectors.toList()));
+  }
 }

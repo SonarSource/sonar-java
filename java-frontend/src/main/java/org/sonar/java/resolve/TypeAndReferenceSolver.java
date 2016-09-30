@@ -216,6 +216,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           }
         }
       );
+      registerType(mit, resolve.applySubstitution((JavaType) mit.symbolType(), typeSubstitution));
       return;
     }
     Resolve.Env methodEnv = semanticModel.getEnv(tree);

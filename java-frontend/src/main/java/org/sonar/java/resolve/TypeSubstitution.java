@@ -100,15 +100,13 @@ public class TypeSubstitution {
     TypeSubstitution result = new TypeSubstitution();
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : substitutionEntries()) {
       TypeVariableJavaType typeVar = substitution.getKey();
-      JavaType targetType = substitution.getValue();
-      if (targetType.isTagged(JavaType.WILDCARD)) {
-        targetType = ((WildCardType) targetType).bound;
-      }
+      JavaType targetType = filterWildcard(substitution.getValue());
       JavaType substitutedType = source.substitutedType(typeVar);
-      if(substitutedType == null) {
+      if(substitutedType == null || targetType == substitutedType) {
         result.add(typeVar, targetType);
         continue;
       }
+      substitutedType = filterWildcard(substitutedType);
       if(targetType.isArray() && substitutedType.isArray()) {
         targetType = elementType(targetType);
         substitutedType = elementType(substitutedType);
@@ -123,6 +121,13 @@ public class TypeSubstitution {
       }
     }
     return result;
+  }
+
+  private static JavaType filterWildcard(JavaType javaType) {
+    if (javaType.isTagged(JavaType.WILDCARD)) {
+      return ((WildCardType) javaType).bound;
+    }
+    return javaType;
   }
 
   private static JavaType elementType(JavaType javaType) {
