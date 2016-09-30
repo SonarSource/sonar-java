@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
@@ -1064,6 +1065,36 @@ public class SymbolTableTest {
 
     JavaSymbol bool = result.symbol("bool");
     assertThat(bool.usages()).hasSize(1);
+  }
+
+  @Test
+  public void MethodReferencesNoArguments() throws Exception {
+    Result result = Result.createFor("MethodReferencesNoArguments");
+
+    JavaSymbol isTrue = result.symbol("isTrue");
+    assertThat(isTrue.usages()).hasSize(1);
+
+    JavaSymbol isFalse = result.symbol("isFalse");
+    assertThat(isFalse.usages()).hasSize(1);
+
+    JavaSymbol up = result.symbol("up");
+    assertThat(up.usages()).hasSize(1);
+
+    Tree upMethodRef = up.usages().get(0).parent();
+    MethodInvocationTree map = (MethodInvocationTree) upMethodRef.parent().parent();
+
+    JavaType mapType = (JavaType) map.symbolType();
+    assertThat(mapType.is("java.util.stream.Stream")).isTrue();
+    assertThat(mapType.isParameterized()).isTrue();
+    List<JavaType> substitutedTypes = ((ParametrizedTypeJavaType) mapType).typeSubstitution.substitutedTypes();
+    assertThat(substitutedTypes).hasSize(1);
+    assertThat(substitutedTypes.get(0).is("A$B")).isTrue();
+
+    JavaSymbol bool = result.symbol("bool", 28);
+    assertThat(bool.usages().stream().map(id -> id.identifierToken().line()).collect(Collectors.toList())).containsExactly(11, 12, 13);
+
+    bool = result.symbol("bool", 29);
+    assertThat(bool.usages().stream().map(id -> id.identifierToken().line()).collect(Collectors.toList())).containsExactly(14, 15);
   }
 
   @Test
