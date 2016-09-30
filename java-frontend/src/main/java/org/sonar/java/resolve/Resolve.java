@@ -97,6 +97,10 @@ public class Resolve {
     return typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
   }
 
+  public JavaType applySubstitution(JavaType type, TypeSubstitution substitution) {
+    return typeSubstitutionSolver.applySubstitution(type, substitution);
+  }
+
   public JavaType resolveTypeSubstitutionWithDiamondOperator(ParametrizedTypeJavaType type, JavaType definition) {
     ParametrizedTypeJavaType result = type;
     if (definition.isParameterized()) {

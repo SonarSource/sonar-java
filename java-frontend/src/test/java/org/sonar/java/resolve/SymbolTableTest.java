@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -1236,6 +1237,17 @@ public class SymbolTableTest {
     assertThat(result.symbol("test1").usages()).hasSize(1);
     assertThat(result.symbol("test2").usages()).hasSize(1);
     assertThat(result.symbol("test3").usages()).hasSize(1);
+  }
 
+  @Test
+  public void infer_method_invocation_return_type() throws Exception {
+    Result result = Result.createFor("CollectorsToList");
+    List<IdentifierTree> usages = result.symbol("foo").usages();
+    assertThat(usages).hasSize(1);
+    ExpressionTree arg = ((MethodInvocationTree) usages.get(0).parent()).arguments().get(0);
+    assertThat(arg.symbolType().is("java.util.List")).isTrue();
+    assertThat(((JavaType) arg.symbolType()).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
   }
 }

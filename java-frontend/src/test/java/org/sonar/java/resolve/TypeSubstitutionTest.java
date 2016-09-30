@@ -177,6 +177,13 @@ public class TypeSubstitutionTest {
     combined = t7.combine(t6);
     assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, y);
     assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(s, i);
+
+    ParametrizedTypeJavaType listOfY = newParameterizedType("List", y);
+    TypeSubstitution t8 = new TypeSubstitution().add(a, new WildCardType(x, WildCardType.BoundType.SUPER)).add(b, listOfY);
+    TypeSubstitution t9 = new TypeSubstitution().add(a, y).add(b, listOfY);
+    combined = t8.combine(t9);
+    assertThat(combined.typeVariables()).hasSize(2).containsSequence(x, b);
+    assertThat(combined.substitutedTypes()).hasSize(2).containsSequence(y, listOfY);
   }
 
   private JavaType newType(String name) {

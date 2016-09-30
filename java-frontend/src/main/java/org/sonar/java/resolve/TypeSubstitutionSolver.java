@@ -93,7 +93,7 @@ public class TypeSubstitutionSolver {
     resultType = applySubstitution(resultType, substitution);
     if (!isReturnTypeCompletelySubstituted(resultType, method.typeVariableTypes)
       || (method.isConstructor() && !isReturnTypeCompletelySubstituted(resultType, defSite.symbol.typeVariableTypes))) {
-      resultType = symbols.deferedType(resultType.erasure());
+      resultType = symbols.deferedType(resultType);
     }
     return resultType;
   }
