@@ -87,6 +87,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -532,11 +533,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private void refineLambdaType(LambdaExpressionTreeImpl lambdaExpressionTree, JavaType lambdaType) {
-    JavaSymbol.MethodJavaSymbol samMethod = resolve.getSamMethod(lambdaType);
-    if(samMethod == null) {
+    Optional<JavaSymbol.MethodJavaSymbol> samMethod = resolve.getSamMethod(lambdaType);
+    if (!samMethod.isPresent()) {
       return;
     }
-    JavaType samReturnType = (JavaType) samMethod.returnType().type();
+    JavaType samReturnType = (JavaType) samMethod.get().returnType().type();
     JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, lambdaType);
     if (capturedReturnType.is("void") || !lambdaType.isParameterized()) {
       return;
@@ -925,15 +926,15 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
     if(methodRefTree.isTypeSet()) {
       JavaType methodRefType = (JavaType) methodRefTree.symbolType();
-      JavaSymbol.MethodJavaSymbol samMethod = resolve.getSamMethod(methodRefType);
-      if (samMethod == null) {
+      Optional<JavaSymbol.MethodJavaSymbol> samMethod = resolve.getSamMethod(methodRefType);
+      if (!samMethod.isPresent()) {
         return;
       }
       JavaSymbol methodSymbol = (JavaSymbol) methodRefTree.method().symbol();
       if (!"<init>".equals(methodSymbol.name) && methodSymbol.isMethodSymbol()) {
-        JavaType samReturnType = (JavaType) samMethod.returnType().type();
+        JavaType samReturnType = (JavaType) samMethod.get().returnType().type();
         JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
-        JavaType refinedReturnType = (JavaType) ((Symbol.MethodSymbol) methodSymbol).returnType().type();
+        JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
         refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
       }
     } else {

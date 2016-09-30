@@ -629,8 +629,11 @@ public class Resolve {
       String methodName = tree.method().name();
       Resolution resolution = findMethod(env, type, "new".equals(methodName) ? "<init>" : methodName, samMethodArgs);
       if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
-        associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
-        ((AbstractTypedTree) tree).setType(formal);
+        if (tree.method().symbol().isUnknown()) {
+          associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
+          ((AbstractTypedTree) tree.method()).setType(resolution.type);
+          ((AbstractTypedTree) tree).setType(formal);
+        }
         return true;
       }
     }
@@ -929,26 +932,14 @@ public class Resolve {
   public List<JavaType> findSamMethodArgs(Type type) {
     return findSamMethodArgsRecursively(type).orElse(new ArrayList<>());
   }
-  
+
   private Optional<List<JavaType>> findSamMethodArgsRecursively(@Nullable Type type) {
-    if(type == null) {
+    if (type == null) {
       return Optional.empty();
     }
-    Optional<List<JavaType>> result = type.symbol().memberSymbols().stream()
-      .filter(Resolve::isAbstractMethod).findFirst()
-      .map(s -> ((MethodJavaType) ((JavaSymbol.MethodJavaSymbol) s).type).argTypes);
-
-    if(!result.isPresent()) {
-      result = findSamMethodArgsRecursively(type.symbol().superClass());
-      if(!result.isPresent()) {
-        result = type.symbol().interfaces().stream()
-          .map(this::findSamMethodArgsRecursively)
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          .findFirst();
-      }
-    }
-    return result.map(samTypes -> applySamSubstitution(type, samTypes));
+    return getSamMethod((JavaType) type)
+      .map(m -> ((MethodJavaType) m.type).argTypes)
+      .map(samTypes -> applySamSubstitution(type, samTypes));
   }
 
   private List<JavaType> applySamSubstitution(Type type, List<JavaType> samTypes) {
@@ -962,20 +953,19 @@ public class Resolve {
     }).collect(Collectors.toList());
   }
 
-  @CheckForNull
-  public JavaSymbol.MethodJavaSymbol getSamMethod(JavaType lambdaType) {
+  public Optional<JavaSymbol.MethodJavaSymbol> getSamMethod(JavaType lambdaType) {
     for (Symbol member : lambdaType.symbol().memberSymbols()) {
       if (isAbstractMethod(member)) {
-        return (JavaSymbol.MethodJavaSymbol) member;
+        return Optional.of((JavaSymbol.MethodJavaSymbol) member);
       }
     }
     for (ClassJavaType type : lambdaType.symbol.superTypes()) {
-      JavaSymbol.MethodJavaSymbol samMethod = getSamMethod(type);
-      if (samMethod != null) {
+      Optional<JavaSymbol.MethodJavaSymbol> samMethod = getSamMethod(type);
+      if (samMethod.isPresent()) {
         return samMethod;
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   private static boolean isAbstractMethod(Symbol member) {

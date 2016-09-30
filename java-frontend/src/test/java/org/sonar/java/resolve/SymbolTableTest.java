@@ -1049,6 +1049,24 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void MethodReferenceWithStream() throws Exception {
+    Result result = Result.createFor("MethodReferencesStream");
+
+    JavaSymbol flatipus1 = result.symbol("flatipus1");
+    assertThat(flatipus1.usages()).hasSize(1);
+
+    MethodInvocationTree flatMap = (MethodInvocationTree) flatipus1.usages().get(0).parent().parent().parent();
+    Type symbolType = flatMap.symbolType();
+    assertThat(symbolType.is("java.util.Optional")).isTrue();
+
+    JavaSymbol flatipus2 = result.symbol("flatipus2");
+    assertThat(flatipus2.usages()).hasSize(1);
+
+    JavaSymbol bool = result.symbol("bool");
+    assertThat(bool.usages()).hasSize(1);
+  }
+
+  @Test
   public void UnionType() throws Exception {
     Result result = Result.createFor("UnionTypes");
 
