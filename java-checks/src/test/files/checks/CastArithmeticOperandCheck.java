@@ -18,6 +18,7 @@ class A {
     foo(); //Compliant
     double tst = 1 | 2; // Compliant
     unknownMethod(1 + 2); // Compliant
+    longMethod(12 / 7, 12 / 7);   // Compliant dividing two ints into and widening into a long can't cause any harm
   }
 
 
