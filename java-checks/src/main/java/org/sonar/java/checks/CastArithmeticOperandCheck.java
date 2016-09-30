@@ -98,6 +98,10 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
   private void checkExpression(Type varType, @Nullable ExpressionTree expr) {
     if (isVarTypeErrorProne(varType) && expr != null && expressionIsOperationToInt(expr)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) expr;
+      if(binaryExpressionTree.is(Tree.Kind.DIVIDE) && varType.isPrimitive(Type.Primitives.LONG)) {
+        // widening the result of an int division is harmless
+        return;
+      }
       reportIssue(binaryExpressionTree.operatorToken(), "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
     }
   }
