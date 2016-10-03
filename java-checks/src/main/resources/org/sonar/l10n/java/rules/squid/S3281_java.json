@@ -1,5 +1,6 @@
 {
   "title": "Default EJB interceptors should be declared in \"ejb-jar.xml\"",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

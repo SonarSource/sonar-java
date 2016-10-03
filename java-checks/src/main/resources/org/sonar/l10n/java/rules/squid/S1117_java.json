@@ -1,5 +1,6 @@
 {
   "title": "Local variables should not shadow class fields",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "cert",
     "pitfall"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

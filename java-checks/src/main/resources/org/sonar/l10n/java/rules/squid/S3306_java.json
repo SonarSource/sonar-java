@@ -1,5 +1,6 @@
 {
   "title": "Constructor injection should be used instead of field injection",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

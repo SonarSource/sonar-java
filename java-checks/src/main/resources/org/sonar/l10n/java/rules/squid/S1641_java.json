@@ -1,5 +1,6 @@
 {
   "title": "Sets with elements that are enum values should be replaced with EnumSet",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

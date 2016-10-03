@@ -1,5 +1,6 @@
 {
   "title": "Annotation arguments should appear in the order in which they were declared",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Web applications should not have a \"main\" method",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,10 @@
     "security",
     "cert",
     "jee"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Critical"
 }

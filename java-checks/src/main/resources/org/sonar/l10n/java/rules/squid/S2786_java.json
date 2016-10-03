@@ -1,5 +1,6 @@
 {
   "title": "Nested \"enum\"s should not be declared static",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

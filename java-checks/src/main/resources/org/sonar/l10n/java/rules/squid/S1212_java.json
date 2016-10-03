@@ -1,5 +1,6 @@
 {
-  "title": "Architectural constraints should be followed",
+  "title": "Track breaches of architectural constraints",
+  "type": "CODE_SMELL",
   "status": "deprecated",
   "tags": [
     

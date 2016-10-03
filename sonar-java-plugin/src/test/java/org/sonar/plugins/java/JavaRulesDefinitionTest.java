@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Cardinality;
 import org.sonar.check.Rule;
@@ -43,8 +44,10 @@ public class JavaRulesDefinitionTest {
 
     RulesDefinition.Rule unusedLabelRule = repository.rule("S1065");
     assertThat(unusedLabelRule).isNotNull();
+    assertThat(unusedLabelRule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
+    assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     // Calling definition multiple time should not lead to failure: thanks C# plugin !

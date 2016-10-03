@@ -1,5 +1,6 @@
 {
   "title": "Lamdbas containing only one statement should not nest this statement in a block",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

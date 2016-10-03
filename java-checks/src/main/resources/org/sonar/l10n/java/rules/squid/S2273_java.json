@@ -1,5 +1,6 @@
 {
   "title": "\"wait(...)\", \"notify()\" and \"notifyAll()\" methods should only be called when a lock is obviously held on an object",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

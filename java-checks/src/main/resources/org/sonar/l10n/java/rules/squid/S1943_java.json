@@ -1,5 +1,6 @@
 {
   "title": "Classes and methods that rely on the default system encoding should not be used",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "bug",
     "unpredictable",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

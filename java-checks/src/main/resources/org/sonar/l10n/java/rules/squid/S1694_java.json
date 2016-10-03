@@ -1,5 +1,6 @@
 {
   "title": "An abstract class should have both abstract and concrete methods",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

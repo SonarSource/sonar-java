@@ -1,5 +1,6 @@
 {
   "title": "Non-thread-safe fields should not be static",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

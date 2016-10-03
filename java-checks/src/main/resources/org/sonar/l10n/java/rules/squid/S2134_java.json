@@ -1,5 +1,6 @@
 {
   "title": "Classes extending java.lang.Thread should override the \"run\" method",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

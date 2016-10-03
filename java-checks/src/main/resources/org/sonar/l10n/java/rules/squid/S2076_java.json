@@ -1,5 +1,6 @@
 {
   "title": "Values passed to OS commands should be sanitized",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,11 @@
     "owasp-a1",
     "security",
     "sans-top25-insecure"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
   ],
   "defaultSeverity": "Critical"
 }

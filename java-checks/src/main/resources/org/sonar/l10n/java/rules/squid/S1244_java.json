@@ -1,5 +1,6 @@
 {
   "title": "Floating point numbers should not be tested for equality",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

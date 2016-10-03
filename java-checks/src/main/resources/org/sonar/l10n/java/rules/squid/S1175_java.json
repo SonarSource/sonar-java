@@ -1,5 +1,6 @@
 {
   "title": "The signature of \"finalize()\" should match that of \"Object.finalize()\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

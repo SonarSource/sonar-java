@@ -1,5 +1,6 @@
 {
   "title": "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,9 @@
     "performance",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Blocker"
 }

@@ -1,5 +1,6 @@
 {
   "title": "Classes should not be empty",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

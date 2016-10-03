@@ -1,5 +1,6 @@
 {
   "title": "JUnit test cases should call super methods",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

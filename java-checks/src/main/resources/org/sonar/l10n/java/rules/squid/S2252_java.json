@@ -1,5 +1,6 @@
 {
   "title": "Loop conditions should be true at least once",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

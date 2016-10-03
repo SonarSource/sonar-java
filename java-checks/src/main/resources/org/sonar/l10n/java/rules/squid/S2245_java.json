@@ -1,5 +1,6 @@
 {
   "title": "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,11 @@
     "security",
     "cert",
     "owasp-a6"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical"
 }

@@ -1,5 +1,6 @@
 {
   "title": "\"Double.longBitsToDouble\" should not be used for \"int\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

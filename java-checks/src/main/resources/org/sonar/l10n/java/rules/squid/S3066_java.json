@@ -1,5 +1,6 @@
 {
   "title": "\"enum\" fields should not be publicly mutable",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

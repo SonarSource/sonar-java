@@ -1,6 +1,7 @@
 {
   "title": "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
-  "status": "ready",
+  "type": "BUG",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

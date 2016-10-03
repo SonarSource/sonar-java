@@ -1,5 +1,6 @@
 {
   "title": "\"compareTo\" should not return \"Integer.MIN_VALUE\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

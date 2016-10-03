@@ -1,5 +1,6 @@
 {
   "title": "Package declaration should match source file directory",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

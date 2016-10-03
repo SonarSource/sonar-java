@@ -1,5 +1,6 @@
 {
   "title": "Useless imports should be removed",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "\"null\" should not be used with \"Optional\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

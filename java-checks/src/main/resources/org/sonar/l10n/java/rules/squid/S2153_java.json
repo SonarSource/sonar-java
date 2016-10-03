@@ -1,5 +1,6 @@
 {
   "title": "Boxing and unboxing should not be immediately reversed",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

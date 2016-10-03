@@ -1,5 +1,6 @@
 {
   "title": "\"@NonNull\" values should not be set to null",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

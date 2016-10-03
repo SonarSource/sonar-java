@@ -1,5 +1,6 @@
 {
   "title": "\"ScheduledThreadPoolExecutor\" should not have 0 core threads",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

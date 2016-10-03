@@ -1,5 +1,6 @@
 {
   "title": "Return values should not be ignored when they contain the operation status code",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -11,6 +12,10 @@
     "security",
     "misra",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

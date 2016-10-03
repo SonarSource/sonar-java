@@ -1,5 +1,6 @@
 {
   "title": "Non-serializable objects should not be stored in \"HttpSession\" objects",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "cwe",
     "bug"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Major"
 }

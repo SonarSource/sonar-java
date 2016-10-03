@@ -1,5 +1,6 @@
 {
   "title": "\"private\" methods that don't access instance data should be \"static\"",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

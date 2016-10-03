@@ -1,5 +1,6 @@
 {
   "title": "Optional value should only be accessed after calling isPresent()",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "cwe",
     "bug"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Major"
 }

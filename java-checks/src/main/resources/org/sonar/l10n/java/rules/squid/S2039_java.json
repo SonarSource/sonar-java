@@ -1,5 +1,6 @@
 {
   "title": "Member variable visibility should be specified",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

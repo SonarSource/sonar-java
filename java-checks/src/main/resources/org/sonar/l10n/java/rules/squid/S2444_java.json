@@ -1,5 +1,6 @@
 {
   "title": "Lazy initialization of \"static\" fields should be \"synchronized\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

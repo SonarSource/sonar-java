@@ -1,5 +1,6 @@
 {
   "title": "Math operands should be cast before assignment",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,7 +10,13 @@
     "cwe",
     "bug",
     "sans-top25-risky",
+    "misra",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "SANS Top 25"
   ],
   "defaultSeverity": "Minor"
 }

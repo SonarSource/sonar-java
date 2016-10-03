@@ -1,5 +1,6 @@
 {
   "title": "Short-circuit logic should be used in boolean contexts",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

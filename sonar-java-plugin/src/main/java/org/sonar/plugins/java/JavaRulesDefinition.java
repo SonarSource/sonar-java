@@ -25,6 +25,7 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rule.RuleStatus;
+import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
@@ -101,6 +102,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       rule.setSeverity(metatada.defaultSeverity.toUpperCase());
       rule.setName(metatada.title);
       rule.addTags(metatada.tags);
+      rule.setType(RuleType.valueOf(metatada.type));
       rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase()));
       if(metatada.remediation != null) {
         rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
@@ -130,6 +132,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     @Nullable
     Remediation remediation;
 
+    String type;
     String[] tags;
     String defaultSeverity;
   }

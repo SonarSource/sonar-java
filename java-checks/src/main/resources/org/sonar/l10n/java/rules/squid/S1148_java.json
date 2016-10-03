@@ -1,5 +1,6 @@
 {
   "title": "Throwable.printStackTrace(...) should not be called",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

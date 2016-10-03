@@ -1,5 +1,6 @@
 {
   "title": "Child class methods named for parent class methods should be overrides",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

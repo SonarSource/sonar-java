@@ -1,5 +1,6 @@
 {
   "title": "Classes with only \"static\" methods should not be instantiated",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

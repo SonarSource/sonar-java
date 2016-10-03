@@ -1,5 +1,6 @@
 {
   "title": "EJB interceptor exclusions should be declared as annotations",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

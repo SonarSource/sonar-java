@@ -1,5 +1,6 @@
 {
   "title": "Printf-style format strings should not lead to unexpected behavior at runtime",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

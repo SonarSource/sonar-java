@@ -1,5 +1,6 @@
 {
   "title": "Maps with keys that are enum values should be replaced with EnumMap",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

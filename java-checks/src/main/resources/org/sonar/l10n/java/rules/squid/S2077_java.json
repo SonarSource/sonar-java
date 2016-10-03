@@ -1,5 +1,6 @@
 {
   "title": "SQL binding mechanisms should be used",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -13,6 +14,12 @@
     "cert",
     "hibernate",
     "sql"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten",
+    "SANS Top 25"
   ],
   "defaultSeverity": "Blocker"
 }

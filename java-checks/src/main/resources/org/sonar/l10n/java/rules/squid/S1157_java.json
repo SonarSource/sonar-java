@@ -1,5 +1,6 @@
 {
   "title": "Case insensitive string comparisons should be made without intermediate upper or lower casing",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

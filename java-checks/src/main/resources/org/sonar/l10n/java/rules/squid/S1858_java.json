@@ -1,5 +1,6 @@
 {
   "title": "\"toString()\" should never be called on a String object",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

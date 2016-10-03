@@ -1,5 +1,6 @@
 {
   "title": "Packages should have a javadoc file 'package-info.java'",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

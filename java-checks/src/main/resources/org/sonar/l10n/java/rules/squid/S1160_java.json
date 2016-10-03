@@ -1,5 +1,6 @@
 {
   "title": "Public methods should throw at most one checked exception",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "JUnit assertions should include messages",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

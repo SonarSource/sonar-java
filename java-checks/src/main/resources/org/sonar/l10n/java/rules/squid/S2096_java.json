@@ -1,5 +1,6 @@
 {
   "title": "\"main\" should not \"throw\" anything",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

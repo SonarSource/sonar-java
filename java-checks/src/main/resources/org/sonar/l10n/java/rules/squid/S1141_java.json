@@ -1,5 +1,6 @@
 {
   "title": "Try-catch blocks should not be nested",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

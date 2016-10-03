@@ -1,5 +1,6 @@
 {
   "title": "\"compareTo\" results should not be checked for specific values",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

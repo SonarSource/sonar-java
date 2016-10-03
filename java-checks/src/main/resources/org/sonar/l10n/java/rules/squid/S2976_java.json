@@ -1,5 +1,6 @@
 {
   "title": "\"File.createTempFile\" should not be used to create a directory",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

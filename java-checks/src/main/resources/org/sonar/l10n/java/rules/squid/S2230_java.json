@@ -1,5 +1,6 @@
 {
   "title": "Non-public methods should not be \"@Transactional\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

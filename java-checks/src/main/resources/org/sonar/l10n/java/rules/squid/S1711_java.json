@@ -1,5 +1,6 @@
 {
   "title": "Standard functional interfaces should not be redefined",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

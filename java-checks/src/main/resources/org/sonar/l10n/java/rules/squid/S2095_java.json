@@ -1,5 +1,6 @@
 {
   "title": "Resources should be closed",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -11,6 +12,10 @@
     "denial-of-service",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Blocker"
 }

@@ -1,5 +1,6 @@
 {
   "title": "\"Threads\" should not be used where \"Runnables\" are expected",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

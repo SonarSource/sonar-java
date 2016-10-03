@@ -1,5 +1,6 @@
 {
   "title": "\"action\" mappings should not have too many \"forward\" entries",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Linear",

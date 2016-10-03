@@ -1,5 +1,6 @@
 {
   "title": "\"super.finalize()\" should be called at the end of \"Object.finalize()\" implementations",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,10 @@
     "cwe",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Critical"
 }

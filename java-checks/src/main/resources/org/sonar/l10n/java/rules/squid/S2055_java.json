@@ -1,5 +1,6 @@
 {
   "title": "The non-serializable super class of a \"Serializable\" class should have a no-argument constructor",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

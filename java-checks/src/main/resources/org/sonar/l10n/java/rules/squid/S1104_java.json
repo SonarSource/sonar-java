@@ -1,5 +1,6 @@
 {
   "title": "Class variable fields should not have public accessibility",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "cwe",
     "security"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Minor"
 }

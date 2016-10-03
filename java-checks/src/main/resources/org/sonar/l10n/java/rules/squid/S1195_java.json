@@ -1,5 +1,6 @@
 {
   "title": "Array designators \"[]\" should be located after the type in method signatures",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

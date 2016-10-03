@@ -1,5 +1,6 @@
 {
   "title": "Multiple loops over the same set should be combined",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

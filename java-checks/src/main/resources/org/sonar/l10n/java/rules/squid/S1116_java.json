@@ -1,5 +1,6 @@
 {
   "title": "Empty statements should be removed",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,9 @@
     "misra",
     "cert",
     "unused"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

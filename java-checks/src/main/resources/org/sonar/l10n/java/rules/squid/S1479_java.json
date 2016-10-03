@@ -1,5 +1,6 @@
 {
   "title": "\"switch\" statements should not have too many \"case\" clauses",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

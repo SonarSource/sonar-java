@@ -1,5 +1,6 @@
 {
   "title": "Cookies should be \"secure\"",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,10 @@
     "security",
     "owasp-a6",
     "owasp-a2"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Minor"
 }

@@ -1,5 +1,6 @@
 {
-  "title": "\"CHECKSTYLE:OFF\" suppression comments should not be used",
+  "title": "Track uses of \"CHECKSTYLE:OFF\" suppression comments",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

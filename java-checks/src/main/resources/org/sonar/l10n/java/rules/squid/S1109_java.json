@@ -1,5 +1,6 @@
 {
   "title": "A close curly brace should be located at the beginning of a line",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
