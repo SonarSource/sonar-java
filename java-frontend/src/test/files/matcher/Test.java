@@ -4,13 +4,32 @@ import java.lang.Integer;
 class Test extends Object {
 
   public String toString() {
+    return "Test";
   }
 
-  public String toString(int bad) {
+  public String toString(int param) {
+    return toString(String.valueOf(param));
+  }
 
+  public String toString(String param) {
+    return param;
   }
 
   public String mit() {
     return new Integer(5).toString();
   }
+
+  public InnerClass inner() {
+    return this.new InnerClass();
+  }
+
+  static class InnerClass {
+    public String toString() {
+      return "InnerClass";
+    }
+    public void coverage(UnknownClass unknownClass) {
+      unknownClass.unknownMethod();
+    }
+  }
+
 }
