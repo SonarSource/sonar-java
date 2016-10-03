@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -628,7 +629,9 @@ public class Resolve {
     if (expression instanceof AbstractTypedTree) {
       JavaType expressionType = (JavaType) ((AbstractTypedTree) expression).symbolType();
       String methodName = tree.method().name();
-      String searchedMethod = "new".equals(methodName) ? "<init>" : methodName;
+      boolean searchingConstructor = JavaKeyword.NEW.getValue().equals(methodName);
+      String searchedMethod = searchingConstructor ? "<init>" : methodName;
+
       Resolution resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs);
       // JLS §15.13.1
       if (isMethodRefOnType(expression) && firstParamSubtypeOfRefType(expressionType, samMethodArgs) && (resolution.symbol.isUnknown() || !resolution.symbol.isStatic())) {
@@ -641,6 +644,10 @@ public class Resolve {
           ((AbstractTypedTree) tree.method()).setType(resolution.type);
           ((AbstractTypedTree) tree).setType(formal);
         }
+        return true;
+      } else if (expressionType.isArray() && searchingConstructor) {
+        ((AbstractTypedTree) tree.method()).setType(expressionType);
+        ((AbstractTypedTree) tree).setType(formal);
         return true;
       }
     }

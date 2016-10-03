@@ -1050,6 +1050,21 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void MethodReferenceWithArrayNew() throws Exception {
+    Result result = Result.createFor("MethodReferencesArrayNew");
+
+    JavaSymbol bar = result.symbol("bar");
+    assertThat(bar.usages()).hasSize(1);
+
+    MethodInvocationTree callingBar = (MethodInvocationTree) bar.usages().get(0).parent();
+    MethodInvocationTree toArray = (MethodInvocationTree) callingBar.arguments().get(0);
+    assertThat(toArray.symbolType().is("B[]")).isTrue();
+
+    JavaSymbol bool = result.symbol("bool");
+    assertThat(bool.usages()).hasSize(1);
+  }
+
+  @Test
   public void MethodReferenceWithStream() throws Exception {
     Result result = Result.createFor("MethodReferencesStream");
 
