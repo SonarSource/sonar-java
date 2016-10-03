@@ -152,5 +152,8 @@ class G<T> {
       String name = clazz.getName();
       Class<T> c = (Class<T>) Class.forName(name, true, o.getClass().getClassLoader());
     }
+    public static Number choose(Integer i, Float f, boolean takeFirst) {
+      return takeFirst ? (Number) i : f;
+    }
   }
 }

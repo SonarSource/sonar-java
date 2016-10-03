@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -63,9 +64,18 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Type cast = typeCastTree.type().symbolType();
     Type target = targetType(typeCastTree);
     Type expressionType = typeCastTree.expression().symbolType();
+    if(isPrimitiveWrapperInConditional(expressionType, typeCastTree)) {
+      // Excluded because covered by S2154
+      return;
+    }
     if(target != null && (isRedundantNumericalCast(cast, expressionType) || isSubtype(expressionType, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
     }
+  }
+
+  private boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
+    Tree parent = skipParentheses(typeCastTree.parent());
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && (((JavaType) expressionType).isPrimitiveWrapper() || expressionType.isPrimitive());
   }
 
   @CheckForNull
