@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -625,10 +626,16 @@ public class Resolve {
   private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
     Tree expression = tree.expression();
     if (expression instanceof AbstractTypedTree) {
-      JavaType type = (JavaType) ((AbstractTypedTree) expression).symbolType();
+      JavaType expressionType = (JavaType) ((AbstractTypedTree) expression).symbolType();
       String methodName = tree.method().name();
-      Resolution resolution = findMethod(env, type, "new".equals(methodName) ? "<init>" : methodName, samMethodArgs);
-      if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
+      String searchedMethod = "new".equals(methodName) ? "<init>" : methodName;
+      Resolution resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs);
+      // JLS §15.13.1
+      if (isMethodRefOnType(expression) && firstParamSubtypeOfRefType(expressionType, samMethodArgs) && (resolution.symbol.isUnknown() || !resolution.symbol.isStatic())) {
+        resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs.stream().skip(1).collect(Collectors.toList()));
+      }
+
+      if (!resolution.symbol.isUnknown()) {
         if (tree.method().symbol().isUnknown()) {
           associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
           ((AbstractTypedTree) tree.method()).setType(resolution.type);
@@ -636,6 +643,19 @@ public class Resolve {
         }
         return true;
       }
+    }
+    return false;
+  }
+
+  private static boolean firstParamSubtypeOfRefType(JavaType expressionType, List<JavaType> samMethodArgs) {
+    return samMethodArgs.isEmpty() || samMethodArgs.get(0).isSubtypeOf(expressionType.erasure());
+  }
+
+  private static boolean isMethodRefOnType(Tree expression) {
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) expression).identifier().symbol().isTypeSymbol();
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) expression).symbol().isTypeSymbol();
     }
     return false;
   }
