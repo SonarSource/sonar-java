@@ -73,7 +73,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
+  private static boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
     Tree parent = skipParentheses(typeCastTree.parent());
     return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && (((JavaType) expressionType).isPrimitiveWrapper() || expressionType.isPrimitive());
   }
