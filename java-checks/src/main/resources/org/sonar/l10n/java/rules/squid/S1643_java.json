@@ -1,5 +1,6 @@
 {
   "title": "Strings should not be concatenated using '+' in a loop",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

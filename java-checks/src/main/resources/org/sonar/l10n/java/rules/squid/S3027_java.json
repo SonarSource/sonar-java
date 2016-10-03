@@ -1,5 +1,6 @@
 {
   "title": "String function use should be optimized for single characters",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

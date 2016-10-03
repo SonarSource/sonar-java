@@ -1,5 +1,6 @@
 {
   "title": "\"@Deprecated\" code should not be used",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,10 @@
     "cwe",
     "obsolete",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

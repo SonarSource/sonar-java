@@ -1,5 +1,6 @@
 {
   "title": "Primitives should not be boxed just for \"String\" conversion",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

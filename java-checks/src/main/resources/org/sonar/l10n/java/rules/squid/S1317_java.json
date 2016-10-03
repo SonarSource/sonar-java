@@ -1,5 +1,6 @@
 {
   "title": "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Literal boolean values should not be used in assertions",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

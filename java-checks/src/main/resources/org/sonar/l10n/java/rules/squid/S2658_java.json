@@ -1,5 +1,6 @@
 {
   "title": "Classes should not be loaded dynamically",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,10 @@
     "cwe",
     "owasp-a1",
     "security"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical"
 }

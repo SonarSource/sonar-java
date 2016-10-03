@@ -1,5 +1,6 @@
 {
   "title": "Related \"if\/else if\" statements should not have the same condition",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

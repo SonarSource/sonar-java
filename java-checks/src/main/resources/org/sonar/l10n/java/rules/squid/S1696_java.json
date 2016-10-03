@@ -1,5 +1,6 @@
 {
   "title": "\"NullPointerException\" should not be caught",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,10 @@
     "cwe",
     "error-handling",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

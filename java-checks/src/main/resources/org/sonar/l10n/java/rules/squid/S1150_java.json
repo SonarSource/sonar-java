@@ -1,5 +1,6 @@
 {
   "title": "Enumeration should not be implemented",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

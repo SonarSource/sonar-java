@@ -1,5 +1,6 @@
 {
   "title": "\"toString()\" and \"clone()\" methods should not return null",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "cwe",
     "bug"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Major"
 }

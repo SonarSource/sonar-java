@@ -1,5 +1,6 @@
 {
   "title": "JUnit rules should be used",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -19,6 +19,10 @@ public class Foo {
   public void doTheThingBetter() { ... }
 }
 
+public class Bar extends Foo {
+  public void doTheThing() { ... } // Noncompliant; don't override a deprecated method or explicitly mark it as @Deprecated
+}
+
 public class Bar extends Fum {  // Noncompliant; Fum is deprecated
 
   public void myMethod() {

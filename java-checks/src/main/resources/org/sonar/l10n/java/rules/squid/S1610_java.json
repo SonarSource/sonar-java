@@ -1,5 +1,6 @@
 {
   "title": "Abstract classes without fields should be converted to interfaces",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Parsing should be used to convert \"Strings\" to primitives",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

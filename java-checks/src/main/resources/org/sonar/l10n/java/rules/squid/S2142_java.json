@@ -1,5 +1,6 @@
 {
   "title": "\"InterruptedException\" should not be ignored",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "cwe",
     "multi-threading",
     "bug"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Major"
 }

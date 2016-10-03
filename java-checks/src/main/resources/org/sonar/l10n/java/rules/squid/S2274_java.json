@@ -1,5 +1,6 @@
 {
   "title": "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "multi-threading",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

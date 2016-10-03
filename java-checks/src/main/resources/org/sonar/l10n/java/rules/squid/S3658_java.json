@@ -1,5 +1,6 @@
 {
   "title": "Unit tests should throw exceptions",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

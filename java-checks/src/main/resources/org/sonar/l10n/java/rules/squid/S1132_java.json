@@ -1,5 +1,6 @@
 {
   "title": "Strings literals should be placed on the left side when checking for equality",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

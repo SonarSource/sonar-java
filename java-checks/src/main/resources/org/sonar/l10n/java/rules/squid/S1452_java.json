@@ -1,5 +1,6 @@
 {
   "title": "Generic wildcard types should not be used in return parameters",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

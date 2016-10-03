@@ -1,5 +1,6 @@
 {
   "title": "Abstract methods should not be redundant",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

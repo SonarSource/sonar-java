@@ -1,5 +1,6 @@
 {
   "title": "\"toArray\" should be passed an array of the proper type",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

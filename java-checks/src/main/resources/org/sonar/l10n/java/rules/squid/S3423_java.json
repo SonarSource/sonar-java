@@ -1,5 +1,6 @@
 {
   "title": "pom elements should be in the recommended order",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

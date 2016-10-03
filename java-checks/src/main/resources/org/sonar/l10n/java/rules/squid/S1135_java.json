@@ -1,8 +1,12 @@
 {
-  "title": "\"TODO\" tags should be handled",
+  "title": "Track uses of \"TODO\" tags",
+  "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
     "cwe"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Info"
 }

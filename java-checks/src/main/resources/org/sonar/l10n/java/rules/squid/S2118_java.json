@@ -1,5 +1,6 @@
 {
   "title": "Non-serializable classes should not be written",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Methods should not have too many return statements",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

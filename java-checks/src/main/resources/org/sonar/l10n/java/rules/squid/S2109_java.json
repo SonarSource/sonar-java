@@ -1,5 +1,6 @@
 {
   "title": "Reflection should not be used to check non-runtime annotations",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

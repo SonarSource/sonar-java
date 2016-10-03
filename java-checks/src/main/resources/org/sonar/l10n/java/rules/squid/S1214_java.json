@@ -1,5 +1,6 @@
 {
   "title": "Constants should not be defined in interfaces",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

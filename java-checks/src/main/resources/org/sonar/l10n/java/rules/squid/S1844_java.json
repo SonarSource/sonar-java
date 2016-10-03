@@ -1,5 +1,6 @@
 {
   "title": "\"Object.wait(...)\" should never be called on objects that implement \"java.util.concurrent.locks.Condition\"",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

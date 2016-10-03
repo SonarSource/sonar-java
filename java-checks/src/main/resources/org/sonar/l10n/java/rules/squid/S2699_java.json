@@ -1,5 +1,6 @@
 {
   "title": "Tests should include assertions",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

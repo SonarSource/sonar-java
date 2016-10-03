@@ -1,5 +1,6 @@
 {
   "title": "Silly bit operations should not be performed",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

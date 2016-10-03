@@ -1,5 +1,6 @@
 {
   "title": "Security constraints should be defined",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -11,6 +12,10 @@
     "security",
     "jee",
     "owasp-a7"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Blocker"
 }

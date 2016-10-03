@@ -1,5 +1,6 @@
 {
   "title": "Value-based objects should not be serialized",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

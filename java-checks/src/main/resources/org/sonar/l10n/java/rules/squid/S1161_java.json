@@ -1,5 +1,6 @@
 {
   "title": "\"@Override\" should be used on overriding and implementing methods",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

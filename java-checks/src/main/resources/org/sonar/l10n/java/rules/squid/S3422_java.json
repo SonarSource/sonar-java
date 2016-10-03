@@ -1,5 +1,6 @@
 {
   "title": "Dependencies should not have \"system\" scope",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

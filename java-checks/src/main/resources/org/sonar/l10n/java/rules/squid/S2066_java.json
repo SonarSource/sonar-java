@@ -1,5 +1,6 @@
 {
   "title": "\"Serializable\" inner classes of non-serializable classes should be \"static\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "serialization",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

@@ -1,5 +1,6 @@
 {
   "title": "\"Object.finalize()\" should remain protected (versus public) when overriding",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,10 @@
   "tags": [
     "cwe",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Critical"
 }

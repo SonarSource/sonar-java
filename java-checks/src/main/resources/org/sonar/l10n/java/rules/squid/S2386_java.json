@@ -1,5 +1,6 @@
 {
   "title": "Mutable fields should not be \"public static\"",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -7,8 +8,13 @@
   },
   "tags": [
     "cwe",
+    "security",
     "unpredictable",
     "cert"
   ],
-  "defaultSeverity": "Blocker"
+  "standards": [
+    "CWE",
+    "CERT"
+  ],
+  "defaultSeverity": "Minor"
 }

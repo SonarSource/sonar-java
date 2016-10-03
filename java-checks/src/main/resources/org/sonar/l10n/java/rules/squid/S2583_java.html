@@ -10,10 +10,11 @@ if( foo == bar &amp;&amp; something &amp;&amp; foo != bar) {...}
 </pre>
 <pre>
 private void compute(int foo) {
-  if (foo == 4 ) {
+  int four = 4;
+  if (foo == four ) {
     doSomething();
-    // We know foo is equal to 4 at this point, so the next condition is always false
-    if (foo &gt; 4) {...}
+    // We know foo is equal to the four variable at this point, so the next condition is always false
+    if (foo &gt; four) {...}
     ...
   }
   ...

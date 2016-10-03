@@ -1,5 +1,6 @@
 {
   "title": "Variables should not be declared before they are relevant",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "The value returned from a stream read should be checked",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

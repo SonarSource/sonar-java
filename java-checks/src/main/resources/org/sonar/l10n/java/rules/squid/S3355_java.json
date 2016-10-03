@@ -1,5 +1,6 @@
 {
   "title": "Web applications should use validation filters",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "owasp-a1",
     "security",
     "injection"
+  ],
+  "standards": [
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical"
 }

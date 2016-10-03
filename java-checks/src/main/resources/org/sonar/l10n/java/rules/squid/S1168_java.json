@@ -1,5 +1,6 @@
 {
   "title": "Empty arrays and collections should be returned instead of null",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -7,6 +8,9 @@
   },
   "tags": [
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

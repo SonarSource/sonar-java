@@ -1,5 +1,6 @@
 {
-  "title": "The @SuppressWarnings annotation should not be used",
+  "title": "Track uses of \"@SuppressWarnings\" annotations",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

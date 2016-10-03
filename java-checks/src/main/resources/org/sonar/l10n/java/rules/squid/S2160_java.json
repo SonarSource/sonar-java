@@ -1,5 +1,6 @@
 {
   "title": "Subclasses that add fields should override \"equals\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

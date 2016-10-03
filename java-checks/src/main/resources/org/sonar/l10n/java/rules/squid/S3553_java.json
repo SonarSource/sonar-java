@@ -1,5 +1,6 @@
 {
   "title": "\"Optional\" should not be used for parameters",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

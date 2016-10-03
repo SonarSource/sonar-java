@@ -1,5 +1,6 @@
 {
   "title": "\"Externalizable\" classes should have no-arguments constructors",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

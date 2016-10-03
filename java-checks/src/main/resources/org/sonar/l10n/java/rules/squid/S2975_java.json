@@ -1,5 +1,6 @@
 {
   "title": "\"clone\" should not be overridden",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "Exception handlers should preserve the original exceptions",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,9 @@
     "bug",
     "cert",
     "suspicious"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

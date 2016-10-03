@@ -1,5 +1,6 @@
 {
   "title": "Mutable members should not be stored or returned directly",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,10 @@
     "security",
     "unpredictable",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

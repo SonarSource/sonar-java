@@ -1,5 +1,6 @@
 {
   "title": "Overriding methods should do more than simply call the same method in the super class ",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "\"runFinalizersOnExit\" should not be called",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Critical"
 }

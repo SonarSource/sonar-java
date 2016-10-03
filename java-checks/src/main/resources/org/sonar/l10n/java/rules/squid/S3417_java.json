@@ -1,5 +1,6 @@
 {
-  "title": "Disallowed dependencies should not be used",
+  "title": "Track uses of disallowed dependencies",
+  "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
     "maven"

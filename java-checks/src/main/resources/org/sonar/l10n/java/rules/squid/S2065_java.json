@@ -1,5 +1,6 @@
 {
   "title": "Fields in non-serializable classes should not be \"transient\"",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

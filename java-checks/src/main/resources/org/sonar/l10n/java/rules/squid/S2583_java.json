@@ -1,5 +1,6 @@
 {
   "title": "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,7 +10,11 @@
     "cwe",
     "bug",
     "misra",
-    "cert"
+    "cert",
+    "pitfall"
+  ],
+  "standards": [
+    "CWE"
   ],
   "defaultSeverity": "Major"
 }

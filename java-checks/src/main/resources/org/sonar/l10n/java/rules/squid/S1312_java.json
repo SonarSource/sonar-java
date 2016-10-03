@@ -1,5 +1,6 @@
 {
   "title": "Loggers should be \"private static final\" and should share a naming convention",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,5 +1,6 @@
 {
   "title": "\"SingleConnectionFactory\" instances should be set to \"reconnectOnException\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

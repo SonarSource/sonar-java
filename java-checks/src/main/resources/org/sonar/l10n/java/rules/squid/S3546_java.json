@@ -1,5 +1,6 @@
 {
   "title": "Custom resources should be closed",
+  "type": "BUG",
   "status": "ready",
   "tags": [
     "denial-of-service",

@@ -1,5 +1,6 @@
 {
   "title": "\"Cloneables\" should implement \"clone\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

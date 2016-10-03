@@ -1,5 +1,6 @@
 {
-  "title": "Disallowed methods should not be used",
+  "title": "Track uses of disallowed methods",
+  "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
     

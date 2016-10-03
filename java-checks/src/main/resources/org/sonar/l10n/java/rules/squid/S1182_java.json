@@ -1,5 +1,6 @@
 {
   "title": "Classes that override \"clone\" should be \"Cloneable\" and call \"super.clone()\"",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,10 @@
     "cwe",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

@@ -1,5 +1,6 @@
 {
   "title": "Math should not be performed on floats",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

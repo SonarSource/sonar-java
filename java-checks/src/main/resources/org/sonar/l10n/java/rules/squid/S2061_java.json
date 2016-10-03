@@ -1,5 +1,6 @@
 {
   "title": "Custom serialization method signatures should meet requirements",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,6 +9,9 @@
   "tags": [
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

@@ -1,5 +1,6 @@
 {
-  "title": "\"NOSONAR\" should not be used to switch off issues",
+  "title": "Track uses of \"NOSONAR\" comments",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

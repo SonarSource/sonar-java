@@ -1,5 +1,6 @@
 {
   "title": "Jump statements should not occur in \"finally\" blocks",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,6 +11,10 @@
     "error-handling",
     "bug",
     "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
   ],
   "defaultSeverity": "Major"
 }

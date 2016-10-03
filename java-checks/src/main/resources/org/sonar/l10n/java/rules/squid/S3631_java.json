@@ -1,5 +1,6 @@
 {
   "title": "\"Arrays.stream\" should be used for primitive arrays",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

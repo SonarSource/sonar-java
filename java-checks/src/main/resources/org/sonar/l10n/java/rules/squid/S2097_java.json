@@ -1,5 +1,6 @@
 {
   "title": "\"equals(Object obj)\" should test argument type",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

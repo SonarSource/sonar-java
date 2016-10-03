@@ -1,5 +1,6 @@
 {
   "title": "Methods named \"equals\" should override Object.equals(Object)",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

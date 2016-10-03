@@ -1,5 +1,6 @@
 {
   "title": "Files should contain only one top-level class or interface each",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Linear",

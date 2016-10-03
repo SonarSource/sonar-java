@@ -1,5 +1,6 @@
 {
   "title": "Multiple variables should not be declared on the same line",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,6 +10,9 @@
     "convention",
     "misra",
     "cert"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Minor"
 }

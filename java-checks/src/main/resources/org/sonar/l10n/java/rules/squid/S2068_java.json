@@ -1,5 +1,6 @@
 {
   "title": "Credentials should not be hard-coded",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -11,6 +12,12 @@
     "cert",
     "sans-top25-porous",
     "owasp-a2"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten",
+    "SANS Top 25"
   ],
   "defaultSeverity": "Blocker"
 }
