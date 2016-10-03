@@ -47,6 +47,7 @@ public class MethodMatcher {
   }
 
   public MethodMatcher name(String methodName) {
+    Preconditions.checkState(this.methodName == null);
     this.methodName = NameCriteria.is(methodName);
     return this;
   }
@@ -127,7 +128,7 @@ public class MethodMatcher {
 
   public boolean matches(MethodInvocationTree mit) {
     IdentifierTree id = getIdentifier(mit);
-    return id != null && matches(id.symbol(), getCallSiteType(mit));
+    return matches(id.symbol(), getCallSiteType(mit));
   }
 
   public boolean matches(MethodTree methodTree) {
@@ -142,16 +143,13 @@ public class MethodMatcher {
 
   private static Type getCallSiteType(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
+    // methodSelect can only be Tree.Kind.IDENTIFIER or Tree.Kind.MEMBER_SELECT
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       Symbol.TypeSymbol enclosingClassSymbol = ((IdentifierTree) methodSelect).symbol().enclosingClass();
-      if (enclosingClassSymbol != null) {
-        return enclosingClassSymbol.type();
-      }
-    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
-      return memberSelect.expression().symbolType();
+      return enclosingClassSymbol != null ? enclosingClassSymbol.type() : null;
+    } else {
+      return ((MemberSelectExpressionTree) methodSelect).expression().symbolType();
     }
-    return null;
   }
 
   private boolean isSearchedMethod(MethodSymbol symbol, Type callSiteType) {
@@ -166,7 +164,8 @@ public class MethodMatcher {
   }
 
   private boolean nameAcceptable(MethodSymbol symbol) {
-    return methodName != null && methodName.test(symbol.name());
+    Preconditions.checkState(methodName != null);
+    return methodName.test(symbol.name());
   }
 
   private boolean parametersAcceptable(MethodSymbol methodSymbol) {
@@ -175,12 +174,11 @@ public class MethodMatcher {
   }
 
   private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id = null;
+    // methodSelect can only be Tree.Kind.IDENTIFIER or Tree.Kind.MEMBER_SELECT
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
+      return (IdentifierTree) mit.methodSelect();
     }
-    return id;
+    return ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
   }
+
 }
