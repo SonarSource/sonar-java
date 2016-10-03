@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -561,13 +560,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (expressionType.isTagged(JavaType.PARAMETERIZED)) {
         TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) expressionType).typeSubstitution;
         typeSubstitution.substitutionEntries().stream()
-        .filter(e -> e.getValue() == capturedReturnType)
-        .findFirst()
-        .ifPresent(e -> {
-          TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
-          JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
-          expression.setType(refinedType);
-        });
+          .filter(e -> e.getValue() == capturedReturnType)
+          .findFirst()
+          .ifPresent(e -> {
+            TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
+            JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
+            expression.setType(refinedType);
+          });
       } else {
         expression.setType(refinedReturnType);
       }
