@@ -565,7 +565,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           .ifPresent(e -> {
             TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
             JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
-            expression.setType(refinedType);
+            if(refinedReturnType instanceof DeferredType) {
+              setInferedType(refinedType, (DeferredType) refinedReturnType);
+            } else  {
+              expression.setType(refinedType);
+            }
           });
       } else {
         expression.setType(refinedReturnType);

@@ -1299,4 +1299,11 @@ public class SymbolTableTest {
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
   }
+
+  @Test
+  public void double_lambda_type_propagation() {
+    Result result = Result.createFor("DoubleLambda");
+    JavaSymbol my = result.symbol("my");
+    assertThat(my.usages()).hasSize(2);
+  }
 }
