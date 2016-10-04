@@ -1058,7 +1058,7 @@ public class SymbolTableTest {
 
     MethodInvocationTree callingBar = (MethodInvocationTree) bar.usages().get(0).parent();
     MethodInvocationTree toArray = (MethodInvocationTree) callingBar.arguments().get(0);
-    assertThat(toArray.symbolType().is("B[]")).isTrue();
+    assertThat(toArray.symbolType().is("B[][]")).isTrue();
 
     JavaSymbol bool = result.symbol("bool");
     assertThat(bool.usages()).hasSize(1);

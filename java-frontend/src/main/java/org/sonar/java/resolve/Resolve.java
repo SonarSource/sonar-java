@@ -60,6 +60,8 @@ import java.util.stream.Collectors;
  */
 public class Resolve {
 
+  private static final String CONSTRUCTOR_NAME = "<init>";
+
   private final JavaSymbolNotFound symbolNotFound = new JavaSymbolNotFound();
 
   private final BytecodeCompleter bytecodeCompleter;
@@ -439,7 +441,7 @@ public class Resolve {
       // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
       newArgTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(argTypes).build();
     }
-    return findMethod(env, site, site, "<init>", newArgTypes, typeParams, autoboxing);
+    return findMethod(env, site, site, CONSTRUCTOR_NAME, newArgTypes, typeParams, autoboxing);
   }
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
@@ -627,10 +629,13 @@ public class Resolve {
   private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
     Tree expression = tree.expression();
     if (expression instanceof AbstractTypedTree) {
+      String searchedMethod = getMethodReferenceMethodName(tree.method().name());
+
       JavaType expressionType = (JavaType) ((AbstractTypedTree) expression).symbolType();
-      String methodName = tree.method().name();
-      boolean searchingConstructor = JavaKeyword.NEW.getValue().equals(methodName);
-      String searchedMethod = searchingConstructor ? "<init>" : methodName;
+      if (isArrayConstructor(expressionType, searchedMethod)) {
+        setMethodRefType(tree, formal, expressionType);
+        return true;
+      }
 
       Resolution resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs);
       // JLS §15.13.1
@@ -641,17 +646,25 @@ public class Resolve {
       if (!resolution.symbol.isUnknown()) {
         if (tree.method().symbol().isUnknown()) {
           associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
-          ((AbstractTypedTree) tree.method()).setType(resolution.type);
-          ((AbstractTypedTree) tree).setType(formal);
+          setMethodRefType(tree, formal, resolution.type);
         }
-        return true;
-      } else if (expressionType.isArray() && searchingConstructor) {
-        ((AbstractTypedTree) tree.method()).setType(expressionType);
-        ((AbstractTypedTree) tree).setType(formal);
         return true;
       }
     }
     return false;
+  }
+
+  private static String getMethodReferenceMethodName(String methodName) {
+    return JavaKeyword.NEW.getValue().equals(methodName) ? CONSTRUCTOR_NAME : methodName;
+  }
+
+  private static boolean isArrayConstructor(JavaType expressionType, String searchedMethod) {
+    return expressionType.isArray() && CONSTRUCTOR_NAME.equals(searchedMethod);
+  }
+
+  private static void setMethodRefType(MethodReferenceTree methodRef, JavaType methodRefType, JavaType methodType) {
+    ((AbstractTypedTree) methodRef).setType(methodRefType);
+    ((AbstractTypedTree) methodRef.method()).setType(methodType);
   }
 
   private static boolean firstParamSubtypeOfRefType(JavaType expressionType, List<JavaType> samMethodArgs) {
