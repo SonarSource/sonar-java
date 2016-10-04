@@ -929,17 +929,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
     if(methodRefTree.isTypeSet()) {
       JavaType methodRefType = (JavaType) methodRefTree.symbolType();
-      Optional<JavaSymbol.MethodJavaSymbol> samMethod = resolve.getSamMethod(methodRefType);
-      if (!samMethod.isPresent()) {
-        return;
-      }
-      JavaSymbol methodSymbol = (JavaSymbol) methodRefTree.method().symbol();
-      if (!"<init>".equals(methodSymbol.name) && methodSymbol.isMethodSymbol()) {
-        JavaType samReturnType = (JavaType) samMethod.get().returnType().type();
-        JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
-        JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
-        refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
-      }
+      resolve.getSamMethod(methodRefType)
+        .map(samMethod -> (JavaType) samMethod.returnType().type())
+        .ifPresent(samReturnType -> {
+          JavaSymbol methodSymbol = (JavaSymbol) methodRefTree.method().symbol();
+          if (!"<init>".equals(methodSymbol.name) && methodSymbol.isMethodSymbol()) {
+            JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
+            JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
+            refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
+          } else {
+            handleNewArray(methodReferenceTree, methodRefType, samReturnType);
+          }
+        });
     } else {
       // TODO : SONARJAVA-1663 : consider type arguments for method resolution and substitution
       scan(methodReferenceTree.typeArguments());
@@ -948,6 +949,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
+  private void handleNewArray(MethodReferenceTree methodReferenceTree, JavaType methodRefType, JavaType samReturnType) {
+    JavaType expressionType = getType(methodReferenceTree.expression());
+    if (expressionType != null && expressionType.isArray() && "new".equals(methodReferenceTree.method().name())) {
+      JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
+      refineType((MethodReferenceTreeImpl) methodReferenceTree, methodRefType, capturedReturnType, expressionType);
+    }
+  }
 
   @Override
   public void visitOther(Tree tree) {
