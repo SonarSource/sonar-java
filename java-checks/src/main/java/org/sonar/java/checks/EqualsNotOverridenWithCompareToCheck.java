@@ -43,25 +43,26 @@ public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVi
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (isComparable(classTree)) {
-      boolean hasEquals = false;
-      MethodTree compare = null;
+    if (!isComparable(classTree)) {
+      return;
+    }
+    boolean hasEquals = false;
+    MethodTree compare = null;
 
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.METHOD)) {
-          MethodTree method = (MethodTree) member;
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.METHOD)) {
+        MethodTree method = (MethodTree) member;
 
-          if (isEqualsMethod(method)) {
-            hasEquals = true;
-          } else if (isCompareToMethod(method)) {
-            compare = method;
-          }
+        if (isEqualsMethod(method)) {
+          hasEquals = true;
+        } else if (isCompareToMethod(method)) {
+          compare = method;
         }
       }
+    }
 
-      if (compare != null && !hasEquals) {
-        reportIssue(compare.simpleName(), "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
-      }
+    if (compare != null && !hasEquals) {
+      reportIssue(compare.simpleName(), "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
     }
   }
 
