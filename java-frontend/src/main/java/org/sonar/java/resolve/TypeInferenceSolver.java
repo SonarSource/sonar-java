@@ -148,7 +148,7 @@ public class TypeInferenceSolver {
         superclass = typeSubstitutionSolver.applySubstitution(superInterface, parametrizedArgType.typeSubstitution);
         TypeSubstitution newSubstitution = inferTypeSubstitutionInParameterizedType(method, substitution, formalType, superclass, variableArity, remainingArgTypes);
         if (!newSubstitution.substitutedTypes().isEmpty()) {
-          result = mergeTypeSubstitutions(substitution, newSubstitution);
+          result = mergeTypeSubstitutions(result, newSubstitution);
         }
       }
 
