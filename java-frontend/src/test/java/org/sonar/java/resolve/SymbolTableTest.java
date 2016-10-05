@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1310,6 +1309,13 @@ public class SymbolTableTest {
     assertThat(usages).hasSize(1);
     ExpressionTree arg = ((MethodInvocationTree) usages.get(0).parent()).arguments().get(0);
     assertThat(arg.symbolType().is("java.util.List")).isTrue();
+    assertThat(((JavaType) arg.symbolType()).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
+    usages = result.symbol("foo2").usages();
+    assertThat(usages).hasSize(1);
+    arg = ((MethodInvocationTree) usages.get(0).parent()).arguments().get(0);
+    assertThat(arg.symbolType().is("java.util.LinkedHashSet")).overridingErrorMessage("Expected java.util.Collection but got "+arg.symbolType().name()).isTrue();
     assertThat(((JavaType) arg.symbolType()).isParameterized()).isTrue();
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
