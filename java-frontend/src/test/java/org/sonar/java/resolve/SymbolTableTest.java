@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1319,6 +1320,13 @@ public class SymbolTableTest {
     assertThat(((JavaType) arg.symbolType()).isParameterized()).isTrue();
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) arg.symbolType()).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
+  }
+
+  @Test
+  public void infer_method_invocation_return_type_on_chained_parameterized_methods() throws Exception {
+    Result result = Result.createFor("ChainedParameterizedMethods");
+    List<IdentifierTree> usages = result.symbol("newBounds").usages();
+    assertThat(usages).hasSize(1);
   }
 
   @Test
