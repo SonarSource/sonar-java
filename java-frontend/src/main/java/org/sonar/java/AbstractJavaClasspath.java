@@ -106,13 +106,7 @@ public abstract class AbstractJavaClasspath {
       Path filePath = resolvePath(baseDir, pathPattern);
       File file = filePath.toFile();
       if(file.isFile()) {
-        if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
-          return Collections.singleton(file);
-        } else {
-          LOG.debug("File " + file.getAbsolutePath() + " was ignored from java classpath");
-          validateLibraries = false;
-          return Collections.emptySet();
-        }
+        return getMatchingFile(pathPattern, file);
       }
       if (file.isDirectory()) {
         return getMatchesInDir(filePath, libraryProperty);
@@ -121,26 +115,21 @@ public abstract class AbstractJavaClasspath {
       // continue
     }
 
-    String dirPath;
-    String fileNamePattern;
-
-    int wildcardIndex = pathPattern.indexOf('*');
-    if (wildcardIndex >= 0) {
-      dirPath = pathPattern.substring(0, wildcardIndex);
-    } else {
-      dirPath = pathPattern;
-    }
-
+    String dirPath = sanitizeWildcards(pathPattern);
+    String fileNamePattern = pathPattern;
     int lastPathSeparator = Math.max(dirPath.lastIndexOf(UNIX_SEPARATOR), dirPath.lastIndexOf(WINDOWS_SEPARATOR));
     if (lastPathSeparator == -1) {
       dirPath = ".";
-      fileNamePattern = pathPattern;
     } else {
       dirPath = pathPattern.substring(0, lastPathSeparator);
       fileNamePattern = pathPattern.substring(lastPathSeparator + 1);
     }
 
     Path dir = resolvePath(baseDir, dirPath);
+    return getFilesInDir(dir, fileNamePattern, libraryProperty);
+  }
+
+  private static Set<File> getFilesInDir(Path dir, String fileNamePattern, boolean libraryProperty) {
     if (!dir.toFile().isDirectory()) {
       return Collections.emptySet();
     }
@@ -153,6 +142,23 @@ public abstract class AbstractJavaClasspath {
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private static String sanitizeWildcards(String pathPattern) {
+    int wildcardIndex = pathPattern.indexOf('*');
+    if (wildcardIndex >= 0) {
+      return pathPattern.substring(0, wildcardIndex);
+    }
+    return pathPattern;
+  }
+
+  private Set<File> getMatchingFile(String pathPattern, File file) {
+    if (pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip") || pathPattern.endsWith(".aar")) {
+      return Collections.singleton(file);
+    }
+    LOG.debug("File " + file.getAbsolutePath() + " was ignored from java classpath");
+    validateLibraries = false;
+    return Collections.emptySet();
   }
 
   private static Set<File> getMatchingDirs(String pattern, Path dir) throws IOException {
