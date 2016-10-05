@@ -87,13 +87,9 @@ public class TypeInferenceSolver {
     }
     handledFormals.put(formalType, argType);
     TypeSubstitution result = substitution;
+
     if (formalType.isTagged(JavaType.TYPEVAR)) {
-      result = completeSubstitution(substitution, formalType, argType);
-      for (JavaType bound : ((TypeVariableJavaType) formalType).bounds) {
-        if(!bound.is("java.lang.Object")) {
-          result = inferTypeSubstitution(method, result, bound, argType, variableArity, remainingArgTypes);
-        }
-      }
+      result = inferTypeSubstitutionInTypeVariable(method, substitution, (TypeVariableJavaType) formalType, argType, variableArity, remainingArgTypes);
     } else if (formalType.isArray()) {
       result = inferTypeSubstitutionInArrayType(method, substitution, (ArrayJavaType) formalType, argType, variableArity, remainingArgTypes);
     } else if (formalType.isParameterized()) {
@@ -211,17 +207,23 @@ public class TypeInferenceSolver {
     return result;
   }
 
-  private TypeSubstitution completeSubstitution(TypeSubstitution substitution, JavaType formalType, JavaType argType) {
+  private TypeSubstitution inferTypeSubstitutionInTypeVariable(MethodJavaSymbol method, TypeSubstitution substitution, TypeVariableJavaType formalType, JavaType argType,
+    boolean variableArity, List<JavaType> remainingArgTypes) {
     TypeSubstitution result = new TypeSubstitution(substitution);
-    if (formalType.isTagged(JavaType.TYPEVAR) && substitution.substitutedType(formalType) == null) {
+    if (substitution.substitutedType(formalType) == null) {
       JavaType expectedType = argType;
       if (expectedType.isPrimitive()) {
         expectedType = expectedType.primitiveWrapperType;
       } else if (isNullType(expectedType)) {
         expectedType = symbols.objectType;
       }
-      TypeVariableJavaType typeVar = (TypeVariableJavaType) formalType;
+      TypeVariableJavaType typeVar = formalType;
       result.add(typeVar, expectedType);
+    }
+    for (JavaType bound : formalType.bounds) {
+      if (!bound.is("java.lang.Object")) {
+        result = inferTypeSubstitution(method, result, bound, argType, variableArity, remainingArgTypes);
+      }
     }
     return result;
   }

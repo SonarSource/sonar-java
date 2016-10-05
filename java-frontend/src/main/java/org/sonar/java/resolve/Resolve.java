@@ -604,13 +604,7 @@ public class Resolve {
 
   private boolean isAcceptableType(Env env, JavaType arg, JavaType formal, boolean autoboxing) {
     if(arg.isTagged(JavaType.DEFERRED)) {
-      List<JavaType> samMethodArgs = findSamMethodArgs(formal);
-      AbstractTypedTree tree = ((DeferredType) arg).tree();
-      if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-        return validMethodReference(env, (MethodReferenceTree) tree, formal, samMethodArgs);
-      }
-      // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
-      return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
+      return isAcceptableDeferredType(env, (DeferredType) arg, formal);
     }
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
       return subtypeOfTypeVar(arg, (TypeVariableJavaType) formal);
@@ -618,12 +612,21 @@ public class Resolve {
     if (formal.isArray() && arg.isArray()) {
       return isAcceptableType(env, ((ArrayJavaType) arg).elementType(), ((ArrayJavaType) formal).elementType(), autoboxing);
     }
-
     if (arg.isParameterized() || formal.isParameterized() || isWilcardType(arg) || isWilcardType(formal)) {
       return callWithRawType(arg, formal) || types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
+  }
+
+  private boolean isAcceptableDeferredType(Env env, DeferredType arg, JavaType formal) {
+    AbstractTypedTree tree = arg.tree();
+    List<JavaType> samMethodArgs = findSamMethodArgs(formal);
+    if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      return validMethodReference(env, (MethodReferenceTree) tree, formal, samMethodArgs);
+    }
+    // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
+    return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
   }
 
   private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
@@ -639,7 +642,7 @@ public class Resolve {
 
       Resolution resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs);
       // JLS §15.13.1
-      if (isMethodRefOnType(expression) && firstParamSubtypeOfRefType(expressionType, samMethodArgs) && (resolution.symbol.isUnknown() || !resolution.symbol.isStatic())) {
+      if (secondSearchRequired(expression, expressionType, resolution.symbol, samMethodArgs)) {
         resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs.stream().skip(1).collect(Collectors.toList()));
       }
 
@@ -667,8 +670,8 @@ public class Resolve {
     ((AbstractTypedTree) methodRef.method()).setType(methodType);
   }
 
-  private static boolean firstParamSubtypeOfRefType(JavaType expressionType, List<JavaType> samMethodArgs) {
-    return samMethodArgs.isEmpty() || samMethodArgs.get(0).isSubtypeOf(expressionType.erasure());
+  private static boolean secondSearchRequired(Tree expression, JavaType expressionType, JavaSymbol symbol, List<JavaType> samMethodArgs) {
+    return isMethodRefOnType(expression) && firstParamSubtypeOfRefType(expressionType, samMethodArgs) && (symbol.isUnknown() || !symbol.isStatic());
   }
 
   private static boolean isMethodRefOnType(Tree expression) {
@@ -678,6 +681,10 @@ public class Resolve {
       return ((IdentifierTree) expression).symbol().isTypeSymbol();
     }
     return false;
+  }
+
+  private static boolean firstParamSubtypeOfRefType(JavaType expressionType, List<JavaType> samMethodArgs) {
+    return samMethodArgs.isEmpty() || samMethodArgs.get(0).isSubtypeOf(expressionType.erasure());
   }
 
   private static void associateReference(IdentifierTree identifier, JavaSymbol.MethodJavaSymbol method) {
