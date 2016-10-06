@@ -25,7 +25,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 public class ArrayJavaType extends JavaType implements Type.ArrayType {
 
-  private final org.sonar.java.resolve.ArrayJavaType erasure;
+  private final ArrayJavaType erasure;
   /**
    * Type of elements of this array.
    */
@@ -38,7 +38,7 @@ public class ArrayJavaType extends JavaType implements Type.ArrayType {
     super(ARRAY, arrayClass);
     this.elementType = elementType;
     // element
-    this.erasure = new org.sonar.java.resolve.ArrayJavaType(arrayClass);
+    this.erasure = new ArrayJavaType(arrayClass);
   }
 
   private ArrayJavaType(JavaSymbol.TypeJavaSymbol arrayClass) {
@@ -59,10 +59,10 @@ public class ArrayJavaType extends JavaType implements Type.ArrayType {
     if (obj == this) {
       return true;
     }
-    if (!(obj instanceof org.sonar.java.resolve.ArrayJavaType)) {
+    if (!(obj instanceof ArrayJavaType)) {
       return false;
     }
-    org.sonar.java.resolve.ArrayJavaType rhs = (org.sonar.java.resolve.ArrayJavaType) obj;
+    ArrayJavaType rhs = (ArrayJavaType) obj;
     return new EqualsBuilder()
       .append(elementType, rhs.elementType)
       .isEquals();
