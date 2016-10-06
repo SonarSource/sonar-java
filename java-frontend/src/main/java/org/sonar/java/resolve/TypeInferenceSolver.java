@@ -82,7 +82,7 @@ public class TypeInferenceSolver {
       return substitution;
     }
     JavaType argType = argumentType;
-    if (argType.isTagged(JavaType.DEFERRED) && ((DeferredType) argType).getUninferedType() != null) {
+    if (argType.isTagged(JavaType.DEFERRED)) {
       argType = ((DeferredType) argType).getUninferedType();
     }
     handledFormals.put(formalType, argType);

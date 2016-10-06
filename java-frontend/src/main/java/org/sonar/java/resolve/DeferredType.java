@@ -51,6 +51,13 @@ public class DeferredType extends JavaType {
   }
 
   public JavaType getUninferedType() {
+    if (uninferedType == null) {
+      return this;
+    }
+    if (uninferedType.isTagged(JavaType.TYPEVAR)) {
+      // produced by a parameterized method where we have not been able to infer return type, so fallback on its leftmost bound
+      return uninferedType.erasure();
+    }
     return uninferedType;
   }
 }

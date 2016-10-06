@@ -1322,6 +1322,13 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void infer_method_invocation_return_type_on_chained_parameterized_methods() throws Exception {
+    Result result = Result.createFor("ChainedParameterizedMethods");
+    List<IdentifierTree> usages = result.symbol("newBounds").usages();
+    assertThat(usages).hasSize(1);
+  }
+
+  @Test
   public void double_lambda_type_propagation() {
     Result result = Result.createFor("DoubleLambda");
     JavaSymbol my = result.symbol("my");
