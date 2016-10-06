@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -116,7 +117,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * TODO more precise
    * From documentation for Javadoc-tool:
    * Documentation comments should be recognized only when placed
    * immediately before class, interface, constructor, method, or field declarations.
@@ -126,7 +126,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * TODO more precise
    * From GWT documentation:
    * JSNI methods are declared native and contain JavaScript code in a specially formatted comment block
    * between the end of the parameter list and the trailing semicolon.
