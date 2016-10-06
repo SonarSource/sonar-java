@@ -24,7 +24,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -66,11 +65,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   }
 
   private static boolean isSerializableArray(Type type) {
-    if (type instanceof ArrayJavaType) {
-      ArrayJavaType arrayJavaType = (ArrayJavaType) type;
-      return isSerializable(arrayJavaType.elementType());
-    }
-    return false;
+    return type.isArray() && isSerializable(((Type.ArrayType) type).elementType());
   }
 
   private static boolean isParametrized(Type type) {
