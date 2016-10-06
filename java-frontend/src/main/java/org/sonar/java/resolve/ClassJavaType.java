@@ -62,14 +62,14 @@ public class ClassJavaType extends JavaType {
       return ((WildCardType) superType).isSubtypeOfBound(this);
     }
     if (superType.isClass()) {
-      org.sonar.java.resolve.ClassJavaType superClassType = (org.sonar.java.resolve.ClassJavaType) superType;
+      ClassJavaType superClassType = (ClassJavaType) superType;
       return this.equals(superClassType) || superTypeIsSubTypeOf(superClassType);
     }
     return false;
   }
 
-  private boolean superTypeIsSubTypeOf(org.sonar.java.resolve.ClassJavaType superClassType) {
-    for (org.sonar.java.resolve.ClassJavaType classType : symbol.superTypes()) {
+  private boolean superTypeIsSubTypeOf(ClassJavaType superClassType) {
+    for (ClassJavaType classType : symbol.superTypes()) {
       if (classType.isSubtypeOf(superClassType)) {
         return true;
       }
