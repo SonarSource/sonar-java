@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -84,7 +83,7 @@ public class TypeInferenceSolver {
     }
     JavaType argType = argumentType;
     if (argType.isTagged(JavaType.DEFERRED)) {
-      argType = getUninferedType((DeferredType) argType);
+      argType = ((DeferredType) argType).getUninferedType();
     }
     handledFormals.put(formalType, argType);
     TypeSubstitution result = substitution;
@@ -101,18 +100,6 @@ public class TypeInferenceSolver {
       // nothing to infer for simple class types or primitive types
     }
     return result;
-  }
-
-  private static JavaType getUninferedType(DeferredType deferredType) {
-    JavaType uninferedType = deferredType.getUninferedType();
-    if (uninferedType == null) {
-      return deferredType;
-    }
-    if (uninferedType.isTagged(JavaType.TYPEVAR)) {
-      // produced by a parameterized method where we have not been able to infer return type, so fallback on its leftmost bound
-      uninferedType = uninferedType.erasure();
-    }
-    return uninferedType;
   }
 
   private TypeSubstitution inferTypeSubstitutionInArrayType(MethodJavaSymbol method, TypeSubstitution substitution, ArrayJavaType formalType, JavaType argType,
