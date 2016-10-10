@@ -1330,6 +1330,17 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void method_reference_as_variable_initializer() {
+    Result result = Result.createFor("MethodReferencesVariableInitializers");
+
+    JavaSymbol invalidate = result.symbol("invalidate");
+    assertThat(invalidate.usages()).hasSize(1);
+
+    JavaSymbol foo = result.symbol("foo");
+    assertThat(foo.usages()).hasSize(1);
+  }
+
+  @Test
   public void double_lambda_type_propagation() {
     Result result = Result.createFor("DoubleLambda");
     JavaSymbol my = result.symbol("my");

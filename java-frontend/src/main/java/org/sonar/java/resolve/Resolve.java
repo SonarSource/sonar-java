@@ -629,7 +629,7 @@ public class Resolve {
     return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
   }
 
-  private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
+  boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
     Tree expression = tree.expression();
     if (expression instanceof AbstractTypedTree) {
       String searchedMethod = getMethodReferenceMethodName(tree.method().name());

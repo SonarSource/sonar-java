@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -34,6 +35,7 @@ import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.resolve.Resolve.Env;
 import org.sonar.java.resolve.Resolve.Resolution;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -812,7 +814,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (initializer != null) {
       resolveAs(initializer, JavaSymbol.VAR);
       if(((JavaType) initializer.symbolType()).isTagged(JavaType.DEFERRED)) {
-        setInferedType(tree.type().symbolType(), (DeferredType) initializer.symbolType());
+        Type variableType = tree.type().symbolType();
+        if (initializer.is(Tree.Kind.METHOD_REFERENCE)) {
+          Env variableEnv = semanticModel.getEnv(tree);
+          List<JavaType> samArgs = resolve.findSamMethodArgs(variableType);
+          resolve.validMethodReference(variableEnv, (MethodReferenceTree) initializer, (JavaType) variableType, samArgs);
+        } else {
+          setInferedType(variableType, (DeferredType) initializer.symbolType());
+        }
       }
     }
   }
