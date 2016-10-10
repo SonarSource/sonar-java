@@ -1360,5 +1360,8 @@ public class SymbolTableTest {
     Result result = Result.createFor("ConditionalExpressionInLambda");
     JavaSymbol foo = result.symbol("foo");
     assertThat(foo.usages()).hasSize(1);
+
+    JavaSymbol bar = result.symbol("bar");
+    assertThat(bar.usages()).hasSize(1);
   }
 }
