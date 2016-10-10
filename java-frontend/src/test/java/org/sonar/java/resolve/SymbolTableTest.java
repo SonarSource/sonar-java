@@ -1334,4 +1334,24 @@ public class SymbolTableTest {
     JavaSymbol my = result.symbol("my");
     assertThat(my.usages()).hasSize(2);
   }
+
+  @Test
+  public void method_reference_constructor_inference() throws Exception {
+    Result result = Result.createFor("ConstructorInMethodRef");
+    MethodTree methodTree = (MethodTree) result.symbol("erased").declaration();
+    Type returnStatementType = ((ReturnStatementTree) methodTree.block().body().get(0)).expression().symbolType();
+    assertThat(returnStatementType.is("java.util.List")).isTrue();
+    assertThat(((JavaType) returnStatementType).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes().get(0).is("java.util.LinkedHashSet")).isTrue();
+
+
+    methodTree = (MethodTree) result.symbol("erased2").declaration();
+    returnStatementType = ((ReturnStatementTree) methodTree.block().body().get(0)).expression().symbolType();
+    assertThat(returnStatementType.is("java.util.List")).isTrue();
+    assertThat(((JavaType) returnStatementType).isParameterized()).isTrue();
+    assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes().get(0).is("java.util.LinkedHashSet")).isTrue();
+
+  }
 }

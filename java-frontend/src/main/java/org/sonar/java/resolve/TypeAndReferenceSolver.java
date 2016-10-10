@@ -198,6 +198,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
+    Resolve.Env methodEnv = semanticModel.getEnv(tree);
     if(mit.isTypeSet() && mit.symbol().isMethodSymbol()) {
       TypeSubstitution typeSubstitution = inferedSubstitution(mit);
       List<JavaType> argTypes = getParameterTypes(tree.arguments());
@@ -216,10 +217,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           }
         }
       );
-      registerType(mit, resolve.applySubstitution((JavaType) mit.symbolType(), typeSubstitution));
+      List<JavaType> typeParamTypes = getParameterTypes(tree.typeArguments());
+      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, (JavaType) mit.symbolType(), typeSubstitution);
       return;
     }
-    Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
     scan(tree.typeArguments());
     List<JavaType> argTypes = getParameterTypes(tree.arguments());
@@ -245,11 +246,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, returnType);
     if(resolution != null) {
       inferArgumentTypes(argTypes, resolution);
-      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, returnType);
+      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, returnType, new TypeSubstitution());
     }
   }
 
-  private void inferReturnTypeFromInferedArgs(MethodInvocationTree tree, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes, JavaType returnType) {
+  private void inferReturnTypeFromInferedArgs(MethodInvocationTree tree, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes,
+                                              JavaType returnType, TypeSubstitution typeSubstitution) {
     List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
     Resolution resolution = null;
     Tree methodSelect = tree.methodSelect();
@@ -270,9 +272,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if(resolution != null && returnType != resolution.type() && resolution.symbol().isMethodSymbol()) {
         MethodJavaType methodType = (MethodJavaType) resolution.type();
         if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
-          registerType(tree, methodType.resultType);
+          registerType(tree, resolve.applySubstitution(methodType.resultType, typeSubstitution));
         }
       }
+    } else {
+      registerType(tree, resolve.applySubstitution(returnType, typeSubstitution));
     }
   }
 
@@ -295,7 +299,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     AbstractTypedTree inferedExpression = deferredType.tree();
     Type newType = infered;
     if (inferedExpression.is(Tree.Kind.NEW_CLASS)) {
-      newType = resolve.resolveTypeSubstitutionWithDiamondOperator((ParametrizedTypeJavaType) ((NewClassTree) inferedExpression).identifier().symbolType(), (JavaType) infered);
+      Type newClassType = ((NewClassTree) inferedExpression).identifier().symbolType();
+      if(((JavaType) newClassType).isParameterized()) {
+        newType = resolve.resolveTypeSubstitutionWithDiamondOperator((ParametrizedTypeJavaType) newClassType, (JavaType) infered);
+      }
     }
     inferedExpression.setInferedType(newType);
     inferedExpression.accept(this);
@@ -933,9 +940,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         .map(samMethod -> (JavaType) samMethod.returnType().type())
         .ifPresent(samReturnType -> {
           JavaSymbol methodSymbol = (JavaSymbol) methodRefTree.method().symbol();
-          if (!"<init>".equals(methodSymbol.name) && methodSymbol.isMethodSymbol()) {
+          if (methodSymbol.isMethodSymbol()) {
             JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
             JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
+            if ("<init>".equals(methodSymbol.name)) {
+              refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
+            }
             refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
           } else {
             handleNewArray(methodReferenceTree, methodRefType, samReturnType);
@@ -947,6 +957,21 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
       registerType(methodRefTree, symbols.deferedType(methodRefTree));
     }
+  }
+
+  private JavaType refinedTypeForConstructor(JavaType capturedReturnType, JavaType refinedReturnType) {
+    JavaType sanitizedCaptured = capturedReturnType;
+    JavaType refinedConstructorType = refinedReturnType;
+    if (refinedConstructorType.symbol().isTypeSymbol() && !((JavaSymbol.TypeJavaSymbol) refinedConstructorType.symbol()).typeParameters().scopeSymbols().isEmpty()) {
+      refinedConstructorType = parametrizedTypeCache.getParametrizedTypeType(refinedConstructorType.symbol, new TypeSubstitution());
+    }
+    if (sanitizedCaptured.isTagged(JavaType.TYPEVAR)) {
+      sanitizedCaptured = ((TypeVariableJavaType) sanitizedCaptured).bounds.get(0);
+    }
+    if (refinedConstructorType.isParameterized()) {
+      refinedConstructorType = resolve.resolveTypeSubstitutionWithDiamondOperator((ParametrizedTypeJavaType) refinedConstructorType, sanitizedCaptured);
+    }
+    return refinedConstructorType;
   }
 
   private void handleNewArray(MethodReferenceTree methodReferenceTree, JavaType methodRefType, JavaType samReturnType) {
