@@ -108,10 +108,10 @@ public class LeastUpperBound {
   }
 
   private static Set<Type> primitiveWrappers(Set<Type> types) {
-    if (!types.stream().allMatch(Type::isPrimitive)) {
-      return types.stream().map(t -> !t.isPrimitive() ? t : ((JavaType) t).primitiveWrapperType()).collect(Collectors.toCollection(LinkedHashSet::new));
+    if (types.stream().allMatch(Type::isPrimitive)) {
+      return types;
     }
-    return types;
+    return types.stream().map(t -> !t.isPrimitive() ? t : ((JavaType) t).primitiveWrapperType()).collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   private List<Set<Type>> supertypes(Collection<Type> types) {
