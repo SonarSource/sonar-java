@@ -80,7 +80,8 @@ public class LeastUpperBound {
       return first;
     }
 
-    List<Set<Type>> supertypes = supertypes(types);
+    Set<Type> newTypes = primitiveWrappers(types);
+    List<Set<Type>> supertypes = supertypes(newTypes);
     List<Set<Type>> erasedSupertypes = erased(supertypes);
 
     List<Type> erasedCandidates = intersection(erasedSupertypes);
@@ -104,7 +105,13 @@ public class LeastUpperBound {
       }
     }
     return erasedBest;
+  }
 
+  private static Set<Type> primitiveWrappers(Set<Type> types) {
+    if (!types.stream().allMatch(Type::isPrimitive)) {
+      return types.stream().map(t -> !t.isPrimitive() ? t : ((JavaType) t).primitiveWrapperType()).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+    return types;
   }
 
   private List<Set<Type>> supertypes(Collection<Type> types) {

@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1352,6 +1353,12 @@ public class SymbolTableTest {
     assertThat(((JavaType) returnStatementType).isParameterized()).isTrue();
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes().get(0).is("java.util.LinkedHashSet")).isTrue();
-
+  }
+  
+  @Test
+  public void conditional_expression_in_lambda() {
+    Result result = Result.createFor("ConditionalExpressionInLambda");
+    JavaSymbol foo = result.symbol("foo");
+    assertThat(foo.usages()).hasSize(1);
   }
 }
