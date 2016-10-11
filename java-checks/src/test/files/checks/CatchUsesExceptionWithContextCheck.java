@@ -93,6 +93,7 @@ class A {
       /* do nothing */
     } catch (ParseException e) {                 // Compliant
     } catch (MalformedURLException e) {          // Compliant
+    } catch (java.time.format.DateTimeParseException e) {          // Compliant
     }
 
     try {
@@ -124,6 +125,7 @@ class A {
       foo = e;
     } catch (java.lang.NumberFormatException e) { // Compliant
     } catch (java.net.MalformedURLException e) {  // Compliant
+    } catch (java.time.format.DateTimeParseException e) {          // Compliant
     } catch (java.text.ParseException e) {        // Compliant
     } catch (java.text.foo e) {                   // Noncompliant
     } catch (java.foo.ParseException e) {         // Noncompliant [[sc=14;ec=39]]
