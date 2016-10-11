@@ -43,13 +43,16 @@ import static org.fest.assertions.Assertions.assertThat;
 public class LeastUpperBoundTest {
 
   private LeastUpperBound leastUpperBound;
+  private JavaType intType;
+  private JavaType longType;
 
   @Before
   public void setUp() {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), parametrizedTypeCache));
     TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
-
+    intType = symbols.intType;
+    longType = symbols.longType;
     leastUpperBound = new LeastUpperBound(typeSubstitutionSolver, parametrizedTypeCache, symbols);
   }
 
@@ -65,6 +68,12 @@ public class LeastUpperBoundTest {
     Type a = classA.symbol().type();
     assertThat(leastUpperBound(a)).isSameAs(a);
     assertThat(leastUpperBound(varType)).isSameAs(varType);
+  }
+
+  @Test
+  public void lub_of_primitives() throws Exception {
+      assertThat(leastUpperBound.leastUpperBound(Sets.newHashSet(intType, intType))).isSameAs(intType);
+      assertThat(leastUpperBound.leastUpperBound(Sets.newHashSet(intType, longType)).isUnknown()).isTrue();
   }
 
   @Test
