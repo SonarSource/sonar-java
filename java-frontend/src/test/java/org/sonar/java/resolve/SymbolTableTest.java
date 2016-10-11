@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1352,6 +1353,46 @@ public class SymbolTableTest {
     assertThat(((JavaType) returnStatementType).isParameterized()).isTrue();
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes().get(0).is("java.util.LinkedHashSet")).isTrue();
-
   }
+  
+  @Test
+  public void conditional_expression_in_lambda() {
+    Result result = Result.createFor("ConditionalExpressionInLambda");
+    JavaSymbol foo = result.symbol("foo");
+    assertThat(foo.usages()).hasSize(1);
+
+    IdentifierTree map = result.referenceTree(8, 8);
+    MethodJavaType mapJavaType = (MethodJavaType) map.symbolType();
+    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
+    assertThat(mapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+
+    JavaType lambdaType = (JavaType) ((MethodInvocationTree) map.parent().parent()).arguments().get(0).symbolType();
+    assertThat(lambdaType.isParameterized()).isTrue();
+    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
+
+    // only interested in return type: LUB of Integer and String
+    JavaType returnType = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution.substitutedTypes().get(1);
+    assertThat(returnType.isSubtypeOf("java.lang.Comparable")).isTrue();
+
+    JavaSymbol bar = result.symbol("bar");
+    assertThat(bar.usages()).hasSize(1);
+
+    IdentifierTree flatMap = result.referenceTree(13, 8);
+    MethodJavaType flatMapJavaType = (MethodJavaType) flatMap.symbolType();
+    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
+    assertThat(flatMapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+
+    lambdaType = (JavaType) ((MethodInvocationTree) flatMap.parent().parent()).arguments().get(0).symbolType();
+    assertThat(lambdaType.isParameterized()).isTrue();
+    assertThat(lambdaType.is("java.util.function.Function")).isTrue();
+
+    // only interested in return type: LUB of deferred type Stream.empty() and Stream<Integer>
+    returnType = ((ParametrizedTypeJavaType) lambdaType).typeSubstitution.substitutedTypes().get(1);
+    assertThat(returnType.isParameterized()).isTrue();
+    assertThat(returnType.is("java.util.stream.Stream")).isTrue();
+
+    JavaType substitution = ((ParametrizedTypeJavaType) returnType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitution.is("java.lang.Integer")).isTrue();
+  }
+
 }

@@ -938,8 +938,11 @@ public class Resolve {
   }
 
   public JavaType conditionalExpressionType(ConditionalExpressionTree tree, JavaType trueType, JavaType falseType) {
-    if (trueType.isTagged(JavaType.DEFERRED) || falseType.isTagged(JavaType.DEFERRED)) {
-      return symbols.deferedType((ConditionalExpressionTreeImpl) tree);
+    if (trueType.isTagged(JavaType.DEFERRED)) {
+      return falseType.isTagged(JavaType.DEFERRED) ? symbols.deferedType((ConditionalExpressionTreeImpl) tree) : falseType;
+    }
+    if (falseType.isTagged(JavaType.DEFERRED)) {
+      return trueType;
     }
     if (trueType == falseType) {
       return trueType;
