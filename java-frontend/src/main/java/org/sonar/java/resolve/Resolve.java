@@ -27,7 +27,6 @@ import com.google.common.collect.Sets;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -623,51 +622,40 @@ public class Resolve {
     AbstractTypedTree tree = arg.tree();
     List<JavaType> samMethodArgs = findSamMethodArgs(formal);
     if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-      return validMethodReference(env, (MethodReferenceTree) tree, formal, samMethodArgs);
+      return validMethodReference(env, (MethodReferenceTree) tree, samMethodArgs);
     }
     // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
     return !tree.is(Tree.Kind.LAMBDA_EXPRESSION) || ((LambdaExpressionTree) tree).parameters().size() == samMethodArgs.size();
   }
 
-  private boolean validMethodReference(Env env, MethodReferenceTree tree, JavaType formal, List<JavaType> samMethodArgs) {
-    Tree expression = tree.expression();
-    if (expression instanceof AbstractTypedTree) {
-      String searchedMethod = getMethodReferenceMethodName(tree.method().name());
-
-      JavaType expressionType = (JavaType) ((AbstractTypedTree) expression).symbolType();
-      if (isArrayConstructor(expressionType, searchedMethod)) {
-        setMethodRefType(tree, formal, expressionType);
-        return true;
-      }
-
-      Resolution resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs);
-      // JLS §15.13.1
-      if (secondSearchRequired(expression, expressionType, resolution.symbol, samMethodArgs)) {
-        resolution = findMethod(env, expressionType, searchedMethod, samMethodArgs.stream().skip(1).collect(Collectors.toList()));
-      }
-
-      if (!resolution.symbol.isUnknown()) {
-        if (tree.method().symbol().isUnknown()) {
-          associateReference(tree.method(), (JavaSymbol.MethodJavaSymbol) resolution.symbol);
-          setMethodRefType(tree, formal, resolution.type);
-        }
-        return true;
-      }
+  private boolean validMethodReference(Env env, MethodReferenceTree tree, List<JavaType> samMethodArgs) {
+    if (isArrayConstructor(tree)) {
+      return true;
     }
-    return false;
+    Resolution resolution = findMethodReference(env, samMethodArgs, tree);
+    return !resolution.symbol.isUnknown();
+  }
+
+  Resolution findMethodReference(Env env, List<JavaType> samMethodArgs, MethodReferenceTree methodRefTree) {
+    Tree expression = methodRefTree.expression();
+    JavaType expressionType = (JavaType) ((AbstractTypedTree) expression).symbolType();
+    String methodName = getMethodReferenceMethodName(methodRefTree.method().name());
+    Resolution resolution = findMethod(env, expressionType, methodName, samMethodArgs);
+    // JLS §15.13.1
+    if (secondSearchRequired(expression, expressionType, resolution.symbol, samMethodArgs)) {
+      resolution = findMethod(env, expressionType, methodName, samMethodArgs.stream().skip(1).collect(Collectors.toList()));
+    }
+    return resolution;
   }
 
   private static String getMethodReferenceMethodName(String methodName) {
     return JavaKeyword.NEW.getValue().equals(methodName) ? CONSTRUCTOR_NAME : methodName;
   }
 
-  private static boolean isArrayConstructor(JavaType expressionType, String searchedMethod) {
-    return expressionType.isArray() && CONSTRUCTOR_NAME.equals(searchedMethod);
-  }
-
-  private static void setMethodRefType(MethodReferenceTree methodRef, JavaType methodRefType, JavaType methodType) {
-    ((AbstractTypedTree) methodRef).setType(methodRefType);
-    ((AbstractTypedTree) methodRef.method()).setType(methodType);
+  private static boolean isArrayConstructor(MethodReferenceTree tree) {
+    JavaType expressionType = (JavaType) ((AbstractTypedTree) tree.expression()).symbolType();
+    String methodName = tree.method().name();
+    return expressionType.isArray() && JavaKeyword.NEW.getValue().equals(methodName);
   }
 
   private static boolean secondSearchRequired(Tree expression, JavaType expressionType, JavaSymbol symbol, List<JavaType> samMethodArgs) {
@@ -685,11 +673,6 @@ public class Resolve {
 
   private static boolean firstParamSubtypeOfRefType(JavaType expressionType, List<JavaType> samMethodArgs) {
     return samMethodArgs.isEmpty() || samMethodArgs.get(0).isSubtypeOf(expressionType.erasure());
-  }
-
-  private static void associateReference(IdentifierTree identifier, JavaSymbol.MethodJavaSymbol method) {
-    ((IdentifierTreeImpl) identifier).setSymbol(method);
-    method.addUsage(identifier);
   }
 
   private boolean callWithRawType(JavaType arg, JavaType formal) {
