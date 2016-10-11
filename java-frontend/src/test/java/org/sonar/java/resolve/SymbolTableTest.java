@@ -1335,9 +1335,11 @@ public class SymbolTableTest {
 
     JavaSymbol invalidate = result.symbol("invalidate");
     assertThat(invalidate.usages()).hasSize(1);
+    assertThat(result.reference(4, 46)).isEqualTo(invalidate);
 
     JavaSymbol foo = result.symbol("foo");
     assertThat(foo.usages()).hasSize(1);
+    assertThat(result.reference(5, 54)).isEqualTo(foo);
   }
 
   @Test
