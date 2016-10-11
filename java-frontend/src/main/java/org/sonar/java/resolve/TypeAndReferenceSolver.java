@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -35,7 +34,6 @@ import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
-import org.sonar.java.resolve.Resolve.Env;
 import org.sonar.java.resolve.Resolve.Resolution;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -814,14 +812,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (initializer != null) {
       resolveAs(initializer, JavaSymbol.VAR);
       if(((JavaType) initializer.symbolType()).isTagged(JavaType.DEFERRED)) {
-        Type variableType = tree.type().symbolType();
-        if (initializer.is(Tree.Kind.METHOD_REFERENCE)) {
-          Env variableEnv = semanticModel.getEnv(tree);
-          List<JavaType> samArgs = resolve.findSamMethodArgs(variableType);
-          resolve.validMethodReference(variableEnv, (MethodReferenceTree) initializer, (JavaType) variableType, samArgs);
-        } else {
-          setInferedType(variableType, (DeferredType) initializer.symbolType());
-        }
+        setInferedType(tree.type().symbolType(), (DeferredType) initializer.symbolType());
       }
     }
   }
@@ -945,27 +936,42 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
     if(methodRefTree.isTypeSet()) {
       JavaType methodRefType = (JavaType) methodRefTree.symbolType();
-      resolve.getSamMethod(methodRefType)
-        .map(samMethod -> (JavaType) samMethod.returnType().type())
-        .ifPresent(samReturnType -> {
-          JavaSymbol methodSymbol = (JavaSymbol) methodRefTree.method().symbol();
-          if (methodSymbol.isMethodSymbol()) {
-            JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
-            JavaType refinedReturnType = ((MethodJavaType) methodRefTree.method().symbolType()).resultType();
-            if ("<init>".equals(methodSymbol.name)) {
-              refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
-            }
-            refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
-          } else {
-            handleNewArray(methodReferenceTree, methodRefType, samReturnType);
+      resolve.getSamMethod(methodRefType).ifPresent(samMethod -> {
+        JavaType samReturnType = (JavaType) samMethod.returnType().type();
+        List<JavaType> samMethodArgs = resolve.findSamMethodArgs(methodRefType);
+        Resolution resolution = resolve.findMethodReference(semanticModel.getEnv(methodReferenceTree), samMethodArgs, methodRefTree);
+        JavaSymbol methodSymbol = resolution.symbol();
+        if (methodSymbol.isMethodSymbol()) {
+          IdentifierTree methodIdentifier = methodRefTree.method();
+          addMethodRefReference(methodIdentifier, methodSymbol);
+          setMethodRefType(methodRefTree, methodRefType, resolution.type());
+
+          JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
+          JavaType refinedReturnType = ((MethodJavaType) methodIdentifier.symbolType()).resultType();
+          if ("<init>".equals(methodSymbol.name)) {
+            refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
           }
-        });
+          refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
+        } else {
+          handleNewArray(methodRefTree, methodRefType, samReturnType);
+        }
+      });
     } else {
       // TODO : SONARJAVA-1663 : consider type arguments for method resolution and substitution
       scan(methodReferenceTree.typeArguments());
       resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
       registerType(methodRefTree, symbols.deferedType(methodRefTree));
     }
+  }
+
+  private static void addMethodRefReference(IdentifierTree methodIdentifier, JavaSymbol methodSymbol) {
+    ((IdentifierTreeImpl) methodIdentifier).setSymbol(methodSymbol);
+    methodSymbol.addUsage(methodIdentifier);
+  }
+
+  private static void setMethodRefType(MethodReferenceTree methodRef, JavaType methodRefType, JavaType methodType) {
+    ((AbstractTypedTree) methodRef).setType(methodRefType);
+    ((AbstractTypedTree) methodRef.method()).setType(methodType);
   }
 
   private JavaType refinedTypeForConstructor(JavaType capturedReturnType, JavaType refinedReturnType) {
