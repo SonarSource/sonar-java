@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
-
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -99,6 +99,14 @@ public class SymbolicExecutionVisitorTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
     assertThat(sev.behaviorCache.entrySet()).hasSize(1);
     assertThat(sev.behaviorCache.keySet().iterator().next().name()).isEqualTo("foo");
+  }
+
+  @Test
+  public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
+    List<MethodYield> yields = sev.behaviorCache.values().iterator().next().yields();
+    assertThat(yields).hasSize(2);
+    yields.stream().map(y -> y.resultConstraint).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
