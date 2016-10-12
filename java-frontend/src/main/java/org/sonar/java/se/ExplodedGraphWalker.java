@@ -489,7 +489,7 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, !b.isCatchBlock()));
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState.clearStack(), !b.isCatchBlock()));
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
