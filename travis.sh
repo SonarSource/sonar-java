@@ -22,7 +22,7 @@ CI)
     SONAR_PROJECT_VERSION=`maven_expression "project.version"`
 
     # Do not deploy a SNAPSHOT version but the release version related to this build
-    set_maven_build_version $TRAVIS_BUILD_NUMBER
+    . set_maven_build_version $TRAVIS_BUILD_NUMBER
     # integration of jacoco report is quite memory-consuming
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
     git fetch --unshallow
@@ -48,7 +48,7 @@ CI)
   if [[ $CURRENT_VERSION =~ "-SNAPSHOT" ]]; then
     echo "======= Found SNAPSHOT version ======="
     # Do not deploy a SNAPSHOT version but the release version related to this build
-    set_maven_build_version $TRAVIS_BUILD_NUMBER
+    . set_maven_build_version $TRAVIS_BUILD_NUMBER
   else
     echo "======= Found RELEASE version ======="
   fi
@@ -66,7 +66,7 @@ CI)
     if [ -n "${GITHUB_TOKEN-}" ]; then
       strongEcho "SonarSource pull request"
       # Do not deploy a SNAPSHOT version but the release version related to this build
-      set_maven_build_version $TRAVIS_BUILD_NUMBER
+      . set_maven_build_version $TRAVIS_BUILD_NUMBER
       mvn deploy sonar:sonar -B -e -V \
           -Pdeploy-sonarsource \
           -Dsonar.analysis.mode=issues \
