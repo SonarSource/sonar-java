@@ -27,7 +27,7 @@ CI)
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
     git fetch --unshallow
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B -e -V \
-       -Pcoverage-per-test,deploy-sonarsource \
+       -Pcoverage-per-test,deploy-sonarsource,release \
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
        -Dsonar.login=$SONAR_TOKEN
