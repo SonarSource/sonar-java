@@ -83,7 +83,7 @@
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
 
-    <!-- release -->
+    <!-- Release: enable publication to Bintray -->
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
   </properties>
 
