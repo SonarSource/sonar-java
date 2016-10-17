@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.collect.Maps;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;
@@ -133,7 +134,7 @@ public class CommonsCollectionsTest {
     if (metrics.get("public_api").intValue() != 0) {
       density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
     }
-    assertThat(density).isEqualTo(0.64, Delta.delta(0.01));
+    assertThat(density).isEqualTo(0.67, Delta.delta(0.01));
 
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 23);

@@ -96,6 +96,7 @@ public class Struts139Test {
     assertThat(getCoreModuleMeasure("files").getIntValue()).isEqualTo(134);
 
     assertThat(getProjectMeasure("public_api").getIntValue()).isEqualTo(2846 - 15);
+    assertThat(getProjectMeasure("public_undocumented_api").getIntValue()).isEqualTo(214);
   }
 
   @Test

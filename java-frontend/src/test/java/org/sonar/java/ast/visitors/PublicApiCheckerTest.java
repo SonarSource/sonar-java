@@ -21,6 +21,7 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -82,8 +83,8 @@ public class PublicApiCheckerTest {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
-          // getters and setters are included in the public API
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
+          // getters and setters are excluded from the public API
+          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.endsWith("GetSet"));
         } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
           if(className==null) {

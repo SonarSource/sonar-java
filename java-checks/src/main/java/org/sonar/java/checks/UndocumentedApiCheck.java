@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
@@ -45,7 +46,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Deque;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Rule(key = "UndocumentedApi")
 @RspecKey("S1176")
@@ -77,8 +77,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private PublicApiChecker publicApiChecker;
   private String packageName;
-  private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
-  private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
   private JavaFileScannerContext context;
 
   @Override
@@ -174,10 +172,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private boolean isAccessor(Tree tree) {
     if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
-      MethodTree methodTree = (MethodTree) tree;
-      String name = methodTree.simpleName().name();
-      return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
-        (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
+      return PublicApiChecker.isAccessor((MethodTree) tree);
     }
     return false;
   }
