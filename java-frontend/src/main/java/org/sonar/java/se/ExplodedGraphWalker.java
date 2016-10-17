@@ -510,7 +510,7 @@ public class ExplodedGraphWalker {
     }
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
-      methodInvokedBehavior.yields()
+      methodInvokedBehavior.reducedYields()
         .stream()
         .filter(yield -> !yield.exception)
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())

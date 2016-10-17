@@ -118,6 +118,60 @@ public class SymbolicExecutionVisitorTest {
   }
 
   @Test
+  public void reduced_yields() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReducedYields.java");
+    MethodBehavior formatValue = getMethodBehavior(sev, "formatValue");
+    /*
+     * [
+     * {params: [NOT_NULL, NO_CONSTRAINT], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, NO_CONSTRAINT], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, NO_CONSTRAINT], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NO_CONSTRAINT (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NULL, TRUE], result: NULL (-1), exceptional: false},
+     * 
+     * {params: [NOT_NULL, FALSE], result: NO_CONSTRAINT (-1), exceptional: true},
+     * {params: [NULL, FALSE], result: NO_CONSTRAINT (-1), exceptional: true}
+     * ]
+     */
+    assertThat(formatValue.yields()).hasSize(21);
+    /*
+     * [
+     * {params: [NOT_NULL, NO_CONSTRAINT], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, NO_CONSTRAINT], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NO_CONSTRAINT (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, TRUE], result: NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NOT_NULL (-1), exceptional: false},
+     * {params: [NOT_NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NULL, FALSE], result: NULL (-1), exceptional: false},
+     * {params: [NULL, TRUE], result: NULL (-1), exceptional: false},
+     * 
+     * {params: [NOT_NULL, FALSE], result: NO_CONSTRAINT (-1), exceptional: true},
+     * {params: [NULL, FALSE], result: NO_CONSTRAINT (-1), exceptional: true},
+     * ]
+     */
+    List<MethodYield> reducedYields = formatValue.reducedYields();
+    assertThat(reducedYields).hasSize(11);
+
+    // check only calculated once
+    assertThat(formatValue.reducedYields() == reducedYields).isTrue();
+  }
+
+  @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
     List<MethodYield> yields = sev.behaviorCache.values().iterator().next().yields();

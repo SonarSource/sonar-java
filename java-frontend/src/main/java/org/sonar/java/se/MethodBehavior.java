@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.resolve.JavaSymbol;
@@ -38,6 +39,7 @@ public class MethodBehavior {
   private final Set<MethodYield> yields;
   private final Map<Symbol, SymbolicValue> parameters;
   private boolean complete = false;
+  private List<MethodYield> reducedYields = null;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
@@ -77,7 +79,22 @@ public class MethodBehavior {
   }
 
   List<MethodYield> yields() {
+    Preconditions.checkState(this.complete);
     return ImmutableList.<MethodYield>builder().addAll(yields).build();
+  }
+
+  List<MethodYield> reducedYields() {
+    Preconditions.checkState(this.complete);
+    if (reducedYields == null) {
+      List<MethodYield> results = new ArrayList<>(yields.size());
+      for (MethodYield yield : yields) {
+        if (results.stream().noneMatch(yield::similarYield)) {
+          results.add(yield);
+        }
+      }
+      reducedYields = ImmutableList.<MethodYield>builder().addAll(results).build();
+    }
+    return reducedYields;
   }
 
   public void addParameter(Symbol symbol, SymbolicValue sv) {

@@ -81,6 +81,10 @@ public class ObjectConstraint implements Constraint {
     return aState.equals(status);
   }
 
+  public boolean sameStatus(ObjectConstraint constraint) {
+    return hasStatus(constraint.status);
+  }
+
   public Tree syntaxNode() {
     return syntaxNode;
   }
