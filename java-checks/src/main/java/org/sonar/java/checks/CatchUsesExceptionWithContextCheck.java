@@ -51,7 +51,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       "java.lang.NumberFormatException, " +
       "java.lang.NoSuchMethodException, " +
       "java.text.ParseException, " +
-      "java.net.MalformedURLException";
+      "java.net.MalformedURLException, " +
+      "java.time.format.DateTimeParseException";
 
 
   @RuleProperty(
