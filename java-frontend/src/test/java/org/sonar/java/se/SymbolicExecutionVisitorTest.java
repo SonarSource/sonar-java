@@ -49,11 +49,19 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void method_behavior_cache_should_be_filled() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.entrySet()).hasSize(5);
-    assertThat(sev.behaviorCache.values().stream().filter(mb -> mb != null).count()).isEqualTo(5);
+    assertThat(sev.behaviorCache.entrySet()).hasSize(6);
+    assertThat(sev.behaviorCache.values().stream().filter(mb -> mb != null).count()).isEqualTo(6);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
-    assertThat(sev.behaviorCache.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList())).containsSequence("topMethod", "bar", "qix", "foo", "independent");
+    assertThat(sev.behaviorCache.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList()))
+      .containsSequence("topMethod", "bar", "qix", "foo", "independent", "nativeMethod");
+
+    MethodBehavior nativeMethod = sev.behaviorCache.keySet().stream()
+      .filter(s -> s.name().equals("nativeMethod"))
+      .map(s -> sev.behaviorCache.get(s))
+      .findFirst()
+      .orElseThrow(IllegalStateException::new);
+    assertThat(nativeMethod.yields()).isEmpty();
   }
 
   @Test
