@@ -31,6 +31,8 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Types;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -72,8 +74,8 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -157,9 +159,6 @@ public class ExplodedGraphWalker {
     this.symbolicExecutionVisitor = symbolicExecutionVisitor;
   }
 
-
-
-  @CheckForNull
   public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
     BlockTree body = tree.block();
     this.methodBehavior = methodBehavior;
@@ -539,6 +538,9 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean methodCanNotBeOverriden(Symbol methodSymbol) {
+    if ((((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.NATIVE) != 0) {
+      return false;
+    }
     return !methodSymbol.isAbstract() &&
       (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
