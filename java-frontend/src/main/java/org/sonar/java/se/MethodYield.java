@@ -19,16 +19,18 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.Lists;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,9 +54,8 @@ public class MethodYield {
     return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + "), exceptional: " + exception + "}";
   }
 
-  public List<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
-    List<ProgramState> results = new ArrayList<>();
-    results.add(programState);
+  public Collection<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
+    Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
       // FIXME : varargs method should be handled
       SymbolicValue invokedArg = invocationArguments.get(index);
@@ -64,22 +65,19 @@ public class MethodYield {
         continue;
       }
 
-      List<ProgramState> programStates = new ArrayList<>();
-      if (constraint instanceof ObjectConstraint) {
-        for (ProgramState state : results) {
-          programStates.addAll(invokedArg.setConstraint(state, (ObjectConstraint) constraint));
-        }
-      } else if (constraint instanceof BooleanConstraint) {
-        for (ProgramState state : results) {
-          programStates.addAll(invokedArg.setConstraint(state, (BooleanConstraint) constraint));
-        }
-      }
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint);
       if (programStates.isEmpty()) {
         // constraint can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
         return programStates;
       }
       results.addAll(programStates);
+    }
+
+    // resulting program states can be empty if all constraints on params are null or if method has no arguments.
+    // That means that this yield is still possible and we need to stack a returned SV with its eventual constraints.
+    if(results.isEmpty()) {
+      results.add(programState);
     }
 
     // applied all constraints from parameters, stack return value
@@ -94,7 +92,19 @@ public class MethodYield {
     if (resultConstraint != null) {
       stateStream = stateStream.map(s -> s.addConstraint(sv, resultConstraint));
     }
-    return stateStream.collect(Collectors.toList());
+    return stateStream.collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {
+    Set<ProgramState> programStates = new LinkedHashSet<>();
+    if (constraint instanceof ObjectConstraint) {
+      ObjectConstraint objectConstraint = (ObjectConstraint) constraint;
+      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, objectConstraint)));
+    } else if (constraint instanceof BooleanConstraint) {
+      BooleanConstraint booleanConstraint = (BooleanConstraint) constraint;
+      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, booleanConstraint)));
+    }
+    return programStates;
   }
 
   @Override

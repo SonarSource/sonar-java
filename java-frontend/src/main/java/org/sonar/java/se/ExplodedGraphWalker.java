@@ -508,12 +508,13 @@ public class ExplodedGraphWalker {
     if(declaration != null) {
       methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
+    final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       methodInvokedBehavior.yields()
         .stream()
         .filter(yield -> !yield.exception)
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> constraintManager.createMethodSymbolicValue(mit, unstack.values)).stream())
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> resultValue).stream())
         .forEach(psYield -> {
           ProgramState ps = psYield;
           if (isNonNullMethod(methodSymbol)) {
@@ -526,7 +527,6 @@ public class ExplodedGraphWalker {
           clearStack(mit);
         });
     } else {
-      final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
       programState = programState.stackValue(resultValue);
       if (isNonNullMethod(methodSymbol)) {
         programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
