@@ -109,6 +109,38 @@ public class MethodYield {
     return programStates;
   }
 
+  public boolean similarYield(MethodYield other) {
+    if (exception != other.exception) {
+      return false;
+    }
+    if (resultIndex != other.resultIndex || !sameConstraintWithSameStatus(resultConstraint, other.resultConstraint)) {
+      return false;
+    }
+    if (parametersConstraints.length != other.parametersConstraints.length) {
+      return false;
+    }
+    for (int i = 0; i < parametersConstraints.length; i++) {
+      if (!sameConstraintWithSameStatus(parametersConstraints[i], other.parametersConstraints[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean sameConstraintWithSameStatus(Constraint a, Constraint b) {
+    if (a instanceof ObjectConstraint && b instanceof ObjectConstraint) {
+      ObjectConstraint aObject = (ObjectConstraint) a;
+      ObjectConstraint bObject = (ObjectConstraint) b;
+      if (aObject.isNull() && bObject.isNull()) {
+        return true;
+      }
+      if (!aObject.isNull() && !bObject.isNull()) {
+        return aObject.sameStatus(bObject);
+      }
+    }
+    return a == b;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
