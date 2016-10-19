@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -30,6 +31,8 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Types;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -40,6 +43,7 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -63,16 +67,17 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -154,9 +159,6 @@ public class ExplodedGraphWalker {
     this.symbolicExecutionVisitor = symbolicExecutionVisitor;
   }
 
-
-
-  @CheckForNull
   public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
     BlockTree body = tree.block();
     this.methodBehavior = methodBehavior;
@@ -186,7 +188,8 @@ public class ExplodedGraphWalker {
       steps++;
       if (steps > MAX_STEPS) {
         checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name());
+        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name()
+          + "#" +tree.simpleName().firstToken().line()+ " in class " + tree.symbol().owner().name());
       }
       // LIFO:
       node = workList.removeFirst();
@@ -230,7 +233,7 @@ public class ExplodedGraphWalker {
 
   private void handleEndOfExecutionPath() {
     checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-    methodBehavior.createYield(programState);
+    methodBehavior.createYield(programState, node.happyPath);
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
@@ -268,6 +271,7 @@ public class ExplodedGraphWalker {
     CFG.Block block = programPosition.block;
     Tree terminator = block.terminator();
     cleanUpProgramState(block);
+    boolean exitPath = node.exitPath;
     if (terminator != null) {
       switch (terminator.kind()) {
         case IF_STATEMENT:
@@ -298,12 +302,21 @@ public class ExplodedGraphWalker {
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues();
           break;
+        case RETURN_STATEMENT:
+          ExpressionTree returnExpression = ((ReturnStatementTree) terminator).expression();
+          if (returnExpression != null) {
+            programState.storeReturnValue();
+          }
+          break;
+        case THROW_STATEMENT:
+          programState.clearReturnValue();
+          break;
         default:
           // do nothing by default.
       }
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
-    if (node.exitPath) {
+    if (exitPath) {
       if (block.exitBlock() != null) {
         enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
       } else {
@@ -315,6 +328,7 @@ public class ExplodedGraphWalker {
     } else {
       for (CFG.Block successor : block.successors()) {
         if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
+          node.happyPath = terminator == null || !terminator.is(Tree.Kind.THROW_STATEMENT);
           enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
         }
       }
@@ -375,7 +389,7 @@ public class ExplodedGraphWalker {
           return;
         }
         executeMethodInvocation(mit);
-        break;
+        return;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
@@ -480,27 +494,62 @@ public class ExplodedGraphWalker {
     setSymbolicValueOnFields(mit);
     // unstack arguments and method identifier
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
-    programState = unstack.state;
     logState(mit);
 
-    // get method behavior for method with known declaration (ie: within the same file)
-    Tree declaration = mit.symbol().declaration();
-    if(declaration != null) {
-      // (FIXME) nothing done of the invoked behavior
-      MethodBehavior methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
-    }
-
-
-
+    programState = unstack.state;
     // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState, !b.isCatchBlock()));
-    final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
-    programState = programState.stackValue(resultValue);
-    if (isNonNullMethod(mit.symbol())) {
-      programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
-    } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-      programState = programState.resetFieldValues(constraintManager);
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState.clearStack(), !b.isCatchBlock()));
+
+    // get method behavior for method with known declaration (ie: within the same file)
+    MethodBehavior methodInvokedBehavior = null;
+    Symbol methodSymbol = mit.symbol();
+    Tree declaration = methodSymbol.declaration();
+    if(declaration != null) {
+      methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
+    final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
+    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
+      List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
+      methodInvokedBehavior.yields()
+        .stream()
+        .filter(yield -> !yield.exception)
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> resultValue).stream())
+        .forEach(psYield -> {
+          ProgramState ps = psYield;
+          if (isNonNullMethod(methodSymbol)) {
+            ps = ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
+          } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
+            ps = ps.resetFieldValues(constraintManager);
+          }
+          checkerDispatcher.syntaxNode = mit;
+          checkerDispatcher.addTransition(ps);
+          clearStack(mit);
+        });
+    } else {
+      programState = programState.stackValue(resultValue);
+      if (isNonNullMethod(methodSymbol)) {
+        programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
+      } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
+        programState = programState.resetFieldValues(constraintManager);
+      }
+      checkerDispatcher.executeCheckPostStatement(mit);
+      clearStack(mit);
+    }
+  }
+
+  private static boolean methodCanNotBeOverriden(Symbol methodSymbol) {
+    if ((((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.NATIVE) != 0) {
+      return false;
+    }
+    return !methodSymbol.isAbstract() &&
+      (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
+  }
+
+  private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
+    List<SymbolicValue> parameterValues = new ArrayList<>(values);
+    parameterValues.remove(0);
+    Collections.reverse(parameterValues);
+    return parameterValues;
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {
@@ -604,6 +653,26 @@ public class ExplodedGraphWalker {
     programState = unstackBinary.state;
     SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
     symbolicValue.computedFrom(unstackBinary.values);
+    if(tree.is(Tree.Kind.PLUS)) {
+      BinaryExpressionTree bt = (BinaryExpressionTree) tree;
+      if (bt.leftOperand().symbolType().is("java.lang.String")) {
+        Constraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1));
+        if (leftConstraint != null && !leftConstraint.isNull()) {
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
+          Preconditions.checkState(programStates.size() == 1);
+          programState = programStates.get(0);
+        }
+
+      } else if(bt.rightOperand().symbolType().is("java.lang.String")) {
+        Constraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0));
+        if (rightConstraint != null && !rightConstraint.isNull()) {
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
+          Preconditions.checkState(programStates.size() == 1);
+          programState = programStates.get(0);
+        }
+
+      }
+    }
     programState = programState.stackValue(symbolicValue);
   }
 
@@ -728,6 +797,9 @@ public class ExplodedGraphWalker {
       return;
     }
     cachedNode.exitPath = exitPath;
+    if(node != null) {
+      cachedNode.happyPath = node.happyPath;
+    }
     workList.addFirst(cachedNode);
   }
 

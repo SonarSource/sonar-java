@@ -66,6 +66,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         behaviorCache.put(methodTree.symbol(), methodBehavior);
         ExplodedGraphWalker walker = egwFactory.createWalker(this);
         methodBehavior = walker.visitMethod(methodTree, methodBehavior);
+        methodBehavior.completed();
       }
       return methodBehavior;
     } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {

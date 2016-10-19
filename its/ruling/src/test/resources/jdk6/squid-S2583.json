@@ -1,8 +1,12 @@
 {
+'jdk6:java/awt/ComponentOrientation.java':[
+172,
+],
 'jdk6:java/awt/Container.java':[
 4021,
 ],
 'jdk6:java/awt/KeyboardFocusManager.java':[
+214,
 2226,
 2592,
 ],
@@ -15,6 +19,9 @@
 'jdk6:java/awt/dnd/DropTarget.java':[
 365,
 410,
+],
+'jdk6:java/awt/font/TextLayout.java':[
+464,
 ],
 'jdk6:java/awt/geom/CubicCurve2D.java':[
 1227,
@@ -38,6 +45,14 @@
 ],
 'jdk6:java/beans/beancontext/BeanContextServicesSupport.java':[
 446,
+],
+'jdk6:java/beans/beancontext/BeanContextSupport.java':[
+422,
+429,
+436,
+443,
+524,
+529,
 ],
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
@@ -85,6 +100,9 @@
 'jdk6:java/security/SecureClassLoader.java':[
 237,
 ],
+'jdk6:java/security/Security.java':[
+595,
+],
 'jdk6:java/sql/SQLException.java':[
 56,
 82,
@@ -113,6 +131,9 @@
 ],
 'jdk6:java/util/concurrent/ScheduledThreadPoolExecutor.java':[
 236,
+],
+'jdk6:java/util/jar/JarFile.java':[
+320,
 ],
 'jdk6:java/util/logging/LogManager.java':[
 499,

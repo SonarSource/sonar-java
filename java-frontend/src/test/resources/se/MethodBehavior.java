@@ -24,5 +24,6 @@ abstract class MethodBehavior {
   private void independent(){
   }
 
+  private native int nativeMethod();
 
 }

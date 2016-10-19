@@ -37,6 +37,7 @@ public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
   private final Set<MethodYield> yields;
   private final Map<Symbol, SymbolicValue> parameters;
+  private boolean complete = false;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
@@ -44,9 +45,9 @@ public class MethodBehavior {
     this.parameters = new LinkedHashMap<>();
   }
 
-  public void createYield(ProgramState programState) {
+  public void createYield(ProgramState programState, boolean happyPathYield) {
     MethodYield yield = new MethodYield(parameters.size());
-
+    yield.exception = !happyPathYield;
     List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
@@ -54,11 +55,13 @@ public class MethodBehavior {
     }
 
     if (!isConstructor() && !isVoidMethod()) {
-      SymbolicValue resultSV = programState.peekValue();
-      // FIXME Handle exception path
+      SymbolicValue resultSV = programState.returnValue();
       if (resultSV != null) {
         yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
         yield.resultConstraint = programState.getConstraint(resultSV);
+      } else {
+        // if there is no return value but we are not in a void method or constructor, we are not in a happy path
+        yield.exception = true;
       }
     }
 
@@ -85,4 +88,11 @@ public class MethodBehavior {
     return parameters.values();
   }
 
+  public boolean isComplete() {
+    return complete;
+  }
+
+  void completed() {
+    this.complete = true;
+  }
 }

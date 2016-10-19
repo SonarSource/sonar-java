@@ -34,12 +34,15 @@ import static java.lang.Boolean.TRUE;
 @interface CheckForNull {}
 @interface Nullable {}
 
-public static class Class extends SuperClass {
+public class Class extends SuperClass {
 
-  private static class Class {
+  private static class Class1 {
     Object field;
 
     Object method() {
+      if (field != null) {
+        return field;
+      }
       return null;
     }
   }
@@ -252,7 +255,7 @@ public static class Class extends SuperClass {
   }
 
   public void method_invocation() {
-    Class instance = new Class();
+    Class1 instance = new Class1();
     if (instance.method() != null && instance.method() == null) { // Compliant
     }
   }
@@ -1263,12 +1266,15 @@ class SuperClass {
     }
   }
   class Env {
+    Object gzip;
+    Object prodMode;
+
     boolean gzip() {
-      return true;
+      return gzip == null;
     }
 
     boolean prodMode() {
-      return true;
+      return prodMode == null;
     }
   }
 
@@ -1277,7 +1283,7 @@ class SuperClass {
         && env.prodMode()
         && request.header(ACCEPT_ENCODING, "").contains(GZIP);
   }
-  
+
   private Object mutex;
   public boolean doubleMutexCondition() {
     if (mutex == null) {
@@ -1313,7 +1319,7 @@ class SuperClass {
 
   @CheckForNull
   private Object nullableMethod() {
-    return null;
+    return new Class1().method();
   }
 
   static void fromEntryArray(boolean foo) {

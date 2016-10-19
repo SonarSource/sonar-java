@@ -83,7 +83,7 @@ class A {
   }
 
   private static void zip(Object dir, String s) throws IOException {
-    for (String n : dir.list(foo() ? "**" : "")) {
+    for (String n : dir.list(barqix() ? "**" : "")) {
       if (s.isEmpty()) {
         relativePath = n;
       }
@@ -168,4 +168,34 @@ class A {
     boolean identifier = true;
     return (boolean) !identifier && foo; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
   }
+}
+
+final class B {
+  Object foo(Object a) {
+    if(a ==  null) {
+      return null;
+    }
+    return a;
+  }
+
+  void bar(Object p) {
+    // check that concatenating a string literal to an object gives a non null SV.
+    Object b = foo("fpp"+p);
+    b.toString();
+  }
+}
+
+final class C {
+  private void bar(Object u) {
+    badRequestIfNullResult(u, "", "");
+    return u.toString();
+  }
+
+  private Object badRequestIfNullResult(@Nullable Object component, String objectType, String objectKey) {
+    if (component == null) {
+      throw new IllegalArgumentException(String.format(NOT_FOUND_FORMAT, objectType, objectKey));
+    }
+    return component;
+  }
+
 }
