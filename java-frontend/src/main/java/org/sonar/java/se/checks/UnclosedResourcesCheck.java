@@ -238,7 +238,7 @@ public class UnclosedResourcesCheck extends SECheck {
       final ExpressionTree variable = syntaxNode.variable();
       if (isNonLocalStorage(variable)) {
         List<SymbolicValue> stackedValues = programState.peekValues(2);
-        SymbolicValue value = stackedValues.get(1);
+        SymbolicValue value = stackedValues.get(0);
         closeResource(value);
       }
     }

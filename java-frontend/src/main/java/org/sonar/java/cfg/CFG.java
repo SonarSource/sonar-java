@@ -577,8 +577,8 @@ public class CFG {
 
   private void buildAssignment(AssignmentExpressionTree tree) {
     currentBlock.elements.add(tree);
-    build(tree.variable());
     build(tree.expression());
+    build(tree.variable());
   }
 
   private void buildMemberSelect(MemberSelectExpressionTree mse) {
