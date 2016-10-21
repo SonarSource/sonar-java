@@ -599,7 +599,7 @@ public class ExplodedGraphWalker {
     ExpressionTree variable = tree.variable();
     ProgramState.Pop unstack = programState.unstackValue(2);
 
-    SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(1) : constraintManager.createSymbolicValue(tree);
+    SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(0) : constraintManager.createSymbolicValue(tree);
     programState = unstack.state;
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       // only local variables or fields are added to table of values
@@ -613,8 +613,8 @@ public class ExplodedGraphWalker {
     ExpressionTree variable = tree.variable();
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
-      SymbolicValue assignedTo = unstack.values.get(0);
-      SymbolicValue value = unstack.values.get(1);
+      SymbolicValue assignedTo = unstack.values.get(1);
+      SymbolicValue value = unstack.values.get(0);
       programState = unstack.state;
       SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
       symbolicValue.computedFrom(ImmutableList.of(assignedTo, value));

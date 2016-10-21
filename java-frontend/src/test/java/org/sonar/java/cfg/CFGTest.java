@@ -819,8 +819,8 @@ public class CFGTest {
             element(Kind.IDENTIFIER, "s"),
             element(Kind.METHOD_INVOCATION)).terminator(Kind.IF_STATEMENT).ifTrue(2).ifFalse(1),
         block(
-            element(Kind.IDENTIFIER, "n"),
             element(Kind.IDENTIFIER, "relativePath"),
+            element(Kind.IDENTIFIER, "n"),
             element(Kind.ASSIGNMENT)).successors(1),
         block(element(Kind.VARIABLE, "n")).terminator(Kind.FOR_EACH_STATEMENT).ifFalse(0).ifTrue(3)
         );
@@ -1030,6 +1030,31 @@ public class CFGTest {
   }
 
   @Test
+  public void assignement_order_of_evaluation() throws Exception {
+    CFG cfg = buildCFG("  void foo() {\n" +
+      "    int[] a = {4,4};\n" +
+      "    int b = 1;\n" +
+      "    a[b] = b = 0;\n" +
+      "   }");
+    CFGChecker checker = checker(
+      block(
+        element(Tree.Kind.INT_LITERAL, 4),
+        element(Tree.Kind.INT_LITERAL, 4),
+        element(Tree.Kind.NEW_ARRAY),
+        element(Tree.Kind.VARIABLE, "a"),
+        element(Tree.Kind.INT_LITERAL, 1),
+        element(Tree.Kind.VARIABLE, "b"),
+        element(Tree.Kind.IDENTIFIER, "b"),
+        element(Tree.Kind.IDENTIFIER, "a"),
+        element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
+        element(Tree.Kind.IDENTIFIER, "b"),
+        element(Tree.Kind.INT_LITERAL, 0),
+        element(Tree.Kind.ASSIGNMENT),
+        element(Tree.Kind.ASSIGNMENT)).successors(0));
+    checker.check(cfg);
+  }
+
+  @Test
   public void prefix_operators() {
     final CFG cfg = buildCFG("void fun() { ++i;i++; }");
     final CFGChecker cfgChecker = checker(
@@ -1058,10 +1083,10 @@ public class CFGTest {
         element(Kind.TRY_STATEMENT)
       ).successors(6),
       block(
+        element(Kind.IDENTIFIER, "bar"),
         element(Kind.NEW_CLASS)
       ).successors(5).exceptions(4),
       block(
-        element(Kind.IDENTIFIER, "bar"),
         element(Kind.ASSIGNMENT)
       ).successors(4),
       block(
@@ -1336,8 +1361,8 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.METHOD_INVOCATION),
         element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.TYPE_CAST),
         element(Tree.Kind.IDENTIFIER, "a"),
+        element(Tree.Kind.TYPE_CAST),
         element(Tree.Kind.PLUS_ASSIGNMENT)
         ).successors(0));
     cfgChecker.check(cfg);
@@ -1348,17 +1373,17 @@ public class CFGTest {
     final CFG cfg = buildCFG("void fun(int[] array) { array[0] = 1; array[3+2] = 4; }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(INT_LITERAL, 1),
         element(INT_LITERAL, 0),
         element(Tree.Kind.IDENTIFIER, "array"),
         element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
+        element(INT_LITERAL, 1),
         element(Tree.Kind.ASSIGNMENT),
-        element(INT_LITERAL, 4),
         element(INT_LITERAL, 3),
         element(INT_LITERAL, 2),
         element(Tree.Kind.PLUS),
         element(Tree.Kind.IDENTIFIER, "array"),
         element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
+        element(INT_LITERAL, 4),
         element(Tree.Kind.ASSIGNMENT)).successors(0));
     cfgChecker.check(cfg);
   }
@@ -1545,14 +1570,15 @@ public class CFGTest {
       block(
         element(Tree.Kind.TRY_STATEMENT)).successors(6),
       block(
-          element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
+        element(Kind.IDENTIFIER, "result"),
+        element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
       block(
         element(Kind.VARIABLE, "iae"),
         element(Tree.Kind.TRY_STATEMENT)).successors(4),
       block(
+        element(Kind.IDENTIFIER, "result"),
         element(Kind.NEW_CLASS)).successors(3).exceptions(0, 2),
       block(
-        element(Kind.IDENTIFIER, "result"),
         element(Kind.ASSIGNMENT)
       ).successors(2),
       block(
@@ -1560,7 +1586,6 @@ public class CFGTest {
         element(Kind.METHOD_INVOCATION)
         ).successors(0).exceptions(0),
       block(
-        element(Kind.IDENTIFIER, "result"),
         element(Kind.ASSIGNMENT)
       ).successors(0)
       );

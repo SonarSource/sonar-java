@@ -141,7 +141,7 @@ public class NonNullSetToNullCheck extends SECheck {
         String nonNullAnnotation = nonNullAnnotation(symbol);
         if (nonNullAnnotation != null) {
           List<SymbolicValue> values = programState.peekValues(2);
-          SymbolicValue assignedValue = values.get(1);
+          SymbolicValue assignedValue = values.get(0);
           Constraint constraint = programState.getConstraint(assignedValue);
           if (constraint != null && constraint.isNull()) {
             reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
