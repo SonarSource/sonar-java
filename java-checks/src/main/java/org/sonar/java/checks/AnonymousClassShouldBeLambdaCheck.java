@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -84,15 +85,20 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {
-    int methodCounter = 0;
+    MethodTree methodTree = null;
     for (Tree tree : members) {
       if (!tree.is(Tree.Kind.EMPTY_STATEMENT, Tree.Kind.METHOD)) {
         return false;
       } else if (tree.is(Tree.Kind.METHOD)) {
-        methodCounter++;
+        if (methodTree != null) {
+          return false;
+        }
+        methodTree = (MethodTree) tree;
+
       }
     }
-    return methodCounter == 1;
+    // if overriden method declares to throw an exception, refactoring to a lambda might prove tricky
+    return methodTree != null && methodTree.throwsClauses().isEmpty();
   }
 
   private static boolean useThisIdentifier(ClassTree body) {

@@ -129,3 +129,17 @@ class A {
 
 
 }
+class SamWithException {
+
+  class MyCheckedException extends Exception {}
+  interface I {
+    void apply(String s) throws MyCheckedException;
+  }
+  void foo(I i) {
+    foo(new I() { // Compliant : Cannot be nicely refactored as lamdba because of the checked exception
+      void apply(String s) throws MyCheckedException {
+        // doSomething
+      }
+    });
+  }
+}
