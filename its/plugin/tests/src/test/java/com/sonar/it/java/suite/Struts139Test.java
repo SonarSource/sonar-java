@@ -106,11 +106,13 @@ public class Struts139Test {
     assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
     assertThat(getProjectMeasure("line_coverage").getValue()).isEqualTo(25.5);
     assertThat(getProjectMeasure("branch_coverage").getValue()).isEqualTo(24.1);
-    // overall coverage is the same as UT if no IT.
-    assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
-    assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
-    assertThat(getProjectMeasure("overall_line_coverage").getValue()).isEqualTo(25.5);
-    assertThat(getProjectMeasure("overall_branch_coverage").getValue()).isEqualTo(24.1);
+    if(JavaTestSuite.sonarqube_version_is_prior_to_6_2()) {
+      // overall coverage is the same as UT if no IT.
+      assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
+      assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
+      assertThat(getProjectMeasure("overall_line_coverage").getValue()).isEqualTo(25.5);
+      assertThat(getProjectMeasure("overall_branch_coverage").getValue()).isEqualTo(24.1);
+    }
     assertThat(getProjectMeasure("tests").getIntValue()).isEqualTo(307);
     assertThat(getProjectMeasure("test_execution_time").getIntValue()).isGreaterThan(200);
     assertThat(getProjectMeasure("test_errors").getIntValue()).isEqualTo(0);

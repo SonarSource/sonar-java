@@ -22,10 +22,11 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
-import java.io.File;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+
+import java.io.File;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -66,4 +67,8 @@ public class JavaTestSuite {
     return projectKey + ":src/main/java/" + pkgDir + cls;
   }
 
+
+  public static boolean sonarqube_version_is_prior_to_6_2() {
+    return !ORCHESTRATOR.getServer().version().isGreaterThanOrEquals("6.2");
+  }
 }
