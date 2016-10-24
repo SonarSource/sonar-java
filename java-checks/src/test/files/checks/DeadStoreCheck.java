@@ -232,3 +232,10 @@ class A {
     }
   }
 }
+
+class Stuff {
+  void foo(boolean b1, boolean b2) {
+    boolean x = false;  // Noncompliant
+    x = b1 && b2;       // Noncompliant
+  }
+}

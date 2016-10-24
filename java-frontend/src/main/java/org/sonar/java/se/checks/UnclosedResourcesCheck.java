@@ -237,8 +237,13 @@ public class UnclosedResourcesCheck extends SECheck {
     public void visitAssignmentExpression(AssignmentExpressionTree syntaxNode) {
       final ExpressionTree variable = syntaxNode.variable();
       if (isNonLocalStorage(variable)) {
-        List<SymbolicValue> stackedValues = programState.peekValues(2);
-        SymbolicValue value = stackedValues.get(0);
+        SymbolicValue value;
+        if (isSimpleAssignment(syntaxNode)) {
+          value = programState.peekValue();
+        } else {
+          value = programState.peekValues(2).get(0);
+        }
+
         closeResource(value);
       }
     }
