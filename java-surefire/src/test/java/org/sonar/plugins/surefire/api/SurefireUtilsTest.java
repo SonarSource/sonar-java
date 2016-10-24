@@ -19,13 +19,12 @@
  */
 package org.sonar.plugins.surefire.api;
 
+import java.io.File;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.PathResolver;
-
-import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,14 +42,13 @@ public class SurefireUtilsTest {
     assertThat(SurefireUtils.getReportsDirectory(settings, fs, pathResolver).isDirectory()).isTrue();
   }
 
-
   @Test
   public void return_default_value_if_property_unset() throws Exception {
     Settings settings = mock(Settings.class);
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest/shouldGetReportsFromProperty"));
     PathResolver pathResolver = new PathResolver();
     File directory = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
-    assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");
+    assertThat(directory.getCanonicalPath()).endsWith("target" + File.separator + "surefire-reports");
     assertThat(directory.exists()).isFalse();
     assertThat(directory.isDirectory()).isFalse();
   }

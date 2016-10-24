@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,8 +29,6 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.squidbridge.api.AnalysisException;
-
-import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -47,7 +46,7 @@ public class JavaClasspathTest {
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.MAIN);
     fs.add(inputFile);
-    settings =  new MapSettings();
+    settings = new MapSettings();
   }
 
   /**
@@ -81,7 +80,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
-  
+
   @Test
   public void setting_binary_dir_prop_should_fill_elements() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin/");
@@ -107,7 +106,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
-  
+
   @Test
   public void absolute_aar_file_name_should_be_resolved() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/oklog-1.0.1.aar").getAbsolutePath());
@@ -138,7 +137,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(2)).exists();
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "target");
   }
-  
+
   @Test
   public void libraries_should_keep_order() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/world.jar,lib/hello.jar,lib/target/classes/*");
@@ -169,7 +168,7 @@ public class JavaClasspathTest {
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar", "oklog-1.0.1.aar");
   }
-  
+
   @Test
   public void should_not_scan_target_classes() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/target/classes");

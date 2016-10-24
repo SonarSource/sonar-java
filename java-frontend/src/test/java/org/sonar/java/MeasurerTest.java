@@ -112,8 +112,8 @@ public class MeasurerTest {
     JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
-    assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);
-    assertThat(context.measure("projectKey:"+relativePath, metric).value()).isEqualTo(expectedValue);
+    assertThat(context.measures("projectKey:" + relativePath)).hasSize(NB_OF_METRICS);
+    assertThat(context.measure("projectKey:" + relativePath, metric).value()).isEqualTo(expectedValue);
   }
 
 }

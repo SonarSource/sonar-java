@@ -80,7 +80,6 @@ public class JavaSquidSensorTest {
     testIssueCreation(InputFile.Type.TEST, 0);
   }
 
-
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     Settings settings = new MapSettings();
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
@@ -102,6 +101,7 @@ public class JavaSquidSensorTest {
     postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
     jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
+    context = SensorContextTester.create(new File("src/test/java/")).setFileSystem(fs);
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 
@@ -112,6 +112,7 @@ public class JavaSquidSensorTest {
     postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
     jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
+    context = SensorContextTester.create(new File("src/test/java/")).setFileSystem(fs);
     settings.setProperty(Java.SOURCE_VERSION, "1.7");
     jss.execute(context);
   }
@@ -148,7 +149,7 @@ public class JavaSquidSensorTest {
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
-    when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
+    when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[] {check});
     return sonarComponents;
   }
 

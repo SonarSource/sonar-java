@@ -21,21 +21,19 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -127,7 +125,6 @@ public class JaCoCoOverallSensorTest {
     verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 1);
   }
 
-
   @Test
   public void should_save_measures_when_no_reports_and_force_property() throws IOException {
     when(configuration.shouldExecuteOnProject(false)).thenReturn(true);
@@ -138,15 +135,15 @@ public class JaCoCoOverallSensorTest {
     verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 0);
   }
 
-  private void verifyOverallMetrics(InputFile resource,int[] zeroHitlines, int[] oneHitlines, int coveredConditions) {
+  private void verifyOverallMetrics(InputFile resource, int[] zeroHitlines, int[] oneHitlines, int coveredConditions) {
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(resource.key(), zeroHitline)).isEqualTo(0);
     }
     for (int oneHitline : oneHitlines) {
-      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, oneHitline)).isEqualTo(1);
+      assertThat(context.lineHits(resource.key(), oneHitline)).isEqualTo(1);
     }
-    assertThat(context.conditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(2);
-    assertThat(context.coveredConditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(coveredConditions);
+    assertThat(context.conditions(resource.key(), 14)).isEqualTo(2);
+    assertThat(context.coveredConditions(resource.key(), 14)).isEqualTo(coveredConditions);
   }
 
   private InputFile analyseReports(String utReport, String itReport) throws IOException {

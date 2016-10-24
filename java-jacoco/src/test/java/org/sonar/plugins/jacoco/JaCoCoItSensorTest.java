@@ -21,6 +21,8 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,16 +30,12 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -70,7 +68,7 @@ public class JaCoCoItSensorTest {
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
     ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
-    FileSystem fileSystem = new DefaultFileSystem((File)null);
+    FileSystem fileSystem = new DefaultFileSystem((File) null);
     pathResolver = mock(PathResolver.class);
     sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
@@ -108,13 +106,13 @@ public class JaCoCoItSensorTest {
     int[] oneHitlines = new int[] {6, 7, 8, 11};
     int[] zeroHitlines = new int[] {15, 16, 18};
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", zeroHitline)).isEqualTo(0);
     }
     for (int oneHitline : oneHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, oneHitline)).isEqualTo(1);
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", oneHitline)).isEqualTo(1);
     }
-    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, 15)).isEqualTo(2);
-    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.IT, 15)).isEqualTo(0);
+    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(2);
+    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(0);
   }
 
   @Test
