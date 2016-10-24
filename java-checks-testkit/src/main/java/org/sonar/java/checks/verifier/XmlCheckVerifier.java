@@ -83,11 +83,21 @@ public class XmlCheckVerifier extends CheckVerifier {
     }
   }
 
+  /**
+   * Read the XML file using javax XMLStreamReader instead of SAX (used by {@link XmlParser}),
+   * as SAX does not provide any  way to retrieve lines information of comments events.
+   *
+   * @param xmlFile
+   * @param checkVerifier
+   */
   protected static void retrieveExpectedIssuesFromFile(File xmlFile, CheckVerifier checkVerifier) {
-    try (FileInputStream is = new FileInputStream(xmlFile)) {
-      XMLInputFactory factory = XMLInputFactory.newInstance();
-      XMLStreamReader reader = factory.createXMLStreamReader(is);
+    XMLInputFactory factory = XMLInputFactory.newInstance();
 
+    // disable DTD validation, in order to avoid query any external URL
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+
+    try (FileInputStream is = new FileInputStream(xmlFile)) {
+      XMLStreamReader reader = factory.createXMLStreamReader(is);
       while (reader.hasNext()) {
         int line = reader.getLocation().getLineNumber();
         reader.next();
