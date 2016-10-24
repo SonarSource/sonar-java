@@ -24,8 +24,11 @@ import org.junit.Test;
 import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.sonar.api.SonarQubeSide.SCANNER;
 
 public class JacocoConfigurationTest {
 
@@ -35,11 +38,21 @@ public class JacocoConfigurationTest {
   @Before
   public void setUp() {
     settings = new MapSettings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
-    jacocoConfiguration = new JacocoConfiguration(settings);
+    jacocoConfiguration = new JacocoConfiguration(settings, SonarRuntimeImpl.forSonarQube(Version.create(6, 2), SCANNER));
   }
 
   @Test
   public void shouldExecuteOnProject() throws Exception {
+    assertThat(jacocoConfiguration.shouldExecuteOnProject(true)).isTrue();
+    assertThat(jacocoConfiguration.shouldExecuteOnProject(false)).isFalse();
+    settings.setProperty(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, true);
+    assertThat(jacocoConfiguration.shouldExecuteOnProject(true)).isTrue();
+    assertThat(jacocoConfiguration.shouldExecuteOnProject(false)).isFalse();
+  }
+
+  @Test
+  public void shouldExecuteOnProject_prior_6_2() throws Exception {
+    jacocoConfiguration = new JacocoConfiguration(settings, SonarRuntimeImpl.forSonarQube(Version.create(6, 1), SCANNER));
     assertThat(jacocoConfiguration.shouldExecuteOnProject(true)).isTrue();
     assertThat(jacocoConfiguration.shouldExecuteOnProject(false)).isFalse();
     settings.setProperty(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, true);

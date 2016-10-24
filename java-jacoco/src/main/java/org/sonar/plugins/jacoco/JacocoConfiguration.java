@@ -21,10 +21,14 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.PropertyType;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaConstants;
 
 import java.util.List;
@@ -32,6 +36,9 @@ import java.util.List;
 @BatchSide
 public class JacocoConfiguration {
 
+  private static final Logger LOG = Loggers.get(JacocoConfiguration.class);
+
+  private static final Version SQ_6_2 = Version.create(6, 2);
   public static final String REPORT_PATH_PROPERTY = "sonar.jacoco.reportPath";
   public static final String REPORT_PATH_DEFAULT_VALUE = "target/jacoco.exec";
   public static final String IT_REPORT_PATH_PROPERTY = "sonar.jacoco.itReportPath";
@@ -40,9 +47,11 @@ public class JacocoConfiguration {
   public static final boolean REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE = false;
 
   private final Settings settings;
+  private final SonarRuntime sonarRuntime;
 
-  public JacocoConfiguration(Settings settings) {
+  public JacocoConfiguration(Settings settings, SonarRuntime sonarRuntime) {
     this.settings = settings;
+    this.sonarRuntime = sonarRuntime;
   }
 
   public boolean shouldExecuteOnProject(boolean reportFound) {
@@ -58,7 +67,10 @@ public class JacocoConfiguration {
   }
 
   private boolean isCoverageToZeroWhenNoReport() {
-    return settings.getBoolean(REPORT_MISSING_FORCE_ZERO);
+    if (sonarRuntime.getApiVersion().isGreaterThanOrEqual(SQ_6_2) && settings.hasKey(REPORT_MISSING_FORCE_ZERO)) {
+      LOG.warn("Property '{}' is deprecated and should not be used with SonarQube 6.2+", REPORT_MISSING_FORCE_ZERO);
+    }
+    return !sonarRuntime.getApiVersion().isGreaterThanOrEqual(SQ_6_2) && settings.getBoolean(REPORT_MISSING_FORCE_ZERO);
   }
 
   public static List<PropertyDefinition> getPropertyDefinitions() {
