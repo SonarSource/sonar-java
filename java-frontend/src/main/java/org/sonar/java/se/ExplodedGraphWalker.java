@@ -597,9 +597,17 @@ public class ExplodedGraphWalker {
 
   private void executeAssignement(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
-    ProgramState.Pop unstack = programState.unstackValue(2);
+    ProgramState.Pop unstack;
+    SymbolicValue value;
 
-    SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(0) : constraintManager.createSymbolicValue(tree);
+    if (isSimpleAssignment(tree)) {
+      unstack = programState.unstackValue(1);
+      value = unstack.values.get(0);
+    } else {
+      unstack = programState.unstackValue(2);
+      value = constraintManager.createSymbolicValue(tree);
+    }
+
     programState = unstack.state;
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       // only local variables or fields are added to table of values
@@ -607,6 +615,10 @@ public class ExplodedGraphWalker {
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
     }
     programState = programState.stackValue(value);
+  }
+
+  private static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
+    return tree.is(Tree.Kind.ASSIGNMENT) && tree.variable().is(Tree.Kind.IDENTIFIER);
   }
 
   private void executeLogicalAssignement(AssignmentExpressionTree tree) {

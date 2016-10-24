@@ -90,9 +90,18 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      List<SymbolicValue> symbolicValues = programState.peekValues(2);
-      SymbolicValue var = symbolicValues.get(1);
-      SymbolicValue expr = symbolicValues.get(0);
+      List<SymbolicValue> symbolicValues;
+      SymbolicValue var;
+      SymbolicValue expr;
+      if (isSimpleAssignment(tree)) {
+        var = programState.getValue(((IdentifierTree) tree.variable()).symbol());
+        expr = programState.peekValue();
+      } else {
+        symbolicValues = programState.peekValues(2);
+        var = symbolicValues.get(1);
+        expr = symbolicValues.get(0);
+      }
+
       checkExpression(tree, var, expr);
     }
 
