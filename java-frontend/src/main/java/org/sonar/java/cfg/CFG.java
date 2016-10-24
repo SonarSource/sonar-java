@@ -66,7 +66,6 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -903,6 +902,13 @@ public class CFG {
   }
 
   private void buildTypeCast(Tree tree) {
+    enclosingTry.peek().catches.entrySet().stream()
+      .filter(e -> e.getKey().isSubtypeOf("java.lang.ClassCastException"))
+      .findFirst()
+      .ifPresent(e -> {
+      currentBlock = createBlock(currentBlock);
+      currentBlock.successors.add(e.getValue());
+    });
     currentBlock.elements.add(tree);
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     build(typeCastTree.expression());

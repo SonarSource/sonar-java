@@ -82,4 +82,14 @@ public class MethodYieldTest {
     Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcNativeMethods.java").behaviorCache;
     behaviorCache.entrySet().stream().filter(e -> e.getKey().name().equals("foo")).forEach(e -> assertThat(e.getValue().yields()).hasSize(2));
   }
+
+  @Test
+  public void catch_class_cast_exception() throws Exception {
+    Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache;
+    assertThat(behaviorCache.values()).hasSize(1);
+    MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
+    assertThat(methodBehavior.yields()).hasSize(2);
+    assertThat(methodBehavior.yields().get(1).resultIndex).isEqualTo(0);
+    assertThat(methodBehavior.yields().get(0).resultConstraint.isNull()).isTrue();
+  }
 }

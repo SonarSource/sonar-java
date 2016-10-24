@@ -47,6 +47,9 @@ import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 
 public class CFGTest {
 
@@ -1344,6 +1347,27 @@ public class CFGTest {
   }
 
   @Test
+  public void catching_class_cast_exception() {
+    CFG cfg = buildCFG("void fun(Object a) {try {return (String) a;} catch(ClassCastException cce) { return null;} }");
+    CFGChecker cfgChecker = checker(
+      block(
+        element(TRY_STATEMENT)
+      ),
+      block(
+        element(Tree.Kind.IDENTIFIER, "a"),
+        element(Tree.Kind.TYPE_CAST)
+      ).successors(1, 2),
+      terminator(RETURN_STATEMENT, 0),
+      block(
+        element(Kind.VARIABLE, "cce"),
+        element(NULL_LITERAL)
+      ).successors(0)
+    );
+    cfgChecker.check(cfg);
+
+  }
+
+  @Test
   public void array_access_expression() {
     final CFG cfg = buildCFG("void fun(int[] array) { array[0] = 1; array[3+2] = 4; }");
     final CFGChecker cfgChecker = checker(
@@ -1605,20 +1629,6 @@ public class CFGTest {
       ).successors(0)
     );
     cfgChecker.check(cfg);
-
-  }
-
-  @Test
-  public void asd() throws Exception {
-    CFG cfg = buildCFG("private static List<String> readFile(File file) {\n" +
-      "    try {\n" +
-      "      return FileUtils.readLines(file);\n" +
-      "    } catch (IOException e) {\n" +
-      "      fail(\"can not read test file\");\n" +
-      "    }\n" +
-      "    return Lists.newArrayList();\n" +
-      "  }");
-    System.out.println(CFGDebug.toString(cfg));
 
   }
 }
