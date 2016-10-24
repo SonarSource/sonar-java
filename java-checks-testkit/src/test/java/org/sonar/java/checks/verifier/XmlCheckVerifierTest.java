@@ -59,8 +59,8 @@ public class XmlCheckVerifierTest {
       @Override
       public void scanFile(XmlCheckContext context) {
         fakeContext = context;
-        context.reportIssue(this, 2, "Message1");
-        context.reportIssue(this, 4, "Message2");
+        context.reportIssue(this, 2, "message1");
+        context.reportIssue(this, 4, "message2");
       }
     });
     assertThat(((FakeXmlCheckContext) fakeContext).getMessages()).hasSize(2);
@@ -72,8 +72,8 @@ public class XmlCheckVerifierTest {
       @Override
       public void scanFile(XmlCheckContext context) {
         try {
-          context.reportIssue(this, firstNode(context, "//test2"), "Message1");
-          context.reportIssue(this, firstNode(context, "//test4"), "Message2");
+          context.reportIssue(this, firstNode(context, "//test2"), "message1");
+          context.reportIssue(this, firstNode(context, "//test4"), "message2");
         } catch (Exception e) {
           Fail.fail();
         }
