@@ -92,4 +92,20 @@ class A {
       foo(() -> myMethod()); // Noncompliant
     }
   }
+
+  void nullChecks(List<String> strings, String s2) {
+    strings.stream().filter(s -> s != null); // Noncompliant {{Replace this lambda with method reference 'Objects::nonNull'.}}
+    strings.stream().filter(s -> { return s != null; }); // Noncompliant {{Replace this lambda with method reference 'Objects::nonNull'.}}
+    strings.stream().filter(s -> (s) == null); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
+    strings.stream().filter(s -> null == s); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
+    strings.stream().filter(s -> (((s == null)))); // Noncompliant {{Replace this lambda with method reference 'Objects::isNull'.}}
+
+    strings.stream().filter(Objects::nonNull); // Compliant
+    strings.stream().filter(Objects::isNull); // Compliant
+
+    strings.stream().filter(s -> (((s == s2)))); // Compliant
+    strings.stream().filter(s -> (((s2 == s)))); // Compliant
+    strings.stream().filter(s -> (((s2 == null)))); // Compliant
+    strings.stream().filter(s -> (((null == null)))); // Compliant
+  }
 }

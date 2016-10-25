@@ -1,4 +1,5 @@
-<p>Method/constructor references are more compact and readable than using lambdas, and are therefore preferred.</p>
+<p>Method/constructor references are more compact and readable than using lambdas, and are therefore preferred. Similarly, <code>null</code> checks
+can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code> methods.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>8</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

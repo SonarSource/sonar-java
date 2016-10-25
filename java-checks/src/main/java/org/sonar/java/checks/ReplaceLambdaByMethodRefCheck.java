@@ -21,11 +21,13 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,6 +36,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -41,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Rule(key = "S1612")
@@ -65,8 +69,56 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isReplaceableSingleMethodInvocation(tree) || isBodyBlockInvokingMethod(tree)) {
       context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
+    } else {
+      getNullCheck(tree)
+        .ifPresent(nullMethod -> 
+          context.reportIssue(this, tree.arrowToken(),
+            "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage())
+      );
     }
     super.visitLambdaExpression(tree);
+  }
+
+  private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
+    Tree lambdaBody = lambda.body();
+    if (isBlockWithOneStatement(lambdaBody)) {
+      return getNullCheckFromReturn(((BlockTree) lambdaBody).body().get(0), lambda);
+    }
+    return getNullCheck(lambdaBody, lambda);
+  }
+
+  private static Optional<String> getNullCheckFromReturn(Tree statement, LambdaExpressionTree lambda) {
+    if (statement.is(Tree.Kind.RETURN_STATEMENT)) {
+      return getNullCheck(((ReturnStatementTree) statement).expression(), lambda);
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<String> getNullCheck(@Nullable Tree statement, LambdaExpressionTree tree) {
+    if (statement == null) {
+      return Optional.empty();
+    }
+    Tree expr = statement;
+    if (expr.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      expr = ExpressionsHelper.skipParentheses((ParenthesizedTree) statement);
+    }
+    if (expr.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree bet = (BinaryExpressionTree) expr;
+      ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(bet.leftOperand());
+      ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(bet.rightOperand());
+      if (nullAgainstParam(leftOperand, rightOperand, tree) || nullAgainstParam(rightOperand, leftOperand, tree)) {
+        return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
+      }
+    }
+    return Optional.empty();
+  }
+
+  private static boolean nullAgainstParam(ExpressionTree o1, ExpressionTree o2, LambdaExpressionTree tree) {
+    if (o1.is(Tree.Kind.NULL_LITERAL) && o2.is(Tree.Kind.IDENTIFIER)) {
+      List<VariableTree> parameters = tree.parameters();
+      return parameters.size() == 1 && parameters.get(0).symbol().equals(((IdentifierTree) o2).symbol());
+    }
+    return false;
   }
 
   private static boolean isReplaceableSingleMethodInvocation(LambdaExpressionTree lambdaTree) {
