@@ -19,6 +19,10 @@
  */
 package org.sonar.plugins.jacoco;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import org.apache.commons.lang.BooleanUtils;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
@@ -26,11 +30,6 @@ import org.jacoco.core.data.IExecutionDataVisitor;
 import org.jacoco.core.data.ISessionInfoVisitor;
 import org.jacoco.core.data.SessionInfoStore;
 import org.sonar.squidbridge.api.AnalysisException;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * Utility class to merge JaCoCo reports.
@@ -69,14 +68,12 @@ public final class JaCoCoReportMerger {
   private static boolean loadSourceFiles(ISessionInfoVisitor infoStore, IExecutionDataVisitor dataStore, File... reports) {
     Boolean isCurrentVersionFormat = null;
     for (File report : reports) {
-      if (report.isFile()) {
-        JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(dataStore, infoStore);
-        boolean reportFormatIsCurrent = jacocoReportReader.useCurrentBinaryFormat();
-        if (isCurrentVersionFormat == null) {
-          isCurrentVersionFormat = reportFormatIsCurrent;
-        } else if (!isCurrentVersionFormat.equals(reportFormatIsCurrent)) {
-          throw new IllegalStateException("You are trying to merge two different JaCoCo binary formats. Please use only one version of JaCoCo.");
-        }
+      JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(dataStore, infoStore);
+      boolean reportFormatIsCurrent = jacocoReportReader.useCurrentBinaryFormat();
+      if (isCurrentVersionFormat == null) {
+        isCurrentVersionFormat = reportFormatIsCurrent;
+      } else if (!isCurrentVersionFormat.equals(reportFormatIsCurrent)) {
+        throw new IllegalStateException("You are trying to merge two different JaCoCo binary formats. Please use only one version of JaCoCo.");
       }
     }
     return BooleanUtils.isNotFalse(isCurrentVersionFormat);

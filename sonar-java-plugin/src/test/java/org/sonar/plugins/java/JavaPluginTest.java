@@ -36,7 +36,7 @@ public class JavaPluginTest {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SERVER);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(25);
+    assertThat(context.getExtensions()).hasSize(24);
     runtime = SonarRuntimeImpl.forSonarLint(Version.create(6, 0));
     context = new Plugin.Context(runtime);
     javaPlugin.define(context);

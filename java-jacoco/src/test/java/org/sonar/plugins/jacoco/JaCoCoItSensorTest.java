@@ -24,106 +24,97 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.config.MapSettings;
+import org.sonar.api.config.PropertyDefinitions;
+import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.plugins.jacoco.JacocoConstants.IT_REPORT_PATH_PROPERTY;
 
 public class JaCoCoItSensorTest {
-  private static File outputDir;
+
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();
+
+  @Rule
+  public LogTester logTester = new LogTester();
+
   private static File jacocoExecutionData;
 
-  private JacocoConfiguration configuration;
-  private PathResolver pathResolver;
   private JaCoCoItSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
   private JavaClasspath javaClasspath = mock(JavaClasspath.class);
 
-  @BeforeClass
-  public static void setUpOutputDir() throws IOException {
-    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
-    jacocoExecutionData = new File(outputDir, "jacoco.exec");
+  private static File baseDir;
 
-    Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
+  private SensorContextTester context;
+
+  @Before
+  public void setUpOutputDir() throws IOException {
+    baseDir = temp.newFolder();
+    jacocoExecutionData = new File(baseDir, "jacoco.exec");
+
+    Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(baseDir, "Hello.class"));
+    Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/jacoco.exec"), jacocoExecutionData);
+
+    context = SensorContextTester.create(baseDir)
+      .setSettings(new MapSettings(new PropertyDefinitions(JacocoConstants.getPropertyDefinitions(Version.create(5, 2)))));
   }
 
   @Before
   public void setUp() {
-    configuration = mock(JacocoConfiguration.class);
     ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
-    FileSystem fileSystem = new DefaultFileSystem((File) null);
-    pathResolver = mock(PathResolver.class);
-    sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
+    sensor = new JaCoCoItSensor(perspectives, javaResourceLocator, javaClasspath);
   }
 
   @Test
-  public void testSensorDefinition() {
-    assertThat(sensor.toString()).isEqualTo("JaCoCoItSensor");
+  public void testSensorDescriptor() {
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    sensor.describe(descriptor);
+    assertThat(descriptor.name()).isEqualTo("JaCoCoIt");
   }
 
   @Test
-  public void shouldExecuteIfReportPathIsDefined() {
-    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
-    when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
-    when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
-    when(configuration.getItReportPath()).thenReturn("it.exec");
-    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
-    assertThat(sensor.shouldExecuteOnProject()).isTrue();
-
-    when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
-    assertThat(sensor.shouldExecuteOnProject()).isFalse();
+  public void logIfInvalidReportPath() {
+    context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "unknown.exec");
+    sensor.execute(context);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("JaCoCo IT report not found: 'unknown.exec'");
   }
 
   @Test
   public void testReadExecutionData() {
-    DefaultInputFile resource = new DefaultInputFile("", "org/sonar/plugins/jacoco/tests/Hello");
-    resource.setLines(19);
-    when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
-    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
+    context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
+    DefaultInputFile file = new DefaultInputFile(context.module().key(), "org/sonar/plugins/jacoco/tests/Hello")
+      .setLines(19);
+    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(file);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(baseDir));
 
     sensor.execute(context);
 
     int[] oneHitlines = new int[] {6, 7, 8, 11};
     int[] zeroHitlines = new int[] {15, 16, 18};
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(file.key(), zeroHitline)).isEqualTo(0);
     }
     for (int oneHitline : oneHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", oneHitline)).isEqualTo(1);
+      assertThat(context.lineHits(file.key(), oneHitline)).isEqualTo(1);
     }
-    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(2);
-    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(0);
-  }
-
-  @Test
-  public void doNotSaveMeasureOnResourceWhichDoesntExistInTheContext() {
-    SensorContext context = mock(SensorContext.class);
-    when(pathResolver.relativeFile(any(File.class), anyString())).thenReturn(jacocoExecutionData);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-
-    sensor.execute(context);
-
-    verify(context, never()).newCoverage();
+    assertThat(context.conditions(file.key(), 15)).isEqualTo(2);
+    assertThat(context.coveredConditions(file.key(), 15)).isEqualTo(0);
   }
 
 }
