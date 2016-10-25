@@ -29,6 +29,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,6 +57,11 @@ public class NullDereferenceCheck extends SECheck {
         return context.getState().addConstraint(values.get(numberArguments), ObjectConstraint.NOT_NULL);
       }
     }
+    if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      toCheck = ((ArrayAccessExpressionTree) toCheck).expression();
+      currentVal = context.getState().peekValues(2).get(1);
+      return checkConstraint(context, toCheck, currentVal);
+    }
     if (toCheck.is(Tree.Kind.MEMBER_SELECT)) {
       return checkMemberSelect(context, (MemberSelectExpressionTree) toCheck, currentVal);
     }
@@ -66,13 +72,16 @@ public class NullDereferenceCheck extends SECheck {
     return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
   }
 
-  private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree syntaxNode, SymbolicValue currentVal) {
-    final ProgramState programState = context.getState();
-    if ("class".equals(syntaxNode.identifier().name())) {
+  private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree mse, SymbolicValue currentVal) {
+    if ("class".equals(mse.identifier().name())) {
       // expression ClassName.class won't raise NPE.
-      return programState;
+      return context.getState();
     }
+    return checkConstraint(context, mse, currentVal);
+  }
 
+  private ProgramState checkConstraint(CheckerContext context, Tree syntaxNode, SymbolicValue currentVal) {
+    ProgramState programState = context.getState();
     Constraint constraint = programState.getConstraint(currentVal);
     if (constraint != null && constraint.isNull()) {
       List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
@@ -82,11 +91,10 @@ public class NullDereferenceCheck extends SECheck {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here", secondary);
       return null;
     }
-    SymbolicValue targetValue = programState.peekValue();
-    constraint = programState.getConstraint(targetValue);
+    constraint = programState.getConstraint(currentVal);
     if (constraint == null) {
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
-      return programState.addConstraint(targetValue, ObjectConstraint.NOT_NULL);
+      return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
     }
     return programState;
   }
