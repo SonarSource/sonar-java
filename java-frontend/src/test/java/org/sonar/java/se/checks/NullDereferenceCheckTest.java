@@ -34,4 +34,8 @@ public class NullDereferenceCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/ObjectsMethodsTest.java", new NullDereferenceCheck());
   }
 
+  @Test
+  public void null_array_access() {
+    JavaCheckVerifier.verify("src/test/files/se/NullArrayAccess.java", new NullDereferenceCheck());
+  }
 }
