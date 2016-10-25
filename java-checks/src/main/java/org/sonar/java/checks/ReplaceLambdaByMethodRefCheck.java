@@ -114,7 +114,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   }
 
   private static boolean nullAgainstParam(ExpressionTree o1, ExpressionTree o2, LambdaExpressionTree tree) {
-    if (o1.is(Tree.Kind.NULL_LITERAL) && (o2.is(Tree.Kind.IDENTIFIER))) {
+    if (o1.is(Tree.Kind.NULL_LITERAL) && o2.is(Tree.Kind.IDENTIFIER)) {
       List<VariableTree> parameters = tree.parameters();
       return parameters.size() == 1 && parameters.get(0).symbol().equals(((IdentifierTree) o2).symbol());
     }
