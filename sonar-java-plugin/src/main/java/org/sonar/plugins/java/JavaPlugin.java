@@ -49,7 +49,6 @@ public class JavaPlugin implements Plugin {
       JavaClasspath.class,
       JavaTestClasspath.class,
       Java.class,
-      CommonRulesSonarWayProfile.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
         .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
         .name("File suffixes")
