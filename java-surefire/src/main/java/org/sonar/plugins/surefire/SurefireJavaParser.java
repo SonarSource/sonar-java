@@ -28,7 +28,6 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
-import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -142,13 +141,6 @@ public class SurefireJavaParser {
     saveMeasure(context, inputFile, CoreMetrics.TEST_ERRORS, report.getErrors());
     saveMeasure(context, inputFile, CoreMetrics.TEST_FAILURES, report.getFailures());
     saveMeasure(context, inputFile, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
-    double passedTests = testsCount - (double) report.getErrors() - report.getFailures();
-    if (testsCount > 0) {
-      double percentage = ParsingUtils.scaleValue(passedTests * 100d / testsCount);
-      if (!Double.isNaN(percentage)) {
-        context.<Double>newMeasure().forMetric(CoreMetrics.TEST_SUCCESS_DENSITY).on(inputFile).withValue(percentage).save();
-      }
-    }
     saveResults(inputFile, report);
   }
 
