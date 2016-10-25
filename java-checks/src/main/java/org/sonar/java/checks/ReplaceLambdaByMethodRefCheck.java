@@ -104,7 +104,9 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     }
     if (expr.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree bet = (BinaryExpressionTree) expr;
-      if (nullAgainstParam(bet.leftOperand(), bet.rightOperand(), tree) || nullAgainstParam(bet.rightOperand(), bet.leftOperand(), tree)) {
+      ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(bet.leftOperand());
+      ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(bet.rightOperand());
+      if (nullAgainstParam(leftOperand, rightOperand, tree) || nullAgainstParam(rightOperand, leftOperand, tree)) {
         return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
       }
     }
