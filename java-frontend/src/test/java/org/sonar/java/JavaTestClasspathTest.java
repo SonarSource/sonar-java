@@ -79,6 +79,17 @@ public class JavaTestClasspathTest {
   }
 
   @Test
+  public void empty_libraries_if_only_main_files() throws Exception {
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
+    DefaultInputFile inputFile = new DefaultInputFile("", "plop.java");
+    inputFile.setType(InputFile.Type.MAIN);
+    inputFile.setLanguage("java");
+    fs.add(inputFile);
+    javaTestClasspath = createJavaClasspath();
+    assertThat(javaTestClasspath.getElements()).isEmpty();
+  }
+
+  @Test
   public void libraries_without_dir() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");

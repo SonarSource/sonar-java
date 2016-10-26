@@ -96,7 +96,7 @@ public abstract class AbstractJavaClasspath {
     return result;
   }
 
-  private boolean hasJavaSources() {
+  protected boolean hasJavaSources() {
     return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
   }
 

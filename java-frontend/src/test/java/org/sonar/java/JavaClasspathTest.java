@@ -278,7 +278,18 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void name() throws Exception {
+  public void classpath_empty_if_only_test_files() throws Exception {
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
+    DefaultInputFile inputFile = new DefaultInputFile("", "plop.java");
+    inputFile.setType(InputFile.Type.TEST);
+    inputFile.setLanguage("java");
+    fs.add(inputFile);
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).isEmpty();
+  }
+
+  @Test
+  public void validate_libraries_only_if_not_filtered_out() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     DefaultInputFile inputFile = new DefaultInputFile("", "plop.java");
