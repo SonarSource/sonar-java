@@ -15,7 +15,7 @@
   <properties>
     <!-- source: http://maven.apache.org/xsd/maven-4.0.0.xsd -->
     <xsdPath>src/main/resources/maven-4.0.0.xsd</xsdPath>
-    <bindingFile>src/main/resources/bindings.xml</bindingFile>
+    <bindingFile>src/main/resources/bindings.xjb</bindingFile>
     <javaPackageName>org.sonar.maven.model.maven2</javaPackageName>
     <targetDir>${project.build.directory}/generated-sources</targetDir>
     <!-- exclude generated sources from analysis -->
@@ -73,25 +73,29 @@
     </pluginManagement>
     <plugins>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>2.2</version>
         <executions>
           <execution>
-            <id>generate-model</id>
-            <phase>generate-sources</phase>
-            <configuration>
-              <target>
-                <mkdir dir="${targetDir}" />
-                <exec executable="xjc">
-                  <arg line="-extension -b ${bindingFile} -p ${javaPackageName} -d ${targetDir} -encoding UTF-8 ${xsdPath}" />
-                </exec>
-              </target>
-            </configuration>
+            <id>xjc</id>
             <goals>
-              <goal>run</goal>
+              <goal>xjc</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <extension>true</extension>
+          <packageName>${javaPackageName}</packageName>
+          <xjbSources>
+            <xjbSource>${bindingFile}</xjbSource>
+          </xjbSources>
+          <outputDirectory>${targetDir}</outputDirectory>
+          <encoding>UTF-8</encoding>
+          <sources>
+            <source>${xsdPath}</source>
+          </sources>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
