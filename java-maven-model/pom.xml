@@ -73,29 +73,29 @@
     </pluginManagement>
     <plugins>
       <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jaxb2-maven-plugin</artifactId>
-          <version>2.2</version>
-          <executions>
-              <execution>
-                  <id>xjc</id>
-                  <goals>
-                      <goal>xjc</goal>
-                  </goals>
-              </execution>
-          </executions>
-          <configuration>
-              <extension>true</extension>
-              <packageName>${javaPackageName}</packageName>
-              <xjbSources>
-                  <xjbSource>${bindingFile}</xjbSource>
-              </xjbSources>
-              <outputDirectory>${targetDir}</outputDirectory>
-              <encoding>UTF-8</encoding>
-              <sources>
-                  <source>${xsdPath}</source>
-              </sources>
-          </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <id>xjc</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <extension>true</extension>
+          <packageName>${javaPackageName}</packageName>
+          <xjbSources>
+            <xjbSource>${bindingFile}</xjbSource>
+          </xjbSources>
+          <outputDirectory>${targetDir}</outputDirectory>
+          <encoding>UTF-8</encoding>
+          <sources>
+            <source>${xsdPath}</source>
+          </sources>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
