@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -238,7 +239,7 @@ public class UnclosedResourcesCheck extends SECheck {
       final ExpressionTree variable = syntaxNode.variable();
       if (isNonLocalStorage(variable)) {
         SymbolicValue value;
-        if (isSimpleAssignment(syntaxNode)) {
+        if (ExpressionUtils.isSimpleAssignment(syntaxNode)) {
           value = programState.peekValue();
         } else {
           value = programState.peekValues(2).get(0);

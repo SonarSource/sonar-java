@@ -30,6 +30,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
@@ -600,7 +601,7 @@ public class ExplodedGraphWalker {
     ProgramState.Pop unstack;
     SymbolicValue value;
 
-    if (isSimpleAssignment(tree)) {
+    if (ExpressionUtils.isSimpleAssignment(tree)) {
       unstack = programState.unstackValue(1);
       value = unstack.values.get(0);
     } else {
@@ -615,10 +616,6 @@ public class ExplodedGraphWalker {
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
     }
     programState = programState.stackValue(value);
-  }
-
-  private static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.ASSIGNMENT) && tree.variable().is(Tree.Kind.IDENTIFIER);
   }
 
   private void executeLogicalAssignement(AssignmentExpressionTree tree) {

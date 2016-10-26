@@ -22,6 +22,7 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -579,13 +580,9 @@ public class CFG {
     currentBlock.elements.add(tree);
     build(tree.expression());
     // The variable is not evaluated for simple assignment as it's only used to know where to store the value: JLS8-15.26
-    if (!isSimpleAssignment(tree)) {
+    if (!ExpressionUtils.isSimpleAssignment(tree)) {
       build(tree.variable());
     }
-  }
-
-  private static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.ASSIGNMENT) && tree.variable().is(Tree.Kind.IDENTIFIER);
   }
 
   private void buildMemberSelect(MemberSelectExpressionTree mse) {

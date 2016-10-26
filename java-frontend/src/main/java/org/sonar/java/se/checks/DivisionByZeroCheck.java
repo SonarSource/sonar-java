@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -93,8 +94,8 @@ public class DivisionByZeroCheck extends SECheck {
       List<SymbolicValue> symbolicValues;
       SymbolicValue var;
       SymbolicValue expr;
-      if (isSimpleAssignment(tree)) {
-        var = programState.getValue(((IdentifierTree) tree.variable()).symbol());
+      if (ExpressionUtils.isSimpleAssignment(tree)) {
+        var = programState.getValue(((IdentifierTree) ExpressionUtils.skipParentheses(tree.variable())).symbol());
         expr = programState.peekValue();
       } else {
         symbolicValues = programState.peekValues(2);
