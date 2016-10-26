@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -109,7 +109,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private static boolean isConcatenation(AssignmentExpressionTree tree) {
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree.expression());
+      ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree.expression());
       return expressionTree.is(Tree.Kind.PLUS) && concatenateVariable(tree.variable(), (BinaryExpressionTree) expressionTree);
     }
     return tree.is(Tree.Kind.PLUS_ASSIGNMENT);

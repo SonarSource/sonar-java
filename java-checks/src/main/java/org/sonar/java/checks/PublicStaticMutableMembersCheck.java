@@ -25,11 +25,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -136,7 +136,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   }
 
   private void checkAssignment(AssignmentExpressionTree node) {
-    ExpressionTree variable = ExpressionsHelper.skipParentheses(node.variable());
+    ExpressionTree variable = ExpressionUtils.skipParentheses(node.variable());
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       variable = ((MemberSelectExpressionTree) variable).identifier();
     }
@@ -166,7 +166,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     if (symbol.isFinal() && isEmptyArray(initializer)) {
       return false;
     }
-    ExpressionTree expression = ExpressionsHelper.skipParentheses(initializer);
+    ExpressionTree expression = ExpressionUtils.skipParentheses(initializer);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       return returnValueIsMutable((MethodInvocationTree) expression);
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {

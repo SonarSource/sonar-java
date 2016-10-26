@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -76,7 +76,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private void checkNewMap(ExpressionTree given, boolean useEnumKey) {
-    ExpressionTree expression = ExpressionsHelper.skipParentheses(given);
+    ExpressionTree expression = ExpressionUtils.skipParentheses(given);
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
       if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {

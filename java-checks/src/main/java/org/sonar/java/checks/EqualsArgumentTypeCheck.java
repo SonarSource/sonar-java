@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -75,7 +75,7 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isArgument(ExpressionTree tree, Symbol parameterSymbol) {
-    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree);
     return expressionTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expressionTree).symbol().equals(parameterSymbol);
   }
 
@@ -181,7 +181,7 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
-      ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
+      ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree);
       return expressionTree.is(Tree.Kind.METHOD_INVOCATION)
         && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
         && isInvocationOnArgument((MethodInvocationTree) expressionTree);

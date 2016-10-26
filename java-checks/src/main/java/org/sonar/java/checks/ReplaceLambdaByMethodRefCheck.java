@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -100,12 +100,12 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     }
     Tree expr = statement;
     if (expr.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      expr = ExpressionsHelper.skipParentheses((ParenthesizedTree) statement);
+      expr = ExpressionUtils.skipParentheses((ParenthesizedTree) statement);
     }
     if (expr.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree bet = (BinaryExpressionTree) expr;
-      ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(bet.leftOperand());
-      ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(bet.rightOperand());
+      ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
+      ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
       if (nullAgainstParam(leftOperand, rightOperand, tree) || nullAgainstParam(rightOperand, leftOperand, tree)) {
         return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
       }

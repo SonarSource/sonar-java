@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -62,8 +62,8 @@ public class RawByteBitwiseOperationsCheck extends BaseTreeVisitor implements Ja
       return;
     }
     if (isIntegerOrLongExpected(tree.symbolType())) {
-      ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(tree.leftOperand());
-      ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(tree.rightOperand());
+      ExpressionTree leftOperand = ExpressionUtils.skipParentheses(tree.leftOperand());
+      ExpressionTree rightOperand = ExpressionUtils.skipParentheses(tree.rightOperand());
       checkShiftWithoutByteSecuring(leftOperand, rightOperand);
       checkShiftWithoutByteSecuring(rightOperand, leftOperand);
     }

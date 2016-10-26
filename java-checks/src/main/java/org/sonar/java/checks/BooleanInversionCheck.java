@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,7 +51,7 @@ public class BooleanInversionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree expression = ExpressionsHelper.skipParentheses(((UnaryExpressionTree) tree).expression());
+    ExpressionTree expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
     if (expression.is(
         Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO,
         Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,

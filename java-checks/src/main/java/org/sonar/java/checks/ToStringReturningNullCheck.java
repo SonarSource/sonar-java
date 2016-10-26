@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -46,7 +46,7 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       insideToString = isToStringDeclaration((MethodTree) tree);
     } else if (insideToString) {
-      ExpressionTree returnExpression = ExpressionsHelper.skipParentheses(((ReturnStatementTree) tree).expression());
+      ExpressionTree returnExpression = ExpressionUtils.skipParentheses(((ReturnStatementTree) tree).expression());
       if (returnExpression.is(Kind.NULL_LITERAL)) {
         reportIssue(returnExpression, "Return empty string instead.");
       }

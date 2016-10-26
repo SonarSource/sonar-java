@@ -21,10 +21,10 @@ package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -82,7 +82,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static MethodInvocationTree isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
-    Tree expression = ExpressionsHelper.skipParentheses(tree);
+    Tree expression = ExpressionUtils.skipParentheses(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
       if (matcher.matches(methodInvocation)) {
@@ -93,7 +93,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isTreeLiteralNull(ExpressionTree tree) {
-    return ExpressionsHelper.skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
+    return ExpressionUtils.skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
   }
 
   private void raiseIssue(IdentifierTree identifierTree) {

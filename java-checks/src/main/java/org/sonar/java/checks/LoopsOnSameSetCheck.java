@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -64,7 +64,7 @@ public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkForEach(Map<Symbol, Integer> forEachSymbols, @Nullable Tree previousIterable, ForEachStatement item) {
-    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(item.expression());
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(item.expression());
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       checkForEachIdentifier(forEachSymbols, (IdentifierTree) expressionTree);
     } else if (previousIterable != null) {

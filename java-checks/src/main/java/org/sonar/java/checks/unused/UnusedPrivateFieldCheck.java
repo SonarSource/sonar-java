@@ -25,7 +25,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -120,7 +120,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void addAssignment(ExpressionTree tree) {
-    ExpressionTree variable = ExpressionsHelper.skipParentheses(tree);
+    ExpressionTree variable = ExpressionUtils.skipParentheses(tree);
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       addAssignment((IdentifierTree) variable);
     } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {

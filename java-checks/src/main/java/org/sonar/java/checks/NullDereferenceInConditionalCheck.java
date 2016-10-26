@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -61,7 +61,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
   }
 
   private static IdentifierTree getIdentifier(ExpressionTree tree) {
-    ExpressionTree nonNullOperand = ExpressionsHelper.skipParentheses(tree);
+    ExpressionTree nonNullOperand = ExpressionUtils.skipParentheses(tree);
     if (nonNullOperand.is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) nonNullOperand;
     }
@@ -140,7 +140,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
   }
 
   private static boolean isNullComparison(ExpressionTree expressionTree, Tree.Kind comparatorKind) {
-    ExpressionTree tree = ExpressionsHelper.skipParentheses(expressionTree);
+    ExpressionTree tree = ExpressionUtils.skipParentheses(expressionTree);
     if (tree.is(comparatorKind)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
       return binary.leftOperand().is(Tree.Kind.NULL_LITERAL) || binary.rightOperand().is(Tree.Kind.NULL_LITERAL);
@@ -149,7 +149,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
   }
 
   private static ExpressionTree getNonNullOperand(ExpressionTree expressionTree) {
-    BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) ExpressionsHelper.skipParentheses(expressionTree);
+    BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) ExpressionUtils.skipParentheses(expressionTree);
     if (binaryExpressionTree.leftOperand().is(Tree.Kind.NULL_LITERAL)) {
       return binaryExpressionTree.rightOperand();
     }

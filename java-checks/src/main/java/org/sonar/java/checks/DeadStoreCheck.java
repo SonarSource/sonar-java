@@ -25,7 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -105,7 +105,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       case REMAINDER_ASSIGNMENT:
       case ASSIGNMENT:
         AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
-        ExpressionTree lhs = ExpressionsHelper.skipParentheses(assignmentExpressionTree.variable());
+        ExpressionTree lhs = ExpressionUtils.skipParentheses(assignmentExpressionTree.variable());
         if (lhs.is(Tree.Kind.IDENTIFIER)) {
           symbol = ((IdentifierTree) lhs).symbol();
           if (isLocalVariable(symbol) && !out.contains(symbol) && (assignmentExpressionTree.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))) {
@@ -154,7 +154,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       case PREFIX_DECREMENT:
       case PREFIX_INCREMENT:
         // within each block, each produced value is consumed or by following elements or by terminator
-        ExpressionTree prefixExpression = ExpressionsHelper.skipParentheses(((UnaryExpressionTree) element).expression());
+        ExpressionTree prefixExpression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) element).expression());
         if (isParentExpressionStatement(element) && prefixExpression.is(Tree.Kind.IDENTIFIER)) {
           symbol = ((IdentifierTree) prefixExpression).symbol();
           if (isLocalVariable(symbol) && !out.contains(symbol)) {
@@ -164,7 +164,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         break;
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
-        ExpressionTree expression = ExpressionsHelper.skipParentheses(((UnaryExpressionTree) element).expression());
+        ExpressionTree expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) element).expression());
         if (expression.is(Tree.Kind.IDENTIFIER)) {
           symbol = ((IdentifierTree) expression).symbol();
           if (isLocalVariable(symbol) && !out.contains(symbol)) {
@@ -251,7 +251,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      ExpressionTree lhs = ExpressionsHelper.skipParentheses(tree.variable());
+      ExpressionTree lhs = ExpressionUtils.skipParentheses(tree.variable());
       if (lhs.is(Tree.Kind.IDENTIFIER)) {
         Symbol symbol = ((IdentifierTree) lhs).symbol();
         if (isLocalVariable(symbol)) {
