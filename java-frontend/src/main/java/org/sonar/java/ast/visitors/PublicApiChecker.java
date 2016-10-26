@@ -20,7 +20,6 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
-import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -41,7 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -266,12 +264,5 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   public int getUndocumentedPublicApi() {
     return publicApi - documentedPublicApi;
-  }
-
-  public double getDocumentedPublicApiDensity() {
-    if (Double.doubleToRawLongBits(publicApi) == 0L) {
-      return 100.0;
-    }
-    return ParsingUtils.scaleValue(documentedPublicApi / ((double) publicApi) * 100, 2);
   }
 }

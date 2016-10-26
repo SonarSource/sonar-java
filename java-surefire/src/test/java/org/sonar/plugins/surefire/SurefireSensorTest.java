@@ -95,9 +95,9 @@ public class SurefireSensorTest {
     surefireSensor.collect(context, new File(getClass().getResource(
         "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/").toURI()));
 
-    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(6);
-    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest2")).hasSize(6);
-    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest3")).hasSize(6);
+    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(5);
+    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest2")).hasSize(5);
+    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest3")).hasSize(5);
 
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.TESTS).value()).isEqualTo(4);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(111L);
@@ -129,8 +129,8 @@ public class SurefireSensorTest {
     surefireSensor.collect(context, new File(getClass().getResource(
         "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/").toURI()));
 
-    // 1 classes, 6 measures by class
-    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(6);
+    // 1 classes, 5 measures by class
+    assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(5);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.TESTS).value()).isEqualTo(7);
   }
@@ -155,7 +155,6 @@ public class SurefireSensorTest {
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(1);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_SUCCESS_DENSITY).value()).isEqualTo(0d);
   }
 
   @Test
@@ -170,7 +169,6 @@ public class SurefireSensorTest {
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(1);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_SUCCESS_DENSITY).value()).isEqualTo(50d);
   }
 
   @Test
@@ -185,7 +183,6 @@ public class SurefireSensorTest {
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(2);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_SUCCESS_DENSITY)).isNull();
   }
 
   @Test
@@ -213,7 +210,6 @@ public class SurefireSensorTest {
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(2);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_SUCCESS_DENSITY).value()).isEqualTo(50d);
   }
 
 }

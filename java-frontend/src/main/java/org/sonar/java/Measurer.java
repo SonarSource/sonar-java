@@ -107,7 +107,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
     saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
-    saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
     saveMetricOnFile(CoreMetrics.PUBLIC_UNDOCUMENTED_API, publicApiChecker.getUndocumentedPublicApi());
     saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
     saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));

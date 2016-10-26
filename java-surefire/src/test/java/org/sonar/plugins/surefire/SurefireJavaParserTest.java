@@ -112,12 +112,12 @@ public class SurefireJavaParserTest {
   public void shouldAggregateReports() throws URISyntaxException {
     SensorContextTester context = mockContext();
     parser.collect(context, getDir("multipleReports"), true);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")).hasSize(6);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CloverCollectorTest")).hasSize(6);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CheckstyleCollectorTest")).hasSize(6);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.SonarMojoTest")).hasSize(6);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JDependsCollectorTest")).hasSize(6);
-    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JavaNCSSCollectorTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")).hasSize(5);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CloverCollectorTest")).hasSize(5);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CheckstyleCollectorTest")).hasSize(5);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.SonarMojoTest")).hasSize(5);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JDependsCollectorTest")).hasSize(5);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JavaNCSSCollectorTest")).hasSize(5);
   }
 
   // SONAR-2841: if there's only a test suite report, then it should be read.
@@ -126,8 +126,8 @@ public class SurefireJavaParserTest {
     SensorContextTester context = mockContext();
 
     parser.collect(context, getDir("onlyTestSuiteReport"), true);
-    assertThat(context.measures(":org.sonar.SecondTest")).hasSize(6);
-    assertThat(context.measures(":org.sonar.JavaNCSSCollectorTest")).hasSize(6);
+    assertThat(context.measures(":org.sonar.SecondTest")).hasSize(5);
+    assertThat(context.measures(":org.sonar.JavaNCSSCollectorTest")).hasSize(5);
   }
 
   /**
