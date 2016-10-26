@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.java.se.ProgramState;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -33,17 +32,6 @@ public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
 
   protected CheckerTreeNodeVisitor(ProgramState programState) {
     this.programState = programState;
-  }
-
-  /**
-   * In case of simple assignments, only the result of the evaluation of the expression is on the stack. Consequently, 
-   * only a single value should be unstacked. For other cases, two values should be unstacked. See JLS8-15.26
-   * 
-   * @param tree The assignment tree
-   * @return true if the tree is a simple assignment 
-   */
-  protected static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.ASSIGNMENT) && tree.variable().is(Tree.Kind.IDENTIFIER);
   }
 
   @Override

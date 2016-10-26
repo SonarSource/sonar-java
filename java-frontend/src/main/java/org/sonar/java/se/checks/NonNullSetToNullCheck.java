@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Scope;
 import org.sonar.java.se.CheckerContext;
@@ -140,7 +141,7 @@ public class NonNullSetToNullCheck extends SECheck {
         Symbol symbol = variable.symbol();
         String nonNullAnnotation = nonNullAnnotation(symbol);
         if (nonNullAnnotation != null) {
-          SymbolicValue assignedValue = isSimpleAssignment(tree) ? programState.peekValue() : programState.peekValues(2).get(0);
+          SymbolicValue assignedValue = ExpressionUtils.isSimpleAssignment(tree) ? programState.peekValue() : programState.peekValues(2).get(0);
           Constraint constraint = programState.getConstraint(assignedValue);
           if (constraint != null && constraint.isNull()) {
             reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
