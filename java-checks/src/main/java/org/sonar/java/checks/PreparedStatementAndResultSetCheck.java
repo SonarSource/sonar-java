@@ -22,12 +22,12 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -110,7 +110,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   @CheckForNull
   private static Integer getNumberQuery(ExpressionTree expression) {
-    ExpressionTree expr = ExpressionsHelper.skipParentheses(expression);
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
     if (expr.is(Tree.Kind.IDENTIFIER)) {
       return handleVariableUsedAsQuery((IdentifierTree) expr);
     } else if (expr.is(Tree.Kind.PLUS)) {

@@ -21,9 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -52,8 +52,8 @@ public class IndexOfStartPositionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(((BinaryExpressionTree) tree).leftOperand());
-    ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(((BinaryExpressionTree) tree).rightOperand());
+    ExpressionTree leftOperand = ExpressionUtils.skipParentheses(((BinaryExpressionTree) tree).leftOperand());
+    ExpressionTree rightOperand = ExpressionUtils.skipParentheses(((BinaryExpressionTree) tree).rightOperand());
     if (leftOperand.is(Tree.Kind.METHOD_INVOCATION)) {
       checkIndexOfInvocation((MethodInvocationTree) leftOperand, rightOperand);
     } else if (rightOperand.is(Tree.Kind.METHOD_INVOCATION)) {

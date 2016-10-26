@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -34,15 +33,6 @@ import java.util.LinkedList;
 public class ExpressionsHelper {
 
   private ExpressionsHelper() {
-
-  }
-
-  public static ExpressionTree skipParentheses(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
   }
 
   public static String concatenate(@Nullable ExpressionTree tree) {

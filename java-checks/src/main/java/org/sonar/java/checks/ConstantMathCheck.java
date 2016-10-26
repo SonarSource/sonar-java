@@ -21,9 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -119,7 +119,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isTruncation(MethodInvocationTree methodTree) {
-    return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(ExpressionsHelper.skipParentheses(methodTree.arguments().get(0)));
+    return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(ExpressionUtils.skipParentheses(methodTree.arguments().get(0)));
   }
 
   private static boolean isConstantWithLiteral(MethodInvocationTree methodTree) {
@@ -158,9 +158,9 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
   }
 
   private static ExpressionTree getInnerExpression(ExpressionTree tree) {
-    ExpressionTree result = ExpressionsHelper.skipParentheses(tree);
+    ExpressionTree result = ExpressionUtils.skipParentheses(tree);
     while (result.is(Tree.Kind.TYPE_CAST)) {
-      result = ExpressionsHelper.skipParentheses(((TypeCastTree) result).expression());
+      result = ExpressionUtils.skipParentheses(((TypeCastTree) result).expression());
     }
     return result;
   }
@@ -180,7 +180,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Integer getFloatingZeroOrOne(ExpressionTree tree) {
-    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree);
     if (expressionTree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
       String value = ((LiteralTree) expressionTree).value();
       if ("0.0".equals(value) || "0.0d".equalsIgnoreCase(value) || "0.0f".equalsIgnoreCase(value)) {

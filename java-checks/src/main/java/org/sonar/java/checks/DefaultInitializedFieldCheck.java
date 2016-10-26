@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -59,7 +59,7 @@ public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
     }
     ExpressionTree initializer = member.initializer();
     if (initializer != null) {
-      initializer = ExpressionsHelper.skipParentheses(initializer);
+      initializer = ExpressionUtils.skipParentheses(initializer);
       if (isDefault(initializer, member.type().symbolType().isPrimitive())) {
         reportIssue(initializer, "Remove this initialization to \"" + ((LiteralTree) initializer).value() + "\", the compiler will do that for you.");
       }

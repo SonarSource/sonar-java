@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -50,7 +50,7 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
       ExpressionTree returnExpression = ((ReturnStatementTree) tree).expression();
       if (returnExpression != null && isPostfix(returnExpression)) {
         UnaryExpressionTree unaryExpression = (UnaryExpressionTree) returnExpression;
-        ExpressionTree expression = ExpressionsHelper.skipParentheses(unaryExpression.expression());
+        ExpressionTree expression = ExpressionUtils.skipParentheses(unaryExpression.expression());
         if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().owner().isMethodSymbol()) {
           reportIssue(unaryExpression);
         }

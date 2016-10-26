@@ -21,9 +21,9 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -106,7 +106,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isFileCreateTempFile(ExpressionTree givenExpression) {
-    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(givenExpression);
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(givenExpression);
     return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && FILE_CREATE_TEMP_FILE.matches((MethodInvocationTree) expressionTree);
   }
 

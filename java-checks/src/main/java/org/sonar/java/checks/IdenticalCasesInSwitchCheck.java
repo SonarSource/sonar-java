@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -112,7 +112,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkConditionalExpression(ConditionalExpressionTree node) {
-    if (SyntacticEquivalence.areEquivalent(ExpressionsHelper.skipParentheses(node.trueExpression()), ExpressionsHelper.skipParentheses(node.falseExpression()))) {
+    if (SyntacticEquivalence.areEquivalent(ExpressionUtils.skipParentheses(node.trueExpression()), ExpressionUtils.skipParentheses(node.falseExpression()))) {
       createIssue(node.falseExpression(), "This conditional operation returns the same value whether the condition is \"true\" or \"false\".", node.trueExpression());
     }
   }
