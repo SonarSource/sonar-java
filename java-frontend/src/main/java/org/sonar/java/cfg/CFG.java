@@ -913,8 +913,8 @@ public class CFG {
       .filter(e -> e.getKey().isSubtypeOf("java.lang.ClassCastException"))
       .findFirst()
       .ifPresent(e -> {
-      currentBlock = createBlock(currentBlock);
-      currentBlock.successors.add(e.getValue());
+        currentBlock = createBlock(currentBlock);
+        currentBlock.successors.add(e.getValue());
     });
     currentBlock.elements.add(tree);
     TypeCastTree typeCastTree = (TypeCastTree) tree;
