@@ -281,6 +281,7 @@ public class JavaSymbol implements Symbol {
   public static class PackageJavaSymbol extends JavaSymbol {
 
     Scope members;
+    TypeJavaSymbol packageInfo;
 
     public PackageJavaSymbol(@Nullable String name, @Nullable JavaSymbol owner) {
       super(PCK, 0, name, owner);
@@ -291,6 +292,11 @@ public class JavaSymbol implements Symbol {
       return members;
     }
 
+    @Override
+    public SymbolMetadataResolve metadata() {
+      complete();
+      return packageInfo.metadata();
+    }
   }
 
   /**

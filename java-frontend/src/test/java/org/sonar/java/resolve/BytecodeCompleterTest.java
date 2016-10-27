@@ -508,4 +508,10 @@ public class BytecodeCompleterTest {
     Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("ChartDirector.Layer");
     assertThat(clazz.memberSymbols().stream().anyMatch(s-> s.name().equals("fj"))).isTrue();
   }
+
+  @Test
+  public void package_annotations() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.MethodSymbols");
+    assertThat(((TypeJavaSymbol) clazz).packge().metadata().isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault")).isTrue();
+  }
 }

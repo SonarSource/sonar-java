@@ -81,8 +81,14 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   public void complete(JavaSymbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
     String bytecodeName = formFullName(symbol);
+    if(symbol.isPackageSymbol()) {
+      bytecodeName = bytecodeName + ".package-info";
+    }
     JavaSymbol.TypeJavaSymbol classSymbol = getClassSymbol(bytecodeName);
-    Preconditions.checkState(classSymbol == symbol);
+    if(symbol.isPackageSymbol()) {
+      ((JavaSymbol.PackageJavaSymbol) symbol).packageInfo = classSymbol;
+    }
+    Preconditions.checkState(symbol.isPackageSymbol() || classSymbol == symbol);
 
     InputStream inputStream = null;
     ClassReader classReader = null;
@@ -98,7 +104,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
     if (classReader != null) {
       classReader.accept(
-          new BytecodeVisitor(this, symbols, (JavaSymbol.TypeJavaSymbol) symbol, parametrizedTypeCache),
+          new BytecodeVisitor(this, symbols, classSymbol, parametrizedTypeCache),
           ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
@@ -227,6 +233,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     JavaSymbol.PackageJavaSymbol result = packages.get(fullname);
     if (result == null) {
       result = new JavaSymbol.PackageJavaSymbol(fullname, symbols.defaultPackage);
+      result.completer = this;
       packages.put(fullname, result);
     }
     return result;
