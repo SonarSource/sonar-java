@@ -213,7 +213,7 @@ public class UnclosedResourcesCheck extends SECheck {
           }
         }
       } else {
-        closeArguments(syntaxNode.arguments(), 0);
+        closeArguments(syntaxNode.arguments());
       }
     }
 
@@ -272,7 +272,7 @@ public class UnclosedResourcesCheck extends SECheck {
         }
       }
       // close any resource used as argument, even for unknown methods
-      closeArguments(syntaxNode.arguments(), 1);
+      closeArguments(syntaxNode.arguments());
     }
 
     private SymbolicValue getTargetValue(MethodInvocationTree syntaxNode) {
@@ -298,12 +298,8 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private void closeArguments(final Arguments arguments, int stackOffset) {
-      final List<SymbolicValue> values = programState.peekValues(arguments.size() + stackOffset);
-      final List<SymbolicValue> argumentValues = values.subList(stackOffset, values.size());
-      for (SymbolicValue target : argumentValues) {
-        closeResource(target);
-      }
+    private void closeArguments(final Arguments arguments) {
+      programState.peekValues(arguments.size()).forEach(this::closeResource);
     }
 
     private void closeResource(@Nullable final SymbolicValue target) {

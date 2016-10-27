@@ -167,7 +167,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
         List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(arguments.size() + 1));
-        argumentValues.remove(0);
+        argumentValues.remove(arguments.size());
         // Arguments of method invocation are in reverse order on the stack, unlike constructors
         Collections.reverse(argumentValues);
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;

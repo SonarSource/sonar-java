@@ -51,10 +51,11 @@ public class NullDereferenceCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
       toCheck = methodInvocation.methodSelect();
+      int numberArguments = methodInvocation.arguments().size();
+      List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
+      currentVal = values.get(numberArguments);
       if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
-        int numberArguments = methodInvocation.arguments().size();
-        List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
-        return context.getState().addConstraint(values.get(numberArguments), ObjectConstraint.NOT_NULL);
+        return context.getState().addConstraint(currentVal, ObjectConstraint.NOT_NULL);
       }
     }
     if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {

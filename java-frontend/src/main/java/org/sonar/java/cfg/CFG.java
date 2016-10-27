@@ -514,13 +514,13 @@ public class CFG {
   private void buildMethodInvocation(MethodInvocationTree mit) {
     handleExceptionalPaths(mit.symbol());
     currentBlock.elements.add(mit);
+    build(mit.arguments());
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
       build(memberSelect.expression());
     } else {
       build(mit.methodSelect());
     }
-    build(mit.arguments());
   }
 
   private void buildIfStatement(IfStatementTree ifStatementTree) {
