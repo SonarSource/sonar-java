@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.MoreObjects;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -146,7 +147,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     boolean hasAutoCloseableSoftAssertion = tree.resources().stream()
       .map(VariableTree::symbol)
       .map(Symbol::type)
-      .filter(type -> type != null)
+      .filter(Objects::nonNull)
       .filter(type -> type.isSubtypeOf("org.assertj.core.api.AutoCloseableSoftAssertions"))
       .findFirst()
       .isPresent();

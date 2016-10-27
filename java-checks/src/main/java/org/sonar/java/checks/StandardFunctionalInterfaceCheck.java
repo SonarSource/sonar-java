@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -180,7 +181,7 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     }
     return STD_INTERFACE_BY_PARAMETER_COUNT.getOrDefault(functionalMethod.parameterTypes().size(), Collections.emptyList()).stream()
         .map(standardInterface -> standardInterface.matchingSpecialization(functionalMethod))
-        .filter(specialization -> specialization != null)
+        .filter(Objects::nonNull)
         .findFirst();
   }
 
