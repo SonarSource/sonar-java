@@ -71,7 +71,7 @@ public class BytecodeVisitor extends ClassVisitor {
   @Override
   public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
     Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
-    Preconditions.checkState(!BytecodeCompleter.isSynthetic(flags), name + " is synthetic");
+    Preconditions.checkState(name.endsWith("package-info") || !BytecodeCompleter.isSynthetic(flags), name + " is synthetic");
     className = name;
     if (signature != null) {
       SignatureReader signatureReader = new SignatureReader(signature);
