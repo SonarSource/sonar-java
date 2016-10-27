@@ -27,9 +27,12 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -38,30 +41,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MethodYieldTest {
-  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
-    ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new ArrayList<>());
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new NullDereferenceCheck()));
-    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    when(context.getTree()).thenReturn(cut);
-    when(context.getSemanticModel()).thenReturn(semanticModel);
-    sev.scanFile(context);
-    return sev;
-  }
   @Test
   public void test_creation_of_states() throws Exception {
-    Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java").behaviorCache;
-    Symbol.MethodSymbol methodSymbol = behaviorCache.keySet().iterator().next();
-    List<MethodYield> yields =
-      behaviorCache.values().stream().flatMap(mb -> mb.yields().stream()).collect(Collectors.toList());
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
+    Symbol.MethodSymbol methodSymbol = entry.getKey();
+    List<MethodYield> yields = entry.getValue().yields();
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue(41);
@@ -73,8 +65,42 @@ public class MethodYieldTest {
     MethodYield methodYield = yields.get(0);
     Collection<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
-    assertThat(generatedStatesFromFirstYield.stream().collect(Collectors.toSet())).hasSize(1);
+  }
 
+  private static enum Status {
+    A, B
+  }
+
+  @Test
+  public void all_constraints_should_be_valid_to_generate_a_new_state() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "bar");
+    Symbol.MethodSymbol methodSymbol = entry.getKey();
+    List<MethodYield> yields = entry.getValue().yields();
+
+    MethodYield trueYield = yields.stream()
+      .filter(y -> y.parametersConstraints[0] instanceof BooleanConstraint && ((BooleanConstraint) y.parametersConstraints[0]).isTrue())
+      .findFirst().get();
+    // force status of the arg1 to be B
+    trueYield.parametersConstraints[1] = ((ObjectConstraint) trueYield.parametersConstraints[1]).withStatus(Status.B);
+
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue sv1 = new SymbolicValue(41);
+    SymbolicValue sv2 = new SymbolicValue(42);
+    SymbolicValue sv3 = new SymbolicValue(43);
+
+    Symbol myBoolean = new JavaSymbol.VariableJavaSymbol(0, "myBoolean", (JavaSymbol) methodSymbol);
+    ps = ps.put(myBoolean, sv1);
+    ps = ps.addConstraint(sv1, BooleanConstraint.TRUE);
+
+    Symbol myVar = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
+    ps = ps.put(myVar, sv2);
+    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, null, Status.A));
+
+    // status of sv2 should be changed from A to B
+    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), ps, () -> sv3);
+    assertThat(generatedStatesFromFirstYield).hasSize(1);
+    assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, Status.B)).isNotNull();
   }
 
   @Test
@@ -91,5 +117,25 @@ public class MethodYieldTest {
     assertThat(methodBehavior.yields()).hasSize(2);
     assertThat(methodBehavior.yields().get(1).resultIndex).isEqualTo(0);
     assertThat(methodBehavior.yields().get(0).resultConstraint.isNull()).isTrue();
+  }
+
+  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
+    ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
+    SemanticModel semanticModel = SemanticModel.createFor(cut, new ArrayList<>());
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new NullDereferenceCheck()));
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    when(context.getTree()).thenReturn(cut);
+    when(context.getSemanticModel()).thenReturn(semanticModel);
+    sev.scanFile(context);
+    return sev;
+  }
+
+  private static Map.Entry<Symbol.MethodSymbol, MethodBehavior> getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
+    Optional<Map.Entry<MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.entrySet().stream()
+      .filter(e -> methodName.equals(e.getKey().name()))
+      .findFirst();
+    assertThat(mb.isPresent()).isTrue();
+    return mb.get();
   }
 }
