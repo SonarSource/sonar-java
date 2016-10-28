@@ -135,10 +135,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       }
     }
 
-    protected void openResource(@Nullable SymbolicValue sv, Tree syntaxNode) {
-      if(sv == null) {
-        sv = programState.peekValue();
-      }
+    protected void openResource(SymbolicValue sv, Tree syntaxNode) {
       programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, status.OPENED));
     }
 
@@ -208,14 +205,14 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     @Override
     public void visitNewClass(NewClassTree newClassTree) {
       if (isCreatingResource(newClassTree)) {
-        openResource(null, newClassTree);
+        openResource(programState.peekValue(), newClassTree);
       }
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (isCreatingResource(mit)) {
-        openResource(null, mit);
+        openResource(programState.peekValue(), mit);
       }
     }
 
