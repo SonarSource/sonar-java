@@ -39,14 +39,19 @@ public class A {
   public void wrongHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     stream.read();
-   return;
   }
 
   public void toleratedHandling() {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     stream.write('c');
-   return;
   }
+
+  public void extendedIgnoredType() {
+    FastByteArrayOutputStream stream = new FastByteArrayOutputStream(); // Compliant
+    stream.write('c');
+  }
+
+  private static class FastByteArrayOutputStream extends ByteArrayOutputStream { }
 
   public void whileLoopHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
