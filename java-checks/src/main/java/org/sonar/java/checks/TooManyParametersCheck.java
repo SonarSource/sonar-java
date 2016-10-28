@@ -19,15 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 @Rule(  key = "S00107")
 @RspecKey("S107")
@@ -49,6 +54,10 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
 
   private JavaFileScannerContext context;
 
+  private static final List<String> WHITE_LIST = ImmutableList.of(
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "com.fasterxml.jackson.annotation.JsonCreator");
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -58,7 +67,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (isOverriding(tree) || (hasSemantic() && usesSpringRequestMappingAnnotation(tree))) {
+    if (isOverriding(tree) || (hasSemantic() && usesAuthorizedAnnotation(tree))) {
       return;
     }
     int max;
@@ -84,8 +93,9 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
     return context.getSemanticModel() != null;
   }
 
-  private static boolean usesSpringRequestMappingAnnotation(MethodTree method) {
-    return method.symbol().metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RequestMapping");
+  private static boolean usesAuthorizedAnnotation(MethodTree method) {
+    SymbolMetadata metadata = method.symbol().metadata();
+    return WHITE_LIST.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
 }
