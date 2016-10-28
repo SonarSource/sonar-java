@@ -38,4 +38,9 @@ public class UnclosedResourcesCheckTest {
   public void streams() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/StreamResource.java", new UnclosedResourcesCheck());
   }
+
+  @Test
+  public void usingYields() {
+    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourceRelyingOnYields.java", new UnclosedResourcesCheck());
+  }
 }

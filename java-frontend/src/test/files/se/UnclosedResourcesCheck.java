@@ -39,14 +39,19 @@ public class A {
   public void wrongHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     stream.read();
-   return;
   }
 
   public void toleratedHandling() {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // Compliant
     stream.write('c');
-   return;
   }
+
+  public void toleratedHandlingWithExtension() {
+    FastByteArrayOutputStream stream = new FastByteArrayOutputStream(); // Compliant
+    stream.write('c');
+  }
+
+  private static class FastByteArrayOutputStream extends ByteArrayOutputStream {  }
 
   public void whileLoopHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
@@ -402,11 +407,11 @@ public class A {
   }
 
   private static void closeQuietly(FileInputStream ... streams) {
-    // supposedly close the input streams
+    // Varargs handled by method yields: supposedly close the input streams
   }
 
   private static void close(FileInputStream fis) {
-    // supposedly close the input stream
+    fis.close();
   }
 
   void activateDeferredProfile(File file) throws Exception {
