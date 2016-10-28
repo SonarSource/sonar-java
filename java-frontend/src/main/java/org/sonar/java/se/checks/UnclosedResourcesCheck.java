@@ -44,6 +44,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -198,7 +200,8 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      final List<SymbolicValue> arguments = programState.peekValues(syntaxNode.arguments().size());
+      List<SymbolicValue> arguments = new ArrayList<>(programState.peekValues(syntaxNode.arguments().size()));
+      Collections.reverse(arguments);
       if (isOpeningResource(syntaxNode)) {
         Iterator<SymbolicValue> iterator = arguments.iterator();
         for (ExpressionTree argument : syntaxNode.arguments()) {
@@ -213,7 +216,7 @@ public class UnclosedResourcesCheck extends SECheck {
           }
         }
       } else {
-        closeArguments(syntaxNode.arguments(), 0);
+        closeArguments(syntaxNode.arguments());
       }
     }
 
@@ -272,7 +275,7 @@ public class UnclosedResourcesCheck extends SECheck {
         }
       }
       // close any resource used as argument, even for unknown methods
-      closeArguments(syntaxNode.arguments(), 1);
+      closeArguments(syntaxNode.arguments());
     }
 
     private SymbolicValue getTargetValue(MethodInvocationTree syntaxNode) {
@@ -298,12 +301,8 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private void closeArguments(final Arguments arguments, int stackOffset) {
-      final List<SymbolicValue> values = programState.peekValues(arguments.size() + stackOffset);
-      final List<SymbolicValue> argumentValues = values.subList(stackOffset, values.size());
-      for (SymbolicValue target : argumentValues) {
-        closeResource(target);
-      }
+    private void closeArguments(final Arguments arguments) {
+      programState.peekValues(arguments.size()).forEach(this::closeResource);
     }
 
     private void closeResource(@Nullable final SymbolicValue target) {

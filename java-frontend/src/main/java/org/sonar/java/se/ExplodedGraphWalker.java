@@ -551,7 +551,7 @@ public class ExplodedGraphWalker {
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
     List<SymbolicValue> parameterValues = new ArrayList<>(values);
-    parameterValues.remove(0);
+    parameterValues.remove(values.size() - 1);
     Collections.reverse(parameterValues);
     return parameterValues;
   }

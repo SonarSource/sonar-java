@@ -38,4 +38,10 @@ public class NullDereferenceCheckTest {
   public void null_array_access() {
     JavaCheckVerifier.verify("src/test/files/se/NullArrayAccess.java", new NullDereferenceCheck());
   }
+
+  @Test
+  public void chained_method_invocation_issue_order() {
+    JavaCheckVerifier.verify("src/test/files/se/MethodParamInvocationOrder.java", new NullDereferenceCheck());
+
+  }
 }

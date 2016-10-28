@@ -28,7 +28,6 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -136,8 +135,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       }
     }
 
-    protected void openResource(Tree syntaxNode) {
-      SymbolicValue sv = programState.peekValue();
+    protected void openResource(SymbolicValue sv, Tree syntaxNode) {
       programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, status.OPENED));
     }
 
@@ -160,18 +158,23 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      closeArguments(syntaxNode.arguments(), 0);
+      programState.peekValues(syntaxNode.arguments().size()).forEach(this::closeResource);
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (isOpeningResource(mit)) {
-        openResource(mit);
+        openResource(getTargetSV(mit), mit);
       } else if (isClosingResource(mit)) {
-        closeResource(programState.peekValue());
+        closeResource(getTargetSV(mit));
       } else {
-        closeArguments(mit.arguments(), 1);
+        programState.peekValues(mit.arguments().size()).forEach(this::closeResource);
       }
+    }
+
+    private SymbolicValue getTargetSV(MethodInvocationTree mit) {
+      List<SymbolicValue> values = programState.peekValues(mit.arguments().size() + 1);
+      return values.get(values.size() -1);
     }
 
     private boolean isOpeningResource(MethodInvocationTree syntaxNode) {
@@ -183,14 +186,6 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       ExpressionTree expression = syntaxNode.expression();
       if (expression != null) {
         closeResource(programState.peekValue());
-      }
-    }
-
-    private void closeArguments(Arguments arguments, int stackOffset) {
-      List<SymbolicValue> values = programState.peekValues(arguments.size() + stackOffset);
-      List<SymbolicValue> argumentValues = values.subList(stackOffset, values.size());
-      for (SymbolicValue target : argumentValues) {
-        closeResource(target);
       }
     }
 
@@ -210,14 +205,14 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     @Override
     public void visitNewClass(NewClassTree newClassTree) {
       if (isCreatingResource(newClassTree)) {
-        openResource(newClassTree);
+        openResource(programState.peekValue(), newClassTree);
       }
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (isCreatingResource(mit)) {
-        openResource(mit);
+        openResource(programState.peekValue(), mit);
       }
     }
 
