@@ -7,4 +7,11 @@ class A {
     o.toString();
     return null;
   }
+
+  void bar(boolean b, Object o) {
+    if (b) {
+      o.toString();
+    }
+  }
+
 }

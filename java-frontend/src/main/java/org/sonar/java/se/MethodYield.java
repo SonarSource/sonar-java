@@ -71,7 +71,7 @@ public class MethodYield {
         // TODO there might be some issue to report in this case.
         return programStates;
       }
-      results.addAll(programStates);
+      results = programStates;
     }
 
     // resulting program states can be empty if all constraints on params are null or if method has no arguments.
