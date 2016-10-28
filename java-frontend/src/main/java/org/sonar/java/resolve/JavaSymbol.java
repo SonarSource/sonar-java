@@ -295,7 +295,7 @@ public class JavaSymbol implements Symbol {
     @Override
     public SymbolMetadataResolve metadata() {
       complete();
-      return packageInfo.metadata();
+      return packageInfo == null ? super.metadata() : packageInfo.metadata();
     }
   }
 

@@ -122,6 +122,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void read_package_annotations() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotations.java", seChecks());
+  }
+
+  @Test
   public void xproc_usage_of_method_behaviors() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehavior.java", seChecks());
   }
