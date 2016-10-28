@@ -96,18 +96,25 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkExpression(Type varType, @Nullable ExpressionTree expr) {
-    if (isVarTypeErrorProne(varType) && expr != null && expressionIsOperationToInt(expr)) {
+    if (isVarTypeErrorProne(varType) && expr != null && expressionIsOperationToIntOrLong(expr)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) expr;
       if(binaryExpressionTree.is(Tree.Kind.DIVIDE) && varType.isPrimitive(Type.Primitives.LONG)) {
         // widening the result of an int division is harmless
+        return;
+      }
+      if (varType.isPrimitive(Type.Primitives.LONG) && expr.symbolType().isPrimitive(Type.Primitives.LONG)) {
         return;
       }
       reportIssue(binaryExpressionTree.operatorToken(), "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
     }
   }
 
-  private static boolean expressionIsOperationToInt(ExpressionTree expr) {
-    return expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS) && expr.symbolType().isPrimitive(Type.Primitives.INT);
+  private static boolean expressionIsOperationToIntOrLong(ExpressionTree expr) {
+    return expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS) && isIntOrLong(expr.symbolType());
+  }
+
+  private static boolean isIntOrLong(Type exprType) {
+    return exprType.isPrimitive(Type.Primitives.INT) || exprType.isPrimitive(Type.Primitives.LONG);
   }
 
   private static boolean isVarTypeErrorProne(Type varType) {

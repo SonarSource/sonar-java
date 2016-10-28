@@ -1,5 +1,5 @@
-<p>When arithmetic is performed on <code>int</code>s, the result will always be an <code>int</code>. You can assign that result to a
-<code>long</code>, <code>double</code>, or <code>float</code> with automatic type conversion, but having started as an <code>int</code>, the result
+<p>When arithmetic is performed on integers, the result will always be an integer. You can assign that result to a <code>long</code>,
+<code>double</code>, or <code>float</code> with automatic type conversion, but having started as an <code>int</code> or <code>long</code>, the result
 will likely not be what you expect. </p>
 <p>For instance, if the result of <code>int</code> division is assigned to a floating-point variable, precision will have been lost before the
 assignment. Likewise, if the result of multiplication is assigned to a <code>long</code>, it may have already overflowed before the assignment.</p>
@@ -16,6 +16,10 @@ Date myDate = new Date(seconds * 1_000); //Noncompliant, won't produce the expec
 public long compute(int factor){
   return factor * 10_000;  //Noncompliant, won't produce the expected result if factor &gt; 214_748
 }
+
+public float compute2(long factor){
+  return factor / 123;  //Noncompliant, will be rounded to closest long integer
+}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -28,6 +32,10 @@ Date myDate = new Date(seconds * 1_000L);
 public long compute(int factor){
   return factor * 10_000L;
 }
+
+public float compute2(long factor){
+  return factor / 123f;
+}
 </pre>
 <p>or</p>
 <pre>
@@ -39,6 +47,10 @@ Date myDate = new Date((long)seconds * 1_000);
 ...
 public long compute(long factor){
   return factor * 10_000;
+}
+
+public float compute2(float factor){
+  return factor / 123;
 }
 </pre>
 <h2>See</h2>
