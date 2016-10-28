@@ -69,7 +69,8 @@ public class UnclosedResourcesCheck extends SECheck {
     "java.io.CharArrayWriter",
     "java.io.StringReader",
     "java.io.StringWriter",
-    "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
+    "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream",
+    "org.springframework.context.ConfigurableApplicationContext"
   };
   private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
