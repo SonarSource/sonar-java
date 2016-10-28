@@ -111,7 +111,7 @@ public class UnclosedResourcesCheck extends SECheck {
       return false;
     }
     for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
-      if (type.is(ignoredTypes)) {
+      if (type.isSubtypeOf(ignoredTypes)) {
         return false;
       }
     }
