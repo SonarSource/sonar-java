@@ -50,9 +50,14 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 
 public class CFGTest {
 
@@ -1683,4 +1688,48 @@ public class CFGTest {
         ).successors(0));
     cfgChecker.check(cfg);
   }
+
+
+  @Test
+  public void constructor_arguments_order() throws Exception {
+    CFG cfg = buildCFG("private void foo(Exception e) {\n" +
+      "throw new IllegalArgumentException(\"iae\", e);\n" +
+      "} "
+    );
+    CFGChecker cfgChecker = checker(
+      block(
+        element(STRING_LITERAL, "iae"),
+        element(IDENTIFIER, "e"),
+        element(NEW_CLASS)
+      ).terminator(THROW_STATEMENT).successors(0)
+    );
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void array_dim_initializer_order() throws Exception {
+    CFG cfg = buildCFG("private void fun() {\n" +
+      "String[] plop = {foo(), bar()};\n" +
+      "String[][] plop2 = new String[qix()][baz()];\n" +
+      "} "
+    );
+    CFGChecker cfgChecker = checker(
+      block(
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION),
+        element(NEW_ARRAY),
+        element(VARIABLE, "plop"),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "baz"),
+        element(METHOD_INVOCATION),
+        element(NEW_ARRAY),
+        element(VARIABLE, "plop2")
+        ).successors(0)
+    );
+    cfgChecker.check(cfg);
+  }
+
 }

@@ -871,11 +871,11 @@ public class CFG {
   private void buildNewClass(NewClassTree tree) {
     handleExceptionalPaths(tree.constructorSymbol());
     currentBlock.elements.add(tree);
+    build(tree.arguments());
     ExpressionTree enclosingExpression = tree.enclosingExpression();
     if (enclosingExpression != null) {
       build(enclosingExpression);
     }
-    build(Lists.reverse(tree.arguments()));
   }
 
   private void handleExceptionalPaths(Symbol symbol) {
@@ -925,8 +925,8 @@ public class CFG {
 
   private void buildNewArray(NewArrayTree tree) {
     currentBlock.elements.add(tree);
-    build(Lists.reverse(tree.dimensions()));
-    build(Lists.reverse(tree.initializers()));
+    build(tree.dimensions());
+    build(tree.initializers());
   }
 
   private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {

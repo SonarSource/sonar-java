@@ -44,6 +44,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -198,7 +200,8 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      final List<SymbolicValue> arguments = programState.peekValues(syntaxNode.arguments().size());
+      List<SymbolicValue> arguments = new ArrayList<>(programState.peekValues(syntaxNode.arguments().size()));
+      Collections.reverse(arguments);
       if (isOpeningResource(syntaxNode)) {
         Iterator<SymbolicValue> iterator = arguments.iterator();
         for (ExpressionTree argument : syntaxNode.arguments()) {

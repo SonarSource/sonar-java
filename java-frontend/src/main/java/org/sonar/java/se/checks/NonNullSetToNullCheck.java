@@ -154,8 +154,10 @@ public class NonNullSetToNullCheck extends SECheck {
     public void visitNewClass(NewClassTree syntaxTree) {
       Symbol symbol = syntaxTree.constructorSymbol();
       if (symbol.isMethodSymbol()) {
-        List<SymbolicValue> argumentValues = programState.peekValues(syntaxTree.arguments().size());
+        int peekSize = syntaxTree.arguments().size();
+        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(peekSize));
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
+        Collections.reverse(argumentValues);
         checkNullArguments(syntaxTree, methodSymbol.getParameters(),
           argumentValues, "Parameter {0} to this constructor is marked \"{1}\" but null is passed.");
       }
@@ -166,9 +168,9 @@ public class NonNullSetToNullCheck extends SECheck {
       Symbol symbol = syntaxTree.symbol();
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
-        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(arguments.size() + 1));
+        int peekSize = arguments.size() + 1;
+        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(peekSize));
         argumentValues.remove(arguments.size());
-        // Arguments of method invocation are in reverse order on the stack, unlike constructors
         Collections.reverse(argumentValues);
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
         checkNullArguments(syntaxTree, methodSymbol.getParameters(),
