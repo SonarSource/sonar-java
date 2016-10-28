@@ -136,12 +136,12 @@ public class NonNullSetToNullCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree variable = (IdentifierTree) tree.variable();
+      if (ExpressionUtils.isSimpleAssignment(tree)) {
+        IdentifierTree variable = (IdentifierTree) ExpressionUtils.skipParentheses(tree.variable());
         Symbol symbol = variable.symbol();
         String nonNullAnnotation = nonNullAnnotation(symbol);
         if (nonNullAnnotation != null) {
-          SymbolicValue assignedValue = ExpressionUtils.isSimpleAssignment(tree) ? programState.peekValue() : programState.peekValues(2).get(0);
+          SymbolicValue assignedValue = programState.peekValue();
           Constraint constraint = programState.getConstraint(assignedValue);
           if (constraint != null && constraint.isNull()) {
             reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);

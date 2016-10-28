@@ -88,6 +88,7 @@ public class MainClass {
   
   public String returnColor() {
     if (secondary == null) {
+      this.primary = null; // FN does not handle fields accessed by this.
       return secondary;
     }
     return primary;
