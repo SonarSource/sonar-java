@@ -20,11 +20,15 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -36,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -49,6 +54,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
@@ -75,9 +83,25 @@ public class UnclosedResourcesCheck extends SECheck {
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
   };
 
+  private List<Symbol> closeableMethodParameters;
+
+  @Override
+  public void init(MethodTree methodTree, CFG cfg) {
+    this.closeableMethodParameters = methodTree.parameters().stream()
+      .map(VariableTree::symbol)
+      .filter(s -> needsClosing(s.type()))
+      .collect(Collectors.toList());
+  }
+
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    final PreStatementVisitor visitor = new PreStatementVisitor(context);
+    ProgramState programState = context.getState();
+    List<SymbolicValue> closeableParameters = closeableMethodParameters.stream()
+      .map(programState::getValue)
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
+
+    final PreStatementVisitor visitor = new PreStatementVisitor(context, closeableParameters);
     syntaxNode.accept(visitor);
     return visitor.programState;
   }
@@ -111,7 +135,7 @@ public class UnclosedResourcesCheck extends SECheck {
       return false;
     }
     for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
-      if (type.is(ignoredTypes)) {
+      if (type.isSubtypeOf(ignoredTypes)) {
         return false;
       }
     }
@@ -191,10 +215,14 @@ public class UnclosedResourcesCheck extends SECheck {
     // opening resources method
     private static final String GET_RESULT_SET = "getResultSet";
 
+    private final CheckerContext context;
     private final ConstraintManager constraintManager;
+    private final List<SymbolicValue> closeableParameters;
 
-    PreStatementVisitor(CheckerContext context) {
+    PreStatementVisitor(CheckerContext context, List<SymbolicValue> closeableParameters) {
       super(context.getState());
+      this.context = context;
+      this.closeableParameters = closeableParameters;
       constraintManager = context.getConstraintManager();
     }
 
@@ -274,8 +302,29 @@ public class UnclosedResourcesCheck extends SECheck {
           constraintManager.setValueFactory(new WrappedValueFactory(value));
         }
       }
+
+      if (methodCanNotBeOverriden(symbol)) {
+        // we rely on X-Procedural analysis
+        return;
+      }
+
       // close any resource used as argument, even for unknown methods
       closeArguments(syntaxNode.arguments());
+    }
+
+    private static boolean methodCanNotBeOverriden(Symbol symbol) {
+      if (!symbol.isMethodSymbol()) {
+        return false;
+      }
+      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
+      if (methodSymbol.declaration() == null) {
+        // method is external to the file
+        return false;
+      }
+      if (((methodSymbol.flags() & Flags.NATIVE) != 0) || methodSymbol.isAbstract() || methodSymbol.isVarArgs()) {
+        return false;
+      }
+      return methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal();
     }
 
     private SymbolicValue getTargetValue(MethodInvocationTree syntaxNode) {
@@ -306,10 +355,28 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private void closeResource(@Nullable final SymbolicValue target) {
+      ObjectConstraint openConstraint = null;
       if (target != null) {
-        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
-        if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
+        openConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
+        if (openConstraint != null) {
+          programState = programState.addConstraint(target.wrappedValue(), openConstraint.withStatus(Status.CLOSED));
+        }
+      }
+      if (openConstraint == null) {
+        Optional<SymbolicValue> closeableParameter = closeableParameters.stream().filter(sv -> sv == target).findAny();
+        if (!closeableParameter.isPresent()) {
+          // not a closeable, do nothing
+          return;
+        }
+        Constraint constraint = programState.getConstraint(target);
+        if (constraint instanceof ObjectConstraint) {
+          programState = programState.addConstraint(target, ((ObjectConstraint) constraint).withStatus(Status.CLOSED));
+        } else if (constraint == null) {
+          // no known constraint on the closable which need to be closed, but we do not invalidate the fact that it still can be null
+          ProgramState nullProgramState = programState.addConstraint(target, ObjectConstraint.nullConstraint());
+          context.addTransition(nullProgramState);
+
+          programState = programState.addConstraint(target, new ObjectConstraint(false, false, null, Status.CLOSED));
         }
       }
     }
