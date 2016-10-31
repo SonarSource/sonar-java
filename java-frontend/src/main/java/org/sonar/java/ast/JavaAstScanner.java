@@ -83,21 +83,21 @@ public class JavaAstScanner {
       Tree ast = parser.parse(file);
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
-      checkInterrrupted(e);
+      checkInterrupted(e);
       LOG.error("Unable to parse source file : " + file.getAbsolutePath());
       LOG.error(e.getMessage());
 
       parseErrorWalkAndVisit(e, file);
     } catch (Exception e) {
-      checkInterrrupted(e);
-      throw new AnalysisException(getAnalyisExceptionMessage(file), e);
+      checkInterrupted(e);
+      throw new AnalysisException(getAnalysisExceptionMessage(file), e);
     } catch (StackOverflowError error) {
       LOG.error("A stack overflow error occured while analyzing file: " + file.getAbsolutePath());
       throw error;
     }
   }
 
-  private static void checkInterrrupted(Exception e) {
+  private static void checkInterrupted(Exception e) {
     Throwable cause = Throwables.getRootCause(e);
     if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
       throw new AnalysisException("Analysis cancelled", e);
@@ -110,11 +110,11 @@ public class JavaAstScanner {
       visitor.visitFile(null);
       visitor.processRecognitionException(e);
     } catch (Exception e2) {
-      throw new AnalysisException(getAnalyisExceptionMessage(file), e2);
+      throw new AnalysisException(getAnalysisExceptionMessage(file), e2);
     }
   }
 
-  private static String getAnalyisExceptionMessage(File file) {
+  private static String getAnalysisExceptionMessage(File file) {
     return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 

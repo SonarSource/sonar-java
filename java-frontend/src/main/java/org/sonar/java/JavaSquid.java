@@ -52,7 +52,7 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
 
-    List<CodeVisitor> commonVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    List<CodeVisitor> commonVisitors = Lists.newArrayList(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
@@ -60,7 +60,7 @@ public class JavaSquid {
     Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
     Collection<CodeVisitor> testCodeVisitors = Lists.newArrayList(commonVisitors);
     if (measurer != null) {
-      Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
+      Iterable<CodeVisitor> measurers = Collections.singletonList(measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
@@ -92,12 +92,7 @@ public class JavaSquid {
   }
 
   private static boolean hasASymbolicExecutionCheck(CodeVisitor[] visitors) {
-    for (CodeVisitor visitor : visitors) {
-      if(visitor instanceof SECheck) {
-        return true;
-      }
-    }
-    return false;
+    return Arrays.stream(visitors).anyMatch(v -> v instanceof SECheck);
   }
 
   private static VisitorsBridge createVisitorBridge(
