@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "SwitchLastCaseIsDefaultCheck")
 @RspecKey("S131")
@@ -51,21 +51,22 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
     }
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
-    if (!defaultLabel.isPresent()) {
+    if (defaultLabel.isPresent()) {
+      CaseLabelTree defaultLabelTree = defaultLabel.get();
+      if (!defaultLabelTree.equals(getLastLabel(switchStatementTree))) {
+        reportIssue(defaultLabelTree, "Move this default to the end of the switch.");
+      }
+    } else {
       if (!isSwitchOnEnum(switchStatementTree)) {
         reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
       } else if (missingCasesOfEnum(switchStatementTree)) {
         reportIssue(switchStatementTree.switchKeyword(), "Complete cases by adding the missing enum constants or add a default case to this switch.");
       }
-    } else if (!defaultLabel.get().equals(getLastLabel(switchStatementTree))) {
-      reportIssue(defaultLabel.get(), "Move this default to the end of the switch.");
     }
   }
 
   private static Optional<CaseLabelTree> getDefaultLabel(SwitchStatementTree switchStatementTree) {
-    return allLabels(switchStatementTree).stream()
-      .filter(SwitchLastCaseIsDefaultCheck::isDefault)
-      .findAny();
+    return allLabels(switchStatementTree).filter(SwitchLastCaseIsDefaultCheck::isDefault).findAny();
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
@@ -77,18 +78,15 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean missingCasesOfEnum(SwitchStatementTree switchStatementTree) {
-    return numberConstants(switchStatementTree) > allLabels(switchStatementTree).size();
+    return numberConstants(switchStatementTree) > allLabels(switchStatementTree).count();
   }
 
-  private static List<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
-    return switchStatementTree.cases().stream()
-      .flatMap(caseGroup -> caseGroup.labels().stream())
-      .collect(Collectors.toList());
+  private static Stream<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
+    return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream());
   }
 
   private static long numberConstants(SwitchStatementTree switchStatementTree) {
-    Symbol.TypeSymbol enumType = switchStatementTree.expression().symbolType().symbol();
-    return enumType.memberSymbols().stream()
+    return switchStatementTree.expression().symbolType().symbol().memberSymbols().stream()
       .filter(Symbol::isVariableSymbol)
       .filter(Symbol::isEnum)
       .count();
