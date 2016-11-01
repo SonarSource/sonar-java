@@ -23,13 +23,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
@@ -67,7 +67,7 @@ public class JavaSquidSensorTest {
   @Before
   public void setUp() {
     sensor = new JavaSquidSensor(mock(SonarComponents.class), fileSystem,
-      mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
+      mock(DefaultJavaResourceLocator.class), new MapSettings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
   }
 
   @Test
@@ -82,7 +82,41 @@ public class JavaSquidSensorTest {
 
 
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+    SensorContextTester context = createContext(onType);
+    DefaultFileSystem fs = context.fileSystem();
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
+    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
+
+    jss.execute(context);
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(79));
+    verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
+
+    context = createContext(onType);
+    fs = context.fileSystem();
+    sonarComponents = createSonarComponentsMock(context);
+    javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
+    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
+    jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
+
+    settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
+    jss.execute(context);
+
+    context = createContext(onType);
+    fs = context.fileSystem();
+    sonarComponents = createSonarComponentsMock(context);
+    javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
+    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
+    jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
+
+    settings.setProperty(Java.SOURCE_VERSION, "1.7");
+    jss.execute(context);
+  }
+
+  private static SensorContextTester createContext(InputFile.Type onType) throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/java/"));
     DefaultFileSystem fs = context.fileSystem();
 
@@ -90,29 +124,7 @@ public class JavaSquidSensorTest {
     File file = new File(fs.baseDir(), effectiveKey);
     DefaultInputFile inputFile = new DefaultInputFile("", effectiveKey).setLanguage("java").setType(onType).initMetadata(new String(Files.readAllBytes(file.toPath()), "UTF-8"));
     fs.add(inputFile);
-
-    SonarComponents sonarComponents = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
-    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
-
-    org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(effectiveKey);
-    resource.setEffectiveKey(effectiveKey);
-    jss.execute(context);
-
-    String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(noSonarFilter, times(1)).noSonarInFile(inputFile, Sets.newHashSet(79));
-    verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
-
-    settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
-    jss.execute(context);
-
-    settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
-    jss.execute(context);
-
-    settings.setProperty(Java.SOURCE_VERSION, "1.7");
-    jss.execute(context);
+    return context;
   }
 
   private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {

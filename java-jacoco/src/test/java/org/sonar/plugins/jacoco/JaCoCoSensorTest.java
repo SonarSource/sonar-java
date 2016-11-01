@@ -31,6 +31,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
@@ -79,7 +80,7 @@ public class JaCoCoSensorTest {
     context = SensorContextTester.create(new File(""));
     pathResolver = mock(PathResolver.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(JacocoConfiguration.REPORT_PATH_PROPERTY, JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE);
     configuration = new JacocoConfiguration(settings);
     perspectives = mock(ResourcePerspectives.class);
@@ -206,7 +207,7 @@ public class JaCoCoSensorTest {
     Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", JacocoConfiguration.REPORT_PATH_PROPERTY, "foo");
     DefaultFileSystem fileSystem = new DefaultFileSystem((File)null);
     fileSystem.add(new DefaultInputFile("","foo").setLanguage("java"));
-    JacocoConfiguration configuration = new JacocoConfiguration(new Settings().addProperties(props));
+    JacocoConfiguration configuration = new JacocoConfiguration(new MapSettings().addProperties(props));
     JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
     DefaultInputFile resource = new DefaultInputFile("", "");

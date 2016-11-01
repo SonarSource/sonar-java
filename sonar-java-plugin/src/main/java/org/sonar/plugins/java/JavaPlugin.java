@@ -20,11 +20,11 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.Plugin;
-import org.sonar.api.PropertyType;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
@@ -36,14 +36,15 @@ import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
 
-  private static final String JAVA_CATEGORY = "java";
-  private static final String GENERAL_SUBCATEGORY = "General";
+  private static final Version SQ_6_0 = Version.create(6, 0);
 
   @Override
   public void define(Context context) {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
-    builder.addAll(SurefireExtensions.getExtensions());
-    builder.addAll(JaCoCoExtensions.getExtensions());
+    if (!context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) || context.getRuntime().getProduct() != SonarProduct.SONARLINT) {
+      builder.addAll(SurefireExtensions.getExtensions());
+      builder.addAll(JaCoCoExtensions.getExtensions());
+    }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
       JavaClasspath.class,
@@ -56,15 +57,6 @@ public class JavaPlugin implements Plugin {
         .subCategory("General")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-      PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
-        .defaultValue(Boolean.toString(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE))
-        .category(JAVA_CATEGORY)
-        .subCategory(GENERAL_SUBCATEGORY)
-        .name("Skip design analysis")
-        .type(PropertyType.BOOLEAN)
-        .hidden()
-        .build(),
-
       JavaRulesDefinition.class,
       JavaSonarWayProfile.class,
       SonarComponents.class,

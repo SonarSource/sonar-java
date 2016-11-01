@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class JavaTestClasspathTest {
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.TEST);
     fs.add(inputFile);
-    settings = new Settings();
+    settings = new MapSettings();
   }
 
   /**

@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -29,7 +30,7 @@ public class JavaTest {
   @Test
   public void should_return_java_file_suffixes() {
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     Java language = new Java(settings);
     assertThat(language.getFileSuffixes()).containsOnly(".java", ".jav");
 
