@@ -21,7 +21,10 @@ package org.sonar.plugins.java;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
-import org.sonar.api.SonarQubeVersion;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -30,9 +33,15 @@ public class JavaPluginTest {
   @Test
   public void test() {
     JavaPlugin javaPlugin = new JavaPlugin();
-    Plugin.Context context = new Plugin.Context(SonarQubeVersion.V5_6);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SERVER);
+    Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(26);
+    assertThat(context.getExtensions()).hasSize(25);
+    runtime = SonarRuntimeImpl.forSonarLint(Version.create(6, 0));
+    context = new Plugin.Context(runtime);
+    javaPlugin.define(context);
+    assertThat(context.getExtensions()).hasSize(15);
+
   }
 
 }

@@ -21,6 +21,7 @@ package org.sonar.plugins.surefire.api;
 
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.PathResolver;
 
@@ -33,7 +34,7 @@ public class SurefireUtilsTest {
 
   @Test
   public void shouldGetReportsFromProperty() {
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty("sonar.junit.reportsPath", "target/surefire");
 
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest/shouldGetReportsFromProperty"));

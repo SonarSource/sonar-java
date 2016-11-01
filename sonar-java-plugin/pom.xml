@@ -20,11 +20,6 @@
     <url>https://github.com/SonarSource/sonar-java</url>
     <tag>HEAD</tag>
   </scm>
-  <properties>
-    <!-- Configuration for sonar-packaging-maven-plugin -->
-    <sonar.pluginClass>org.sonar.plugins.java.JavaPlugin</sonar.pluginClass>
-    <sonar.pluginName>Java</sonar.pluginName>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -88,6 +83,17 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <version>1.17</version>
+        <configuration>
+          <pluginName>Java</pluginName>
+          <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
+          <sonarLintSupported>true</sonarLintSupported>
+          <sonarQubeMinVersion>5.6</sonarQubeMinVersion> <!-- allow to depend on API 6.1 but run on LTS -->
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

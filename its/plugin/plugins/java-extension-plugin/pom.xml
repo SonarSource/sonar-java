@@ -50,5 +50,19 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <version>1.17</version>
+        <configuration>
+          <pluginClass>org.sonar.samples.java.JavaExtensionPlugin</pluginClass>
+          <sonarLintSupported>false</sonarLintSupported>
+          <sonarQubeMinVersion>5.6</sonarQubeMinVersion>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
