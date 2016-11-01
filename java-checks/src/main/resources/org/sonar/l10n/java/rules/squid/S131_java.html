@@ -38,6 +38,24 @@ switch (param) {
     break;
 }
 </pre>
+<h2>Exceptions</h2>
+<p>If the <code>switch</code> parameter is an <code>Enum</code> and if all the constants of this enum are used in the <code>case</code> statements,
+then no <code>default</code> clause is expected.</p>
+<p>Example:</p>
+<pre>
+public enum Day {
+    SUNDAY, MONDAY
+}
+...
+switch(day) {
+  case SUNDAY:
+    doSomething();
+    break;
+  case MONDAY:
+    doSomethingElse();
+    break;
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> MISRA C:2004, 15.0 - The MISRA C <em>switch</em> syntax shall be used. </li>
