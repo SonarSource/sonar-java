@@ -1,0 +1,36 @@
+{
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/BaseChartWeb.java': [
+    29,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/DbClient.java': [
+    63,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v36/ViolationConverter.java': [
+    42,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssueQuery.java': [
+    42,
+    290,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/filter/IssueFilterParameters.java': [
+    34,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndexDefinition.java': [
+    32,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QGatesWs.java': [
+    29,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdate.java': [
+    34,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/index/RuleNormalizer.java': [
+    59,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java': [
+    54,
+  ],
+  'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/index/SourceLineIndexDefinition.java': [
+    29,
+  ],
+}

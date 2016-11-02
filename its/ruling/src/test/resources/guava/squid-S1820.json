@@ -1,0 +1,20 @@
+{
+  'com.google.guava:guava:src/com/google/common/base/Ascii.java': [
+    46,
+  ],
+  'com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java': [
+    152,
+  ],
+  'com.google.guava:guava:src/com/google/common/cache/LocalCache.java': [
+    96,
+  ],
+  'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java': [
+    73,
+  ],
+  'com.google.guava:guava:src/com/google/common/net/HttpHeaders.java': [
+    37,
+  ],
+  'com.google.guava:guava:src/com/google/common/net/MediaType.java': [
+    83,
+  ],
+}
