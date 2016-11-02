@@ -20,16 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Rule(key = "SwitchLastCaseIsDefaultCheck")
 @RspecKey("S131")
@@ -42,35 +46,55 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    CaseLabelTree defaultLabel = getDefaultLabel(switchStatementTree);
-    CaseLabelTree lastLabel = getLastLabel(switchStatementTree);
-    if (defaultLabel == null) {
-      reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
-    } else if (!defaultLabel.equals(lastLabel)) {
-      reportIssue(defaultLabel, "Move this default to the end of the switch.");
+    Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
+    if (defaultLabel.isPresent()) {
+      CaseLabelTree defaultLabelTree = defaultLabel.get();
+      if (!defaultLabelTree.equals(getLastLabel(switchStatementTree))) {
+        reportIssue(defaultLabelTree, "Move this default to the end of the switch.");
+      }
+    } else {
+      if (!isSwitchOnEnum(switchStatementTree)) {
+        reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
+      } else if (missingCasesOfEnum(switchStatementTree)) {
+        reportIssue(switchStatementTree.switchKeyword(), "Complete cases by adding the missing enum constants or add a default case to this switch.");
+      }
     }
   }
 
+  private static Optional<CaseLabelTree> getDefaultLabel(SwitchStatementTree switchStatementTree) {
+    return allLabels(switchStatementTree).filter(SwitchLastCaseIsDefaultCheck::isDefault).findAny();
+  }
 
-  private static CaseLabelTree getDefaultLabel(SwitchStatementTree switchStatementTree) {
-    for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
-      for (CaseLabelTree caseLabelTree : caseGroupTree.labels()) {
-        if (JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text())) {
-          return caseLabelTree;
-        }
-      }
-    }
-    return null;
+  private static boolean isDefault(CaseLabelTree caseLabelTree) {
+    return JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text());
+  }
+
+  private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
+    return switchStatementTree.expression().symbolType().symbol().isEnum();
+  }
+
+  private static boolean missingCasesOfEnum(SwitchStatementTree switchStatementTree) {
+    return numberConstants(switchStatementTree) > allLabels(switchStatementTree).count();
+  }
+
+  private static Stream<CaseLabelTree> allLabels(SwitchStatementTree switchStatementTree) {
+    return switchStatementTree.cases().stream().flatMap(caseGroup -> caseGroup.labels().stream());
+  }
+
+  private static long numberConstants(SwitchStatementTree switchStatementTree) {
+    return switchStatementTree.expression().symbolType().symbol().memberSymbols().stream()
+      .filter(Symbol::isVariableSymbol)
+      .filter(Symbol::isEnum)
+      .count();
   }
 
   private static CaseLabelTree getLastLabel(SwitchStatementTree switchStatementTree) {
-    if (!switchStatementTree.cases().isEmpty()) {
-      List<CaseLabelTree> labels = switchStatementTree.cases().get(switchStatementTree.cases().size() - 1).labels();
-      if (!labels.isEmpty()) {
-        return labels.get(labels.size() - 1);
-      }
-    }
-    return null;
+    List<CaseGroupTree> caseGroups = switchStatementTree.cases();
+    List<CaseLabelTree> lastCaseLabels = caseGroups.get(caseGroups.size() - 1).labels();
+    return lastCaseLabels.get(lastCaseLabels.size() - 1);
   }
 }
