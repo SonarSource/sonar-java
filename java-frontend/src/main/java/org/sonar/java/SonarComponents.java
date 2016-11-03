@@ -37,6 +37,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -45,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 
 @BatchSide
+@SonarLintSide
 public class SonarComponents {
 
   private final FileLinesContextFactory fileLinesContextFactory;
