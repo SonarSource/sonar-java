@@ -30,7 +30,7 @@ import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
 
-  private static TypeSubstitutionSolver typeSubstitutionSolver;
+  public static TypeSubstitutionSolver typeSubstitutionSolver;
   final TypeSubstitution typeSubstitution;
   final JavaType rawType;
 
@@ -105,9 +105,5 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       }
     }
     return true;
-  }
-
-  public static void setTypeSubstitutionSolver(TypeSubstitutionSolver typeSubstitutionSolver) {
-    ParametrizedTypeJavaType.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 }

@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -43,13 +44,10 @@ public class VisitorsBridgeTest {
 
   @Test
   public void test_semantic_exclusions() {
-    VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList(new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        assertThat(context.getSemanticModel() == null).isTrue();
-        assertThat(context.fileParsed()).isTrue();
-      }
-    }), Lists.<File>newArrayList(), null);
+    VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
+      assertThat(context.getSemanticModel()).isNull();
+      assertThat(context.fileParsed()).isTrue();
+    }), Lists.newArrayList(), null);
     checkFile(contstructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
@@ -66,13 +64,24 @@ public class VisitorsBridgeTest {
       public List<Kind> nodesToVisit() {
         return ImmutableList.of(Tree.Kind.METHOD);
       }
-    }), Lists.<File>newArrayList(), null);
+    }), Lists.newArrayList(), null);
     checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
   private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(new File(filename));
     visitorsBridge.visitFile(parse(code));
+  }
+
+  @Test
+  public void parameterized_type_should_not_hold_reference() throws Exception {
+    VisitorsBridge visitorsBridge =
+      new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
+        assertThat(context.getSemanticModel()).isNotNull();
+        assertThat(ParametrizedTypeJavaType.typeSubstitutionSolver).isNotNull();
+      }), Lists.newArrayList(), null);
+    checkFile("Foo.java", "class Foo {}", visitorsBridge);
+    assertThat(ParametrizedTypeJavaType.typeSubstitutionSolver).isNull();
   }
 
   private static String contstructFileName(String... path) {
