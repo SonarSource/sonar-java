@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * This batch extension should be extended to provide the classes to be used to instantiate checks.
@@ -37,6 +38,7 @@ import org.sonar.api.batch.BatchSide;
  * </pre>
  */
 @Beta
+@SonarLintSide
 @BatchSide
 public interface CheckRegistrar {
 
