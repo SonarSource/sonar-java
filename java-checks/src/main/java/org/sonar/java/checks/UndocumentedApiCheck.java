@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
@@ -29,6 +31,7 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.model.PackageUtils;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -83,6 +86,9 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     this.context = context;
     classTrees.clear();
     currentParents.clear();
@@ -169,7 +175,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean isExcluded(Tree tree) {
-    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingInclusionPattern() || isMatchingExclusionPattern();
+    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingInclusionPattern() || isMatchingExclusionPattern() || isOverridingMethod(tree);
   }
 
   private boolean isAccessor(Tree tree) {
@@ -200,6 +206,10 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private boolean isMatchingExclusionPattern() {
     return WildcardPattern.match(getExclusionPatterns(), className());
+  }
+
+  private static boolean isOverridingMethod(Tree tree) {
+    return tree.is(Tree.Kind.METHOD) && BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
   private String className() {

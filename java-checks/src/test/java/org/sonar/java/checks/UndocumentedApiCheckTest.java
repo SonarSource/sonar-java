@@ -43,6 +43,12 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
+  public void no_issue_without_Semantic() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UndocumentedApi.java", check);
+  }
+
+  @Test
   public void custom() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "**.open.**";

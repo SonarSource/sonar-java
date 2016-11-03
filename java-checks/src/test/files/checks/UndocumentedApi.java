@@ -260,7 +260,7 @@ public class MyRunner extends Foo {
     void method();
   }
 
-  public void foo // Noncompliant [[sc=15;ec=18]]
+  public void foo // Compliant - Override Foo.foo()
   (
   )
   {
@@ -298,4 +298,23 @@ class AnonymousInnerClass {
 class PublicConstructorOfNonPublicClass {
   public PublicConstructorOfNonPublicClass(int a){
   }
+}
+
+/**
+ * Documented
+ */
+class A {
+
+  /**
+   * Documented
+   */
+  public void doSomething() { }
+
+  /**
+   * Documented
+   */
+  public static class B extends A {
+    public void doSomething() { } // Compliant - Override
+  }
+
 }
