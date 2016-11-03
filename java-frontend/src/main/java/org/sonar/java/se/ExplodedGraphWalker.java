@@ -53,6 +53,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -83,6 +84,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -643,6 +645,8 @@ public class ExplodedGraphWalker {
   }
 
   private void executeNewArray(NewArrayTree newArrayTree) {
+    int numberDimensions = (int) newArrayTree.dimensions().stream().map(ArrayDimensionTree::expression).filter(Objects::nonNull).count();
+    programState = programState.unstackValue(numberDimensions).state;
     programState = programState.unstackValue(newArrayTree.initializers().size()).state;
     SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
     programState = programState.stackValue(svNewArray);

@@ -676,3 +676,13 @@ class RaisedExceptionCannotBeNull {
     }
   }
 }
+
+class FooBar {
+  private static void foo(Object o, boolean b) {
+    FooBar.foo(null, true); // Compliant
+  }
+
+  private static void bar(Object o, byte[] b) {
+    FooBar.bar(null, new byte[10]); // Compliant
+  }
+}
