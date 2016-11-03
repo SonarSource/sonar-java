@@ -318,3 +318,16 @@ class A {
   }
 
 }
+
+@interface MyAnnotation {}
+
+class UsesVisibleForTesting {
+  @org.fest.util.VisibleForTesting
+  public void doSomething() {}  // Compliant
+
+  @com.google.common.annotations.VisibleForTesting
+  public void doSomethingElse() {} // Compliant
+
+  @MyAnnotation
+  public void doNothing() {} // Noncompliant
+}

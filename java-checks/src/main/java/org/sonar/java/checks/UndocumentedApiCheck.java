@@ -34,6 +34,7 @@ import org.sonar.java.model.PackageUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -175,7 +176,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean isExcluded(Tree tree) {
-    return !isPublicApi(tree) || isAccessor(tree) || !isMatchingInclusionPattern() || isMatchingExclusionPattern() || isOverridingMethod(tree);
+    return !isPublicApi(tree)
+      || isAccessor(tree)
+      || !isMatchingInclusionPattern()
+      || isMatchingExclusionPattern()
+      || isOverridingMethod(tree)
+      || isVisibleForTestingMethod(tree);
   }
 
   private boolean isAccessor(Tree tree) {
@@ -210,6 +216,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private static boolean isOverridingMethod(Tree tree) {
     return tree.is(Tree.Kind.METHOD) && BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
+  }
+
+  private static boolean isVisibleForTestingMethod(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      SymbolMetadata metadata = ((MethodTree) tree).symbol().metadata();
+      return metadata.isAnnotatedWith("org.fest.util.VisibleForTesting") || metadata.isAnnotatedWith("com.google.common.annotations.VisibleForTesting");
+    }
+    return false;
   }
 
   private String className() {
