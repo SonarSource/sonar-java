@@ -27,6 +27,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Set;
 
 @BatchSide
+@SonarLintSide
 public abstract class AbstractJavaClasspath {
 
   private static final char SEPARATOR = ',';

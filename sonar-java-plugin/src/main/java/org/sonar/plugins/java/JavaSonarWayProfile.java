@@ -28,6 +28,7 @@ import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.java.checks.CheckList;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,6 +40,7 @@ import java.util.Map;
 /**
  * Replacement for org.sonar.plugins.squid.SonarWayProfile
  */
+@SonarLintSide
 public class JavaSonarWayProfile extends ProfileDefinition {
 
   private final Gson gson = new Gson();
