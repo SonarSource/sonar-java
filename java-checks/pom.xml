@@ -95,6 +95,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.easytesting</groupId>
+                  <artifactId>fest-util</artifactId>
+                  <version>1.2.5</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.mockito</groupId>
                   <artifactId>mockito-all</artifactId>
                   <version>1.9.0</version>
