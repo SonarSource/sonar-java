@@ -1,16 +1,21 @@
 package java.util;
 
+import javax.annotation.CheckForNull;
 import java.util.Objects;
+import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
 
 public class ObjectsNullCheck {
-  
+  Object o;
+
   public void parameterMaybeNullable(Object a) {
     Object x = checkForNullMethod();
     if (a.equals(x)) {
       x.toString(); // Compliant: x cannot be null hereafter because of equality
     }
   }
-  
+
   public void parameterNoLongerNullable(Object a) {
     Object x = checkForNullMethod();
     if (Objects.nonNull(x)) {
@@ -19,7 +24,7 @@ public class ObjectsNullCheck {
       x.logNull(); // Noncompliant {{NullPointerException might be thrown as 'x' is nullable here}}
     }
   }
-  
+
   public void parameterStillNullable(Object a) {
     Object x = checkForNullMethod();
     if (Objects.isNull(x)) {
@@ -28,7 +33,7 @@ public class ObjectsNullCheck {
       x.toString(); // Compliant: x was checked for non null
     }
   }
-    
+
   public void testRequireNull(Supplier<String> supplier) {
     Object x = checkForNullMethod();
     Objects.requireNonNull(x);
@@ -39,35 +44,18 @@ public class ObjectsNullCheck {
     Object z = checkForNullMethod();
     Objects.requireNonNull(z, supplier);
     z.toString(); // Compliant: z was checked for non null
-  }
-}
-
-// Needed to ensure that all methods of Objects are declared (for tests with Java version prior to 1.8)
-
-class Objects {
-  public static boolean isNull(Object obj) {
-    return obj == null;
+    Object v = checkForNullMethod();
+    requireNonNull(v);
+    v.toString(); // Compliant
+    Object w = checkForNullMethod();
+    w.toString(); // Noncompliant
   }
 
-  public static boolean nonNull(Object obj) {
-    return obj != null;
-  }
-  
-  public static <T> T  requireNonNull(T obj) {
-    if (obj == null) {
-      throw new NullPointerException();
+  @CheckForNull
+  private Object checkForNullMethod() {
+    if (o == null) {
+      return null;
     }
-  }
-  
-  public static <T> T  requireNonNull(T obj, String message) {
-    if (obj == null) {
-      throw new NullPointerException(message);
-    }
-  }
-  
-  public static <T> T  requireNonNull(T obj, Supplier<String> supplier) {
-    if (obj == null) {
-      throw new NullPointerException(supplier.get());
-    }
+    return o;
   }
 }
