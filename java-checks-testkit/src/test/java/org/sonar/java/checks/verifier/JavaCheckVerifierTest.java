@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -252,7 +251,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java", visitor);
       Fail.fail();
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]");
+      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java:10");
     }
   }
 
@@ -263,7 +262,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java", visitor);
       Fail.fail();
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]");
+      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
     }
   }
 

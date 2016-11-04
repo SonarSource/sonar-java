@@ -250,9 +250,14 @@ public abstract class CheckVerifier {
         }
       }
       if (!expected.isEmpty() || !unexpected.isEmpty()) {
-        Fail.fail("Secondary locations: expected: " + expected + " unexpected:" + unexpected);
+        Fail.fail(String.format("Secondary locations: expected: %s unexpected:%s. In %s:%d", expected, unexpected, normalizedFilePath(analyzerMessage), analyzerMessage.getLine()));
       }
     }
+  }
+
+  private static String normalizedFilePath(AnalyzerMessage analyzerMessage) {
+    String absolutePath = analyzerMessage.getFile().getPath();
+    return absolutePath.replace("\\", "/");
   }
 
   private static String normalizeColumn(int startCharacter) {
