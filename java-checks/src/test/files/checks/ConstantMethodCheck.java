@@ -1,26 +1,26 @@
-import java.lang.Override;
-import java.lang.String;
+class A implements Comparable<A> {
 
-class A {
-
-  void foo() {
+  int foo() {
     return 1; // Noncompliant [[sc=12;ec=13]] {{Remove this method and declare a constant for this value.}}
   }
-  void foo() {
+  String bar() {
     return ""; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
   }
-  void foo() {
+  char qix() {
     return ''; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
   }
-  void foo() {
+  Object lum() {
+    return new Object(); // Compliant
+  }
+  int gul() {
     System.out.println("foo");
     return 1;
   }
-  abstract void foo();
-  void foo(){
+  abstract void bom();
+  void bah(){
     return;
   }
-  void foo(){
+  void tol(){
     System.out.println("");
   }
 
@@ -28,7 +28,18 @@ class A {
   public String toString() {
     return "";  // compliant, this method is an override
   }
-  void foo() {
+  // removed @Override annotation
+  public int compareTo(A o) {
+    return 0; // Compliant - method is an override
+  }
+  long gro() {
     return 1L; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
   }
+
+  @MyAnnotation
+  long puf() {
+    return 1L; // Compliant
+  }
 }
+
+@interface MyAnnotation {}

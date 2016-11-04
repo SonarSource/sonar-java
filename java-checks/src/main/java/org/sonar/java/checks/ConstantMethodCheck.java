@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S3400")
@@ -46,6 +48,9 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     BlockTree body = methodTree.block();
+    if (!methodTree.modifiers().annotations().isEmpty()) {
+      return;
+    }
     if (BooleanUtils.isFalse(methodTree.isOverriding()) && body != null && body.body().size() == 1) {
       StatementTree uniqueStatement = body.body().get(0);
       if (uniqueStatement.is(Kind.RETURN_STATEMENT)) {
