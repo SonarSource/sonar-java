@@ -448,6 +448,7 @@ public final class CheckList {
       .add(OptionalGetBeforeIsPresentCheck.class)
       .add(ValueBasedObjectsShouldNotBeSerializedCheck.class)
       .add(FilesExistsJDK8Check.class)
+      .add(StaticImportCountCheck.class)
       .build();
   }
 
