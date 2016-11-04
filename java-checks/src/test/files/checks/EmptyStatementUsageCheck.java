@@ -81,3 +81,14 @@ static class Bar {
 }
 
 ; // Noncompliant {{Remove this empty statement.}}
+
+enum EmptyEnum {
+  // This is my empty enum full of emptyness
+  ; // Compliant
+
+  boolean foo() {
+    return false;
+  }
+
+  ; // Noncompliant
+}
