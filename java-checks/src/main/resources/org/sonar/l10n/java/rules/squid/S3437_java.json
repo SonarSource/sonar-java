@@ -8,8 +8,8 @@
   },
   "tags": [
     "serialization",
-    "bug",
-    "java8"
+    "java8",
+    "lock-in"
   ],
   "defaultSeverity": "Minor"
 }
