@@ -68,6 +68,7 @@ public class SemanticModel {
   }
 
   public void done(){
+    ParametrizedTypeJavaType.typeSubstitutionSolver = null;
     bytecodeCompleter.done();
   }
 
