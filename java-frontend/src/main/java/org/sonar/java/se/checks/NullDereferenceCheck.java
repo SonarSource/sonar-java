@@ -55,7 +55,8 @@ public class NullDereferenceCheck extends SECheck {
       List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
       currentVal = values.get(numberArguments);
       if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
-        return context.getState().addConstraint(currentVal, ObjectConstraint.NOT_NULL);
+        SymbolicValue firstArg = values.get(numberArguments - 1);
+        return context.getState().addConstraint(firstArg, ObjectConstraint.NOT_NULL);
       }
     }
     if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
