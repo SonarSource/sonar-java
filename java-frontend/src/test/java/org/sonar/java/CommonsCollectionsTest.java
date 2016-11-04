@@ -129,14 +129,7 @@ public class CommonsCollectionsTest {
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
-    double density = 1.0;
-    if (metrics.get("public_api").intValue() != 0) {
-      density = (metrics.get("public_api") - metrics.get("public_undocumented_api")) / metrics.get("public_api");
-    }
-    assertThat(density).isEqualTo(0.64, Delta.delta(0.01));
-
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 23);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
   }
 

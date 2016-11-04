@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 13;
+  private static final int NB_OF_METRICS = 11;
   private SensorContextTester context;
   private JavaSquid squid;
   private File baseDir;
@@ -61,16 +61,6 @@ public class MeasurerTest {
   @Test
   public void verify_methods_metric() {
     checkMetric("Methods.java", "functions", 7);
-  }
-
-  @Test
-  public void verify_public_api_metric() {
-    checkMetric("Comments.java", "public_api", 2);
-  }
-
-  @Test
-  public void verify_public_undocumented_api() {
-    checkMetric("Comments.java", "public_undocumented_api", 0);
   }
 
   @Test
