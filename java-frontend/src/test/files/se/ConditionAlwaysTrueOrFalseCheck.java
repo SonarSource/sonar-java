@@ -83,7 +83,7 @@ public class Class extends SuperClass {
     if (parameter1 && true) { // Noncompliant [[sc=23;ec=27]] {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (parameter1 && parameter2) { // Compliant, unknown
-      if(parameter3 || (!parameter3)){} // Noncompliant [[sc=24;ec=37]] {{Change this condition so that it does not always evaluate to "true"}}
+      if(parameter3 || (!parameter3)){} // Noncompliant [[sc=25;ec=36]] {{Change this condition so that it does not always evaluate to "true"}}
     }
 
   }
@@ -95,7 +95,7 @@ public class Class extends SuperClass {
     }
 
     if ((min == R || min > max)) {
-      if (max != R && (min == R || min > max)) { // Noncompliant [[sc=23;ec=46]] {{Change this condition so that it does not always evaluate to "true"}}
+      if (max != R && (min == R || min > max)) { // Noncompliant [[sc=36;ec=45]] {{Change this condition so that it does not always evaluate to "true"}}
 
       }
     }
@@ -1978,6 +1978,13 @@ class NestedMax {
     System.out.println("");
     System.out.println("");
   }
-
+  boolean foo(Object o1, Object o2) {
+    if(o1 == null && o2 == null)
+      return false;
+    if((o1 != null && o2 == null) || (o1 == null && o2 != null)) { // Noncompliant [[sc=53;ec=63]] {{Change this condition so that it does not always evaluate to "true"}}
+      return false;
+    }
+    return true;
+  }
 
 }

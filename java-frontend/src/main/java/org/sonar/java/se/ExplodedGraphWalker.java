@@ -349,11 +349,12 @@ public class ExplodedGraphWalker {
    * Required for accurate reporting.
    * If condition is && or || expression, then return its right operand.
    */
-  private static Tree cleanupCondition(Tree condition) {
-    if (condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
-      return ((BinaryExpressionTree) condition).rightOperand();
+  private static ExpressionTree cleanupCondition(ExpressionTree condition) {
+    ExpressionTree cleanedUpCondition = ExpressionUtils.skipParentheses(condition);
+    if (cleanedUpCondition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+      cleanedUpCondition = cleanupCondition(((BinaryExpressionTree) cleanedUpCondition).rightOperand());
     }
-    return condition;
+    return cleanedUpCondition;
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
