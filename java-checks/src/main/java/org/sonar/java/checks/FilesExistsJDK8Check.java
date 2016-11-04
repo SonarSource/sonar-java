@@ -62,6 +62,6 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
-    reportIssue(mit.methodSelect(), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "\" method");
+    reportIssue(mit.methodSelect(), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "()\" method");
   }
 }
