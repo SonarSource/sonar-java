@@ -16,20 +16,6 @@ public void run () {
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-public void run () throws InterruptedException{
-  try {
-    while (true) {
-      // do stuff
-    }
-  }catch (InterruptedException e) {
-    LOGGER.log(Level.WARN, "Interrupted!", e);
-    // clean up state...
-    throw e;
-  }
-}
-</pre>
-<p>or</p>
-<pre>
 public void run () {
   try {
     while (true) {
