@@ -1,0 +1,13 @@
+{
+  "title": "Classes should not have too many \"static\" imports",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}
