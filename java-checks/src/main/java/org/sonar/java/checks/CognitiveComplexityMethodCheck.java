@@ -281,8 +281,8 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
 
     /* top node will be right-most ||
        its right operand will be (in precedence order):
-        - the || to the right
-        - the && to the right
+        - the first || to the left
+        - the && to the left
         - the symbol/expr to be evaluated
      */
 
