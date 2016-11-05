@@ -141,7 +141,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     return total;
   }
 
-  private void addSecondaryLocation(List<JavaFileScannerContext.Location> flow, Tree st, int hit,  int nestingLevel) {
+  private static void addSecondaryLocation(List<JavaFileScannerContext.Location> flow, Tree st, int hit,  int nestingLevel) {
 
     Tree tree = st;
 
@@ -239,7 +239,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     return total;
   }
 
-  private int countExtraConditions(Tree tree, List<JavaFileScannerContext.Location> flow) {
+  private static int countExtraConditions(Tree tree, List<JavaFileScannerContext.Location> flow) {
     switch (tree.kind()) {
       case WHILE_STATEMENT:
         return countConditions(((WhileStatementTree) tree).condition(), flow);
@@ -264,7 +264,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
    * @param expressionTree
    * @return
    */
-  private int countConditions(ExpressionTree expressionTree, List<JavaFileScannerContext.Location> flow) {
+  private static int countConditions(ExpressionTree expressionTree, List<JavaFileScannerContext.Location> flow) {
 
     if (expressionTree == null) {
       return 0;
@@ -314,7 +314,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     return total;
   }
 
-  private BinaryExpressionTree scootLeft(BinaryExpressionTree binaryExpressionTree) {
+  private static BinaryExpressionTree scootLeft(BinaryExpressionTree binaryExpressionTree) {
 
     BinaryExpressionTree binTree = binaryExpressionTree;
 
@@ -333,7 +333,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   }
 
 
-  private boolean isLogicalOp(ExpressionTree expTree) {
+  private static boolean isLogicalOp(ExpressionTree expTree) {
     return expTree.is(CONDITIONAL_AND) || expTree.is(CONDITIONAL_OR);
   }
 
@@ -359,7 +359,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     return total;
   }
 
-  private int countBreakAndContinue(Tree st, List<JavaFileScannerContext.Location> flow) {
+  private static int countBreakAndContinue(Tree st, List<JavaFileScannerContext.Location> flow) {
     if ( (st.is(BREAK_STATEMENT) && ((BreakStatementTree) st).label() != null)
             || (st.is(CONTINUE_STATEMENT) && ((ContinueStatementTree) st).label() != null) ) {
       flow.add(new JavaFileScannerContext.Location("+1", st));
@@ -370,7 +370,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     return 0;
   }
 
-  private Tree getSegmentOfInterest(StatementTree st) {
+  private static Tree getSegmentOfInterest(StatementTree st) {
     switch (st.kind()) {
       case LABELED_STATEMENT:
         return ((LabeledStatementTree)st).statement();
@@ -401,7 +401,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   }
 
 
-  private List<StatementTree> getChildren(Tree st) {
+  private static List<StatementTree> getChildren(Tree st) {
 
     StatementTree statementTree = null;
 
