@@ -107,7 +107,7 @@ static class Baz {
     }
   };
   static {
-    try{
+    try{ // Noncompliant {{Make this line start at column 9.}}
        while (keys.hasMoreElements()) { // Noncompliant {{Make this line start at column 13.}}
         s = keys.nextElement();         // Noncompliant {{Make this line start at column 17.}}
         rId = (String) s;
