@@ -123,7 +123,8 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void read_package_annotations() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotations.java", seChecks());
+    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotationsNullable.java", seChecks());
+    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotationsNonNull.java", seChecks());
   }
 
   @Test

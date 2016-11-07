@@ -242,13 +242,15 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name()) && tree.parameters().size() == 1;
-    boolean nonNullParams = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata().isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
+    SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
+    boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
+    boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
       methodBehavior.addParameter(variableTree.symbol(), sv);
       stateStream = stateStream.map(ps -> ps.put(variableTree.symbol(), sv));
-      if (isEqualsMethod || parameterCanBeNull(variableTree)) {
+      if (isEqualsMethod || nullableParams || parameterCanBeNull(variableTree)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
             sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
