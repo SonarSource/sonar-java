@@ -816,7 +816,7 @@ public class Resolve {
    * Is given class a subclass of given base class?
    */
   @VisibleForTesting
-  static boolean isSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
+  static boolean isSubClass(@Nullable JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     // TODO get rid of null check
     if (c == null) {
       return false;

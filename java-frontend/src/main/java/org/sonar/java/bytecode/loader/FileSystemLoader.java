@@ -19,6 +19,8 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +32,7 @@ class FileSystemLoader implements Loader {
 
   private Path baseDirPath;
 
-  public FileSystemLoader(File baseDir) {
+  public FileSystemLoader(@Nullable File baseDir) {
     if (baseDir == null) {
       throw new IllegalArgumentException("baseDir can't be null");
     }

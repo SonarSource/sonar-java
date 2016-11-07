@@ -19,6 +19,8 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +44,7 @@ public class AarLoader implements Loader {
   private Path tempClassesJar;
   private JarLoader classesLoader;
 
-  public AarLoader(File file) {
+  public AarLoader(@Nullable File file) {
     if (file == null) {
       throw new IllegalArgumentException("file can't be null");
     }

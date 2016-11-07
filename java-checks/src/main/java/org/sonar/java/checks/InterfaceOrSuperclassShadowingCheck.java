@@ -28,6 +28,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S2176")
@@ -50,7 +52,7 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
     }
   }
 
-  private void checkSuperType(ClassTree tree, Type superType) {
+  private void checkSuperType(ClassTree tree, @Nullable Type superType) {
     if (superType != null && superType.symbol().name().equals(tree.symbol().name())) {
       String classOrInterface = tree.is(Tree.Kind.CLASS) ? "class" : "interface";
       reportIssue(tree.simpleName(), "Rename this " + classOrInterface + ".");

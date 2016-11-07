@@ -19,6 +19,8 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import javax.annotation.Nullable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +40,7 @@ class JarLoader implements Loader {
   /**
    * @throws IllegalStateException if an I/O error has occurred
    */
-  public JarLoader(File file) {
+  public JarLoader(@Nullable File file) {
     if (file == null) {
       throw new IllegalArgumentException("file can't be null");
     }

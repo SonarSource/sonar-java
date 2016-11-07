@@ -140,7 +140,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return newKeyword;
   }
 
-  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree tree) {
+  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, @Nullable Tree tree) {
     if (tree != null) {
       builder.add(tree);
     }

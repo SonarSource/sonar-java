@@ -91,7 +91,7 @@ public class SemanticModel {
       }
 
       @Override
-      protected void scan(ListTree<? extends Tree> listTree) {
+      protected void scan(@Nullable ListTree<? extends Tree> listTree) {
         if (listTree != null) {
           scan((List<? extends Tree>) listTree);
         }

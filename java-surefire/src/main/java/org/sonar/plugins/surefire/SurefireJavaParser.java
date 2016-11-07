@@ -36,6 +36,7 @@ import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.Serializable;
@@ -63,7 +64,7 @@ public class SurefireJavaParser {
     }
   }
 
-  private static File[] getReports(File dir, boolean reportDirSetByUser) {
+  private static File[] getReports(@Nullable File dir, boolean reportDirSetByUser) {
     if (dir == null) {
       return new File[0];
     } else if (!dir.isDirectory()) {

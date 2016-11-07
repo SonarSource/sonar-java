@@ -135,8 +135,10 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
   }
 
-  public boolean isPublicApi(Tree currentParent, Tree tree) {
-    if (tree.is(CLASS_KINDS) && (currentParent == null || currentParent.is(PublicApiChecker.CLASS_KINDS))) {
+  public boolean isPublicApi(@Nullable Tree currentParent, Tree tree) {
+    if (currentParent == null) {
+      return tree.is(CLASS_KINDS) && isPublicApi((ClassTree) tree);
+    } else if (tree.is(CLASS_KINDS) && currentParent.is(PublicApiChecker.CLASS_KINDS)) {
       return isPublicApi((ClassTree) currentParent, (ClassTree) tree);
     } else if (tree.is(METHOD_KINDS)) {
       return isPublicApi((ClassTree) currentParent, (MethodTree) tree);
@@ -146,7 +148,11 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return false;
   }
 
-  private static boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
+  private static boolean isPublicApi(ClassTree classTree) {
+    return isPublicApi(null, classTree);
+  }
+
+  private static boolean isPublicApi(@Nullable ClassTree currentClass, ClassTree classTree) {
     return (currentClass != null && isPublicInterface(currentClass)) || hasPublic(classTree.modifiers());
   }
 

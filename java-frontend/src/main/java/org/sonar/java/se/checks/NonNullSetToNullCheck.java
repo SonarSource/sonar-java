@@ -178,7 +178,7 @@ public class NonNullSetToNullCheck extends SECheck {
       }
     }
 
-    protected void checkNullArguments(Tree syntaxTree, Scope parameters, List<SymbolicValue> argumentValues, String message) {
+    protected void checkNullArguments(Tree syntaxTree, @Nullable Scope parameters, List<SymbolicValue> argumentValues, String message) {
       if (parameters != null) {
         List<JavaSymbol> scopeSymbols = parameters.scopeSymbols();
         int parametersToTest = argumentValues.size();

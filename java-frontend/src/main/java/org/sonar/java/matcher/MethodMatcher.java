@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 public class MethodMatcher {
 
   private TypeCriteria typeDefinition;
@@ -152,7 +154,7 @@ public class MethodMatcher {
     }
   }
 
-  private boolean isSearchedMethod(MethodSymbol symbol, Type callSiteType) {
+  private boolean isSearchedMethod(MethodSymbol symbol, @Nullable Type callSiteType) {
     boolean result = nameAcceptable(symbol) && parametersAcceptable(symbol);
     if (typeDefinition != null) {
       result &= typeDefinition.test(symbol.owner().type());

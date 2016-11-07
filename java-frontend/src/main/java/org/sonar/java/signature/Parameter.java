@@ -19,6 +19,8 @@
  */
 package org.sonar.java.signature;
 
+import javax.annotation.Nullable;
+
 public class Parameter {
 
   private final JvmJavaType jvmJavaType;
@@ -34,7 +36,7 @@ public class Parameter {
     this.isArray = isArray;
   }
 
-  public Parameter(String classCanonicalName, boolean isArray) {
+  public Parameter(@Nullable String classCanonicalName, boolean isArray) {
     if (classCanonicalName == null || "".equals(classCanonicalName)) {
       throw new IllegalArgumentException("With an Object JavaType, this is mandatory to specify the canonical name of the class.");
     }

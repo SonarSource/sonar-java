@@ -42,6 +42,8 @@ import org.sonar.api.test.Testable;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,13 +130,14 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  private void readExecutionData(File jacocoExecutionData, SensorContext context) {
-    if (jacocoExecutionData == null || !jacocoExecutionData.isFile()) {
-      JaCoCoExtensions.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
-      jacocoExecutionData = null;
+  private void readExecutionData(@Nullable File jacocoExecutionData, SensorContext context) {
+    File newJacocoExecutionData = jacocoExecutionData;
+    if (newJacocoExecutionData == null || !newJacocoExecutionData.isFile()) {
+      JaCoCoExtensions.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", newJacocoExecutionData);
+      newJacocoExecutionData = null;
     }
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
-    jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
+    jacocoReportReader = new JacocoReportReader(newJacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
 
     boolean collectedCoveragePerTest = readCoveragePerTests(executionDataVisitor);
 
@@ -153,7 +156,7 @@ public abstract class AbstractAnalyzer {
       JaCoCoExtensions.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
     } else if (collectedCoveragePerTest) {
       JaCoCoExtensions.LOG.info("Information about coverage per test has been collected.");
-    } else if (jacocoExecutionData != null) {
+    } else if (newJacocoExecutionData != null) {
       JaCoCoExtensions.LOG.info("No information about coverage per test.");
     }
   }
