@@ -126,7 +126,8 @@ public class AnalyzerMessage {
     );
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return String.format("'%s' in %s:%d", getMessage(), getFile(), getLine());
   }
 }
