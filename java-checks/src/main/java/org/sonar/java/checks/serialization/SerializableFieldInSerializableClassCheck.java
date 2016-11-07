@@ -79,7 +79,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     }
   }
 
-  private static boolean initializerIsUnserializableCollection(ExpressionTree initializer) {
+  private static boolean initializerIsUnserializableCollection(@Nullable ExpressionTree initializer) {
     return initializer != null && isUnserializableCollection(initializer.symbolType());
   }
 
