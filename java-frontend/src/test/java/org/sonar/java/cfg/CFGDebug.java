@@ -19,17 +19,91 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.SyntaxTreeDebug;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.List;
+
 public class CFGDebug {
+
+  private static final String DOT_PADDING = "  ";
+  private static final String DOT_NEW_LINE = "\\n";
 
   private static final int MAX_KINDNAME = Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT.name().length() + 5;
 
   private CFGDebug() {
+  }
+
+  public static String toDot(CFG cfg) {
+    StringBuilder sb = new StringBuilder();
+
+    List<Block> blocks = cfg.blocks();
+
+    sb.append("cfg{");
+    sb.append(DOT_NEW_LINE);
+
+    int firstBlockId = blocks.size() - 1;
+
+    for (Block block : blocks) {
+      int id = block.id();
+      sb.append(DOT_PADDING);
+      sb.append(id + dotBlockLabel(id, firstBlockId) + ";");
+      sb.append(DOT_NEW_LINE);
+    }
+
+    sb.append(DOT_NEW_LINE);
+
+    for (Block block : blocks) {
+      for (Block successor : block.successors()) {
+        sb.append(DOT_PADDING);
+        sb.append(block.id() + "->" + successor.id() + dotEdgeLabel(block, successor) + ";");
+        sb.append(DOT_NEW_LINE);
+      }
+    }
+
+    sb.append("}");
+
+    return sb.toString();
+  }
+
+  private static String dotEdgeLabel(Block block, Block successor) {
+    String edgeLabel = "";
+    if (successor == block.trueBlock()) {
+      edgeLabel = "TRUE";
+    } else if (successor == block.falseBlock()) {
+      edgeLabel = "FALSE";
+    } else if (successor == block.exitBlock()) {
+      edgeLabel = "EXIT";
+    }
+    if (!edgeLabel.isEmpty()) {
+      return "[label=" + edgeLabel + "]";
+    }
+    return "";
+  }
+
+  private static String dotBlockLabel(int blockId, int firstBlockId) {
+    String label = "B" + blockId;
+    String color = "";
+    if (blockId == 0) {
+      label += " (EXIT)";
+      color = "red";
+    } else if (blockId == firstBlockId) {
+      label += " (START)";
+      color = "green";
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.append("[label=\"");
+    sb.append(label);
+    sb.append("\"");
+    if (!color.isEmpty()) {
+      sb.append(",fillcolor=\"");
+      sb.append(color);
+      sb.append("\",fontcolor=\"white\"");
+    }
+    sb.append("]");
+    return sb.toString();
   }
 
   public static String toString(CFG cfg) {
