@@ -21,7 +21,6 @@ package org.sonar.java.checks.helpers;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -32,21 +31,17 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * Helper Visitor to be used to find the latest {@link ExpressionTree} used as initializer (for a {@link VariableTree}) 
+ * Helper class to be used to find the latest {@link ExpressionTree} used as initializer (for a {@link VariableTree}) 
  * or expression used in assignment (for a {@link AssignmentExpressionTree}) for a given variable.
  */
-public class ReassignmentFinder extends BaseTreeVisitor {
+public class ReassignmentFinder {
 
-  private final List<IdentifierTree> usages;
-  private List<Tree> reassignments;
-
-  private ReassignmentFinder(List<IdentifierTree> usages) {
-    this.usages = usages;
-    this.reassignments = new LinkedList<>();
+  private ReassignmentFinder() {
   }
 
   @CheckForNull
@@ -54,7 +49,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     Tree result = referenceSymbol.declaration();
     List<IdentifierTree> usages = referenceSymbol.usages();
     if (usages.size() != 1) {
-      List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
+      List<AssignmentExpressionTree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
 
       SyntaxToken startPointToken = startingPoint.firstToken();
       Tree lastReassignment = getClosestReassignment(startPointToken, reassignments);
@@ -77,52 +72,53 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     return ((AssignmentExpressionTree) tree).expression();
   }
 
-  private static List<Tree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
+  private static List<AssignmentExpressionTree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
     if (ownerDeclaration != null) {
-      ReassignmentFinder reassignmentFinder = new ReassignmentFinder(usages);
-      ownerDeclaration.accept(reassignmentFinder);
-      return reassignmentFinder.reassignments;
+      List<AssignmentExpressionTree> assignments = new ArrayList<>();
+      for (IdentifierTree usage : usages) {
+        checkAssignment(usage).ifPresent(assignments::add);
+      }
+      return assignments;
     }
     return new ArrayList<>();
   }
 
-  @CheckForNull
-  private static Tree getClosestReassignment(SyntaxToken startToken, List<Tree> reassignments) {
-    Tree result = null;
-    for (Tree reassignment : reassignments) {
-      SyntaxToken reassignmentFirstToken = reassignment.firstToken();
-      int reassignmentLine = reassignmentFirstToken.line();
-      int startLine = startToken.line();
-      if (startLine > reassignmentLine ||
-          (startLine == reassignmentLine &&
-              startToken.column() > reassignmentFirstToken.column() &&
-              !isInAssignedExpression(startToken, reassignment))) {
-        result = reassignment;
+  private static Optional<AssignmentExpressionTree> checkAssignment(IdentifierTree usage) {
+    Tree previousTree = usage;
+    Tree nonParenthesisParent = previousTree.parent();
+
+    while (nonParenthesisParent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      previousTree = nonParenthesisParent;
+      nonParenthesisParent = previousTree.parent();
+    }
+
+    if (nonParenthesisParent instanceof AssignmentExpressionTree) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) nonParenthesisParent;
+      if (assignment.variable().equals(previousTree)) {
+        return Optional.of(assignment);
       }
+    }
+    return Optional.empty();
+  }
+
+  @CheckForNull
+  private static Tree getClosestReassignment(SyntaxToken startToken, List<AssignmentExpressionTree> reassignments) {
+    Tree result = null;
+    List<Tree> assignmentsBeforeStartToken = reassignments.stream()
+      .sorted(ReassignmentFinder::isBefore)
+      .filter(a -> isBefore(startToken, a) > 0)
+      .collect(Collectors.toList());
+
+    if (!assignmentsBeforeStartToken.isEmpty()) {
+      return assignmentsBeforeStartToken.get(assignmentsBeforeStartToken.size() - 1);
     }
     return result;
   }
 
-  private static boolean isInAssignedExpression(SyntaxToken syntaxToken, Tree reassignement) {
-    Tree parent = syntaxToken.parent();
-    while (parent != null && !parent.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      if(parent == reassignement) {
-        return true;
-      }
-      parent = parent.parent();
-    }
-    return false;
-  }
-
-  @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (isSearchedVariable(tree.variable())) {
-      reassignments.add(tree);
-    }
-    super.visitAssignmentExpression(tree);
-  }
-
-  private boolean isSearchedVariable(ExpressionTree variable) {
-    return variable.is(Tree.Kind.IDENTIFIER) && usages.contains(variable);
+  private static int isBefore(Tree t1, Tree t2) {
+    SyntaxToken firstTokenT1 = t1.firstToken();
+    SyntaxToken firstTokenT2 = t2.firstToken();
+    int line = Integer.compare(firstTokenT1.line(), firstTokenT2.line());
+    return line != 0 ? line : Integer.compare(firstTokenT1.column(), firstTokenT2.column());
   }
 }

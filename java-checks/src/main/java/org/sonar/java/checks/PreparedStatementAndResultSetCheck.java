@@ -121,10 +121,18 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   private static Integer handleVariableUsedAsQuery(IdentifierTree identifier) {
     ExpressionTree lastAssignment = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(identifier, identifier.symbol());
-    if (lastAssignment != null) {
+    if (lastAssignment != null && !isPartOfExpression(identifier, lastAssignment)) {
       return getNumberQuery(lastAssignment);
     }
     return null;
+  }
+
+  private static boolean isPartOfExpression(IdentifierTree identifier, ExpressionTree lastAssignment) {
+    Tree parent = identifier;
+    do {
+      parent = parent.parent();
+    } while (parent != null && !parent.equals(lastAssignment));
+    return parent != null;
   }
 
   private static Integer handleStringConcatenation(BinaryExpressionTree expr) {
