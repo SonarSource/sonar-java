@@ -4,6 +4,7 @@
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BasicDynaBean.java':[
 141,
+425,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
 410,
@@ -35,15 +36,20 @@
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ConvertUtilsBean.java':[
 546,
+684,
 847,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/DefaultBeanIntrospector.java':[
 122,
 ],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/FluentPropertyBeanIntrospector.java':[
+131,
+],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaBean.java':[
 463,
 603,
 686,
+908,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaList.java':[
 441,
@@ -135,6 +141,7 @@
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/expression/DefaultResolver.java':[
 79,
+116,
 222,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/locale/BaseLocaleConverter.java':[

@@ -1,7 +1,7 @@
 class CognitiveComplexityCheck {
 
 
-  public int ternaryOp(int a, int b) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+  public int ternaryOp(int a, int b) { // Noncompliant [[sc=14;ec=23;secondary=6,8]] {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
 
     int c = a>b?b:a;
 
@@ -9,27 +9,39 @@ class CognitiveComplexityCheck {
 
   }
 
-  public void extraConditions(){ // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 21 to the 0 allowed.}}
-
-    if (a && b || c || d) {      // +3
-    }
-    if (a && b || c && d || e) { // +5
-    }
-    if (a || b && c || d && e) { // +5
-    }
-    if (a && b && c || d || e) { // +3
-    }
-
-    if (a) {                     // +1
-    }
-    if (a && b && c && d && e) { // +2
-    }
-    if (a || b || c || d || e) { // +2
-    }
+  public boolean extraConditions() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+    return a && b || foo(b && c);
+  }
+  public boolean extraConditions2() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+    return a && (b || c) || d;
+  }
+  public void extraConditions3() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+    if (a && b || c || d) {}
+  }
+  public void extraConditions4() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
+    if (a && b || c && d || e) {}
+  }
+  public void extraConditions5() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
+    if (a || b && c || d && e) {}
+  }
+  public void extraConditions6() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+    if (a && b && c || d || e) {}
+  }
+  public void extraConditions7() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 1 to the 0 allowed.}}
+    if (a) {}
+  }
+  public void extraConditions8() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+    if (a && b && c && d && e) {}
+  }
+  public void extraConditions9() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+      if (a || b || c || d || e) {}
+  }
+  public void extraCondition10() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
+    if (a && b && c || d || e && f){}
   }
 
 
-  public void switch2(){ // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 14 to the 0 allowed.}}
+  public void switch2(){ // Noncompliant [[sc=15;ec=22;secondary=46,50,51,51,51,55,57]] {{Refactor this method to reduce its Cognitive Complexity from 14 to the 0 allowed.}}
 
     switch(foo){                              //+1
       case 1:
@@ -105,7 +117,7 @@ class CognitiveComplexityCheck {
   }
 
 
-  static boolean enforceLimits(BoundTransportAddress boundTransportAddress) {
+  static boolean enforceLimits(BoundTransportAddress boundTransportAddress) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 1 to the 0 allowed.}}
     Iterable<JoinTuple> itr = () -> new JoinTupleIterator(tuples.tuples(), parentIndex, parentReference);
 
     Predicate<TransportAddress> isLoopbackOrLinkLocalAddress = t -> t.address().getAddress().isLinkLocalAddress()
@@ -143,7 +155,7 @@ class CognitiveComplexityCheck {
     }
   }
 
-  boolean isPalindrome(char [] s, int len) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+  boolean isPalindrome(char [] s, int len) { // Noncompliant Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.
 
     if(len < 2)
       return true;
@@ -242,6 +254,14 @@ class CognitiveComplexityCheck {
 
   public String getSpecifiedByKeysAsCommaList() {
     return getRuleKeysAsString(specifiedBy);
+  }
+
+  void localClasses() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+    class local {
+      boolean plop() { // compliant : will be counted in the enclosing method
+        return a && b || c && d;
+      }
+    }
   }
 
 
