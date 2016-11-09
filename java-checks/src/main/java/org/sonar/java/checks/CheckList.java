@@ -433,6 +433,7 @@ public final class CheckList {
       .add(ExternalizableClassConstructorCheck.class)
       .add(PrivateReadResolveCheck.class)
       .add(RandomFloatToIntCheck.class)
+      .add(CognitiveComplexityMethodCheck.class)
       .add(SyncGetterAndSetterCheck.class)
       .add(ToArrayCheck.class)
       .add(ClassWithoutHashCodeInHashStructureCheck.class)
