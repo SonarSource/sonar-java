@@ -24,53 +24,66 @@ import org.sonar.java.model.SyntaxTreeDebug;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class CFGDebug {
 
   private static final String DOT_PADDING = "  ";
-  private static final String DOT_NEW_LINE = "\\n";
+  private static final String NEW_LINE = "\n";
 
   private static final int MAX_KINDNAME = Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT.name().length() + 5;
 
   private CFGDebug() {
   }
 
+  /**
+   * Convert the CFG to DOT format (graph description language).
+   * See language specification: http://www.graphviz.org/content/dot-language
+   */
   public static String toDot(CFG cfg) {
     StringBuilder sb = new StringBuilder();
-
     List<Block> blocks = cfg.blocks();
 
-    sb.append("cfg{");
-    sb.append(DOT_NEW_LINE);
-
+    // nodes
     int firstBlockId = blocks.size() - 1;
+    blocks.stream().map(block -> dotBlockLabel(block.id(), firstBlockId)).forEach(sb::append);
 
+    sb.append(NEW_LINE);
+
+    // edges
     for (Block block : blocks) {
-      int id = block.id();
-      sb.append(DOT_PADDING);
-      sb.append(id + dotBlockLabel(id, firstBlockId) + ";");
-      sb.append(DOT_NEW_LINE);
+      block.successors().stream().map(successor -> dotSuccessorFormat(block, successor)).forEach(sb::append);
+      block.exceptions().stream().map(exception -> dotExceptionFormat(block, exception)).forEach(sb::append);
     }
 
-    sb.append(DOT_NEW_LINE);
+    return escapeNewLines("graph cfg {" + NEW_LINE + sb.toString() + "}");
+  }
 
-    for (Block block : blocks) {
-      for (Block successor : block.successors()) {
-        sb.append(DOT_PADDING);
-        sb.append(block.id() + "->" + successor.id() + dotSuccessorLabel(block, successor) + ";");
-        sb.append(DOT_NEW_LINE);
-      }
-      for (Block exception : block.exceptions()) {
-        sb.append(DOT_PADDING);
-        sb.append(block.id() + "->" + exception.id() + dotExceptionLabel(block, exception) + ";");
-        sb.append(DOT_NEW_LINE);
-      }
+  private static String escapeNewLines(String dotGraph) {
+    return dotGraph.replaceAll("\\n", "\\\\n");
+  }
+
+  private static String dotBlockLabel(int blockId, int firstBlockId) {
+    String label = "B" + blockId;
+    String color = "";
+    if (blockId == 0) {
+      label += " (EXIT)";
+      color = "red";
+    } else if (blockId == firstBlockId) {
+      label += " (START)";
+      color = "green";
     }
 
-    sb.append("}");
+    if (!color.isEmpty()) {
+      color = MessageFormat.format(",fillcolor=\"{0}\",fontcolor=\"white\"", color);
+    }
 
-    return sb.toString();
+    return MessageFormat.format(DOT_PADDING + "{0}[label=\"{1}\"{2}];" + NEW_LINE, blockId, label, color);
+  }
+
+  private static String dotSuccessorFormat(Block block, Block successor) {
+    return MessageFormat.format(DOT_PADDING + "{0}->{1}{2};" + NEW_LINE, block.id(), successor.id(), dotSuccessorLabel(block, successor));
   }
 
   private static String dotSuccessorLabel(Block block, Block successor) {
@@ -88,31 +101,8 @@ public class CFGDebug {
     return "";
   }
 
-  private static String dotExceptionLabel(Block block, Block exception) {
-    return "[label=\"EXCEPTION\",color=\"orange\",fontcolor=\"orange\"]";
-  }
-
-  private static String dotBlockLabel(int blockId, int firstBlockId) {
-    String label = "B" + blockId;
-    String color = "";
-    if (blockId == 0) {
-      label += " (EXIT)";
-      color = "red";
-    } else if (blockId == firstBlockId) {
-      label += " (START)";
-      color = "green";
-    }
-    StringBuilder sb = new StringBuilder();
-    sb.append("[label=\"");
-    sb.append(label);
-    sb.append("\"");
-    if (!color.isEmpty()) {
-      sb.append(",fillcolor=\"");
-      sb.append(color);
-      sb.append("\",fontcolor=\"white\"");
-    }
-    sb.append("]");
-    return sb.toString();
+  private static String dotExceptionFormat(Block block, Block exception) {
+    return MessageFormat.format(DOT_PADDING + "{0}->{1}[label=\"EXCEPTION\",color=\"orange\",fontcolor=\"orange\"];" + NEW_LINE, block.id(), exception.id());
   }
 
   public static String toString(CFG cfg) {
