@@ -58,7 +58,12 @@ public class CFGDebug {
     for (Block block : blocks) {
       for (Block successor : block.successors()) {
         sb.append(DOT_PADDING);
-        sb.append(block.id() + "->" + successor.id() + dotEdgeLabel(block, successor) + ";");
+        sb.append(block.id() + "->" + successor.id() + dotSuccessorLabel(block, successor) + ";");
+        sb.append(DOT_NEW_LINE);
+      }
+      for (Block exception : block.exceptions()) {
+        sb.append(DOT_PADDING);
+        sb.append(block.id() + "->" + exception.id() + dotExceptionLabel(block, exception) + ";");
         sb.append(DOT_NEW_LINE);
       }
     }
@@ -68,7 +73,7 @@ public class CFGDebug {
     return sb.toString();
   }
 
-  private static String dotEdgeLabel(Block block, Block successor) {
+  private static String dotSuccessorLabel(Block block, Block successor) {
     String edgeLabel = "";
     if (successor == block.trueBlock()) {
       edgeLabel = "TRUE";
@@ -78,9 +83,13 @@ public class CFGDebug {
       edgeLabel = "EXIT";
     }
     if (!edgeLabel.isEmpty()) {
-      return "[label=" + edgeLabel + "]";
+      return "[label=\"" + edgeLabel + "\"]";
     }
     return "";
+  }
+
+  private static String dotExceptionLabel(Block block, Block exception) {
+    return "[label=\"EXCEPTION\",color=\"orange\",fontcolor=\"orange\"]";
   }
 
   private static String dotBlockLabel(int blockId, int firstBlockId) {
