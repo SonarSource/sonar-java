@@ -125,4 +125,8 @@ public class AnalyzerMessage {
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
   }
+
+  @Override public String toString() {
+    return String.format("'%s' in %s:%d", getMessage(), getFile(), getLine());
+  }
 }
