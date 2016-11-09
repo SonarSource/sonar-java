@@ -1688,8 +1688,10 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v36/ViolationConverter.java':[
 44,
+87,
 89,
 90,
+100,
 113,
 114,
 126,

@@ -3540,6 +3540,7 @@
 ],
 'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/resolve/Symbols.java':[
 35,
+91,
 128,
 179,
 199,
@@ -3722,6 +3723,7 @@
 ],
 'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/signature/MethodSignatureScanner.java':[
 40,
+46,
 58,
 63,
 68,

@@ -40,6 +40,7 @@
 'jdk6:java/awt/AWTEvent.java':[
 89,
 96,
+238,
 306,
 312,
 331,
@@ -351,6 +352,7 @@
 868,
 ],
 'jdk6:java/awt/Button.java':[
+102,
 122,
 136,
 145,
@@ -407,6 +409,7 @@
 537,
 ],
 'jdk6:java/awt/Checkbox.java':[
+63,
 111,
 114,
 143,
@@ -463,6 +466,7 @@
 130,
 ],
 'jdk6:java/awt/CheckboxMenuItem.java':[
+50,
 72,
 83,
 97,
@@ -547,6 +551,7 @@
 ],
 'jdk6:java/awt/Color.java':[
 247,
+263,
 279,
 282,
 286,
@@ -724,6 +729,7 @@
 7770,
 ],
 'jdk6:java/awt/Container.java':[
+231,
 253,
 263,
 327,
@@ -984,6 +990,7 @@
 ],
 'jdk6:java/awt/Cursor.java':[
 151,
+176,
 267,
 270,
 271,
@@ -1021,6 +1028,7 @@
 1068,
 ],
 'jdk6:java/awt/Dialog.java':[
+86,
 314,
 315,
 341,
@@ -1044,6 +1052,7 @@
 ],
 'jdk6:java/awt/Dimension.java':[
 61,
+70,
 81,
 93,
 104,
@@ -1065,6 +1074,7 @@
 126,
 ],
 'jdk6:java/awt/Event.java':[
+581,
 613,
 638,
 662,
@@ -1147,6 +1157,7 @@
 ],
 'jdk6:java/awt/FileDialog.java':[
 98,
+103,
 124,
 137,
 160,
@@ -1231,6 +1242,7 @@
 32,
 ],
 'jdk6:java/awt/FontMetrics.java':[
+86,
 118,
 128,
 160,
@@ -1256,6 +1268,7 @@
 ],
 'jdk6:java/awt/Frame.java':[
 347,
+351,
 444,
 458,
 459,
@@ -1540,8 +1553,10 @@
 271,
 307,
 321,
+327,
 ],
 'jdk6:java/awt/Insets.java':[
+72,
 87,
 119,
 120,
@@ -1733,6 +1748,7 @@
 2628,
 ],
 'jdk6:java/awt/Label.java':[
+41,
 90,
 100,
 134,
@@ -1992,6 +2008,7 @@
 929,
 ],
 'jdk6:java/awt/Menu.java':[
+44,
 88,
 99,
 112,
@@ -2035,6 +2052,7 @@
 522,
 ],
 'jdk6:java/awt/MenuBar.java':[
+56,
 89,
 106,
 117,
@@ -2072,6 +2090,7 @@
 413,
 ],
 'jdk6:java/awt/MenuComponent.java':[
+38,
 146,
 196,
 203,
@@ -2100,6 +2119,7 @@
 964,
 ],
 'jdk6:java/awt/MenuItem.java':[
+58,
 142,
 158,
 175,
@@ -2425,6 +2445,7 @@
 475,
 ],
 'jdk6:java/awt/ScrollPane.java':[
+84,
 170,
 184,
 191,
@@ -2548,6 +2569,7 @@
 190,
 ],
 'jdk6:java/awt/SystemColor.java':[
+409,
 427,
 441,
 456,
@@ -2672,6 +2694,7 @@
 1209,
 ],
 'jdk6:java/awt/TextField.java':[
+124,
 137,
 165,
 184,
@@ -2873,6 +2896,7 @@
 1559,
 1604,
 1605,
+1612,
 1640,
 1641,
 1646,
@@ -2912,6 +2936,7 @@
 761,
 ],
 'jdk6:java/awt/Window.java':[
+301,
 375,
 460,
 492,
@@ -3526,6 +3551,9 @@
 281,
 287,
 ],
+'jdk6:java/awt/event/InputEvent.java':[
+176,
+],
 'jdk6:java/awt/event/InputMethodEvent.java':[
 143,
 324,
@@ -3559,6 +3587,7 @@
 165,
 ],
 'jdk6:java/awt/event/KeyEvent.java':[
+886,
 965,
 967,
 1080,
@@ -3742,6 +3771,7 @@
 1580,
 ],
 'jdk6:java/awt/event/MouseEvent.java':[
+336,
 363,
 453,
 457,
@@ -5615,6 +5645,7 @@
 'jdk6:java/awt/image/ColorModel.java':[
 187,
 188,
+197,
 218,
 219,
 250,
@@ -7107,6 +7138,7 @@
 178,
 452,
 990,
+1253,
 1265,
 1275,
 1309,
@@ -8162,6 +8194,7 @@
 397,
 ],
 'jdk6:java/io/DeleteOnExitHook.java':[
+20,
 34,
 41,
 44,
@@ -8293,6 +8326,7 @@
 44,
 49,
 87,
+124,
 ],
 'jdk6:java/io/FileInputStream.java':[
 110,
@@ -8307,6 +8341,7 @@
 340,
 341,
 342,
+361,
 ],
 'jdk6:java/io/FileNotFoundException.java':[
 33,
@@ -8330,6 +8365,7 @@
 364,
 365,
 366,
+413,
 ],
 'jdk6:java/io/FilePermission.java':[
 164,
@@ -8554,6 +8590,7 @@
 36,
 ],
 'jdk6:java/io/ObjectInputStream.java':[
+199,
 212,
 274,
 300,
@@ -9381,6 +9418,7 @@
 ],
 'jdk6:java/io/ObjectStreamClass.java':[
 67,
+150,
 163,
 175,
 186,
@@ -10182,6 +10220,7 @@
 1052,
 1069,
 1075,
+1106,
 ],
 'jdk6:java/io/Reader.java':[
 50,
@@ -10375,6 +10414,7 @@
 281,
 291,
 295,
+302,
 ],
 'jdk6:java/io/WriteAbortedException.java':[
 50,
@@ -10498,6 +10538,7 @@
 'jdk6:java/lang/Byte.java':[
 58,
 62,
+67,
 86,
 108,
 151,
@@ -10523,6 +10564,7 @@
 'jdk6:java/lang/Character.java':[
 378,
 2061,
+2066,
 2085,
 2086,
 2369,
@@ -10849,6 +10891,7 @@
 423,
 424,
 472,
+1029,
 ],
 'jdk6:java/lang/CharacterData01.java':[
 218,
@@ -10891,6 +10934,7 @@
 259,
 264,
 297,
+480,
 ],
 'jdk6:java/lang/CharacterData02.java':[
 55,
@@ -10900,6 +10944,7 @@
 226,
 240,
 257,
+384,
 ],
 'jdk6:java/lang/CharacterData0E.java':[
 54,
@@ -10909,6 +10954,7 @@
 226,
 241,
 259,
+388,
 ],
 'jdk6:java/lang/CharacterDataLatin1.java':[
 56,
@@ -10916,6 +10962,7 @@
 243,
 244,
 266,
+309,
 ],
 'jdk6:java/lang/CharacterDataPrivateUse.java':[
 32,
@@ -11225,7 +11272,11 @@
 34,
 44,
 ],
+'jdk6:java/lang/Compiler.java':[
+44,
+],
 'jdk6:java/lang/ConditionalSpecialCasing.java':[
+76,
 77,
 81,
 91,
@@ -11525,6 +11576,7 @@
 498,
 525,
 529,
+534,
 553,
 555,
 616,
@@ -11738,6 +11790,7 @@
 460,
 ],
 'jdk6:java/lang/ProcessEnvironment.java':[
+53,
 68,
 73,
 78,
@@ -11973,6 +12026,7 @@
 153,
 178,
 182,
+187,
 206,
 209,
 269,
@@ -12588,6 +12642,7 @@
 172,
 185,
 186,
+202,
 ],
 'jdk6:java/lang/UnknownError.java':[
 24,
@@ -12661,6 +12716,7 @@
 158,
 159,
 162,
+173,
 ],
 'jdk6:java/lang/ref/PhantomReference.java':[
 46,
@@ -12676,6 +12732,7 @@
 115,
 116,
 124,
+135,
 160,
 171,
 189,
@@ -13039,6 +13096,7 @@
 900,
 909,
 926,
+975,
 976,
 1018,
 1085,
@@ -13085,6 +13143,7 @@
 2546,
 2583,
 2618,
+2629,
 2648,
 2698,
 2719,
@@ -13174,6 +13233,7 @@
 208,
 ],
 'jdk6:java/net/DatagramPacket.java':[
+32,
 62,
 78,
 99,
@@ -13305,6 +13365,7 @@
 ],
 'jdk6:java/net/HttpCookie.java':[
 952,
+1072,
 1074,
 ],
 'jdk6:java/net/HttpRetryException.java':[
@@ -13471,6 +13532,7 @@
 77,
 ],
 'jdk6:java/net/InetAddress.java':[
+212,
 238,
 249,
 259,
@@ -13525,6 +13587,7 @@
 813,
 819,
 823,
+833,
 840,
 846,
 862,
@@ -13717,6 +13780,7 @@
 173,
 ],
 'jdk6:java/net/NetworkInterface.java':[
+37,
 51,
 62,
 78,
@@ -13786,6 +13850,7 @@
 62,
 ],
 'jdk6:java/net/PlainDatagramSocketImpl.java':[
+63,
 72,
 76,
 91,
@@ -13829,6 +13894,7 @@
 351,
 ],
 'jdk6:java/net/PlainSocketImpl.java':[
+87,
 102,
 110,
 114,
@@ -13961,6 +14027,7 @@
 150,
 ],
 'jdk6:java/net/ProxySelector.java':[
+50,
 51,
 53,
 56,
@@ -14206,6 +14273,7 @@
 149,
 ],
 'jdk6:java/net/SocketPermission.java':[
+216,
 264,
 271,
 277,
@@ -14923,6 +14991,7 @@
 512,
 540,
 567,
+585,
 608,
 612,
 620,
@@ -15058,6 +15127,7 @@
 180,
 ],
 'jdk6:java/net/URLEncoder.java':[
+109,
 112,
 115,
 118,
@@ -18683,6 +18753,7 @@
 912,
 914,
 925,
+932,
 982,
 984,
 1018,
@@ -18818,6 +18889,7 @@
 ],
 'jdk6:java/security/Security.java':[
 41,
+50,
 59,
 67,
 68,
@@ -18944,6 +19016,7 @@
 217,
 219,
 221,
+231,
 247,
 249,
 254,
@@ -19441,6 +19514,7 @@
 144,
 ],
 'jdk6:java/security/cert/TrustAnchor.java':[
+50,
 112,
 151,
 152,
@@ -19467,6 +19541,7 @@
 134,
 ],
 'jdk6:java/security/cert/X509CRLSelector.java':[
+58,
 109,
 112,
 204,
@@ -19503,6 +19578,8 @@
 666,
 ],
 'jdk6:java/security/cert/X509CertSelector.java':[
+76,
+115,
 157,
 171,
 185,
@@ -20462,6 +20539,7 @@
 640,
 ],
 'jdk6:java/text/Bidi.java':[
+54,
 156,
 157,
 159,
@@ -21557,6 +21635,7 @@
 2590,
 2604,
 2609,
+2611,
 2626,
 2651,
 2659,
@@ -22773,6 +22852,7 @@
 38,
 ],
 'jdk6:java/util/JapaneseImperialCalendar.java':[
+205,
 216,
 230,
 281,
@@ -24290,9 +24370,11 @@
 1149,
 ],
 'jdk6:java/util/concurrent/atomic/AtomicBoolean.java':[
+29,
 30,
 ],
 'jdk6:java/util/concurrent/atomic/AtomicInteger.java':[
+32,
 33,
 107,
 123,
@@ -24310,6 +24392,7 @@
 305,
 ],
 'jdk6:java/util/concurrent/atomic/AtomicLong.java':[
+46,
 47,
 121,
 137,
@@ -24334,6 +24417,7 @@
 395,
 ],
 'jdk6:java/util/concurrent/atomic/AtomicReference.java':[
+26,
 27,
 ],
 'jdk6:java/util/concurrent/atomic/AtomicReferenceFieldUpdater.java':[
@@ -24488,6 +24572,7 @@
 384,
 385,
 388,
+414,
 430,
 432,
 533,
@@ -24902,6 +24987,7 @@
 357,
 ],
 'jdk6:java/util/logging/LogManager.java':[
+157,
 208,
 215,
 217,
@@ -25671,6 +25757,7 @@
 5088,
 5090,
 5097,
+5107,
 ],
 'jdk6:java/util/regex/PatternSyntaxException.java':[
 45,
@@ -25721,6 +25808,7 @@
 31,
 ],
 'jdk6:java/util/zip/Deflater.java':[
+110,
 122,
 133,
 141,
@@ -25777,6 +25865,7 @@
 84,
 ],
 'jdk6:java/util/zip/Inflater.java':[
+68,
 90,
 124,
 139,
@@ -25813,6 +25902,7 @@
 223,
 ],
 'jdk6:java/util/zip/ZipEntry.java':[
+41,
 55,
 56,
 59,
@@ -25853,6 +25943,7 @@
 39,
 ],
 'jdk6:java/util/zip/ZipFile.java':[
+56,
 88,
 120,
 122,

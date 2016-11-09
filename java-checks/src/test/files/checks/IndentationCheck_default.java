@@ -272,4 +272,10 @@ public interface plop {
     this.inclusionPredicates = new Predicate[] {s -> true};
   }
 
+  void plop() {
+    map(p -> {
+      String s;
+    }).foo().bar();
+  }
+
 }
