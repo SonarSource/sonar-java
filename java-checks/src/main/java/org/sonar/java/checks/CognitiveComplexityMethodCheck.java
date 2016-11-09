@@ -80,7 +80,8 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     method.accept(complexityVisitor);
     int total = complexityVisitor.complexity;
     if (total > max) {
-      reportIssue(method.simpleName(), "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", complexityVisitor.flow, total - max);
+      reportIssue(method.simpleName(),
+        "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", complexityVisitor.flow, total - max);
     }
 
   }

@@ -2,6 +2,9 @@
 'jdk6:java/awt/AWTEvent.java':[
 355,
 ],
+'jdk6:java/awt/BasicStroke.java':[
+317,
+],
 'jdk6:java/awt/Container.java':[
 427,
 4181,
