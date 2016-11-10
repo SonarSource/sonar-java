@@ -645,6 +645,14 @@ class NullPointerTest {
     }
     return result;
   }
+
+  private void bar(@Nullable Object v) {
+    NullPointerTest.qix(v, v != null ? "A" : null); // Compliant
+    NullPointerTest.qix(v, (v != null && "B".equals(v.toString())) ? "B" : null); // Compliant
+    NullPointerTest.qix(v, (v == null || "B".equals(v.toString())) ? "B" : null); // Compliant
+  }
+
+  static void qix(Object o1, Object o2) {  }
 }
 
 class MyClass {

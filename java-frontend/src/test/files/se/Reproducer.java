@@ -48,6 +48,15 @@ class A {
         || (charactersReader.getCurrentValue() == CharactersReader.END_OF_STREAM && charactersReader.getPreviousValue() != LF_END_OF_LINE);
   }
 
+  private static final char CR_END_OF_LINE = 'A';
+  private static final char LF_END_OF_LINE = 'B';
+
+  public static interface CharactersReader {
+    char END_OF_STREAM = 'C';
+    char getCurrentValue();
+    char getPreviousValue();
+  }
+
   private void foo(boolean b) {
     boolean plop = bar() || b;
     printState();
