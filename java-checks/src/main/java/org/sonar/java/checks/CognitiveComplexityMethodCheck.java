@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -116,8 +117,8 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
       complexity += increase;
       if(!ignored.contains(tree)) {
         String message = "+" + increase;
-        if (nesting > 1) {
-          message += " (incl " + (nesting - 1) + " for nesting)";
+        if (increase > 1) {
+          message += " (incl " + (increase - 1) + " for nesting)";
         }
         flow.add(new JavaFileScannerContext.Location(message, tree));
       }
@@ -233,13 +234,15 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
       if(tree.is(CONDITIONAL_AND, CONDITIONAL_OR)) {
-        increaseComplexityByOne(tree);
-        if(ExpressionUtils.skipParentheses(tree.leftOperand()).kind() == tree.kind()) {
-          ignored.add(tree.leftOperand());
+        increaseComplexityByOne(tree.operatorToken());
+        ExpressionTree left = ExpressionUtils.skipParentheses(tree.leftOperand());
+        if(left.kind() == tree.kind()) {
+          ignored.add(((BinaryExpressionTree) left).operatorToken());
           complexity--;
         }
-        if(ExpressionUtils.skipParentheses(tree.rightOperand()).kind() == tree.kind()) {
-          ignored.add(tree.rightOperand());
+        ExpressionTree right = ExpressionUtils.skipParentheses(tree.rightOperand());
+        if(right.kind() == tree.kind()) {
+          ignored.add(((BinaryExpressionTree) right).operatorToken());
           complexity--;
         }
       }
