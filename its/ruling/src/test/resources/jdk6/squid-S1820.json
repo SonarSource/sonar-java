@@ -1,190 +1,44 @@
 {
-  'jdk6:java/awt/AWTEvent.java': [
-    64,
-  ],
-  'jdk6:java/awt/AlphaComposite.java': [
-    335,
-  ],
-  'jdk6:java/awt/BorderLayout.java': [
-    107,
-  ],
-  'jdk6:java/awt/Color.java': [
-    43,
-  ],
-  'jdk6:java/awt/Component.java': [
-    169,
-  ],
-  'jdk6:java/awt/Container.java': [
-    72,
-  ],
-  'jdk6:java/awt/Cursor.java': [
-    32,
-  ],
-  'jdk6:java/awt/Event.java': [
-    45,
-  ],
-  'jdk6:java/awt/EventQueue.java': [
-    84,
-  ],
-  'jdk6:java/awt/Font.java': [
-    206,
-  ],
-  'jdk6:java/awt/Frame.java': [
-    118,
-  ],
-  'jdk6:java/awt/GridBagConstraints.java': [
-    20,
-  ],
-  'jdk6:java/awt/KeyboardFocusManager.java': [
-    79,
-  ],
-  'jdk6:java/awt/MultipleGradientPaintContext.java': [
-    35,
-  ],
-  'jdk6:java/awt/PageAttributes.java': [
-    76,
-  ],
-  'jdk6:java/awt/RenderingHints.java': [
-    64,
-  ],
-  'jdk6:java/awt/SystemColor.java': [
-    35,
-  ],
-  'jdk6:java/awt/TexturePaintContext.java': [
-    22,
-  ],
-  'jdk6:java/awt/Window.java': [
-    131,
-  ],
-  'jdk6:java/awt/color/ColorSpace.java': [
-    80,
-  ],
-  'jdk6:java/awt/color/ICC_Profile.java': [
-    73,
-  ],
-  'jdk6:java/awt/event/InputEvent.java': [
-    37,
-  ],
-  'jdk6:java/awt/event/KeyEvent.java': [
-    125,
-  ],
-  'jdk6:java/awt/event/MouseEvent.java': [
-    159,
-  ],
-  'jdk6:java/awt/font/NumericShaper.java': [
-    55,
-  ],
-  'jdk6:java/awt/font/OpenType.java': [
-    21,
-  ],
-  'jdk6:java/awt/font/TextAttribute.java': [
-    239,
-  ],
-  'jdk6:java/awt/font/TextMeasurer.java': [
-    80,
-  ],
-  'jdk6:java/awt/geom/AffineTransform.java': [
-    97,
-  ],
-  'jdk6:java/awt/geom/Path2D.java': [
-    53,
-  ],
-  'jdk6:java/awt/image/BufferedImage.java': [
-    53,
-  ],
-  'jdk6:java/awt/image/ColorModel.java': [
-    138,
-  ],
-  'jdk6:java/beans/Introspector.java': [
-    83,
-  ],
-  'jdk6:java/io/ObjectStreamClass.java': [
-    50,
-  ],
-  'jdk6:java/io/ObjectStreamConstants.java': [
-    17,
-  ],
-  'jdk6:java/io/StreamTokenizer.java': [
-    48,
-  ],
-  'jdk6:java/math/BigDecimal.java': [
-    208,
-  ],
-  'jdk6:java/math/BigInteger.java': [
-    80,
-  ],
-  'jdk6:java/net/HttpURLConnection.java': [
-    33,
-  ],
-  'jdk6:java/net/SocketPermission.java': [
-    123,
-  ],
-  'jdk6:java/net/SocksConsts.java': [
-    13,
-  ],
-  'jdk6:java/net/URI.java': [
-    453,
-  ],
-  'jdk6:java/security/cert/X509CertSelector.java': [
-    68,
-  ],
-  'jdk6:java/sql/DatabaseMetaData.java': [
-    54,
-  ],
-  'jdk6:java/sql/Types.java': [
-    16,
-  ],
-  'jdk6:java/text/DateFormat.java': [
-    126,
-    730,
-  ],
-  'jdk6:java/text/DecimalFormat.java': [
-    359,
-  ],
-  'jdk6:java/text/DecimalFormatSymbols.java': [
-    50,
-  ],
-  'jdk6:java/text/NumberFormat.java': [
-    165,
-  ],
-  'jdk6:java/text/SimpleDateFormat.java': [
-    324,
-  ],
-  'jdk6:java/util/Calendar.java': [
-    291,
-  ],
-  'jdk6:java/util/Currency.java': [
-    32,
-  ],
-  'jdk6:java/util/Formatter.java': [
-    4182,
-    4296,
-  ],
-  'jdk6:java/util/GregorianCalendar.java': [
-    282,
-  ],
-  'jdk6:java/util/JapaneseImperialCalendar.java': [
-    51,
-  ],
-  'jdk6:java/util/Locale.java': [
-    149,
-  ],
-  'jdk6:java/util/Scanner.java': [
-    328,
-  ],
-  'jdk6:java/util/SimpleTimeZone.java': [
-    133,
-  ],
-  'jdk6:java/util/jar/JarVerifier.java': [
-    27,
-  ],
-  'jdk6:java/util/prefs/FileSystemPreferences.java': [
-    33,
-  ],
-  'jdk6:java/util/regex/Pattern.java': [
-    600,
-  ],
-  'jdk6:java/util/zip/ZipConstants.java': [
-    17,
-  ],
+'jdk6:java/awt/Component.java':[
+169,
+],
+'jdk6:java/awt/GridBagConstraints.java':[
+20,
+],
+'jdk6:java/awt/KeyboardFocusManager.java':[
+79,
+],
+'jdk6:java/awt/TexturePaintContext.java':[
+22,
+],
+'jdk6:java/awt/Window.java':[
+131,
+],
+'jdk6:java/awt/font/TextMeasurer.java':[
+80,
+],
+'jdk6:java/awt/image/ColorModel.java':[
+138,
+],
+'jdk6:java/io/ObjectStreamClass.java':[
+50,
+],
+'jdk6:java/security/cert/X509CertSelector.java':[
+68,
+],
+'jdk6:java/text/DecimalFormat.java':[
+359,
+],
+'jdk6:java/util/Scanner.java':[
+328,
+],
+'jdk6:java/util/SimpleTimeZone.java':[
+133,
+],
+'jdk6:java/util/jar/JarVerifier.java':[
+27,
+],
+'jdk6:java/util/prefs/FileSystemPreferences.java':[
+33,
+],
 }

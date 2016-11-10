@@ -56,4 +56,15 @@ class ThisIsOK { // Compliant
   public int field18;
   public int field19;
   public int field20;
+  public static final int STATIC_FINAL_FIELD_5;
+  public static final int STATIC_FINAL_FIELD_6;
+  public static final int STATIC_FINAL_FIELD_7;
+  public static final int STATIC_FINAL_FIELD_8;
+  public static final int STATIC_FINAL_FIELD_9;
+  public static final int STATIC_FINAL_FIELD_10;
+  private static final int STATIC_FINAL_FIELD_11;
+  private static final int STATIC_FINAL_FIELD_12;
+  private static final int STATIC_FINAL_FIELD_13;
+  private static final int STATIC_FINAL_FIELD_14;
+  private static final int STATIC_FINAL_FIELD_15;
 }
