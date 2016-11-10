@@ -934,7 +934,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
-    if(methodRefTree.isTypeSet()) {
+    if (methodRefTree.isTypeSet() && methodReferenceTree.typeArguments() == null) {
       JavaType methodRefType = (JavaType) methodRefTree.symbolType();
       resolve.getSamMethod(methodRefType).ifPresent(samMethod -> {
         JavaType samReturnType = (JavaType) samMethod.returnType().type();
