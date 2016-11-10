@@ -283,4 +283,9 @@ public class StandardFunctionalInterfaceCheck {
     R m(T x, U y);
   }
 
+  @FunctionalInterface
+  interface UsingArrays { // Compliant - Array used as return type
+    byte[] bar(int value);
+  }
+
 }

@@ -179,8 +179,9 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     if (!functionalMethod.thrownTypes().isEmpty() || (declaration != null && !declaration.typeParameters().isEmpty())) {
       return Optional.empty();
     }
+    Type returnType = declaration != null ? declaration.returnType().symbolType() : functionalMethod.returnType().type();
     return STD_INTERFACE_BY_PARAMETER_COUNT.getOrDefault(functionalMethod.parameterTypes().size(), Collections.emptyList()).stream()
-        .map(standardInterface -> standardInterface.matchingSpecialization(functionalMethod))
+        .map(standardInterface -> standardInterface.matchingSpecialization(functionalMethod, returnType))
         .filter(Objects::nonNull)
         .findFirst();
   }
@@ -239,9 +240,8 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     }
 
     @CheckForNull
-    private String matchingSpecialization(MethodSymbol method) {
+    private String matchingSpecialization(MethodSymbol method, Type actualReturnType) {
       Map<String, String> genericTypeMapping = genericTypes.isEmpty() ? Collections.emptyMap() : new HashMap<>();
-      Type actualReturnType = method.returnType().type();
       String expectedReturnType = convertGenericType(returnType, actualReturnType, genericTypeMapping);
       if (!expectedReturnType.equals(actualReturnType.fullyQualifiedName())) {
         return null;
