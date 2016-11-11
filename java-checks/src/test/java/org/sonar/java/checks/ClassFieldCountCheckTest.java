@@ -32,6 +32,11 @@ public class ClassFieldCountCheckTest {
   }
 
   @Test
+  public void static_final() {
+    JavaCheckVerifier.verify(TEST_FILES_DIR + "ClassFieldCountCheck.java", new ClassFieldCountCheck());
+  }
+
+  @Test
   public void enums_interfaces_and_anonymous_trees() {
     ClassFieldCountCheck check = new ClassFieldCountCheck();
     check.setThreshold(2);

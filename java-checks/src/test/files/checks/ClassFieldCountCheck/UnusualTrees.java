@@ -9,7 +9,7 @@ enum TooManyFieldsEnum { // Noncompliant [[sc=6;ec=23]] {{Refactor this class so
    int field3;
 }
 
-interface TooManyFieldsInterface { // Noncompliant [[sc=11;ec=33]] {{Refactor this class so it has no more than 2 fields, rather than the 3 it currently has.}}
+interface TooManyFieldsInterface { // Compliant - interface fields are effectively static and final
    int field1;
    int field2;
    int field3;

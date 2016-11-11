@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -65,7 +66,11 @@ public class ClassFieldCountCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean shouldBeCounted(VariableTree variableTree) {
-    return countNonPublicFields || variableTree.symbol().isPublic();
+    Symbol symbol = variableTree.symbol();
+    if (symbol.isStatic() && symbol.isFinal()) {
+      return false;
+    }
+    return countNonPublicFields || symbol.isPublic();
   }
 
   public void setThreshold(int threshold) {
