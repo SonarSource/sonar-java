@@ -1,4 +1,4 @@
-function loadCfg(DOTstring) {
+function loadDot(DOTstring, isSyntaxTree) {
   var parsedData = vis.network.convertDot(DOTstring);
 
   var data = {
@@ -15,6 +15,16 @@ function loadCfg(DOTstring) {
       face: 'monospace',
       color: '#333',
       align: 'left'
+    }
+  }
+  if(isSyntaxTree) {
+    options.layout = {
+      hierarchical: {
+        enabled: true,
+        sortMethod: 'directed',
+        levelSeparation: 100,
+        nodeSpacing: 1
+      }
     }
   }
 

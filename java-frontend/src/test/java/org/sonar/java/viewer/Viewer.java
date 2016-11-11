@@ -17,34 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.cfg;
-
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
-
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.resolve.SemanticModel;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package org.sonar.java.viewer;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -54,20 +27,34 @@ import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.StyleSpansBuilder;
+import org.sonar.java.ast.api.JavaKeyword;
 
-public class CFGViewer extends Application {
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
-  private static final String DEFAULT_SOURCE_CODE = "/cfgviewer/default.java";
+public class Viewer extends Application {
+
+  private static final String DEFAULT_SOURCE_CODE = "/viewer/default.java";
 
   private final VBox verticalLayout = new VBox();
   private final CodeArea codeArea = new CodeArea();
-  private final TextArea cfgText = new TextArea();
-  private final WebView webView = new WebView();
+  final TextArea textArea = new TextArea();
+  final WebView webView = new WebView();
 
   private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", javaKeywords()) + ")\\b";
   private static final String PAREN_PATTERN = "\\(|\\)";
@@ -89,10 +76,14 @@ public class CFGViewer extends Application {
 
   private String lastAnalysed = "";
 
+  public static void main(String[] args) {
+    launch(args);
+  }
+
   private static String defaultFileContent() {
     String result;
     try {
-      Path path = Paths.get(CFGViewer.class.getResource(DEFAULT_SOURCE_CODE).toURI());
+      Path path = Paths.get(Viewer.class.getResource(DEFAULT_SOURCE_CODE).toURI());
       result = new String(Files.readAllBytes(path));
     } catch (URISyntaxException | IOException e) {
       e.printStackTrace();
@@ -104,29 +95,23 @@ public class CFGViewer extends Application {
   private static String[] javaKeywords() {
     return Arrays.stream(JavaKeyword.values())
       .map(JavaKeyword::getValue)
-      .toArray(size -> new String[size]);
-  }
-
-  public static void main(String[] args) {
-    launch(args);
+      .toArray(String[]::new);
   }
 
   @Override
   public void start(Stage primaryStage) throws Exception {
     setupLayout();
 
-    primaryStage.setTitle("SonarQube Java Analyzer - CFG Viewer");
+    primaryStage.setTitle("SonarQube Java Analyzer - Viewer");
     codeArea.insertText(0, defaultFileContent());
 
     SplitPane splitPane = new SplitPane();
     splitPane.getItems().addAll(verticalLayout, webView);
-    webView.getEngine().load(CFGViewer.class.getResource("/cfgviewer/cfg.html").toExternalForm());
+    webView.getEngine().load(Viewer.class.getResource("/viewer/viewer.html").toExternalForm());
     primaryStage.setScene(new Scene(splitPane, 1200, 800));
     primaryStage.show();
 
-    Timeline timeline = new Timeline(new KeyFrame(
-      Duration.millis(500),
-      ae -> checkForUpdate()));
+    Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), ae -> checkForUpdate()));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
   }
@@ -139,28 +124,15 @@ public class CFGViewer extends Application {
     }
   }
 
-  private void analyse(String source) {
-    CFG cfg = buildCFG(source);
-    addCFGText(cfg);
-    String dot = CFGDebug.toDot(cfg);
-    WebEngine webEngine = webView.getEngine();
-    webEngine.executeScript("loadCfg('" + dot + "')");
+  protected void analyse(String source){
+//    new CFGViewer(this).analyse(source);
+    new TreeViewer(this).analyse(source);
   }
 
-  private void addCFGText(CFG cfg) {
-    cfgText.setText(CFGDebug.toString(cfg));
-  }
-
-  private static CFG buildCFG(String source) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
-    SemanticModel.createFor(cut, Lists.newArrayList());
-    MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return CFG.build(firstMethod);
-  }
 
   private void setupLayout() {
     codeArea.setStyle("-fx-min-height: 400px;");
-    codeArea.getStylesheets().add(CFGViewer.class.getResource("/cfgviewer/java-keywords.css").toExternalForm());
+    codeArea.getStylesheets().add(Viewer.class.getResource("/viewer/java-keywords.css").toExternalForm());
     codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
     codeArea.richChanges()
       .filter(ch -> !ch.getInserted().equals(ch.getRemoved()))
@@ -168,9 +140,9 @@ public class CFGViewer extends Application {
         codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
       });
 
-    cfgText.setStyle("-fx-min-height: 390px; -fx-font-family: monospace;");
+    textArea.setStyle("-fx-min-height: 390px; -fx-font-family: monospace;");
 
-    verticalLayout.getChildren().addAll(codeArea, cfgText);
+    verticalLayout.getChildren().addAll(codeArea, textArea);
   }
 
   private static StyleSpans<Collection<String>> computeHighlighting(String text) {
