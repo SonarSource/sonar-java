@@ -1113,6 +1113,15 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void MethodReferencesTypeArguments() throws Exception {
+    Result result = Result.createFor("MethodReferencesTypeArguments");
+
+    JavaSymbol getValue = result.symbol("getValue");
+    // FIXME SONARJAVA-1663 type arguments are currently ignored
+    assertThat(getValue.usages()).hasSize(0);
+  }
+
+  @Test
   public void UnionType() throws Exception {
     Result result = Result.createFor("UnionTypes");
 
