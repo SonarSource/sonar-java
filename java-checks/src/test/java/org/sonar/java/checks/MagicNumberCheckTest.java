@@ -35,4 +35,11 @@ public class MagicNumberCheckTest {
     check.authorizedNumbers = "-1,0,1,2";
     JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheckCustom.java", check);
   }
+  
+  @Test
+  public void detectedWithAuthorizedNumberSpaces() {
+    MagicNumberCheck check = new MagicNumberCheck();
+    check.authorizedNumbers = " -1,0 , 1 ,2";
+    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheckCustom.java", check);
+  }
 }
