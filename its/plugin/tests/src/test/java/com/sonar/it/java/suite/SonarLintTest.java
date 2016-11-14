@@ -27,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
@@ -128,6 +129,16 @@ public class SonarLintTest {
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
       tuple("squid:S1481", 4, inputFile.getPath(), "MINOR"));
+  }
+
+  @Test
+  public void parse_error_should_report_analysis_error() throws Exception {
+    ClientInputFile inputFile = prepareInputFile("ParseError.java", "class ParseError {", false);
+    final List<Issue> issues = new ArrayList<>();
+    AnalysisResults analysisResults = sonarlintEngine.analyze(
+      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+    assertThat(issues).isEmpty();
+    assertThat(analysisResults.failedAnalysisFiles()).hasSize(1);
   }
 
   private ClientInputFile prepareInputFile(String relativePath, String content, final boolean isTest) throws IOException {
