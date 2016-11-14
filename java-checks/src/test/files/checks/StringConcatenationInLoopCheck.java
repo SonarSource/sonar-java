@@ -38,6 +38,9 @@ class A {
       MyObject.newInstance().stringProperty += "b"; // Noncompliant {{Use a StringBuilder instead.}}
       MyObject.newInstance().stringProperty = "b" + MyObject.newInstance().stringProperty; // Noncompliant {{Use a StringBuilder instead.}}
     }
+    for (int i=0; i < array.length; i++) {
+      array[i] = "a" + array[i]; // Compliant, it is an array access
+    }
   }
 
   class MyObject {
