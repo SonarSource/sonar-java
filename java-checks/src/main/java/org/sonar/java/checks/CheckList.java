@@ -47,6 +47,7 @@ import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassC
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
+import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
@@ -454,6 +455,7 @@ public final class CheckList {
       .add(StaticImportCountCheck.class)
       .add(ClassFieldCountCheck.class)
       .add(DoubleCheckedLockingCheck.class)
+      .add(WriteObjectTheOnlySynchronizedMethodCheck.class)
       .add(SynchronizationOnGetClassCheck.class)
       .build();
   }
