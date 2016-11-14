@@ -52,8 +52,8 @@ public final class SerializableContract {
     String classFullyQualifiedName = classTree.symbol().type().fullyQualifiedName();
     for (Tree member : classTree.members()) {
 
-      MethodMatcher writeObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
-      MethodMatcher readObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
+      MethodMatcher writeObjectMatcher = writeObjectMatcher(classFullyQualifiedName);
+      MethodMatcher readObjectMatcher = readObjectMatcher(classFullyQualifiedName);
 
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
@@ -64,6 +64,14 @@ public final class SerializableContract {
       }
     }
     return hasReadObject && hasWriteObject;
+  }
+
+  public static MethodMatcher readObjectMatcher(String classFullyQualifiedName) {
+    return MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
+  }
+
+  public static MethodMatcher writeObjectMatcher(String classFullyQualifiedName) {
+    return MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
   }
 
   private static boolean methodThrows(MethodTree methodTree, String... throwClauseFullyQualifiedNames) {
