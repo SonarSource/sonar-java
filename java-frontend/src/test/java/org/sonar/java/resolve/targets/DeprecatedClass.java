@@ -28,3 +28,12 @@ public class DeprecatedClass {
   @Deprecated
   class InnerClass {}
 }
+
+@Deprecated
+enum DeprecatedEnum {
+  A, B, C;
+}
+
+enum PartiallyDeprecatedEnum {
+  A, B, @Deprecated C;
+}

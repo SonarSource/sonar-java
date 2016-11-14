@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -411,6 +412,11 @@ public class SymbolTableTest {
     // usages of methods values() and valueOf(String s) from an enum when read from byte code
     assertThat(result.reference(17, 5)).isSameAs(result.symbol("useValues", 21));
     assertThat(result.reference(18, 5)).isSameAs(result.symbol("useValueOf", 22));
+
+    // deprecated enum constants
+    List<Symbol> deprecatedEnumConstant = new ArrayList<>(enumSymbol.lookupSymbols("C"));
+    assertThat(deprecatedEnumConstant).hasSize(1);
+    assertThat(deprecatedEnumConstant.get(0).isDeprecated()).isTrue();
   }
 
   @Test
