@@ -39,6 +39,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
@@ -210,6 +211,20 @@ public class BytecodeCompleterTest {
     assertThat(staticInnerClass.isDeprecated()).isTrue();
     JavaSymbol.TypeJavaSymbol innerClass = (JavaSymbol.TypeJavaSymbol) deprecatedClass.members().lookup("InnerClass").get(0);
     assertThat(innerClass.isDeprecated()).isTrue();
+
+    JavaSymbol.TypeJavaSymbol deprecatedEnum = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DeprecatedEnum");
+    assertThat(deprecatedEnum.isDeprecated()).isTrue();
+    assertThat(deprecatedEnum.memberSymbols().stream().filter(Symbol::isVariableSymbol).filter(Symbol::isEnum).noneMatch(Symbol::isDeprecated)).isTrue();
+
+    JavaSymbol.TypeJavaSymbol partiallyDeprecatedEnum = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.PartiallyDeprecatedEnum");
+    assertThat(partiallyDeprecatedEnum.isDeprecated()).isFalse();
+    List<Symbol> deprecatedEnumConstants = partiallyDeprecatedEnum.memberSymbols().stream()
+      .filter(Symbol::isVariableSymbol)
+      .filter(Symbol::isEnum)
+      .filter(Symbol::isDeprecated)
+      .collect(Collectors.toList());
+    assertThat(deprecatedEnumConstants).hasSize(1);
+    assertThat(deprecatedEnumConstants.get(0).name()).isEqualTo("C");
   }
 
   @Test
