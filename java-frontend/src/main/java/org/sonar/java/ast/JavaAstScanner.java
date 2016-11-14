@@ -107,8 +107,7 @@ public class JavaAstScanner {
   private void parseErrorWalkAndVisit(RecognitionException e, File file) {
     try {
       // Process the exception
-      visitor.visitFile(null);
-      visitor.processRecognitionException(e);
+      visitor.processRecognitionException(e, file);
     } catch (Exception e2) {
       throw new AnalysisException(getAnalysisExceptionMessage(file), e2);
     }
