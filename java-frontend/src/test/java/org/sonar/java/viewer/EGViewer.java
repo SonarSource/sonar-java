@@ -23,38 +23,63 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import javafx.scene.web.WebEngine;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.ExplodedGraphWalker;
+import org.sonar.java.se.MethodBehavior;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class CFGViewer {
+public class EGViewer {
 
   private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
   private final Viewer viewer;
 
-  CFGViewer(Viewer viewer) {
+  EGViewer(Viewer viewer) {
     this.viewer = viewer;
   }
 
   public void analyse(String source){
-    CFG cfg = buildCFG(source);
-    viewer.textArea.setText(CFGDebug.toString(cfg));
-    String dot = CFGDebug.toDot(cfg);
+    ExplodedGraph eg = buildEG(source);
+    viewer.textArea.setText(CFGDebug.toString(CFGViewer.buildCFG(source)));
+    String dot = egToDot(eg);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', false)");
+    webEngine.executeScript("loadDot('" + dot + "', true)");
   }
 
-  static CFG buildCFG(String source) {
+  private static ExplodedGraph buildEG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
     SemanticModel.createFor(cut, Lists.newArrayList());
     MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return CFG.build(firstMethod);
+    return getEg(firstMethod);
   }
 
+  private static ExplodedGraph getEg(MethodTree methodTree) {
+    ExplodedGraphWalker walker = new ExplodedGraphWalker();
+    walker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+    return walker.getExplodedGraph();
+  }
+
+  private static String egToDot(ExplodedGraph eg) {
+    String result = "graph ExplodedGraph { ";
+    List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.getNodes().keySet());
+    int index = 0;
+    for (ExplodedGraph.Node node : nodes) {
+      result += index + "[label = \"" + node.programPoint + "\"] ";
+      if(node.parent != null) {
+        result += nodes.indexOf(node.parent) + "->"+index+"[label=\""+node.learnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString)
+          .collect(Collectors.joining(","))+"\"] ";
+      }
+      index++;
+    }
+    return result+"}";
+  }
 }

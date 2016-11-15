@@ -21,9 +21,13 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,6 +48,10 @@ public class ExplodedGraph {
     result.isNew = true;
     nodes.put(result, result);
     return result;
+  }
+
+  public Map<Node, Node> getNodes() {
+    return nodes;
   }
 
   public static class ProgramPoint {
@@ -73,6 +81,15 @@ public class ExplodedGraph {
       }
       return false;
     }
+
+    @Override
+    public String toString() {
+      String tree = "";
+      if(i < block.elements().size()) {
+        tree = ""+block.elements().get(i).kind()+block.elements().get(i).firstToken().line();
+      }
+      return "B"+block.id()+"."+i+"  "+tree;
+    }
   }
 
   public static class Node {
@@ -83,13 +100,47 @@ public class ExplodedGraph {
     /**
      * Execution location. Currently only pre-statement, but tomorrow we might add post-statement.
      */
-    final ProgramPoint programPoint;
+    public final ProgramPoint programPoint;
     @Nullable
-    final ProgramState programState;
+    public final ProgramState programState;
+    @Nullable
+    public Node parent;
+    private final List<LearnedConstraint> learnedConstraints;
 
     Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
       this.programState = programState;
+      learnedConstraints = new ArrayList<>();
+    }
+
+    public void setParent(@Nullable Node parent) {
+      this.parent = parent;
+      if(parent != null) {
+        programState.constraints.forEach((sv, c) -> {
+          if(parent.programState.getConstraint(sv) != c) {
+            learnedConstraints.add(new LearnedConstraint(sv, c));
+          }
+        });
+      }
+    }
+
+    public List<LearnedConstraint> learnedConstraints() {
+      return learnedConstraints;
+    }
+
+    public static class LearnedConstraint {
+      public SymbolicValue sv;
+      public Constraint constraint;
+
+      public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
+        this.sv = sv;
+        this.constraint = constraint;
+      }
+
+      @Override
+      public String toString() {
+        return sv+" - "+constraint;
+      }
     }
 
     @Override

@@ -107,43 +107,44 @@ public class ExplodedGraphWalker {
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private MethodTree methodTree;
+
   private ExplodedGraph explodedGraph;
+
   private Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
   private LiveVariables liveVariables;
-
   private CheckerDispatcher checkerDispatcher;
-  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
 
+  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
   @VisibleForTesting
   int steps;
+
   ConstraintManager constraintManager;
   private boolean cleanup = true;
   MethodBehavior methodBehavior;
-
   public static class ExplodedGraphTooBigException extends RuntimeException {
+
     public ExplodedGraphTooBigException(String s) {
       super(s);
     }
   }
-
   public static class MaximumStepsReachedException extends RuntimeException {
+
     public MaximumStepsReachedException(String s) {
       super(s);
     }
-
     public MaximumStepsReachedException(String s, TooManyNestedBooleanStatesException e) {
       super(s, e);
     }
-  }
 
+  }
   public static class TooManyNestedBooleanStatesException extends RuntimeException {
-  }
 
+  }
   @VisibleForTesting
-  ExplodedGraphWalker() {
+  public ExplodedGraphWalker() {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
     List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
@@ -161,6 +162,10 @@ public class ExplodedGraphWalker {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.symbolicExecutionVisitor = symbolicExecutionVisitor;
+  }
+
+  public ExplodedGraph getExplodedGraph() {
+    return explodedGraph;
   }
 
   public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
@@ -228,7 +233,6 @@ public class ExplodedGraphWalker {
 
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
-    explodedGraph = null;
     workList = null;
     node = null;
     programState = null;
@@ -843,6 +847,7 @@ public class ExplodedGraphWalker {
     if(node != null) {
       cachedNode.happyPath = node.happyPath;
     }
+    cachedNode.setParent(node);
     workList.addFirst(cachedNode);
   }
 
