@@ -55,4 +55,13 @@ public class ModifiersUtilsTest {
     assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)).isFalse();
     assertThat(ModifiersUtils.getModifier(classTree.modifiers(), Modifier.ABSTRACT)).isNull();
   }
+
+  @Test
+  public void test_find_modifier() {
+    File file = new File("src/test/files/model/ModifiersUtilsTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(file);
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC).isPresent()).isTrue();
+    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT).isPresent()).isFalse();
+  }
 }

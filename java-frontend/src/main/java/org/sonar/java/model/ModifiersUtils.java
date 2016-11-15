@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 
 import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 public final class ModifiersUtils {
 
@@ -32,21 +33,17 @@ public final class ModifiersUtils {
   }
 
   public static boolean hasModifier(ModifiersTree modifiers, Modifier expectedModifier) {
-    for (ModifierKeywordTree modifierKeywordTree : modifiers.modifiers()) {
-      if (expectedModifier.equals(modifierKeywordTree.modifier())) {
-        return true;
-      }
-    }
-    return false;
+    return findModifier(modifiers, expectedModifier).isPresent();
   }
 
   @CheckForNull
-  public static ModifierKeywordTree getModifier(ModifiersTree modifiers, Modifier modifier) {
-    for (ModifierKeywordTree modifierKeywordTree : modifiers.modifiers()) {
-      if (modifier.equals(modifierKeywordTree.modifier())) {
-        return modifierKeywordTree;
-      }
-    }
-    return null;
+  public static ModifierKeywordTree getModifier(ModifiersTree modifiers, Modifier expectedModifier) {
+    return findModifier(modifiers, expectedModifier).orElse(null);
+  }
+
+  public static Optional<ModifierKeywordTree> findModifier(ModifiersTree modifiersTree,  Modifier expectedModifier) {
+    return modifiersTree.modifiers().stream()
+      .filter(modifierKeywordTree -> modifierKeywordTree.modifier() == expectedModifier)
+      .findAny();
   }
 }
