@@ -29,6 +29,7 @@ public class ClassFieldCountCheckTest {
   @Test
   public void simple_case() {
     JavaCheckVerifier.verify(TEST_FILES_DIR + "SimpleDefaultCase.java", new ClassFieldCountCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILES_DIR + "SimpleDefaultCase.java", new ClassFieldCountCheck());
   }
 
   @Test

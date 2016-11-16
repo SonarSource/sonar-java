@@ -35,11 +35,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
@@ -51,7 +51,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 @Rule(key = "S2168")
 public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
-  private Deque<CheckedLocking> ifConditionSymbolStack = new LinkedList<>();
+  private Deque<IfFieldEqNull> ifConditionSymbolStack = new LinkedList<>();
   private Deque<Tree> synchronizedStmtStack = new LinkedList<>();
 
   @Override
@@ -64,11 +64,10 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    if (isIfFieldEqNullTree(tree)) {
-      IfStatementTree ifTree = (IfStatementTree) tree;
-      ifConditionSymbolStack.push(new CheckedLocking(ifTree));
-      visitIfStatement(ifTree);
-    }
+    isIfFieldEqNull(tree).ifPresent(ifFieldEqNull -> {
+      ifConditionSymbolStack.push(ifFieldEqNull);
+      visitIfStatement(ifFieldEqNull.ifTree);
+    });
     if (tree.is(SYNCHRONIZED_STATEMENT)) {
       synchronizedStmtStack.push(tree);
     }
@@ -79,30 +78,33 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    if (isIfFieldEqNullTree(tree)) {
-      ifConditionSymbolStack.pop();
-    }
+    isIfFieldEqNull(tree).ifPresent(cl -> ifConditionSymbolStack.pop());
     if (tree.is(SYNCHRONIZED_STATEMENT)) {
       synchronizedStmtStack.pop();
     }
   }
 
-  private static boolean isIfFieldEqNullTree(Tree tree) {
+  private static Optional<IfFieldEqNull> isIfFieldEqNull(Tree tree) {
     if (!tree.is(IF_STATEMENT)) {
-      return false;
+      return Optional.empty();
     }
     IfStatementTree ifTree = (IfStatementTree) tree;
     if (!ifTree.condition().is(EQUAL_TO)) {
-      return false;
+      return Optional.empty();
     }
     BinaryExpressionTree eqRelation = (BinaryExpressionTree) ifTree.condition();
-    return (isField(eqRelation.leftOperand()) && eqRelation.rightOperand().is(NULL_LITERAL))
-      || (isField(eqRelation.rightOperand()) && eqRelation.leftOperand().is(NULL_LITERAL));
+    if (eqRelation.rightOperand().is(NULL_LITERAL)) {
+      return isField(eqRelation.leftOperand()).map(f -> new IfFieldEqNull(ifTree, f));
+    }
+    if (eqRelation.leftOperand().is(NULL_LITERAL)) {
+      return isField(eqRelation.rightOperand()).map(f -> new IfFieldEqNull(ifTree, f));
+    }
+    return Optional.empty();
   }
 
   private void visitIfStatement(IfStatementTree ifTree) {
     if (insideCriticalSection()) {
-      CheckedLocking parentIf = sameFieldAlreadyOnStack(ifConditionSymbolStack.peek());
+      IfFieldEqNull parentIf = sameFieldAlreadyOnStack(ifConditionSymbolStack.peek());
       if (parentIf.ifTree == ifTree) {
         return;
       }
@@ -123,7 +125,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
    * Returns if statement which has the same condition as nestedIf , or nestedIf if there is no such other
    * if statement on the stack
    */
-  private CheckedLocking sameFieldAlreadyOnStack(CheckedLocking nestedIf) {
+  private IfFieldEqNull sameFieldAlreadyOnStack(IfFieldEqNull nestedIf) {
     return ifConditionSymbolStack.stream()
       .skip(1)
       .filter(parentIf -> parentIf.field == nestedIf.field)
@@ -131,23 +133,19 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
       .orElse(nestedIf);
   }
 
-  private static boolean isField(ExpressionTree expressionTree) {
-    Symbol symbol = symbolFromVariable(expressionTree);
-    if (symbol == null) {
-      return false;
-    }
-    return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol();
+  private static Optional<Symbol> isField(ExpressionTree expressionTree) {
+    return symbolFromVariable(expressionTree)
+      .filter(s -> s.isVariableSymbol() && s.owner().isTypeSymbol());
   }
 
-  @CheckForNull
-  private static Symbol symbolFromVariable(ExpressionTree variable) {
+  private static Optional<Symbol> symbolFromVariable(ExpressionTree variable) {
     if (variable.is(IDENTIFIER)) {
-      return ((IdentifierTree) variable).symbol();
+      return Optional.of(((IdentifierTree) variable).symbol());
     }
     if (variable.is(MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) variable).identifier().symbol();
+      return Optional.of(((MemberSelectExpressionTree) variable).identifier().symbol());
     }
-    return null;
+    return Optional.empty();
   }
 
   private static boolean thenStmtInitializeField(StatementTree statementTree, Symbol field) {
@@ -181,34 +179,19 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree assignmentTree) {
       ExpressionTree variable = assignmentTree.variable();
-      Symbol symbol = symbolFromVariable(variable);
-      if (field == symbol) {
-        assignmentToField = true;
-      }
+      symbolFromVariable(variable)
+        .filter(s -> s == field)
+        .ifPresent(s -> assignmentToField = true);
     }
   }
 
-  private static class CheckedLocking {
+  private static class IfFieldEqNull {
     private final IfStatementTree ifTree;
     private final Symbol field;
 
-    private CheckedLocking(IfStatementTree ifTree) {
+    private IfFieldEqNull(IfStatementTree ifTree, Symbol field) {
       this.ifTree = ifTree;
-      this.field = fieldFromEqCondition(ifTree.condition());
-    }
-
-    private static Symbol fieldFromEqCondition(ExpressionTree condition) {
-      if (!condition.is(EQUAL_TO)) {
-        return null;
-      }
-      BinaryExpressionTree eqRelation = (BinaryExpressionTree) condition;
-      if (isField(eqRelation.leftOperand())) {
-        return symbolFromVariable(eqRelation.leftOperand());
-      }
-      if (isField(eqRelation.rightOperand())) {
-        return symbolFromVariable(eqRelation.rightOperand());
-      }
-      return null;
+      this.field = field;
     }
   }
 
