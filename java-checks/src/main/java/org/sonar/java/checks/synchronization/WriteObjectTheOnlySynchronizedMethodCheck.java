@@ -79,7 +79,7 @@ public class WriteObjectTheOnlySynchronizedMethodCheck extends IssuableSubscript
 
     @Override
     public void visitMethod(MethodTree tree) {
-      if (tree == writeObjectMethodTree || moreThanSingleLock) {
+      if (tree.equals(writeObjectMethodTree) || moreThanSingleLock) {
         return;
       }
       if (hasModifier(tree.modifiers(), SYNCHRONIZED)) {
