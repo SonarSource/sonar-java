@@ -3,8 +3,8 @@ class Foo {
   private Helper helper = null;
 
   public Helper classicCase() {
-    if (helper == null) // Noncompliant [[sc=5;ec=7;secondary=8]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=6,8]] {{Remove this dangerous instance of double-checked locking.}}
         if (helper == null)
           helper = new Helper();
       }
@@ -12,8 +12,8 @@ class Foo {
   }
 
   public Helper fieldIsNotActuallyInitializedHere() {
-    if (helper == null) // Compliant - field is not initialized in this method actually
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Compliant - field is not initialized in this method actually
         if (helper == null) {
           System.out.println("haha!"); // Nelson
         }
@@ -22,8 +22,8 @@ class Foo {
   }
 
   public Helper memberSelectCondition() {
-    if (this.helper == null) // Noncompliant [[sc=5;ec=7;secondary=27]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (this.helper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=25,27]] {{Remove this dangerous instance of double-checked locking.}}
         if (helper == null)
           this.helper = new Helper();
       }
@@ -31,8 +31,8 @@ class Foo {
   }
 
   public Helper memberSelectCondition2() {
-    if (helper == null) // Noncompliant [[sc=5;ec=7;secondary=36]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=34,36]] {{Remove this dangerous instance of double-checked locking.}}
         if (this.helper == null)
           this.helper = new Helper();
       }
@@ -40,8 +40,8 @@ class Foo {
   }
 
   public Helper memberSelectCondition3() {
-    if (this.helper == null) // Noncompliant [[sc=5;ec=7;secondary=45]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (this.helper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=43,45]] {{Remove this dangerous instance of double-checked locking.}}
         if (this.helper == null)
           this.helper = new Helper();
       }
@@ -49,8 +49,8 @@ class Foo {
   }
 
   public Helper invertedConditions() {
-    if (null == this.helper) // Noncompliant [[sc=5;ec=7;secondary=54]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (null == this.helper)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=52,54]] {{Remove this dangerous instance of double-checked locking.}}
         if (null == helper)
           this.helper = new Helper();
       }
@@ -58,8 +58,8 @@ class Foo {
   }
 
   public Helper intializationViaMemberSelect2() {
-    if (helper == null) // Noncompliant [[sc=5;ec=7;secondary=63]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=61,63]] {{Remove this dangerous instance of double-checked locking.}}
         if (helper == null)
           this.helper = new Helper();
       }
@@ -70,8 +70,8 @@ class Foo {
   private HelperInterface helperInterface;
 
   public HelperInterface interfaceHelper() {
-    if (helperInterface == null) // Noncompliant [[sc=5;ec=7;secondary=75]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (helperInterface == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=73,75]] {{Remove this dangerous instance of double-checked locking.}}
         if (helperInterface == null)
           this.helperInterface = new Helper();
       }
@@ -79,8 +79,8 @@ class Foo {
   }
 
   public AbstractHelper abstractHelper() {
-    if (abstractHelper == null) // Noncompliant [[sc=5;ec=7;secondary=84]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (this) {
+    if (abstractHelper == null)
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=82,84]] {{Remove this dangerous instance of double-checked locking.}}
         if (abstractHelper == null)
           this.abstractHelper = new Helper();
       }
@@ -90,8 +90,8 @@ class Foo {
   private UnknownType unknownType;
 
   public UnknownType unknownType() {
-    if (unknownType == null) { // Noncompliant [[sc=5;ec=7;secondary=95]] {{Remove this dangerous instance of double-checked locking.}}
-      synchronized (Helper.class) {
+    if (unknownType == null) {
+      synchronized (Helper.class) { // Noncompliant [[sc=7;ec=19;secondary=93,95]] {{Remove this dangerous instance of double-checked locking.}}
         if (unknownType == null) {
           this.unknownType = new UnknownType();
         }
@@ -106,8 +106,8 @@ class VolatileFoo {
   private volatile Helper helper = null;
 
   public Helper classicCase() {
-    if (helper == null) // Compliant because field is volatile
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Compliant because field is volatile
         if (helper == null)
           helper = new Helper();
       }
@@ -119,8 +119,8 @@ class ImmutableFoo {
   private ImmutableHelper helper = null;
 
   public ImmutableHelper classicCase() {
-    if (helper == null) // Compliant since Helper is effectively immutable
-      synchronized (this) {
+    if (helper == null)
+      synchronized (this) { // Compliant since Helper is effectively immutable
         if (helper == null)
           helper = new ImmutableHelper();
       }
@@ -132,11 +132,11 @@ class NestedIfs {
   private Helper helper = null;
 
   public Helper unrelatedNestedIfs() {
-    if (null == helper) { // Noncompliant [[sc=5;ec=7;secondary=142]] {{Remove this dangerous instance of double-checked locking.}}
+    if (null == helper) {
       if (sunIsUp) {
         doSomething();
       }
-      synchronized (this) {
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=135,142]] {{Remove this dangerous instance of double-checked locking.}}
         if (sunIsDown) {
           doSomethingElse();
           if (null == helper)
@@ -177,7 +177,7 @@ class Compliant {
 
   public void notTheSameTest() {
     if (sunIsUp) {
-      synchronized (this) {
+      synchronized (this) { // Compliant
         if (helper == null)
           helper = new Helper();
       }
@@ -187,9 +187,20 @@ class Compliant {
   public void notTheField() {
     Helper helper = null;
     if (helper == null) {
-      synchronized (this) {
+      synchronized (this) { // Compliant
         if (helper == null) {
-          helper = new Helper(); // Compliant
+          helper = new Helper();
+        }
+      }
+    }
+  }
+
+  public void notTheField2() {
+    Helper helper = null;
+    if (null == null) {
+      synchronized (this) { // Compliant
+        if (helper == helper) {
+          helper = new Helper();
         }
       }
     }
@@ -197,9 +208,9 @@ class Compliant {
 
   public void primitiveField() {
     if (primitiveField == null) {
-      synchronized (this) {
+      synchronized (this) { // Compliant
         if (primitiveField == null) {
-          primitiveField = 42; // Compliant
+          primitiveField = 42;
         }
       }
     }
@@ -207,9 +218,9 @@ class Compliant {
 
   public void otherField() {
     if (helper == null) {
-      synchronized (this) {
+      synchronized (this) { // Compliant
         if (primitiveField == null) {
-          primitiveField = 42; // Compliant
+          primitiveField = 42;
         }
       }
     }
@@ -225,26 +236,13 @@ class Compliant {
     }
   }
 
-  public void notTheField() {
-    Object a;
-    if (a == a) {
-      synchronized (this) {
-        if (null == null) {
-          a = new Object(); // Compliant
-        }
-      }
+  public void synchronizedWithTwoIfs() {
+    synchronized (this) { // Compliant
+      if (helper == null)
+        if (helper == null)
+          helper = new Helper();
     }
-  }
-
-  public void notTheField() {
-    Object a;
-    if (a == a) {
-      synchronized (this) {
-        if (a == null) {
-          a = new Object(); // Compliant
-        }
-      }
-    }
+    return helper;
   }
 
   public void notAVariable() {
@@ -257,9 +255,31 @@ class Compliant {
     }
   }
 
-  class StringResource {
-    final String field;
+  public synchronized Helper synchronizedClassicCase() {
+    if (helper == null)
+      synchronized (this) { // Compliant
+        if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
   }
 
+}
 
+class StringResource {
+  final String field;
+}
+
+class HelloWorld {
+  private static Object resource = null;
+
+  public static Object getInstance() {
+    if (resource == null) {
+      synchronized (HelloWorld.class) { // Compliant - java.lang.Object is effectively immutable
+        if (resource == null)
+          resource = new Object();
+      }
+    }
+    return resource;
+  }
 }

@@ -21,6 +21,7 @@ package org.sonar.java.checks.synchronization;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -32,7 +33,11 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
@@ -40,23 +45,27 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IF_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 
 @Rule(key = "S2168")
 public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
-  private Deque<IfFieldEqNull> ifConditionSymbolStack = new LinkedList<>();
-  private Deque<Tree> synchronizedStmtStack = new LinkedList<>();
+  private Deque<IfFieldEqNull> ifFieldStack = new LinkedList<>();
+  private Deque<CriticalSection> synchronizedStmtStack = new LinkedList<>();
+  private boolean methodIsSynchronized;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(IF_STATEMENT, SYNCHRONIZED_STATEMENT);
+    return ImmutableList.of(IF_STATEMENT, SYNCHRONIZED_STATEMENT, METHOD);
   }
 
   @Override
@@ -65,11 +74,15 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
       return;
     }
     isIfFieldEqNull(tree).ifPresent(ifFieldEqNull -> {
-      ifConditionSymbolStack.push(ifFieldEqNull);
+      ifFieldStack.push(ifFieldEqNull);
       visitIfStatement(ifFieldEqNull.ifTree);
     });
     if (tree.is(SYNCHRONIZED_STATEMENT)) {
-      synchronizedStmtStack.push(tree);
+      CriticalSection criticalSection = new CriticalSection((SynchronizedStatementTree) tree, ifFieldStack.size());
+      synchronizedStmtStack.push(criticalSection);
+    }
+    if (tree.is(METHOD)) {
+      methodIsSynchronized = ModifiersUtils.hasModifier(((MethodTree) tree).modifiers(), Modifier.SYNCHRONIZED);
     }
   }
 
@@ -78,7 +91,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    isIfFieldEqNull(tree).ifPresent(cl -> ifConditionSymbolStack.pop());
+    isIfFieldEqNull(tree).ifPresent(cl -> ifFieldStack.pop());
     if (tree.is(SYNCHRONIZED_STATEMENT)) {
       synchronizedStmtStack.pop();
     }
@@ -104,17 +117,25 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
   private void visitIfStatement(IfStatementTree ifTree) {
     if (insideCriticalSection()) {
-      IfFieldEqNull parentIf = sameFieldAlreadyOnStack(ifConditionSymbolStack.peek());
-      if (parentIf.ifTree == ifTree) {
-        return;
-      }
-      if (thenStmtInitializeField(ifTree.thenStatement(), parentIf.field)
-        && !parentIf.field.isVolatile()
-        && !isAssignedAtomically(parentIf.field)) {
-        ImmutableList<JavaFileScannerContext.Location> flow = ImmutableList.of(new JavaFileScannerContext.Location("Double-checked locking", ifTree.ifKeyword()));
-        reportIssue(parentIf.ifTree.ifKeyword(), "Remove this dangerous instance of double-checked locking.", flow, null);
-      }
+      Optional<IfFieldEqNull> parentIf = sameFieldAlreadyOnStack(ifFieldStack.peek());
+      parentIf.ifPresent(pIf -> ifSynchronizedIfPattern(pIf, ifTree));
     }
+  }
+
+  private void ifSynchronizedIfPattern(IfFieldEqNull parentIf, IfStatementTree nestedIf) {
+    if (thenStmtInitializeField(nestedIf.thenStatement(), parentIf.field)
+      && !parentIf.field.isVolatile()
+      && !isAssignedAtomically(parentIf.field)
+      && !methodIsSynchronized) {
+      SyntaxToken synchronizedKeyword = synchronizedStmtStack.peek().synchronizedTree.synchronizedKeyword();
+      reportIssue(synchronizedKeyword, "Remove this dangerous instance of double-checked locking.", createFlow(parentIf.ifTree, nestedIf), null);
+    }
+  }
+
+  private static List<JavaFileScannerContext.Location> createFlow(IfStatementTree parentIf, IfStatementTree nestedIf) {
+    return Stream.of(parentIf.condition(), nestedIf.condition())
+      .map(c -> new JavaFileScannerContext.Location("Double-checked locking", c))
+      .collect(Collectors.toList());
   }
 
   private boolean insideCriticalSection() {
@@ -122,15 +143,15 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * Returns if statement which has the same condition as nestedIf , or nestedIf if there is no such other
-   * if statement on the stack
+   * Returns if statement which is above the critical section (synchronized) and has the same condition as nestedIf
+   *
    */
-  private IfFieldEqNull sameFieldAlreadyOnStack(IfFieldEqNull nestedIf) {
-    return ifConditionSymbolStack.stream()
-      .skip(1)
+  private Optional<IfFieldEqNull> sameFieldAlreadyOnStack(IfFieldEqNull nestedIf) {
+    int aboveSynchronized = ifFieldStack.size() - synchronizedStmtStack.peek().ifStackDepth;
+    return ifFieldStack.stream()
+      .skip(aboveSynchronized)
       .filter(parentIf -> parentIf.field == nestedIf.field)
-      .findFirst()
-      .orElse(nestedIf);
+      .findFirst();
   }
 
   private static Optional<Symbol> isField(ExpressionTree expressionTree) {
@@ -192,6 +213,16 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     private IfFieldEqNull(IfStatementTree ifTree, Symbol field) {
       this.ifTree = ifTree;
       this.field = field;
+    }
+  }
+
+  private static class CriticalSection {
+    SynchronizedStatementTree synchronizedTree;
+    int ifStackDepth;
+
+    public CriticalSection(SynchronizedStatementTree synchronizedTree, int ifStackDepth) {
+      this.synchronizedTree = synchronizedTree;
+      this.ifStackDepth = ifStackDepth;
     }
   }
 
