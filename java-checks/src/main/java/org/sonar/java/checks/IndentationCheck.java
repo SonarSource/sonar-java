@@ -52,7 +52,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @RuleProperty(
     key = "indentationLevel",
-    description = "Number of white-spaces of an indent. If this property is not set, we just check that the code is indented.",
+    description = "Number of white-spaces of an indent.",
     defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
   public int indentationLevel = DEFAULT_INDENTATION_LEVEL;
 
