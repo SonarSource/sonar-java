@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CheckerContext {
 
@@ -32,12 +33,13 @@ public interface CheckerContext {
 
   void reportIssue(Tree tree, SECheck check, String message);
 
-  void reportIssue(Tree tree, SECheck check, String message, List<JavaFileScannerContext.Location> locations);
+  void reportIssue(Tree tree, SECheck check, String message, Set<List<JavaFileScannerContext.Location>> flows);
 
   void addTransition(ProgramState state);
 
   ProgramState getState();
 
-  ConstraintManager getConstraintManager();
+  ExplodedGraph.Node getNode();
 
+  ConstraintManager getConstraintManager();
 }

@@ -21,7 +21,6 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -35,9 +34,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
@@ -110,31 +110,39 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
-    reportIssue(javaCheck, tree, message, ImmutableList.<Location>of(), null);
+    reportIssue(javaCheck, tree, message, ImmutableList.of(), null);
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, secondary, cost));
+    List<List<Location>> flows = secondary.isEmpty() ? Collections.emptyList() : Collections.singletonList(secondary);
+    reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
+  }
+
+  @Override
+  public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
+    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-    reportIssue(javaCheck, startTree, endTree, message, ImmutableList.<Location>of(), null);
+    reportIssue(javaCheck, startTree, endTree, message, ImmutableList.of(), null);
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, secondary, cost));
+    List<List<Location>> flows = secondary.isEmpty() ? Collections.emptyList() : Collections.singletonList(secondary);
+    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
   }
 
-  protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary,
+  protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, Iterable<List<Location>> flows,
     @Nullable Integer cost) {
     AnalyzerMessage.TextSpan textSpan = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
-    for (Location location : secondary) {
-      AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
-      analyzerMessage.secondaryLocations.add(secondaryLocation);
+    for (List<Location> flow : flows) {
+      List<AnalyzerMessage> sonarqubeFlow =
+      flow.stream().map(l -> new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(l.syntaxNode), l.msg, 0)).collect(Collectors.toList());
+      analyzerMessage.flows.add(sonarqubeFlow);
     }
     return analyzerMessage;
   }

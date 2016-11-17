@@ -209,12 +209,7 @@ public class SonarComponents {
     } else {
       issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
     }
-    for (AnalyzerMessage location : analyzerMessage.secondaryLocations) {
-      AnalyzerMessage.TextSpan secondarySpan = location.primaryLocation();
-      issue.addSecondaryLocation(
-        inputFromIOFile(location.getFile()), secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, location.getMessage());
-    }
-    issue.save();
+    issue.addFlow(inputFromIOFile(analyzerMessage.getFile()), analyzerMessage.flows).save();
   }
 
   public boolean reportAnalysisError(RecognitionException re, File file) {

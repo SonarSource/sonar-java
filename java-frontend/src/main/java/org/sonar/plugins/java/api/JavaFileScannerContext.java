@@ -146,6 +146,17 @@ public interface JavaFileScannerContext {
    */
   void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+
+  /**
+   * Report an issue.
+   * @param javaCheck check raising the issue
+   * @param tree syntax node on which to raise the issue.
+   * @param message Message to display to the user.
+   * @param flows List of list of {@link Location} to display flows for the issue.
+   * @param cost computed remediation cost if applicable, null if not.
+   */
+  void reportIssueWithFlow(JavaCheck javaCheck, Tree tree, String message, Iterable<List<Location>> flows, @Nullable Integer cost);
+
   /**
    * Report an issue.
    * @param javaCheck check raising the issue

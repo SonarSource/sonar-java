@@ -20,9 +20,9 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -35,7 +35,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
@@ -86,11 +88,10 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     Constraint constraint = programState.getConstraint(currentVal);
     if (constraint != null && constraint.isNull()) {
-      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
-      if(((ObjectConstraint) constraint).syntaxNode() != null ) {
-        secondary.add(new JavaFileScannerContext.Location("", ((ObjectConstraint) constraint).syntaxNode()));
-      }
-      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here", secondary);
+      String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
+      Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
+      flows.add(flow(context.getNode(), currentVal));
+      context.reportIssue(syntaxNode, this, message, flows);
       return null;
     }
     constraint = programState.getConstraint(currentVal);
@@ -99,6 +100,23 @@ public class NullDereferenceCheck extends SECheck {
       return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
     }
     return programState;
+  }
+
+  private static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
+    List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+    ExplodedGraph.Node node = currentNode;
+    while (node != null) {
+      ExplodedGraph.Node finalNode = node;
+      if(finalNode.programPoint.syntaxTree() != null) {
+        node.learnedConstraints.stream()
+          .map(lc->lc.sv)
+          .filter(sv -> sv.equals(currentVal))
+          .findFirst()
+          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.programPoint.syntaxTree())));
+      }
+      node = node.parent;
+    }
+    return flow;
   }
 
   @Override

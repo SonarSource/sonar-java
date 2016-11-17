@@ -42,6 +42,10 @@ public class NullDereferenceCheckTest {
   @Test
   public void chained_method_invocation_issue_order() {
     JavaCheckVerifier.verify("src/test/files/se/MethodParamInvocationOrder.java", new NullDereferenceCheck());
+  }
 
+  @Test
+  public void reporting_test() {
+    JavaCheckVerifier.verify("src/test/files/se/NPE_reporting.java", new NullDereferenceCheck());
   }
 }

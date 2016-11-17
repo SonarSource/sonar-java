@@ -125,8 +125,8 @@ public class Viewer extends Application {
   }
 
   protected void analyse(String source){
-//    new CFGViewer(this).analyse(source);
-    new EGViewer(this).analyse(source);
+    new CFGViewer(this).analyse(source);
+//    new EGViewer(this).analyse(source);
 //    new TreeViewer(this).analyse(source);
   }
 

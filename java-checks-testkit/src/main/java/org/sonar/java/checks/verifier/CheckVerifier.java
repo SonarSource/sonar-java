@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -235,7 +236,7 @@ public abstract class CheckVerifier {
     assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
     assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
     if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
-      List<AnalyzerMessage> secondaryLocations = analyzerMessage.secondaryLocations;
+      List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList());
       Multiset<String> actualLines = HashMultiset.create();
       for (AnalyzerMessage secondaryLocation : secondaryLocations) {
         actualLines.add(Integer.toString(secondaryLocation.getLine()));

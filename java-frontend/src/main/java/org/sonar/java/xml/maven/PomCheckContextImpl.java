@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import javax.xml.xpath.XPath;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheckContext {
@@ -60,7 +61,7 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, file, line, message, 0);
     for (Location location : secondary) {
       AnalyzerMessage secondaryLocation = getSecondaryAnalyzerMessage(check, file, location);
-      analyzerMessage.secondaryLocations.add(secondaryLocation);
+      analyzerMessage.flows.add(Collections.singletonList(secondaryLocation));
     }
     getSonarComponents().reportIssue(analyzerMessage);
   }

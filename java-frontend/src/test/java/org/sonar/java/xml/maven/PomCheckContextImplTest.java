@@ -38,6 +38,7 @@ import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -125,23 +126,23 @@ public class PomCheckContextImplTest {
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        reportedMessage = "onLine:" + (String) invocation.getArguments()[3];
+        reportedMessage = "onLine:" + invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq((Integer) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq(null));
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        reportedMessage = "onFile:" + (String) invocation.getArguments()[3];
+        reportedMessage = "onFile:" + invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq((Integer) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq(null));
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
         reportedMessage = "analyzerMessage:" + analyzerMessage.getMessage();
-        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+        for (AnalyzerMessage secondary : analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList())) {
           TextSpan location = secondary.primaryLocation();
           reportedMessage += ";" + secondary.getMessage() + "[" +
             location.startLine + ";" + location.startCharacter + "/" +

@@ -39,7 +39,7 @@ public class AnalyzerMessage {
   private final int cost;
   @Nullable
   private TextSpan textSpan;
-  public final List<AnalyzerMessage> secondaryLocations = new ArrayList<>();
+  public final List<List<AnalyzerMessage>> flows = new ArrayList<>();
 
   public AnalyzerMessage(JavaCheck check, File file, int line, String message, int cost) {
     this(check, file, line > 0 ? new TextSpan(line, -1, line, -1) : null, message, cost);
