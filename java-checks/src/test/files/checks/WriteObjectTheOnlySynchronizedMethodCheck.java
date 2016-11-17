@@ -6,7 +6,6 @@ public class RubberBall {
   }
 
   private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Noncompliant {{Remove this "synchronized" keyword.}}
-    // ...
   }
 }
 
@@ -15,8 +14,8 @@ public class RubberBall2 {
   public void bounce(float angle, float velocity) {
   }
 
-  private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant, maybe FN
-    // ...
+  private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant, maybe FN because we include nested classes,
+                                                                                        // which may or may not be synchronizing something relevant
   }
 
   class Nested {
@@ -25,7 +24,6 @@ public class RubberBall2 {
     }
 
     private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Noncompliant {{Remove this "synchronized" keyword.}}
-      // ...
     }
   }
 
@@ -38,7 +36,9 @@ public class RubberBall2 {
     }
 
     private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
-      // ...
+    }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
     }
   }
 }
@@ -47,12 +47,10 @@ public class ClassWithSynchronizedStmtIsOK {
 
   public void bounce(float angle, float velocity) {
     synchronized (this) {
-      // ...
     }
   }
 
   private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
-    // ...
   }
 }
 
@@ -65,7 +63,6 @@ public class TwoSynchrozniedMethodIsOK {
   }
 
   private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
-    // ...
   }
 }
 

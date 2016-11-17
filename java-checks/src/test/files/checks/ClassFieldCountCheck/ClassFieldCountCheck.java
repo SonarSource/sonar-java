@@ -19,7 +19,7 @@ class TooManyFields1 { // Noncompliant
   public int field18;
   public int field19;
   public int field20;
-  public int field21;
+  public static int field21;
 }
 
 
@@ -47,5 +47,6 @@ class Constants { // Compliant - static final are not counted
   static final int field21;
 
   private boolean youCanCountOnMe;
+  static boolean youCanCountOnMeStatically;
 }
 

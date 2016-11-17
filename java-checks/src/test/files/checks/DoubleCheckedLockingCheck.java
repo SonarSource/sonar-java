@@ -87,8 +87,8 @@ class Foo {
     return abstractHelper;
   }
 
-
   private UnknownType unknownType;
+
   public UnknownType unknownType() {
     if (unknownType == null) { // Noncompliant [[sc=5;ec=7;secondary=95]] {{Remove this dangerous instance of double-checked locking.}}
       synchronized (Helper.class) {
@@ -101,7 +101,7 @@ class Foo {
   }
 }
 
-//after java 5 volatile keyword will guarantee correct read/write ordering with memory barriers
+// after java 5 volatile keyword will guarantee correct read/write ordering with memory barriers
 class VolatileFoo {
   private volatile Helper helper = null;
 
@@ -132,14 +132,14 @@ class NestedIfs {
   private Helper helper = null;
 
   public Helper unrelatedNestedIfs() {
-    if (helper == null) { // Noncompliant [[sc=5;ec=7;secondary=142]] {{Remove this dangerous instance of double-checked locking.}}
+    if (null == helper) { // Noncompliant [[sc=5;ec=7;secondary=142]] {{Remove this dangerous instance of double-checked locking.}}
       if (sunIsUp) {
         doSomething();
       }
       synchronized (this) {
         if (sunIsDown) {
           doSomethingElse();
-          if (helper == null)
+          if (null == helper)
             helper = new Helper();
         }
       }
@@ -189,7 +189,7 @@ class Compliant {
     if (helper == null) {
       synchronized (this) {
         if (helper == null) {
-          helper = new Helper();
+          helper = new Helper(); // Compliant
         }
       }
     }
@@ -199,7 +199,7 @@ class Compliant {
     if (primitiveField == null) {
       synchronized (this) {
         if (primitiveField == null) {
-          primitiveField = 42;
+          primitiveField = 42; // Compliant
         }
       }
     }
@@ -209,18 +209,57 @@ class Compliant {
     if (helper == null) {
       synchronized (this) {
         if (primitiveField == null) {
-          primitiveField = 42;
+          primitiveField = 42; // Compliant
         }
       }
     }
   }
 
+  public void otherField2() {
+    if (helper == null) {
+      synchronized (this) {
+        if (helper == null) {
+          primitiveField = 42; // Compliant
+        }
+      }
+    }
+  }
+
+  public void notTheField() {
+    Object a;
+    if (a == a) {
+      synchronized (this) {
+        if (null == null) {
+          a = new Object(); // Compliant
+        }
+      }
+    }
+  }
+
+  public void notTheField() {
+    Object a;
+    if (a == a) {
+      synchronized (this) {
+        if (a == null) {
+          a = new Object(); // Compliant
+        }
+      }
+    }
+  }
+
+  public void notAVariable() {
+    if (MyClass.class == null) {
+      synchronized (this) { // Compliant
+        if (MyClass.class == null) {
+
+        }
+      }
+    }
+  }
+
+  class StringResource {
+    final String field;
+  }
+
 
 }
-
-
-class StringResource {
-  final String field;
-}
-
-

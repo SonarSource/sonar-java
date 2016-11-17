@@ -27,6 +27,7 @@ public class DoubleCheckedLockingCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/DoubleCheckedLockingCheck.java", new DoubleCheckedLockingCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DoubleCheckedLockingCheck.java", new DoubleCheckedLockingCheck());
   }
 
 }
