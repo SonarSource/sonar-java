@@ -73,7 +73,7 @@ class A0 {
 
   void test_npe_in_conditional_and(String str) {
     boolean b1 = str == null
-        && str.length() == 0; // Noncompliant
+        && str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
 
   void instance_of_set_not_null_constraint(Object d) {
@@ -89,6 +89,22 @@ class A0 {
 
   void lambdas() {
     foo(a -> a, x -> y);
+  }
+
+  boolean booleanField;
+  Object objectField1;
+  Object objectField2;
+  boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+
+    if (obj instanceof A0) {
+      A0 other = (A0) obj;
+      return (booleanField ? other.booleanField : (other.objectField1 != null) && (objectField1 == other.objectField1)) && objectField2.equals(other.objectField2);
+    } else {
+      return false;
+    }
   }
 
 }

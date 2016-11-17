@@ -40,7 +40,7 @@ import static org.fest.assertions.Fail.fail;
 public class ExplodedGraphWalkerTest {
 
   @Test
-  public void test() {
+  public void seEngineTest() {
     JavaCheckVerifier.verify("src/test/files/se/SeEngineTest.java", seChecks());
   }
 

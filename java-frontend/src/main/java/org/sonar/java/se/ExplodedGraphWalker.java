@@ -364,11 +364,16 @@ public class ExplodedGraphWalker {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
+    SymbolicValue peek = programState.peekValue();
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     ExplodedGraph.ProgramPoint falseBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0);
     for (ProgramState state : pair.a) {
+      ProgramState ps = state;
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isPartOfConditionalExpressionCondition(condition)) {
+        // re-push the last value on the top of the stack as it may be required for next expression
+        ps = state.stackValue(peek);
+      }
       // enqueue false-branch, if feasible
-      ProgramState ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
@@ -376,13 +381,27 @@ public class ExplodedGraphWalker {
     }
     ExplodedGraph.ProgramPoint trueBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0);
     for (ProgramState state : pair.b) {
-      ProgramState ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
+      ProgramState ps = state;
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isPartOfConditionalExpressionCondition(condition)) {
+        // re-push the last value on the top of the stack as it may be required for next expression
+        ps = state.stackValue(peek);
+      }
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
     }
+  }
+
+  private static boolean isPartOfConditionalExpressionCondition(Tree tree) {
+    Tree current;
+    Tree parent = tree;
+    do {
+      current = parent;
+      parent = parent.parent();
+    } while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR));
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && current.equals(((ConditionalExpressionTree) parent).condition());
   }
 
   private void visit(Tree tree, @Nullable Tree terminator) {
