@@ -41,7 +41,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -331,8 +333,8 @@ public class JavaCheckVerifierTest {
 
     protected FakeVisitor withDefaultIssues() {
       AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
-      withMultipleLocation.secondaryLocations.add(new AnalyzerMessage(this, new File("a"), 3, "no message", 0));
-      withMultipleLocation.secondaryLocations.add(new AnalyzerMessage(this, new File("a"), 4, "no message", 0));
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 3, "no message", 0)));
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 4, "no message", 0)));
       return this.withIssue(1, "message")
         .withIssue(3, "message1")
         .withIssue(7, "message2")
@@ -382,10 +384,9 @@ public class JavaCheckVerifierTest {
       for (AnalyzerMessage analyzerMessage : preciseIssues.values()) {
         Double messageCost = analyzerMessage.getCost();
         Integer cost = messageCost != null ? messageCost.intValue() : null;
-        List<JavaFileScannerContext.Location> secLocations = new ArrayList<>();
-        for (AnalyzerMessage secondaryLocation : analyzerMessage.secondaryLocations) {
-          secLocations.add(new JavaFileScannerContext.Location("", mockTree(secondaryLocation)));
-        }
+        List<JavaFileScannerContext.Location> secLocations = analyzerMessage.flows.stream()
+          .map(l -> new JavaFileScannerContext.Location("", mockTree(l.get(0))))
+          .collect(Collectors.toList());
         reportIssue(mockTree(analyzerMessage), analyzerMessage.getMessage(), secLocations, cost);
       }
       for (String message : issuesOnFile) {

@@ -26,8 +26,9 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
@@ -66,13 +67,18 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public void reportIssue(Tree tree, SECheck check, String message) {
-    reportIssue(tree, check, message, new ArrayList<JavaFileScannerContext.Location>());
+  public ExplodedGraph.Node getNode() {
+    return explodedGraphWalker.node;
   }
 
   @Override
-  public void reportIssue(Tree tree, SECheck check, String message, List<JavaFileScannerContext.Location> locations) {
-    check.reportIssue(tree, message, locations);
+  public void reportIssue(Tree tree, SECheck check, String message) {
+    reportIssue(tree, check, message, new HashSet<>());
+  }
+
+  @Override
+  public void reportIssue(Tree tree, SECheck check, String message, Set<List<JavaFileScannerContext.Location>> flows) {
+    check.reportIssue(tree, message, flows);
   }
 
   @Override

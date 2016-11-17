@@ -37,6 +37,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -169,7 +170,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
     for (XmlDocumentLocation location : secondary) {
       AnalyzerMessage secondaryLocation = getSecondaryAnalyzerMessage(check, file, location);
       if (secondaryLocation != null) {
-        analyzerMessage.secondaryLocations.add(secondaryLocation);
+        analyzerMessage.flows.add(Collections.singletonList(secondaryLocation));
       }
     }
     return analyzerMessage;

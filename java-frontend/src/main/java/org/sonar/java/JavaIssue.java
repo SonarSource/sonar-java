@@ -21,12 +21,16 @@ package org.sonar.java;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
+import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
 
 import javax.annotation.Nullable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class JavaIssue {
   private final NewIssue newIssue;
@@ -75,6 +79,24 @@ public final class JavaIssue {
         .message(message));
     return this;
   }
+
+  public JavaIssue addFlow(InputFile file, List<List<AnalyzerMessage>> flows) {
+    for (List<AnalyzerMessage> flow : flows) {
+      newIssue.addFlow(flow.stream()
+        .map(am -> newIssue.newLocation()
+          .on(file)
+          .at(range(file, am.primaryLocation()))
+          .message(am.getMessage()))
+        .collect(Collectors.toList()));
+    }
+    return this;
+  }
+
+  private TextRange range(InputFile file, AnalyzerMessage.TextSpan textSpan) {
+    return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+  }
+
+
 
   public void save() {
     newIssue.save();

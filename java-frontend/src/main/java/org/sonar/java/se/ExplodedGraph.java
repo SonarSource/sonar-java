@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
@@ -89,6 +90,13 @@ public class ExplodedGraph {
         tree = ""+block.elements().get(i).kind()+block.elements().get(i).firstToken().line();
       }
       return "B"+block.id()+"."+i+"  "+tree;
+    }
+
+    public Tree syntaxTree() {
+      if(i < block.elements().size()) {
+        return block.elements().get(i);
+      }
+      return block.terminator();
     }
   }
 

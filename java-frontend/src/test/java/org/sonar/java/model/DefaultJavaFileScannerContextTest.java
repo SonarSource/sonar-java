@@ -39,6 +39,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -69,7 +71,7 @@ public class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertThat(reportedMessage.secondaryLocations).isEmpty();
+    assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 1, 0, 4, 1);
   }
@@ -82,7 +84,7 @@ public class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertThat(reportedMessage.secondaryLocations).isEmpty();
+    assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 1, 6, 1, 7);
   }
@@ -95,7 +97,7 @@ public class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isEqualTo(COST);
-    assertThat(reportedMessage.secondaryLocations).isEmpty();
+    assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 1, 6, 1, 7);
   }
@@ -112,10 +114,11 @@ public class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertThat(reportedMessage.secondaryLocations).hasSize(1);
+    assertThat(reportedMessage.flows).hasSize(1);
 
     assertMessagePosition(reportedMessage, 1, 6, 1, 7);
-    assertMessagePosition(reportedMessage.secondaryLocations.get(0), 2, 2, 2, 13);
+    List<AnalyzerMessage> secondaries = reportedMessage.flows.stream().map(flow -> flow.get(0)).collect(Collectors.toList());
+    assertMessagePosition(secondaries.get(0), 2, 2, 2, 13);
   }
 
   @Test
@@ -128,7 +131,7 @@ public class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertThat(reportedMessage.secondaryLocations).isEmpty();
+    assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 2, 6, 3, 10);
   }

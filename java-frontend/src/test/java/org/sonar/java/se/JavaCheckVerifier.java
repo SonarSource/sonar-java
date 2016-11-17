@@ -50,6 +50,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -326,11 +327,9 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
     assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
     if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
-      List<AnalyzerMessage> secondaryLocations = analyzerMessage.secondaryLocations;
+      List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList());
       Multiset<String> actualLines = HashMultiset.create();
-      for (AnalyzerMessage secondaryLocation : secondaryLocations) {
-        actualLines.add(Integer.toString(secondaryLocation.getLine()));
-      }
+      actualLines.addAll(secondaryLocations.stream().map(secondaryLocation -> Integer.toString(secondaryLocation.getLine())).collect(Collectors.toList()));
       List<String> expected = Lists.newArrayList(Splitter.on(",").omitEmptyStrings().trimResults().split(attrs.get(IssueAttribute.SECONDARY_LOCATIONS)));
       List<String> unexpected = new ArrayList<>();
       for (String actualLine : actualLines) {

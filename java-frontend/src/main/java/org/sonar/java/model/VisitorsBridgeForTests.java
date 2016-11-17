@@ -21,7 +21,6 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
@@ -33,13 +32,13 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
@@ -97,7 +96,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-      issues.add(createAnalyzerMessage(javaCheck, syntaxNode, null, message, secondary, cost));
+      List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
+      issues.add(createAnalyzerMessage(getFile(), javaCheck, syntaxNode, null, message, flows, cost));
     }
 
     @Override
@@ -110,8 +110,13 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
       issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, secondary, cost));
     }
 
+    @Override
+    public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
+      issues.add(createAnalyzerMessage(getFile(), javaCheck, syntaxNode, null, message, flows, cost));
+    }
+
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, secondary, cost);
+      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, Collections.singletonList(secondary), cost);
     }
   }
 }
