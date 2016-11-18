@@ -54,7 +54,7 @@ class CognitiveComplexityCheck {
 
           if(element.is(Tree.Kind.ASSIGNMENT)) { //+3 (nesting=2)
             out.remove(symbol);
-          } else {                               //+1 (nesting=2)
+          } else {                               //+1
             out.add(symbol);
           }
         }
@@ -143,7 +143,8 @@ class CognitiveComplexityCheck {
 
   private static String getValueToEval( List<String> strings ) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 6 to the 0 allowed.}}
 
-    if (Measure.Level.ERROR.equals(alertLevel) && foo = YELLOW) {   // 1
+    if (Measure.Level.ERROR.equals(alertLevel) // +1
+      && foo = YELLOW) {   // +1
       return condition.getErrorThreshold();
     } else if (Measure.Level.WARN.equals(alertLevel)) {             // 1
       return condition.getWarningThreshold();
