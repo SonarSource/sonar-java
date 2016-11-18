@@ -25,7 +25,6 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -40,7 +39,6 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -125,7 +123,6 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
   private void ifSynchronizedIfPattern(IfFieldEqNull parentIf, IfStatementTree nestedIf) {
     if (thenStmtInitializeField(nestedIf.thenStatement(), parentIf.field)
       && !parentIf.field.isVolatile()
-      && !isAssignedAtomically(parentIf.field)
       && !methodIsSynchronized) {
       SyntaxToken synchronizedKeyword = synchronizedStmtStack.peek().synchronizedTree.synchronizedKeyword();
       reportIssue(synchronizedKeyword, "Remove this dangerous instance of double-checked locking.", createFlow(parentIf.ifTree, nestedIf), null);
@@ -173,19 +170,6 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     AssignmentVisitor visitor = new AssignmentVisitor(field);
     statementTree.accept(visitor);
     return visitor.assignmentToField;
-  }
-
-  private static boolean isAssignedAtomically(Symbol field) {
-    Type fieldType = field.type();
-    if (fieldType.isUnknown() || fieldType.symbol().isInterface() || fieldType.symbol().isAbstract()) {
-      return false;
-    }
-    if (fieldType.isPrimitive()) {
-      return true;
-    }
-    Collection<Symbol> members = fieldType.symbol().memberSymbols();
-    return members.stream()
-      .noneMatch(m -> m.isVariableSymbol() && m.type().isPrimitive() && !m.isFinal());
   }
 
   private static class AssignmentVisitor extends BaseTreeVisitor {
