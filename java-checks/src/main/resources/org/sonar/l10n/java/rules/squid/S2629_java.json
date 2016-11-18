@@ -1,0 +1,14 @@
+{
+  "title": "\"Preconditions\" and logging arguments should not require evaluation",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "bug"
+  ],
+  "defaultSeverity": "Major"
+}

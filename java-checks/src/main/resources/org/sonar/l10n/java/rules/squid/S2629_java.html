@@ -1,0 +1,40 @@
+<p>Passing message arguments that require further evaluation into a Guava <code>com.google.common.base.Preconditions</code> check can result in a
+performance penalty. That's because whether or not they're needed, each argument must be resolved before the method is actually called.</p>
+<p>Similarly, passing concatenated strings into a logging method can also incur a needless performance hit because the concatenation will be performed
+every time the method is called, whether or not the log level is low enough to show the message.</p>
+<p>Instead, you should structure your code to pass static or pre-computed values into <code>Preconditions</code> conditions check and logging
+calls.</p>
+<p>Specifically, the built-in string formatting should be used instead of string concatenation, and if the message is the result of a method call,
+then <code>Preconditions</code> should be skipped altoghether, and the relevant exception should be conditionally thrown instead.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+logger.log(Level.DEBUG, "Something went wrong: " + message);  // Noncompliant; string concatenation performed even when log level too high to show DEBUG messages
+
+LOG.error("Unable to open file " + csvPath, e);  // Noncompliant
+
+Preconditions.checkState(a &gt; 0, "Arg must be positive, but got " + a);  // Noncompliant. String concatenation performed even when a &gt; 0
+
+Preconditions.checkState(condition, formatMessage());  // Noncompliant. formatMessage() invoked regardless of condition
+
+Preconditions.checkState(condition, "message: %s", formatMessage());  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+logger.log(Level.SEVERE, "Something went wrong: %s ", message);  // String formatting only applied if needed
+
+LOG.error("Unable to open file {}", csvPath, e);
+
+Preconditions.checkState(arg &gt; 0, "Arg must be positive, but got %d", a);  // String formatting only applied if needed
+
+if (!condition) {
+  throw new IllegalStateException(formatMessage());  // formatMessage() only invoked conditionally
+}
+
+if (!condition) {
+  throw new IllegalStateException("message: " + formatMessage());
+}
+</pre>
+<h2>Exceptions</h2>
+<p>Rule is skipping <code>catch</code> blocks, because the performance penalty is not important on exceptional paths (catch block should not be a part
+of standard program flow). Getters are not counting as method evaluations and effectively behave like a variable in the rule context.</p>
+
