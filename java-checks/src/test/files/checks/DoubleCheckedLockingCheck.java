@@ -115,19 +115,6 @@ class VolatileFoo {
   }
 }
 
-class ImmutableFoo {
-  private ImmutableHelper helper = null;
-
-  public ImmutableHelper classicCase() {
-    if (helper == null)
-      synchronized (this) { // Compliant since Helper is effectively immutable
-        if (helper == null)
-          helper = new ImmutableHelper();
-      }
-    return helper;
-  }
-}
-
 class NestedIfs {
   private Helper helper = null;
 
@@ -136,7 +123,7 @@ class NestedIfs {
       if (sunIsUp) {
         doSomething();
       }
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=135,142]] {{Remove this dangerous instance of double-checked locking.}}
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=122,129]] {{Remove this dangerous instance of double-checked locking.}}
         if (sunIsDown) {
           doSomethingElse();
           if (null == helper)
@@ -150,24 +137,6 @@ class NestedIfs {
   static class Helper {
     int field;
   }
-}
-
-class Helper {
-
-  int mutableField;
-
-}
-
-class ImmutableHelper {
-  final int field;
-}
-
-interface HelperInterface {
-
-}
-
-abstract class AbstractHelper {
-
 }
 
 class Compliant {
@@ -206,15 +175,6 @@ class Compliant {
     }
   }
 
-  public void primitiveField() {
-    if (primitiveField == null) {
-      synchronized (this) { // Compliant
-        if (primitiveField == null) {
-          primitiveField = 42;
-        }
-      }
-    }
-  }
 
   public void otherField() {
     if (helper == null) {
@@ -268,18 +228,4 @@ class Compliant {
 
 class StringResource {
   final String field;
-}
-
-class HelloWorld {
-  private static Object resource = null;
-
-  public static Object getInstance() {
-    if (resource == null) {
-      synchronized (HelloWorld.class) { // Compliant - java.lang.Object is effectively immutable
-        if (resource == null)
-          resource = new Object();
-      }
-    }
-    return resource;
-  }
 }
