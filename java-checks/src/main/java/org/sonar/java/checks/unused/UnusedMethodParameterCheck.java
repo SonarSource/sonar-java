@@ -21,6 +21,9 @@ package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -30,6 +33,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,10 +45,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
@@ -54,7 +54,10 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatcherCollection SERIALIZABLE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
     MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
-
+  private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
+  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping", 
+    "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
+  
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
@@ -67,7 +70,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       List<IdentifierTree> unused = Lists.newArrayList();
       for (VariableTree var : methodTree.parameters()) {
         Symbol symbol = var.symbol();
-        if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)) {
+        if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION) && !isStrutsActionParameter(var)) {
           unused.add(var.simpleName());
         }
       }
@@ -114,6 +117,12 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     ModifiersTree modifiers = tree.modifiers();
     return ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT)
       || (!ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block()));
+  }
+  
+  private static boolean isStrutsActionParameter(VariableTree methodTree) {
+    Type superClass = methodTree.symbol().enclosingClass().superClass();
+    return superClass != null && superClass.fullyQualifiedName().equals(STRUTS_ACTION_SUPERCLASS)
+      && EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES.contains(methodTree.symbol().type().fullyQualifiedName());
   }
 
   private static boolean isEmptyOrThrowStatement(BlockTree block) {

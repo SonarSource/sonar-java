@@ -5,6 +5,11 @@ import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionForm;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.struts.action.Action;
 
 class A extends B{
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
@@ -42,7 +47,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=45]]
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=50]]
     System.out.println("");
   }
 }
@@ -150,6 +155,20 @@ class Annotations {
   @SuppressWarnings("unchecked")
   void uncheckedFoobar(List<?> list, int unused) { // Noncompliant {{Remove this unused method parameter "unused".}} [[sc=42;ec=48]]
     List<String> strings = (List<String>) list;
+  }
+}
+
+class StrutsAction extends Action {
+  void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String s) { // Compliant
+    System.out.println(s); 
+  }
+  
+  void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+    System.out.println(""); 
+  }
+  
+  void qix(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
+    System.out.println(""); 
   }
 }
 
