@@ -10,6 +10,7 @@ import org.apache.struts.action.ActionForm;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.Action;
+import org.apache.struts.actions.BaseAction;
 
 class A extends B{
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
@@ -47,7 +48,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=50]]
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=51]]
     System.out.println("");
   }
 }
@@ -168,6 +169,20 @@ class StrutsAction extends Action {
   }
   
   void qix(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
+    System.out.println(""); 
+  }
+  
+  void qiz(ActionMapping mapping, ActionForm form) { // Compliant
+    System.out.println(""); 
+  }
+}
+
+class StrutsAction2 extends BaseAction {
+  void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
+    System.out.println(""); 
+  }
+  
+  void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
     System.out.println(""); 
   }
 }

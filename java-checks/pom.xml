@@ -214,6 +214,11 @@
                   <artifactId>struts-core</artifactId>
                   <version>1.3.10</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.struts</groupId>
+                  <artifactId>struts-extras</artifactId>
+                  <version>1.3.10</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>

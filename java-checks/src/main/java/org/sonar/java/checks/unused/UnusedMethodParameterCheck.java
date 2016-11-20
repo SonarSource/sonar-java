@@ -121,7 +121,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   
   private static boolean isStrutsActionParameter(VariableTree methodTree) {
     Type superClass = methodTree.symbol().enclosingClass().superClass();
-    return superClass != null && superClass.fullyQualifiedName().equals(STRUTS_ACTION_SUPERCLASS)
+    return superClass != null && superClass.isSubtypeOf(STRUTS_ACTION_SUPERCLASS)
       && EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES.contains(methodTree.symbol().type().fullyQualifiedName());
   }
 
