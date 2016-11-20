@@ -49,7 +49,7 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
-  private static final List<String> ANNOTATION_WHITE_LIST = Arrays.asList("javax.inject.Inject", "org.jboss.seam.annotations.Out");
+  private static final List<String> ANNOTATION_WHITE_LIST = Arrays.asList("javax.inject.Inject", "org.jboss.seam.annotations.Out", "lombok.Getter");
 
   @Override
   public List<Kind> nodesToVisit() {

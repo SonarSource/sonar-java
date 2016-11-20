@@ -256,3 +256,15 @@ class AnnotatedPrivateFields {
     return deprecated + injectedService.toString();
   }
 }
+
+class Example {
+  @lombok.Getter
+  private int fieldWithGetter; // Compliant
+  private int value = 42; // Noncompliant
+  
+  private void foo() {
+      fieldWithGetter = 1;
+      value = 2;
+  }
+
+}
