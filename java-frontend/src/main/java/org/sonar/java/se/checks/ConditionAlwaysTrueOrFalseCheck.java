@@ -19,17 +19,19 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Rule(key = "S2583")
 public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
@@ -44,20 +46,22 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     EvaluatedConditions ec = evaluatedConditions.pop();
-    for (Tree condition : Sets.difference(ec.evaluatedToFalse, ec.evaluatedToTrue)) {
-      context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"");
+    for (Tree condition : Sets.difference(ec.evaluatedToFalse.keySet(), ec.evaluatedToTrue.keySet())) {
+      context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"",
+        ec.evaluatedToFalse.get(condition).stream().map(node -> flow(node, node.programState.peekValue())).collect(Collectors.toSet()));
     }
-    for (Tree condition : Sets.difference(ec.evaluatedToTrue, ec.evaluatedToFalse)) {
-      context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"");
+    for (Tree condition : Sets.difference(ec.evaluatedToTrue.keySet(), ec.evaluatedToFalse.keySet())) {
+      context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"",
+        ec.evaluatedToTrue.get(condition).stream().map(node -> flow(node, node.programState.peekValue())).collect(Collectors.toSet()));
     }
   }
 
-  public void evaluatedToFalse(Tree condition) {
-    evaluatedConditions.peek().evaluatedToFalse(condition);
+  public void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
+    evaluatedConditions.peek().evaluatedToFalse(condition, node);
   }
 
-  public void evaluatedToTrue(Tree condition) {
-    evaluatedConditions.peek().evaluatedToTrue(condition);
+  public void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
+    evaluatedConditions.peek().evaluatedToTrue(condition, node);
   }
 
   @Override
@@ -66,15 +70,15 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static class EvaluatedConditions {
-    private final Set<Tree> evaluatedToFalse = new HashSet<>();
-    private final Set<Tree> evaluatedToTrue = new HashSet<>();
+    private final Multimap<Tree, ExplodedGraph.Node> evaluatedToFalse = HashMultimap.create();
+    private final Multimap<Tree, ExplodedGraph.Node> evaluatedToTrue = HashMultimap.create();
 
-    void evaluatedToFalse(Tree condition) {
-      evaluatedToFalse.add(condition);
+    void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
+      evaluatedToFalse.put(condition, node);
     }
 
-    void evaluatedToTrue(Tree condition) {
-      evaluatedToTrue.add(condition);
+    void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
+      evaluatedToTrue.put(condition, node);
     }
 
   }
