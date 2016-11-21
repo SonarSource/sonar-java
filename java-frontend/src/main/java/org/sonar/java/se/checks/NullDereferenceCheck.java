@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Rule(key = "S2259")
@@ -105,6 +106,7 @@ public class NullDereferenceCheck extends SECheck {
   private static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
     ExplodedGraph.Node node = currentNode;
+    Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
     while (node != null) {
       ExplodedGraph.Node finalNode = node;
       if(finalNode.programPoint.syntaxTree() != null) {
@@ -112,7 +114,19 @@ public class NullDereferenceCheck extends SECheck {
           .map(lc->lc.sv)
           .filter(sv -> sv.equals(currentVal))
           .findFirst()
-          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.programPoint.syntaxTree())));
+          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
+        if (lastEvaluated != null) {
+          Symbol finalLastEvaluated = lastEvaluated;
+          Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
+            .map(ls -> ls.symbol)
+            .filter(sv -> sv.equals(finalLastEvaluated))
+            .findFirst();
+          if (learnedSymbol.isPresent()) {
+            lastEvaluated = finalNode.parent.programState.getLastEvaluated();
+            flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
+          }
+        }
+
       }
       node = node.parent;
     }

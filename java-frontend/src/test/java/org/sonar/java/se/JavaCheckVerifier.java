@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -327,7 +328,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
     assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
     if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
-      List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList());
+      List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.isEmpty() ? null:l.get(0)).filter(Objects::nonNull).collect(Collectors.toList());
       Multiset<String> actualLines = HashMultiset.create();
       actualLines.addAll(secondaryLocations.stream().map(secondaryLocation -> Integer.toString(secondaryLocation.getLine())).collect(Collectors.toList()));
       List<String> expected = Lists.newArrayList(Splitter.on(",").omitEmptyStrings().trimResults().split(attrs.get(IssueAttribute.SECONDARY_LOCATIONS)));
