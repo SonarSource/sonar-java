@@ -7,7 +7,7 @@ public enum Continent {
   public static int countryCount2;  // compliant, static field
   private int landMass;
   public final com.google.common.collect.ImmutableList regions; // Compliant - immutable
-  private final java.util.Date dateNow;
+  private final java.util.Date date;
   
   Continent(int countryCount, int landMass) {
   }
@@ -55,6 +55,5 @@ public enum Continent3 {
     this.countryCount = countryCount;
     this.landMass = landMass;
     this.regions = new String[] {"Grazelands", "Molag Amur", "Sheogorad", "West Gash"};
-    this.dateNow = new Date();
   }
 }
