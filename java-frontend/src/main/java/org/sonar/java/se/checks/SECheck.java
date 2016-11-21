@@ -21,15 +21,20 @@ package org.sonar.java.se.checks;
 
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class SECheck implements JavaFileScanner {
@@ -73,6 +78,36 @@ public abstract class SECheck implements JavaFileScanner {
         return seIssue;
       })
       .orElse(new SEIssue(tree, message, secondary)));
+  }
+
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal ) {
+    List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+    ExplodedGraph.Node node = currentNode;
+    Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
+    while (node != null) {
+      ExplodedGraph.Node finalNode = node;
+      if(finalNode.programPoint.syntaxTree() != null) {
+        node.getLearnedConstraints().stream()
+          .map(lc->lc.sv)
+          .filter(sv -> sv.equals(currentVal))
+          .findFirst()
+          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
+        if (lastEvaluated != null) {
+          Symbol finalLastEvaluated = lastEvaluated;
+          Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
+            .map(ls -> ls.symbol)
+            .filter(sv -> sv.equals(finalLastEvaluated))
+            .findFirst();
+          if (learnedSymbol.isPresent()) {
+            lastEvaluated = finalNode.parent.programState.getLastEvaluated();
+            flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
+          }
+        }
+
+      }
+      node = node.parent;
+    }
+    return flow;
   }
 
   public void interruptedExecution(CheckerContext context) {

@@ -385,7 +385,7 @@ public class ExplodedGraphWalker {
       // enqueue false-branch, if feasible
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
+        alwaysTrueOrFalseChecker.evaluatedToFalse(condition, node);
       }
     }
     ExplodedGraph.ProgramPoint trueBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0);
@@ -399,7 +399,7 @@ public class ExplodedGraphWalker {
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
+        alwaysTrueOrFalseChecker.evaluatedToTrue(condition, node);
       }
     }
   }

@@ -22,7 +22,6 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -37,7 +36,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Rule(key = "S2259")
@@ -101,36 +99,6 @@ public class NullDereferenceCheck extends SECheck {
       return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
     }
     return programState;
-  }
-
-  private static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
-    List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-    ExplodedGraph.Node node = currentNode;
-    Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
-    while (node != null) {
-      ExplodedGraph.Node finalNode = node;
-      if(finalNode.programPoint.syntaxTree() != null) {
-        node.learnedConstraints.stream()
-          .map(lc->lc.sv)
-          .filter(sv -> sv.equals(currentVal))
-          .findFirst()
-          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
-        if (lastEvaluated != null) {
-          Symbol finalLastEvaluated = lastEvaluated;
-          Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
-            .map(ls -> ls.symbol)
-            .filter(sv -> sv.equals(finalLastEvaluated))
-            .findFirst();
-          if (learnedSymbol.isPresent()) {
-            lastEvaluated = finalNode.parent.programState.getLastEvaluated();
-            flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
-          }
-        }
-
-      }
-      node = node.parent;
-    }
-    return flow;
   }
 
   @Override
