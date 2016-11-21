@@ -23,10 +23,10 @@ import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,10 +93,10 @@ public class ExplodedGraph {
     }
 
     public Tree syntaxTree() {
-      if(i < block.elements().size()) {
-        return block.elements().get(i);
+      if(block.elements().isEmpty()) {
+        return block.terminator();
       }
-      return block.terminator();
+      return block.elements().get(Math.min(i, block.elements().size() - 1));
     }
   }
 
@@ -115,10 +115,13 @@ public class ExplodedGraph {
     public Node parent;
     private final List<LearnedConstraint> learnedConstraints;
 
+    private final List<LearnedValue> learnedSymbols;
+
     Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
+      learnedSymbols = new ArrayList<>();
     }
 
     public void setParent(@Nullable Node parent) {
@@ -129,12 +132,22 @@ public class ExplodedGraph {
             learnedConstraints.add(new LearnedConstraint(sv, c));
           }
         });
+        programState.values.forEach((s, sv) -> {
+         if(parent.programState.getValue(s)!= sv) {
+           learnedSymbols.add(new LearnedValue(sv, s));
+         }
+        });
       }
     }
 
-    public List<LearnedConstraint> learnedConstraints() {
+    public List<LearnedConstraint> getLearnedConstraints() {
       return learnedConstraints;
     }
+
+    public List<LearnedValue> getLearnedSymbols() {
+      return learnedSymbols;
+    }
+
 
     public static class LearnedConstraint {
       public SymbolicValue sv;
@@ -148,6 +161,21 @@ public class ExplodedGraph {
       @Override
       public String toString() {
         return sv+" - "+constraint;
+      }
+    }
+
+    public static class LearnedValue {
+      public SymbolicValue sv;
+      public Symbol symbol;
+
+      public LearnedValue(SymbolicValue sv, Symbol symbol) {
+        this.sv = sv;
+        this.symbol = symbol;
+      }
+
+      @Override
+      public String toString() {
+        return sv+" - "+symbol.name();
       }
     }
 

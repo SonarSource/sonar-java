@@ -75,8 +75,8 @@ public class EGViewer {
     for (ExplodedGraph.Node node : nodes) {
       result += index + "[label = \"" + node.programPoint + "\"] ";
       if(node.parent != null) {
-        result += nodes.indexOf(node.parent) + "->"+index+"[label=\""+node.learnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString)
-          .collect(Collectors.joining(","))+"\"] ";
+        result += nodes.indexOf(node.parent) + "->"+index+"[label=\""+node.getLearnedSymbols().stream().map(ExplodedGraph.Node.LearnedValue::toString).collect(Collectors.joining(","))
+          + " " +node.getLearnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString).collect(Collectors.joining(","))+"\"] ";
       }
       index++;
     }

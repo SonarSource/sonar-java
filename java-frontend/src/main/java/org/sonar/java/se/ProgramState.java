@@ -78,10 +78,13 @@ public class ProgramState {
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
 
+  @Nullable
+  Symbol lastEvaluated;
+
   private final Deque<SymbolicValue> stack;
-  private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue returnSymbolicValue;
+  final PMap<Symbol, SymbolicValue> values;
   final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
@@ -94,6 +97,11 @@ public class ProgramState {
     this.stack = stack;
     this.returnSymbolicValue = returnSymbolicValue;
     constraintSize = 3;
+  }
+  private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
+                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints, Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
+    this(values, references, constraints, visitedPoints, stack, returnSymbolicValue);
+    lastEvaluated = symbol;
   }
 
   private ProgramState(ProgramState ps, Deque<SymbolicValue> newStack) {
@@ -155,6 +163,11 @@ public class ProgramState {
     return count == null ? 0 : count;
   }
 
+  @CheckForNull
+  public Symbol getLastEvaluated() {
+    return lastEvaluated;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,7 +215,10 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
+      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
+    }
+    if(lastEvaluated == null) {
+      lastEvaluated = symbol;
     }
     return this;
   }
