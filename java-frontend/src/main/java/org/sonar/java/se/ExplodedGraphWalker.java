@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -364,14 +365,14 @@ public class ExplodedGraphWalker {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
-    SymbolicValue peek = programState.peekValue();
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     ExplodedGraph.ProgramPoint falseBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0);
     for (ProgramState state : pair.a) {
       ProgramState ps = state;
       if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isPartOfConditionalExpressionCondition(condition)) {
-        // re-push the last value on the top of the stack as it may be required for next expression
-        ps = state.stackValue(peek);
+        // push a FALSE value on the top of the stack to enforce the choice of the branch,
+        // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
+        ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
       }
       // enqueue false-branch, if feasible
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
@@ -383,8 +384,9 @@ public class ExplodedGraphWalker {
     for (ProgramState state : pair.b) {
       ProgramState ps = state;
       if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isPartOfConditionalExpressionCondition(condition)) {
-        // re-push the last value on the top of the stack as it may be required for next expression
-        ps = state.stackValue(peek);
+        // push a TRUE value on the top of the stack to enforce the choice of the branch,
+        // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
+        ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
       }
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
