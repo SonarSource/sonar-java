@@ -249,9 +249,10 @@ public class ExplodedGraphWalker {
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
-      methodBehavior.addParameter(variableTree.symbol(), sv);
-      stateStream = stateStream.map(ps -> ps.put(variableTree.symbol(), sv));
-      if (isEqualsMethod || nullableParams || parameterCanBeNull(variableTree)) {
+      Symbol variableSymbol = variableTree.symbol();
+      methodBehavior.addParameter(variableSymbol, sv);
+      stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
+      if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
             sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
@@ -264,9 +265,11 @@ public class ExplodedGraphWalker {
     return stateStream.collect(Collectors.toList());
   }
 
-  private static boolean parameterCanBeNull(final VariableTree variableTree) {
-    final SymbolMetadata metadata = variableTree.symbol().metadata();
-    return metadata.isAnnotatedWith("javax.annotation.CheckForNull") || metadata.isAnnotatedWith("javax.annotation.Nullable");
+  private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParams) {
+    SymbolMetadata metadata = variableSymbol.metadata();
+    return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
+      || metadata.isAnnotatedWith("javax.annotation.Nullable")
+      || (nullableParams && !variableSymbol.type().isPrimitive());
   }
 
   private void cleanUpProgramState(CFG.Block block) {
