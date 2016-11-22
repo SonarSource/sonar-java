@@ -39,6 +39,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -522,6 +523,12 @@ public class BytecodeCompleterTest {
   public void inner_class_obfuscated() throws Exception {
     Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("ChartDirector.Layer");
     assertThat(clazz.memberSymbols().stream().anyMatch(s-> s.name().equals("fj"))).isTrue();
+
+    Symbol.TypeSymbol library = bytecodeCompleter.getClassSymbol("com.jniwrapper.Library");
+    Optional<Symbol> ar = library.memberSymbols().stream().filter(s -> s.name().equals("ar")).findFirst();
+    assertThat(ar.isPresent()).isTrue();
+    // Assert that the inner class fully qualified name does not contain the enclosing class name as it was obfuscated.
+    ar.ifPresent(s -> assertThat(((TypeJavaSymbol) s).getFullyQualifiedName()).isEqualTo("com.jniwrapper.ar"));
   }
 
   @Test

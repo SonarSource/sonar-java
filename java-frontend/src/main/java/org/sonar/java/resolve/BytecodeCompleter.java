@@ -121,11 +121,14 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return classLoader;
   }
 
-  public String formFullName(JavaSymbol symbol) {
+  private String formFullName(JavaSymbol symbol) {
+    if(symbol.isTypeSymbol()) {
+      return ((JavaSymbol.TypeJavaSymbol) symbol).getFullyQualifiedName();
+    }
     return formFullName(symbol.name, symbol.owner);
   }
 
-  public String formFullName(String name, JavaSymbol site) {
+  String formFullName(String name, JavaSymbol site) {
     String result = name;
     JavaSymbol owner = site;
     while (owner != symbols.defaultPackage) {
@@ -164,7 +167,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       }
       if ( owner != null) {
         //handle innerClasses
-        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName), owner);
+        String name = Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName);
+        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), name, owner, bytecodeName);
       } else {
         symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
