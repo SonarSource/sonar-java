@@ -105,6 +105,7 @@ public class ExplodedGraphWalker {
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
+  private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private MethodTree methodTree;
   private ExplodedGraph explodedGraph;
@@ -787,7 +788,7 @@ public class ExplodedGraphWalker {
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
-    if (isLocalMethodInvocation(tree)) {
+    if (isLocalMethodInvocation(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
       resetFieldValues();
     }
   }
