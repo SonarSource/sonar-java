@@ -81,8 +81,8 @@ public class ProgramState {
   private final Deque<SymbolicValue> stack;
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
-  private final PMap<SymbolicValue, Constraint> constraints;
   private SymbolicValue returnSymbolicValue;
+  final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
