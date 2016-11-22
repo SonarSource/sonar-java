@@ -69,4 +69,12 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     return ImmutableList.of(programState);
   }
 
+  public SymbolicValue getLeftOp() {
+    return leftOp;
+  }
+
+  public SymbolicValue getRightOp() {
+    return rightOp;
+  }
+
 }

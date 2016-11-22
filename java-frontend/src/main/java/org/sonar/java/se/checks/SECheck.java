@@ -19,11 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Sets;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -80,8 +82,14 @@ public abstract class SECheck implements JavaFileScanner {
       .orElse(new SEIssue(tree, message, secondary)));
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal ) {
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+    if(currentVal instanceof BinarySymbolicValue) {
+      Set<JavaFileScannerContext.Location> locations = Sets.newHashSet();
+      locations.addAll(flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getLeftOp()));
+      locations.addAll(flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getRightOp()));
+      flow.addAll(locations);
+    }
     ExplodedGraph.Node node = currentNode;
     Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
     while (node != null) {
