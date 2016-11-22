@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +38,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
 import static org.sonar.java.se.ProgramState.isField;
 
 /**
@@ -49,7 +47,6 @@ import static org.sonar.java.se.ProgramState.isField;
 public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Remove the \"%s\" field and declare it as a local variable in the relevant methods.";
-  private static final List<String> ANNOTATION_WHITE_LIST = Arrays.asList("javax.inject.Inject", "org.jboss.seam.annotations.Out", "lombok.Getter");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -64,14 +61,14 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     classSymbol.memberSymbols().stream()
       .filter(PrivateFieldUsedLocallyCheck::isPrivateField)
       .filter(s -> !(s.isFinal() && s.isStatic()))
-      .filter(s -> !useAllowedAnnotation(s))
+      .filter(s -> !hasAnnotation(s))
       .filter(s -> !s.usages().isEmpty())
       .filter(s -> !fieldsReadOnAnotherInstance.contains(s))
       .forEach(s -> checkPrivateField(s, classSymbol));
   }
 
-  private static boolean useAllowedAnnotation(Symbol s) {
-    return ANNOTATION_WHITE_LIST.stream().anyMatch(s.metadata()::isAnnotatedWith);
+  private static boolean hasAnnotation(Symbol s) {
+    return !s.metadata().annotations().isEmpty();
   }
 
   private void checkPrivateField(Symbol privateFieldSymbol, TypeSymbol classSymbol) {

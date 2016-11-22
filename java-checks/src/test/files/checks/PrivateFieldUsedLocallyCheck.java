@@ -248,7 +248,7 @@ class AnnotatedPrivateFields {
   private Object injectedService; // Compliant
 
   @Deprecated
-  private String deprecated; // Noncompliant
+  private String deprecated; // Compliant
 
   public String doRandomStuff(String s) {
     injectedService = s;
@@ -261,6 +261,8 @@ class Example {
   @lombok.Getter
   private int fieldWithGetter; // Compliant
   private int value = 42; // Noncompliant
+  @AnyAnnotation
+  private int annotatedField; // Compliant
   
   private void foo() {
       fieldWithGetter = 1;
