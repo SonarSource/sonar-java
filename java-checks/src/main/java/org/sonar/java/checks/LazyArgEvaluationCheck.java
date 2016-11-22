@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -40,37 +40,33 @@ import java.util.stream.Stream;
 @Rule(key = "S2629")
 public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final MethodMatcher PRECONDITIONS = MethodMatcher.create()
+    .typeDefinition("com.google.common.base.Preconditions")
+    .name("checkState")
+    .withAnyParameters();
 
-  static final class Methods {
+  private static final MethodMatcher LOG = MethodMatcher.create()
+    .typeDefinition("java.util.logging.Logger")
+    .name("log")
+    .addParameter(TypeCriteria.anyType())
+    .addParameter(String.class.getCanonicalName());
 
-    static final class Guava {
-      static final MethodMatcher PRECONDITIONS = MethodMatcher.create()
-        .name("checkState").withAnyParameters();
+  private static final MethodMatcher TRACE = slf4jPrototype().name("trace");
+  private static final MethodMatcher DEBUG = slf4jPrototype().name("debug");
+  private static final MethodMatcher INFO = slf4jPrototype().name("info");
+  private static final MethodMatcher WARN = slf4jPrototype().name("warn");
+  private static final MethodMatcher ERROR = slf4jPrototype().name("error");
 
-      private Guava() {}
-    }
-
-    static final class Logging {
-      static final MethodMatcher LOG = MethodMatcher.create()
-        .name("log").addParameter(TypeCriteria.anyType()).addParameter(JAVA_LANG_STRING);
-      static final MethodMatcher TRACE = slf4jPrototype().name("trace");
-      static final MethodMatcher DEBUG = slf4jPrototype().name("debug");
-      static final MethodMatcher INFO = slf4jPrototype().name("info");
-      static final MethodMatcher WARN = slf4jPrototype().name("warn");
-      static final MethodMatcher ERROR = slf4jPrototype().name("error");
-
-      private Logging() {}
-
-      static MethodMatcher slf4jPrototype() {
-        return MethodMatcher.create().addParameter(JAVA_LANG_STRING).addParameter(TypeCriteria.anyType());
-      }
-    }
-
-    private Methods() {}
-  }
+  private static final MethodMatcherCollection LAZY_ARG_METHODS = MethodMatcherCollection.create(PRECONDITIONS, LOG, TRACE, DEBUG, INFO, WARN, ERROR);
 
   private JavaFileScannerContext context;
+
+  private static MethodMatcher slf4jPrototype() {
+    return MethodMatcher.create()
+      .typeDefinition("org.slf4j.Logger")
+      .addParameter(String.class.getCanonicalName())
+      .addParameter(TypeCriteria.anyType());
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -83,27 +79,14 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    for (MethodMatcher methodMatcher : getMethodInvocationMatchers()) {
-      if (methodMatcher.matches(tree)) {
-        onMethodInvocationFound(tree);
-        break;
-      }
+    if (LAZY_ARG_METHODS.anyMatch(tree)) {
+      onMethodInvocationFound(tree);
     }
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
     // cut the visit on catch blocks, because we don't mind some performance loss on exceptional paths
-  }
-
-  private static List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(Methods.Guava.PRECONDITIONS,
-      Methods.Logging.LOG,
-      Methods.Logging.TRACE,
-      Methods.Logging.DEBUG,
-      Methods.Logging.INFO,
-      Methods.Logging.WARN,
-      Methods.Logging.ERROR);
   }
 
   private void onMethodInvocationFound(MethodInvocationTree mit) {
@@ -138,7 +121,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   private static Stream<ExpressionTree> findStringArg(MethodInvocationTree mit) {
     return mit.arguments().stream()
-      .filter(arg -> arg.symbolType().is(JAVA_LANG_STRING));
+      .filter(arg -> arg.symbolType().is(String.class.getCanonicalName()));
   }
 
   private static class StringExpressionVisitor extends BaseTreeVisitor {

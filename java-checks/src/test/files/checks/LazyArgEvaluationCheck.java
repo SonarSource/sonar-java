@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 class LazyArgEvaluationCheck {
 
-  public static final Logger LOG = LoggerFactory.getLogger(LazyArgEvaluationCheck.class);
+  public static final Logger slf4j = LoggerFactory.getLogger(LazyArgEvaluationCheck.class);
   public static final java.util.logging.Logger logger = java.util.logging.Logger.getGlobal();
 
   public static void main(String[] args) {
@@ -23,7 +23,11 @@ class LazyArgEvaluationCheck {
 
     logger.log(Level.SEVERE, "Something went wrong: " + message);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
-    LOG.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
     checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
@@ -35,15 +39,15 @@ class LazyArgEvaluationCheck {
   }
 
   public static void cachingOnDisk(File path) {
-    LOG.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - getters are OK
-    LOG.info("Caching on disk @ {}", path.isAbsolutePath()); // Compliant - getters are OK
+    slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - getters are OK
+    slf4j.info("Caching on disk @ {}", path.isAbsolutePath()); // Compliant - getters are OK
   }
 
   public void exceptionalPaths() {
     try {
 
     } catch (Exception e) {
-      LOG.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - because we don't care about small performance loss in exceptional paths
+      slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - because we don't care about small performance loss in exceptional paths
     }
   }
 
