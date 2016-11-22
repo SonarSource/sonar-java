@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -129,7 +130,7 @@ public class ExplodedGraph {
       if(parent != null) {
         programState.constraints.forEach((sv, c) -> {
           if(parent.programState.getConstraint(sv) != c) {
-            learnedConstraints.add(new LearnedConstraint(sv, c));
+            addConstraint(sv, c);
           }
         });
         programState.values.forEach((s, sv) -> {
@@ -139,6 +140,16 @@ public class ExplodedGraph {
         });
       }
     }
+
+    private void addConstraint(SymbolicValue sv, Constraint constraint) {
+      if(sv instanceof BinarySymbolicValue) {
+        BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
+        addConstraint(binarySymbolicValue.getLeftOp(), null);
+        addConstraint(binarySymbolicValue.getRightOp(), null);
+      }
+      learnedConstraints.add(new LearnedConstraint(sv, constraint));
+    }
+
 
     public List<LearnedConstraint> getLearnedConstraints() {
       return learnedConstraints;

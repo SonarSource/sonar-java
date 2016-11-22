@@ -14,7 +14,7 @@ public class Class {
 
   void relationship(boolean a, boolean b) {
     if(a < b) {
-      if(b > a) { // Noncompliant should have secondary=16
+      if(b > a) { // Noncompliant [[secondary=16]]
       }
     }
   }
@@ -25,6 +25,15 @@ public class Class {
       if(b) { // Noncompliant [[secondary=24]]
       }
     }
+  }
+
+  void unarySymbolicvalue(boolean a, boolean b) {
+    if(! (a ==b ))
+      if (a == b); // Noncompliant [[secondary=31]]
+  }
+  void unary(boolean a) {
+    if(!a)
+      if (a); // Noncompliant [[secondary=35]]
   }
 
 
