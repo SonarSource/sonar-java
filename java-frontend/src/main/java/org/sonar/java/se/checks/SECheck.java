@@ -99,7 +99,7 @@ public abstract class SECheck implements JavaFileScanner {
           .map(lc->lc.sv)
           .filter(sv -> sv.equals(currentVal))
           .findFirst()
-          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
+          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("When", finalNode.parent.programPoint.syntaxTree())));
         if (lastEvaluated != null) {
           Symbol finalLastEvaluated = lastEvaluated;
           Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
@@ -108,7 +108,7 @@ public abstract class SECheck implements JavaFileScanner {
             .findFirst();
           if (learnedSymbol.isPresent()) {
             lastEvaluated = finalNode.parent.programState.getLastEvaluated();
-            flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
+            flow.add(new JavaFileScannerContext.Location("Given", finalNode.parent.programPoint.syntaxTree()));
           }
         }
 
