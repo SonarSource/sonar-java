@@ -114,6 +114,7 @@ public class Viewer extends Application {
     WebEngine webEngine = webView.getEngine();
     webEngine.load(Viewer.class.getResource("/viewer/viewer.html").toExternalForm());
     webEngine.setUserStyleSheetLocation(Viewer.class.getResource("/viewer/viewer.css").toExternalForm());
+    webView.setContextMenuEnabled(false);
     primaryStage.setScene(new Scene(splitPane, 1200, 800));
     primaryStage.show();
 
