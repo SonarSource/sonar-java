@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -644,6 +645,16 @@ public class JavaSymbol implements Symbol {
 
     public boolean isParametrized() {
       return !typeVariableTypes.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+      if (isUnknown()) {
+        return "!unknownOwner!#!unknownMethod!()";
+      } else if (owner.isUnknown()) {
+        return String.format("!unknownOwner!#%s()", name);
+      }
+      return String.format("%s#%s()", owner.name, name);
     }
   }
 
