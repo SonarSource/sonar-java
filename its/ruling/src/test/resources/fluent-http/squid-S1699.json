@@ -26,10 +26,4 @@
 'net.code-story:http:src/main/java/net/codestory/http/routes/RouteCollection.java':[
 75,
 ],
-'net.code-story:http:src/main/java/net/codestory/http/templating/Site.java':[
-54,
-60,
-69,
-77,
-],
 }

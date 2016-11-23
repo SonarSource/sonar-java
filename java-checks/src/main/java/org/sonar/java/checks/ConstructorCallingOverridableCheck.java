@@ -67,7 +67,6 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
     private TypeJavaSymbol constructorType;
-
     public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
       this.constructorType = constructorType;
     }
@@ -87,7 +86,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
-        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
+        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol) &&!isInsideAnonymousClass(methodIdentifier)) {
           reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
@@ -122,6 +121,19 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
     private boolean isOverridableMethod(Symbol symbol) {
       return symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic();
+    }
+
+    private boolean isInsideAnonymousClass(IdentifierTree tree){
+      Tree container = containingNewClassOrConstructor(tree);
+      return container.is(Kind.NEW_CLASS,Kind.LAMBDA_EXPRESSION);
+    }
+
+    private Tree containingNewClassOrConstructor(IdentifierTree usageIdentifier) {
+      Tree parent = usageIdentifier;
+      do {
+        parent = parent.parent();
+      } while (!parent.is(Kind.NEW_CLASS,Kind.CONSTRUCTOR,Kind.LAMBDA_EXPRESSION));
+      return parent;
     }
 
   }
