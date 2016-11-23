@@ -10,7 +10,14 @@ function loadDot(DOTstring, isSyntaxTree) {
   var options = parsedData.options;
 
   options.nodes = {
-    color: '#eee',
+    color: {
+      background: '#eee',
+      border: 'gray',
+      highlight:{
+        background: 'yellow',
+        border: 'gold'
+      }
+    },
     font: {
       size: 12,
       face: 'monospace',
