@@ -42,6 +42,7 @@ public class EGViewer {
 
   private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
   private final Viewer viewer;
+  private static final boolean SHOW_CACHE = true;
 
   EGViewer(Viewer viewer) {
     this.viewer = viewer;
@@ -52,7 +53,7 @@ public class EGViewer {
     viewer.textArea.setText(CFGDebug.toString(CFGViewer.buildCFG(source)));
     String dot = egToDot(eg);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', true)");
+    webEngine.executeScript("loadDot('" + dot + "', " + (!SHOW_CACHE) + ")");
   }
 
   private static ExplodedGraph buildEG(String source) {
@@ -78,8 +79,23 @@ public class EGViewer {
         result += nodes.indexOf(node.parent) + "->"+index+"[label=\""+node.getLearnedSymbols().stream().map(ExplodedGraph.Node.LearnedValue::toString).collect(Collectors.joining(","))
           + " " +node.getLearnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString).collect(Collectors.joining(","))+"\"] ";
       }
+      if (SHOW_CACHE) {
+        for (ExplodedGraph.Node cacheHit : node.cacheHits) {
+          result += nodes.indexOf(cacheHit) + "->" + index + "[label=\"CACHE\", color=\"red\", fontcolor=\"red\"] ";
+        }
+      }
       index++;
     }
-    return result+"}";
+    return result + "}";
+
+  }
+
+  private static String specialHighlight(ExplodedGraph.Node node) {
+    if (node.parent == null) {
+      return ",color=\"green\",fontcolor=\"white\"";
+    } else if (node.programPoint.toString().startsWith("B0.0")) {
+      return ",color=\"black\",fontcolor=\"white\"";
+    }
+    return "";
   }
 }
