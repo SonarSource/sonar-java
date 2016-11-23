@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
@@ -115,6 +116,7 @@ public class ExplodedGraph {
     public final ProgramState programState;
     @Nullable
     public Node parent;
+    public final List<Node> cacheHits;
     private final List<LearnedConstraint> learnedConstraints;
 
     private final List<LearnedValue> learnedSymbols;
@@ -124,6 +126,7 @@ public class ExplodedGraph {
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
       learnedSymbols = new ArrayList<>();
+      cacheHits = new ArrayList<>();
     }
 
     public void setParent(@Nullable Node parent) {
@@ -218,6 +221,10 @@ public class ExplodedGraph {
     @Override
     public String toString() {
       return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
+    }
+
+    public void newCacheHit(Node node) {
+      cacheHits.add(node);
     }
   }
 }
