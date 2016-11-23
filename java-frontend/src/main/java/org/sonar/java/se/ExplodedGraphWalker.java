@@ -842,6 +842,7 @@ public class ExplodedGraphWalker {
     ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
     if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
+      cachedNode.newCacheHit(node);
       return;
     }
     cachedNode.exitPath = exitPath;
