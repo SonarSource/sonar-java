@@ -89,7 +89,7 @@ public class NullDereferenceCheck extends SECheck {
     if (constraint != null && constraint.isNull()) {
       String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
       Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
-      flows.add(flow(context.getNode(), currentVal));
+      flows.add(SECheck.flow(context.getNode(), currentVal));
       context.reportIssue(syntaxNode, this, message, flows);
       return null;
     }

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -84,38 +84,38 @@ public abstract class SECheck implements JavaFileScanner {
 
   public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-    if(currentVal instanceof BinarySymbolicValue) {
-      Set<JavaFileScannerContext.Location> locations = Sets.newHashSet();
-      locations.addAll(flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getLeftOp()));
-      locations.addAll(flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getRightOp()));
+    if (currentVal instanceof BinarySymbolicValue) {
+      Set<JavaFileScannerContext.Location> locations = new HashSet<>();
+      locations.addAll(SECheck.flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getLeftOp()));
+      locations.addAll(SECheck.flow(currentNode.parent, ((BinarySymbolicValue) currentVal).getRightOp()));
       flow.addAll(locations);
     }
     ExplodedGraph.Node node = currentNode;
     Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
     while (node != null) {
       ExplodedGraph.Node finalNode = node;
-      if(finalNode.programPoint.syntaxTree() != null) {
-        node.getLearnedConstraints().stream()
-          .map(lc->lc.sv)
-          .filter(sv -> sv.equals(currentVal))
-          .findFirst()
-          .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("When", finalNode.parent.programPoint.syntaxTree())));
-        if (lastEvaluated != null) {
-          Symbol finalLastEvaluated = lastEvaluated;
-          Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
-            .map(ls -> ls.symbol)
-            .filter(sv -> sv.equals(finalLastEvaluated))
-            .findFirst();
-          if (learnedSymbol.isPresent()) {
-            lastEvaluated = finalNode.parent.programState.getLastEvaluated();
-            flow.add(new JavaFileScannerContext.Location("Given", finalNode.parent.programPoint.syntaxTree()));
-          }
+      if (finalNode.programPoint.syntaxTree() == null) {
+        continue;
+      }
+      node.getLearnedConstraints().stream()
+        .map(ExplodedGraph.Node.LearnedConstraint::getSv)
+        .filter(sv -> sv.equals(currentVal))
+        .findFirst()
+        .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
+      if (lastEvaluated != null) {
+        Symbol finalLastEvaluated = lastEvaluated;
+        Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
+          .map(ExplodedGraph.Node.LearnedValue::getSymbol)
+          .filter(sv -> sv.equals(finalLastEvaluated))
+          .findFirst();
+        if (learnedSymbol.isPresent()) {
+          lastEvaluated = finalNode.parent.programState.getLastEvaluated();
+          flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
         }
-
       }
       node = node.parent;
     }
-    return flow;
+    return Lists.reverse(flow);
   }
 
   public void interruptedExecution(CheckerContext context) {

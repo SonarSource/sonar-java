@@ -748,11 +748,10 @@ public class ExplodedGraphWalker {
       value = constraintManager.createSymbolicValue(tree);
       programState = programState.stackValue(value);
       learnIdentifierNullConstraints(tree, value);
-      programState = programState.put(symbol, value);
     } else {
       programState = programState.stackValue(value);
-      programState = programState.put(symbol, value);
     }
+    programState = programState.put(symbol, value);
   }
 
   private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {

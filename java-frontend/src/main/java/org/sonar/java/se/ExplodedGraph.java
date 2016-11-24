@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -127,21 +128,22 @@ public class ExplodedGraph {
 
     public void setParent(@Nullable Node parent) {
       this.parent = parent;
-      if(parent != null) {
+      if (parent != null) {
         programState.constraints.forEach((sv, c) -> {
-          if(parent.programState.getConstraint(sv) != c) {
+          if (parent.programState.getConstraint(sv) != c) {
             addConstraint(sv, c);
           }
         });
         programState.values.forEach((s, sv) -> {
-         if(parent.programState.getValue(s)!= sv) {
-           learnedSymbols.add(new LearnedValue(sv, s));
-         }
+          if (parent.programState.getValue(s) != sv) {
+            learnedSymbols.add(new LearnedValue(sv, s));
+          }
         });
       }
     }
 
     private void addConstraint(SymbolicValue sv, Constraint constraint) {
+      // FIXME : this might end up adding twice the same SV in learned constraints. Safe because of find first in SECheck.flows
       if(sv instanceof BinarySymbolicValue) {
         BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
         addConstraint(binarySymbolicValue.getLeftOp(), null);
@@ -161,12 +163,16 @@ public class ExplodedGraph {
 
 
     public static class LearnedConstraint {
-      public SymbolicValue sv;
-      public Constraint constraint;
+      final SymbolicValue sv;
 
+      final Constraint constraint;
       public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
         this.sv = sv;
         this.constraint = constraint;
+      }
+
+      public SymbolicValue getSv() {
+        return sv;
       }
 
       @Override
@@ -176,12 +182,16 @@ public class ExplodedGraph {
     }
 
     public static class LearnedValue {
-      public SymbolicValue sv;
-      public Symbol symbol;
+      final SymbolicValue sv;
+      final Symbol symbol;
 
       public LearnedValue(SymbolicValue sv, Symbol symbol) {
         this.sv = sv;
         this.symbol = symbol;
+      }
+
+      public Symbol getSymbol() {
+        return symbol;
       }
 
       @Override

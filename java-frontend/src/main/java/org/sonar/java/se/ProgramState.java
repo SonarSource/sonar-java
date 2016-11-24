@@ -99,7 +99,8 @@ public class ProgramState {
     constraintSize = 3;
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints, Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
+                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+                       Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
     this(values, references, constraints, visitedPoints, stack, returnSymbolicValue);
     lastEvaluated = symbol;
   }

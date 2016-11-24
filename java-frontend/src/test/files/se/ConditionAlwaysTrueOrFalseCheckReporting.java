@@ -6,34 +6,34 @@ package javax.annotation;
 public class Class {
 
   void nestedCondition(boolean a) {
-    if(a) {
-      if(a) { // Noncompliant [[secondary=9]]
+    if(a) { // flow@nested {{}}
+      if(a) { // Noncompliant [[flows=nested]]
       }
     }
   }
 
   void relationship(boolean a, boolean b) {
-    if(a < b) {
-      if(b > a) { // Noncompliant [[secondary=16]]
+    if(a < b) { // flow@rel {{}}
+      if(b > a) { // Noncompliant [[flows=rel]]
       }
     }
   }
 
   void reassignement(boolean a, boolean b) {
-    if(a) {
-      b = a;
-      if(b) { // Noncompliant [[secondary=24]]
+    if(a) { // flow@reass {{}}
+      b = a; // flow@reass {{}}
+      if(b) { // Noncompliant [[flows=reass]]
       }
     }
   }
 
   void unarySymbolicvalue(boolean a, boolean b) {
-    if(! (a ==b ))
-      if (a == b); // Noncompliant [[secondary=31]]
+    if(! (a ==b )) // flow@unarySv {{}}
+      if (a == b); // Noncompliant [[flows=unarySv]]
   }
   void unary(boolean a) {
-    if(!a)
-      if (a); // Noncompliant [[secondary=35]]
+    if(!a) // flow@unary {{}}
+      if (a); // Noncompliant [[flows=unary]]
   }
 
 

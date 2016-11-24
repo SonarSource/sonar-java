@@ -92,7 +92,7 @@ public final class JavaIssue {
     return this;
   }
 
-  private TextRange range(InputFile file, AnalyzerMessage.TextSpan textSpan) {
+  private static TextRange range(InputFile file, AnalyzerMessage.TextSpan textSpan) {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
