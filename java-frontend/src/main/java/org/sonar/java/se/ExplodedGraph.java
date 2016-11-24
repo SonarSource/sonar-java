@@ -114,9 +114,7 @@ public class ExplodedGraph {
     public final ProgramPoint programPoint;
     @Nullable
     public final ProgramState programState;
-    @Nullable
-    public Node parent;
-    public final List<Node> cacheHits;
+    public final List<Node> parents;
     private final List<LearnedConstraint> learnedConstraints;
 
     private final List<LearnedValue> learnedSymbols;
@@ -126,22 +124,24 @@ public class ExplodedGraph {
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
       learnedSymbols = new ArrayList<>();
-      cacheHits = new ArrayList<>();
+      parents = new ArrayList<>();
     }
 
     public void setParent(@Nullable Node parent) {
-      this.parent = parent;
       if (parent != null) {
-        programState.constraints.forEach((sv, c) -> {
-          if (parent.programState.getConstraint(sv) != c) {
-            addConstraint(sv, c);
-          }
-        });
-        programState.values.forEach((s, sv) -> {
-          if (parent.programState.getValue(s) != sv) {
-            learnedSymbols.add(new LearnedValue(sv, s));
-          }
-        });
+        if (parents.isEmpty()) {
+          programState.constraints.forEach((sv, c) -> {
+            if (parent.programState.getConstraint(sv) != c) {
+              addConstraint(sv, c);
+            }
+          });
+          programState.values.forEach((s, sv) -> {
+            if (parent.programState.getValue(s) != sv) {
+              learnedSymbols.add(new LearnedValue(sv, s));
+            }
+          });
+        }
+        parents.add(0, parent);
       }
     }
 
@@ -155,6 +155,9 @@ public class ExplodedGraph {
       learnedConstraints.add(new LearnedConstraint(sv, constraint));
     }
 
+    public void addParent(Node node) {
+      parents.add(node);
+    }
 
     public List<LearnedConstraint> getLearnedConstraints() {
       return learnedConstraints;
@@ -221,10 +224,6 @@ public class ExplodedGraph {
     @Override
     public String toString() {
       return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
-    }
-
-    public void newCacheHit(Node node) {
-      cacheHits.add(node);
     }
   }
 }
