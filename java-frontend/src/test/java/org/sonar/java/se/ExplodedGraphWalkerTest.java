@@ -73,6 +73,49 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
+    ExplodedGraph.ProgramPoint[] points = new ExplodedGraph.ProgramPoint[2];
+    ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker() {
+
+      boolean shouldEnqueueFalseBranch = false;
+
+      @Override
+      public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
+        int nbOfExecution = programState.numberOfTimeVisited(programPoint);
+        if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
+          shouldEnqueueFalseBranch = true;
+          points[0] = programPoint;
+        } else {
+          shouldEnqueueFalseBranch = false;
+        }
+        int workListSize = workList.size();
+
+        super.enqueue(programPoint, programState, exitPath);
+
+        assertThat(workList.size()).isEqualTo(workListSize + 1);
+        if (shouldEnqueueFalseBranch) {
+          assertThat(points[1]).isNull();
+          points[1] = workList.peekFirst().programPoint;
+        }
+      }
+    };
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestMaxExecProgramPoint.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
+      @Override
+      public void visitNode(Tree tree) {
+        explodedGraphWalker.visitMethod((MethodTree) tree, new MethodBehavior(((MethodTree) tree).symbol()));
+      }
+    });
+
+    // B2 - for each
+    assertThat(points[0]).isNotNull();
+    assertThat(points[0].block.id()).isEqualTo(2);
+
+    // B1 - using the false branch to exit the loop
+    assertThat(points[1]).isNotNull();
+    assertThat(points[1].block.id()).isEqualTo(1);
+  }
+
+  @Test
   public void test_limited_loop_execution() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
       @Override
