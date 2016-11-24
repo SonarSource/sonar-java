@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
