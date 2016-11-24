@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -41,13 +42,30 @@ public class ExplodedGraph {
   Node getNode(ProgramPoint programPoint, @Nullable ProgramState programState) {
     Node result = new Node(programPoint, programState);
     Node cached = nodes.get(result);
-    if (cached != null) {
+    if (cached != null && !visitedMoreTimes(cached, result)) {
       cached.isNew = false;
       return cached;
     }
     result.isNew = true;
     nodes.put(result, result);
     return result;
+  }
+
+  private static boolean visitedMoreTimes(Node cached, Node result) {
+    Node n = cached;
+    while (n != null) {
+      int cachedNbVisit = cached.programState.numberOfTimeVisited(n.programPoint);
+      int resultNbVisit = result.programState.numberOfTimeVisited(n.programPoint);
+      if (resultNbVisit == 0) {
+        // never took that path
+        return false;
+      }
+      if (cachedNbVisit > resultNbVisit) {
+        return true;
+      }
+      n = n.parents.isEmpty() ? null : n.parents.get(0);
+    }
+    return false;
   }
 
   public Map<Node, Node> getNodes() {
