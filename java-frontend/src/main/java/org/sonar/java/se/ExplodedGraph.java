@@ -103,27 +103,31 @@ public class ExplodedGraph {
     public final ProgramPoint programPoint;
     @Nullable
     public final ProgramState programState;
-    @Nullable
-    public Node parent;
-    public final List<Node> cacheHits;
+    public final List<Node> parents;
     private final List<LearnedConstraint> learnedConstraints;
 
     Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
-      cacheHits = new ArrayList<>();
+      parents = new ArrayList<>();
     }
 
     public void setParent(@Nullable Node parent) {
-      this.parent = parent;
       if(parent != null) {
-        programState.constraints.forEach((sv, c) -> {
-          if(parent.programState.getConstraint(sv) != c) {
-            learnedConstraints.add(new LearnedConstraint(sv, c));
-          }
-        });
+        if (parents.isEmpty()) {
+          programState.constraints.forEach((sv, c) -> {
+            if (parent.programState.getConstraint(sv) != c) {
+              learnedConstraints.add(new LearnedConstraint(sv, c));
+            }
+          });
+        }
+        parents.add(parent);
       }
+    }
+
+    public void addParent(Node node) {
+      parents.add(node);
     }
 
     public List<LearnedConstraint> learnedConstraints() {
@@ -163,10 +167,6 @@ public class ExplodedGraph {
     @Override
     public String toString() {
       return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
-    }
-
-    public void newCacheHit(Node node) {
-      cacheHits.add(node);
     }
   }
 }

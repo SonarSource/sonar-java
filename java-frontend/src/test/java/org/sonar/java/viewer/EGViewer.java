@@ -74,17 +74,16 @@ public class EGViewer {
     List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.getNodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
-      result += index + "[label = \"" + node.programPoint + "\""
-        + ",programState=\"" + node.programState + "\""
-        + specialHighlight(node)
-        + "] ";
-      if (node.parent != null) {
-        result += nodes.indexOf(node.parent) + "->" + index + "[label=\"" + node.learnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString)
-          .collect(Collectors.joining(",")) + "\"] ";
-      }
-      if (SHOW_CACHE) {
-        for (ExplodedGraph.Node cacheHit : node.cacheHits) {
-          result += nodes.indexOf(cacheHit) + "->" + index + "[label=\"CACHE\", color=\"red\", fontcolor=\"red\"] ";
+      result += graphNode(index, node);
+      if (!node.parents.isEmpty()) {
+        ExplodedGraph.Node firstParent = node.parents.get(0);
+        result += parentEdge(nodes.indexOf(firstParent), index, node, firstParent);
+
+        if (SHOW_CACHE && node.parents.size() > 1) {
+          List<ExplodedGraph.Node> cacheHits = node.parents.subList(1, node.parents.size());
+          for (ExplodedGraph.Node cacheHit : cacheHits) {
+            result += cacheEdge(nodes.indexOf(cacheHit), index, cacheHit);
+          }
         }
       }
       index++;
@@ -93,12 +92,25 @@ public class EGViewer {
 
   }
 
+  private static String graphNode(int index, ExplodedGraph.Node node) {
+    return index + "[label = \"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node) + "] ";
+  }
+
   private static String specialHighlight(ExplodedGraph.Node node) {
-    if (node.parent == null) {
+    if (node.parents.isEmpty()) {
       return ",color=\"green\",fontcolor=\"white\"";
     } else if (node.programPoint.toString().startsWith("B0.0")) {
       return ",color=\"black\",fontcolor=\"white\"";
     }
     return "";
+  }
+
+  private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node firstParent) {
+    return from + "->" + to + "[label=\"" + node.learnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString)
+      .collect(Collectors.joining(",")) + "\"] ";
+  }
+
+  private static String cacheEdge(int from, int to, ExplodedGraph.Node cacheHit) {
+    return from + "->" + to + "[label=\"CACHE\", color=\"red\", fontcolor=\"red\"] ";
   }
 }
