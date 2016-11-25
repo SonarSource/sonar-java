@@ -119,7 +119,7 @@ public class ExplodedGraph {
 
     private final List<LearnedValue> learnedSymbols;
 
-    Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
+    public Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
       this.programState = programState;
       learnedConstraints = new ArrayList<>();

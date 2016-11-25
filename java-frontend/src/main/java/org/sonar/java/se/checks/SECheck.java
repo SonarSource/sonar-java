@@ -94,17 +94,18 @@ public abstract class SECheck implements JavaFileScanner {
     Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
     while (node != null) {
       ExplodedGraph.Node finalNode = node;
+      node = node.parent;
       if (finalNode.programPoint.syntaxTree() == null) {
         continue;
       }
-      node.getLearnedConstraints().stream()
+      finalNode.getLearnedConstraints().stream()
         .map(ExplodedGraph.Node.LearnedConstraint::getSv)
         .filter(sv -> sv.equals(currentVal))
         .findFirst()
         .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree())));
       if (lastEvaluated != null) {
         Symbol finalLastEvaluated = lastEvaluated;
-        Optional<Symbol> learnedSymbol = node.getLearnedSymbols().stream()
+        Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
           .map(ExplodedGraph.Node.LearnedValue::getSymbol)
           .filter(sv -> sv.equals(finalLastEvaluated))
           .findFirst();
@@ -113,7 +114,6 @@ public abstract class SECheck implements JavaFileScanner {
           flow.add(new JavaFileScannerContext.Location("", finalNode.parent.programPoint.syntaxTree()));
         }
       }
-      node = node.parent;
     }
     return Lists.reverse(flow);
   }
