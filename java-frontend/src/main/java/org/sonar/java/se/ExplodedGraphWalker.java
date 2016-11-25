@@ -102,6 +102,7 @@ public class ExplodedGraphWalker {
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
+  @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
@@ -835,23 +836,23 @@ public class ExplodedGraphWalker {
     enqueue(programPoint, programState, false);
   }
 
-  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
-    ExplodedGraph.ProgramPoint newProgramPoint = programPoint;
+  public void enqueue(ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath) {
+    ExplodedGraph.ProgramPoint programPoint = newProgramPoint;
 
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       if (isRestartingForEachLoop(programPoint)) {
         // reached the max number of visit by program point, so take the false branch with current program state
-        newProgramPoint = new ExplodedGraph.ProgramPoint(programPoint.block.falseBlock(), 0);
+        programPoint = new ExplodedGraph.ProgramPoint(programPoint.block.falseBlock(), 0);
       } else {
-        debugPrint(newProgramPoint);
+        debugPrint(programPoint);
         return;
       }
     }
     checkExplodedGraphTooBig(programState);
-    ProgramState ps = programState.visitedPoint(newProgramPoint, nbOfExecution + 1);
+    ProgramState ps = programState.visitedPoint(programPoint, nbOfExecution + 1);
     ps.lastEvaluated = programState.getLastEvaluated();
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(newProgramPoint, ps);
+    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, ps);
     if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
       return;

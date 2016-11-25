@@ -7,7 +7,7 @@ class A0 {
    *     jumps to: B4
    *
    *   B4
-   *   0:  IDENTIFIER                            words
+   *   0:  IDENTIFIER                            objects
    *     jumps to: B2
    *
    *   B3
@@ -16,8 +16,8 @@ class A0 {
    *     jumps to: B2
    *
    *   B2
-   *   0:  VARIABLE                              word
-   *   T:  FOR_EACH_STATEMENT                    for {word : words}
+   *   0:  VARIABLE                              o
+   *   T:  FOR_EACH_STATEMENT                    for {o : objects}
    *     jumps to: B1(false) B3(true)
    *
    *   B1
@@ -27,9 +27,9 @@ class A0 {
    *
    *   B0 (Exit):
    */
-  int count(java.util.Collection<String> words) {
+  int count(java.util.Collection<Object> objects) {
     int i = 0;
-    for (String word : words) {
+    for (Object o : objects) {
       i++;
     }
     return i;

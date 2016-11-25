@@ -74,7 +74,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
-    ExplodedGraph.ProgramPoint[] points = new ExplodedGraph.ProgramPoint[2];
+    ExplodedGraph.ProgramPoint[] programPoints = new ExplodedGraph.ProgramPoint[2];
     ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker() {
 
       boolean shouldEnqueueFalseBranch = false;
@@ -84,7 +84,7 @@ public class ExplodedGraphWalkerTest {
         int nbOfExecution = programState.numberOfTimeVisited(programPoint);
         if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
           shouldEnqueueFalseBranch = true;
-          points[0] = programPoint;
+          programPoints[0] = programPoint;
         } else {
           shouldEnqueueFalseBranch = false;
         }
@@ -94,8 +94,8 @@ public class ExplodedGraphWalkerTest {
 
         assertThat(workList.size()).isEqualTo(workListSize + 1);
         if (shouldEnqueueFalseBranch) {
-          assertThat(points[1]).isNull();
-          points[1] = workList.peekFirst().programPoint;
+          assertThat(programPoints[1]).isNull();
+          programPoints[1] = workList.peekFirst().programPoint;
         }
       }
     };
@@ -106,13 +106,15 @@ public class ExplodedGraphWalkerTest {
       }
     });
 
+    // we reached the max number of execution of a program point
+    assertThat(programPoints[0]).isNotNull();
     // B2 - for each
-    assertThat(points[0]).isNotNull();
-    assertThat(points[0].block.id()).isEqualTo(2);
+    assertThat(programPoints[0].block.id()).isEqualTo(2);
 
+    // we enqueued a new node in the workList after reaching the max number of execeution point
+    assertThat(programPoints[1]).isNotNull();
     // B1 - using the false branch to exit the loop
-    assertThat(points[1]).isNotNull();
-    assertThat(points[1].block.id()).isEqualTo(1);
+    assertThat(programPoints[1].block.id()).isEqualTo(1);
   }
 
   @Test
