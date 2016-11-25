@@ -75,12 +75,13 @@ public class EGViewer {
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
       result += graphNode(index, node);
-      if (!node.parents.isEmpty()) {
-        ExplodedGraph.Node firstParent = node.parents.get(0);
+      if (!node.getParents().isEmpty()) {
+        ExplodedGraph.Node firstParent = node.parent();
         result += parentEdge(nodes.indexOf(firstParent), index, node, firstParent);
 
-        if (SHOW_CACHE && node.parents.size() > 1) {
-          List<ExplodedGraph.Node> cacheHits = node.parents.subList(1, node.parents.size());
+        int nbParents = node.getParents().size();
+        if (SHOW_CACHE && nbParents > 1) {
+          List<ExplodedGraph.Node> cacheHits = node.getParents().subList(1, nbParents);
           for (ExplodedGraph.Node cacheHit : cacheHits) {
             result += cacheEdge(nodes.indexOf(cacheHit), index, cacheHit);
           }
@@ -97,7 +98,7 @@ public class EGViewer {
   }
 
   private static String specialHighlight(ExplodedGraph.Node node) {
-    if (node.parents.isEmpty()) {
+    if (node.getParents().isEmpty()) {
       return ",color=\"green\",fontcolor=\"white\"";
     } else if (node.programPoint.toString().startsWith("B0.0")) {
       return ",color=\"black\",fontcolor=\"white\"";
