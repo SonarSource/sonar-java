@@ -102,7 +102,8 @@ public class ExplodedGraphWalker {
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
-  private static final int MAX_EXEC_PROGRAM_POINT = 2;
+  @VisibleForTesting
+  static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
   private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
@@ -111,7 +112,8 @@ public class ExplodedGraphWalker {
 
   private ExplodedGraph explodedGraph;
 
-  private Deque<ExplodedGraph.Node> workList;
+  @VisibleForTesting
+  Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
@@ -834,11 +836,18 @@ public class ExplodedGraphWalker {
     enqueue(programPoint, programState, false);
   }
 
-  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
+  public void enqueue(ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath) {
+    ExplodedGraph.ProgramPoint programPoint = newProgramPoint;
+
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
-      debugPrint(programState);
-      return;
+      if (isRestartingForEachLoop(programPoint)) {
+        // reached the max number of visit by program point, so take the false branch with current program state
+        programPoint = new ExplodedGraph.ProgramPoint(programPoint.block.falseBlock(), 0);
+      } else {
+        debugPrint(programPoint);
+        return;
+      }
     }
     checkExplodedGraphTooBig(programState);
     ProgramState ps = programState.visitedPoint(programPoint, nbOfExecution + 1);
@@ -854,6 +863,11 @@ public class ExplodedGraphWalker {
     }
     cachedNode.setParent(node);
     workList.addFirst(cachedNode);
+  }
+
+  private static boolean isRestartingForEachLoop(ExplodedGraph.ProgramPoint programPoint) {
+    Tree terminator = programPoint.block.terminator();
+    return terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT);
   }
 
   private void checkExplodedGraphTooBig(ProgramState programState) {

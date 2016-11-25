@@ -1988,3 +1988,43 @@ class NestedMax {
   }
 
 }
+
+class CheckingLoops {
+  void foo(java.util.List<String> words) {
+    if (GoodOldForLoop.count(words)) {} // Compliant
+    if (ForEachLoop.count(words)) {} // Compliant
+  }
+
+  static class GoodOldForLoop {
+    private static boolean count(java.util.List<String> words) {
+      boolean result = false;
+      for (int i = 0; i < words.size(); i++) {
+        String word = words.get(i);
+        if (isWord(word)) {
+          result = true;
+        }
+      }
+      return result;
+    }
+
+    private static boolean isWord(String word) {
+      return word.startsWith("hello") && word.endsWith("word");
+    }
+  }
+
+  static class ForEachLoop {
+    private static boolean count(java.util.List<String> words) {
+      boolean result = false;
+      for (String word : words) {
+        if (isWord(word)) {
+          result = true;
+        }
+      }
+      return result;
+    }
+
+    private static boolean isWord(String word) {
+      return word.startsWith("hello") && word.endsWith("word");
+    }
+  }
+}
