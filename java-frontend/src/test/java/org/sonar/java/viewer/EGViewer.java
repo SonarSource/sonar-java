@@ -53,7 +53,7 @@ public class EGViewer {
     viewer.textArea.setText(CFGDebug.toString(CFGViewer.buildCFG(source)));
     String dot = egToDot(eg);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', " + (!SHOW_CACHE) + ")");
+    webEngine.executeScript("loadEG('" + dot + "', " + (!SHOW_CACHE) + ")");
   }
 
   private static ExplodedGraph buildEG(String source) {
