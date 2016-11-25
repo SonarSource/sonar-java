@@ -87,15 +87,15 @@ public abstract class SECheck implements JavaFileScanner {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
     if (currentVal instanceof BinarySymbolicValue) {
       Set<JavaFileScannerContext.Location> locations = new HashSet<>();
-      locations.addAll(SECheck.flow(currentNode.parents.get(0), ((BinarySymbolicValue) currentVal).getLeftOp()));
-      locations.addAll(SECheck.flow(currentNode.parents.get(0), ((BinarySymbolicValue) currentVal).getRightOp()));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp()));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp()));
       flow.addAll(locations);
     }
     ExplodedGraph.Node node = currentNode;
     Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
     while (node != null) {
       ExplodedGraph.Node finalNode = node;
-      node = node.parents.isEmpty() ? null : node.parents.get(0);
+      node = node.parent();
       if (finalNode.programPoint.syntaxTree() == null) {
         continue;
       }
@@ -103,7 +103,7 @@ public abstract class SECheck implements JavaFileScanner {
         .map(ExplodedGraph.Node.LearnedConstraint::getSv)
         .filter(sv -> sv.equals(currentVal))
         .findFirst()
-        .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parents.get(0).programPoint.syntaxTree())));
+        .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree())));
       if (lastEvaluated != null) {
         Symbol finalLastEvaluated = lastEvaluated;
         Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
@@ -111,8 +111,8 @@ public abstract class SECheck implements JavaFileScanner {
           .filter(sv -> sv.equals(finalLastEvaluated))
           .findFirst();
         if (learnedSymbol.isPresent()) {
-          lastEvaluated = finalNode.parents.get(0).programState.getLastEvaluated();
-          flow.add(new JavaFileScannerContext.Location("", finalNode.parents.get(0).programPoint.syntaxTree()));
+          lastEvaluated = finalNode.parent().programState.getLastEvaluated();
+          flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree()));
         }
       }
     }

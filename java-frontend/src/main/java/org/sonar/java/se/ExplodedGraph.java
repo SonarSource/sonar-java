@@ -114,7 +114,7 @@ public class ExplodedGraph {
     public final ProgramPoint programPoint;
     @Nullable
     public final ProgramState programState;
-    public final List<Node> parents;
+    private final List<Node> parents;
     private final List<LearnedConstraint> learnedConstraints;
 
     private final List<LearnedValue> learnedSymbols;
@@ -157,6 +157,15 @@ public class ExplodedGraph {
 
     public void addParent(Node node) {
       parents.add(node);
+    }
+
+    @Nullable
+    public Node parent() {
+      return parents.isEmpty() ? null : parents.get(0);
+    }
+
+    public List<Node> getParents() {
+      return parents;
     }
 
     public List<LearnedConstraint> getLearnedConstraints() {
