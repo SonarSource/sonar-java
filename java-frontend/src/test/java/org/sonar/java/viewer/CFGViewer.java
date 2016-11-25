@@ -47,7 +47,7 @@ public class CFGViewer {
     viewer.textArea.setText(CFGDebug.toString(cfg));
     String dot = CFGDebug.toDot(cfg);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', false)");
+    webEngine.executeScript("loadCFG('" + dot + "')");
   }
 
   static CFG buildCFG(String source) {

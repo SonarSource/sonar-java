@@ -40,7 +40,7 @@ public class TreeViewer {
   public void analyse(String source){
     String dot = new TreeToDot().treeToDot(PARSER.parse(source));
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', true)");
+    webEngine.executeScript("loadSyntaxTree('" + dot + "')");
   }
 
   private static class TreeToDot {
