@@ -19,7 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -36,19 +44,12 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
@@ -57,6 +58,14 @@ public class UnclosedResourcesCheck extends SECheck {
     OPENED, CLOSED
   }
 
+  private static final String DEFAULT_EXCLUDED_TYPES = "";
+  
+  @RuleProperty(
+    key = "Excluded types",
+    description = "Comma separated list of the fully qualified name of excluded types. Example: org.apache.hadoop.fs.FileSystem",
+    defaultValue = "" + DEFAULT_EXCLUDED_TYPES)
+  public String excludedTypes = DEFAULT_EXCLUDED_TYPES;
+  
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
@@ -72,9 +81,21 @@ public class UnclosedResourcesCheck extends SECheck {
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream",
     "org.springframework.context.ConfigurableApplicationContext"
   };
+  
+  private static final List<String> excludedTypesList = new ArrayList<>();
+  
   private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
   };
+  
+  @Override
+  public void init(MethodTree methodTree, CFG cfg) {
+    super.init(methodTree, cfg);
+    excludedTypesList.clear();
+    for (String excludedType : excludedTypes.split(",")) {
+      excludedTypesList.add(excludedType.trim());
+    }
+  }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -107,7 +128,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
   }
 
-  private static boolean needsClosing(Type type) {
+  private boolean needsClosing(Type type) {
     if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
       return false;
     }
@@ -116,21 +137,26 @@ public class UnclosedResourcesCheck extends SECheck {
         return false;
       }
     }
+    for (String excludedType : excludedTypesList) {
+      if (type.is(excludedType)) {
+        return false;
+      }
+    }
     return isCloseable(type);
   }
 
-  private static boolean isCloseable(Type type) {
+  private boolean isCloseable(Type type) {
     return type.isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE) || type.isSubtypeOf(JAVA_IO_CLOSEABLE);
   }
 
-  private static boolean isOpeningResource(NewClassTree syntaxNode) {
+  private boolean isOpeningResource(NewClassTree syntaxNode) {
     if (isWithinTryHeader(syntaxNode)) {
       return false;
     }
     return needsClosing(syntaxNode.symbolType());
   }
 
-  private static boolean isWithinTryHeader(Tree syntaxNode) {
+  private boolean isWithinTryHeader(Tree syntaxNode) {
     final Tree parent = syntaxNode.parent();
     if (parent.is(Tree.Kind.VARIABLE)) {
       return isTryStatementResource((VariableTree) parent);
@@ -138,12 +164,12 @@ public class UnclosedResourcesCheck extends SECheck {
     return false;
   }
 
-  private static boolean isTryStatementResource(VariableTree variable) {
+  private boolean isTryStatementResource(VariableTree variable) {
     final TryStatementTree tryStatement = getEnclosingTryStatement(variable);
     return tryStatement != null && tryStatement.resources().contains(variable);
   }
 
-  private static TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
+  private TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
     Tree parent = syntaxNode.parent();
     while (parent != null) {
       if (parent.is(Tree.Kind.TRY_STATEMENT)) {
@@ -154,7 +180,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return null;
   }
 
-  private static class ResourceWrapperSymbolicValue extends SymbolicValue {
+  private class ResourceWrapperSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue dependent;
 
@@ -170,7 +196,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   }
 
-  private static class WrappedValueFactory implements SymbolicValueFactory {
+  private class WrappedValueFactory implements SymbolicValueFactory {
 
     private final SymbolicValue value;
 
@@ -185,7 +211,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   }
 
-  private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
+  private class PreStatementVisitor extends CheckerTreeNodeVisitor {
     // closing methods
     private static final String CLOSE = "close";
     private static final String GET_MORE_RESULTS = "getMoreResults";
@@ -253,7 +279,7 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private static boolean isNonLocalStorage(ExpressionTree variable) {
+    private boolean isNonLocalStorage(ExpressionTree variable) {
       if (variable.is(Tree.Kind.IDENTIFIER)) {
         Symbol owner = ((IdentifierTree) variable).symbol().owner();
         return !owner.isMethodSymbol();
@@ -316,7 +342,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
   }
 
-  private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
+  private class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
     PostStatementVisitor(CheckerContext context) {
       super(context.getState());
@@ -348,7 +374,7 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private static boolean isJdbcResourceCreation(ExpressionTree targetExpression) {
+    private boolean isJdbcResourceCreation(ExpressionTree targetExpression) {
       for (String creator : JDBC_RESOURCE_CREATIONS) {
         if (targetExpression.symbolType().is(creator)) {
           return true;
