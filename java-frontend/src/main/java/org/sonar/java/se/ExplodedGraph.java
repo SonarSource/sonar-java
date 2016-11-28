@@ -141,7 +141,7 @@ public class ExplodedGraph {
             }
           });
         }
-        parents.add(0, parent);
+        parents.add(parent);
       }
     }
 
