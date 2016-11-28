@@ -38,4 +38,10 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   public void reporting() {
     JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionAlwaysTrueOrFalseCheck());
   }
+
+  @Test
+  public void reporting_getting_wrong_parent() {
+    // Checks flow iterating through the correct parent
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
 }
