@@ -20,11 +20,11 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -39,12 +39,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public abstract class SECheck implements JavaFileScanner {
 
   private Set<SEIssue> issues = new HashSet<>();
-  
-  public void init(MethodTree methodTree, CFG cfg){
+
+  public void init(MethodTree methodTree, CFG cfg) {
 
   }
 
@@ -72,23 +73,27 @@ public abstract class SECheck implements JavaFileScanner {
     issues.clear();
   }
 
-  public void reportIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> secondary) {
+  public void reportIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> flows) {
     issues.add(issues.stream()
       .filter(seIssue -> seIssue.tree.equals(tree))
       .findFirst()
       .map(seIssue -> {
-        seIssue.flows.addAll(secondary);
+        seIssue.flows.addAll(flows);
         return seIssue;
       })
-      .orElse(new SEIssue(tree, message, secondary)));
+      .orElse(new SEIssue(tree, message, flows)));
   }
 
   public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
+    return flow(currentNode, currentVal, constraint -> true);
+  }
+
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> constraintPredicate) {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
     if (currentVal instanceof BinarySymbolicValue) {
       Set<JavaFileScannerContext.Location> locations = new HashSet<>();
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp()));
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp()));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp(), constraintPredicate));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp(), constraintPredicate));
       flow.addAll(locations);
     }
     ExplodedGraph.Node node = currentNode;
@@ -100,10 +105,9 @@ public abstract class SECheck implements JavaFileScanner {
         continue;
       }
       finalNode.getLearnedConstraints().stream()
-        .map(ExplodedGraph.Node.LearnedConstraint::getSv)
-        .filter(sv -> sv.equals(currentVal))
+        .filter(lc -> lc.getSv().equals(currentVal) && constraintPredicate.test(lc.getConstraint()))
         .findFirst()
-        .ifPresent(sv -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree())));
+        .ifPresent(lc -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree())));
       if (lastEvaluated != null) {
         Symbol finalLastEvaluated = lastEvaluated;
         Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
@@ -131,7 +135,7 @@ public abstract class SECheck implements JavaFileScanner {
     public SEIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> flows) {
       this.tree = tree;
       this.message = message;
-      this.flows = flows;
+      this.flows = new HashSet<>(flows);
     }
 
     public Tree getTree() {
