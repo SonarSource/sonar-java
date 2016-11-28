@@ -115,7 +115,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    List<List<Location>> flows = secondary.isEmpty() ? Collections.emptyList() : Collections.singletonList(secondary);
+    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
     reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
   }
 
@@ -131,7 +131,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-    List<List<Location>> flows = secondary.isEmpty() ? Collections.emptyList() : Collections.singletonList(secondary);
+    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
   }
 
