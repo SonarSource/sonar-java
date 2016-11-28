@@ -21,8 +21,6 @@ package org.sonar.java.model;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
@@ -80,7 +78,7 @@ public class DefaultJavaFileScannerContextTest {
   public void report_issue_on_tree_with_no_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
-    context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<JavaFileScannerContext.Location>(), null);
+    context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<>(), null);
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
@@ -93,7 +91,7 @@ public class DefaultJavaFileScannerContextTest {
   public void report_issue_on_tree_with_cost() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
-    context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<JavaFileScannerContext.Location>(), COST);
+    context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<>(), COST);
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isEqualTo(COST);
@@ -106,19 +104,23 @@ public class DefaultJavaFileScannerContextTest {
   public void report_issue_on_tree_with_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
+    Tree secondMember = tree.members().get(1);
 
-    ArrayList<Location> secondary = new ArrayList<JavaFileScannerContext.Location>();
+    ArrayList<Location> secondary = new ArrayList<>();
     secondary.add(new JavaFileScannerContext.Location("secondary", firstMember));
+    secondary.add(new JavaFileScannerContext.Location("secondary", secondMember));
 
     context.reportIssue(CHECK, tree.simpleName(), "msg", secondary, null);
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertThat(reportedMessage.flows).hasSize(1);
+    assertThat(reportedMessage.flows).hasSize(2);
 
     assertMessagePosition(reportedMessage, 1, 6, 1, 7);
     List<AnalyzerMessage> secondaries = reportedMessage.flows.stream().map(flow -> flow.get(0)).collect(Collectors.toList());
+    assertThat(secondaries).hasSize(2);
     assertMessagePosition(secondaries.get(0), 2, 2, 2, 13);
+    assertMessagePosition(secondaries.get(1), 3, 2, 3, 15);
   }
 
   @Test
@@ -146,12 +148,9 @@ public class DefaultJavaFileScannerContextTest {
 
   private static SonarComponents createSonarComponentsMock() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
-        return null;
-      }
+    doAnswer(invocation -> {
+      reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
+      return null;
     }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
 
     return sonarComponents;
