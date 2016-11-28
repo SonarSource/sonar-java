@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
-
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
@@ -28,8 +27,8 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class ExplodedGraph {
 
     @Override
     public int hashCode() {
-      if(hashcode == 0) {
+      if (hashcode == 0) {
         hashcode = block.id() * 31 + i;
       }
       return hashcode;
@@ -89,14 +88,14 @@ public class ExplodedGraph {
     @Override
     public String toString() {
       String tree = "";
-      if(i < block.elements().size()) {
-        tree = ""+block.elements().get(i).kind()+block.elements().get(i).firstToken().line();
+      if (i < block.elements().size()) {
+        tree = "" + block.elements().get(i).kind() + block.elements().get(i).firstToken().line();
       }
-      return "B"+block.id()+"."+i+"  "+tree;
+      return "B" + block.id() + "." + i + "  " + tree;
     }
 
     public Tree syntaxTree() {
-      if(block.elements().isEmpty()) {
+      if (block.elements().isEmpty()) {
         return block.terminator();
       }
       return block.elements().get(Math.min(i, block.elements().size() - 1));
@@ -145,9 +144,9 @@ public class ExplodedGraph {
       }
     }
 
-    private void addConstraint(SymbolicValue sv, Constraint constraint) {
+    private void addConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
       // FIXME : this might end up adding twice the same SV in learned constraints. Safe because of find first in SECheck.flows
-      if(sv instanceof BinarySymbolicValue) {
+      if (sv instanceof BinarySymbolicValue) {
         BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
         addConstraint(binarySymbolicValue.getLeftOp(), null);
         addConstraint(binarySymbolicValue.getRightOp(), null);
@@ -176,12 +175,13 @@ public class ExplodedGraph {
       return learnedSymbols;
     }
 
-
     public static class LearnedConstraint {
       final SymbolicValue sv;
 
+      @Nullable
       final Constraint constraint;
-      public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
+
+      public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
         this.sv = sv;
         this.constraint = constraint;
       }
@@ -190,9 +190,14 @@ public class ExplodedGraph {
         return sv;
       }
 
+      @CheckForNull
+      public Constraint getConstraint() {
+        return constraint;
+      }
+
       @Override
       public String toString() {
-        return sv+" - "+constraint;
+        return sv + " - " + constraint;
       }
     }
 
@@ -211,7 +216,7 @@ public class ExplodedGraph {
 
       @Override
       public String toString() {
-        return sv+" - "+symbol.name();
+        return sv + " - " + symbol.name();
       }
     }
 
