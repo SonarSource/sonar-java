@@ -72,4 +72,18 @@ public class CustomUnclosedResourcesCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/customresources/OpenedClosedAny.java", check);
   }
 
+  /**
+   * {@link CustomUnclosedResourcesCheck.Status} class needs to be different, otherwise issued will be duplicated. See SONARJAVA-1624
+   */
+  @Test
+  public void check_status_is_different_instance() {
+    CustomUnclosedResourcesCheck check1 = new CustomUnclosedResourcesCheck();
+    check1.constructor = "org.sonar.custom.GenericResource(java.lang.String)";
+    check1.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";
+    CustomUnclosedResourcesCheck check2 = new CustomUnclosedResourcesCheck();
+    check2.constructor = "org.sonar.custom.GenericResource(java.lang.String)";
+    check2.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";
+    JavaCheckVerifier.verify("src/test/files/se/customresources/ConstructorClosed.java", check1, check2);
+  }
+
 }
