@@ -19,47 +19,39 @@
  */
 package org.sonar.java.se.constraint;
 
-import org.sonar.plugins.java.api.tree.Tree;
-
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ObjectConstraint implements Constraint {
 
-  public static final ObjectConstraint NOT_NULL = new ObjectConstraint(false, true, null, null);
+  public static final ObjectConstraint NOT_NULL = new ObjectConstraint(false, true, null);
 
   private final boolean isNull;
   private final boolean disposable;
-  private final Tree syntaxNode;
   @Nullable
   private final Object status;
 
-  public ObjectConstraint(Tree syntaxNode, Object status) {
-    this(false, true, syntaxNode, status);
+  public ObjectConstraint(Object status) {
+    this(false, true, status);
   }
 
-  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable Tree syntaxNode, @Nullable Object status) {
+  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable Object status) {
     this.isNull = isNull;
     this.disposable = disposable;
-    this.syntaxNode = syntaxNode;
     this.status = status;
   }
 
   public static ObjectConstraint nullConstraint() {
-    return nullConstraint(null);
-  }
-
-  public static ObjectConstraint nullConstraint(@Nullable Tree syntaxNode) {
-    return new ObjectConstraint(true, false, syntaxNode, null);
+    return new ObjectConstraint(true, false, null);
   }
 
   public ObjectConstraint inverse() {
-    return new ObjectConstraint(!isNull, disposable, syntaxNode, status);
+    return new ObjectConstraint(!isNull, disposable, status);
   }
 
   public ObjectConstraint withStatus(Object newStatus) {
-    return new ObjectConstraint(isNull, disposable, syntaxNode, newStatus);
+    return new ObjectConstraint(isNull, disposable, newStatus);
   }
 
   @Override
@@ -80,10 +72,6 @@ public class ObjectConstraint implements Constraint {
       return status == null;
     }
     return aState.equals(status);
-  }
-
-  public Tree syntaxNode() {
-    return syntaxNode;
   }
 
   @Override
@@ -107,14 +95,12 @@ public class ObjectConstraint implements Constraint {
       return false;
     }
     ObjectConstraint that = (ObjectConstraint) o;
-    return isNull == that.isNull &&
-      Objects.equals(syntaxNode, that.syntaxNode) &&
-      Objects.equals(status, that.status);
+    return isNull == that.isNull && Objects.equals(status, that.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isNull, syntaxNode, status);
+    return Objects.hash(isNull, status);
   }
 
   public static Predicate<Constraint> statusPredicate(Object status) {

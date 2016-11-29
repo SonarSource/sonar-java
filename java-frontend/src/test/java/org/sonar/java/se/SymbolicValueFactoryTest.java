@@ -26,7 +26,6 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 
@@ -45,7 +44,7 @@ public class SymbolicValueFactoryTest {
   private static class TestSymbolicValueFactory implements SymbolicValueFactory {
 
     @Override
-    public SymbolicValue createSymbolicValue(int id, Tree syntaxNode) {
+    public SymbolicValue createSymbolicValue(int id) {
       return new TestSymbolicValue(id);
     }
   }

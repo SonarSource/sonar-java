@@ -38,14 +38,13 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
   private enum Status {
-    ZERO, NON_ZERO, UNDETERMINED;
+    ZERO, NON_ZERO, UNDETERMINED
   }
 
   /**
@@ -62,8 +61,8 @@ public class DivisionByZeroCheck extends SECheck {
   }
 
   private static class ZeroConstraint extends ObjectConstraint {
-    private ZeroConstraint(Tree syntaxNode, Status status) {
-      super(false, false, syntaxNode, status);
+    private ZeroConstraint(Status status) {
+      super(false, false, status);
     }
 
     @Override
@@ -123,16 +122,16 @@ public class DivisionByZeroCheck extends SECheck {
         case LESS_THAN:
         case LESS_THAN_OR_EQUAL_TO:
           symbolicValues = programState.peekValues(2);
-          setAsUndetermined(symbolicValues.get(1), tree.leftOperand());
-          setAsUndetermined(symbolicValues.get(0), tree.rightOperand());
+          setAsUndetermined(symbolicValues.get(1));
+          setAsUndetermined(symbolicValues.get(0));
           break;
         default:
           // do nothing
       }
     }
 
-    private void setAsUndetermined(SymbolicValue sv, Tree tree) {
-      programState = programState.addConstraint(sv, new ZeroConstraint(tree, Status.UNDETERMINED));
+    private void setAsUndetermined(SymbolicValue sv) {
+      programState = programState.addConstraint(sv, new ZeroConstraint(Status.UNDETERMINED));
     }
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -197,11 +196,11 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void deferConstraint(Status status) {
-      constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, status));
+      constraintManager.setValueFactory(id -> new DeferredStatusHolderSV(id, status));
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory((id, node) -> new DeferredStatusHolderSV(id, isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED)) {
+      constraintManager.setValueFactory(id -> new DeferredStatusHolderSV(id, isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED)) {
         @Override
         public SymbolicValue wrappedValue() {
           return sv.wrappedValue();
@@ -271,9 +270,9 @@ public class DivisionByZeroCheck extends SECheck {
       String value = tree.value();
       SymbolicValue sv = programState.peekValue();
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
-        addZeroConstraint(sv, tree, Status.ZERO);
+        addZeroConstraint(sv, Status.ZERO);
       } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
-        addZeroConstraint(sv, tree, isNumberZero(value) ? Status.ZERO : Status.NON_ZERO);
+        addZeroConstraint(sv, isNumberZero(value) ? Status.ZERO : Status.NON_ZERO);
       }
     }
 
@@ -287,33 +286,33 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      checkDeferredConstraint(tree);
+      checkDeferredConstraint();
     }
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      checkDeferredConstraint(tree);
+      checkDeferredConstraint();
     }
 
     @Override
     public void visitUnaryExpression(UnaryExpressionTree tree) {
-      checkDeferredConstraint(tree);
+      checkDeferredConstraint();
     }
 
     @Override
     public void visitTypeCast(TypeCastTree tree) {
-      checkDeferredConstraint(tree);
+      checkDeferredConstraint();
     }
 
-    private void checkDeferredConstraint(Tree tree) {
+    private void checkDeferredConstraint() {
       SymbolicValue sv = programState.peekValue();
       if (sv instanceof DeferredStatusHolderSV) {
-        addZeroConstraint(sv, tree, ((DeferredStatusHolderSV) sv).deferredStatus);
+        addZeroConstraint(sv, ((DeferredStatusHolderSV) sv).deferredStatus);
       }
     }
 
-    private void addZeroConstraint(SymbolicValue sv, Tree tree, Status status) {
-      programState = programState.addConstraint(sv, new ZeroConstraint(tree, status));
+    private void addZeroConstraint(SymbolicValue sv, Status status) {
+      programState = programState.addConstraint(sv, new ZeroConstraint(status));
     }
   }
 }

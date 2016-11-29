@@ -261,7 +261,7 @@ public class ExplodedGraphWalker {
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
-            sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
+            sv.setConstraint(ps, ObjectConstraint.nullConstraint()).stream(),
             sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
       } else if(nonNullParams) {
@@ -767,7 +767,7 @@ public class ExplodedGraphWalker {
     }
     // only check final field with an initializer
     if (initializer.is(Tree.Kind.NULL_LITERAL)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint(initializer));
+      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint());
     } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
     }

@@ -53,12 +53,10 @@ public class LocksNotUnlockedCheck extends SECheck {
   private static class TryLockSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue operand;
-    private final Tree syntaxNode;
 
-    public TryLockSymbolicValue(final int id, final SymbolicValue operand, final Tree syntaxNode) {
+    public TryLockSymbolicValue(final int id, final SymbolicValue operand) {
       super(id);
       this.operand = operand;
-      this.syntaxNode = syntaxNode;
     }
 
     @Override
@@ -69,9 +67,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(false, false, syntaxNode, Status.LOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(false, false, Status.LOCKED)));
       } else {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(syntaxNode, Status.UNLOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(Status.UNLOCKED)));
       }
     }
 
@@ -90,8 +88,8 @@ public class LocksNotUnlockedCheck extends SECheck {
     }
 
     @Override
-    public SymbolicValue createSymbolicValue(int id, Tree syntaxNode) {
-      return new TryLockSymbolicValue(id, operand, syntaxNode);
+    public SymbolicValue createSymbolicValue(int id) {
+      return new TryLockSymbolicValue(id, operand);
     }
 
   }
@@ -144,9 +142,9 @@ public class LocksNotUnlockedCheck extends SECheck {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
         if (LOCK_METHOD_NAME.equals(methodName) || TRY_LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, target, Status.LOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, Status.LOCKED));
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(target, Status.UNLOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(Status.UNLOCKED));
         }
       }
     }

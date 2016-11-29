@@ -208,7 +208,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     @Override
-    public SymbolicValue createSymbolicValue(int counter, Tree syntaxNode) {
+    public SymbolicValue createSymbolicValue(int counter) {
       return new ResourceWrapperSymbolicValue(counter, value);
     }
 
@@ -356,7 +356,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
         if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraint(instanceValue, new ObjectConstraint(false, false, syntaxNode, Status.OPENED));
+          programState = programState.addConstraint(instanceValue, new ObjectConstraint(false, false, Status.OPENED));
         }
       }
     }
@@ -372,7 +372,7 @@ public class UnclosedResourcesCheck extends SECheck {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
-          programState = programState.addConstraint(programState.peekValue(), new ObjectConstraint(false, false, syntaxNode, Status.OPENED));
+          programState = programState.addConstraint(programState.peekValue(), new ObjectConstraint(false, false, Status.OPENED));
         }
       }
     }

@@ -107,7 +107,7 @@ public class MethodYieldTest {
 
     Symbol myVar = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
     ps = ps.put(myVar, sv2);
-    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, null, Status.A));
+    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, Status.A));
 
     // status of sv2 should be changed from A to B
     Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);

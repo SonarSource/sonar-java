@@ -42,13 +42,12 @@ public class ConstraintTest {
   @Test
   public void open_status() {
     final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), 0, 0, false));
-    ObjectConstraint constraint = new ObjectConstraint(tree, TestStatus.OPENED);
+    ObjectConstraint constraint = new ObjectConstraint(TestStatus.OPENED);
     assertThat(constraint.isNull()).as("Opened constraint is not null").isFalse();
     assertThat(constraint.isDisposable()).isTrue();
     assertThat(constraint.inverse().isNull()).as("Inverse of opened constraint is NULL").isTrue();
     assertThat(constraint.hasStatus(TestStatus.OPENED)).as("Opened constraint is 'opened'").isTrue();
     assertThat(constraint.hasStatus(TestStatus.CLOSED)).as("Opened constraint is not 'opened'").isFalse();
-    assertThat(constraint.syntaxNode()).as("Constraint's syntax node").isSameAs(tree);
     assertThat(constraint.toString()).as("Constraint's string").isEqualTo("NOT_NULL(OPENED)");
 
     constraint = constraint.withStatus(TestStatus.CLOSED);
@@ -84,7 +83,7 @@ public class ConstraintTest {
         return sv3;
       }
     };
-    ObjectConstraint constraint = new ObjectConstraint(null, TestStatus.OPENED);
+    ObjectConstraint constraint = new ObjectConstraint(TestStatus.OPENED);
     assertThat(state.getConstraintWithStatus(sv4, constraint)).isNull();
     state = state.addConstraint(sv3, constraint);
     assertThat(state.getConstraintWithStatus(sv4, TestStatus.OPENED)).isEqualTo(constraint);

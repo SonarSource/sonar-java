@@ -105,7 +105,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
-        constraintManager.setValueFactory((id, node) -> new OptionalSymbolicValue(id, programState.peekValue()));
+        constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, programState.peekValue()));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
         context.reportIssue(tree, check, "Call \"" + getIdentifierPart(tree.methodSelect()) + "isPresent()\" before accessing the value.");
         programState = null;
