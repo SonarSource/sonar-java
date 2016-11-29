@@ -1,5 +1,7 @@
 class A {
-  void null_assigned() {
+  void null_assigned(Object b, Object c) {
+    if(b == null);
+    if(c == null);
     Object a = null; // flow@fl1 {{...}}
     a.toString(); // Noncompliant [[flows=fl1]]
   }
