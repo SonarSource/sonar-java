@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -107,7 +106,7 @@ public abstract class SECheck implements JavaFileScanner {
       finalNode.getLearnedConstraints().stream()
         .filter(lc -> lc.getSv().equals(currentVal) && constraintPredicate.test(lc.getConstraint()))
         .findFirst()
-        .ifPresent(lc -> flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree())));
+        .ifPresent(lc -> flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree())));
       if (lastEvaluated != null) {
         Symbol finalLastEvaluated = lastEvaluated;
         Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
@@ -116,11 +115,11 @@ public abstract class SECheck implements JavaFileScanner {
           .findFirst();
         if (learnedSymbol.isPresent()) {
           lastEvaluated = finalNode.parent().programState.getLastEvaluated();
-          flow.add(new JavaFileScannerContext.Location("", finalNode.parent().programPoint.syntaxTree()));
+          flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree()));
         }
       }
     }
-    return Lists.reverse(flow);
+    return flow;
   }
 
   public void interruptedExecution(CheckerContext context) {
