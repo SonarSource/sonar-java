@@ -37,7 +37,7 @@ public class A {
   }
 
   public void wrongHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     stream.read();
   }
 
@@ -54,7 +54,7 @@ public class A {
   private static class FastByteArrayOutputStream extends ByteArrayOutputStream { }
 
   public void whileLoopHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     while(needsMore()) {
       stream = new FileInputStream("myFile");
       stream.read();
@@ -65,10 +65,10 @@ public class A {
 
   public void wrongLoopHandling() {
     int i = 0;
-    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant {{Close this "FileInputStream".}}
+    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     while(needsMore()) {
       i += 1;
-      stream = new FileInputStream("WhileFile"+i); // Noncompliant {{Close this "FileInputStream".}}
+      stream = new FileInputStream("WhileFile"+i); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     }
     stream.close();
   }
@@ -91,12 +91,12 @@ public class A {
   }
   
   public void openedRussianDolls() {
-    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Close this "FileInputStream".}}
+    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     in.read();
   }
   
   public void overwrite() {
-    InputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
+    InputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows]] {{Close this "FileInputStream".}}
     stream = new FileInputStream("otherFile");
     stream.close();
   }
@@ -111,11 +111,11 @@ public class A {
   }
   
   public void creationWithinIFs(boolean test) {
-    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+    Reader reader3 = new FileReader(""); // Noncompliant [[flows]] {{Close this "FileReader".}}
     if (test) {
-      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+      reader3 = new FileReader(""); // Noncompliant [[flows]] {{Close this "FileReader".}}
     } else {
-      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+      reader3 = new FileReader(""); // Noncompliant [[flows]] {{Close this "FileReader".}}
     }
   }
   
