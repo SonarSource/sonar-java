@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -96,7 +97,7 @@ class Expectations {
     }
 
     static <T> Function<String, List<T>> multiValueAttribute(Function<String, T> convert) {
-      return (String input) -> Arrays.stream(input.split(",")).map(convert).collect(toList());
+      return (String input) -> Strings.isNullOrEmpty(input) ? Collections.emptyList() : Arrays.stream(input.split(",")).map(convert).collect(toList());
     }
 
     <T> T get(Map<IssueAttribute, Object> values) {
@@ -311,10 +312,15 @@ class Expectations {
       }
       Iterable<String> attributes = Splitter.on(";").split(attributesSubstr);
       for (String attribute : attributes) {
-        String[] split = StringUtils.split(attribute, '=');
-        if (split.length == 2 && ATTRIBUTE_MAP.containsKey(split[0])) {
-          IssueAttribute issueAttribute = ATTRIBUTE_MAP.get(split[0]);
-          Object value = issueAttribute.setter.apply(split[1]);
+        String attributeValue = "";
+        if (attribute.indexOf('=') != -1) {
+          String[] split = StringUtils.split(attribute, '=');
+          attribute = split[0];
+          attributeValue = split.length == 2 ? split[1] : "";
+        }
+        if (ATTRIBUTE_MAP.containsKey(attribute)) {
+          IssueAttribute issueAttribute = ATTRIBUTE_MAP.get(attribute);
+          Object value = issueAttribute.setter.apply(attributeValue);
           attr.put(issueAttribute, value);
         } else {
           Fail.fail("// Noncompliant attributes not valid: " + attributesSubstr);
