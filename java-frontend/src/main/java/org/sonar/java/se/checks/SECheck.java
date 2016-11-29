@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public abstract class SECheck implements JavaFileScanner {
 
@@ -87,12 +88,17 @@ public abstract class SECheck implements JavaFileScanner {
     return flow(currentNode, currentVal, constraint -> true);
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> constraintPredicate) {
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow) {
+    return flow(currentNode, currentVal, addToFlow, c -> false);
+  }
+
+  public static List<JavaFileScannerContext.Location> flow(
+    ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
     List<JavaFileScannerContext.Location> flow = new ArrayList<>();
     if (currentVal instanceof BinarySymbolicValue) {
       Set<JavaFileScannerContext.Location> locations = new HashSet<>();
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp(), constraintPredicate));
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp(), constraintPredicate));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp(), addToFlow, terminateTraversal));
+      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp(), addToFlow, terminateTraversal));
       flow.addAll(locations);
     }
     ExplodedGraph.Node node = currentNode;
@@ -103,10 +109,19 @@ public abstract class SECheck implements JavaFileScanner {
       if (finalNode.programPoint.syntaxTree() == null) {
         continue;
       }
-      finalNode.getLearnedConstraints().stream()
-        .filter(lc -> lc.getSv().equals(currentVal) && constraintPredicate.test(lc.getConstraint()))
-        .findFirst()
-        .ifPresent(lc -> flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree())));
+
+      List<Constraint> learnedConstraints = finalNode.getLearnedConstraints().stream()
+        .filter(lc -> lc.getSv().equals(currentVal))
+        .map(ExplodedGraph.Node.LearnedConstraint::getConstraint)
+        .collect(Collectors.toList());
+
+      if (learnedConstraints.stream().anyMatch(addToFlow)) {
+        flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree()));
+      }
+      if (learnedConstraints.stream().anyMatch(terminateTraversal)) {
+        break;
+      }
+
       if (lastEvaluated != null) {
         Symbol finalLastEvaluated = lastEvaluated;
         Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
