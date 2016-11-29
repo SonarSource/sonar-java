@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -49,6 +50,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -56,6 +58,11 @@ public class NonNullSetToNullCheck extends SECheck {
   private static final String[] ANNOTATIONS = {"javax.annotation.Nonnull", "javax.validation.constraints.NotNull",
     "edu.umd.cs.findbugs.annotations.NonNull", "org.jetbrains.annotations.NotNull", "lombok.NonNull",
     "android.support.annotation.NonNull"};
+
+  private static final String[] JPA_ANNOTATIONS = {
+    "javax.persistence.Entity",
+    "javax.persistence.Embeddable"
+  };
 
   private MethodTree methodTree;
 
@@ -80,7 +87,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    if (methodTree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
@@ -88,6 +95,18 @@ public class NonNullSetToNullCheck extends SECheck {
         }
       }
     }
+  }
+
+  private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {
+    if (!methodTree.block().body().isEmpty()) {
+      // Constructor does something.
+      return false;
+    }
+
+    ClassTree classTree = (ClassTree) methodTree.parent();
+    return classTree.modifiers().annotations().stream()
+      .map(annotationTree -> annotationTree.annotationType().symbolType())
+      .anyMatch(symbol -> Stream.of(JPA_ANNOTATIONS).anyMatch(symbol::is));
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
@@ -136,18 +155,26 @@ public class NonNullSetToNullCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (ExpressionUtils.isSimpleAssignment(tree)) {
-        IdentifierTree variable = (IdentifierTree) ExpressionUtils.skipParentheses(tree.variable());
-        Symbol symbol = variable.symbol();
-        String nonNullAnnotation = nonNullAnnotation(symbol);
-        if (nonNullAnnotation != null) {
-          SymbolicValue assignedValue = programState.peekValue();
-          Constraint constraint = programState.getConstraint(assignedValue);
-          if (constraint != null && constraint.isNull()) {
-            reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
-          }
+      IdentifierTree variable;
+
+      if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
+        variable = (IdentifierTree) tree.variable();
+      } else if (tree.variable().is(Tree.Kind.MEMBER_SELECT)) {
+        variable = ((MemberSelectExpressionTree) tree.variable()).identifier();
+      } else {
+        return;
+      }
+
+      Symbol symbol = variable.symbol();
+      String nonNullAnnotation = nonNullAnnotation(symbol);
+      if (nonNullAnnotation != null) {
+        SymbolicValue assignedValue = ExpressionUtils.isSimpleAssignment(tree) ? programState.peekValue() : programState.peekValues(2).get(0);
+        Constraint constraint = programState.getConstraint(assignedValue);
+        if (constraint != null && constraint.isNull()) {
+          reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
         }
       }
+
     }
 
     @Override
