@@ -52,7 +52,7 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
             // Assign issues to the last label in the group
             CaseLabelTree caseLabel = caseGroup.labels().get(caseGroup.labels().size() - 1);
 
-            // Reserve the body as commonly the unconditional exit will be at the end of the body.
+            // Reverse the body as commonly the unconditional exit will be at the end of the body.
             if (Lists.reverse(caseGroup.body()).stream().noneMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit)) {
               context.reportIssue(this, caseLabel, "End this switch case with an unconditional break, return or throw statement.");
             }
@@ -62,44 +62,30 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
   }
 
   private static boolean isUnconditionalExit(Tree syntaxNode) {
-    if (syntaxNode.is(
-        Tree.Kind.BREAK_STATEMENT,
-        Tree.Kind.THROW_STATEMENT,
-        Tree.Kind.RETURN_STATEMENT,
-        // The continue statement also unconditionally exits the switch-statement.
-        Tree.Kind.CONTINUE_STATEMENT)) {
-      // Exit found
-      return true;
-    }
-
-    if (!syntaxNode.is(Tree.Kind.BLOCK, Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT)) {
-      // Not a block of code or a condition, not a possible exit.
-      return false;
-    }
-
-    if (syntaxNode.is(Tree.Kind.BLOCK)) {
-      // Tests if the block contains an unconditional statement.
-      BlockTree block = (BlockTree) syntaxNode;
-      return block.body().stream().anyMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit);
-    } else if (syntaxNode.is(Tree.Kind.TRY_STATEMENT)) {
-      return isUnconditionalExitInTryCatchConstruct((TryStatementTree) syntaxNode);
-    } else {
-      return isUnconditionalExitInIfStatement((IfStatementTree) syntaxNode);
+    switch (syntaxNode.kind()) {
+      case BREAK_STATEMENT:
+      case THROW_STATEMENT:
+      case RETURN_STATEMENT:
+      case CONTINUE_STATEMENT:
+        return true;
+      case BLOCK:
+        return ((BlockTree) syntaxNode).body().stream().anyMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit);
+      case TRY_STATEMENT:
+        return isUnconditionalExitInTryCatchStatement((TryStatementTree) syntaxNode);
+      case IF_STATEMENT:
+        return isUnconditionalExitInIfStatement((IfStatementTree) syntaxNode);
+      default:
+        return false;
     }
   }
 
-  private static boolean isUnconditionalExitInTryCatchConstruct(TryStatementTree tryStatement) {
-    if (!isUnconditionalExit(tryStatement.block())) {
-      return false;
-    }
-
-    // If the try-block exits unconditionally then all catch blocks must do so as well.
-    // When they don't the try-catch block is not a valid unconditional exit.
-    return tryStatement.catches().stream().allMatch(catchTree -> isUnconditionalExit(catchTree.block()));
+  private static boolean isUnconditionalExitInTryCatchStatement(TryStatementTree tryStatement) {
+    return isUnconditionalExit(tryStatement.block())
+        && tryStatement.catches().stream().allMatch(catchTree -> isUnconditionalExit(catchTree.block()));
   }
 
   private static boolean isUnconditionalExitInIfStatement(IfStatementTree ifStatement) {
-    if (!isUnconditionalExitInStatement(ifStatement.thenStatement())) {
+    if (!isUnconditionalExit(ifStatement.thenStatement())) {
       return false;
     }
 
@@ -109,14 +95,6 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
       return false;
     }
 
-    return isUnconditionalExitInStatement(elseStatement);
-  }
-
-  private static boolean isUnconditionalExitInStatement(StatementTree statementTree) {
-    if (statementTree.is(Tree.Kind.IF_STATEMENT)) {
-      return isUnconditionalExitInIfStatement((IfStatementTree) statementTree);
-    } else {
-      return isUnconditionalExit(statementTree);
-    }
+    return isUnconditionalExit(elseStatement);
   }
 }
