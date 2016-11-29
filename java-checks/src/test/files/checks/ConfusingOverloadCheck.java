@@ -72,3 +72,15 @@ class Fruit{
   static class Pear{}
   static class Apple{}
 }
+
+
+class UnknownParam {
+  private static int method(UNKNOWN arg) {
+
+  }
+}
+class UnknownParamChild extends UnknownParam {
+  protected int method(UNKNOWN arg) {
+
+  }
+}
