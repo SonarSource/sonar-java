@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -102,10 +103,8 @@ public class NonNullSetToNullCheck extends SECheck {
       return false;
     }
 
-    ClassTree classTree = (ClassTree) methodTree.parent();
-    return classTree.modifiers().annotations().stream()
-      .map(annotationTree -> annotationTree.annotationType().symbolType())
-      .anyMatch(symbol -> Stream.of(JPA_ANNOTATIONS).anyMatch(symbol::is));
+    SymbolMetadata symbolMetadata = ((ClassTree) methodTree.parent()).symbol().metadata();
+    return Stream.of(JPA_ANNOTATIONS).anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
