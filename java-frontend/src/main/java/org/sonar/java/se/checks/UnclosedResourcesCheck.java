@@ -19,15 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -44,12 +38,19 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
@@ -58,13 +59,12 @@ public class UnclosedResourcesCheck extends SECheck {
     OPENED, CLOSED
   }
 
-  private static final String DEFAULT_EXCLUDED_TYPES = "";
-  
   @RuleProperty(
-    key = "Excluded types",
-    description = "Comma separated list of the fully qualified name of excluded types. Example: org.apache.hadoop.fs.FileSystem",
-    defaultValue = "" + DEFAULT_EXCLUDED_TYPES)
-  public String excludedTypes = DEFAULT_EXCLUDED_TYPES;
+    key = "excludedResourceTypes",
+    description = "Comma separated list of the excluded resource types, using fully qualified names (example: \"org.apache.hadoop.fs.FileSystem\")",
+    defaultValue = "")
+  public String excludedTypes = "";
+  private final List<String> excludedTypesList = new ArrayList<>();
   
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
@@ -81,21 +81,9 @@ public class UnclosedResourcesCheck extends SECheck {
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream",
     "org.springframework.context.ConfigurableApplicationContext"
   };
-  
-  private static final List<String> excludedTypesList = new ArrayList<>();
-  
   private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
   };
-  
-  @Override
-  public void init(MethodTree methodTree, CFG cfg) {
-    super.init(methodTree, cfg);
-    excludedTypesList.clear();
-    for (String excludedType : excludedTypes.split(",")) {
-      excludedTypesList.add(excludedType.trim());
-    }
-  }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -137,12 +125,21 @@ public class UnclosedResourcesCheck extends SECheck {
         return false;
       }
     }
-    for (String excludedType : excludedTypesList) {
+    for (String excludedType : loadExcludedTypesList()) {
       if (type.is(excludedType)) {
         return false;
       }
     }
     return isCloseable(type);
+  }
+  
+  private List<String> loadExcludedTypesList() {
+    if ( excludedTypesList.isEmpty() && !StringUtils.isBlank(excludedTypes)) {
+      for (String excludedType : excludedTypes.split(",")) {
+        excludedTypesList.add(excludedType.trim());
+      }
+    }
+    return excludedTypesList;
   }
 
   private boolean isCloseable(Type type) {
@@ -169,7 +166,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return tryStatement != null && tryStatement.resources().contains(variable);
   }
 
-  private TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
+  private static TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
     Tree parent = syntaxNode.parent();
     while (parent != null) {
       if (parent.is(Tree.Kind.TRY_STATEMENT)) {
@@ -180,7 +177,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return null;
   }
 
-  private class ResourceWrapperSymbolicValue extends SymbolicValue {
+  private static class ResourceWrapperSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue dependent;
 
@@ -196,7 +193,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   }
 
-  private class WrappedValueFactory implements SymbolicValueFactory {
+  private static class WrappedValueFactory implements SymbolicValueFactory {
 
     private final SymbolicValue value;
 
