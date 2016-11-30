@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2222")
@@ -96,6 +98,7 @@ public class LocksNotUnlockedCheck extends SECheck {
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
     private final ConstraintManager constraintManager;
+
     public PreStatementVisitor(CheckerContext context) {
       super(context.getState());
       constraintManager = context.getConstraintManager();
@@ -169,10 +172,20 @@ public class LocksNotUnlockedCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    final List<ObjectConstraint> constraints = context.getState().getFieldConstraints(Status.LOCKED);
-    for (ObjectConstraint constraint : constraints) {
-      Tree syntaxNode = constraint.syntaxNode();
-      context.reportIssue(syntaxNode, this, "Unlock \"" + syntaxNode.toString() + "\" along all executions paths of this method.");
+    ExplodedGraph.Node node = context.getNode();
+    context.getState().getValuesWithConstraints(Status.LOCKED).keySet()
+      .forEach(sv -> SECheck.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream()
+      .findFirst()
+      .ifPresent(loc -> reportIssue(reportOn(loc.syntaxNode), "Unlock this lock along all executions paths of this method.", Collections.emptySet())));
+  }
+
+  private static Tree reportOn(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) methodSelect).expression();
+      }
     }
+    return syntaxNode;
   }
 }
