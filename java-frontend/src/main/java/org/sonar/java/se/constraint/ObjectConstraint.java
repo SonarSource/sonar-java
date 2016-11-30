@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class ObjectConstraint implements Constraint {
 
@@ -115,4 +116,9 @@ public class ObjectConstraint implements Constraint {
   public int hashCode() {
     return Objects.hash(isNull, syntaxNode, status);
   }
+
+  public static Predicate<Constraint> statusPredicate(Object status) {
+    return c -> c instanceof ObjectConstraint && ((ObjectConstraint) c).hasStatus(status);
+  }
+
 }

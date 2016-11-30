@@ -26,7 +26,7 @@ public class GenericResource {
   }
   
   public static void wrong(String name) {
-    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant
+    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant {{Close this "GenericResource".}}
     resource.use();
   }
   
