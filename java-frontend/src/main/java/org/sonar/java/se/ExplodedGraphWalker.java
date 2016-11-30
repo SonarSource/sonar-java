@@ -550,10 +550,11 @@ public class ExplodedGraphWalker {
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
+      List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
       methodInvokedBehavior.yields()
         .stream()
         .filter(yield -> !yield.exception)
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> resultValue).stream())
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue).stream())
         .forEach(psYield -> {
           ProgramState ps = psYield;
           if (isNonNullMethod(methodSymbol)) {

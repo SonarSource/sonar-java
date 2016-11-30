@@ -33,7 +33,11 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -42,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -63,7 +68,7 @@ public class MethodYieldTest {
     ps = ps.put(sym, sv1);
 
     MethodYield methodYield = yields.get(0);
-    Collection<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), ps, () -> sv3);
+    Collection<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
 
@@ -98,9 +103,72 @@ public class MethodYieldTest {
     ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, null, Status.A));
 
     // status of sv2 should be changed from A to B
-    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), ps, () -> sv3);
+    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
     assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, Status.B)).isNotNull();
+  }
+
+  @Test
+  public void constraints_on_varargs() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsYields.java");
+
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "varArgMethod");
+    Symbol.MethodSymbol methodSymbol = entry.getKey();
+    MethodYield yield = entry.getValue().yields().get(0);
+
+    // verify NOT_NULL constraint on first argument
+    assertThat(yield.parametersConstraints[0].isNull()).isFalse();
+
+    List<IdentifierTree> usages = methodSymbol.usages();
+    assertThat(usages).hasSize(6);
+
+    List<List<Type>> arguments = usages.stream()
+      .map(MethodYieldTest::getMethodIncoationArgumentsTypes)
+      .collect(Collectors.toList());
+
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue sv1 = new SymbolicValue(41);
+    SymbolicValue sv2 = new SymbolicValue(42);
+    SymbolicValue sv3 = new SymbolicValue(43);
+
+    // apply constraint NotNull to parameter
+    Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Lists.newArrayList(sv1), arguments.get(0), ps, () -> sv2);
+    assertThat(arrayOfA).hasSize(1);
+    assertThat(arrayOfA.iterator().next().getConstraint(sv1).isNull()).isFalse();
+
+    // apply constraint NotNull to parameter (B[] is a subtype of A[])
+    Collection<ProgramState> arrayOfB = yield.statesAfterInvocation(Lists.newArrayList(sv1), arguments.get(1), ps, () -> sv2);
+    assertThat(arrayOfB).hasSize(1);
+    assertThat(arrayOfB.iterator().next().getConstraint(sv1).isNull()).isFalse();
+
+    // no constraint, as 'a' is not an array
+    Collection<ProgramState> objectA = yield.statesAfterInvocation(Lists.newArrayList(sv1), arguments.get(2), ps, () -> sv2);
+    assertThat(objectA).hasSize(1);
+    assertThat(objectA.iterator().next().getConstraint(sv1)).isNull();
+
+    // no constraint, as 'a' and 'b' can not receive the constraint of the array
+    Collection<ProgramState> objectsAandB = yield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), arguments.get(3), ps, () -> sv3);
+    assertThat(objectsAandB).hasSize(1);
+    assertThat(objectsAandB.iterator().next().getConstraint(sv1)).isNull();
+    assertThat(objectsAandB.iterator().next().getConstraint(sv2)).isNull();
+
+    // no param, we learn nothing, only the SV associated to the method invocation is on the stack
+    Collection<ProgramState> noParam = yield.statesAfterInvocation(Lists.newArrayList(), arguments.get(4), ps, () -> sv3);
+    assertThat(noParam).hasSize(1);
+    assertThat(noParam.iterator().next().unstackValue(1).state).isEqualTo(ps);
+
+    // null param, contradiction, no resulting program state
+    ps = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.nullConstraint());
+    Collection<ProgramState> nullParam = yield.statesAfterInvocation(Lists.newArrayList(sv1), arguments.get(5), ps, () -> sv2);
+    assertThat(nullParam).isEmpty();
+  }
+
+  private static List<Type> getMethodIncoationArgumentsTypes(IdentifierTree identifier) {
+    Tree tree = identifier;
+    while(!tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      tree = tree.parent();
+    }
+    return ((MethodInvocationTree) tree).arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
   }
 
   @Test
