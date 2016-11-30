@@ -6,7 +6,7 @@ import java.lang.Runnable;
 // class complexity: 3+1
 public class AnonymousClass {
 
-  // method complexity: 3
+  // method complexity: 1
   public void hasComplexAnonymousClass() {
     Runnable runnable = new Runnable() {
       public void run() {

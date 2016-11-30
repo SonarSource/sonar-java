@@ -97,31 +97,22 @@ public class JavaComplexityTest {
 
   @Test
   public void testAverageMethodComplexity() {
-    // complexity 6 / 4 methods
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "function_complexity").getValue()).isEqualTo(1.5);
 
-    // complexity 5 / 4 methods. Real value is 1.25 but round up to 1.3
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "function_complexity").getValue()).isEqualTo(1.3);
 
-    // (1 + 3) / 2 = 2
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "AnonymousClass.java"), "function_complexity").getValue()).isEqualTo(2.0);
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "AnonymousClass.java"), "function_complexity").getValue()).isEqualTo(1.0);
 
-    // Helloworld: 6/4
-    // ContainsInnerClasses: 5/4
-    // AnonymousClass: 4/2
-    // => 19/12 Real value is 1.5833 but lowered to 1.5
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity").getValue()).isEqualTo(1.5);
-    assertThat(getMeasure(PROJECT, "function_complexity").getValue()).isEqualTo(1.5);
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity").getValue()).isEqualTo(1.3);
+    assertThat(getMeasure(PROJECT, "function_complexity").getValue()).isEqualTo(1.3);
   }
 
   @Test
   public void testAverageClassComplexity() {
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "class_complexity").getValue()).isEqualTo(7.0);
 
-    // 1 + 1 + 3 => complexity 5/3
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "class_complexity").getValue()).isEqualTo(1.7);
 
-    // 1 + 1 + 3 + 7 + 0 + 4 => 16/6 = 2.666
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "class_complexity").getValue()).isEqualTo(2.7);
   }
 
@@ -130,18 +121,14 @@ public class JavaComplexityTest {
    */
   @Test
   public void testDistributionOfFileComplexity() throws Exception {
-    // 0 + 4 + 5 + 6 => 2 in range [0,5[ and 2 in range [5,10[
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "file_complexity_distribution").getData()).isEqualTo("0=2;5=2;10=0;20=0;30=0;60=0;90=0");
     assertThat(getMeasure(PROJECT, "file_complexity_distribution").getData()).isEqualTo("0=2;5=2;10=0;20=0;30=0;60=0;90=0");
   }
 
   @Test
   public void testDistributionOfMethodComplexity() {
-    // ContainsInnerClasses: 1+ 1 + 2 + 1
-    // Helloworld: 1 + 3 (static block is not a method)
-    // Anonymous class : 1 + 3
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity_distribution").getData()).isEqualTo("1=7;2=3;4=0;6=0;8=0;10=0;12=0");
-    assertThat(getMeasure(PROJECT, "function_complexity_distribution").getData()).isEqualTo("1=7;2=3;4=0;6=0;8=0;10=0;12=0");
+    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity", ""), "function_complexity_distribution").getData()).isEqualTo("1=8;2=2;4=0;6=0;8=0;10=0;12=0");
+    assertThat(getMeasure(PROJECT, "function_complexity_distribution").getData()).isEqualTo("1=8;2=2;4=0;6=0;8=0;10=0;12=0");
   }
 
   @Test
@@ -160,7 +147,7 @@ public class JavaComplexityTest {
     IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
 
     List<Issue> issues = issueClient.find(IssueQuery.create().componentRoots(PROJECT)).list();
-    assertThat(issues).hasSize(4);
+    assertThat(issues).hasSize(3);
     Set<String> debts = Sets.newHashSet();
     for (Issue issue : issues) {
       debts.add(issue.debt());

@@ -95,7 +95,7 @@ public class StrutsTest {
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403 /* empty statements between members of class */+ 3);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(3859);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3068);
   }
 
 }

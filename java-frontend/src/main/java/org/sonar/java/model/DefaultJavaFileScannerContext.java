@@ -154,7 +154,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public List<Tree> getComplexityNodes(Tree tree) {
-    return complexityVisitor.scan(tree);
+    return complexityVisitor.getNodes(tree);
   }
 
   @Override

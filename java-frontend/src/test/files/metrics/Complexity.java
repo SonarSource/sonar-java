@@ -22,14 +22,14 @@ public class HelloWorld  {
     switch (ch) {
       case 'a': // +1 case
       case 'b': // +1 case
-      default:
+      default: // +1 default case
         break;
     }
 
     try {
-      throw new RuntimeException(); // +1 throw-statement
-    } catch (Exception e) { // +1 catch-clause
-      return; // +1 return-statement
+      throw new RuntimeException();
+    } catch (Exception e) {
+      return;
     }
 
     return; // +0 last return-statement
@@ -53,6 +53,15 @@ abstract class AbstractClass {
   }
   public void setI(int i){
     this.i = i; // +1
+  }
+
+  public void lambda() {// +1
+    Function<String, String> f = s -> { // +1 for the lambda itself
+      if(s.isEmpty()) { // +1 for the if
+        return s;
+      }
+      return s;
+    };
   }
 }
 
