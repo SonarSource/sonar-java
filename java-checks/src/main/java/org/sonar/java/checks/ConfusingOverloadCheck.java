@@ -103,7 +103,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
   private static boolean hideStaticMethod(MethodSymbol methodSymbol, Type superClass, Symbol symbolWithSameName) {
     return symbolWithSameName.isStatic()
       && !methodSymbol.isStatic()
-      && ((MethodJavaSymbol) methodSymbol).checkOverridingParameters((MethodJavaSymbol) symbolWithSameName, (ClassJavaType) superClass);
+      && BooleanUtils.isTrue(((MethodJavaSymbol) methodSymbol).checkOverridingParameters((MethodJavaSymbol) symbolWithSameName, (ClassJavaType) superClass));
   }
 
   private static boolean confusingOverload(MethodSymbol methodSymbol, MethodSymbol methodWithSameName) {
@@ -116,7 +116,8 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     for (int i = 0; i < argTypes.size(); i++) {
-      if (!argTypes.get(i).name().equals(parameterTypes.get(i).name())) {
+      Type argType = argTypes.get(i);
+      if (argType.isUnknown() || !argType.name().equals(parameterTypes.get(i).name())) {
         return false;
       }
     }
