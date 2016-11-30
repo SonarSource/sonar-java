@@ -35,4 +35,15 @@ public class HelloWorld {
     return 42;
   }
 
+  void lambdaExclusion() {
+    Function<String, String> f = s -> {
+      if(s.isEmpty()) {
+        return s;
+      } else if(s.length >= 2) {
+        return s;
+      }
+      return s;
+    };
+  }
+
 }

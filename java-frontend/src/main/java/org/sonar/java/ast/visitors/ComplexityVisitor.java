@@ -19,111 +19,107 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComplexityVisitor extends SubscriptionVisitor {
+public class ComplexityVisitor extends BaseTreeVisitor {
 
   private List<Tree> blame = new ArrayList<>();
+  private Tree root;
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-        .add(Tree.Kind.METHOD)
-        .add(Tree.Kind.CONSTRUCTOR)
-        .add(Tree.Kind.IF_STATEMENT)
-        .add(Tree.Kind.FOR_STATEMENT)
-        .add(Tree.Kind.FOR_EACH_STATEMENT)
-        .add(Tree.Kind.DO_STATEMENT)
-        .add(Tree.Kind.WHILE_STATEMENT)
-        .add(Tree.Kind.RETURN_STATEMENT)
-        .add(Tree.Kind.THROW_STATEMENT)
-        .add(Tree.Kind.CASE_LABEL)
-        .add(Tree.Kind.CATCH)
-        .add(Tree.Kind.CONDITIONAL_EXPRESSION)
-        .add(Tree.Kind.CONDITIONAL_AND)
-        .add(Tree.Kind.CONDITIONAL_OR)
-        .build();
-  }
 
-  public List<Tree> scan(Tree tree) {
+  public List<Tree> getNodes(Tree tree) {
     blame.clear();
-    super.scanTree(tree);
+    root = tree;
+    scan(tree);
+    root = null;
     return blame;
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    switch (tree.kind()) {
-      case METHOD:
-      case CONSTRUCTOR:
-        computeMethodComplexity((MethodTree) tree);
-        break;
-      case CASE_LABEL:
-        CaseLabelTree caseLabelTree = (CaseLabelTree) tree;
-        if (!"default".equals(caseLabelTree.caseOrDefaultKeyword().text())) {
-          blame.add(caseLabelTree.caseOrDefaultKeyword());
-        }
-        break;
-      case IF_STATEMENT:
-      case FOR_STATEMENT:
-      case FOR_EACH_STATEMENT:
-      case DO_STATEMENT:
-      case WHILE_STATEMENT:
-      case RETURN_STATEMENT:
-      case THROW_STATEMENT:
-      case CATCH:
-        blame.add(tree.firstToken());
-        break;
-      case CONDITIONAL_EXPRESSION:
-        blame.add(((ConditionalExpressionTree) tree).questionToken());
-        break;
-      case CONDITIONAL_AND:
-      case CONDITIONAL_OR:
-        blame.add(((BinaryExpressionTree) tree).operatorToken());
-        break;
-      default:
-        throw new UnsupportedOperationException();
+  public void visitMethod(MethodTree tree) {
+    if (tree.block() != null) {
+      blame.add(tree.simpleName().identifierToken());
     }
+    super.visitMethod(tree);
   }
 
-  private void computeMethodComplexity(MethodTree methodTree) {
-    BlockTree block = methodTree.block();
-    if (block != null) {
-      blame.add(methodTree.simpleName().identifierToken());
+  @Override
+  public void visitClass(ClassTree tree) {
+    if(root.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.COMPILATION_UNIT)) {
+      super.visitClass(tree);
     }
   }
 
   @Override
-  public void leaveNode(Tree tree) {
-    switch (tree.kind()) {
-      case METHOD:
-      case CONSTRUCTOR:
-        leaveMethod((MethodTree) tree);
-        break;
-      default:
-        // nothing to do
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    if(root.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.COMPILATION_UNIT) || lambdaExpressionTree.equals(root)) {
+      blame.add(lambdaExpressionTree.arrowToken());
+      super.visitLambdaExpression(lambdaExpressionTree);
     }
   }
 
-  private void leaveMethod(MethodTree tree) {
-    BlockTree block = tree.block();
-    if (block != null && !block.body().isEmpty()) {
-      StatementTree last = Iterables.getLast(block.body());
-      if (last.is(Tree.Kind.RETURN_STATEMENT)) {
-        // minus one because we are going to count the return with +1
-        blame.remove(last.firstToken());
-      }
+  @Override
+  public void visitCaseLabel(CaseLabelTree tree) {
+    blame.add(tree.firstToken());
+    super.visitCaseLabel(tree);
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    blame.add(tree.firstToken());
+    super.visitForEachStatement(tree);
+  }
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    blame.add(tree.firstToken());
+    super.visitForStatement(tree);
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    blame.add(tree.firstToken());
+    super.visitWhileStatement(tree);
+  }
+
+  @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    blame.add(tree.firstToken());
+    super.visitDoWhileStatement(tree);
+  }
+
+  @Override
+  public void visitIfStatement(IfStatementTree tree) {
+    blame.add(tree.firstToken());
+    super.visitIfStatement(tree);
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    blame.add(tree.questionToken());
+    super.visitConditionalExpression(tree);
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    if (tree.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+      blame.add(tree.operatorToken());
     }
+    super.visitBinaryExpression(tree);
   }
 }

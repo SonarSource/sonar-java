@@ -19,13 +19,11 @@ public class Helloworld {
     this.field = s;
   }
 
-  // accessor handled as other method (SONARJAVA-398)
   // complexity: 1
   public String getField() {
     return field;
   }
 
-  // accessor handled as other method (SONARJAVA-398)
   // complexity: 1
   public void setField(String s) {
     this.field = s;
