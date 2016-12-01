@@ -187,6 +187,7 @@ public class ExplodedGraphWalker {
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
+    List<ExplodedGraph.Node> endOfExecutionPath = new ArrayList<>();
     if(DEBUG_MODE_ACTIVATED) {
       LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
     }
@@ -207,7 +208,7 @@ public class ExplodedGraphWalker {
       programPosition = node.programPoint;
       programState = node.programState;
       if (programPosition.block.successors().isEmpty()) {
-        handleEndOfExecutionPath();
+        endOfExecutionPath.add(node);
         continue;
       }
       try {
@@ -233,6 +234,12 @@ public class ExplodedGraphWalker {
       }
     }
 
+    endOfExecutionPath.forEach(n -> {
+      node = n;
+      programPosition = node.programPoint;
+      programState = node.programState;
+      handleEndOfExecutionPath();
+    });
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
     workList = null;
