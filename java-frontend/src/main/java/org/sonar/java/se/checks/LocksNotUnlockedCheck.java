@@ -171,10 +171,10 @@ public class LocksNotUnlockedCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(Status.LOCKED).keySet()
-      .forEach(sv -> SECheck.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream()
-      .findFirst()
-      .ifPresent(loc -> reportIssue(reportOn(loc.syntaxNode), "Unlock this lock along all executions paths of this method.", Collections.emptySet())));
+    node.printAncestors();
+    context.getState().getValuesWithConstraints(Status.LOCKED).keySet().stream()
+      .flatMap(sv -> SECheck.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream())
+      .forEach(loc -> reportIssue(reportOn(loc.syntaxNode), "Unlock this lock along all executions paths of this method.", Collections.emptySet()));
   }
 
   private static Tree reportOn(Tree syntaxNode) {

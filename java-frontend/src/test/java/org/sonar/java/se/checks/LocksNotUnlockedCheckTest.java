@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.se.JavaCheckVerifier;
 
@@ -30,7 +29,6 @@ public class LocksNotUnlockedCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheck.java", new LocksNotUnlockedCheck());
   }
 
-  @Ignore
   @Test
   public void object_constraint_cache_issues() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheckCache.java", new LocksNotUnlockedCheck());
