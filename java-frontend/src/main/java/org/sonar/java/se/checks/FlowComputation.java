@@ -41,6 +41,7 @@ public class FlowComputation {
   private final Predicate<Constraint> terminateTraversal;
   private final List<JavaFileScannerContext.Location> flow = new ArrayList<>();
   private final SymbolicValue symbolicValue;
+  private final Set<ExplodedGraph.Node> visited = new HashSet<>();
 
   private FlowComputation(SymbolicValue symbolicValue, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
     this.addToFlow = addToFlow;
@@ -85,9 +86,10 @@ public class FlowComputation {
   }
 
   private void run(@Nullable final ExplodedGraph.Node currentNode, @Nullable final Symbol trackSymbol) {
-    if (currentNode == null) {
+    if (currentNode == null || visited.contains(currentNode)) {
       return;
     }
+    visited.add(currentNode);
 
     Symbol newTrackSymbol = trackSymbol;
     if (currentNode.programPoint.syntaxTree() != null) {
@@ -97,7 +99,9 @@ public class FlowComputation {
         return;
       }
     }
-    run(currentNode.parent(), newTrackSymbol);
+    for (ExplodedGraph.Node parent : currentNode.getParents()) {
+      run(parent, newTrackSymbol);
+    }
   }
 
   private List<Constraint> flowFromLearnedConstraints(ExplodedGraph.Node currentNode) {
