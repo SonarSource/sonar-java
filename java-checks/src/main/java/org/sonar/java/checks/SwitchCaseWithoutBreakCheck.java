@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -45,18 +46,18 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree switchStatement) {
-      switchStatement.cases().stream()
-          // Exclude the last case as stated in RSPEC. This also excludes switches with no or a single case group.
-          .limit(Math.max(0, switchStatement.cases().size() - 1))
-          .forEach(caseGroup -> {
-            // Assign issues to the last label in the group
-            CaseLabelTree caseLabel = caseGroup.labels().get(caseGroup.labels().size() - 1);
+    switchStatement.cases().stream()
+      // Exclude the last case as stated in RSPEC. This also excludes switches with no or a single case group.
+      .limit(Math.max(0, switchStatement.cases().size() - 1))
+      .forEach(caseGroup -> {
+        // Assign issues to the last label in the group
+        CaseLabelTree caseLabel = caseGroup.labels().get(caseGroup.labels().size() - 1);
 
-            // Reverse the body as commonly the unconditional exit will be at the end of the body.
-            if (Lists.reverse(caseGroup.body()).stream().noneMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit)) {
-              context.reportIssue(this, caseLabel, "End this switch case with an unconditional break, return or throw statement.");
-            }
-          });
+          // Reverse the body as commonly the unconditional exit will be at the end of the body.
+        if (Lists.reverse(caseGroup.body()).stream().noneMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit)) {
+          context.reportIssue(this, caseLabel, "End this switch case with an unconditional break, return or throw statement.");
+        }
+      });
 
     super.visitSwitchStatement(switchStatement);
   }
