@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
@@ -90,7 +91,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> outVar, Set<Tree> assignmentLHS, Tree element) {
     Set<Symbol> out = outVar;
-    Symbol symbol;
     switch (element.kind()) {
       case PLUS_ASSIGNMENT:
       case DIVIDE_ASSIGNMENT:
@@ -104,35 +104,16 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
       case REMAINDER_ASSIGNMENT:
       case ASSIGNMENT:
-        AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
-        ExpressionTree lhs = ExpressionUtils.skipParentheses(assignmentExpressionTree.variable());
-        if (lhs.is(Tree.Kind.IDENTIFIER)) {
-          symbol = ((IdentifierTree) lhs).symbol();
-          if (isLocalVariable(symbol) && !out.contains(symbol) && (assignmentExpressionTree.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))) {
-            createIssue(assignmentExpressionTree.operatorToken(), assignmentExpressionTree.expression(), symbol);
-          }
-          assignmentLHS.add(lhs);
-          if(element.is(Tree.Kind.ASSIGNMENT)) {
-            out.remove(symbol);
-          } else {
-            out.add(symbol);
-          }
-        }
+        handleAssignment(out, assignmentLHS, (AssignmentExpressionTree) element);
         break;
       case IDENTIFIER:
-        symbol = ((IdentifierTree) element).symbol();
-        if (!assignmentLHS.contains(element) && isLocalVariable(symbol)) {
-          out.add(symbol);
-        }
+        handleIdentifier(out, assignmentLHS, (IdentifierTree) element);
         break;
       case VARIABLE:
-        out = handleVariable(out, (VariableTree) element);
+        handleVariable(out, (VariableTree) element);
         break;
       case NEW_CLASS:
-        ClassTree body = ((NewClassTree) element).classBody();
-        if (body != null) {
-          out.addAll(getUsedLocalVarInSubTree(body, methodSymbol));
-        }
+        handleNewClass(out, methodSymbol, (NewClassTree) element);
         break;
       case LAMBDA_EXPRESSION:
         LambdaExpressionTree lambda = (LambdaExpressionTree) element;
@@ -143,34 +124,15 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         out.addAll(getUsedLocalVarInSubTree(methodRef.expression(), methodSymbol));
         break;
       case TRY_STATEMENT:
-        TryStatementTree tryStatement = (TryStatementTree) element;
-        AssignedLocalVarVisitor visitor = new AssignedLocalVarVisitor();
-        tryStatement.block().accept(visitor);
-        out.addAll(visitor.assignedLocalVars);
-        for (CatchTree catchTree : tryStatement.catches()) {
-          out.addAll(getUsedLocalVarInSubTree(catchTree, methodSymbol));
-        }
+        handleTryStatement(out, methodSymbol, (TryStatementTree) element);
         break;
       case PREFIX_DECREMENT:
       case PREFIX_INCREMENT:
-        // within each block, each produced value is consumed or by following elements or by terminator
-        ExpressionTree prefixExpression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) element).expression());
-        if (isParentExpressionStatement(element) && prefixExpression.is(Tree.Kind.IDENTIFIER)) {
-          symbol = ((IdentifierTree) prefixExpression).symbol();
-          if (isLocalVariable(symbol) && !out.contains(symbol)) {
-            createIssue(element, symbol);
-          }
-        }
+        handlePrefixExpression(out, (UnaryExpressionTree) element);
         break;
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
-        ExpressionTree expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) element).expression());
-        if (expression.is(Tree.Kind.IDENTIFIER)) {
-          symbol = ((IdentifierTree) expression).symbol();
-          if (isLocalVariable(symbol) && !out.contains(symbol)) {
-            createIssue(element, symbol);
-          }
-        }
+        handlePostfixExpression(out, (UnaryExpressionTree) element);
         break;
       case CLASS:
       case ENUM:
@@ -185,8 +147,76 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     return out;
   }
 
+  private void handleAssignment(Set<Symbol> out, Set<Tree> assignmentLHS, AssignmentExpressionTree element) {
+    ExpressionTree lhs = ExpressionUtils.skipParentheses(element.variable());
+    if (lhs.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) lhs).symbol();
+      if (isLocalVariable(symbol) && !out.contains(symbol) && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))) {
+        createIssue(element.operatorToken(), element.expression(), symbol);
+      }
+      assignmentLHS.add(lhs);
+      if (element.is(Tree.Kind.ASSIGNMENT)) {
+        out.remove(symbol);
+      } else {
+        out.add(symbol);
+      }
+    }
+  }
+
   private static boolean isParentExpressionStatement(Tree element) {
     return element.parent().is(Tree.Kind.EXPRESSION_STATEMENT);
+  }
+
+  private static void handleIdentifier(Set<Symbol> out, Set<Tree> assignmentLHS, IdentifierTree element) {
+    Symbol symbol = element.symbol();
+    if (!assignmentLHS.contains(element) && isLocalVariable(symbol)) {
+      out.add(symbol);
+    }
+  }
+
+  private void handleVariable(Set<Symbol> out, VariableTree localVar) {
+    Symbol symbol = localVar.symbol();
+    if (localVar.initializer() != null && !out.contains(symbol)) {
+      createIssue(((VariableTreeImpl) localVar).equalToken(), localVar.initializer(), symbol);
+    }
+    out.remove(symbol);
+  }
+
+  private static void handleNewClass(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, NewClassTree element) {
+    ClassTree body = element.classBody();
+    if (body != null) {
+      out.addAll(getUsedLocalVarInSubTree(body, methodSymbol));
+    }
+  }
+
+  private static void handleTryStatement(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, TryStatementTree element) {
+    AssignedLocalVarVisitor visitor = new AssignedLocalVarVisitor();
+    element.block().accept(visitor);
+    out.addAll(visitor.assignedLocalVars);
+    for (CatchTree catchTree : element.catches()) {
+      out.addAll(getUsedLocalVarInSubTree(catchTree, methodSymbol));
+    }
+  }
+
+  private void handlePrefixExpression(Set<Symbol> out, UnaryExpressionTree element) {
+    // within each block, each produced value is consumed or by following elements or by terminator
+    ExpressionTree expression = element.expression();
+    if (isParentExpressionStatement(element) && expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      if (isLocalVariable(symbol) && !out.contains(symbol)) {
+        createIssue(element, symbol);
+      }
+    }
+  }
+
+  private void handlePostfixExpression(Set<Symbol> out, UnaryExpressionTree element) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(element.expression());
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      if (isLocalVariable(symbol) && !out.contains(symbol)) {
+        createIssue(element, symbol);
+      }
+    }
   }
 
   private void createIssue(Tree element, Symbol symbol) {
@@ -199,15 +229,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private static String getMessage(Symbol symbol) {
     return "Remove this useless assignment to local variable \"" + symbol.name() + "\".";
-  }
-
-  private Set<Symbol> handleVariable(Set<Symbol> out, VariableTree localVar) {
-    Symbol symbol = localVar.symbol();
-    if (localVar.initializer() != null && !out.contains(symbol)) {
-      createIssue(((VariableTreeImpl) localVar).equalToken(),  localVar.initializer(), symbol);
-    }
-    out.remove(symbol);
-    return out;
   }
 
   private static Set<Symbol> getUsedLocalVarInSubTree(Tree tree, Symbol.MethodSymbol methodSymbol) {
