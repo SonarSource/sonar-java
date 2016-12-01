@@ -21,25 +21,16 @@ package org.sonar.java.se.checks;
 
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class SECheck implements JavaFileScanner {
 
@@ -82,59 +73,6 @@ public abstract class SECheck implements JavaFileScanner {
         return seIssue;
       })
       .orElse(new SEIssue(tree, message, flows)));
-  }
-
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
-    return flow(currentNode, currentVal, constraint -> true);
-  }
-
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow) {
-    return flow(currentNode, currentVal, addToFlow, c -> false);
-  }
-
-  public static List<JavaFileScannerContext.Location> flow(
-    ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
-    List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-    if (currentVal instanceof BinarySymbolicValue) {
-      Set<JavaFileScannerContext.Location> locations = new HashSet<>();
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getLeftOp(), addToFlow, terminateTraversal));
-      locations.addAll(SECheck.flow(currentNode.parent(), ((BinarySymbolicValue) currentVal).getRightOp(), addToFlow, terminateTraversal));
-      flow.addAll(locations);
-    }
-    ExplodedGraph.Node node = currentNode;
-    Symbol lastEvaluated = currentNode.programState.getLastEvaluated();
-    while (node != null) {
-      ExplodedGraph.Node finalNode = node;
-      node = node.parent();
-      if (finalNode.programPoint.syntaxTree() == null) {
-        continue;
-      }
-
-      List<Constraint> learnedConstraints = finalNode.getLearnedConstraints().stream()
-        .filter(lc -> lc.getSv().equals(currentVal))
-        .map(ExplodedGraph.Node.LearnedConstraint::getConstraint)
-        .collect(Collectors.toList());
-
-      if (learnedConstraints.stream().anyMatch(addToFlow)) {
-        flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree()));
-      }
-      if (learnedConstraints.stream().anyMatch(terminateTraversal)) {
-        break;
-      }
-
-      if (lastEvaluated != null) {
-        Symbol finalLastEvaluated = lastEvaluated;
-        Optional<Symbol> learnedSymbol = finalNode.getLearnedSymbols().stream()
-          .map(ExplodedGraph.Node.LearnedValue::getSymbol)
-          .filter(sv -> sv.equals(finalLastEvaluated))
-          .findFirst();
-        if (learnedSymbol.isPresent()) {
-          lastEvaluated = finalNode.parent().programState.getLastEvaluated();
-          flow.add(new JavaFileScannerContext.Location("...", finalNode.parent().programPoint.syntaxTree()));
-        }
-      }
-    }
-    return flow;
   }
 
   public void interruptedExecution(CheckerContext context) {

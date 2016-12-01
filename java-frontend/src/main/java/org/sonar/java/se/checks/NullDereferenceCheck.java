@@ -93,7 +93,7 @@ public class NullDereferenceCheck extends SECheck {
       if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
         val = currentVal;
       }
-      flows.add(SECheck.flow(context.getNode(), val));
+      flows.add(FlowComputation.flow(context.getNode(), val));
       context.reportIssue(syntaxNode, this, message, flows);
       return null;
     }

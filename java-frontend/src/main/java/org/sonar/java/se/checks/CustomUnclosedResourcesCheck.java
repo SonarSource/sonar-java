@@ -106,7 +106,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<JavaFileScannerContext.Location> flow = SECheck.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED));
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED));
     flow.stream()
       .filter(loc -> loc.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .findFirst()
