@@ -6,7 +6,7 @@ in a deadlock.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public synchronized void doSomething(Object obj) {  // first lock
-  synchronize (obj) {  // second lock
+  synchronized (obj) {  // second lock
     // ...
     obj.notify(); // Noncompliant; only the second lock is released
   }
