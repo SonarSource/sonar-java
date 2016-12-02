@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Helper class to be used to find the latest {@link ExpressionTree} used as initializer (for a {@link VariableTree}) 
  * or expression used in assignment (for a {@link AssignmentExpressionTree}) for a given variable.
  */
-public class ReassignmentFinder {
+public final class ReassignmentFinder {
 
   private ReassignmentFinder() {
   }
