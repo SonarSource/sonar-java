@@ -1,5 +1,5 @@
 {
-  "title": "Inner classes should not have too many lines",
+  "title": "Inner classes should not have too many lines of code",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
