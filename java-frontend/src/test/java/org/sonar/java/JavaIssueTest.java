@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
@@ -30,6 +31,9 @@ import org.sonar.api.batch.sensor.internal.SensorStorage;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -84,6 +88,43 @@ public class JavaIssueTest {
 
     Mockito.verify(storage, Mockito.times(1)).store(newIssueOnLine);
     assertLocation(newIssueOnLine.primaryLocation(), file, "line message", 2, 0, 2, 4);
+  }
+
+  @Test
+  public void test_addFlow() throws Exception {
+    DefaultInputFile file = new DefaultInputFile("module", "relPath");
+    file.setModuleBaseDir(new java.io.File("").toPath());
+    file.setLines(3);
+    file.setOriginalLineOffsets(new int[]{0, 10, 15});
+    file.setLastValidOffset(25);
+    RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
+    SensorContext sensorContext = mock(SensorContext.class);
+    SensorStorage storage = mock(SensorStorage.class);
+    DefaultIssue newIssueEmptyFlow = new DefaultIssue(storage);
+    DefaultIssue newIssueWithFlow = new DefaultIssue(storage);
+    Mockito.when(sensorContext.newIssue()).thenReturn(newIssueEmptyFlow, newIssueWithFlow);
+
+    JavaIssue javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
+    javaIssue.setPrimaryLocation(file, "main message", 1, 2, 1, 6);
+    javaIssue.addFlow(file, new ArrayList<>());
+    javaIssue.save();
+    Mockito.verify(storage, Mockito.times(1)).store(newIssueEmptyFlow);
+    assertThat(newIssueEmptyFlow.flows()).isEmpty();
+
+
+    javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
+    javaIssue.setPrimaryLocation(file, "main message", 1, 2, 1, 6);
+    List<List<AnalyzerMessage>> flows = new ArrayList<>();
+    flows.add(
+      Lists.newArrayList(
+        new AnalyzerMessage(null, file.file(), new AnalyzerMessage.TextSpan(2,2,2,4), "flow message 1", 0)));
+    flows.add(
+      Lists.newArrayList(
+        new AnalyzerMessage(null, file.file(), new AnalyzerMessage.TextSpan(3,1,3,5), "flow message 2", 0)));
+    javaIssue.addFlow(file, flows);
+    javaIssue.save();
+    Mockito.verify(storage, Mockito.times(1)).store(newIssueWithFlow);
+    assertThat(newIssueWithFlow.flows()).hasSize(2);
   }
 
   private static void assertLocation(IssueLocation location, InputFile file, String message, int startLine, int startOffset, int endLine, int endOffset) {
