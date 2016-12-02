@@ -24,7 +24,9 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,14 +38,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MethodYield {
+  private final boolean varArgs;
   Constraint[] parametersConstraints;
   int resultIndex;
   @Nullable
   Constraint resultConstraint;
   boolean exception;
 
-  public MethodYield(int arity) {
+  public MethodYield(int arity, boolean varArgs) {
     this.parametersConstraints = new Constraint[arity];
+    this.varArgs = varArgs;
     this.resultIndex = -1;
     this.resultConstraint = null;
     this.exception = false;
@@ -54,17 +58,17 @@ public class MethodYield {
     return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + "), exceptional: " + exception + "}";
   }
 
-  public Collection<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
+  public Collection<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
+    Supplier<SymbolicValue> svSupplier) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
-      // FIXME : varargs method should be handled
-      SymbolicValue invokedArg = invocationArguments.get(index);
-      Constraint constraint = parametersConstraints[Math.min(index, parametersConstraints.length - 1)];
+      Constraint constraint = getConstraint(index, invocationTypes);
       if (constraint == null) {
         // no constraint on this parameter, let's try next one.
         continue;
       }
 
+      SymbolicValue invokedArg = invocationArguments.get(index);
       Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint);
       if (programStates.isEmpty()) {
         // constraint can't be satisfied, no need to process things further, this yield is not applicable.
@@ -93,6 +97,31 @@ public class MethodYield {
       stateStream = stateStream.map(s -> s.addConstraint(sv, resultConstraint));
     }
     return stateStream.collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  @CheckForNull
+  private Constraint getConstraint(int index, List<Type> invocationTypes) {
+    if (!varArgs || applicableOnVarArgs(index, invocationTypes)) {
+      return parametersConstraints[index];
+    }
+    return null;
+  }
+
+  /**
+   * For varArgs methods, only apply the constraint on single array parameter, in order to not 
+   * wrongly apply it on all the elements of the array.
+   */
+  private boolean applicableOnVarArgs(int index, List<Type> types) {
+    if (index < parametersConstraints.length - 1) {
+      // not the varArg argument
+      return true;
+    }
+    if (parametersConstraints.length != types.size()) {
+      // more than one element in the variadic part
+      return false;
+    }
+    Type argumentType = types.get(index);
+    return argumentType.isArray() || argumentType.is("<nulltype>");
   }
 
   private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {

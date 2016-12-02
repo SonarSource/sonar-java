@@ -46,7 +46,7 @@ public class MethodBehavior {
   }
 
   public void createYield(ProgramState programState, boolean happyPathYield) {
-    MethodYield yield = new MethodYield(parameters.size());
+    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
     yield.exception = !happyPathYield;
     List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
