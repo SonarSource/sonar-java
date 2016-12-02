@@ -26,12 +26,12 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,14 +62,14 @@ public class MethodYield {
     Supplier<SymbolicValue> svSupplier) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
-      Optional<Constraint> constraint = getConstraint(index, invocationTypes);
-      if (!constraint.isPresent()) {
+      Constraint constraint = getConstraint(index, invocationTypes);
+      if (constraint == null) {
         // no constraint on this parameter, let's try next one.
         continue;
       }
 
       SymbolicValue invokedArg = invocationArguments.get(index);
-      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint.get());
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint);
       if (programStates.isEmpty()) {
         // constraint can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
@@ -99,18 +99,19 @@ public class MethodYield {
     return stateStream.collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  private Optional<Constraint> getConstraint(int index, List<Type> invocationTypes) {
-    if (!varArgs || appliableOnVarArgs(index, invocationTypes)) {
-      return Optional.ofNullable(parametersConstraints[index]);
+  @CheckForNull
+  private Constraint getConstraint(int index, List<Type> invocationTypes) {
+    if (!varArgs || applicableOnVarArgs(index, invocationTypes)) {
+      return parametersConstraints[index];
     }
-    return Optional.empty();
+    return null;
   }
 
   /**
    * For varArgs methods, only apply the constraint on single array parameter, in order to not 
    * wrongly apply it on all the elements of the array.
    */
-  private boolean appliableOnVarArgs(int index, List<Type> types) {
+  private boolean applicableOnVarArgs(int index, List<Type> types) {
     if (index < parametersConstraints.length - 1) {
       // not the varArg argument
       return true;
