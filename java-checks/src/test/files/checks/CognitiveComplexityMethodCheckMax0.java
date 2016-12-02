@@ -62,6 +62,16 @@ class CognitiveComplexityCheck {
     }
   }
 
+  public void extraCondition11() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+    if (a || (b || c)) {}
+  }
+
+  public void breakWithLabel(java.util.Collection<Boolean> objects) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+    doABarrelRoll:
+    for(Object o : objects) { // +1
+      break doABarrelRoll;    // +1
+    }
+  }
 
   public void doFilter(ServletRequest servletRequest) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 13 to the 0 allowed.}}
 
