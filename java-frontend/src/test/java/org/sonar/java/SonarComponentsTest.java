@@ -21,14 +21,15 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.RecognitionException;
+import com.sonar.sslr.impl.LexerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -36,14 +37,14 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.batch.sensor.issue.NewIssue;
-import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -55,7 +56,6 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -236,11 +236,12 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void add_issue() throws Exception {
+  public void add_issue_or_parse_error() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+    SensorContextTester context = SensorContextTester.create(new File(""));
 
-    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
+    DefaultFileSystem fileSystem = context.fileSystem();
     File file = new File("file.java");
     DefaultInputFile inputFile = new DefaultInputFile("", "file.java");
     inputFile.setLines(45);
@@ -250,17 +251,6 @@ public class SonarComponentsTest {
     inputFile.setOriginalLineOffsets(linesOffset);
     inputFile.setLastValidOffset(420);
     fileSystem.add(inputFile);
-    context = mock(SensorContext.class);
-    NewIssue newIssue = mock(NewIssue.class);
-    when(newIssue.forRule(any(RuleKey.class))).thenReturn(newIssue);
-    when(newIssue.gap(anyDouble())).thenReturn(newIssue);
-    when(context.newIssue()).thenReturn(newIssue);
-
-    NewIssueLocation newIssueLocation = mock(NewIssueLocation.class);
-    when(newIssue.newLocation()).thenReturn(newIssueLocation);
-    when(newIssueLocation.at(any(TextRange.class))).thenReturn(newIssueLocation);
-    when(newIssueLocation.on(any(InputComponent.class))).thenReturn(newIssueLocation);
-
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
@@ -275,19 +265,31 @@ public class SonarComponentsTest {
     sonarComponents.addIssue(new File("."), expectedCheck, 42, "message on line", 1);
     sonarComponents.addIssue(new File("unknown_file"), expectedCheck, 42, "message on line", 1);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, file, 35, "other message", 0));
-    verify(context, times(3)).newIssue();
+
+    assertThat(context.allIssues()).hasSize(3);
+
+    Version version60 = Version.create(6, 0);
+    Version version56 = Version.create(5, 6);
+    RecognitionException parseError = new RecognitionException(new LexerException("parse error"));
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(version60));
+    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isTrue();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(version56));
+    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(version60, SonarQubeSide.SCANNER));
+    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(version56, SonarQubeSide.SCANNER));
+    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
+
+
   }
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
-    return new CheckRegistrar() {
-      @Override
-      public void register(RegistrarContext registrarContext) {
-        registrarContext.registerClassesForRepository(
-          REPOSITORY_NAME,
-          Lists.<Class<? extends JavaCheck>>newArrayList(expectedCheck.getClass()),
-          null);
-      }
-    };
+    return registrarContext -> registrarContext.registerClassesForRepository(REPOSITORY_NAME,
+      Lists.<Class<? extends JavaCheck>>newArrayList(expectedCheck.getClass()), null);
   }
 
   private static class CustomCheck implements JavaCheck {
