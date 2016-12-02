@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
-
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -28,11 +27,11 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -63,19 +62,14 @@ public class MethodYield {
     Supplier<SymbolicValue> svSupplier) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
-      SymbolicValue invokedArg = invocationArguments.get(index);
-      Constraint constraint = null;
-      if (!varArgs || varArgsCalledWithOneArrayParameter(index, invocationTypes)) {
-        constraint = parametersConstraints[index];
-      } else {
-        // no constraints are assigned on parameters of varargs methods when called with multiple arguments
-      }
-      if (constraint == null) {
+      Optional<Constraint> constraint = getConstraint(index, invocationTypes);
+      if (!constraint.isPresent()) {
         // no constraint on this parameter, let's try next one.
         continue;
       }
 
-      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint);
+      SymbolicValue invokedArg = invocationArguments.get(index);
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint.get());
       if (programStates.isEmpty()) {
         // constraint can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
@@ -105,10 +99,28 @@ public class MethodYield {
     return stateStream.collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  private boolean varArgsCalledWithOneArrayParameter(int index, List<Type> types) {
-    boolean isLastArgument = index == parametersConstraints.length - 1;
-    boolean singleVariadicArg = parametersConstraints.length == types.size();
-    return isLastArgument && singleVariadicArg && (types.get(index).isArray() || types.get(index).is("<nulltype>"));
+  private Optional<Constraint> getConstraint(int index, List<Type> invocationTypes) {
+    if (!varArgs || appliableOnVarArgs(index, invocationTypes)) {
+      return Optional.ofNullable(parametersConstraints[index]);
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * For varArgs methods, only apply the constraint on single array parameter, in order to not 
+   * wrongly apply it on all the elements of the array.
+   */
+  private boolean appliableOnVarArgs(int index, List<Type> types) {
+    if (index < parametersConstraints.length - 1) {
+      // not the varArg argument
+      return true;
+    }
+    if (parametersConstraints.length != types.size()) {
+      // more than one element in the variadic part
+      return false;
+    }
+    Type argumentType = types.get(index);
+    return argumentType.isArray() || argumentType.is("<nulltype>");
   }
 
   private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {
