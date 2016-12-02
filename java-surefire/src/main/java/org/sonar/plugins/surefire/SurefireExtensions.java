@@ -20,9 +20,9 @@
 package org.sonar.plugins.surefire;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.java.JavaConstants;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public final class SurefireExtensions {
             .name("JUnit Reports")
             .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
             .onQualifiers(Qualifiers.PROJECT)
-            .category(CoreProperties.CATEGORY_JAVA)
+            .category(JavaConstants.JAVA_CATEGORY)
             .subCategory("JUnit")
             .build(),
 
