@@ -157,7 +157,8 @@ public class MethodYield {
     MethodYield other = (MethodYield) obj;
     if (!Arrays.equals(parametersConstraints, other.parametersConstraints)
       || exception != other.exception
-      || resultIndex != other.resultIndex) {
+      || resultIndex != other.resultIndex
+      || varArgs != other.varArgs) {
       return false;
     }
     if (resultConstraint != null) {

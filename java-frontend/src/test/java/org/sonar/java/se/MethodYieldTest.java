@@ -72,6 +72,13 @@ public class MethodYieldTest {
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
 
+  @Test
+  public void test_toString() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
+    MethodYield yield = getMethodBehavior(sev, "bar").getValue().yields().get(0);
+    assertThat(yield.toString()).isEqualTo("{params: [TRUE, NOT_NULL], result: null (-1), exceptional: false}");
+  }
+
   private static enum Status {
     A, B
   }
@@ -106,6 +113,48 @@ public class MethodYieldTest {
     Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
     assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, Status.B)).isNotNull();
+  }
+
+  @Test
+  public void test_yield_equality() {
+    MethodYield yield = new MethodYield(1, false);
+    MethodYield otherYield;
+
+    assertThat(yield).isNotEqualTo(null);
+    assertThat(yield).isNotEqualTo(new Object());
+
+    // same instance
+    assertThat(yield).isEqualTo(yield);
+
+    // same constraints, same nb of parameters, same exceptional aspect
+    assertThat(yield).isEqualTo(new MethodYield(1, false));
+
+    // arity is taken into account
+    assertThat(yield).isNotEqualTo(new MethodYield(0, false));
+
+    // varargs is taken into account
+    assertThat(yield).isNotEqualTo(new MethodYield(1, true));
+
+    // same arity and constraints but exceptional path
+    otherYield = new MethodYield(1, false);
+    otherYield.exception = true;
+    assertThat(yield).isNotEqualTo(otherYield);
+
+    // same arity and constraints but different return value
+    otherYield = new MethodYield(1, false);
+    otherYield.resultIndex = 0;
+    assertThat(yield).isNotEqualTo(otherYield);
+
+    // same arity but different return constraint
+    otherYield = new MethodYield(1, false);
+    otherYield.resultConstraint = ObjectConstraint.NOT_NULL;
+    assertThat(yield).isNotEqualTo(otherYield);
+
+    // same return constraint
+    yield.resultConstraint = ObjectConstraint.NOT_NULL;
+    otherYield = new MethodYield(1, false);
+    otherYield.resultConstraint = ObjectConstraint.NOT_NULL;
+    assertThat(yield).isEqualTo(otherYield);
   }
 
   @Test
