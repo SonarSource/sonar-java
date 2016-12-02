@@ -21,9 +21,8 @@ package org.sonar.java;
 
 public final class JavaConstants {
 
-  private JavaConstants() {
-  }
-
   public static final String JAVA_CATEGORY = "java";
 
+  private JavaConstants() {
+  }
 }
