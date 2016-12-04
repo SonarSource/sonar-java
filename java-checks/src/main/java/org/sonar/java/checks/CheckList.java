@@ -459,6 +459,7 @@ public final class CheckList {
       .add(WriteObjectTheOnlySynchronizedMethodCheck.class)
       .add(TwoLocksWaitNotifyCheck.class)
       .add(SynchronizationOnGetClassCheck.class)
+      .add(DisallowedClassCheck.class)
       .build();
   }
 
