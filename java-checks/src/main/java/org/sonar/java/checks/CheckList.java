@@ -451,6 +451,7 @@ public final class CheckList {
       .add(FilesExistsJDK8Check.class)
       .add(StaticImportCountCheck.class)
       .add(ClassFieldCountCheck.class)
+      .add(DisallowedClassCheck.class)
       .build();
   }
 
