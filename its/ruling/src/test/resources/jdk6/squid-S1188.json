@@ -2,9 +2,6 @@
 'jdk6:java/awt/Component.java':[
 826,
 ],
-'jdk6:java/awt/GraphicsEnvironment.java':[
-126,
-],
 'jdk6:java/awt/Toolkit.java':[
 674,
 827,
@@ -20,9 +17,6 @@
 ],
 'jdk6:java/io/ObjectStreamClass.java':[
 411,
-],
-'jdk6:java/lang/Class.java':[
-2881,
 ],
 'jdk6:java/lang/Compiler.java':[
 45,
@@ -42,9 +36,6 @@
 ],
 'jdk6:java/net/InetAddress.java':[
 863,
-],
-'jdk6:java/net/Socket.java':[
-408,
 ],
 'jdk6:java/net/URLClassLoader.java':[
 405,
@@ -82,14 +73,8 @@
 302,
 350,
 ],
-'jdk6:java/util/Collections.java':[
-2451,
-],
 'jdk6:java/util/Currency.java':[
 125,
-],
-'jdk6:java/util/ServiceLoader.java':[
-407,
 ],
 'jdk6:java/util/jar/JarFile.java':[
 592,
