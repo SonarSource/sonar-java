@@ -1,4 +1,10 @@
 {
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/FeedFileSourcesBinaryData.java':[
+67,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
+119,
+],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/ServerComponents.java':[
 477,
 ],
@@ -10,5 +16,8 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
 116,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/index/SourceFileResultSetIterator.java':[
+115,
 ],
 }
