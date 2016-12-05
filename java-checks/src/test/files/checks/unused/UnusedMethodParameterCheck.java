@@ -181,12 +181,21 @@ class StrutsAction2 extends BaseAction {
   void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
     System.out.println(""); 
   }
-  
+
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
-    System.out.println(""); 
+    System.out.println("");
   }
 
   void qiz(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpFakeResponse unusedResponse) { // Noncompliant {{Remove this unused method parameter "unusedResponse".}}
+    System.out.println("");
+  }
+}
+
+class NotStrutsAction {
+  void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Noncompliant {{Remove this unused method parameter "response".}}
+    doSomething(mapping);
+    doSomething(form);
+    doSomething(request);
     System.out.println("");
   }
 }
