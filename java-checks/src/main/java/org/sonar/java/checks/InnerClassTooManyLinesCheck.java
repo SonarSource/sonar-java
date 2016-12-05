@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -55,11 +56,9 @@ public class InnerClassTooManyLinesCheck extends IssuableSubscriptionVisitor {
     Type ownerType = owner.type();
     if (ownerType != null && ownerType.isClass() && owner.owner().isPackageSymbol()) {
       // raise only one issue for the first level of nesting when multiple nesting
-      int first = node.firstToken().line();
-      int last = node.lastToken().line();
-      int length = last - first + 1;
-      if (length > max) {
-        reportIssue(ExpressionsHelper.reportOnClassTree(node), "Reduce this class from " + length + " to the maximum allowed " + max + " or externalize it in a public class.");
+      int lines = new LinesOfCodeVisitor().linesOfCode(node);
+      if (lines > max) {
+        reportIssue(ExpressionsHelper.reportOnClassTree(node), "Reduce this class from " + lines + " to the maximum allowed " + max + " or externalize it in a public class.");
       }
     }
   }
