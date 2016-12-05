@@ -142,7 +142,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return excludedTypesList;
   }
 
-  private boolean isCloseable(Type type) {
+  private static boolean isCloseable(Type type) {
     return type.isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE) || type.isSubtypeOf(JAVA_IO_CLOSEABLE);
   }
 
@@ -153,7 +153,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return needsClosing(syntaxNode.symbolType());
   }
 
-  private boolean isWithinTryHeader(Tree syntaxNode) {
+  private static boolean isWithinTryHeader(Tree syntaxNode) {
     final Tree parent = syntaxNode.parent();
     if (parent.is(Tree.Kind.VARIABLE)) {
       return isTryStatementResource((VariableTree) parent);
@@ -161,7 +161,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return false;
   }
 
-  private boolean isTryStatementResource(VariableTree variable) {
+  private static boolean isTryStatementResource(VariableTree variable) {
     final TryStatementTree tryStatement = getEnclosingTryStatement(variable);
     return tryStatement != null && tryStatement.resources().contains(variable);
   }
