@@ -23,9 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
-import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.text.MessageFormat;
@@ -35,7 +34,7 @@ import java.util.List;
 @RspecKey("S104")
 public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
-  private static final int DEFAULT_MAXIMUM = 1000;
+  private static final int DEFAULT_MAXIMUM = 750;
 
   @RuleProperty(
       key = "Max",
@@ -46,16 +45,14 @@ public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TOKEN);
+    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
-  public void visitToken(SyntaxToken token) {
-    if (((InternalSyntaxToken) token).isEOF()) {
-      int lines = token.line();
-      if (lines > maximum) {
-        addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
-      }
+  public void visitNode(Tree tree) {
+    int lines = new LinesOfCodeVisitor().linesOfCode(tree);
+    if (lines > maximum) {
+      addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
     }
   }
 }
