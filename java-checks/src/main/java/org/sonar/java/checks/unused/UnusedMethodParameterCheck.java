@@ -21,7 +21,6 @@ package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
@@ -44,6 +43,8 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.ArrayList;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
@@ -119,10 +120,10 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       || (!ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block()));
   }
   
-  private static boolean isStrutsActionParameter(VariableTree methodTree) {
-    Type superClass = methodTree.symbol().enclosingClass().superClass();
+  private static boolean isStrutsActionParameter(VariableTree variableTree) {
+    Type superClass = variableTree.symbol().enclosingClass().superClass();
     return superClass != null && superClass.isSubtypeOf(STRUTS_ACTION_SUPERCLASS)
-      && EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES.contains(methodTree.symbol().type().fullyQualifiedName());
+      && EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES.contains(variableTree.symbol().type().fullyQualifiedName());
   }
 
   private static boolean isEmptyOrThrowStatement(BlockTree block) {
