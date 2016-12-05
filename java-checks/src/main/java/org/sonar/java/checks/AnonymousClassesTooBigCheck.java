@@ -20,13 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -88,21 +87,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     super.visitLambdaExpression(lambdaExpressionTree);
   }
 
-  private static int getNumberOfLines(ClassTree classTree) {
-    int startLine = classTree.openBraceToken().line();
-    int endline = classTree.closeBraceToken().line();
-    return endline - startLine + 1;
+  private static int getNumberOfLines(Tree tree) {
+    return new LinesOfCodeVisitor().linesOfCode(tree);
   }
-
-  private static int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
-    Tree body = lambdaExpressionTree.body();
-    SyntaxToken firstSyntaxToken = body.firstToken();
-    SyntaxToken lastSyntaxToken = body.lastToken();
-    if (firstSyntaxToken == null || lastSyntaxToken == null) {
-      // Only happen if the body of the lambda expression is a Tree.Kind.OTHER
-      return 0;
-    }
-    return lastSyntaxToken.line() - firstSyntaxToken.line() + 1;
-  }
-
 }
