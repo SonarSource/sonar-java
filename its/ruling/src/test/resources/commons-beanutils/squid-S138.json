@@ -3,4 +3,11 @@
 326,
 860,
 ],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/PropertyUtilsBean.java':[
+1576,
+2102,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/NumberConverter.java':[
+300,
+],
 }
