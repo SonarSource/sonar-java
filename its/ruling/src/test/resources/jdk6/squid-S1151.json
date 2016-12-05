@@ -2,7 +2,6 @@
 'jdk6:java/awt/AWTEvent.java':[
 437,
 459,
-479,
 486,
 498,
 516,
@@ -16,7 +15,6 @@
 5312,
 ],
 'jdk6:java/awt/Container.java':[
-4238,
 4256,
 ],
 'jdk6:java/awt/DefaultKeyboardFocusManager.java':[
@@ -106,16 +104,11 @@
 2352,
 2365,
 2377,
-2437,
 2464,
 2496,
-2523,
 2530,
-2545,
 2552,
-2565,
 2572,
-2585,
 2592,
 2639,
 2652,
@@ -129,8 +122,6 @@
 2778,
 2791,
 2804,
-2817,
-2825,
 3027,
 3037,
 3047,
@@ -313,8 +304,6 @@
 448,
 464,
 480,
-590,
-597,
 ],
 'jdk6:java/awt/image/SampleModel.java':[
 345,
@@ -338,6 +327,11 @@
 456,
 466,
 ],
+'jdk6:java/awt/print/PageFormat.java':[
+321,
+327,
+333,
+],
 'jdk6:java/io/DataInputStream.java':[
 501,
 511,
@@ -347,7 +341,6 @@
 'jdk6:java/io/ObjectInputStream.java':[
 1335,
 1346,
-2430,
 2437,
 2461,
 3059,
@@ -359,7 +352,6 @@
 3291,
 ],
 'jdk6:java/io/ObjectStreamClass.java':[
-1247,
 2028,
 ],
 'jdk6:java/io/RandomAccessFile.java':[
@@ -369,7 +361,6 @@
 794,
 ],
 'jdk6:java/lang/CharacterData00.java':[
-236,
 310,
 ],
 'jdk6:java/lang/CharacterData01.java':[
@@ -381,7 +372,6 @@
 'jdk6:java/net/PlainDatagramSocketImpl.java':[
 259,
 287,
-328,
 ],
 'jdk6:java/net/PlainSocketImpl.java':[
 227,
@@ -438,21 +428,15 @@
 226,
 233,
 ],
-'jdk6:java/text/RBTableBuilder.java':[
-283,
-291,
-],
 'jdk6:java/text/SimpleDateFormat.java':[
 1003,
 1013,
 1027,
 1047,
 1057,
-1070,
 1077,
 1087,
 1114,
-1129,
 1250,
 1259,
 1270,
@@ -488,10 +472,8 @@
 3961,
 3971,
 3978,
-4372,
 ],
 'jdk6:java/util/GregorianCalendar.java':[
-1103,
 1111,
 1153,
 1190,
@@ -511,7 +493,6 @@
 1801,
 ],
 'jdk6:java/util/JapaneseImperialCalendar.java':[
-513,
 521,
 569,
 684,
@@ -521,7 +502,6 @@
 846,
 882,
 1014,
-1083,
 1174,
 1208,
 1222,
@@ -537,9 +517,7 @@
 ],
 'jdk6:java/util/SimpleTimeZone.java':[
 738,
-1457,
 1465,
-1480,
 1488,
 ],
 'jdk6:java/util/regex/Pattern.java':[
@@ -570,7 +548,6 @@
 'jdk6:java/util/zip/ZipInputStream.java':[
 153,
 163,
-300,
 307,
 ],
 'jdk6:java/util/zip/ZipOutputStream.java':[
