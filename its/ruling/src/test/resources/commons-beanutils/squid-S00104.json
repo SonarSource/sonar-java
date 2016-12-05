@@ -1,17 +1,5 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanUtilsBean.java':[
-0,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MethodUtils.java':[
-0,
-],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/PropertyUtilsBean.java':[
-0,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/locale/LocaleBeanUtilsBean.java':[
-0,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/package-info.java':[
 0,
 ],
 }
