@@ -171,18 +171,8 @@ class F {
     );
   }
 
-  @SuppressWarnings("unchecked")
   private Map<String, Object> loadYamlConfig(String configFile) {
-    Path configPath = Paths.get(configFile);
-    if (!resources.exists(configPath)) {
-      return emptyMap();
-    }
-
-    try {
-      return YamlParser.INSTANCE.parseMap(resources.sourceFile(configPath));
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to read " + configFile, e);
-    }
+    return emptyMap();
   }
 
   public Set<String> getResourceList() {
@@ -193,13 +183,13 @@ class F {
 class G{
   G(int value) {
     this.profileActivator = new ProfileActivator() {
-      public void activate() throws ProfileDataException {
+      public void activate() throws Exception {
         activateDeferredProfile();  // Compliant
       }
     };
     ProfileDeferralMgr.registerDeferral(this.profileActivator);
   }
-  void activateDeferredProfile()  throws ProfileDataException{
+  void activateDeferredProfile()  throws Exception{
 
   }
 }

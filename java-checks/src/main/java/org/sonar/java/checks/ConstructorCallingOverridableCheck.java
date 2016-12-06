@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -86,11 +88,21 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
-        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol) &&!isInsideAnonymousClass(methodIdentifier)) {
+        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
           reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // skip new class
     }
 
     private boolean is(ExpressionTree expression, String match) {
@@ -122,20 +134,6 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
     private boolean isOverridableMethod(Symbol symbol) {
       return symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic();
     }
-
-    private boolean isInsideAnonymousClass(IdentifierTree tree){
-      Tree container = containingNewClassOrConstructor(tree);
-      return container.is(Kind.NEW_CLASS,Kind.LAMBDA_EXPRESSION);
-    }
-
-    private Tree containingNewClassOrConstructor(IdentifierTree usageIdentifier) {
-      Tree parent = usageIdentifier;
-      do {
-        parent = parent.parent();
-      } while (!parent.is(Kind.NEW_CLASS,Kind.CONSTRUCTOR,Kind.LAMBDA_EXPRESSION));
-      return parent;
-    }
-
   }
 
 }
