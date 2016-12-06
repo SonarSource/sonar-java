@@ -20,16 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
+import com.google.common.reflect.ClassPath;
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
@@ -47,17 +49,17 @@ public class CheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
-  private static final List<String> SE_CHEKS = ImmutableList.of(
-    "NullDereferenceCheck",
-    "ConditionAlwaysTrueOrFalseCheck",
-    "UnclosedResourcesCheck",
-    "CustomUnclosedResourcesCheck",
-    "LocksNotUnlockedCheck",
-    "NonNullSetToNullCheck",
-    "NoWayOutLoopCheck",
-    "DivisionByZeroCheck",
-    "OptionalGetBeforeIsPresentCheck"
-  );
+  private static List<String> SE_CHEKS;
+
+  @BeforeClass
+  public static void before() throws Exception {
+    SE_CHEKS = ClassPath.from(CheckListTest.class.getClassLoader())
+      .getTopLevelClasses("org.sonar.java.se.checks")
+      .stream()
+      .map(ClassPath.ClassInfo::getSimpleName)
+      .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
+      .collect(Collectors.toList());
+  }
 
   /**
    * Enforces that each check declared in list.
