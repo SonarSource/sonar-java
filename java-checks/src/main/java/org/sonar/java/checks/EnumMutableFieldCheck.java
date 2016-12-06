@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -51,7 +52,7 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
         VariableTree variableTree = (VariableTree) member;
         ModifiersTree modifiers = variableTree.modifiers();
         ModifierKeywordTree publicModifier = ModifiersUtils.getModifier(modifiers, Modifier.PUBLIC);
-        if (publicModifier != null && (isNotStaticOrFinal(variableTree)|| isMutableFinalMember(variableTree))) {
+        if (publicModifier != null && (isNotStaticOrFinal(variableTree,variableTree.modifiers())|| isMutableFinalMember(variableTree))) {
           reportIssue(publicModifier, "Lower the visibility of this field.");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
@@ -64,9 +65,9 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
   
-  private static boolean isNotStaticOrFinal(VariableTree variableTree) {
-    return !ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC)
-      && !ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL);
+  private static boolean isNotStaticOrFinal(VariableTree variableTree, ModifiersTree modifiersTree) {
+    return !ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC)
+      && !ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
   }
   
   private static boolean isMutableFinalMember(VariableTree variableTree) {
@@ -78,8 +79,9 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
   }
   
   private static boolean isDateOrCollection(VariableTree variableTree) {
-    return variableTree.symbol().type().is("java.util.Date") || 
-      (variableTree.symbol().type().isSubtypeOf("java.util.Collection") && !variableTree.symbol().type().isSubtypeOf("com.google.common.collect.ImmutableCollection")); 
+    Type type = variableTree.symbol().type();
+    return type.is("java.util.Date") ||
+      (type.isSubtypeOf("java.util.Collection") && !type.isSubtypeOf("com.google.common.collect.ImmutableCollection"));
   }
 
   private static boolean isSetter(MethodTree methodTree) {
