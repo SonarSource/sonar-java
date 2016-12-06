@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -66,7 +65,11 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       ObjectConstraint optionalConstraint = (ObjectConstraint) programState.getConstraint(optionalSV);
-      if (optionalConstraint == null || isImpossibleState(booleanConstraint, optionalConstraint)) {
+      if(optionalConstraint == null) {
+        // Constraint on the optional SV might have been disposed. But is is necessarily non null because NPE check is ran before.
+        optionalConstraint = ObjectConstraint.NOT_NULL;
+      }
+      if (isImpossibleState(booleanConstraint, optionalConstraint)) {
         return ImmutableList.of();
       }
       if (optionalConstraint.hasStatus(Status.NOT_PRESENT) || optionalConstraint.hasStatus(Status.PRESENT)) {

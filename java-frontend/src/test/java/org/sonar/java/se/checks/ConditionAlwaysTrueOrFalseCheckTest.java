@@ -30,6 +30,11 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
+  public void condition_always_true_with_optional() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
   public void resetFields_ThreadSleepCalls() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new ConditionAlwaysTrueOrFalseCheck());
   }
