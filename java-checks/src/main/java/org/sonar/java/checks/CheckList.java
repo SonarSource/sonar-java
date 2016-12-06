@@ -471,7 +471,6 @@ public final class CheckList {
       .add(BadTestClassNameCheck.class)
       .add(BadTestMethodNameCheck.class)
       .add(AssertionFailInCatchBlockCheck.class)
-      .add(DisallowedClassCheck.class)
       .build();
   }
 

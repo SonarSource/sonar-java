@@ -25,15 +25,18 @@ import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.RuleTemplate;
 
-@Rule(key = DisallowedClassCheck.KEY)
+@RuleTemplate
+@Rule(key = "S3688")
 public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String KEY = "S3688";
   @RuleProperty(
     key = "className",
     description = "Fully qualified name of the forbidden class. Use a regex to forbid a package.",
@@ -45,7 +48,9 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    scan(context.getTree());
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
   }
 
   @Override
@@ -74,12 +79,22 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
     super.visitNewClass(newClassTree );
   }
 
+  @Override
+  public void visitClass(ClassTree classTree) {
+    TypeTree superClass = classTree.superClass();
+    if (superClass != null) {
+      String superClassTypeName = superClass.symbolType().fullyQualifiedName();
+      checkIfDisallowed(superClassTypeName, superClass);
+    }
+    super.visitClass(classTree);
+  }
+
   private void checkIfDisallowed(String className, Tree tree) {
     if (pattern == null) {
       try {
         pattern = Pattern.compile(disallowedClass);
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("[" + KEY + "] Unable to compile the regular expression: " + disallowedClass, e);
+        throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + disallowedClass, e);
       }
     }
     if (pattern.matcher(className).matches()) {
