@@ -25,7 +25,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -43,6 +42,7 @@ import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.Constraint;
@@ -78,7 +78,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -888,7 +887,8 @@ public class ExplodedGraphWalker {
   public static class ExplodedGraphWalkerFactory {
 
     private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
-    private final List<SECheck> seChecks = new ArrayList<>();
+    @VisibleForTesting
+    final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
       List<SECheck> checks = new ArrayList<>();
@@ -906,6 +906,7 @@ public class ExplodedGraphWalker {
       seChecks.add(removeOrDefault(checks, new LocksNotUnlockedCheck()));
       seChecks.add(removeOrDefault(checks, new NonNullSetToNullCheck()));
       seChecks.add(removeOrDefault(checks, new NoWayOutLoopCheck()));
+      seChecks.add(removeOrDefault(checks, new OptionalGetBeforeIsPresentCheck()));
       seChecks.addAll(checks);
     }
 
