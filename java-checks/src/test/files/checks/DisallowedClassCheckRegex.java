@@ -11,7 +11,7 @@ void method(String param) { // Noncompliant [[sc=13;ec=19]]
   var.doSomething(new Integer(1)); // Noncompliant  [[sc=19;ec=33]]
 }
 }
-class B extends String { // Compliant, can extend
+class B extends String { // Noncompliant
   public B(Integer a) { // Noncompliant [[sc=12;ec=19]]
   }
   public void doSomething(Integer a) { // Noncompliant [[sc=27;ec=34]]

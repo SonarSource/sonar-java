@@ -30,6 +30,7 @@ public class DisallowedClassCheckTest {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     visitor.disallowedClass = "java.lang.String";
     JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheck.java", visitor);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DisallowedClassCheck.java", visitor);
   }
 
   @Test
@@ -42,6 +43,7 @@ public class DisallowedClassCheckTest {
   @Test(expected = IllegalArgumentException.class)
   public void checkBadRegex() throws Throwable {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
+    // bad regex
     visitor.disallowedClass = "java.lang(";
       try {
           JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
