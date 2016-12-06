@@ -2,7 +2,4 @@
 'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/ast/parser/TreeFactory.java':[
 111,
 ],
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/resolve/Resolve.java':[
-44,
-],
 }

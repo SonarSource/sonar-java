@@ -304,6 +304,7 @@ public class JavaSymbol implements Symbol {
    */
   public static class TypeJavaSymbol extends JavaSymbol implements TypeSymbol {
 
+    private String bytecodeName = null;
     private String fullyQualifiedName;
     Scope members;
     Scope typeParameters;
@@ -325,6 +326,11 @@ public class JavaSymbol implements Symbol {
       } else {
         internalName = name;
       }
+    }
+
+    public TypeJavaSymbol(int flags, String name, TypeJavaSymbol owner, String bytecodeName) {
+      this(flags, name, owner);
+      this.bytecodeName = bytecodeName;
     }
 
     private String registerClassInternalName(String name) {
@@ -362,6 +368,9 @@ public class JavaSymbol implements Symbol {
     }
 
     public String getFullyQualifiedName() {
+      if (bytecodeName != null) {
+        return bytecodeName;
+      }
       if(fullyQualifiedName == null) {
         String newQualification = "";
         if (owner.isPackageSymbol()) {
@@ -461,7 +470,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public String toString() {
-      return "VariableSymbol#"+name;
+      return String.format("%s#%s", owner().name(), name());
     }
   }
 
@@ -636,6 +645,16 @@ public class JavaSymbol implements Symbol {
 
     public boolean isParametrized() {
       return !typeVariableTypes.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+      if (isUnknown()) {
+        return "!unknownOwner!#!unknownMethod!()";
+      } else if (owner.isUnknown()) {
+        return String.format("!unknownOwner!#%s()", name);
+      }
+      return String.format("%s#%s()", owner.name, name);
     }
   }
 

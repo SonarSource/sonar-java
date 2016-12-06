@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -73,7 +73,7 @@ public class SecondPass implements JavaSymbol.Completer {
     Resolve.Env env = semanticModel.getEnv(symbol);
     ClassJavaType type = (ClassJavaType) symbol.type;
 
-    if ((symbol.flags() & Flags.ANNOTATION) == 0) {
+    if (!symbol.isFlag(Flags.ANNOTATION)) {
       // JLS8 15.8.3 If this is a class or interface (default methods), enter symbol for "this"
       symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "this", symbol.type, symbol));
     }
@@ -90,12 +90,7 @@ public class SecondPass implements JavaSymbol.Completer {
 
     //Interfaces
     ImmutableList.Builder<JavaType> interfaces = ImmutableList.builder();
-    for (Tree interfaceTree : tree.superInterfaces()) {
-      JavaType interfaceType = resolveType(env, interfaceTree);
-      if (interfaceType != null) {
-        interfaces.add(interfaceType);
-      }
-    }
+    tree.superInterfaces().stream().map(interfaceTree -> resolveType(env, interfaceTree)).filter(Objects::nonNull).forEach(interfaces::add);
 
     if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
       // JLS8 9.6: The direct superinterface of every annotation type is java.lang.annotation.Annotation.
@@ -128,7 +123,7 @@ public class SecondPass implements JavaSymbol.Completer {
         }
       }
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
-      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.of(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       symbol.members.enter(defaultConstructor);
     }

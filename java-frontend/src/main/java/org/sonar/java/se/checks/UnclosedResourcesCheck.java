@@ -23,11 +23,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -43,7 +45,6 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -92,19 +93,24 @@ public class UnclosedResourcesCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    final List<ObjectConstraint> constraints = context.getState().getFieldConstraints(Status.OPENED);
-    for (ObjectConstraint constraint : constraints) {
-      Tree syntaxNode = constraint.syntaxNode();
-      String name = null;
-      if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
-        name = ((NewClassTree) syntaxNode).identifier().symbolType().name();
-      } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-        name = ((MethodInvocationTree) syntaxNode).symbolType().name();
-      }
-      if (name != null) {
-        context.reportIssue(syntaxNode, this, "Close this \"" + name + "\".");
-      }
+    ExplodedGraph.Node node = context.getNode();
+    context.getState().getValuesWithConstraints(Status.OPENED)
+      .forEach((sv, c) -> processUnclosedSymbolicValue(node, sv));
+  }
+
+  private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
+    List<JavaFileScannerContext.Location> flow = SECheck.flow(node, sv,
+      constraint -> constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(Status.OPENED));
+    flow.stream()
+      .filter(loc -> loc.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
+      .forEach(loc -> reportIssue(loc.syntaxNode, String.format("Close this \"%s\".", name(loc.syntaxNode)), Collections.emptySet()));
+  }
+
+  private static String name(Tree tree) {
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      return ((NewClassTree) tree).symbolType().name();
     }
+    return ((MethodInvocationTree) tree).symbolType().name();
   }
 
   private static boolean needsClosing(Type type) {

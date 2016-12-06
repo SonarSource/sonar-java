@@ -645,6 +645,30 @@ class NullPointerTest {
     }
     return result;
   }
+
+  private void bar(@Nullable Object v) {
+    NullPointerTest.qix(v, v != null ? "A" : null); // Compliant
+    NullPointerTest.qix(v, (v != null && "B".equals(v.toString())) ? "B" : null); // Compliant
+    NullPointerTest.qix(v, (v == null || "B".equals(v.toString())) ? "B" : null); // Compliant
+  }
+
+  static void qix(Object o1, Object o2) {  }
+
+  private static boolean testSomething1(List<String> p1, @Nullable String p2) {
+    return p1.isEmpty() && p2 != null && p2.length() > 0 && p2.charAt(0) == '?';
+  }
+
+  private static boolean testSomething2(List<String> p1, @Nullable String p2) {
+    return p1.isEmpty() || p2 == null || p2.length() > 0 || p2.charAt(0) == '?';
+  }
+
+  public boolean checkThatStuff(@Nullable Object c) {
+    return checkSomething("HELLO") && c instanceof MyClass && ((MyClass) c).isLike("hello");
+  }
+
+  private static boolean checkSomething(String s) {
+    return s.isEmpty();
+  }
 }
 
 class MyClass {
@@ -662,6 +686,10 @@ class MyClass {
           "threadName");
         return null;
       });
+  }
+
+  boolean isLike(String s) {
+    return s.isEmpty();
   }
 }
 class RaisedExceptionCannotBeNull {

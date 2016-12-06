@@ -34,7 +34,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
+import java.util.Objects;
 
 @Rule(key = "S2677")
 public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
@@ -57,12 +59,10 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      for (MethodMatcher matcher : CHECKED_METHODS) {
-        MethodInvocationTree mit = isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher);
-        if (mit != null) {
-          raiseIssue(MethodsHelper.methodName(mit));
-        }
-      }
+      CHECKED_METHODS.stream()
+        .map(matcher -> isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher))
+        .filter(Objects::nonNull)
+        .forEach(mit -> raiseIssue(MethodsHelper.methodName(mit)));
     } else {
       BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
       ExpressionTree leftOperand = expressionTree.leftOperand();

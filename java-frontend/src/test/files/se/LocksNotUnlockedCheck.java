@@ -9,7 +9,7 @@ public class MyClass {
 
   public void acquireLock() {
     Lock local = new ReentrantLock();
-    local.lock();  // Noncompliant  {{Unlock "local" along all executions paths of this method.}}
+    local.lock();  // Noncompliant  {{Unlock this lock along all executions paths of this method.}}
     l1.lock();
   }
 

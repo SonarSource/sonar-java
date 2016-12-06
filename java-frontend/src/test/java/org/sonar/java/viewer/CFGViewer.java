@@ -47,10 +47,10 @@ public class CFGViewer {
     viewer.textArea.setText(CFGDebug.toString(cfg));
     String dot = CFGDebug.toDot(cfg);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadDot('" + dot + "', false)");
+    webEngine.executeScript("loadCFG('" + dot + "')");
   }
 
-  private static CFG buildCFG(String source) {
+  static CFG buildCFG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
     SemanticModel.createFor(cut, Lists.newArrayList());
     MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));

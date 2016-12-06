@@ -20,12 +20,12 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.CoreProperties;
 import org.sonar.api.PropertyType;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.java.JavaConstants;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class JacocoConfiguration {
     return ImmutableList.of(
         PropertyDefinition.builder(JacocoConfiguration.REPORT_PATH_PROPERTY)
             .defaultValue(JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE)
-            .category(CoreProperties.CATEGORY_JAVA)
+            .category(JavaConstants.JAVA_CATEGORY)
             .subCategory(subCategory)
             .name("UT JaCoCo Report")
             .description("Path to the JaCoCo report file containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
@@ -74,7 +74,7 @@ public class JacocoConfiguration {
             .build(),
         PropertyDefinition.builder(JacocoConfiguration.IT_REPORT_PATH_PROPERTY)
             .defaultValue(JacocoConfiguration.IT_REPORT_PATH_DEFAULT_VALUE)
-            .category(CoreProperties.CATEGORY_JAVA)
+            .category(JavaConstants.JAVA_CATEGORY)
             .subCategory(subCategory)
             .name("IT JaCoCo Report")
             .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
@@ -83,7 +83,7 @@ public class JacocoConfiguration {
         PropertyDefinition.builder(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO)
             .defaultValue(Boolean.toString(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE))
             .name("Force zero coverage")
-            .category(CoreProperties.CATEGORY_JAVA)
+            .category(JavaConstants.JAVA_CATEGORY)
             .subCategory(subCategory)
             .description("Force coverage to 0% if no JaCoCo reports are found during analysis.")
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)

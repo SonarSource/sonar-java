@@ -42,6 +42,7 @@ import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.Constraint;
@@ -77,7 +78,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -101,48 +101,52 @@ public class ExplodedGraphWalker {
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
-  private static final int MAX_EXEC_PROGRAM_POINT = 2;
+  @VisibleForTesting
+  static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
+  private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private MethodTree methodTree;
+
   private ExplodedGraph explodedGraph;
-  private Deque<ExplodedGraph.Node> workList;
+
+  @VisibleForTesting
+  Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
   private LiveVariables liveVariables;
-
   private CheckerDispatcher checkerDispatcher;
-  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
 
+  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
   @VisibleForTesting
   int steps;
+
   ConstraintManager constraintManager;
   private boolean cleanup = true;
   MethodBehavior methodBehavior;
-
   public static class ExplodedGraphTooBigException extends RuntimeException {
+
     public ExplodedGraphTooBigException(String s) {
       super(s);
     }
   }
-
   public static class MaximumStepsReachedException extends RuntimeException {
+
     public MaximumStepsReachedException(String s) {
       super(s);
     }
-
     public MaximumStepsReachedException(String s, TooManyNestedBooleanStatesException e) {
       super(s, e);
     }
-  }
 
+  }
   public static class TooManyNestedBooleanStatesException extends RuntimeException {
-  }
 
+  }
   @VisibleForTesting
-  ExplodedGraphWalker() {
+  public ExplodedGraphWalker() {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
     List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
@@ -160,6 +164,10 @@ public class ExplodedGraphWalker {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.symbolicExecutionVisitor = symbolicExecutionVisitor;
+  }
+
+  public ExplodedGraph getExplodedGraph() {
+    return explodedGraph;
   }
 
   public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
@@ -227,7 +235,6 @@ public class ExplodedGraphWalker {
 
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
-    explodedGraph = null;
     workList = null;
     node = null;
     programState = null;
@@ -248,9 +255,10 @@ public class ExplodedGraphWalker {
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
-      methodBehavior.addParameter(variableTree.symbol(), sv);
-      stateStream = stateStream.map(ps -> ps.put(variableTree.symbol(), sv));
-      if (isEqualsMethod || nullableParams || parameterCanBeNull(variableTree)) {
+      Symbol variableSymbol = variableTree.symbol();
+      methodBehavior.addParameter(variableSymbol, sv);
+      stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
+      if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
             sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
@@ -263,9 +271,11 @@ public class ExplodedGraphWalker {
     return stateStream.collect(Collectors.toList());
   }
 
-  private static boolean parameterCanBeNull(final VariableTree variableTree) {
-    final SymbolMetadata metadata = variableTree.symbol().metadata();
-    return metadata.isAnnotatedWith("javax.annotation.CheckForNull") || metadata.isAnnotatedWith("javax.annotation.Nullable");
+  private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParams) {
+    SymbolMetadata metadata = variableSymbol.metadata();
+    return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
+      || metadata.isAnnotatedWith("javax.annotation.Nullable")
+      || (nullableParams && !variableSymbol.type().isPrimitive());
   }
 
   private void cleanUpProgramState(CFG.Block block) {
@@ -367,22 +377,42 @@ public class ExplodedGraphWalker {
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     ExplodedGraph.ProgramPoint falseBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0);
     for (ProgramState state : pair.a) {
+      ProgramState ps = state;
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isPartOfConditionalExpressionCondition(condition)) {
+        // push a FALSE value on the top of the stack to enforce the choice of the branch,
+        // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
+        ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
+      }
       // enqueue false-branch, if feasible
-      ProgramState ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
+        alwaysTrueOrFalseChecker.evaluatedToFalse(condition, node);
       }
     }
     ExplodedGraph.ProgramPoint trueBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0);
     for (ProgramState state : pair.b) {
-      ProgramState ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
+      ProgramState ps = state;
+      if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isPartOfConditionalExpressionCondition(condition)) {
+        // push a TRUE value on the top of the stack to enforce the choice of the branch,
+        // as non-reachable symbolic values won't get a TRUE/FALSE constraint when assuming dual
+        ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
+      }
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
+        alwaysTrueOrFalseChecker.evaluatedToTrue(condition, node);
       }
     }
+  }
+
+  private static boolean isPartOfConditionalExpressionCondition(Tree tree) {
+    Tree current;
+    Tree parent = tree;
+    do {
+      current = parent;
+      parent = parent.parent();
+    } while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR));
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && current.equals(((ConditionalExpressionTree) parent).condition());
   }
 
   private void visit(Tree tree, @Nullable Tree terminator) {
@@ -519,10 +549,11 @@ public class ExplodedGraphWalker {
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
+      List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
       methodInvokedBehavior.yields()
         .stream()
         .filter(yield -> !yield.exception)
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, programState, () -> resultValue).stream())
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue).stream())
         .forEach(psYield -> {
           ProgramState ps = psYield;
           if (isNonNullMethod(methodSymbol)) {
@@ -618,12 +649,12 @@ public class ExplodedGraphWalker {
     }
 
     programState = unstack.state;
+    programState = programState.stackValue(value);
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       // only local variables or fields are added to table of values
       // FIXME SONARJAVA-1776 fields accessing using "this." should be handled
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
     }
-    programState = programState.stackValue(value);
   }
 
   private void executeLogicalAssignement(AssignmentExpressionTree tree) {
@@ -635,8 +666,8 @@ public class ExplodedGraphWalker {
       programState = unstack.state;
       SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
       symbolicValue.computedFrom(ImmutableList.of(assignedTo, value));
-      programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
       programState = programState.stackValue(symbolicValue);
+      programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
     }
   }
 
@@ -701,14 +732,14 @@ public class ExplodedGraphWalker {
     programState = unstackUnary.state;
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.values);
-    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
-      && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
-      programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
-    }
     if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
       programState = programState.stackValue(unstackUnary.values.get(0));
     } else {
       programState = programState.stackValue(unarySymbolicValue);
+    }
+    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
+      && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
+      programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
     }
   }
 
@@ -717,10 +748,12 @@ public class ExplodedGraphWalker {
     SymbolicValue value = programState.getValue(symbol);
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
-      programState = programState.put(symbol, value);
+      programState = programState.stackValue(value);
       learnIdentifierNullConstraints(tree, value);
+    } else {
+      programState = programState.stackValue(value);
     }
-    programState = programState.stackValue(value);
+    programState = programState.put(symbol, value);
   }
 
   private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {
@@ -763,7 +796,7 @@ public class ExplodedGraphWalker {
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
-    if (isLocalMethodInvocation(tree)) {
+    if (isLocalMethodInvocation(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
       resetFieldValues();
     }
   }
@@ -803,23 +836,39 @@ public class ExplodedGraphWalker {
     enqueue(programPoint, programState, false);
   }
 
-  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
+  public void enqueue(ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath) {
+    ExplodedGraph.ProgramPoint programPoint = newProgramPoint;
+
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
-      debugPrint(programState);
-      return;
+      if (isRestartingForEachLoop(programPoint)) {
+        // reached the max number of visit by program point, so take the false branch with current program state
+        programPoint = new ExplodedGraph.ProgramPoint(programPoint.block.falseBlock(), 0);
+      } else {
+        debugPrint(programPoint);
+        return;
+      }
     }
     checkExplodedGraphTooBig(programState);
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
+    ProgramState ps = programState.visitedPoint(programPoint, nbOfExecution + 1);
+    ps.lastEvaluated = programState.getLastEvaluated();
+    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, ps);
     if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
+      cachedNode.addParent(node);
       return;
     }
     cachedNode.exitPath = exitPath;
     if(node != null) {
       cachedNode.happyPath = node.happyPath;
     }
+    cachedNode.setParent(node);
     workList.addFirst(cachedNode);
+  }
+
+  private static boolean isRestartingForEachLoop(ExplodedGraph.ProgramPoint programPoint) {
+    Tree terminator = programPoint.block.terminator();
+    return terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT);
   }
 
   private void checkExplodedGraphTooBig(ProgramState programState) {
@@ -838,7 +887,8 @@ public class ExplodedGraphWalker {
   public static class ExplodedGraphWalkerFactory {
 
     private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
-    private final List<SECheck> seChecks = new ArrayList<>();
+    @VisibleForTesting
+    final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
       List<SECheck> checks = new ArrayList<>();
@@ -856,6 +906,7 @@ public class ExplodedGraphWalker {
       seChecks.add(removeOrDefault(checks, new LocksNotUnlockedCheck()));
       seChecks.add(removeOrDefault(checks, new NonNullSetToNullCheck()));
       seChecks.add(removeOrDefault(checks, new NoWayOutLoopCheck()));
+      seChecks.add(removeOrDefault(checks, new OptionalGetBeforeIsPresentCheck()));
       seChecks.addAll(checks);
     }
 

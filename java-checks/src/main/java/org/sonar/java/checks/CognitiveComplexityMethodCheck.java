@@ -58,7 +58,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 @Rule(key = "S3776")
 public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor {
 
-  private static final int DEFAULT_MAX = 10;
+  private static final int DEFAULT_MAX = 15;
 
   @RuleProperty(
           key = "Threshold",
@@ -97,10 +97,12 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
     private final Set<Tree> ignored;
     int complexity;
     int nesting;
+    boolean ignoreNesting;
 
     CognitiveComplexityVisitor() {
       complexity = 0;
       nesting = 1;
+      ignoreNesting = false;
       flow = new ArrayList<>();
       ignored = new HashSet<>();
     }
@@ -115,7 +117,10 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
 
     private void increaseComplexity(Tree tree, int increase) {
       complexity += increase;
-      if(!ignored.contains(tree)) {
+      if (ignoreNesting) {
+        flow.add(new JavaFileScannerContext.Location("+1", tree));
+        ignoreNesting = false;
+      } else if (!ignored.contains(tree)) {
         String message = "+" + increase;
         if (increase > 1) {
           message += " (incl " + (increase - 1) + " for nesting)";
@@ -133,8 +138,12 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
       nesting--;
       boolean elseStatementNotIF = tree.elseStatement() != null && !tree.elseStatement().is(IF_STATEMENT);
       if(elseStatementNotIF) {
-        increaseComplexityByNesting(tree.elseKeyword());
+        increaseComplexityByOne(tree.elseKeyword());
         nesting++;
+      } else if(tree.elseStatement() != null) {
+        // else statement is an if, visiting it will increase complexity by nesting so by one only.
+        ignoreNesting = true;
+        complexity -= nesting - 1;
       }
       scan(tree.elseStatement());
       if(elseStatementNotIF) {

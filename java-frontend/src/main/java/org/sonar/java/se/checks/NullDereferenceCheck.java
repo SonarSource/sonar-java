@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -35,7 +34,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
@@ -86,11 +87,14 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     Constraint constraint = programState.getConstraint(currentVal);
     if (constraint != null && constraint.isNull()) {
-      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
-      if(((ObjectConstraint) constraint).syntaxNode() != null ) {
-        secondary.add(new JavaFileScannerContext.Location("", ((ObjectConstraint) constraint).syntaxNode()));
+      String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
+      Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
+      SymbolicValue val = null;
+      if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
+        val = currentVal;
       }
-      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here", secondary);
+      flows.add(SECheck.flow(context.getNode(), val));
+      context.reportIssue(syntaxNode, this, message, flows);
       return null;
     }
     constraint = programState.getConstraint(currentVal);

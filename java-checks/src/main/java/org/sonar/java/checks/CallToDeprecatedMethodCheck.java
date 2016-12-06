@@ -94,7 +94,11 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDeprecated(Symbol symbol) {
-    return symbol.isDeprecated() || (isConstructor(symbol) && symbol.owner().isDeprecated());
+    return symbol.isDeprecated() || (isConstructor(symbol) && symbol.owner().isDeprecated()) || isDeprecatedEnumConstant(symbol);
+  }
+
+  private static boolean isDeprecatedEnumConstant(Symbol symbol) {
+    return symbol.isVariableSymbol() && symbol.isEnum() && symbol.type().symbol().isDeprecated();
   }
 
   private static boolean isConstructor(Symbol symbol) {

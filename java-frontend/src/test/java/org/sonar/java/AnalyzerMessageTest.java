@@ -95,4 +95,16 @@ public class AnalyzerMessageTest {
     assertThat(analyzerMessage.getCost()).isNull();
     assertThat(analyzerMessage.primaryLocation()).isNull();
   }
+
+  @Test
+  public void toString_test() throws Exception {
+    JavaCheck javaCheck = mock(JavaCheck.class);
+    File file = new File("file");
+    String message = "analyzer message";
+    int cost = 0;
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, 12, message, cost);
+    assertThat(analyzerMessage.toString()).isEqualTo("'analyzer message' in file:12");
+    analyzerMessage = new AnalyzerMessage(javaCheck, null, null, null, cost);
+    assertThat(analyzerMessage.toString()).isEqualTo("'null' in null:null");
+  }
 }

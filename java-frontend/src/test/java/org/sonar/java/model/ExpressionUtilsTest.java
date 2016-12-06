@@ -32,10 +32,13 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPrivate;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ExpressionUtilsTest {
@@ -85,5 +88,15 @@ public class ExpressionUtilsTest {
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(2))).isFalse();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(3))).isFalse();
+  }
+
+  @Test
+  public void private_constructor() throws Exception {
+    assertThat(isFinal(ExpressionUtils.class.getModifiers())).isTrue();
+    Constructor<ExpressionUtils> constructor = ExpressionUtils.class.getDeclaredConstructor();
+    assertThat(isPrivate(constructor.getModifiers())).isTrue();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
   }
 }

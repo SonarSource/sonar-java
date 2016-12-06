@@ -122,12 +122,10 @@ public class Struts139Test {
   @Test
   public void complexity_metrics() {
     setCurrentProject();
-    // Add 208 getters/setters
-    int expectedComplexity = 6740 + 208;
-    assertThat(getProjectMeasure("complexity").getIntValue()).isEqualTo(expectedComplexity);
+    assertThat(getProjectMeasure("complexity").getIntValue()).isEqualTo(5603);
 
-    assertThat(getProjectMeasure("class_complexity").getValue()).isEqualTo(20.6);
-    assertThat(getProjectMeasure("function_complexity").getValue()).isEqualTo(2.4);
+    assertThat(getProjectMeasure("class_complexity").getValue()).isEqualTo(16.6);
+    assertThat(getProjectMeasure("function_complexity").getValue()).isEqualTo(1.9);
 
     int expected_statements = 12103;
     expected_statements += 3; // empty statements in type declaration or member of classes in struts-1.3.9
@@ -139,16 +137,16 @@ public class Struts139Test {
     setCurrentProject();
     assertThat(orchestrator.getServer().getWsClient().find(
         ResourceQuery.createForMetrics(JavaTestSuite.keyFor(MODULE_CORE, "org/apache/struts/config", ""), "file_complexity_distribution"))
-        .getMeasure("file_complexity_distribution").getData()).isEqualTo("0=2;5=2;10=2;20=0;30=4;60=4;90=1");
-    assertThat(getCoreModuleMeasure("file_complexity_distribution").getData()).isEqualTo("0=42;5=23;10=22;20=11;30=17;60=9;90=10");
-    assertThat(getProjectMeasure("file_complexity_distribution").getData()).isEqualTo("0=131;5=39;10=47;20=37;30=35;60=16;90=15");
+        .getMeasure("file_complexity_distribution").getData()).isEqualTo("0=3;5=1;10=2;20=1;30=5;60=2;90=1");
+    assertThat(getCoreModuleMeasure("file_complexity_distribution").getData()).isEqualTo("0=49;5=24;10=22;20=8;30=17;60=5;90=9");
+    assertThat(getProjectMeasure("file_complexity_distribution").getData()).isEqualTo("0=141;5=44;10=55;20=26;30=34;60=7;90=13");
   }
 
   @Test
   public void function_complexity_distribution() {
     assertThat(orchestrator.getServer().getWsClient().find(
         ResourceQuery.createForMetrics(JavaTestSuite.keyFor(MODULE_CORE, "org/apache/struts/config", ""), "function_complexity_distribution"))
-        .getMeasure("function_complexity_distribution").getData()).isEqualTo("1=134;2=88;4=11;6=12;8=7;10=2;12=8");
+        .getMeasure("function_complexity_distribution").getData()).isEqualTo("1=134;2=96;4=12;6=9;8=6;10=0;12=5");
   }
 
   @Test

@@ -1,6 +1,4 @@
-import java.lang.Deprecated;
-
-public class CallToDeprecatedMethod {
+class CallToDeprecatedMethod {
 
   public CallToDeprecatedMethod() {
     String string = new String("my string");
@@ -9,6 +7,15 @@ public class CallToDeprecatedMethod {
     new MyDeprecatedClass(); // Noncompliant
     old++; // Noncompliant
     MyDeprecatedClass.a++; // Noncompliant
+  }
+
+  void useDeprecatedEum(Object o) {
+    useDeprecatedEum(DeprecatedEnum // Noncompliant
+      .A); // Noncompliant
+    useDeprecatedEum(DeprecatedEnum // Noncompliant
+      .B); // Noncompliant
+    useDeprecatedEum(PartiallyDeprecatedEnum.C);
+    useDeprecatedEum(PartiallyDeprecatedEnum.D); // Noncompliant
   }
 
   @Deprecated
@@ -70,5 +77,15 @@ public class CallToDeprecatedMethod {
       "".getBytes(1, 1, new byte[3], 7);
     }
   }
+}
 
+@Deprecated
+enum DeprecatedEnum {
+  A,
+  B;
+}
+
+enum PartiallyDeprecatedEnum {
+  C,
+  @Deprecated D;
 }

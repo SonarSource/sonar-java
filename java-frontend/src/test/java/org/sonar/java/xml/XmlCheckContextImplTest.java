@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -185,7 +186,7 @@ public class XmlCheckContextImplTest {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
         reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")";
-        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+        for (AnalyzerMessage secondary : analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList())) {
           reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
         }
         return null;
@@ -211,7 +212,7 @@ public class XmlCheckContextImplTest {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
         reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")[" + analyzerMessage.getCost() + "]";
-        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+        for (AnalyzerMessage secondary : analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList())) {
           reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
         }
         return null;
@@ -263,7 +264,7 @@ public class XmlCheckContextImplTest {
       public Void answer(InvocationOnMock invocation) throws Throwable {
         AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
         reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")";
-        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+        for (AnalyzerMessage secondary : analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList())) {
           reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
         }
         return null;
@@ -287,18 +288,18 @@ public class XmlCheckContextImplTest {
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        reportedMessage = "onLine:" + (String) invocation.getArguments()[3];
+        reportedMessage = "onLine:" + invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq((Integer) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(LINE), anyString(), eq(null));
 
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        reportedMessage = "onFile:" + (String) invocation.getArguments()[3];
+        reportedMessage = "onFile:" + invocation.getArguments()[3];
         return null;
       }
-    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq((Integer) null));
+    }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq(null));
 
     return sonarComponents;
   }

@@ -22,15 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,6 +33,17 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class
     LiveVariables {
@@ -115,18 +117,8 @@ public class
         blockOut = new HashSet<>();
         out.put(block, blockOut);
       }
-      for (CFG.Block successor : block.successors()) {
-        Set<Symbol> inOfSuccessor = in.get(successor);
-        if (inOfSuccessor != null) {
-          blockOut.addAll(inOfSuccessor);
-        }
-      }
-      for (CFG.Block successor : block.exceptions()) {
-        Set<Symbol> inOfSuccessor = in.get(successor);
-        if (inOfSuccessor != null) {
-          blockOut.addAll(inOfSuccessor);
-        }
-      }
+      block.successors().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
+      block.exceptions().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
       // in = gen and (out - kill)
       Set<Symbol> newIn = new HashSet<>(gen.get(block));
       newIn.addAll(Sets.difference(blockOut, kill.get(block)));
@@ -135,9 +127,7 @@ public class
         continue;
       }
       in.put(block, newIn);
-      for (CFG.Block predecessor : block.predecessors()) {
-        workList.addLast(predecessor);
-      }
+      block.predecessors().forEach(workList::addLast);
     }
   }
 

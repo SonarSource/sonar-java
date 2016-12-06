@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class ExpressionUtils {
+public final class ExpressionUtils {
 
   private ExpressionUtils() {
   }

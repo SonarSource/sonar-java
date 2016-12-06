@@ -1,6 +1,3 @@
-import java.lang.Override;
-import java.lang.String;
-
 enum foo  {
   FOO{
     @Override
@@ -25,8 +22,16 @@ interface Handler {
   String handle();
 }
 
+interface MyInterface {
+  enum InnerEnum {
+    A,B,C;
+  }
+}
+
 class A {
   void toto() {
+    new MyInterface() {}; // Compliant
+
     new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
       @Override
       public String handle() {
@@ -67,16 +72,16 @@ class A {
         return new C().fun();
       }
     };
-    
+
     new Handler(){ // Compliant
       int myVar;
-      
+
       @Override
       public String handle() {
         return "";
       }
     };
-    
+
     new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
       @Override
       public String handle() {
@@ -124,11 +129,8 @@ class A {
       };
     }
   }
-
-
-
-
 }
+
 class SamWithException {
 
   class MyCheckedException extends Exception {}

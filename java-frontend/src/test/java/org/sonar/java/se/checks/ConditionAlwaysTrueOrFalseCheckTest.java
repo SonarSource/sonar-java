@@ -29,4 +29,24 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
   }
 
+  @Test
+  public void condition_always_true_with_optional() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
+  public void resetFields_ThreadSleepCalls() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
+  public void reporting() {
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
+  public void reporting_getting_wrong_parent() {
+    // Checks flow iterating through the correct parent
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
 }

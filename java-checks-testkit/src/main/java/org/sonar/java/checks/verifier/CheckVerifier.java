@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -77,7 +78,6 @@ public abstract class CheckVerifier {
   private final ArrayListMultimap<Integer, Map<IssueAttribute, String>> expected = ArrayListMultimap.create();
   private boolean expectNoIssues = false;
   private String expectFileIssue;
-  private Integer expectFileIssueOnline;
 
   public void expectNoIssues() {
     this.expectNoIssues = true;
@@ -85,10 +85,6 @@ public abstract class CheckVerifier {
 
   public void setExpectedFileIssue(String expectFileIssue) {
     this.expectFileIssue = expectFileIssue;
-  }
-
-  public void expectFileIssueOnline(Integer expectFileIssueOnline) {
-    this.expectFileIssueOnline = expectFileIssueOnline;
   }
 
   public abstract String getExpectedIssueTrigger();
@@ -235,7 +231,7 @@ public abstract class CheckVerifier {
     assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
     assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
     if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
-      List<AnalyzerMessage> secondaryLocations = analyzerMessage.secondaryLocations;
+      List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList());
       Multiset<String> actualLines = HashMultiset.create();
       for (AnalyzerMessage secondaryLocation : secondaryLocations) {
         actualLines.add(Integer.toString(secondaryLocation.getLine()));
@@ -250,6 +246,7 @@ public abstract class CheckVerifier {
         }
       }
       if (!expected.isEmpty() || !unexpected.isEmpty()) {
+        // Line is not covered by JaCoCo because of thrown exception but effectively covered in UT.
         Fail.fail(String.format("Secondary locations: expected: %s unexpected:%s. In %s:%d", expected, unexpected, normalizedFilePath(analyzerMessage), analyzerMessage.getLine()));
       }
     }
@@ -271,9 +268,9 @@ public abstract class CheckVerifier {
   }
 
   private void assertSingleIssue(Set<AnalyzerMessage> issues) {
-    Preconditions.checkState(issues.size() == 1, "A single issue is expected with line " + expectFileIssueOnline);
+    Preconditions.checkState(issues.size() == 1, "A single issue is expected on the file");
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
-    assertThat(issue.getLine()).isEqualTo(expectFileIssueOnline);
+    assertThat(issue.getLine()).isNull();
     assertThat(issue.getMessage()).isEqualTo(expectFileIssue);
   }
 

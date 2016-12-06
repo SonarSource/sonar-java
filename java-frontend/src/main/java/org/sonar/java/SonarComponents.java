@@ -22,6 +22,8 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.RecognitionException;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -34,6 +36,7 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -49,6 +52,7 @@ import java.util.List;
 @SonarLintSide
 public class SonarComponents {
 
+  private static final Version SQ_6_0 = Version.create(6, 0);
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
@@ -205,11 +209,17 @@ public class SonarComponents {
     } else {
       issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
     }
-    for (AnalyzerMessage location : analyzerMessage.secondaryLocations) {
-      AnalyzerMessage.TextSpan secondarySpan = location.primaryLocation();
-      issue.addSecondaryLocation(
-        inputFromIOFile(location.getFile()), secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, location.getMessage());
+    issue.addFlow(inputFromIOFile(analyzerMessage.getFile()), analyzerMessage.flows).save();
+  }
+
+  public boolean reportAnalysisError(RecognitionException re, File file) {
+    if (context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0)) {
+      context.newAnalysisError()
+        .onFile(inputFromIOFile(file))
+        .message(re.getMessage())
+        .save();
+      return context.runtime().getProduct() == SonarProduct.SONARLINT;
     }
-    issue.save();
+    return false;
   }
 }

@@ -1,0 +1,15 @@
+{
+  "title": "\"wait\" and \"notify\" should not be called when multiple locks are held",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "multi-threading",
+    "bug",
+    "deadlock"
+  ],
+  "defaultSeverity": "Blocker"
+}

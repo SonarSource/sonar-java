@@ -116,6 +116,10 @@ public class JavaSymbolTest {
     assertThat(methodSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(methodSymbol.enclosingClass()).isSameAs(typeSymbol);
 
+    assertThat(methodSymbol.toString()).isEqualTo("t#name()");
+    assertThat(new JavaSymbol.MethodJavaSymbol(42, "name", Symbols.unknownType.symbol).toString()).isEqualTo("!unknownOwner!#name()");
+    assertThat(Symbols.unknownMethodSymbol.toString()).isEqualTo("!unknownOwner!#!unknownMethod!()");
+
     JavaSymbol.MethodJavaSymbol constructor = new JavaSymbol.MethodJavaSymbol(42, "<init>", typeSymbol);
     assertThat(constructor.kind).isEqualTo(JavaSymbol.MTH);
     assertTrue(constructor.isMethodSymbol());
@@ -126,6 +130,8 @@ public class JavaSymbolTest {
     assertThat(constructor.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(constructor.outermostClass()).isSameAs(outermostClass);
     assertThat(constructor.enclosingClass()).isSameAs(typeSymbol);
+
+    assertThat(constructor.toString()).isEqualTo("t#<init>()");
   }
 
   @Test

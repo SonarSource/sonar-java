@@ -41,7 +41,7 @@ class CognitiveComplexityCheck {
   }
 
 
-  public void switch2(){ // Noncompliant [[sc=15;ec=22;secondary=46,50,51,51,51,55,57]] {{Refactor this method to reduce its Cognitive Complexity from 14 to the 0 allowed.}}
+  public void switch2(){ // Noncompliant [[sc=15;ec=22;secondary=46,50,51,51,51,55,57]] {{Refactor this method to reduce its Cognitive Complexity from 12 to the 0 allowed.}}
 
     switch(foo){                              //+1
       case 1:
@@ -54,7 +54,7 @@ class CognitiveComplexityCheck {
 
           if(element.is(Tree.Kind.ASSIGNMENT)) { //+3 (nesting=2)
             out.remove(symbol);
-          } else {                               //+3 (nesting=2)
+          } else {                               //+1
             out.add(symbol);
           }
         }
@@ -62,6 +62,16 @@ class CognitiveComplexityCheck {
     }
   }
 
+  public void extraCondition11() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+    if (a || (b || c)) {}
+  }
+
+  public void breakWithLabel(java.util.Collection<Boolean> objects) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
+    doABarrelRoll:
+    for(Object o : objects) { // +1
+      break doABarrelRoll;    // +1
+    }
+  }
 
   public void doFilter(ServletRequest servletRequest) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 13 to the 0 allowed.}}
 
@@ -143,7 +153,8 @@ class CognitiveComplexityCheck {
 
   private static String getValueToEval( List<String> strings ) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 6 to the 0 allowed.}}
 
-    if (Measure.Level.ERROR.equals(alertLevel) && foo = YELLOW) {   // 1
+    if (Measure.Level.ERROR.equals(alertLevel) // +1
+      && foo = YELLOW) {   // +1
       return condition.getErrorThreshold();
     } else if (Measure.Level.WARN.equals(alertLevel)) {             // 1
       return condition.getWarningThreshold();
@@ -260,6 +271,23 @@ class CognitiveComplexityCheck {
     class local {
       boolean plop() { // compliant : will be counted in the enclosing method
         return a && b || c && d;
+      }
+    }
+  }
+
+  void noNestingForIfElseIf() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 21 to the 0 allowed.}}
+    while (true) { // +1
+      if (true) { // +2 (nesting=1)
+        for (;;) { // +3 (nesting=2)
+          if (true) { // +4 (nesting=3)
+          } else if (true) { // +1
+          } else { // +1
+            if (true) {
+            } // +5 (nesting=4)
+          }
+
+          if (true) {} // +4 (nesting=3)
+        }
       }
     }
   }

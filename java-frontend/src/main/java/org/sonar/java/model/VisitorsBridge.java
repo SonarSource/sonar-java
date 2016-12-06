@@ -35,12 +35,10 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -61,7 +59,7 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), Lists.<File>newArrayList(), null);
+    this(Collections.singletonList(visitor), Lists.newArrayList(), null);
   }
 
   @VisibleForTesting
@@ -98,7 +96,7 @@ public class VisitorsBridge {
 
   public void visitFile(@Nullable Tree parsedTree) {
     semanticModel = null;
-    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
+    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.newArrayList(), Lists.newArrayList(), null);
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;
@@ -177,12 +175,14 @@ public class VisitorsBridge {
     }
   }
 
-  public void processRecognitionException(RecognitionException e) {
-    for (JavaFileScanner scanner : scanners) {
-      if (scanner instanceof AstScannerExceptionHandler) {
-        ((AstScannerExceptionHandler) scanner).processRecognitionException(e);
-      }
+  public void processRecognitionException(RecognitionException e, File file) {
+    if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
+      this.visitFile(null);
+      scanners.stream()
+        .filter(scanner -> scanner instanceof AstScannerExceptionHandler)
+        .forEach(scanner -> ((AstScannerExceptionHandler) scanner).processRecognitionException(e));
     }
+
   }
 
   public void setCurrentFile(File currentFile) {

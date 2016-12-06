@@ -57,10 +57,9 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     scan(context.getTree());
   }
 
-
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (!loopLevel.isEmpty() && isStringConcatenation(tree) && isNotLoopLocalVar(tree)) {
+    if (!loopLevel.isEmpty() && isStringConcatenation(tree) && isNotLoopLocalVar(tree) && isNotArrayAccess(tree)) {
       context.reportIssue(this, tree.variable(), "Use a StringBuilder instead.");
     }
     super.visitAssignmentExpression(tree);
@@ -74,6 +73,10 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
       return false;
     }
     return true;
+  }
+
+  private static boolean isNotArrayAccess(AssignmentExpressionTree tree) {
+    return !tree.variable().is(Tree.Kind.ARRAY_ACCESS_EXPRESSION);
   }
 
   private static IdentifierTree getIdentifierTree(ExpressionTree tree) {

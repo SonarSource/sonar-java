@@ -1,0 +1,19 @@
+{
+  "title": "\"getClass\" should not be used for synchronization",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "security",
+    "multi-threading",
+    "bug",
+    "cert"
+  ],
+  "standards": [
+    "CERT"
+  ],
+  "defaultSeverity": "Major"
+}

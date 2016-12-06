@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -49,6 +50,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -56,6 +58,11 @@ public class NonNullSetToNullCheck extends SECheck {
   private static final String[] ANNOTATIONS = {"javax.annotation.Nonnull", "javax.validation.constraints.NotNull",
     "edu.umd.cs.findbugs.annotations.NonNull", "org.jetbrains.annotations.NotNull", "lombok.NonNull",
     "android.support.annotation.NonNull"};
+
+  private static final String[] JPA_ANNOTATIONS = {
+    "javax.persistence.Entity",
+    "javax.persistence.Embeddable"
+  };
 
   private MethodTree methodTree;
 
@@ -80,7 +87,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    if (methodTree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
@@ -88,6 +95,16 @@ public class NonNullSetToNullCheck extends SECheck {
         }
       }
     }
+  }
+
+  private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {
+    if (!methodTree.block().body().isEmpty()) {
+      // Constructor does something.
+      return false;
+    }
+
+    SymbolMetadata symbolMetadata = ((ClassTree) methodTree.parent()).symbol().metadata();
+    return Stream.of(JPA_ANNOTATIONS).anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {

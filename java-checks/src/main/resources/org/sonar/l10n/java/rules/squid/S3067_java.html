@@ -1,0 +1,28 @@
+<p><code>getClass</code> should not be used for synchronization in non-<code>final</code> classes because child classes will synchronize on a
+different object than the parent or each other, allowing multiple threads into the code block at once, despite the <code>synchronized</code>
+keyword.</p>
+<p>Instead, hard code the name of the class on which to synchronize or make the class <code>final</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyClass {
+  public void doSomethingSynchronized(){
+    synchronized (this.getClass()) {  // Noncompliant
+      // ...
+    }
+  }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class MyClass {
+  public void doSomethingSynchronized(){
+    synchronized (MyClass.class) {
+      // ...
+    }
+  }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/bwCaAg">CERT, LCK02-J.</a> - Do not synchronize on the class object returned by
+  getClass() </li>
+</ul>
+

@@ -32,6 +32,7 @@ import org.sonar.maven.model.maven2.MavenProject;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 @Beta
@@ -104,7 +105,7 @@ public class PomCheckVerifier extends CheckVerifier {
       AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, getFile(), line, message, 0);
       for (Location location : secondary) {
         AnalyzerMessage secondaryLocation = new AnalyzerMessage(check, getFile(), location.tree.startLocation().line(), location.msg, 0);
-        analyzerMessage.secondaryLocations.add(secondaryLocation);
+        analyzerMessage.flows.add(Collections.singletonList(secondaryLocation));
       }
       getMessages().add(analyzerMessage);
     }

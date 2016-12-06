@@ -41,14 +41,27 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPrivate;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ReassignmentFinderTest {
 
   private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
+
+  @Test
+  public void private_constructor() throws Exception {
+    assertThat(isFinal(ReassignmentFinder.class.getModifiers())).isTrue();
+    Constructor<ReassignmentFinder> constructor = ReassignmentFinder.class.getDeclaredConstructor();
+    assertThat(isPrivate(constructor.getModifiers())).isTrue();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
 
   @Test
   public void parameter() throws Exception {
@@ -140,6 +153,21 @@ public class ReassignmentFinderTest {
 
     List<StatementTree> statements = methodBody(code);
     ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(2));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
+  }
+
+  @Test
+  public void assignement_with_parenthesis() throws Exception {
+    String code = newCode(
+      "int foo() {",
+      "  int a;",
+      "  a = 0;",
+      "  int b = ((a));",
+      "  return a;",
+      "}");
+
+    List<StatementTree> statements = methodBody(code);
+    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(1));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 

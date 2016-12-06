@@ -1,7 +1,7 @@
 import java.nio.file.AccessMode;
 
 public enum Foo {
-  A, B, C;
+  A, B, @Deprecated C;
 }
 
 class MyClass {

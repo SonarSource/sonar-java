@@ -1,0 +1,56 @@
+<p>Double-checked locking is the practice of checking a lazy-initialized object's state both before and after a <code>synchronized</code> block is
+entered to determine whether or not to initialize the object.</p>
+<p>It does not work reliably in a platform-independent manner without additional synchronization for mutable instances of anything other than
+<code>float</code> or <code>int</code>. Using double-checked locking for the lazy initialization of any other type of primitive or mutable object
+risks a second thread using an uninitialized or partially initialized member while the first thread is still creating it, and crashing the
+program.</p>
+<p>There are multiple ways to fix this. The simplest one is to simply not use double checked locking at all, and synchronize the whole method instead.
+With early versions of the JVM, synchronizing the whole method was generally advised against for performance reasons. But <code>synchronized</code>
+performance has improved a lot in newer JVMs, so this is now a preferred solution. If you prefer to avoid using <code>synchronized</code> altogether,
+you can use an inner <code>static class</code> to hold the reference instead. Inner static classes are guaranteed to load lazily.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@NotThreadSafe
+public class DoubleCheckedLocking {
+    private static Resource resource;
+
+    public static Resource getInstance() {
+        if (resource == null) {
+            synchronized (DoubleCheckedLocking.class) {
+                if (resource == null)
+                    resource = new Resource();
+            }
+        }
+        return resource;
+    }
+
+    static class Resource {
+
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@ThreadSafe
+public class SafeLazyInitialization {
+    private static Resource resource;
+
+    public synchronized static Resource getInstance() {
+        if (resource == null)
+            resource = new Resource();
+        return resource;
+    }
+
+    static class Resource {
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a> </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/IgAZAg">CERT, LCK10-J.</a> - Use a correct form of the double-checked locking idiom
+  </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/609.html">MITRE, CWE-609</a> - Double-checked locking </li>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4">JLS 12.4</a> - Initialization of Classes and Interfaces </li>
+</ul>
+

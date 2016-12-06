@@ -366,7 +366,7 @@ public class CFGTest {
 
   public static final ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
 
-  private static CFG buildCFG(final String methodCode) {
+  public static CFG buildCFG(final String methodCode) {
     final CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
     SemanticModel.createFor(cut, Lists.newArrayList());
     final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
