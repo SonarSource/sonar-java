@@ -52,7 +52,7 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
         VariableTree variableTree = (VariableTree) member;
         ModifiersTree modifiers = variableTree.modifiers();
         ModifierKeywordTree publicModifier = ModifiersUtils.getModifier(modifiers, Modifier.PUBLIC);
-        if (publicModifier != null && (isNotStaticOrFinal(variableTree,variableTree.modifiers())|| isMutableFinalMember(variableTree))) {
+        if (publicModifier != null && (isNotStaticOrFinal(variableTree.modifiers())|| isMutableFinalMember(variableTree))) {
           reportIssue(publicModifier, "Lower the visibility of this field.");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
@@ -65,7 +65,7 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
   
-  private static boolean isNotStaticOrFinal(VariableTree variableTree, ModifiersTree modifiersTree) {
+  private static boolean isNotStaticOrFinal(ModifiersTree modifiersTree) {
     return !ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC)
       && !ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
   }
