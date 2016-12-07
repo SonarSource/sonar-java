@@ -126,6 +126,8 @@ public class ExplodedGraphWalker {
   ConstraintManager constraintManager;
   private boolean cleanup = true;
   MethodBehavior methodBehavior;
+  private List<ExplodedGraph.Node> endOfExecutionPath;
+
   public static class ExplodedGraphTooBigException extends RuntimeException {
 
     public ExplodedGraphTooBigException(String s) {
@@ -187,7 +189,7 @@ public class ExplodedGraphWalker {
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
-    List<ExplodedGraph.Node> endOfExecutionPath = new ArrayList<>();
+    endOfExecutionPath = new ArrayList<>();
     if(DEBUG_MODE_ACTIVATED) {
       LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
     }
@@ -202,9 +204,7 @@ public class ExplodedGraphWalker {
         throwMaxSteps(tree);
       }
       // LIFO:
-      node = workList.removeFirst();
-      programPosition = node.programPoint;
-      programState = node.programState;
+      setNode(workList.removeFirst());
       if (programPosition.block.successors().isEmpty()) {
         endOfExecutionPath.add(node);
         continue;
@@ -230,12 +230,7 @@ public class ExplodedGraphWalker {
       }
     }
 
-    endOfExecutionPath.forEach(n -> {
-      node = n;
-      programPosition = node.programPoint;
-      programState = node.programState;
-      handleEndOfExecutionPath();
-    });
+    handleEndOfExecutionPath();
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
     workList = null;
@@ -259,12 +254,24 @@ public class ExplodedGraphWalker {
   }
 
   private void interrupted() {
+    handleEndOfExecutionPath();
     checkerDispatcher.interruptedExecution();
   }
 
+  private void setNode(ExplodedGraph.Node node) {
+    this.node = node;
+    programPosition = this.node.programPoint;
+    programState = this.node.programState;
+  }
+
   private void handleEndOfExecutionPath() {
-    checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-    methodBehavior.createYield(programState, node.happyPath);
+    ExplodedGraph.Node savedNode = node;
+    endOfExecutionPath.forEach(n -> {
+      setNode(n);
+      checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+      methodBehavior.createYield(programState, node.happyPath);
+    });
+    setNode(savedNode);
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
