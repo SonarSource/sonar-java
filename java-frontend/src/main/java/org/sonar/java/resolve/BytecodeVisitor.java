@@ -271,7 +271,7 @@ public class BytecodeVisitor extends ClassVisitor {
         result = symbols.booleanType;
         break;
       case org.objectweb.asm.Type.ARRAY:
-        result = new ArrayJavaType(convertAsmType(asmType.getElementType()), symbols.arrayClass);
+        result = buildArrayType(convertAsmType(asmType.getElementType()), asmType.getDimensions());
         break;
       case org.objectweb.asm.Type.VOID:
         result = symbols.voidType;
@@ -280,6 +280,14 @@ public class BytecodeVisitor extends ClassVisitor {
         throw new IllegalArgumentException(asmType.toString());
     }
     return result;
+  }
+
+  private JavaType buildArrayType(JavaType elementType, int dimensions) {
+    ArrayJavaType type = new ArrayJavaType(elementType, symbols.arrayClass);
+    for (int i = 1; i < dimensions; i++) {
+      type = new ArrayJavaType(type, symbols.arrayClass);
+    }
+    return type;
   }
 
   /**

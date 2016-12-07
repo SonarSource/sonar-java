@@ -516,7 +516,21 @@ public class BytecodeCompleterTest {
 
     JavaType resultType = ((MethodJavaType) methodBuilder.type()).resultType;
     assertThat(resultType).isInstanceOf(ParametrizedTypeJavaType.class);
+  }
 
+  @Test
+  public void array_types_dimension_taken_into_account() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ArrayTypes");
+    Symbol field = clazz.lookupSymbols("field").iterator().next();
+
+    Type type = field.type();
+    assertThat(type.isArray()).isTrue();
+
+    Type elementType = ((Type.ArrayType) type).elementType();
+    assertThat(elementType.isArray()).isTrue();
+
+    elementType = ((Type.ArrayType) elementType).elementType();
+    assertThat(elementType.is("java.lang.Object")).isTrue();
   }
 
   @Test
