@@ -138,3 +138,58 @@ class Extra {
     T qix();
   }
 }
+
+abstract class E {
+  private final MyInterface myInterface1;
+  private final MyInterface myInterface2;
+
+  public E() {
+    myInterface1 = new MyInterface() {
+      @Override
+      public String foo() throws Exception {
+        return doInBackground(); // Compliant
+      }
+    };
+    myInterface2 = () -> doInBackground(); // Compliant
+  }
+
+  protected abstract String doInBackground() throws Exception;
+
+  interface MyInterface {
+    String foo() throws Exception;
+  }
+}
+
+class F {
+  public F(){
+    yaml = memoize(() -> loadYamlConfig("_config.yml")); // Compliant
+
+    data = memoize(() -> getResourceList() // Compliant
+      .stream()
+      .filter(path -> path.startsWith("_data/"))
+      .collect(toMap(Site::nameWithoutExtension, this::readYaml))
+    );
+  }
+
+  private Map<String, Object> loadYamlConfig(String configFile) {
+    return emptyMap();
+  }
+
+  public Set<String> getResourceList() {
+    return resourceList.get();
+  }
+}
+
+class G{
+  G(int value) {
+    this.profileActivator = new ProfileActivator() {
+      public void activate() throws Exception {
+        activateDeferredProfile();  // Compliant
+      }
+    };
+    ProfileDeferralMgr.registerDeferral(this.profileActivator);
+  }
+  void activateDeferredProfile()  throws Exception{
+
+  }
+}
