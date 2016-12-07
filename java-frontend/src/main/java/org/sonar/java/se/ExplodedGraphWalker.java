@@ -199,9 +199,7 @@ public class ExplodedGraphWalker {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
-        checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name()
-          + "#" +tree.simpleName().firstToken().line()+ " in class " + tree.symbol().owner().name());
+        throwMaxSteps(tree);
       }
       // LIFO:
       node = workList.removeFirst();
@@ -228,9 +226,7 @@ public class ExplodedGraphWalker {
           handleBlockExit(programPosition);
         }
       } catch (TooManyNestedBooleanStatesException e) {
-        checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException(
-          "reached maximum number of " + MAX_NESTED_BOOLEAN_STATES + " branched states for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name(), e);
+        throwTooManyBooleanStates(tree, e);
       }
     }
 
@@ -246,6 +242,24 @@ public class ExplodedGraphWalker {
     node = null;
     programState = null;
     constraintManager = null;
+  }
+
+  private void throwTooManyBooleanStates(MethodTree tree, TooManyNestedBooleanStatesException e) {
+    interrupted();
+    String message = String.format("reached maximum number of %d branched states for method %s in class %s",
+      MAX_NESTED_BOOLEAN_STATES, tree.simpleName().name(), tree.symbol().owner().name());
+    throw new MaximumStepsReachedException(message, e);
+  }
+
+  private void throwMaxSteps(MethodTree tree) {
+    interrupted();
+    String message = String.format("reached limit of %d steps for method %s#%d in class %s",
+      MAX_STEPS, tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
+    throw new MaximumStepsReachedException(message);
+  }
+
+  private void interrupted() {
+    checkerDispatcher.interruptedExecution();
   }
 
   private void handleEndOfExecutionPath() {
@@ -461,7 +475,7 @@ public class ExplodedGraphWalker {
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
       case OR_ASSIGNMENT:
-        executeLogicalAssignement((AssignmentExpressionTree) tree);
+        executeLogicalAssignment((AssignmentExpressionTree) tree);
         break;
       case ARRAY_ACCESS_EXPRESSION:
         executeArrayAccessExpression((ArrayAccessExpressionTree) tree);
@@ -664,7 +678,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void executeLogicalAssignement(AssignmentExpressionTree tree) {
+  private void executeLogicalAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
