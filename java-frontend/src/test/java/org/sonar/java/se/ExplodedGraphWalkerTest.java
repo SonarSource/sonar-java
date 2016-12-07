@@ -152,6 +152,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void test_maximum_steps_reached_with_issue() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/MaxStepsWithIssue.java", new UnclosedResourcesCheck());
+  }
+
+  @Test
   public void test_maximum_number_nested_states() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxNestedStates.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
       @Override
