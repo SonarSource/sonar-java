@@ -19,7 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -58,6 +60,13 @@ public class UnclosedResourcesCheck extends SECheck {
     OPENED, CLOSED
   }
 
+  @RuleProperty(
+    key = "excludedResourceTypes",
+    description = "Comma separated list of the excluded resource types, using fully qualified names (example: \"org.apache.hadoop.fs.FileSystem\")",
+    defaultValue = "")
+  public String excludedTypes = "";
+  private final List<String> excludedTypesList = new ArrayList<>();
+  
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
@@ -113,7 +122,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return ((MethodInvocationTree) tree).symbolType().name();
   }
 
-  private static boolean needsClosing(Type type) {
+  private boolean needsClosing(Type type) {
     if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
       return false;
     }
@@ -122,14 +131,28 @@ public class UnclosedResourcesCheck extends SECheck {
         return false;
       }
     }
+    for (String excludedType : loadExcludedTypesList()) {
+      if (type.is(excludedType)) {
+        return false;
+      }
+    }
     return isCloseable(type);
+  }
+  
+  private List<String> loadExcludedTypesList() {
+    if ( excludedTypesList.isEmpty() && !StringUtils.isBlank(excludedTypes)) {
+      for (String excludedType : excludedTypes.split(",")) {
+        excludedTypesList.add(excludedType.trim());
+      }
+    }
+    return excludedTypesList;
   }
 
   private static boolean isCloseable(Type type) {
     return type.isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE) || type.isSubtypeOf(JAVA_IO_CLOSEABLE);
   }
 
-  private static boolean isOpeningResource(NewClassTree syntaxNode) {
+  private boolean isOpeningResource(NewClassTree syntaxNode) {
     if (isWithinTryHeader(syntaxNode)) {
       return false;
     }
@@ -191,7 +214,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   }
 
-  private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
+  private class PreStatementVisitor extends CheckerTreeNodeVisitor {
     // closing methods
     private static final String CLOSE = "close";
     private static final String GET_MORE_RESULTS = "getMoreResults";
@@ -259,7 +282,7 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private static boolean isNonLocalStorage(ExpressionTree variable) {
+    private boolean isNonLocalStorage(ExpressionTree variable) {
       if (variable.is(Tree.Kind.IDENTIFIER)) {
         Symbol owner = ((IdentifierTree) variable).symbol().owner();
         return !owner.isMethodSymbol();
@@ -322,7 +345,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
   }
 
-  private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
+  private class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
     PostStatementVisitor(CheckerContext context) {
       super(context.getState());
@@ -354,7 +377,7 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private static boolean isJdbcResourceCreation(ExpressionTree targetExpression) {
+    private boolean isJdbcResourceCreation(ExpressionTree targetExpression) {
       for (String creator : JDBC_RESOURCE_CREATIONS) {
         if (targetExpression.symbolType().is(creator)) {
           return true;
