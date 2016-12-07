@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -33,7 +34,6 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
 import java.util.List;
 
 @Rule(key = "S3066")
@@ -49,11 +49,10 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
     ClassTree enumTree = (ClassTree) tree;
     for (Tree member : enumTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
-        ModifiersTree modifiers = ((VariableTree) member).modifiers();
+        VariableTree variableTree = (VariableTree) member;
+        ModifiersTree modifiers = variableTree.modifiers();
         ModifierKeywordTree publicModifier = ModifiersUtils.getModifier(modifiers, Modifier.PUBLIC);
-        if (publicModifier != null && !ModifiersUtils.hasModifier(modifiers, Modifier.STATIC)
-        // FIXME SONARJAVA-1604 final mutable field should raise issues
-          && !ModifiersUtils.hasModifier(modifiers, Modifier.FINAL)) {
+        if (publicModifier != null && (isNotStaticOrFinal(variableTree.modifiers())|| isMutableFinalMember(variableTree))) {
           reportIssue(publicModifier, "Lower the visibility of this field.");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
@@ -64,6 +63,25 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
         }
       }
     }
+  }
+  
+  private static boolean isNotStaticOrFinal(ModifiersTree modifiersTree) {
+    return !ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC)
+      && !ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
+  }
+  
+  private static boolean isMutableFinalMember(VariableTree variableTree) {
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL) && isMutableMember(variableTree);
+  }
+  
+  private static boolean isMutableMember(VariableTree variableTree) {
+    return variableTree.type().is(Tree.Kind.ARRAY_TYPE) || isDateOrCollection(variableTree);
+  }
+  
+  private static boolean isDateOrCollection(VariableTree variableTree) {
+    Type type = variableTree.symbol().type();
+    return type.is("java.util.Date") ||
+      (type.isSubtypeOf("java.util.Collection") && !type.isSubtypeOf("com.google.common.collect.ImmutableCollection"));
   }
 
   private static boolean isSetter(MethodTree methodTree) {
