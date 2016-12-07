@@ -65,7 +65,7 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
   
-  private static boolean isNotStaticOrFinal(ModifiersTree modifiersTree) {
+  private static boolean isNotStaticOrFinal( ModifiersTree modifiersTree) {
     return !ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC)
       && !ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
   }
