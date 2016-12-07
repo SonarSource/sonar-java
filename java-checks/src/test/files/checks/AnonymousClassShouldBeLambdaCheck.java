@@ -145,3 +145,27 @@ class SamWithException {
     });
   }
 }
+
+abstract class WithinLambda {
+
+  @FunctionalInterface
+  interface Action<T> {
+    T run();
+  }
+
+  abstract <T> T doSomething(Action<T> action);
+
+  private void bar(WithinLambda a) {
+    a.doSomething(
+      (Action<Void>) () -> {
+        new Thread(
+          new Runnable() { // FN: not handled
+            @Override
+            public void run() {
+              // do somehting
+            }
+          });
+        return null;
+      });
+  }
+}
