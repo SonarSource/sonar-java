@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.scan.filesystem.PathResolver;
@@ -140,13 +139,13 @@ public class JaCoCoOverallSensorTest {
 
   private void verifyOverallMetrics(InputFile resource,int[] zeroHitlines, int[] oneHitlines, int coveredConditions) {
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(resource.key(), zeroHitline)).isEqualTo(0);
     }
     for (int oneHitline : oneHitlines) {
-      assertThat(context.lineHits(resource.key(), CoverageType.OVERALL, oneHitline)).isEqualTo(1);
+      assertThat(context.lineHits(resource.key(), oneHitline)).isEqualTo(1);
     }
-    assertThat(context.conditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(2);
-    assertThat(context.coveredConditions(resource.key(), CoverageType.OVERALL, 14)).isEqualTo(coveredConditions);
+    assertThat(context.conditions(resource.key(), 14)).isEqualTo(2);
+    assertThat(context.coveredConditions(resource.key(), 14)).isEqualTo(coveredConditions);
   }
 
   private InputFile analyseReports(String utReport, String itReport) throws IOException {
