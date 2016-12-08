@@ -46,7 +46,6 @@ public class MyClass {
     releaseLock();
   }
 
-  boolean foo;
   public void multipleLockState() {
     Lock lock = new ReentrantLock();
     if(foo) {
@@ -190,7 +189,7 @@ public class MyClass {
       lock.tryLock();
     }
     lock.unlock();
-    while (Random.nextBoolean()) {
+    while (foo) {
       lock.tryLock(); // Noncompliant
       lock =  new ReentrantLock();
     }

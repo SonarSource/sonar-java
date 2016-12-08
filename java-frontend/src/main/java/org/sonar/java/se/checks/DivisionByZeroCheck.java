@@ -44,7 +44,7 @@ import java.util.List;
 public class DivisionByZeroCheck extends SECheck {
 
   private enum Status {
-    ZERO, NON_ZERO, UNDETERMINED
+    ZERO, NON_ZERO, UNDETERMINED;
   }
 
   /**

@@ -72,7 +72,7 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     PCollections.emptyMap(),
-    Lists.newLinkedList(),
+    Lists.<SymbolicValue>newLinkedList(),
     null);
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
@@ -88,7 +88,7 @@ public class ProgramState {
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack, @Nullable SymbolicValue returnSymbolicValue) {
+    Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
