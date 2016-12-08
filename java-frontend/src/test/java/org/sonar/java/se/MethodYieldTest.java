@@ -251,15 +251,15 @@ public class MethodYieldTest {
     MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
     assertThat(methodBehavior.yields()).hasSize(2);
     MethodYield[] expected = new MethodYield[] {
-      buildMethodYield(0, null, (Constraint) null),
-      buildMethodYield(-1, new ObjectConstraint(true, false, null), (Constraint) null)};
+      buildMethodYield(0, null),
+      buildMethodYield(-1, ObjectConstraint.nullConstraint())};
     assertThat(methodBehavior.yields()).contains((Object[]) expected);
   }
 
-  private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint, Constraint... paramConstraints) {
-    MethodYield methodYield = new MethodYield(paramConstraints.length, false);
+  private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
+    MethodYield methodYield = new MethodYield(1, false);
     methodYield.resultIndex = resultIndex;
-    methodYield.parametersConstraints = paramConstraints;
+    methodYield.parametersConstraints = new Constraint[] {null};
     methodYield.exception = false;
     methodYield.resultConstraint = resultConstraint;
     return methodYield;
