@@ -81,6 +81,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class ExplodedGraphWalker {
   ConstraintManager constraintManager;
   private boolean cleanup = true;
   MethodBehavior methodBehavior;
-  private List<ExplodedGraph.Node> endOfExecutionPath;
+  private Set<ExplodedGraph.Node> endOfExecutionPath;
 
   public static class ExplodedGraphTooBigException extends RuntimeException {
 
@@ -189,7 +190,7 @@ public class ExplodedGraphWalker {
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
-    endOfExecutionPath = new ArrayList<>();
+    endOfExecutionPath = new HashSet<>();
     if(DEBUG_MODE_ACTIVATED) {
       LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
     }

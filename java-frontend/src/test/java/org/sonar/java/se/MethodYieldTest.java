@@ -28,6 +28,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -40,12 +41,14 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -75,8 +78,10 @@ public class MethodYieldTest {
   @Test
   public void test_toString() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    MethodYield yield = getMethodBehavior(sev, "bar").getValue().yields().get(0);
-    assertThat(yield.toString()).isEqualTo("{params: [TRUE, NOT_NULL], result: null (-1), exceptional: false}");
+    Set<String> yieldsToString = getMethodBehavior(sev, "bar").getValue().yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
+    assertThat(yieldsToString).contains(
+      "{params: [TRUE, NOT_NULL], result: null (-1), exceptional: false}",
+      "{params: [FALSE, null], result: null (-1), exceptional: false}");
   }
 
   private static enum Status {
@@ -245,8 +250,19 @@ public class MethodYieldTest {
     assertThat(behaviorCache.values()).hasSize(1);
     MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
     assertThat(methodBehavior.yields()).hasSize(2);
-    assertThat(methodBehavior.yields().get(1).resultIndex).isEqualTo(0);
-    assertThat(methodBehavior.yields().get(0).resultConstraint.isNull()).isTrue();
+    MethodYield[] expected = new MethodYield[] {
+      buildMethodYield(0, null, (Constraint) null),
+      buildMethodYield(-1, new ObjectConstraint(true, false, null), (Constraint) null)};
+    assertThat(methodBehavior.yields()).contains((Object[]) expected);
+  }
+
+  private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint, Constraint... paramConstraints) {
+    MethodYield methodYield = new MethodYield(paramConstraints.length, false);
+    methodYield.resultIndex = resultIndex;
+    methodYield.parametersConstraints = paramConstraints;
+    methodYield.exception = false;
+    methodYield.resultConstraint = resultConstraint;
+    return methodYield;
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
