@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.MapSettings;
@@ -120,13 +119,13 @@ public class JaCoCoSensorTest {
     int[] oneHitlines = new int[] {6, 7, 8, 11};
     int[] zeroHitlines = new int[] {15, 16, 18};
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.UNIT, zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", zeroHitline)).isEqualTo(0);
     }
     for (int oneHitline : oneHitlines) {
-      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.UNIT, oneHitline)).isEqualTo(1);
+      assertThat(context.lineHits(":org/sonar/plugins/jacoco/tests/Hello", oneHitline)).isEqualTo(1);
     }
-    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.UNIT, 15)).isEqualTo(2);
-    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", CoverageType.UNIT, 15)).isEqualTo(0);
+    assertThat(context.conditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(2);
+    assertThat(context.coveredConditions(":org/sonar/plugins/jacoco/tests/Hello", 15)).isEqualTo(0);
   }
 
   @Test
@@ -219,7 +218,7 @@ public class JaCoCoSensorTest {
     sensor_force_coverage.execute(context);
     int[] zeroHitlines = new int[] {6, 7, 8, 11, 15, 16, 18};
     for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(":", CoverageType.UNIT, zeroHitline)).isEqualTo(0);
+      assertThat(context.lineHits(":", zeroHitline)).isEqualTo(0);
     }
   }
 
