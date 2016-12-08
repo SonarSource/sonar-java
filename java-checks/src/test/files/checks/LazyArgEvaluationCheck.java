@@ -22,13 +22,7 @@ class LazyArgEvaluationCheck {
     logger.log(Level.SEVERE, message); // Compliant
 
     logger.log(Level.SEVERE, "Something went wrong: " + message);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-
-    slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
-
+    
     checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
     Preconditions.checkState(System.currentTimeMillis() > 0, formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
@@ -48,6 +42,12 @@ class LazyArgEvaluationCheck {
 
     } catch (Exception e) {
       slf4j.info("Caching on disk @ {}", path.getAbsolutePath()); // Compliant - because we don't care about small performance loss in exceptional paths
+      myField = new MyClass() {
+        @Overidde
+        void doSomethingAllTheTime() {
+          slf4j.info("logging all the time consuming resources for nothing " + computeValue() + generateStuff()); // Noncompliant
+        }
+      };
     }
   }
 
@@ -66,6 +66,65 @@ class LazyArgEvaluationCheck {
         return "tostring";
       }
     });
+  }
+  
+  void slf4j() {
+    slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+
+    if (slf4j.isTraceEnabled()) {
+      slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
+    }
+    if (slf4j.isDebugEnabled()) {
+      slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
+    }
+    if (slf4j.isInfoEnabled()) {
+      slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
+    }
+    if (slf4j.isWarnEnabled()) {
+      slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
+    }
+    if (slf4j.isErrorEnabled()) {
+      slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
+    }
+  }
+  
+  void jul() {
+    logger.finest("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.finer("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.fine("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.config("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.info("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.warning("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    logger.severe("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+
+    if (logger.isFinestEnabled()) {
+      logger.finest("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isFinerEnabled()) {
+      logger.finer("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isFineEnabled()) {
+      logger.fine("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isFinestEnabled()) {
+      logger.finest("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isConfigEnabled()) {
+      logger.config("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isInfoEnabled()) {
+      logger.info("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isWarningEnabled()) {
+      logger.warning("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
+    if (logger.isSevereEnabled()) {
+      logger.severe("Unable to open file " + csvPath);  // Compliant - inside if test
+    }
   }
 
 }
