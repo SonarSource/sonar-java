@@ -1,8 +1,7 @@
 package org.test;
 
 import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import java.util.*;
 import java.io.*;
@@ -22,6 +21,8 @@ class LazyArgEvaluationCheck {
     logger.log(Level.SEVERE, message); // Compliant
 
     logger.log(Level.SEVERE, "Something went wrong: " + message);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+
+    logger.log(Level.SEVERE, () -> "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
     
     checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
@@ -74,6 +75,17 @@ class LazyArgEvaluationCheck {
     slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.warn("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
+
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1);  // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, 2);  // Noncompliant
+    slf4j.error("Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!");  // Noncompliant
+
+    Marker confidentialMarker = MarkerFactory.getMarker("CONFIDENTIAL");
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1);  // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, 2);  // Noncompliant
+    slf4j.error(confidentialMarker, "Unable to open file " + csvPath, new RuntimeException(), 1, "vargs", "vargs", "vargs FTW!");  // Noncompliant
 
     if (slf4j.isTraceEnabled()) {
       slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
