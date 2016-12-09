@@ -207,6 +207,9 @@ public class SonarComponents {
       // either an issue at file or folder level
       issue.setPrimaryLocationOnFile(inputPath, analyzerMessage.getMessage());
     } else {
+      if (!textSpan.onLine()) {
+        Preconditions.checkState(!textSpan.isEmpty(), "Issue location should not be empty");
+      }
       issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
     }
     issue.addFlow(inputFromIOFile(analyzerMessage.getFile()), analyzerMessage.flows).save();

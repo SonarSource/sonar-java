@@ -19,10 +19,16 @@
  */
 package org.sonar.java;
 
+import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,6 +54,7 @@ public class AnalyzerMessageTest {
     assertThat(location.startCharacter).isEqualTo(-1);
     assertThat(location.endLine).isEqualTo(line);
     assertThat(location.endCharacter).isEqualTo(-1);
+    assertThat(location.isEmpty()).isTrue();
     assertThat(location.toString()).isEqualTo("(5:-1)-(5:-1)");
   }
 
@@ -67,7 +74,60 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-   public void testAnalyzerMessageOnFile() {
+  public void emptyTextSpan() {
+    // same line, same offset
+    assertThat(new AnalyzerMessage.TextSpan(42, 2, 42, 2).isEmpty()).isTrue();
+    // different offset
+    assertThat(new AnalyzerMessage.TextSpan(42, 2, 42, 5).isEmpty()).isFalse();
+    // different lines, different offset
+    assertThat(new AnalyzerMessage.TextSpan(42, 2, 43, 5).isEmpty()).isFalse();
+    // different lines, same offset
+    assertThat(new AnalyzerMessage.TextSpan(42, 2, 43, 2).isEmpty()).isFalse();
+  }
+
+  @Test
+  public void textSpanOnLine() {
+    assertThat(new AnalyzerMessage.TextSpan(42).onLine()).isTrue();
+    assertThat(new AnalyzerMessage.TextSpan(0, -1, 0, 5).onLine()).isTrue();
+    assertThat(new AnalyzerMessage.TextSpan(0, 2, 0, 2).onLine()).isFalse();
+  }
+
+  @Test
+  public void textSpanForTrees() {
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse("class A {\n}\n");
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+
+    TextSpan textSpan;
+
+    textSpan = AnalyzerMessage.textSpanFor(classTree);
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isEqualTo(0);
+    assertThat(textSpan.endLine).isEqualTo(2);
+    assertThat(textSpan.endCharacter).isEqualTo(1);
+
+    textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), classTree.openBraceToken());
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isEqualTo(0);
+    assertThat(textSpan.endLine).isEqualTo(1);
+    assertThat(textSpan.endCharacter).isEqualTo(9);
+  }
+
+  @Test
+  public void shouldFailOnEmptyTrees() {
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8)
+      .parse("class A {\n}\n");
+
+    try {
+      AnalyzerMessage.textSpanFor(cut.eofToken());
+      Fail.fail("Should have failed on empty issue location");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(IllegalStateException.class);
+      assertThat(e.getMessage()).isEqualTo("Issue location should not be empty");
+    }
+  }
+
+  @Test
+  public void testAnalyzerMessageOnFile() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     File file = new File("a");
     String message = "analyzer message";
