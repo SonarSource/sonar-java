@@ -22,16 +22,12 @@ package org.sonar.java.se.checks;
 import org.junit.Test;
 import org.sonar.java.se.JavaCheckVerifier;
 
-public class LocksNotUnlockedCheckTest {
+public class FlowComputationTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheck.java", new LocksNotUnlockedCheck());
+  public void learned_symbol() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputation.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 
-  @Test
-  public void object_constraint_cache_issues() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheckCache.java", new LocksNotUnlockedCheck());
 
-  }
 }

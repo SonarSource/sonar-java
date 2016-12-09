@@ -20,9 +20,8 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public interface SymbolicValueFactory {
 
-  SymbolicValue createSymbolicValue(int id, Tree syntaxNode);
+  SymbolicValue createSymbolicValue(int id);
 }

@@ -93,7 +93,7 @@ public class NullDereferenceCheck extends SECheck {
       if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
         val = currentVal;
       }
-      flows.add(SECheck.flow(context.getNode(), val));
+      flows.add(FlowComputation.flow(context.getNode(), val));
       context.reportIssue(syntaxNode, this, message, flows);
       return null;
     }
@@ -123,7 +123,7 @@ public class NullDereferenceCheck extends SECheck {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint(syntaxNode)));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint()));
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }

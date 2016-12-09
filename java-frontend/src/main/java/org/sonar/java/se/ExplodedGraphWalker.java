@@ -81,6 +81,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,6 +127,8 @@ public class ExplodedGraphWalker {
   ConstraintManager constraintManager;
   private boolean cleanup = true;
   MethodBehavior methodBehavior;
+  private Set<ExplodedGraph.Node> endOfExecutionPath;
+
   public static class ExplodedGraphTooBigException extends RuntimeException {
 
     public ExplodedGraphTooBigException(String s) {
@@ -187,6 +190,7 @@ public class ExplodedGraphWalker {
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
+    endOfExecutionPath = new HashSet<>();
     if(DEBUG_MODE_ACTIVATED) {
       LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
     }
@@ -198,16 +202,12 @@ public class ExplodedGraphWalker {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
-        checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name()
-          + "#" +tree.simpleName().firstToken().line()+ " in class " + tree.symbol().owner().name());
+        throwMaxSteps(tree);
       }
       // LIFO:
-      node = workList.removeFirst();
-      programPosition = node.programPoint;
-      programState = node.programState;
+      setNode(workList.removeFirst());
       if (programPosition.block.successors().isEmpty()) {
-        handleEndOfExecutionPath();
+        endOfExecutionPath.add(node);
         continue;
       }
       try {
@@ -227,12 +227,11 @@ public class ExplodedGraphWalker {
           handleBlockExit(programPosition);
         }
       } catch (TooManyNestedBooleanStatesException e) {
-        checkerDispatcher.interruptedExecution();
-        throw new MaximumStepsReachedException(
-          "reached maximum number of " + MAX_NESTED_BOOLEAN_STATES + " branched states for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name(), e);
+        throwTooManyBooleanStates(tree, e);
       }
     }
 
+    handleEndOfExecutionPath();
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
     workList = null;
@@ -241,9 +240,39 @@ public class ExplodedGraphWalker {
     constraintManager = null;
   }
 
+  private void throwTooManyBooleanStates(MethodTree tree, TooManyNestedBooleanStatesException e) {
+    interrupted();
+    String message = String.format("reached maximum number of %d branched states for method %s in class %s",
+      MAX_NESTED_BOOLEAN_STATES, tree.simpleName().name(), tree.symbol().owner().name());
+    throw new MaximumStepsReachedException(message, e);
+  }
+
+  private void throwMaxSteps(MethodTree tree) {
+    interrupted();
+    String message = String.format("reached limit of %d steps for method %s#%d in class %s",
+      MAX_STEPS, tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
+    throw new MaximumStepsReachedException(message);
+  }
+
+  private void interrupted() {
+    handleEndOfExecutionPath();
+    checkerDispatcher.interruptedExecution();
+  }
+
+  private void setNode(ExplodedGraph.Node node) {
+    this.node = node;
+    programPosition = this.node.programPoint;
+    programState = this.node.programState;
+  }
+
   private void handleEndOfExecutionPath() {
-    checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-    methodBehavior.createYield(programState, node.happyPath);
+    ExplodedGraph.Node savedNode = node;
+    endOfExecutionPath.forEach(n -> {
+      setNode(n);
+      checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+      methodBehavior.createYield(programState, node.happyPath);
+    });
+    setNode(savedNode);
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
@@ -261,7 +290,7 @@ public class ExplodedGraphWalker {
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
-            sv.setConstraint(ps, ObjectConstraint.nullConstraint(variableTree)).stream(),
+            sv.setConstraint(ps, ObjectConstraint.nullConstraint()).stream(),
             sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
       } else if(nonNullParams) {
@@ -454,7 +483,7 @@ public class ExplodedGraphWalker {
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
       case OR_ASSIGNMENT:
-        executeLogicalAssignement((AssignmentExpressionTree) tree);
+        executeLogicalAssignment((AssignmentExpressionTree) tree);
         break;
       case ARRAY_ACCESS_EXPRESSION:
         executeArrayAccessExpression((ArrayAccessExpressionTree) tree);
@@ -657,7 +686,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void executeLogicalAssignement(AssignmentExpressionTree tree) {
+  private void executeLogicalAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
@@ -767,7 +796,7 @@ public class ExplodedGraphWalker {
     }
     // only check final field with an initializer
     if (initializer.is(Tree.Kind.NULL_LITERAL)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint(initializer));
+      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint());
     } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
     }

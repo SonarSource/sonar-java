@@ -40,7 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -376,30 +375,6 @@ public class ProgramState {
       }
     });
     return result;
-  }
-
-  public List<ObjectConstraint> getFieldConstraints(final Object state) {
-    final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
-    final List<ObjectConstraint> result = new ArrayList<>();
-    constraints.forEach((symbolicValue, valueConstraint) -> {
-      if (valueConstraint instanceof ObjectConstraint && !valuesAssignedToFields.contains(symbolicValue)) {
-        ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
-        if (constraint.hasStatus(state)) {
-          result.add(constraint);
-        }
-      }
-    });
-    return result;
-  }
-
-  public Set<SymbolicValue> getFieldValues() {
-    final Set<SymbolicValue> fieldValues = new HashSet<>();
-    values.forEach((symbol, symbolicValue) -> {
-      if (isField(symbol)) {
-        fieldValues.add(symbolicValue);
-      }
-    });
-    return fieldValues;
   }
 
   public List<BinaryRelation> getKnownRelations() {
