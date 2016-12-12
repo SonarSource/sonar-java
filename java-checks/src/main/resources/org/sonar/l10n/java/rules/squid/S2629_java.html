@@ -22,6 +22,8 @@ Preconditions.checkState(condition, "message: %s", formatMessage());  // Noncomp
 <pre>
 logger.log(Level.SEVERE, "Something went wrong: %s ", message);  // String formatting only applied if needed
 
+logger.log(Level.SEVERE, () -&gt; "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
+
 LOG.error("Unable to open file {}", csvPath, e);
 
 if (LOG.isDebugEnabled() {
