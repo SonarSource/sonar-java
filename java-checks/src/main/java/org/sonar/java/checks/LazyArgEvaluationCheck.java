@@ -62,13 +62,6 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     MethodMatcher test();
 
-    static MethodMatcher levelTestMatcher(String typeDefinition, String level) {
-      return MethodMatcher.create()
-        .typeDefinition(typeDefinition)
-        .name(String.format("is%c%sEnabled", level.charAt(0), level.toLowerCase(Locale.ROOT).substring(2)))
-        .withoutParameter();
-    }
-
     static Stream<LogLevels> logLevels() {
       return Stream.concat(Arrays.stream(SLF4J_LEVELS.values()), Arrays.stream(JUL_LEVELS.values()));
     }
@@ -105,6 +98,13 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
           prototype.get().parameters(MARKER, STRING, OBJECT_ARR)
         );
       }
+
+      private static MethodMatcher levelTestMatcher(String typeDefinition, String level) {
+        return MethodMatcher.create()
+          .typeDefinition(typeDefinition)
+          .name(String.format("is%c%sEnabled", level.charAt(0), level.toLowerCase(Locale.ROOT).substring(1)))
+          .withoutParameter();
+      }
     }
 
     enum JUL_LEVELS implements LogLevels {
@@ -127,7 +127,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
       @Override
       public MethodMatcher test() {
-        return levelTestMatcher(JUL_LOGGER, toString());
+        return MethodMatcher.create().typeDefinition(JUL_LOGGER).name("isLoggable").addParameter("java.util.logging.Level");
       }
     }
   }
@@ -180,6 +180,8 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     ifTree.condition().accept(levelTestVisitor);
     if (levelTestVisitor.match) {
       stackAndContinue(ifTree, super::visitIfStatement);
+    } else {
+      super.visitIfStatement(ifTree);
     }
   }
 
@@ -199,7 +201,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private boolean insideCatchStatement() {
-    return treeStack.peek().is(Tree.Kind.CATCH);
+    return treeStack.peek() != null && treeStack.peek().is(Tree.Kind.CATCH);
   }
 
   private <T extends Tree> void stackAndContinue(T tree, Consumer<T> visit) {

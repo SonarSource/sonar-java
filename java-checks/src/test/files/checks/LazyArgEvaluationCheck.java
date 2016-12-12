@@ -116,29 +116,13 @@ class LazyArgEvaluationCheck {
     logger.warning("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     logger.severe("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
-    if (logger.isFinestEnabled()) {
+    if (logger.isLoggable(Level.FINEST)) {
       logger.finest("Unable to open file " + csvPath);  // Compliant - inside if test
     }
-    if (logger.isFinerEnabled()) {
-      logger.finer("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isFineEnabled()) {
-      logger.fine("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isFinestEnabled()) {
-      logger.finest("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isConfigEnabled()) {
-      logger.config("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isInfoEnabled()) {
-      logger.info("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isWarningEnabled()) {
-      logger.warning("Unable to open file " + csvPath);  // Compliant - inside if test
-    }
-    if (logger.isSevereEnabled()) {
-      logger.severe("Unable to open file " + csvPath);  // Compliant - inside if test
+
+    if (logger.isLoggable(Level.INFO)) {
+      logger.trace("Unable to open file " + csvPath);  // Compliant - FP, we don't verify that level in "if" matches actual level used in logging
+      logger.info("Unable to open file " + csvPath);  // Compliant
     }
   }
 
