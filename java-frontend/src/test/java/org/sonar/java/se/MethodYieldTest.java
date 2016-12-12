@@ -160,6 +160,66 @@ public class MethodYieldTest {
     otherYield = new MethodYield(1, false);
     otherYield.resultConstraint = ObjectConstraint.NOT_NULL;
     assertThat(yield).isEqualTo(otherYield);
+
+    // exceptional yields
+    MethodYield exceptionalYield = new MethodYield(0, false);
+    exceptionalYield.exception = true;
+    otherYield = new MethodYield(0, false);
+
+    otherYield.exception = false;
+    assertThat(exceptionalYield).isNotEqualTo(otherYield);
+
+    otherYield.exception = true;
+    assertThat(exceptionalYield).isEqualTo(otherYield);
+
+    otherYield.exceptionType = "exception";
+    assertThat(exceptionalYield).isNotEqualTo(otherYield);
+
+    exceptionalYield.exceptionType = "exception";
+    assertThat(exceptionalYield).isEqualTo(otherYield);
+  }
+
+  @Test
+  public void test_hashCode() {
+    MethodYield methodYield = new MethodYield(0, true);
+    MethodYield other = new MethodYield(0, true);
+
+    // same values for same yields
+    assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
+
+    // different values for different yields
+    other.exception = true;
+    assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
+  }
+
+  @Test
+  public void exceptional_yields() {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
+
+    List<MethodYield> yields = getMethodBehavior(sev, "myMethod").getValue().yields();
+    assertThat(yields).hasSize(3);
+
+    List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(2);
+
+    // implicit exception
+    Optional<MethodYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType == null).findFirst();
+    assertThat(implicitException.isPresent()).isTrue();
+    implicitException.ifPresent(yield -> {
+      assertThat(yield.resultIndex).isEqualTo(-1);
+      assertThat(yield.resultConstraint).isNull();
+      assertThat(yield.parametersConstraints[0]).isEqualTo(BooleanConstraint.FALSE);
+    });
+
+    // explicit exception
+    Optional<MethodYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null).findFirst();
+    assertThat(explicitException.isPresent()).isTrue();
+    explicitException.ifPresent(yield -> {
+      assertThat(yield.resultIndex).isEqualTo(-1);
+      assertThat(yield.resultConstraint).isNull();
+      assertThat(yield.parametersConstraints[0]).isEqualTo(BooleanConstraint.TRUE);
+      assertThat(yield.exceptionType).isEqualTo("org.foo.MyException1");
+    });
   }
 
   @Test

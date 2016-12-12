@@ -55,13 +55,14 @@ public class MethodBehavior {
     }
 
     if (!isConstructor() && !isVoidMethod()) {
-      SymbolicValue resultSV = programState.returnValue();
-      if (resultSV != null) {
-        yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
-        yield.resultConstraint = programState.getConstraint(resultSV);
-      } else {
+      SymbolicValue resultSV = programState.exitValue();
+      if (resultSV == null || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
         // if there is no return value but we are not in a void method or constructor, we are not in a happy path
         yield.exception = true;
+        yield.exceptionType = resultSV == null ? null : ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType().fullyQualifiedName();
+      } else {
+        yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
+        yield.resultConstraint = programState.getConstraint(resultSV);
       }
     }
 
