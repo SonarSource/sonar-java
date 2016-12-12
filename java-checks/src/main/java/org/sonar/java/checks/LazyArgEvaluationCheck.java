@@ -47,6 +47,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.sonar.java.matcher.TypeCriteria.anyType;
+
 @Rule(key = "S2629")
 public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -94,12 +96,12 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       private static List<MethodMatcher> slf4jVariants(Supplier<MethodMatcher> prototype) {
         return ImmutableList.of(
           prototype.get().parameters(STRING),
-          prototype.get().parameters(STRING, TypeCriteria.anyType()),
-          prototype.get().parameters(STRING, TypeCriteria.anyType(), TypeCriteria.anyType()),
+          prototype.get().parameters(STRING, anyType()),
+          prototype.get().parameters(STRING, anyType(), anyType()),
           prototype.get().parameters(STRING, OBJECT_ARR),
           prototype.get().parameters(MARKER, STRING),
-          prototype.get().parameters(MARKER, STRING, TypeCriteria.anyType()),
-          prototype.get().parameters(MARKER, STRING, TypeCriteria.anyType(), TypeCriteria.anyType()),
+          prototype.get().parameters(MARKER, STRING, anyType()),
+          prototype.get().parameters(MARKER, STRING, anyType(), anyType()),
           prototype.get().parameters(MARKER, STRING, OBJECT_ARR)
         );
       }
