@@ -102,6 +102,9 @@ class LazyArgEvaluationCheck {
     if (slf4j.isErrorEnabled()) {
       slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Compliant - inside if test
     }
+    if (b) {
+      slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
+    }
   }
   
   void jul() {
