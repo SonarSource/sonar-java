@@ -122,7 +122,7 @@ public class AnalyzerMessageTest {
       Fail.fail("Should have failed on empty issue location");
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalStateException.class);
-      assertThat(e.getMessage()).isEqualTo("Issue location should not be empty");
+      assertThat(e.getMessage()).isEqualTo("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
     }
   }
 

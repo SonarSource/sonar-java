@@ -138,7 +138,9 @@ public class AnalyzerMessage {
       lastSyntaxToken.line(),
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
-    Preconditions.checkState(!location.isEmpty(), "Issue location should not be empty");
+    Preconditions.checkState(!location.isEmpty(),
+      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
+      firstSyntaxToken.line(), firstSyntaxToken.column());
     return location;
   }
 
