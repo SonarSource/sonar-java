@@ -121,7 +121,7 @@ class LazyArgEvaluationCheck {
     }
 
     if (logger.isLoggable(Level.INFO)) {
-      logger.trace("Unable to open file " + csvPath);  // Compliant - FP, we don't verify that level in "if" matches actual level used in logging
+      logger.trace("Unable to open file " + csvPath);  // Compliant - FN, we don't verify that level in "if" matches actual level used in logging
       logger.info("Unable to open file " + csvPath);  // Compliant
     }
   }
