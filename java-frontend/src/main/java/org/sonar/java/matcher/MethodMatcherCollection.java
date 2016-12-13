@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +43,11 @@ public class MethodMatcherCollection {
 
   public MethodMatcherCollection add(MethodMatcher matcher) {
     this.matchers.add(matcher);
+    return this;
+  }
+
+  public MethodMatcherCollection addAll(Collection<MethodMatcher> matchers) {
+    this.matchers.addAll(matchers);
     return this;
   }
 
