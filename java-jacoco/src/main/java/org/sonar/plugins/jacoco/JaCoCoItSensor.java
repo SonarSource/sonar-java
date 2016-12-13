@@ -19,62 +19,59 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.batch.fs.FileSystem;
+import java.io.File;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.config.Settings;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.File;
+import static org.sonar.plugins.jacoco.JacocoConstants.IT_REPORT_PATH_PROPERTY;
 
 public class JaCoCoItSensor implements Sensor {
-  private final JacocoConfiguration configuration;
+
+  private static final Logger LOG = Loggers.get(JaCoCoItSensor.class);
+
   private final ResourcePerspectives perspectives;
-  private final FileSystem fileSystem;
-  private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
 
-  public JaCoCoItSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
-                        JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
-    this.configuration = configuration;
+  public JaCoCoItSensor(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this.perspectives = perspectives;
-    this.fileSystem = fileSystem;
-    this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
     this.javaClasspath = javaClasspath;
   }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage("java").name("JaCoCoItSensor");
+    descriptor.onlyOnLanguage("java").name("JaCoCoIt");
   }
 
   @Override
   public void execute(SensorContext context) {
-    if(shouldExecuteOnProject()) {
-      new ITAnalyzer().analyse(context);
+    Settings settings = context.settings();
+    String reportPath = settings.getString(IT_REPORT_PATH_PROPERTY);
+    File itReport = context.fileSystem().resolvePath(reportPath);
+    if (!itReport.isFile()) {
+      if (settings.hasKey(IT_REPORT_PATH_PROPERTY)) {
+        LOG.info("JaCoCo IT report not found: '{}'", reportPath);
+      }
+      return;
     }
-  }
-
-  @VisibleForTesting
-  boolean shouldExecuteOnProject() {
-    File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-    boolean foundReport = report.isFile();
-    if(!foundReport) {
-      JaCoCoExtensions.LOG.info("JaCoCoItSensor: JaCoCo IT report not found: "+report.getPath());
-    }
-    return configuration.shouldExecuteOnProject(foundReport);
+    new ITAnalyzer(itReport).analyse(context);
   }
 
   class ITAnalyzer extends AbstractAnalyzer {
-    public ITAnalyzer() {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
+    private final File itReport;
+
+    public ITAnalyzer(File itReport) {
+      super(perspectives, javaResourceLocator, javaClasspath);
+      this.itReport = itReport;
     }
 
     @Override
@@ -83,13 +80,8 @@ public class JaCoCoItSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath() {
-      return configuration.getItReportPath();
+    protected File getReportPath() {
+      return itReport;
     }
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName();
   }
 }

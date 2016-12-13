@@ -74,7 +74,8 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>6.1</sonar.version>
+    <sonar.version>6.2-RC2</sonar.version>
+    <sonar.min.version>5.6</sonar.min.version>
     <orchestrator.version>3.11</orchestrator.version>
     <sslr.version>1.21</sslr.version>
     <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
@@ -107,6 +108,15 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <configuration>
+          <sonarQubeMinVersion>${sonar.min.version}</sonarQubeMinVersion>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencyManagement>
@@ -132,6 +142,11 @@
             <artifactId>guava</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.5</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>

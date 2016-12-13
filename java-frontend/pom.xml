@@ -30,6 +30,10 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-maven-model</artifactId>
       <version>${project.version}</version>

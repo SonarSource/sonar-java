@@ -19,72 +19,59 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.sonar.api.batch.fs.FileSystem;
+import java.io.File;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.config.Settings;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.File;
+import static org.sonar.plugins.jacoco.JacocoConstants.IT_REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JacocoConstants.REPORT_MISSING_FORCE_ZERO;
+import static org.sonar.plugins.jacoco.JacocoConstants.REPORT_PATH_PROPERTY;
 
 public class JaCoCoOverallSensor implements Sensor {
 
   public static final String JACOCO_OVERALL = "jacoco-overall.exec";
 
-  private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
-  private final FileSystem fileSystem;
-  private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
 
-  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
-                             JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
-    this.configuration = configuration;
+  public JaCoCoOverallSensor(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this.perspectives = perspectives;
-    this.fileSystem = fileSystem;
-    this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
     this.javaClasspath = javaClasspath;
   }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage("java").name("JaCoCoOverallSensor");
+    descriptor.onlyOnLanguage("java").name("JaCoCoOverall");
   }
 
   @Override
   public void execute(SensorContext context) {
-    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
-    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-    if(shouldExecuteOnProject()) {
-      File reportOverall = new File(fileSystem.workDir(), JACOCO_OVERALL);
+    Settings settings = context.settings();
+    File utReport = context.fileSystem().resolvePath(settings.getString(REPORT_PATH_PROPERTY));
+    File itReport = context.fileSystem().resolvePath(settings.getString(IT_REPORT_PATH_PROPERTY));
+    if (utReport.isFile() && itReport.isFile()) {
+      File reportOverall = new File(context.fileSystem().workDir(), JACOCO_OVERALL);
       reportOverall.getParentFile().mkdirs();
-      JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
+      JaCoCoReportMerger.mergeReports(reportOverall, utReport, itReport);
       new OverallAnalyzer(reportOverall).analyse(context);
+    } else if (utReport.isFile() || itReport.isFile() || settings.getBoolean(REPORT_MISSING_FORCE_ZERO)) {
+      new OverallAnalyzer(utReport.isFile() ? utReport : itReport).analyse(context);
     }
-  }
-
-  public boolean shouldExecuteOnProject() {
-    File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
-    File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-    boolean foundOneReport = reportUTs.exists() || reportITs.exists();
-    boolean shouldExecute = configuration.shouldExecuteOnProject(foundOneReport);
-    if (!foundOneReport && shouldExecute) {
-      JaCoCoExtensions.LOG.info("JaCoCoOverallSensor: JaCoCo reports not found.");
-    }
-    return shouldExecute;
   }
 
   class OverallAnalyzer extends AbstractAnalyzer {
     private final File report;
 
     OverallAnalyzer(File report) {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, false);
+      super(perspectives, javaResourceLocator, javaClasspath, false);
       this.report = report;
     }
 
@@ -94,14 +81,9 @@ public class JaCoCoOverallSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath() {
-      return report.getAbsolutePath();
+    protected File getReportPath() {
+      return report;
     }
 
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName();
   }
 }
