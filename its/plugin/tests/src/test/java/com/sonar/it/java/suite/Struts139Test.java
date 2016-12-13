@@ -98,7 +98,11 @@ public class Struts139Test {
   @Test
   public void unit_test_metrics() {
     setCurrentProject();
-    assertThat(getProjectMeasure("lines_to_cover").getValue()).isEqualTo(15474, offset(10.0));
+    int linesToCover = 15498;
+    if(JavaTestSuite.sonarqube_version_is_prior_to_6_2()) {
+      linesToCover = 15474;
+    }
+    assertThat(getProjectMeasure("lines_to_cover").getValue()).isEqualTo(linesToCover, offset(10.0));
     assertThat(getProjectMeasure("coverage").getValue()).isEqualTo(25.1, offset(0.1));
     assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(36.8, offset(0.2));
     assertThat(getProjectMeasure("line_coverage").getValue()).isEqualTo(25.5);

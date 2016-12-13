@@ -53,6 +53,7 @@ import java.util.List;
 public class SonarComponents {
 
   private static final Version SQ_6_0 = Version.create(6, 0);
+  private static final Version SQ_6_2 = Version.create(6, 2);
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
@@ -98,6 +99,10 @@ public class SonarComponents {
 
   public InputFile inputFromIOFile(File file) {
     return fs.inputFile(fs.predicates().is(file));
+  }
+
+  public int fileLength(File file) {
+    return inputFromIOFile(file).lines();
   }
 
   private InputPath inputPathFromIOFile(File file) {
@@ -224,5 +229,9 @@ public class SonarComponents {
       return context.runtime().getProduct() == SonarProduct.SONARLINT;
     }
     return false;
+  }
+
+  public boolean isSQGreaterThan62() {
+    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2);
   }
 }

@@ -114,7 +114,7 @@ public class CFG {
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
 
-  private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
+  private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
@@ -122,7 +122,7 @@ public class CFG {
     outerTry.successorBlock = exitBlocks.peek();
     enclosingTry.add(outerTry);
     enclosedByCatch.push(false);
-    build(tree.body());
+    build(trees);
     prune();
     computePredecessors(blocks);
   }
@@ -333,11 +333,13 @@ public class CFG {
     blocks.add(result);
     return result;
   }
-
+  public static CFG buildCFG(List<? extends Tree> trees) {
+    return new CFG(trees, null);
+  }
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block, tree.symbol());
+    return new CFG(block.body(), tree.symbol());
   }
 
   private void build(ListTree<? extends Tree> trees) {
