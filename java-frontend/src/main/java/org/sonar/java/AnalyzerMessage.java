@@ -19,6 +19,8 @@
  */
 package org.sonar.java;
 
+import com.google.common.base.Preconditions;
+
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,7 +44,7 @@ public class AnalyzerMessage {
   public final List<List<AnalyzerMessage>> flows = new ArrayList<>();
 
   public AnalyzerMessage(JavaCheck check, File file, int line, String message, int cost) {
-    this(check, file, line > 0 ? new TextSpan(line, -1, line, -1) : null, message, cost);
+    this(check, file, line > 0 ? new TextSpan(line) : null, message, cost);
   }
 
   public AnalyzerMessage(JavaCheck check, File file, @Nullable TextSpan textSpan, String message, int cost) {
@@ -92,6 +94,10 @@ public class AnalyzerMessage {
     public final int endLine;
     public final int endCharacter;
 
+    public TextSpan(int line) {
+      this(line, -1, line, -1);
+    }
+
     public TextSpan(int startLine, int startCharacter, int endLine, int endCharacter) {
       this.startLine = startLine;
       this.startCharacter = startCharacter;
@@ -102,6 +108,14 @@ public class AnalyzerMessage {
     @Override
     public String toString() {
       return "(" + startLine + ":" + startCharacter + ")-(" + endLine + ":" + endCharacter + ")";
+    }
+
+    public boolean onLine() {
+      return startCharacter == -1;
+    }
+
+    public boolean isEmpty() {
+      return startLine == endLine && startCharacter == endCharacter;
     }
   }
 
@@ -118,12 +132,16 @@ public class AnalyzerMessage {
   }
 
   private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
-    return new AnalyzerMessage.TextSpan(
+    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
       firstSyntaxToken.line(),
       firstSyntaxToken.column(),
       lastSyntaxToken.line(),
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
+    Preconditions.checkState(!location.isEmpty(),
+      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
+      firstSyntaxToken.line(), firstSyntaxToken.column());
+    return location;
   }
 
   @Override
