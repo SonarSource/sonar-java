@@ -70,7 +70,7 @@ public class JavaSquid {
       codeVisitors = Iterables.concat(
           codeVisitors,
           Arrays.asList(
-              new FileLinesVisitor(sonarComponents, conf.getCharset()),
+              new FileLinesVisitor(sonarComponents),
               new SyntaxHighlighterVisitor(sonarComponents)
           )
       );
