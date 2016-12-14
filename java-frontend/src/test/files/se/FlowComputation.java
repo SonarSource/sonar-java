@@ -4,7 +4,7 @@ class A {
     Object b = new Object();
     if (a == null) { // flow@comb {{...}}
       b = a; // flow@comb {{...}}
-      b.toString(); // Noncompliant [[flows=comb]]
+      b.toString(); // Noncompliant [[flows=comb]] flow@comb
     }
   }
 
