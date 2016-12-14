@@ -41,9 +41,10 @@ public class JavaPlugin implements Plugin {
   @Override
   public void define(Context context) {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
-    if (!context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) || context.getRuntime().getProduct() != SonarProduct.SONARLINT) {
+    Version sonarQubeVersion = context.getSonarQubeVersion();
+    if (!sonarQubeVersion.isGreaterThanOrEqual(SQ_6_0) || context.getRuntime().getProduct() != SonarProduct.SONARLINT) {
       builder.addAll(SurefireExtensions.getExtensions());
-      builder.addAll(JaCoCoExtensions.getExtensions());
+      builder.addAll(JaCoCoExtensions.getExtensions(sonarQubeVersion));
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(

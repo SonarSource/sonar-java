@@ -84,7 +84,7 @@ public class JaCoCoOverallSensor implements Sensor {
     private final File report;
 
     OverallAnalyzer(File report) {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, false);
+      super(perspectives, javaResourceLocator, javaClasspath, false);
       this.report = report;
     }
 
@@ -94,8 +94,8 @@ public class JaCoCoOverallSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath() {
-      return report.getAbsolutePath();
+    protected File getReport() {
+      return report;
     }
 
   }

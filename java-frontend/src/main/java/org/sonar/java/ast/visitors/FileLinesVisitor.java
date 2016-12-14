@@ -125,12 +125,10 @@ public class FileLinesVisitor extends SubscriptionVisitor {
         trees = ((BlockTree) tree).body();
         break;
       case VARIABLE:
-        VariableTree variableTree = (VariableTree) tree;
-        trees = visitVariable(variableTree);
+        trees = visitVariable((VariableTree) tree);
         break;
       case LAMBDA_EXPRESSION:
-        LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
-        trees = visitLambda(lambda);
+        trees = visitLambda((LambdaExpressionTree) tree);
         break;
       case METHOD:
       case CONSTRUCTOR:

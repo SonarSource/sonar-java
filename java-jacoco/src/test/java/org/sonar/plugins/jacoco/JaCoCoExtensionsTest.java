@@ -20,6 +20,7 @@
 package org.sonar.plugins.jacoco;
 
 import org.junit.Test;
+import org.sonar.api.utils.Version;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +28,8 @@ public class JaCoCoExtensionsTest {
 
   @Test
   public void testExtensions() {
-    assertThat(JaCoCoExtensions.getExtensions().size()).isEqualTo(7);
+    assertThat(JaCoCoExtensions.getExtensions(Version.create(5, 6)).size()).isEqualTo(7);
+    assertThat(JaCoCoExtensions.getExtensions(Version.create(6, 2)).size()).isEqualTo(3);
   }
 
 }
