@@ -21,10 +21,13 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -204,7 +206,7 @@ public class JavaCheckVerifier {
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
-    Multimap<Integer, EnumMap<Expectations.IssueAttribute, Object>> expected = expectations.issues;
+    Multimap<Integer, Expectations.Issue> expected = expectations.issues;
     for (AnalyzerMessage issue : issues) {
       validateIssue(expected, unexpectedLines, issue);
     }
@@ -225,11 +227,11 @@ public class JavaCheckVerifier {
     assertThat(unseenFlowWithLines).overridingErrorMessage("Following flow comments were observed, but not referenced by any issue: " + unseenFlowWithLines).isEmpty();
   }
 
-  private void validateIssue(Multimap<Integer, EnumMap<Expectations.IssueAttribute, Object>> expected,
+  private void validateIssue(Multimap<Integer, Expectations.Issue> expected,
     List<Integer> unexpectedLines, AnalyzerMessage issue) {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
-      Map<Expectations.IssueAttribute, Object> attrs = Iterables.getLast(expected.get(line));
+      Expectations.Issue attrs = Iterables.getLast(expected.get(line));
       assertAttributeMatch(issue, attrs, MESSAGE);
       validateAnalyzerMessageAttributes(attrs, issue);
       expected.remove(line, attrs);
@@ -238,7 +240,7 @@ public class JavaCheckVerifier {
     }
   }
 
-  private void validateAnalyzerMessageAttributes(Map<Expectations.IssueAttribute, Object> attrs, AnalyzerMessage analyzerMessage) {
+  private void validateAnalyzerMessageAttributes(Expectations.Issue attrs, AnalyzerMessage analyzerMessage) {
     Double effortToFix = analyzerMessage.getCost();
     if (effortToFix != null) {
       assertAttributeMatch(effortToFix, attrs, EFFORT_TO_FIX);
@@ -272,17 +274,28 @@ public class JavaCheckVerifier {
   }
 
   private void assertExpectedAndMissingFlows(List<String> expectedFlowIds, List<List<AnalyzerMessage>> unexpectedFlows) {
+    if (expectedFlowIds.size() == 1 && expectedFlowIds.size() == unexpectedFlows.size()) {
+      assertSoleFlowDiscrepancy(expectedFlowIds.get(0), unexpectedFlows.get(0));
+    }
+
     String unexpectedMsg = unexpectedFlows.stream()
       .map(JavaCheckVerifier::flowToString)
       .collect(joining("\n"));
 
-    String missingMsg = expectedFlowIds.stream().collect(joining(","));
+    String missingMsg = expectedFlowIds.stream().map(fid -> String.format("%s [%s]", fid, expectations.flowToLines(fid))).collect(joining(","));
 
     if (!unexpectedMsg.isEmpty() || !missingMsg.isEmpty()) {
       unexpectedMsg = unexpectedMsg.isEmpty() ? "" : String.format("Unexpected flows: %s. ", unexpectedMsg);
       missingMsg = missingMsg.isEmpty() ? "" : String.format("Missing flows: %s.", missingMsg);
       Fail.fail(unexpectedMsg + missingMsg);
     }
+  }
+
+  private void assertSoleFlowDiscrepancy(String expectedId, List<AnalyzerMessage> actualFlow) {
+    Collection<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
+    List<Integer> expectedLines = expected.stream().map(f -> f.line).collect(Collectors.toList());
+    List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
+    assertThat(actualLines).as("Flow " + expectedId + " has line differences").isEqualTo(expectedLines);
   }
 
   private void validateFlow(List<AnalyzerMessage> flow, Map<String, List<AnalyzerMessage>> foundFlows, List<List<AnalyzerMessage>> unexpectedFlows) {
@@ -299,10 +312,9 @@ public class JavaCheckVerifier {
   }
 
   private void validateFlowAttributes(List<AnalyzerMessage> actual, String flowId) {
-    List<String> actualMessages = actual.stream().map(m -> m.getMessage()).collect(Collectors.toList());
     Collection<Expectations.FlowComment> expected = expectations.flows.get(flowId);
-    List<String> expectedMessages = expected.stream().map(f -> (String) f.get(MESSAGE)).collect(Collectors.toList());
-    assertIgnoreNull(actualMessages, expectedMessages, "Expected messages in flow " + flowId);
+
+    validateFlowMessages(actual, flowId, expected);
 
     Iterator<AnalyzerMessage> actualIterator = actual.iterator();
     Iterator<Expectations.FlowComment> expectedIterator = expected.iterator();
@@ -314,23 +326,23 @@ public class JavaCheckVerifier {
     }
   }
 
-  private void assertIgnoreNull(Collection<?> actualCollection, Collection<?> expectedCollection, String failureMsg) {
-    Iterator<?> actual = actualCollection.iterator();
-    Iterator<?> expected = expectedCollection.iterator();
-    while (actual.hasNext() && expected.hasNext()) {
-      Object act = actual.next();
-      Object exp = expected.next();
-      if (!Objects.equals(act, exp) && act != null && exp != null) {
-        assertThat(actualCollection).as(failureMsg).isEqualTo(expectedCollection);
-      }
-    }
-    if (actual.hasNext() || expected.hasNext()) {
-      assertThat(actualCollection).as(failureMsg).isEqualTo(expectedCollection);
-    }
+  private void validateFlowMessages(List<AnalyzerMessage> actual, String flowId, Collection<Expectations.FlowComment> expected) {
+    ListMultimap<Integer, String> actualMessages = ArrayListMultimap.create();
+    actual.forEach(m -> actualMessages.put(m.getLine(), m.getMessage()));
+
+    ListMultimap<Integer, String> expectedMessages = ArrayListMultimap.create();
+    expected.stream()
+      .filter(f -> f.get(MESSAGE) != null)
+      .forEach(f -> expectedMessages.put(f.line, f.get(MESSAGE)));
+
+    Multimap<Integer, String> missing = Multimaps.filterEntries(expectedMessages, e -> !actualMessages.containsEntry(e.getKey(), e.getValue()));
+    assertThat(missing.asMap())
+      .overridingErrorMessage("Wrong messages in flow %s\n expected: %s\n actual: %s", flowId, expectedMessages, actualMessages)
+      .isEmpty();
   }
 
   private static String flowToString(List<AnalyzerMessage> flow) {
-    return flow.stream().map(m -> String.valueOf(m.getLine())).collect(joining(",","[","]"));
+    return flow.stream().map(m -> String.valueOf(m.getLine())).sorted().collect(joining(",","[","]"));
   }
 
   private static void validateSecondaryLocations(List<AnalyzerMessage> actual, List<Integer> expected) {
@@ -361,7 +373,9 @@ public class JavaCheckVerifier {
 
   private static void assertAttributeMatch(AnalyzerMessage issue, Map<Expectations.IssueAttribute, Object> attributes, Expectations.IssueAttribute attribute) {
     if (attributes.containsKey(attribute)) {
-      assertThat(issue.getMessage()).as("line " + issue.getLine() + " attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute).toString());
+      assertThat(issue.getMessage())
+        .as("line " + issue.getLine() + " attribute mismatch for " + attribute + ": " + attributes)
+        .isEqualTo(String.valueOf((Object) attribute.get(attributes)));
     }
   }
 
@@ -372,7 +386,7 @@ public class JavaCheckVerifier {
     assertThat(issue.getMessage()).isEqualTo(expectFileIssue);
   }
 
-  private static void assertNoIssues(Multimap<Integer, EnumMap<Expectations.IssueAttribute, Object>> expected, Set<AnalyzerMessage> issues) {
+  private static void assertNoIssues(Multimap<Integer, Expectations.Issue> expected, Set<AnalyzerMessage> issues) {
     assertThat(issues).overridingErrorMessage("No issues expected but got: " + issues).isEmpty();
     // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
     assertThat(expected.isEmpty()).overridingErrorMessage("The file should not declare noncompliants when no issues are expected").isTrue();

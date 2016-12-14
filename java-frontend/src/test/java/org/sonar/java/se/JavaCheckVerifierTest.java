@@ -44,6 +44,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class JavaCheckVerifierTest {
 
@@ -82,7 +83,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected {1=[{MESSAGE=message}]}, Unexpected at [4]");
+      assertThat(e).hasMessage("Expected {1=[{LINE=1, MESSAGE=message}]}, Unexpected at [4]");
     }
   }
 
@@ -94,7 +95,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected {1=[{MESSAGE=message}]}");
+      assertThat(e).hasMessage("Expected {1=[{LINE=1, MESSAGE=message}]}");
     }
   }
 
@@ -275,7 +276,7 @@ public class JavaCheckVerifierTest {
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Unexpected flows: [5,6]. Missing flows: npe1.");
+      assertThat(e).hasMessage("[Flow npe1 has line differences] expected:<[[3, 9]]> but was:<[[5, 6]]>");
     }
   }
 
@@ -293,7 +294,7 @@ public class JavaCheckVerifierTest {
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Missing flows: npe1.");
+      assertThat(e).hasMessage("Missing flows: npe1 [3,9].");
     }
   }
 
@@ -310,13 +311,13 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-    try {
-      JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
-      Fail.fail("");
-    } catch (AssertionError e) {
-      assertThat(e)
-        .hasMessage("[Expected messages in flow npe1] expected:<[\"[a is assigned to null here\", \"a is assigned to b here]\"]> but was:<[\"[invalid 1\", \"invalid 2]\"]>");
-    }
+
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
+    assertThat(throwable)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Wrong messages in flow npe1\n"
+        + " expected: {3=[a is assigned to null here], 9=[a is assigned to b here]}\n"
+        + " actual: {3=[invalid 1], 9=[invalid 2]}");
   }
 
   @Test
