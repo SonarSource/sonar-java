@@ -569,8 +569,6 @@ public class ExplodedGraphWalker {
     logState(mit);
 
     programState = unstack.state;
-    // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), programState.clearStack(), !b.isCatchBlock()));
 
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
@@ -583,9 +581,12 @@ public class ExplodedGraphWalker {
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
-      methodInvokedBehavior.yields()
-        .stream()
-        .filter(yield -> !yield.exception)
+
+      methodInvokedBehavior.exceptionalPathYields()
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue).stream())
+        .forEach(this::enqueueExceptionalPaths);
+
+      methodInvokedBehavior.happyPathYields()
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue).stream())
         .forEach(psYield -> {
           ProgramState ps = psYield;
@@ -599,6 +600,8 @@ public class ExplodedGraphWalker {
           clearStack(mit);
         });
     } else {
+      enqueueExceptionalPaths(programState);
+
       programState = programState.stackValue(resultValue);
       if (isNonNullMethod(methodSymbol)) {
         programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
@@ -608,6 +611,10 @@ public class ExplodedGraphWalker {
       checkerDispatcher.executeCheckPostStatement(mit);
       clearStack(mit);
     }
+  }
+
+  private void enqueueExceptionalPaths(ProgramState ps) {
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps.clearStack(), !b.isCatchBlock()));
   }
 
   private static boolean methodCanNotBeOverriden(Symbol methodSymbol) {
