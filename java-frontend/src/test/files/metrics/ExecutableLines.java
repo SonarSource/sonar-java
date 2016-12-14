@@ -42,3 +42,6 @@ public class HelloWorld {
     return a;
   };
 }
+interface I {
+  String s = "s"; // Wrongly counted as executable because it is implicitely static final
+}
