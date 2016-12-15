@@ -1,15 +1,9 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FeedIssueLongDates.java':[
-49,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java':[
 221,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java':[
 725,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/index/RuleDoc.java':[
-148,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/BaseIndex.java':[
 114,

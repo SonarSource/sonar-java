@@ -106,7 +106,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<JavaFileScannerContext.Location> flow = SECheck.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED));
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED));
     flow.stream()
       .filter(loc -> loc.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .findFirst()
@@ -143,8 +143,8 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       }
     }
 
-    protected void openResource(SymbolicValue sv, Tree syntaxNode) {
-      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, status.OPENED));
+    protected void openResource(SymbolicValue sv) {
+      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, status.OPENED));
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {
@@ -172,7 +172,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (isOpeningResource(mit)) {
-        openResource(getTargetSV(mit), mit);
+        openResource(getTargetSV(mit));
       } else if (isClosingResource(mit)) {
         closeResource(getTargetSV(mit));
       } else {
@@ -213,14 +213,14 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     @Override
     public void visitNewClass(NewClassTree newClassTree) {
       if (isCreatingResource(newClassTree)) {
-        openResource(programState.peekValue(), newClassTree);
+        openResource(programState.peekValue());
       }
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (isCreatingResource(mit)) {
-        openResource(programState.peekValue(), mit);
+        openResource(programState.peekValue());
       }
     }
 

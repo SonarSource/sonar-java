@@ -1,7 +1,7 @@
-SonarQube Java Analyzer [![Build Status](https://travis-ci.org/SonarSource/sonar-java.svg?branch=master)](https://travis-ci.org/SonarSource/sonar-java) 
+SonarJava [![Build Status](https://travis-ci.org/SonarSource/sonar-java.svg?branch=master)](https://travis-ci.org/SonarSource/sonar-java) 
 ==========
 
-This is the plugin for the [SonarQube](http://www.sonarqube.org/) platform which provides [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis) of Java code. It will allow you to produce stable and easily supported code by helping you find and correct bugs, vulnerabilities and smells in your code.
+SonarJava is a code analyzer for Java projects. Information about the SonarJava features is available [here](https://www.sonarsource.com/why-us/products/languages/java.html).
 
 **Build status (all branches)**
 

@@ -6,7 +6,9 @@ public enum Continent {
   public int countryCount;  // Noncompliant [[sc=3;ec=9]] {{Lower the visibility of this field.}}
   public static int countryCount2;  // compliant, static field
   private int landMass;
-
+  public final com.google.common.collect.ImmutableList regions; // Compliant - immutable
+  private final java.util.Date date;
+  
   Continent(int countryCount, int landMass) {
   }
 
@@ -31,6 +33,7 @@ public enum Continent2 {
 
   private int countryCount;
   private int landMass;
+  public final java.util.List regions; // Noncompliant {{Lower the visibility of this field.}}
 
   Continent2(int countryCount, int landMass) {
 
@@ -45,8 +48,9 @@ public enum Continent3 {
 
   public final int countryCount; // Compliant - final
   private int landMass;
-  public final String[] regions; // False negative - mutable field!
-
+  public final String[] regions; // Noncompliant {{Lower the visibility of this field.}}
+  public final java.util.Date date; // Noncompliant {{Lower the visibility of this field.}}
+  
   Continent3(int countryCount, int landMass) {
     this.countryCount = countryCount;
     this.landMass = landMass;

@@ -1,0 +1,9 @@
+{
+  "title": "Disallowed classes should not be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+
+  ],
+  "defaultSeverity": "Info"
+}

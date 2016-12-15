@@ -22,7 +22,6 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
@@ -49,11 +48,11 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
     EvaluatedConditions ec = evaluatedConditions.pop();
     for (Tree condition : Sets.difference(ec.evaluatedToFalse.keySet(), ec.evaluatedToTrue.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"",
-        ec.evaluatedToFalse.get(condition).stream().map(node -> SECheck.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
+        ec.evaluatedToFalse.get(condition).stream().map(node -> FlowComputation.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
     }
     for (Tree condition : Sets.difference(ec.evaluatedToTrue.keySet(), ec.evaluatedToFalse.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"",
-        ec.evaluatedToTrue.get(condition).stream().map(node -> SECheck.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
+        ec.evaluatedToTrue.get(condition).stream().map(node -> FlowComputation.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
     }
   }
 

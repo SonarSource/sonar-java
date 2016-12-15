@@ -26,7 +26,7 @@ public class EmptyFileCheckTest {
 
   @Test
   public void test_empty_file() {
-    JavaCheckVerifier.verify("src/test/files/checks/EmptyFile.java", new EmptyFileCheck());
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/EmptyFile.java", "This file has 0 lines of code.", new EmptyFileCheck());
   }
 
   @Test

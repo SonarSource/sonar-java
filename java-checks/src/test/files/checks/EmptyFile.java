@@ -1,1 +1,1 @@
-// Noncompliant {{This Java file is empty.}}
+// this is an fully commented empty file

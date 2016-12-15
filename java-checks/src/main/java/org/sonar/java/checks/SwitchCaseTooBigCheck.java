@@ -20,15 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -51,67 +47,15 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
-      List<CaseLabelTree> labels = caseGroupTree.labels();
-      for (int i = 0; i < labels.size() - 1; i++) {
-        CaseLabelTree currentLabel = labels.get(i);
-        int caseStartLine = line(currentLabel);
-        int nextCaseStartLine = line(labels.get(i + 1));
-
-        check(currentLabel, caseStartLine, nextCaseStartLine);
-      }
-
-      CaseLabelTree lastLabel = Iterables.getLast(labels);
-      int lastLabelLine = line(lastLabel);
-      int statementLine = firstStatementLine(caseGroupTree.body(), lastLabelLine);
-      int startLine = Math.min(lastLabelLine + 1, statementLine);
-      int endLine = getNextLine(switchStatementTree, caseGroupTree);
-      check(lastLabel, startLine, endLine);
-    }
-  }
-
-  private static int firstStatementLine(List<StatementTree> body, int lastLabelLine) {
-    if (!body.isEmpty()) {
-      StatementTree firstStatement = body.get(0);
-      int firstStatementLine = line(body.get(0));
-
-      List<SyntaxTrivia> trivias = firstStatement.firstToken().trivias();
-      if (!trivias.isEmpty()) {
-        int firstLineTrivia = firstLineTrivia(trivias);
-        if (firstLineTrivia == lastLabelLine) {
-          firstLineTrivia = firstLineTrivia + 1;
+    LinesOfCodeVisitor locVisitor = new LinesOfCodeVisitor();
+    switchStatementTree.cases().forEach(
+      cgt -> {
+        int lines = cgt.body().stream().mapToInt(locVisitor::linesOfCode).sum();
+        if (lines > max) {
+          reportIssue(cgt.labels().get(cgt.labels().size() - 1),
+            "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
         }
-        return Math.min(firstLineTrivia, firstStatementLine);
       }
-      return firstStatementLine;
-    }
-    return Integer.MAX_VALUE;
-  }
-
-  private static int firstLineTrivia(List<SyntaxTrivia> trivias) {
-    return trivias.get(0).startLine();
-  }
-
-  private void check(CaseLabelTree caseLabelTree, int caseStartLine, int nextCaseStartLine) {
-    int lines = Math.max(nextCaseStartLine - caseStartLine, 1);
-
-    if (lines > max) {
-      reportIssue(caseLabelTree, "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
-    }
-  }
-
-  private static int getNextLine(SwitchStatementTree switchStatementTree, CaseGroupTree caseGroupTree) {
-    int switchLastLine = line(switchStatementTree.closeBraceToken());
-    List<CaseGroupTree> cases = switchStatementTree.cases();
-    int indexOfCaseGroup = cases.indexOf(caseGroupTree);
-    if (indexOfCaseGroup == cases.size() - 1) {
-      return switchLastLine;
-    } else {
-      return line(cases.get(indexOfCaseGroup + 1));
-    }
-  }
-
-  private static int line(Tree tree) {
-    return tree.firstToken().line();
+      );
   }
 }

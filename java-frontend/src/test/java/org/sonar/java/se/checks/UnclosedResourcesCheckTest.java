@@ -43,4 +43,11 @@ public class UnclosedResourcesCheckTest {
   public void streams() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/StreamResource.java", new UnclosedResourcesCheck());
   }
+  
+  @Test
+  public void testWithExcludedTypes() {
+    UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
+    unclosedResourcesCheck.excludedTypes = "java.io.FileInputStream, java.sql.Statement";
+    JavaCheckVerifier.verify("src/test/files/se/ExcludedResourcesTestFile.java", unclosedResourcesCheck);
+  }
 }

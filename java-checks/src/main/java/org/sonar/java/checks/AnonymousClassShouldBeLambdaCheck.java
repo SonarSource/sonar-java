@@ -79,7 +79,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if(hasOnlyOneMethod(classBody.members()) && classBody.symbol().isTypeSymbol()) {
       // Verify class body is a subtype of an interface
       JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
-      return symbol.getSuperclass().is("java.lang.Object") && symbol.getInterfaces().size() == 1;
+      return symbol.getInterfaces().size() == 1 && symbol.getSuperclass().is("java.lang.Object");
     }
     return false;
   }

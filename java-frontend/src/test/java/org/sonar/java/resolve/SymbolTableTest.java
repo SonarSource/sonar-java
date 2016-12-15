@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -960,6 +961,35 @@ public class SymbolTableTest {
     assertThat(sym.isDeprecated()).isTrue();
     sym = result.symbol("fun");
     assertThat(sym.isDeprecated()).isTrue();
+  }
+
+  /**
+   * This test covers cases used as examples of ambiguous method invocations in JEP 302: Lambda Leftovers.
+   * These cases are not resolved and causes compilations errors in java 8.
+   *
+   * We are correctly resolving them.
+   *
+   * @see <a href="http://openjdk.java.net/jeps/302">JEP-302</a>
+   */
+  @Test
+  public void java8_ambiguous_method_invocations_as_for_JEP302() {
+    Result result = Result.createFor("Java8AmbiguousMethodInvocationsJEP302");
+
+    assertThat(usageLines(result.symbol("m", 9))).containsExactly(4, 5);
+    assertThat(usageLines(result.symbol("m", 10))).isEmpty();
+
+    assertThat(usageLines(result.symbol("m2", 12))).containsExactly(6);
+    assertThat(usageLines(result.symbol("m2", 13))).isEmpty();
+
+    assertThat(usageLines(result.symbol("g", 33))).containsExactly(5);
+    assertThat(usageLines(result.symbol("g", 34))).isEmpty();
+
+    assertThat(usageLines(result.symbol("f", 38))).containsExactly(6);
+    assertThat(usageLines(result.symbol("f", 39))).isEmpty();
+  }
+
+  private static List<Integer> usageLines(JavaSymbol symbol) {
+    return symbol.usages().stream().map(IdentifierTree::firstToken).map(SyntaxToken::line).collect(Collectors.toList());
   }
 
   @Test

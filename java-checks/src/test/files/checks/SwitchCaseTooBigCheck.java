@@ -21,7 +21,7 @@ class A {
         System.out.println();           // 4
         System.out.println();           // 5
         System.out.println(); }         // 6
-      case 3: // Noncompliant
+      case 3: // compliant : empty spaces and comments do not count in loc
         System.out.println();           // 1
                                 /* foo */                       // 2
 
@@ -29,7 +29,7 @@ class A {
         );                              // 5
                                 /* tata */                      // 6
       case 4: // 1
-      case 5: // Noncompliant 1
+      case 5: // Compliant: only comments 1
         // 2
         // 3
         // 4
@@ -39,7 +39,8 @@ class A {
 
 
       case 7: // Noncompliant {{Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.}}
-        // my empty comment     // 1
+        // my empty comment  (does not count)
+        System.out.println();   // 1
         System.out.println();   // 2
         System.out.println();   // 3
         System.out.println();   // 4

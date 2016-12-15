@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -401,16 +400,16 @@ public class JavaCheckVerifierTest {
     }
 
     private FakeVisitor issueWithFlow(int line) {
-      return issueWithFlow(line, null);
-    }
-
-    private FakeVisitor issueWithFlow(int line, @Nullable String message) {
-      return issueWithFlow(line, message, 0, line, 0);
+      return issueWithFlow(null, new AnalyzerMessage.TextSpan(line));
     }
 
     private FakeVisitor issueWithFlow(int line, @Nullable String message, int startColumn, int endLine, int endColumn) {
+      return issueWithFlow(message, new AnalyzerMessage.TextSpan(line, startColumn, endLine, endColumn));
+    }
+
+    private FakeVisitor issueWithFlow(@Nullable String message, AnalyzerMessage.TextSpan location) {
       Preconditions.checkState(issueWithFlow == null, "Finish previous issueWithFlow by calling #add");
-      issueWithFlow = new AnalyzerMessage(this, new File("f"), new AnalyzerMessage.TextSpan(line, startColumn, endLine, endColumn), message, 0);
+      issueWithFlow = new AnalyzerMessage(this, new File("f"), location, message, 0);
       return this;
     }
 
@@ -420,39 +419,24 @@ public class JavaCheckVerifierTest {
       return this;
     }
 
-    private FakeVisitor flow(int... lines) {
-      flow();
-      Arrays.stream(lines).forEach(l -> flowItem(l));
-      return this;
-    }
-
-    private FakeVisitor flow(int line, @Nullable String msg) {
-      flow();
-      return flowItem(line, msg);
-    }
-
     private FakeVisitor flow(int line1, @Nullable String msg1, int line2, @Nullable String msg2) {
       flow();
       flowItem(line1, msg1);
       return flowItem(line2, msg2);
     }
 
-    private FakeVisitor flowItem(int line) {
-      return flowItem(line, null);
-    }
-
     private FakeVisitor flowItem(int line, @Nullable String msg) {
-      return flowItem(line, msg, 0, line, 0);
+      return flowItem(msg, new AnalyzerMessage.TextSpan(line));
     }
 
     private FakeVisitor flowItem(int line, @Nullable String msg, int startColumn, int endColumn) {
-      return flowItem(line, msg, startColumn, line, endColumn);
+      return flowItem(msg, new AnalyzerMessage.TextSpan(line, startColumn, line, endColumn));
     }
 
-    private FakeVisitor flowItem(int line, @Nullable String msg, int startColumn, int endLine, int endColumn) {
+    private FakeVisitor flowItem(@Nullable String msg, AnalyzerMessage.TextSpan textSpan) {
       List<List<AnalyzerMessage>> flows = issueWithFlow.flows;
       Preconditions.checkState(!flows.isEmpty(), "Call #flow first to create a flow");
-      AnalyzerMessage flowItem = new AnalyzerMessage(this, new File("f"), new AnalyzerMessage.TextSpan(line, startColumn, endLine, endColumn), msg, 0);
+      AnalyzerMessage flowItem = new AnalyzerMessage(this, new File("f"), textSpan, msg, 0);
       flows.get(flows.size() - 1).add(flowItem);
       return this;
     }
@@ -500,6 +484,9 @@ public class JavaCheckVerifierTest {
 
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
       AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+      if (textSpan.onLine()) {
+        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false);
+      }
       return new ReturnStatementTreeImpl(
         new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false),
         null,

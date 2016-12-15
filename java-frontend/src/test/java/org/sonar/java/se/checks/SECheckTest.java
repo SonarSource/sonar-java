@@ -38,7 +38,7 @@ public class SECheckTest {
     CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
     ExplodedGraph.Node node = new ExplodedGraph.Node(new ExplodedGraph.ProgramPoint(cfg.blocks().get(3), 0), mock(ProgramState.class));
     node.addParent(new ExplodedGraph.Node(new ExplodedGraph.ProgramPoint(cfg.blocks().get(2), 2), mock(ProgramState.class)));
-    List<JavaFileScannerContext.Location> flow = SECheck.flow(node, new SymbolicValue(12));
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, new SymbolicValue(12));
     assertThat(flow).isEmpty();
   }
 

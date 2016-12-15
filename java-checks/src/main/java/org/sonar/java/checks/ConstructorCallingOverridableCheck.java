@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -67,7 +69,6 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
     private TypeJavaSymbol constructorType;
-
     public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
       this.constructorType = constructorType;
     }
@@ -92,6 +93,16 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // skip new class
     }
 
     private boolean is(ExpressionTree expression, String match) {
@@ -123,7 +134,6 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
     private boolean isOverridableMethod(Symbol symbol) {
       return symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic();
     }
-
   }
 
 }

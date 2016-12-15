@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -32,7 +33,7 @@ import java.util.List;
 @Rule(key = "S138")
 public class MethodTooBigCheck extends IssuableSubscriptionVisitor {
 
-  private static final int DEFAULT_MAX = 100;
+  private static final int DEFAULT_MAX = 75;
 
   @RuleProperty(description = "Maximum authorized lines in a method", defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
@@ -47,14 +48,11 @@ public class MethodTooBigCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      int lines = getLines(block);
+      int lines = new LinesOfCodeVisitor().linesOfCode(block);
       if (lines > max) {
-        reportIssue(methodTree.simpleName(), "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");
+        reportIssue(methodTree.simpleName(),
+          "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");
       }
     }
-  }
-
-  private static int getLines(BlockTree block) {
-    return 1 + block.closeBraceToken().line() - block.openBraceToken().line();
   }
 }

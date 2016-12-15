@@ -28,7 +28,7 @@ public class TooManyLinesOfCodeInFileCheckTest {
 
   @Test
   public void testDefault() {
-    assertThat(new TooManyLinesOfCodeInFileCheck().maximum).isEqualTo(1000);
+    assertThat(new TooManyLinesOfCodeInFileCheck().maximum).isEqualTo(750);
   }
 
   @Test

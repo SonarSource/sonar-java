@@ -22,7 +22,6 @@ package org.sonar.java.ast.visitors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -33,7 +32,7 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   private Set<Integer> lines = Sets.newHashSet();
 
-  public int linesOfCode(CompilationUnitTree tree) {
+  public int linesOfCode(Tree tree) {
     lines.clear();
     scanTree(tree);
     return lines.size();

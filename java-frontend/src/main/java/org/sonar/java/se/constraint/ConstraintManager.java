@@ -21,7 +21,6 @@ package org.sonar.java.se.constraint;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -94,8 +93,14 @@ public class ConstraintManager {
         result = createIdentifierSymbolicValue((IdentifierTree) syntaxNode);
         break;
       default:
-        result = createDefaultSymbolicValue(syntaxNode);
+        result = createDefaultSymbolicValue();
     }
+    counter++;
+    return result;
+  }
+
+  public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(Type exceptionType) {
+    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, exceptionType);
     counter++;
     return result;
   }
@@ -116,7 +121,7 @@ public class ConstraintManager {
       SymbolicValue operand = values.get(0);
       result.computedFrom(ImmutableList.of(operand));
     } else {
-      result = createDefaultSymbolicValue(syntaxNode);
+      result = createDefaultSymbolicValue();
     }
     counter++;
     return result;
@@ -149,12 +154,12 @@ public class ConstraintManager {
         return SymbolicValue.FALSE_LITERAL;
       }
     }
-    return createDefaultSymbolicValue(identifier);
+    return createDefaultSymbolicValue();
   }
 
-  private SymbolicValue createDefaultSymbolicValue(Tree syntaxNode) {
+  private SymbolicValue createDefaultSymbolicValue() {
     SymbolicValue result;
-    result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
+    result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter);
     symbolicValueFactory = null;
     return result;
   }
@@ -172,5 +177,4 @@ public class ConstraintManager {
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
-
 }

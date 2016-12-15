@@ -28,6 +28,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 
@@ -187,6 +188,24 @@ public class SymbolicValue {
       this.operand = symbolicValues.get(0);
     }
 
+  }
+
+  public static class ExceptionalSymbolicValue extends SymbolicValue {
+    private final Type exceptionType;
+
+    public ExceptionalSymbolicValue(int id, Type exceptionType) {
+      super(id);
+      this.exceptionType = exceptionType;
+    }
+
+    public Type exceptionType() {
+      return exceptionType;
+    }
+
+    @Override
+    public String toString() {
+      return super.toString() + "_" + exceptionType.fullyQualifiedName() + "!";
+    }
   }
 
   public static class NotSymbolicValue extends UnarySymbolicValue {

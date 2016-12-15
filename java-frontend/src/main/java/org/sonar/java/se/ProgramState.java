@@ -40,7 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -83,25 +82,25 @@ public class ProgramState {
 
   private final Deque<SymbolicValue> stack;
   private final PMap<SymbolicValue, Integer> references;
-  private SymbolicValue returnSymbolicValue;
+  private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
   final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
+    Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
-    this.returnSymbolicValue = returnSymbolicValue;
+    this.exitSymbolicValue = exitSymbolicValue;
     constraintSize = 3;
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-                       Deque<SymbolicValue> stack, SymbolicValue returnSymbolicValue) {
-    this(values, references, constraints, visitedPoints, stack, returnSymbolicValue);
+                       Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
+    this(values, references, constraints, visitedPoints, stack, exitSymbolicValue);
     lastEvaluated = symbol;
   }
 
@@ -111,7 +110,7 @@ public class ProgramState {
     constraints = ps.constraints;
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
-    returnSymbolicValue = ps.returnSymbolicValue;
+    exitSymbolicValue = ps.exitSymbolicValue;
     stack = newStack;
   }
 
@@ -121,7 +120,7 @@ public class ProgramState {
     constraints = newConstraints;
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
-    returnSymbolicValue = ps.returnSymbolicValue;
+    exitSymbolicValue = ps.exitSymbolicValue;
     this.stack = ps.stack;
   }
 
@@ -216,7 +215,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
+      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
     }
     if(lastEvaluated == null) {
       lastEvaluated = symbol;
@@ -282,7 +281,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, returnSymbolicValue)
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue)
       : this;
   }
 
@@ -303,7 +302,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     constraints.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, returnSymbolicValue) : this;
+    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -331,7 +330,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, returnSymbolicValue);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -348,7 +347,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, returnSymbolicValue);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 
   @CheckForNull
@@ -378,30 +377,6 @@ public class ProgramState {
     return result;
   }
 
-  public List<ObjectConstraint> getFieldConstraints(final Object state) {
-    final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
-    final List<ObjectConstraint> result = new ArrayList<>();
-    constraints.forEach((symbolicValue, valueConstraint) -> {
-      if (valueConstraint instanceof ObjectConstraint && !valuesAssignedToFields.contains(symbolicValue)) {
-        ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
-        if (constraint.hasStatus(state)) {
-          result.add(constraint);
-        }
-      }
-    });
-    return result;
-  }
-
-  public Set<SymbolicValue> getFieldValues() {
-    final Set<SymbolicValue> fieldValues = new HashSet<>();
-    values.forEach((symbol, symbolicValue) -> {
-      if (isField(symbol)) {
-        fieldValues.add(symbolicValue);
-      }
-    });
-    return fieldValues;
-  }
-
   public List<BinaryRelation> getKnownRelations() {
     final List<BinaryRelation> knownRelations = new ArrayList<>();
     constraints.forEach((symbolicValue, constraint) -> {
@@ -429,16 +404,12 @@ public class ProgramState {
     return null;
   }
 
-  public void storeReturnValue() {
-    this.returnSymbolicValue = peekValue();
-  }
-
-  public void clearReturnValue() {
-    this.returnSymbolicValue = null;
+  public void storeExitValue() {
+    this.exitSymbolicValue = peekValue();
   }
 
   @CheckForNull
-  public SymbolicValue returnValue() {
-    return this.returnSymbolicValue;
+  public SymbolicValue exitValue() {
+    return this.exitSymbolicValue;
   }
 }

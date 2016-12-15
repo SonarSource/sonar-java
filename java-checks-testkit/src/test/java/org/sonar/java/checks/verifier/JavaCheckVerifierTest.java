@@ -396,6 +396,9 @@ public class JavaCheckVerifierTest {
 
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
       AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+      if (textSpan.onLine()) {
+        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false);
+      }
       return new ReturnStatementTreeImpl(
         new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false),
         null,
