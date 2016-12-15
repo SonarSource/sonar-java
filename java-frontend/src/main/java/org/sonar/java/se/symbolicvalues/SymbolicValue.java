@@ -204,7 +204,7 @@ public class SymbolicValue {
 
     @Override
     public String toString() {
-      return super.toString() + "!";
+      return super.toString() + "_" + exceptionType.fullyQualifiedName() + "!";
     }
   }
 
