@@ -78,7 +78,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   private static final Tree.Kind[] CONDITIONAL_EXCLUSIONS = new Tree.Kind[]{
       Tree.Kind.METHOD_INVOCATION, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT,
       Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.TYPE_CAST, Tree.Kind.NEW_CLASS,
-      Tree.Kind.ARRAY_ACCESS_EXPRESSION
+      Tree.Kind.ARRAY_ACCESS_EXPRESSION, Tree.Kind.NEW_ARRAY
   };
 
   static {

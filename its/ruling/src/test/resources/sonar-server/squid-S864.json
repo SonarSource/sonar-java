@@ -15,12 +15,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/measure/MeasureFilterSort.java':[
 126,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
-405,
-446,
-452,
-458,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/RepositoriesAction.java':[
 68,
 ],
