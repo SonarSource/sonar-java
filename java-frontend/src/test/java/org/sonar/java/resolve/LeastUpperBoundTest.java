@@ -21,7 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LeastUpperBoundTest {
 

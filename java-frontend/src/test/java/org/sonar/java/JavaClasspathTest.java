@@ -31,7 +31,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class JavaClasspathTest {
@@ -125,7 +125,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(1)).exists();
     assertThat(javaClasspath.getElements().get(2)).exists();
     assertThat(javaClasspath.getElements().get(3)).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("lib", "hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("lib", "hello.jar", "world.jar", "foo.jar");
   }
 
   @Test
@@ -136,7 +136,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(0)).exists();
     assertThat(javaClasspath.getElements().get(1)).exists();
     assertThat(javaClasspath.getElements().get(2)).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "target");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "target");
   }
   
   @Test
@@ -147,7 +147,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(0)).exists();
     assertThat(javaClasspath.getElements().get(1)).exists();
     assertThat(javaClasspath.getElements().get(2)).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").containsExactly("world.jar", "hello.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").containsExactly("world.jar", "hello.jar", "foo.jar");
   }
 
   @Test
@@ -157,7 +157,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements().get(0)).exists();
     assertThat(javaClasspath.getElements().get(1)).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar");
   }
 
   @Test
@@ -167,7 +167,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(6);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar", "oklog-1.0.1.aar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar", "oklog-1.0.1.aar");
   }
   
   @Test
@@ -177,7 +177,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     File classes = javaClasspath.getElements().get(0);
     assertThat(classes).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("classes");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("classes");
   }
 
   @Test
@@ -194,7 +194,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(2);
     jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar");
 
   }
 
@@ -205,7 +205,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(3);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
   }
 
   @Test
@@ -215,13 +215,13 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(3);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**\\*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
   }
 
   @Test

@@ -30,7 +30,7 @@ import org.sonar.api.config.Settings;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class JavaTestClasspathTest {
@@ -69,7 +69,7 @@ public class JavaTestClasspathTest {
     assertThat(javaTestClasspath.getElements().get(0)).exists();
     assertThat(javaTestClasspath.getElements().get(1)).exists();
     assertThat(javaTestClasspath.getElements().get(2)).exists();
-    assertThat(javaTestClasspath.getElements()).onProperty("name").contains("hello.jar", "world.jar", "target");
+    assertThat(javaTestClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "target");
   }
 
   @Test

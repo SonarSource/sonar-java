@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.io.Resources;
 import org.apache.commons.lang.StringUtils;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
@@ -48,7 +48,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class CheckVerifier {
   public static final String ISSUE_MARKER = "Noncompliant";

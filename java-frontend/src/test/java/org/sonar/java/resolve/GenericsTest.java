@@ -20,11 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.fest.assertions.Assertions;
-import org.fest.assertions.GenericAssert;
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
@@ -45,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GenericsTest {
   @Test
@@ -898,10 +897,10 @@ public class GenericsTest {
     return ((MethodInvocationTree) current).symbolType();
   }
 
-  static class SubtypeAssert extends GenericAssert<SubtypeAssert, Type> {
+  static class SubtypeAssert extends AbstractAssert<SubtypeAssert, Type> {
 
     public SubtypeAssert(Type type) {
-      super(SubtypeAssert.class, type);
+      super(type, SubtypeAssert.class);
     }
 
     static SubtypeAssert assertThat(Type type) {

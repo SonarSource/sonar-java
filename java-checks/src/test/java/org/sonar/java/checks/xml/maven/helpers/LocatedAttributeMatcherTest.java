@@ -22,7 +22,7 @@ package org.sonar.java.checks.xml.maven.helpers;
 import org.junit.Test;
 import org.sonar.maven.model.LocatedAttribute;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocatedAttributeMatcherTest {
 

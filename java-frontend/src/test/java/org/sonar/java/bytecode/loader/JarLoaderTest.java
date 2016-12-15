@@ -29,7 +29,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JarLoaderTest {
 

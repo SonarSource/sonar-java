@@ -26,7 +26,7 @@ import org.junit.rules.ExpectedException;
 import java.io.File;
 import java.net.URL;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileSystemLoaderTest {
 

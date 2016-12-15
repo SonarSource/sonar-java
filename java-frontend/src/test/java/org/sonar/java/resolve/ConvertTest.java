@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConvertTest {
 

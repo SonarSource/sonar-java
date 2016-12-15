@@ -19,7 +19,7 @@
  */
 package org.sonar.java;
 
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.ast.parser.JavaParser;
@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class AnalyzerMessageTest {

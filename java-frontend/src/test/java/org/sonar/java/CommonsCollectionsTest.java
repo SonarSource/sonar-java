@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.Delta;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -39,7 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class CommonsCollectionsTest {

@@ -25,7 +25,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
-import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -41,7 +40,7 @@ import org.sonar.wsclient.services.ResourceQuery;
 import java.io.File;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTest {
 
@@ -144,12 +143,8 @@ public class JavaTest {
     List<Issue> issues = issueClient.find(IssueQuery.create().components("org.example:example:src/main/java/EclispeI18NFiltered.java")).list();
     assertThat(issues).hasSize(2);
     for (Issue issue : issues) {
-      assertThat(issue.ruleKey()).satisfies(new Condition<String>() {
-        @Override
-        public boolean matches(String value) {
-          return "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value);
-        }
-      });
+      assertThat(issue.ruleKey()).matches(value -> "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value));
+
       assertThat(issue.line()).isEqualTo(17);
     }
   }

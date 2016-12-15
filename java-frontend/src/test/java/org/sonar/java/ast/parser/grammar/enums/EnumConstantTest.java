@@ -33,6 +33,7 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
 public class EnumConstantTest {
@@ -55,8 +56,8 @@ public class EnumConstantTest {
     LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
     ActionParser<Tree> parser = new ActionParser<>(StandardCharsets.UTF_8, b, JavaGrammar.class, new TreeFactory(), new JavaNodeBuilder(), JavaLexer.ENUM_CONSTANT);
     EnumConstantTreeImpl node = (EnumConstantTreeImpl) parser.parse("@Foo CONSTANT");
-    org.fest.assertions.Assertions.assertThat(node.modifiers().size()).isEqualTo(1);
-    org.fest.assertions.Assertions.assertThat(((IdentifierTree)((AnnotationTreeImpl) node.modifiers().get(0)).annotationType()).identifierToken().text()).isEqualTo("Foo");
+    assertThat(node.modifiers().size()).isEqualTo(1);
+    assertThat(((IdentifierTree)((AnnotationTreeImpl) node.modifiers().get(0)).annotationType()).identifierToken().text()).isEqualTo("Foo");
   }
 
 }

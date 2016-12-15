@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProgramPointTest {
   @Test

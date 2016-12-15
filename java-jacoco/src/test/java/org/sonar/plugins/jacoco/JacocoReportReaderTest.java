@@ -21,7 +21,7 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
