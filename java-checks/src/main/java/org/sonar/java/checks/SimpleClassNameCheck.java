@@ -56,16 +56,10 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
     CompilationUnitTree cut = (CompilationUnitTree) tree;
     cut.types().stream().filter(NOT_EMPTY_STATEMENT).map(t -> ((ClassTree) t).symbol()).forEach(this::checkSymbol);
     List<ImportTree> imports = cut.imports().stream().filter(NOT_EMPTY_STATEMENT).map(t -> (ImportTree) t).collect(Collectors.toList());
-    boolean fileContainsStarImport = false;
-    for (ImportTree importTree : imports) {
-      if (importTree.qualifiedIdentifier().is(Kind.MEMBER_SELECT)) {
-        IdentifierTree identifier = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
-        if ("*".equals(identifier.name())) {
-          fileContainsStarImport = true;
-          break;
-        }
-      }
-    }
+    boolean fileContainsStarImport = imports.stream()
+      .filter(it -> it.qualifiedIdentifier().is(Kind.MEMBER_SELECT))
+      .map(it -> ((MemberSelectExpressionTree) it.qualifiedIdentifier()).identifier())
+      .anyMatch(i -> "*".equals(i.name()));
     if(!fileContainsStarImport) {
       checkImports(imports);
     }
