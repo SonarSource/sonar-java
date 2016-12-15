@@ -99,6 +99,12 @@ public class ConstraintManager {
     return result;
   }
 
+  public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(Type exceptionType) {
+    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, exceptionType);
+    counter++;
+    return result;
+  }
+
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode) || isObjectsMethod(syntaxNode.symbol(), "equals")) {
@@ -171,5 +177,4 @@ public class ConstraintManager {
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
-
 }

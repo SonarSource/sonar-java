@@ -20,6 +20,8 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -43,6 +45,8 @@ public class MethodYield {
   int resultIndex;
   @Nullable
   Constraint resultConstraint;
+  @Nullable
+  String exceptionType;
   boolean exception;
 
   public MethodYield(int arity, boolean varArgs) {
@@ -51,11 +55,17 @@ public class MethodYield {
     this.resultIndex = -1;
     this.resultConstraint = null;
     this.exception = false;
+    this.exceptionType = null;
   }
 
   @Override
   public String toString() {
-    return "{params: " + Arrays.toString(parametersConstraints) + ", result: " + resultConstraint + " (" + resultIndex + "), exceptional: " + exception + "}";
+    return String.format("{params: %s, result: %s (%d), exceptional: %b%s}",
+      Arrays.toString(parametersConstraints),
+      resultConstraint,
+      resultIndex,
+      exception,
+      exceptionType == null ? "" : (" (" + exceptionType + ")"));
   }
 
   public Collection<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
@@ -138,12 +148,15 @@ public class MethodYield {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + Arrays.hashCode(parametersConstraints);
-    result = prime * result + ((resultConstraint == null) ? 0 : resultConstraint.hashCode());
-    result = prime * result + resultIndex;
-    return result;
+    return new HashCodeBuilder(7, 1291)
+      .append(parametersConstraints)
+      .append(varArgs)
+      .append(resultIndex)
+      .append(resultIndex)
+      .append(resultConstraint)
+      .append(exception)
+      .append(exceptionType)
+      .hashCode();
   }
 
   @Override
@@ -155,15 +168,13 @@ public class MethodYield {
       return false;
     }
     MethodYield other = (MethodYield) obj;
-    if (!Arrays.equals(parametersConstraints, other.parametersConstraints)
-      || exception != other.exception
-      || resultIndex != other.resultIndex
-      || varArgs != other.varArgs) {
-      return false;
-    }
-    if (resultConstraint != null) {
-      return resultConstraint.equals(other.resultConstraint);
-    }
-    return other.resultConstraint == null;
+    return new EqualsBuilder()
+      .append(parametersConstraints, other.parametersConstraints)
+      .append(varArgs, other.varArgs)
+      .append(resultIndex, other.resultIndex)
+      .append(resultConstraint, other.resultConstraint)
+      .append(exception, other.exception)
+      .append(exceptionType, other.exceptionType)
+      .isEquals();
   }
 }

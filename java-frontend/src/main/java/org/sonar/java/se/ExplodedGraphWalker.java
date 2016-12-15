@@ -71,6 +71,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -352,11 +353,14 @@ public class ExplodedGraphWalker {
         case RETURN_STATEMENT:
           ExpressionTree returnExpression = ((ReturnStatementTree) terminator).expression();
           if (returnExpression != null) {
-            programState.storeReturnValue();
+            programState.storeExitValue();
           }
           break;
         case THROW_STATEMENT:
-          programState.clearReturnValue();
+          ProgramState.Pop unstack = programState.unstackValue(1);
+          // we don't use the SV related to the expression
+          programState = unstack.state.stackValue(constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType()));
+          programState.storeExitValue();
           break;
         default:
           // do nothing by default.
