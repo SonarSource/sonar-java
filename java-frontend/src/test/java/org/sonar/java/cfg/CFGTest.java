@@ -21,6 +21,7 @@ package org.sonar.java.cfg;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG.Block;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,6 +130,8 @@ public class CFGTest {
     private int ifTrue = -1;
     private int ifFalse = -1;
     private int exitId = -1;
+    private boolean isCatchBlock = false;
+    private boolean isFinallyBlock = false;
 
     BlockChecker(final int... ids) {
       if( ids.length <= 1) {
@@ -168,6 +172,16 @@ public class CFGTest {
         exceptionsIDs[n++] = i;
       }
       Arrays.sort(exceptionsIDs);
+      return this;
+    }
+
+    BlockChecker isCatchBlock() {
+      isCatchBlock = true;
+      return this;
+    }
+
+    BlockChecker isFinallyBlock() {
+      isFinallyBlock = true;
       return this;
     }
 
@@ -221,6 +235,12 @@ public class CFGTest {
       assertThat(block.exceptions().stream().mapToInt(Block::id).sorted().toArray()).as("Expected exceptions in block " + block.id()).isEqualTo(exceptionsIDs);
       if (terminatorChecker != null) {
         terminatorChecker.check(block.terminator());
+      }
+      if (isCatchBlock) {
+        assertThat(block.isCatchBlock()).as("Block B" + block.id() + " expected to be flagged as 'catch' block").isTrue();
+      }
+      if (isFinallyBlock) {
+        assertThat(block.isFinallyBlock()).as("Block B" + block.id() + " expected to be flagged as 'finally' block").isTrue();
       }
     }
 
@@ -366,8 +386,15 @@ public class CFGTest {
 
   public static final ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
 
-  public static CFG buildCFG(final String methodCode) {
-    final CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
+  public static CFG buildCFG(String methodCode) {
+    return buildCFGFromCUT((CompilationUnitTree) parser.parse("class A { " + methodCode + " }"));
+  }
+
+  public static CFG buildCFG(File file) {
+    return buildCFGFromCUT((CompilationUnitTree) parser.parse(file));
+  }
+
+  private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
     SemanticModel.createFor(cut, Lists.newArrayList());
     final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return CFG.build(tree);
@@ -1239,7 +1266,7 @@ public class CFGTest {
           element(Tree.Kind.MEMBER_SELECT),
           element(Tree.Kind.CHAR_LITERAL, "''"),
           element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(0));
+      ).successors(0).isFinallyBlock());
     cfgChecker.check(cfg);
     cfg = buildCFG("void fun() {try {System.out.println('');} catch(IllegalArgumentException e) { foo('i');} catch(Exception e){bar('e');}" +
         " finally { System.out.println('finally'); }}");
@@ -1258,19 +1285,19 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.CHAR_LITERAL, "'i'"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(1).exceptions(1),
+      ).successors(1).exceptions(1).isCatchBlock(),
       block(
         element(Kind.VARIABLE, "e"),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.CHAR_LITERAL, "'e'"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(1).exceptions(1),
+      ).successors(1).exceptions(1).isCatchBlock(),
       block(
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.CHAR_LITERAL, "'finally'"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(0)
+      ).successors(0).isFinallyBlock()
     );
     cfgChecker.check(cfg);
     cfg = buildCFG(
@@ -1287,7 +1314,7 @@ public class CFGTest {
           element(Kind.VARIABLE, "e"),
           element(Tree.Kind.IDENTIFIER, "e"),
             element(Tree.Kind.INSTANCE_OF)
-        ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0)
+      ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0).isCatchBlock()
     );
     cfgChecker.check(cfg);
     cfg = buildCFG(
@@ -1303,7 +1330,7 @@ public class CFGTest {
         block(
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Kind.METHOD_INVOCATION)
-        ).successors(0, 1).exit(0),
+      ).successors(0, 1).exit(0).isFinallyBlock(),
         block(
             element(Tree.Kind.IDENTIFIER, "bar"),
             element(Kind.METHOD_INVOCATION)
@@ -1606,7 +1633,7 @@ public class CFGTest {
         element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
       block(
         element(Kind.VARIABLE, "iae"),
-        element(Tree.Kind.TRY_STATEMENT)).successors(4),
+        element(Tree.Kind.TRY_STATEMENT)).successors(4).isCatchBlock(),
       block(
         element(Kind.NEW_CLASS)).successors(3).exceptions(0, 2),
       block(
@@ -1621,7 +1648,45 @@ public class CFGTest {
       ).successors(0)
       );
     cfgChecker.check(cfg);
+  }
 
+  @Test
+  public void catch_block_correctly_flagged_in_CFG() {
+    CFG cfg = buildCFG(new File("src/test/files/cfg/CFGCatchBlocks.java"));
+
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(8),
+      block(
+        element(Tree.Kind.IDENTIFIER, "m1"),
+        element(Tree.Kind.IDENTIFIER, "o1"),
+        element(Tree.Kind.IDENTIFIER, "o2"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(7, 5, 3, 1),
+      block(
+        element(Tree.Kind.VARIABLE, "e"),
+        element(Tree.Kind.IDENTIFIER, "m2"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(6).exceptions(1).isCatchBlock(),
+      block(
+        element(Tree.Kind.IDENTIFIER, "m3"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(1),
+      block(
+        element(Tree.Kind.VARIABLE, "e"),
+        element(Tree.Kind.IDENTIFIER, "o2"),
+        element(Tree.Kind.NULL_LITERAL),
+        element(Tree.Kind.EQUAL_TO)).terminator(Tree.Kind.IF_STATEMENT).ifTrue(4).ifFalse(1).isCatchBlock(),
+      block(
+        element(Tree.Kind.IDENTIFIER, "m4"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(1),
+      block(
+        element(Tree.Kind.VARIABLE, "e"),
+        element(Tree.Kind.IDENTIFIER, "m5"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(2).exceptions(1).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "res")).successors(1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "m6"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).isFinallyBlock());
+    cfgChecker.check(cfg);
   }
 
   @Test
