@@ -22,6 +22,7 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -67,6 +68,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -813,7 +815,7 @@ public class CFG {
     tryStatement.successorBlock = finallyOrEndBlock;
     enclosingTry.push(tryStatement);
     enclosedByCatch.push(false);
-    for (CatchTree catchTree : tryStatementTree.catches()) {
+    for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
       currentBlock.isCatchBlock = true;
       if (!catchTree.block().body().isEmpty()) {

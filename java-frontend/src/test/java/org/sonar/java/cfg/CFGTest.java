@@ -1241,7 +1241,7 @@ public class CFGTest {
           element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
-    cfg = buildCFG("void fun() {try {System.out.println('');} catch(IllegalArgumentException e) { foo('iae');} catch(Exception e){foo('e');}" +
+    cfg = buildCFG("void fun() {try {System.out.println('');} catch(IllegalArgumentException e) { foo('i');} catch(Exception e){bar('e');}" +
         " finally { System.out.println('finally'); }}");
     cfgChecker = checker(
         block(
@@ -1256,15 +1256,15 @@ public class CFGTest {
       block(
         element(Kind.VARIABLE, "e"),
         element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.CHAR_LITERAL, "'e'"),
+        element(Tree.Kind.CHAR_LITERAL, "'i'"),
         element(Tree.Kind.METHOD_INVOCATION)
-          ).successors(1).exceptions(1),
+      ).successors(1).exceptions(1),
       block(
         element(Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.CHAR_LITERAL, "'iae'"),
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(Tree.Kind.CHAR_LITERAL, "'e'"),
         element(Tree.Kind.METHOD_INVOCATION)
-          ).successors(1).exceptions(1),
+      ).successors(1).exceptions(1),
       block(
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
@@ -1493,6 +1493,7 @@ public class CFGTest {
 
   @Test
   public void try_statement_with_CFG_blocks() {
+    // method invocation after if
     CFG cfg = buildCFG(
       "  private void f(boolean action) {\n" +
         "    try {\n" +
@@ -1520,6 +1521,8 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
+
+    // method invocation before if
     cfg = buildCFG(
       "  private void f(boolean action) {\n" +
         "    try {\n" +
@@ -1547,6 +1550,8 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
+
+    // finally
     cfg = buildCFG(
       "  private void f(boolean action) {\n" +
         "    try {\n" +
