@@ -21,8 +21,6 @@ package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
-
-import org.fest.assertions.Delta;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,7 +30,8 @@ import org.sonar.wsclient.services.ResourceQuery;
 
 import java.util.Date;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 public class Struts139Test {
 
@@ -99,15 +98,15 @@ public class Struts139Test {
   @Test
   public void unit_test_metrics() {
     setCurrentProject();
-    assertThat(getProjectMeasure("lines_to_cover").getValue()).isEqualTo(15474, Delta.delta(10));
-    assertThat(getProjectMeasure("coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
-    assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
+    assertThat(getProjectMeasure("lines_to_cover").getValue()).isEqualTo(15474, offset(10.0));
+    assertThat(getProjectMeasure("coverage").getValue()).isEqualTo(25.1, offset(0.1));
+    assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(36.8, offset(0.2));
     assertThat(getProjectMeasure("line_coverage").getValue()).isEqualTo(25.5);
     assertThat(getProjectMeasure("branch_coverage").getValue()).isEqualTo(24.1);
     if(JavaTestSuite.sonarqube_version_is_prior_to_6_2()) {
       // overall coverage is the same as UT if no IT.
-      assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
-      assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
+      assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(36.8, offset(0.2));
+      assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.1, offset(0.1));
       assertThat(getProjectMeasure("overall_line_coverage").getValue()).isEqualTo(25.5);
       assertThat(getProjectMeasure("overall_branch_coverage").getValue()).isEqualTo(24.1);
     }

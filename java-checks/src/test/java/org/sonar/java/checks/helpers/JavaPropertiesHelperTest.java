@@ -37,7 +37,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaPropertiesHelperTest {
 

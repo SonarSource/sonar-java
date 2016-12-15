@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -41,8 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -138,10 +138,10 @@ public class FileLinesVisitorTest {
       if (counter.commentedLines.contains(line)) {
         counter.commentedLines.remove(line);
       } else {
-        fail("should not have extra lines");
+        Fail.fail("should not have extra lines");
       }
     }
-    assertThat(counter.commentedLines).containsExactly(counter.casesNotCoveredLines.toArray());
+    assertThat(counter.commentedLines).containsExactly(counter.casesNotCoveredLines.toArray(new Integer[0]));
   }
 
   private static class CommentsCounter {
@@ -171,7 +171,7 @@ public class FileLinesVisitorTest {
           lineNumber++;
         }
       } catch (IOException e) {
-        fail();
+        Fail.fail(e.getMessage());
       }
       return counter;
     }

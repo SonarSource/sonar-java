@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.typed.ActionParser;
-import org.fest.assertions.GenericAssert;
+import org.assertj.core.api.AbstractAssert;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaLexer;
@@ -57,10 +57,10 @@ public class Assertions {
       rule));
   }
 
-  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser<Tree>> {
+  public static class ParserAssert extends AbstractAssert<ParserAssert, ActionParser<Tree>> {
 
     public ParserAssert(ActionParser<Tree> actual) {
-      super(ParserAssert.class, actual);
+      super(actual, ParserAssert.class);
     }
 
     private void parseTillEof(String input) {

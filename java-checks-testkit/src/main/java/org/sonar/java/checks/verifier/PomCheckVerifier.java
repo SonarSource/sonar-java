@@ -20,7 +20,7 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.annotations.Beta;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.checks.verifier.XmlCheckVerifier.FakeXmlCheckContext;
 import org.sonar.java.xml.XmlParser;

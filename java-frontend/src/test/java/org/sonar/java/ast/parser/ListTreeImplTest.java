@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListTreeImplTest {
 
@@ -45,7 +45,7 @@ public class ListTreeImplTest {
     List<SyntaxToken> separators = Lists.newArrayList(token1, token2);
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
     Iterable<Tree> result = listTree.children();
-    assertThat(result).containsOnly(tree1, token1, tree2, token2, tree3);
+    assertThat(Lists.newArrayList(result)).containsExactly(tree1, token1, tree2, token2, tree3);
   }
 
   @Test
@@ -55,7 +55,7 @@ public class ListTreeImplTest {
     List<SyntaxToken> separators = Lists.newArrayList();
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
     Iterable<Tree> result = listTree.children();
-    assertThat(result).containsOnly(tree1);
+    assertThat(Lists.newArrayList(result)).containsExactly(tree1);
   }
 
   private static class MyList extends ListTreeImpl<Tree> {

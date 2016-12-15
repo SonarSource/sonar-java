@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TypeInferenceSolverTest {
 

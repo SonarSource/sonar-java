@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,7 +73,7 @@ public class JavaSonarWayProfileTest {
     ProfileDefinition sonarWay = new JavaSonarWayProfile(ruleFinder(true));
     ValidationMessages validation = ValidationMessages.create();
     RulesProfile profile = sonarWay.createProfile(validation);
-    assertThat(profile.getActiveRules()).onProperty("repositoryKey").containsOnly(CheckList.REPOSITORY_KEY);
+    assertThat(profile.getActiveRules()).extracting("repositoryKey").containsOnly(CheckList.REPOSITORY_KEY);
     assertThat(profile.getActiveRulesByRepository("common-java")).isEmpty();
     assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY).size()).isGreaterThanOrEqualTo(269);
     assertThat(profile.getName()).isEqualTo("Sonar way");

@@ -21,7 +21,7 @@ package org.sonar.plugins.jacoco;
 
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JaCoCoExtensionsTest {
 

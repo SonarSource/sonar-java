@@ -21,8 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.fest.assertions.Fail;
-import org.fest.assertions.ObjectAssert;
+import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -45,7 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -135,7 +134,7 @@ public class TypeAndReferenceSolverTest {
     try {
       treeOf(code);
     } catch (StackOverflowError soe) {
-      throw Fail.fail("Stackoverflow error was thrown !");
+      throw new AssertionError("Stackoverflow error was thrown !");
     }
   }
 
@@ -474,7 +473,7 @@ public class TypeAndReferenceSolverTest {
     assertThatTypeOf(BOOLEAN, "||", BOOLEAN).isSameAs(symbols.booleanType);
   }
 
-  private ObjectAssert assertThatTypeOf(String o1, String op, String o2) {
+  private AbstractObjectAssert<?, JavaType> assertThatTypeOf(String o1, String op, String o2) {
     return assertThat(typeOf(o1 + op + o2)).as(o1 + op + o2);
   }
 

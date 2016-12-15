@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import org.fest.assertions.BooleanAssert;
+import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Test;
 import org.sonar.maven.model.LocatedAttribute;
 
 import javax.annotation.Nullable;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RangedVersionMatcherTest {
 
@@ -122,7 +122,7 @@ public class RangedVersionMatcherTest {
     assertWithMatcher(version).isFalse();
   }
 
-  private BooleanAssert assertWithMatcher(@Nullable String version) {
+  private AbstractBooleanAssert<?> assertWithMatcher(@Nullable String version) {
     if (version != null) {
       return assertThat(matcher.test(new LocatedAttribute(version)));
     }

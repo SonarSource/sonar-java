@@ -19,14 +19,14 @@
  */
 package org.sonar.maven.model;
 
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

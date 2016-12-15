@@ -37,7 +37,7 @@ import org.sonar.test.TestUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -80,7 +80,7 @@ public class JaCoCoOverallSensorTest {
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
 
-    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
+    assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test
@@ -90,7 +90,7 @@ public class JaCoCoOverallSensorTest {
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.not.found.exec"));
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
-    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
+    assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test
@@ -100,7 +100,7 @@ public class JaCoCoOverallSensorTest {
     when(pathResolver.relativeFile(any(File.class), eq("it.exec"))).thenReturn(new File(outputDir, "it.exec"));
     when(configuration.getItReportPath()).thenReturn("it.exec");
     when(configuration.getReportPath()).thenReturn("ut.exec");
-    org.fest.assertions.Assertions.assertThat(sensor.shouldExecuteOnProject()).isTrue();
+    assertThat(sensor.shouldExecuteOnProject()).isTrue();
   }
 
   @Test

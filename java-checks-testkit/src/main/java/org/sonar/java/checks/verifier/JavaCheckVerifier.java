@@ -22,8 +22,7 @@ package org.sonar.java.checks.verifier;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;

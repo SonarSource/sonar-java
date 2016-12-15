@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;

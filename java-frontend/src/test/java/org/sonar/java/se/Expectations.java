@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;

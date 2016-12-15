@@ -29,7 +29,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class VisitorsBridgeForTestsTest {
 

@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 

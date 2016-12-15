@@ -51,7 +51,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -328,7 +328,7 @@ public class MethodYieldTest {
     MethodYield[] expected = new MethodYield[] {
       buildMethodYield(0, null),
       buildMethodYield(-1, ObjectConstraint.nullConstraint())};
-    assertThat(methodBehavior.yields()).contains((Object[]) expected);
+    assertThat(methodBehavior.yields()).contains(expected);
   }
 
   private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {

@@ -22,7 +22,7 @@ package org.sonar.java.model;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
-import org.fest.assertions.BooleanAssert;
+import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SyntacticEquivalenceTest {
 
@@ -94,7 +94,7 @@ public class SyntacticEquivalenceTest {
     assertAreNotEquivalent(Lists.newArrayList(statement1), Lists.newArrayList(statement2));
   }
 
-  private BooleanAssert getAssertion(List<String> statement1, List<String> statement2) {
+  private AbstractBooleanAssert<?> getAssertion(List<String> statement1, List<String> statement2) {
     CompilationUnitTree compilationUnitTree = compilationUnitTree("class A { void method1() { " + Joiner.on(";").join(statement1) + ";} " +
       "void method2(){ " + Joiner.on(";").join(statement2) + ";} }");
     ClassTree classTree = ((ClassTree) compilationUnitTree.types().get(0));
