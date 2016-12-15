@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class ConstraintManager {
@@ -99,8 +101,9 @@ public class ConstraintManager {
     return result;
   }
 
-  public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(Type exceptionType) {
-    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, exceptionType);
+  public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(@Nullable Type exceptionType) {
+    Type type = (exceptionType != null && exceptionType.isUnknown()) ? null : exceptionType;
+    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, type);
     counter++;
     return result;
   }

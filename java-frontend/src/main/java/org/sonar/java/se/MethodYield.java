@@ -46,7 +46,7 @@ public class MethodYield {
   @Nullable
   Constraint resultConstraint;
   @Nullable
-  String exceptionType;
+  Type exceptionType;
   boolean exception;
 
   public MethodYield(int arity, boolean varArgs) {

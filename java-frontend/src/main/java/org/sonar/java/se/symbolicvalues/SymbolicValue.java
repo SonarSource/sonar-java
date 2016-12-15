@@ -21,6 +21,7 @@ package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -30,8 +31,11 @@ import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SymbolicValue {
 
@@ -189,20 +193,33 @@ public class SymbolicValue {
   }
 
   public static class ExceptionalSymbolicValue extends SymbolicValue {
+    @Nullable
     private final Type exceptionType;
 
-    public ExceptionalSymbolicValue(int id, Type exceptionType) {
+    public ExceptionalSymbolicValue(int id, @Nullable Type exceptionType) {
       super(id);
       this.exceptionType = exceptionType;
     }
 
+    @CheckForNull
     public Type exceptionType() {
       return exceptionType;
     }
 
     @Override
     public String toString() {
-      return super.toString() + "_" + exceptionType.fullyQualifiedName() + "!";
+      return super.toString() + "_" + (exceptionType == null ? "!unknownException" : exceptionType.fullyQualifiedName()) + "!";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      return Objects.equals(exceptionType, ((ExceptionalSymbolicValue) o).exceptionType);
     }
   }
 

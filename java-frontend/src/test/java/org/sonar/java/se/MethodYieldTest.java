@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -172,10 +173,11 @@ public class MethodYieldTest {
     otherYield.exception = true;
     assertThat(exceptionalYield).isEqualTo(otherYield);
 
-    otherYield.exceptionType = "exception";
+    Type exceptionType = Mockito.mock(Type.class);
+    otherYield.exceptionType = exceptionType;
     assertThat(exceptionalYield).isNotEqualTo(otherYield);
 
-    exceptionalYield.exceptionType = "exception";
+    exceptionalYield.exceptionType = exceptionType;
     assertThat(exceptionalYield).isEqualTo(otherYield);
   }
 
@@ -217,7 +219,7 @@ public class MethodYieldTest {
     assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(explicitExceptionYield.resultConstraint).isNull();
     assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.TRUE);
-    assertThat(explicitExceptionYield.exceptionType).isEqualTo("org.foo.MyException1");
+    assertThat(explicitExceptionYield.exceptionType.is("org.foo.MyException1")).isTrue();
   }
 
   @Test
@@ -234,7 +236,7 @@ public class MethodYieldTest {
     assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(explicitExceptionYield.resultConstraint).isNull();
     assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.nullConstraint());
-    assertThat(explicitExceptionYield.exceptionType).isEqualTo("org.foo.MyException1");
+    assertThat(explicitExceptionYield.exceptionType.is("org.foo.MyException1")).isTrue();
   }
 
   @Test
