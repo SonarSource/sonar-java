@@ -817,11 +817,11 @@ public class CFG {
     enclosedByCatch.push(false);
     for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
-      currentBlock.isCatchBlock = true;
       if (!catchTree.block().body().isEmpty()) {
         enclosedByCatch.push(true);
         build(catchTree.block());
         buildVariable(catchTree.parameter());
+        currentBlock.isCatchBlock = true;
         enclosedByCatch.pop();
       }
       tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
