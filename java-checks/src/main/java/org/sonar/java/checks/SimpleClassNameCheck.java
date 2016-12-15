@@ -20,39 +20,32 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 @Rule(key = "S1942")
 public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Replace this fully qualified name with \"%s\"";
-  private List<ImportTree> importTrees = new ArrayList<>();
-  private boolean fileContainsStarImport = false;
+  private static final Predicate<Tree> NOT_EMPTY_STATEMENT = t -> !t.is(Kind.EMPTY_STATEMENT);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.IMPORT);
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
-    if (!fileContainsStarImport) {
-      checkImports();
-    }
-    fileContainsStarImport = false;
-    importTrees.clear();
+    return ImmutableList.of(Kind.COMPILATION_UNIT);
   }
 
   @Override
@@ -60,33 +53,33 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-
-    ImportTree importTree = (ImportTree)tree;
-
-    if (importTree.qualifiedIdentifier().is(Kind.MEMBER_SELECT)) {
-
-      IdentifierTree identifier = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
-      if ("*".equals(identifier.name())) {
-        fileContainsStarImport = true;
-        return;
+    CompilationUnitTree cut = (CompilationUnitTree) tree;
+    cut.types().stream().filter(NOT_EMPTY_STATEMENT).map(t -> ((ClassTree) t).symbol()).forEach(this::checkSymbol);
+    List<ImportTree> imports = cut.imports().stream().filter(NOT_EMPTY_STATEMENT).map(t -> (ImportTree) t).collect(Collectors.toList());
+    boolean fileContainsStarImport = false;
+    for (ImportTree importTree : imports) {
+      if (importTree.qualifiedIdentifier().is(Kind.MEMBER_SELECT)) {
+        IdentifierTree identifier = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
+        if ("*".equals(identifier.name())) {
+          fileContainsStarImport = true;
+          break;
+        }
       }
     }
-
-    importTrees.add(importTree);
+    if(!fileContainsStarImport) {
+      checkImports(imports);
+    }
   }
 
-  private void checkImports() {
+  private void checkImports(List<ImportTree> imports) {
     SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-    for (ImportTree importTree : importTrees) {
-      Symbol symbol = semanticModel.getSymbol(importTree);
-
-      if (symbol != null) {
-        checkImportedSymbol(symbol);
-      }
-    }
+    imports.stream()
+      .map(semanticModel::getSymbol)
+      .filter(Objects::nonNull)
+      .forEach(this::checkSymbol);
   }
 
-  private void checkImportedSymbol(Symbol symbol) {
+  private void checkSymbol(Symbol symbol) {
     for (IdentifierTree usageIdentifier : symbol.usages()) {
       Tree parent = usageIdentifier.parent();
 

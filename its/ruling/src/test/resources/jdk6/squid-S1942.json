@@ -21,6 +21,12 @@
 'jdk6:java/io/ObjectOutputStream.java':[
 196,
 ],
+'jdk6:java/io/PrintStream.java':[
+343,
+],
+'jdk6:java/io/PrintWriter.java':[
+315,
+],
 'jdk6:java/lang/reflect/AccessibleObject.java':[
 152,
 ],
