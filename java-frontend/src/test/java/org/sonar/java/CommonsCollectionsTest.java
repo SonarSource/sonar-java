@@ -124,7 +124,6 @@ public class CommonsCollectionsTest {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
-    assertThat(metrics.get("lines").intValue()).isEqualTo(64125);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
