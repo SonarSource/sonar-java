@@ -19,9 +19,7 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -40,14 +38,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor {
+public class Measurer extends SubscriptionVisitor {
 
   private static final Number[] LIMITS_COMPLEXITY_METHODS = {1, 2, 4, 6, 8, 10, 12};
   private static final Number[] LIMITS_COMPLEXITY_FILES = {0, 5, 10, 20, 30, 60, 90};
@@ -61,7 +57,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private RangeDistributionBuilder methodComplexityDistribution;
 
   private final Deque<ClassTree> classTrees = new LinkedList<>();
-  private Charset charset;
   private int classes;
 
   public Measurer(FileSystem fs, SensorContext context, NoSonarFilter noSonarFilter) {
@@ -110,8 +105,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
     RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
     saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
-    saveLinesMetric();
-
   }
 
   private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {
@@ -119,15 +112,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     commentLinesVisitor.analyzeCommentLines(context.getTree());
     noSonarFilter.noSonarInFile(sonarFile, commentLinesVisitor.noSonarLines());
     return commentLinesVisitor;
-  }
-
-  private void saveLinesMetric() {
-    try {
-      String content = Files.toString(context.getFile(), charset);
-      saveMetricOnFile(CoreMetrics.LINES, content.split("(\r)?\n|\r", -1).length);
-    } catch (IOException e) {
-      Throwables.propagate(e);
-    }
   }
 
   @Override
@@ -163,10 +147,5 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
     sensorContext.<T>newMeasure().forMetric(metric).on(sonarFile).withValue(value).save();
-  }
-
-  @Override
-  public void setCharset(Charset charset) {
-    this.charset = charset;
   }
 }

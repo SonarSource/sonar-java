@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 11;
+  private static final int NB_OF_METRICS = 10;
   private SensorContextTester context;
   private JavaSquid squid;
   private File baseDir;
@@ -49,13 +49,6 @@ public class MeasurerTest {
     baseDir = new File("src/test/files/metrics");
     context = SensorContextTester.create(baseDir);
     fs = context.fileSystem();
-  }
-
-  @Test
-  public void verify_lines_metric() {
-    checkMetric("Lines.java", "lines", 7);
-    checkMetric("CommentedOutFile.java", "lines", 2);
-    checkMetric("EmptyFile.java", "lines", 1);
   }
 
   @Test
@@ -111,7 +104,7 @@ public class MeasurerTest {
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);
     assertThat(context.measure("projectKey:"+relativePath, metric).value()).isEqualTo(expectedValue);
   }
