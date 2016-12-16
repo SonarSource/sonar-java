@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -107,7 +108,9 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
         constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, programState.peekValue()));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
-        context.reportIssue(tree, check, "Call \"" + getIdentifierPart(tree.methodSelect()) + "isPresent()\" before accessing the value.");
+        String identifier = getIdentifierPart(tree.methodSelect());
+        context.reportIssue(tree, check, String.format("Call \"%sisPresent()\" before accessing the value.", StringUtils.isEmpty(identifier) ? "Optional#" : (identifier + ".")),
+          Flows.singleton(String.format("Optional %sis accessed", StringUtils.isEmpty(identifier) ? "" : (identifier + " ")), tree.methodSelect()));
         programState = null;
       }
     }
@@ -120,7 +123,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          return ((IdentifierTree) expression).name() + ".";
+          return ((IdentifierTree) expression).name();
         }
       }
       return "";
