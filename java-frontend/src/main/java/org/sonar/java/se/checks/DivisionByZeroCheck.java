@@ -211,8 +211,18 @@ public class DivisionByZeroCheck extends SECheck {
     private void reportIssue(Tree tree) {
       ExpressionTree expression = getDenominator(tree);
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
-      String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("'" + ((IdentifierTree) expression).name() + "'") : "this expression";
-      context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".");
+      String expressionName;
+      String flowMessage;
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        String name = ((IdentifierTree) expression).name();
+        expressionName = "'" + name + "'";
+        flowMessage = name + " is divided by zero";
+      } else {
+        expressionName = "this expression";
+        flowMessage = "this expression contains division by zero";
+      }
+      context.reportIssue(expression, DivisionByZeroCheck.this, String.format("Make sure %s can't be zero before doing this %s.", expressionName, operation),
+        Flows.singleton(flowMessage, tree));
 
       // interrupt exploration
       programState = null;
