@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -66,6 +67,9 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
     StatementTree butLastStatement = statements.get(size - 2);
     if (butLastStatement.is(Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) butLastStatement;
+      if (hasSuppressWarningsAnnotation(variableTree)) {
+        return;
+      }
       StatementTree lastStatement = statements.get(size - 1);
       String lastStatementIdentifier = getReturnOrThrowIdentifier(lastStatement);
       if (lastStatementIdentifier != null) {
@@ -77,6 +81,15 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
       }
     }
 
+  }
+
+  private static boolean hasSuppressWarningsAnnotation(VariableTree variableTree) {
+    for (AnnotationTree annotationTree : variableTree.modifiers().annotations()) {
+      if (annotationTree.symbolType().is("java.lang.SuppressWarnings")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @CheckForNull

@@ -56,4 +56,20 @@ class A{
     long duration2 = computeDurationInMilliseconds();
   }
 
+  <T> Class<T> get( Class<?> a ){
+    @SuppressWarnings("unchecked")
+    Class<T> res = (Class<T>)a; // Compliant - used for SuppressWarnings
+    return res;
+  }
+
+  <T> Class<T> get( Class<?> a ){
+    Class<T> res = (Class<T>)a; // Noncompliant {{Immediately return this expression instead of assigning it to the temporary variable "res".}}
+    return res;
+  }
+
+  <T> Class<T> get( Class<?> a ){
+    @AnyAnnotation
+    Class<T> res = (Class<T>)a; // Noncompliant {{Immediately return this expression instead of assigning it to the temporary variable "res".}}
+    return res;
+  }
 }
