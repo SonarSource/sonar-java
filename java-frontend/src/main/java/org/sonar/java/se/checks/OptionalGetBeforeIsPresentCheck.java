@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -29,6 +28,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
@@ -109,8 +110,17 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, programState.peekValue()));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
         String identifier = getIdentifierPart(tree.methodSelect());
-        context.reportIssue(tree, check, String.format("Call \"%sisPresent()\" before accessing the value.", StringUtils.isEmpty(identifier) ? "Optional#" : (identifier + ".")),
-          Flows.singleton(String.format("Optional %sis accessed", StringUtils.isEmpty(identifier) ? "" : (identifier + " ")), tree.methodSelect()));
+        String issueMsg;
+        String flowMsg;
+        if (identifier.isEmpty()) {
+          issueMsg = "Optional#";
+          flowMsg = "";
+        } else {
+          issueMsg = identifier + ".";
+          flowMsg = identifier + " ";
+        }
+        Set<List<JavaFileScannerContext.Location>> flow = FlowComputation.singleton("Optional " + flowMsg + "is accessed", tree.methodSelect());
+        context.reportIssue(tree, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.", flow);
         programState = null;
       }
     }
