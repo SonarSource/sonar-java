@@ -72,7 +72,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   public JavaSymbol.TypeJavaSymbol registerClass(JavaSymbol.TypeJavaSymbol classSymbol) {
     String flatName = formFullName(classSymbol);
-    Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : " + flatName);
+    Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : %s", flatName);
     classes.put(flatName, classSymbol);
     return classSymbol;
   }

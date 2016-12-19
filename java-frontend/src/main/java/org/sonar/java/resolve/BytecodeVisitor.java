@@ -33,6 +33,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,8 +71,8 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
-    Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '" + name + "' should ends with " + classSymbol.name);
-    Preconditions.checkState(name.endsWith("package-info") || !BytecodeCompleter.isSynthetic(flags), name + " is synthetic");
+    Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '%s' should ends with %s", name, classSymbol.name);
+    Preconditions.checkState(name.endsWith("package-info") || !BytecodeCompleter.isSynthetic(flags), "%s is synthetic", name);
     className = name;
     if (signature != null) {
       SignatureReader signatureReader = new SignatureReader(signature);
@@ -81,7 +82,7 @@ public class BytecodeVisitor extends ClassVisitor {
       ((ClassJavaType) classSymbol.type).interfaces = readGenericSignature.interfaces();
     } else {
       if (superName == null) {
-        Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for " + className);
+        Preconditions.checkState("java/lang/Object".equals(className), "superName must be null only for java/lang/Object, but not for %s", className);
         // TODO(Godin): what about interfaces and annotations
       } else {
         ((ClassJavaType) classSymbol.type).supertype = getClassSymbol(superName).type;
@@ -207,7 +208,7 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkNotNull(name);
     Preconditions.checkNotNull(desc);
     if (!BytecodeCompleter.isSynthetic(flags)) {
-      Preconditions.checkState((flags & Opcodes.ACC_BRIDGE) == 0, "bridge method not marked as synthetic in class " + className);
+      Preconditions.checkState((flags & Opcodes.ACC_BRIDGE) == 0, "bridge method not marked as synthetic in class %s", className);
       // TODO(Godin): according to JVMS 4.7.24 - parameter can be marked as synthetic
       MethodJavaType type = new MethodJavaType(
           convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
@@ -331,7 +332,8 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitFormalTypeParameter(String name) {
       List<JavaSymbol> lookup = classSymbol.typeParameters.lookup(name);
-      Preconditions.checkState(lookup.size() == 1, "found "+lookup.size());
+      int lookupSize = lookup.size();
+      Preconditions.checkState(lookupSize == 1, "found %s instead of 1", lookupSize);
       typeVariableSymbol = (JavaSymbol.TypeVariableJavaSymbol) lookup.iterator().next();
       bounds = ((TypeVariableJavaType) typeVariableSymbol.type).bounds;
     }
@@ -452,7 +454,8 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitFormalTypeParameter(String name) {
       List<JavaSymbol> lookup = methodSymbol.typeParameters.lookup(name);
-      Preconditions.checkState(lookup.size() == 1, "found "+lookup.size());
+      int lookupSize = lookup.size();
+      Preconditions.checkState(lookupSize == 1, "found %s instead of 1", lookupSize);
       typeVariableSymbol = (JavaSymbol.TypeVariableJavaSymbol) lookup.iterator().next();
       bounds = ((TypeVariableJavaType) typeVariableSymbol.type).bounds;
     }
@@ -614,7 +617,7 @@ public class BytecodeVisitor extends ClassVisitor {
         currentSymbol = currentSymbol.owner();
       }
 
-      Preconditions.checkState(!lookup.isEmpty(), "Could not resolve type parameter: "+name+" in class "+classSymbol.getName());
+      Preconditions.checkState(!lookup.isEmpty(), "Could not resolve type parameter: %s in class %s", name, classSymbol.getName());
       Preconditions.checkState(lookup.size() == 1, "More than one type parameter with the same name");
       typeRead = lookup.get(0).type;
       visitEnd();
