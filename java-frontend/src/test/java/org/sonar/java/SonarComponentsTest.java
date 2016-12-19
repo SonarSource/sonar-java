@@ -287,6 +287,17 @@ public class SonarComponentsTest {
 
   }
 
+  @Test
+  public void verify_sq_version() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    sonarComponents.setSensorContext(context);
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(5, 6)));
+    assertThat(sonarComponents.isSQGreaterThan62()).isFalse();
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
+    assertThat(sonarComponents.isSQGreaterThan62()).isTrue();
+  }
+
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
     return registrarContext -> registrarContext.registerClassesForRepository(REPOSITORY_NAME,
       Lists.<Class<? extends JavaCheck>>newArrayList(expectedCheck.getClass()), null);
