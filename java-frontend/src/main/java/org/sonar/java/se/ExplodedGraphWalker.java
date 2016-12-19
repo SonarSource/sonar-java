@@ -273,7 +273,9 @@ public class ExplodedGraphWalker {
     ExplodedGraph.Node savedNode = node;
     endOfExecutionPath.forEach(n -> {
       setNode(n);
-      checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+      if (!programState.exitingOnRuntimeException()) {
+        checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
+      }
       methodBehavior.createYield(programState, node.happyPath);
     });
     setNode(savedNode);

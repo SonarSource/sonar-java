@@ -413,4 +413,8 @@ public class ProgramState {
   public SymbolicValue exitValue() {
     return this.exitSymbolicValue;
   }
+
+  public boolean exitingOnRuntimeException() {
+    return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
+  }
 }
