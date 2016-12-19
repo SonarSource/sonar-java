@@ -18,6 +18,23 @@ public String readFile(File f) {
   return sb.toString();
 }
 </pre>
+<h2>Compliant Solution</h2>
+<pre>
+string s = "";
+try
+{
+  s = File.ReadAllText(fileName);
+}
+catch (Exception e) // Compliant
+{
+  logger.LogError(e);
+  throw;
+}
+</pre>
+<p>or</p>
+<pre>
+string s = File.ReadAllText(fileName);
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/SIIyAQ">CERT, MSC12-CPP.</a> - Detect and remove code that has no effect </li>
