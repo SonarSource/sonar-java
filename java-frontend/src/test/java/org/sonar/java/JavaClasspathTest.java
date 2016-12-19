@@ -209,6 +209,16 @@ public class JavaClasspathTest {
   }
 
   @Test
+  public void wildcard_directory_should_resolve_libs_in_that_dir() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/**/*.jar");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(3);
+    File jar = javaClasspath.getElements().get(0);
+    assertThat(jar).exists();
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
+  }
+
+  @Test
   public void both_path_separator_should_be_supported_on_one_JVM() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
     javaClasspath = createJavaClasspath();
