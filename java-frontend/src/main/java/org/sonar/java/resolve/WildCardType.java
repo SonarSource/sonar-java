@@ -58,7 +58,7 @@ public class WildCardType extends JavaType {
   @Override
   public boolean isSubtypeOf(Type superType) {
     if (((JavaType) superType).isTagged(WILDCARD)) {
-      org.sonar.java.resolve.WildCardType superTypeWildcard = (org.sonar.java.resolve.WildCardType) superType;
+      WildCardType superTypeWildcard = (WildCardType) superType;
       JavaType superTypeBound = superTypeWildcard.bound;
       switch (superTypeWildcard.boundType) {
         case UNBOUNDED:

@@ -78,7 +78,7 @@ public class ClassJavaType extends JavaType {
   }
 
   private boolean superTypeContains(String fullyQualifiedName) {
-    for (org.sonar.java.resolve.ClassJavaType classType : symbol.superTypes()) {
+    for (ClassJavaType classType : symbol.superTypes()) {
       if (classType.is(fullyQualifiedName)) {
         return true;
       }
