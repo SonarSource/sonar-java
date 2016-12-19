@@ -56,4 +56,10 @@ class A{
     long duration2 = computeDurationInMilliseconds();
   }
 
+  Object SuppressWarnings() {
+    @SuppressWarnings("unchecked")
+    Object a = myMethod(); // compliant, the variable is annotated.
+    return a;
+  }
+
 }
