@@ -10,7 +10,7 @@ class A {
 
   void relationship(boolean a, boolean b) {
     if(a < b) { // flow@rel {{...}}
-      if(b > a) { // Noncompliant [[flows=rel]] {{Change this condition so that it does not always evaluate to "true"}}
+      if(b > a) { // Noncompliant [[flows=rel]] {{Change this condition so that it does not always evaluate to "true"}} flow@rel {{Condition is always true}}
       }
     }
   }
