@@ -20,7 +20,15 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class FlowComputationTest {
 
@@ -29,5 +37,13 @@ public class FlowComputationTest {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputation.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 
-
+  @Test
+  public void test_singleton() throws Exception {
+    MethodInvocationTreeImpl mockTree = mock(MethodInvocationTreeImpl.class);
+    Set<List<JavaFileScannerContext.Location>> singleton = FlowComputation.singleton("singleton msg", mockTree);
+    assertThat(singleton).hasSize(1);
+    List<JavaFileScannerContext.Location> flow = singleton.iterator().next();
+    assertThat(flow).hasSize(1);
+    assertThat(flow.get(0).msg).isEqualTo("singleton msg");
+  }
 }

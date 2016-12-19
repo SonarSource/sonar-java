@@ -19,12 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -135,5 +138,9 @@ public class FlowComputation {
 
   private static JavaFileScannerContext.Location location(ExplodedGraph.Node node) {
     return new JavaFileScannerContext.Location("...", node.programPoint.syntaxTree());
+  }
+
+  static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
+    return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
   }
 }

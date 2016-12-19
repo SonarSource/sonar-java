@@ -221,8 +221,8 @@ public class DivisionByZeroCheck extends SECheck {
         expressionName = "this expression";
         flowMessage = "this expression contains division by zero";
       }
-      context.reportIssue(expression, DivisionByZeroCheck.this, String.format("Make sure %s can't be zero before doing this %s.", expressionName, operation),
-        Flows.singleton(flowMessage, tree));
+      context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
+        FlowComputation.singleton(flowMessage, tree));
 
       // interrupt exploration
       programState = null;
