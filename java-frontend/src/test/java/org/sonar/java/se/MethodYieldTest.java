@@ -226,17 +226,21 @@ public class MethodYieldTest {
   public void exceptional_yields_void_method() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYieldsVoidMethod.java");
     List<MethodYield> yields = getMethodBehavior(sev, "myVoidMethod").getValue().yields();
-    assertThat(yields).hasSize(2); // should be 3, implicit exception is missing
+    assertThat(yields).hasSize(4);
 
     List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(1); // should be 2
+    assertThat(exceptionalYields).hasSize(3);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType == null).count()).isEqualTo(1);
 
-    MethodYield explicitExceptionYield = exceptionalYields.get(0);
-
+    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException1")).findAny().get();
     assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(explicitExceptionYield.resultConstraint).isNull();
     assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.nullConstraint());
-    assertThat(explicitExceptionYield.exceptionType.is("org.foo.MyException1")).isTrue();
+
+    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException2")).findAny().get();
+    assertThat(implicitExceptionYield.resultIndex).isEqualTo(-1);
+    assertThat(implicitExceptionYield.resultConstraint).isNull();
+    assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.NOT_NULL);
   }
 
   @Test
@@ -245,7 +249,11 @@ public class MethodYieldTest {
 
     Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "varArgMethod");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
-    MethodYield yield = entry.getValue().yields().get(0);
+    List<MethodYield> yields = entry.getValue().yields();
+    assertThat(yields).hasSize(3);
+    assertThat(yields.stream().filter(y -> y.exception).count()).isEqualTo(2);
+
+    MethodYield yield = yields.stream().filter(y -> !y.exception).findFirst().get();
 
     // check that we have NOT_NULL constraint on the first argument
     assertThat(yield.parametersConstraints[0].isNull()).isFalse();

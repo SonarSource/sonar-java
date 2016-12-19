@@ -587,13 +587,13 @@ public class ExplodedGraphWalker {
 
       Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = thrownExceptions(methodInvokedBehavior);
 
-      // Enqueue exceptional paths
+      // Enqueue exceptional paths from exceptional yields
       methodInvokedBehavior.exceptionalPathYields()
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> thrownExceptionsByExceptionType.get(yield.exceptionType)).stream())
         .forEach(this::enqueueExceptionalPaths);
 
       // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
-      enqueueExceptionalPaths(programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null)), true);
+      enqueueUncheckedExceptionalPaths();
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
@@ -610,8 +610,17 @@ public class ExplodedGraphWalker {
           clearStack(mit);
         });
     } else {
-      enqueueExceptionalPaths(programState);
+      Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = thrownExceptions(methodSymbol);
 
+      // Enqueue exceptional paths from thrown exceptions
+      thrownExceptionsByExceptionType.values().stream()
+        .map(programState.clearStack()::stackValue)
+        .forEach(this::enqueueExceptionalPaths);
+
+      // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
+      enqueueUncheckedExceptionalPaths();
+
+      // Enqueue happy paths
       programState = programState.stackValue(resultValue);
       if (isNonNullMethod(methodSymbol)) {
         programState = programState.addConstraint(resultValue, ObjectConstraint.notNull());
@@ -623,52 +632,69 @@ public class ExplodedGraphWalker {
     }
   }
 
+  private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(Symbol methodSymbol) {
+    if (methodSymbol.isMethodSymbol()) {
+      return thrownExceptions(((Symbol.MethodSymbol) methodSymbol).thrownTypes());
+    }
+
+    return new HashMap<>();
+  }
+
   private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(MethodBehavior methodBehavior) {
-    Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions = new HashMap<>();
-    methodBehavior.exceptionalPathYields()
+    List<Type> exceptionTypes = methodBehavior
+      .exceptionalPathYields()
       .map(yield -> yield.exceptionType)
+      .collect(Collectors.toList());
+    return thrownExceptions(exceptionTypes);
+  }
+
+  private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(List<Type> exceptionTypes) {
+    Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions = new HashMap<>();
+    exceptionTypes.stream()
       .filter(exceptionType -> !thrownExceptions.containsKey(exceptionType))
       .forEach(exceptionType -> thrownExceptions.put(exceptionType, constraintManager.createExceptionalSymbolicValue(exceptionType)));
 
     return thrownExceptions;
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps) {
-    enqueueExceptionalPaths(ps, false);
+  private void enqueueUncheckedExceptionalPaths() {
+    ProgramState ps = programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null));
+    enqueueExceptionalPaths(ps);
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps, boolean unchecked) {
+  private void enqueueExceptionalPaths(ProgramState ps) {
     Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
-    SymbolicValue lastSV = ps.peekValue();
-    ProgramState newPS = ps.clearStack();
-    if (lastSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      // only branch to the catch block corresponding to the exception
-      List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
-      Type thrownType = ((SymbolicValue.ExceptionalSymbolicValue) lastSV).exceptionType();
-      if (thrownType != null) {
-        // only consider the first match, as order of catch block is important
-        Optional<CFG.Block> catchBlock = catchBlocks.stream()
-          .filter(b -> isValidCatchBlock(b, thrownType))
-          .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
-          .findFirst();
-        if (catchBlock.isPresent()) {
-          enqueue(new ExplodedGraph.ProgramPoint(catchBlock.get(), 0), newPS, true);
-          return;
-        }
-      } else if (unchecked) {
-        List<CFG.Block> uncheckedExceptionCatchBlocks = catchBlocks.stream()
-          .filter(ExplodedGraphWalker::isCatchingUncheckedException)
-          .collect(Collectors.toList());
-        if (!uncheckedExceptionCatchBlocks.isEmpty()) {
-          uncheckedExceptionCatchBlocks.forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPS, true));
-          return;
-        }
-
+    List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
+    SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue();
+    Type thrownType = exceptionSV.exceptionType();
+    if (thrownType != null) {
+      // only consider the first match, as order of catch block is important
+      Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
+        .filter(b -> isValidCatchBlock(b, thrownType))
+        .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
+        .findFirst();
+      if (firstMatchingCatchBlock.isPresent()) {
+        enqueue(new ExplodedGraph.ProgramPoint(firstMatchingCatchBlock.get(), 0), ps.clearStack());
+        return;
       }
-      // use any other exception block, i.e. finally block and exit block
-      exceptionBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK.negate()).collect(Collectors.toSet());
+    } else {
+      // branch to any unchecked exception catch
+      catchBlocks.stream()
+        .filter(ExplodedGraphWalker::isCatchingUncheckedException)
+        .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps.clearStack()));
     }
-    exceptionBlocks.forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPS, !b.isCatchBlock()));
+    // use other exceptional blocks, i.e. finally block and exit blocks
+    exceptionBlocks.stream()
+      .filter(CFG.Block.IS_CATCH_BLOCK.negate())
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps.clearStack(), !b.isCatchBlock()));
+
+    // consider the exception as an exception forcing the exit of the method
+    ProgramState newPs = ps.clearStack().stackValue(exceptionSV);
+    newPs.storeExitValue();
+
+    node.programPoint.block.successors().stream()
+      .filter(CFG.Block::isMethodExitBlock)
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs.clearStack(), !b.isCatchBlock()));
   }
 
   private static boolean isValidCatchBlock(CFG.Block catchBlock, Type thrownType) {

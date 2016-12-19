@@ -102,8 +102,7 @@ public class ConstraintManager {
   }
 
   public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(@Nullable Type exceptionType) {
-    Type type = (exceptionType != null && exceptionType.isUnknown()) ? null : exceptionType;
-    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, type);
+    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, exceptionType);
     counter++;
     return result;
   }
