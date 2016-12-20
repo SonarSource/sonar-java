@@ -214,6 +214,10 @@ public class ExplodedGraph {
         return symbol;
       }
 
+      public SymbolicValue getSv() {
+        return sv;
+      }
+
       @Override
       public String toString() {
         return sv + " - " + symbol.name();

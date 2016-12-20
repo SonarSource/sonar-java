@@ -125,19 +125,28 @@ public class FlowComputation {
     if (trackSymbol == null || parent == null) {
       return null;
     }
-    Optional<Symbol> learnedSymbol = currentNode.getLearnedSymbols().stream()
-      .map(ExplodedGraph.Node.LearnedValue::getSymbol)
-      .filter(symbol -> symbol.equals(trackSymbol))
+    Optional<ExplodedGraph.Node.LearnedValue> learnedValue = currentNode.getLearnedSymbols().stream()
+      .filter(lv -> lv.getSymbol().equals(trackSymbol))
       .findFirst();
-    if (learnedSymbol.isPresent()) {
-      flow.add(location(parent));
+    if (learnedValue.isPresent()) {
+      ExplodedGraph.Node.LearnedValue lv = learnedValue.get();
+      Constraint constraintForSV = parent.programState.getConstraint(lv.getSv());
+      if (constraintForSV == null) {
+        flow.add(location(parent));
+      } else {
+        flow.add(location(parent, lv.getSymbol().name() + " is assigned " + constraintForSV.valueAsString()));
+      }
       return parent.programState.getLastEvaluated();
     }
     return trackSymbol;
   }
 
   private static JavaFileScannerContext.Location location(ExplodedGraph.Node node) {
-    return new JavaFileScannerContext.Location("...", node.programPoint.syntaxTree());
+    return location(node, "...");
+  }
+
+  private static JavaFileScannerContext.Location location(ExplodedGraph.Node node, String message) {
+    return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
   }
 
   static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
