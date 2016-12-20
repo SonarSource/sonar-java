@@ -20,8 +20,18 @@
 package org.sonar.java.se.constraint;
 
 public enum BooleanConstraint implements Constraint {
-  TRUE,
-  FALSE;
+  TRUE {
+    @Override
+    public String valueAsString() {
+      return "true";
+    }
+  },
+  FALSE {
+    @Override
+    public String valueAsString() {
+      return "false";
+    }
+  };
 
   @Override
   public boolean isNull() {

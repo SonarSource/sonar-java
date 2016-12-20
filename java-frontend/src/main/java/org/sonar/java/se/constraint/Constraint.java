@@ -22,4 +22,11 @@ package org.sonar.java.se.constraint;
 public interface Constraint {
 
   boolean isNull();
+
+  /**
+   * @return String representation of value encoded by constraint for purpose of flow message
+   */
+  default String valueAsString() {
+    return "";
+  }
 }

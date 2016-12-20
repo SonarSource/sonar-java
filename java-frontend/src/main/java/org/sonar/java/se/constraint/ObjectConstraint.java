@@ -59,6 +59,11 @@ public class ObjectConstraint implements Constraint {
     return isNull;
   }
 
+  @Override
+  public String valueAsString() {
+    return isNull ? "null" : String.valueOf(status);
+  }
+
   public boolean isInvalidWith(@Nullable Constraint target) {
     return false;
   }
