@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -27,6 +28,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -187,7 +189,7 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void handleDivide(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
       if (isZero(rightOp)) {
-        reportIssue(tree);
+        reportIssue(tree, rightOp);
       } else if (isZero(leftOp)) {
         reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
@@ -208,7 +210,7 @@ public class DivisionByZeroCheck extends SECheck {
       });
     }
 
-    private void reportIssue(Tree tree) {
+    private void reportIssue(Tree tree, SymbolicValue denominator) {
       ExpressionTree expression = getDenominator(tree);
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
       String expressionName;
@@ -221,8 +223,11 @@ public class DivisionByZeroCheck extends SECheck {
         expressionName = "this expression";
         flowMessage = "this expression contains division by zero";
       }
+
+      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), denominator);
+      flow.add(new JavaFileScannerContext.Location(flowMessage, tree));
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
-        FlowComputation.singleton(flowMessage, tree));
+        ImmutableSet.of(flow));
 
       // interrupt exploration
       programState = null;
