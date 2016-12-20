@@ -20,20 +20,34 @@ public String readFile(File f) {
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-string s = "";
-try
-{
-  s = File.ReadAllText(fileName);
-}
-catch (Exception e) // Compliant
-{
-  logger.LogError(e);
-  throw;
+public String readFile(File f) {
+  StringBuilder sb = new StringBuilder();
+  try {
+    FileReader fileReader = new FileReader(fileName);
+    BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+    while((line = bufferedReader.readLine()) != null) {
+      //...
+  }
+  catch (IOException e) {
+    logger.LogError(e);
+    throw e;
+  }
+  return sb.toString();
 }
 </pre>
 <p>or</p>
 <pre>
-string s = File.ReadAllText(fileName);
+public String readFile(File f) throws IOException {
+  StringBuilder sb = new StringBuilder();
+  FileReader fileReader = new FileReader(fileName);
+  BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+  while((line = bufferedReader.readLine()) != null) {
+    //...
+
+  return sb.toString();
+}
 </pre>
 <h2>See</h2>
 <ul>
