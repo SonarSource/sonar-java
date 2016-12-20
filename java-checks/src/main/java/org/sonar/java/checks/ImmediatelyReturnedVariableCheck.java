@@ -66,6 +66,9 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
     StatementTree butLastStatement = statements.get(size - 2);
     if (butLastStatement.is(Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) butLastStatement;
+      if(!variableTree.modifiers().annotations().isEmpty()) {
+        return;
+      }
       StatementTree lastStatement = statements.get(size - 1);
       String lastStatementIdentifier = getReturnOrThrowIdentifier(lastStatement);
       if (lastStatementIdentifier != null) {
