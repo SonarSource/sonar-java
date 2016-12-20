@@ -210,7 +210,10 @@ public abstract class AbstractJavaClasspath {
 
     matches.addAll(dirs);
     matches.addAll(new LibraryFinder().find(dir, matcher));
-
+    if(pattern.startsWith("**/")) {
+      // match jar in the base dir when using wildcard
+      matches.addAll(new LibraryFinder().find(dir, FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern.substring(3)))));
+    }
     return matches;
   }
 
