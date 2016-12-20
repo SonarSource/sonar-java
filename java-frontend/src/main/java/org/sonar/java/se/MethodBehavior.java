@@ -46,16 +46,16 @@ public class MethodBehavior {
     this.parameters = new LinkedHashMap<>();
   }
 
-  public void createYield(ProgramState programState, boolean happyPathYield) {
-    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
-    yield.exception = !happyPathYield;
+  public void createYield(ExplodedGraph.Node node) {
+    MethodYield yield = new MethodYield(node, parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
+    yield.exception = !node.happyPath;
     List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
-      yield.parametersConstraints[i] = programState.getConstraint(parameterSymbolicValues.get(i));
+      yield.parametersConstraints[i] = node.programState.getConstraint(parameterSymbolicValues.get(i));
     }
 
-    SymbolicValue resultSV = programState.exitValue();
+    SymbolicValue resultSV = node.programState.exitValue();
     if (resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
       yield.exception = true;
       yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
@@ -65,7 +65,7 @@ public class MethodBehavior {
         yield.exception = true;
       } else {
         yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
-        yield.resultConstraint = programState.getConstraint(resultSV);
+        yield.resultConstraint = node.programState.getConstraint(resultSV);
       }
     }
 

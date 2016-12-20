@@ -73,6 +73,7 @@ public class ProgramState {
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     PCollections.emptyMap(),
     Lists.<SymbolicValue>newLinkedList(),
+    null,
     null);
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
@@ -86,21 +87,25 @@ public class ProgramState {
   final PMap<Symbol, SymbolicValue> values;
   final PMap<SymbolicValue, Constraint> constraints;
 
+  @Nullable
+  private MethodYield selectedYield;
+
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
+    Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue, @Nullable MethodYield selectedYield) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     this.exitSymbolicValue = exitSymbolicValue;
+    this.selectedYield = selectedYield;
     constraintSize = 3;
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-                       Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
-    this(values, references, constraints, visitedPoints, stack, exitSymbolicValue);
+                       Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue, @Nullable MethodYield selectedYield) {
+    this(values, references, constraints, visitedPoints, stack, exitSymbolicValue, selectedYield);
     lastEvaluated = symbol;
   }
 
@@ -111,6 +116,7 @@ public class ProgramState {
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
+    selectedYield = ps.selectedYield;
     stack = newStack;
   }
 
@@ -121,7 +127,19 @@ public class ProgramState {
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
+    selectedYield = ps.selectedYield;
     this.stack = ps.stack;
+  }
+
+  private ProgramState(ProgramState ps, MethodYield selectedYield) {
+    values = ps.values;
+    references = ps.references;
+    constraints = ps.constraints;
+    constraintSize = ps.constraintSize + 1;
+    visitedPoints = ps.visitedPoints;
+    exitSymbolicValue = ps.exitSymbolicValue;
+    stack = ps.stack;
+    this.selectedYield = selectedYield;
   }
 
   ProgramState stackValue(SymbolicValue sv) {
@@ -216,7 +234,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
+      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, selectedYield);
     }
     if(lastEvaluated == null) {
       lastEvaluated = symbol;
@@ -282,8 +300,10 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue)
-      : this;
+    if (cleanAction.newProgramState) {
+      return new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue, selectedYield);
+    }
+    return this;
   }
 
   public ProgramState cleanupConstraints() {
@@ -303,7 +323,10 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     constraints.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue) : this;
+    if (cleanAction.newProgramState) {
+      return new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue, selectedYield);
+    }
+    return this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -331,7 +354,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, selectedYield);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -348,7 +371,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue, selectedYield);
   }
 
   @CheckForNull
@@ -416,5 +439,14 @@ public class ProgramState {
 
   public boolean exitingOnRuntimeException() {
     return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
+  }
+
+  ProgramState setSelectedYield(@Nullable MethodYield methodYield) {
+    return new ProgramState(this, methodYield);
+  }
+
+  @CheckForNull
+  public MethodYield selectedYield() {
+    return this.selectedYield;
   }
 }

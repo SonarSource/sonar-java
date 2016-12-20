@@ -21,7 +21,7 @@ class A {
   void null_assigned(Object b, Object c) {
     if(b == null);
     if(c == null);
-    getA().toString(); // Noncompliant [[flows=mnull]] flow@mnull {{Result of getA() is dereferenced}} flow@mnull {{...}}
+    getA().toString(); // Noncompliant [[flows=mnull]] flow@mnull {{Result of getA() is dereferenced}} flow@mnull {{Uses return value [see L#17].}}
   }
 
   void reassignement() {

@@ -127,7 +127,7 @@ public class MethodYieldTest {
 
   @Test
   public void test_yield_equality() {
-    MethodYield yield = new MethodYield(1, false);
+    MethodYield yield = new MethodYield(null, 1, false);
     MethodYield otherYield;
 
     assertThat(yield).isNotEqualTo(null);
@@ -137,39 +137,42 @@ public class MethodYieldTest {
     assertThat(yield).isEqualTo(yield);
 
     // same constraints, same nb of parameters, same exceptional aspect
-    assertThat(yield).isEqualTo(new MethodYield(1, false));
+    assertThat(yield).isEqualTo(new MethodYield(null, 1, false));
 
     // arity is taken into account
-    assertThat(yield).isNotEqualTo(new MethodYield(0, false));
+    assertThat(yield).isNotEqualTo(new MethodYield(null, 0, false));
 
     // varargs is taken into account
-    assertThat(yield).isNotEqualTo(new MethodYield(1, true));
+    assertThat(yield).isNotEqualTo(new MethodYield(null, 1, true));
+
+    // node is not taken into account
+    assertThat(yield).isNotEqualTo(new MethodYield(Mockito.mock(ExplodedGraph.Node.class), 1, true));
 
     // same arity and constraints but exceptional path
-    otherYield = new MethodYield(1, false);
+    otherYield = new MethodYield(null, 1, false);
     otherYield.exception = true;
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same arity and constraints but different return value
-    otherYield = new MethodYield(1, false);
+    otherYield = new MethodYield(null, 1, false);
     otherYield.resultIndex = 0;
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same arity but different return constraint
-    otherYield = new MethodYield(1, false);
+    otherYield = new MethodYield(null, 1, false);
     otherYield.resultConstraint = ObjectConstraint.notNull();
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same return constraint
     yield.resultConstraint = ObjectConstraint.notNull();
-    otherYield = new MethodYield(1, false);
+    otherYield = new MethodYield(null, 1, false);
     otherYield.resultConstraint = ObjectConstraint.notNull();
     assertThat(yield).isEqualTo(otherYield);
 
     // exceptional yields
-    MethodYield exceptionalYield = new MethodYield(0, false);
+    MethodYield exceptionalYield = new MethodYield(null, 0, false);
     exceptionalYield.exception = true;
-    otherYield = new MethodYield(0, false);
+    otherYield = new MethodYield(null, 0, false);
 
     otherYield.exception = false;
     assertThat(exceptionalYield).isNotEqualTo(otherYield);
@@ -187,8 +190,8 @@ public class MethodYieldTest {
 
   @Test
   public void test_hashCode() {
-    MethodYield methodYield = new MethodYield(0, true);
-    MethodYield other = new MethodYield(0, true);
+    MethodYield methodYield = new MethodYield(null, 0, true);
+    MethodYield other = new MethodYield(null, 0, true);
 
     // same values for same yields
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
@@ -353,7 +356,7 @@ public class MethodYieldTest {
   }
 
   private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
-    MethodYield methodYield = new MethodYield(1, false);
+    MethodYield methodYield = new MethodYield(null, 1, false);
     methodYield.resultIndex = resultIndex;
     methodYield.parametersConstraints = new Constraint[] {null};
     methodYield.exception = false;

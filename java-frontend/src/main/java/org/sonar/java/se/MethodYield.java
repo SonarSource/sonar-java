@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class MethodYield {
+  final ExplodedGraph.Node node;
   private final boolean varArgs;
   Constraint[] parametersConstraints;
   int resultIndex;
@@ -48,7 +49,8 @@ public class MethodYield {
   Type exceptionType;
   boolean exception;
 
-  public MethodYield(int arity, boolean varArgs) {
+  public MethodYield(ExplodedGraph.Node node, int arity, boolean varArgs) {
+    this.node = node;
     this.parametersConstraints = new Constraint[arity];
     this.varArgs = varArgs;
     this.resultIndex = -1;
@@ -105,7 +107,7 @@ public class MethodYield {
     if (resultConstraint != null) {
       stateStream = stateStream.map(s -> s.addConstraint(sv, resultConstraint));
     }
-    return stateStream.distinct();
+    return stateStream.distinct().map(s -> s.setSelectedYield(this));
   }
 
   @CheckForNull
