@@ -29,13 +29,13 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2222")
@@ -173,10 +173,28 @@ public class LocksNotUnlockedCheck extends SECheck {
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(Status.LOCKED).keySet().stream()
       .flatMap(sv -> FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream())
-      .forEach(loc -> reportIssue(reportOn(loc.syntaxNode), "Unlock this lock along all executions paths of this method.", Collections.emptySet()));
+      .forEach(this::reportIssue);
   }
 
-  private static Tree reportOn(Tree syntaxNode) {
+  private void reportIssue(JavaFileScannerContext.Location location) {
+    String flowMsg = "Lock " + quoteOrEmpty(lockName(location.syntaxNode)) + "is never unlocked";
+    Tree tree = issueTree(location.syntaxNode);
+    reportIssue(tree, "Unlock this lock along all executions paths of this method.", FlowComputation.singleton(flowMsg, tree));
+  }
+
+  private static String lockName(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
+      return SyntaxTreeNameFinder.getName(methodSelect);
+    }
+    return SyntaxTreeNameFinder.getName(syntaxNode);
+  }
+
+  private static String quoteOrEmpty(String input) {
+    return input.isEmpty() ? "" : ("'" + input + "' ");
+  }
+
+  private static Tree issueTree(Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
