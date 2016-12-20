@@ -4,8 +4,9 @@ package org.sonar.custom;
 //    factoryMethod = org.sonar.custom.ResourceFactory#createResource(java.lang.String)
 //    closingMethod = org.sonar.custom.GenericResource#closeResource(java.lang.String)
 
+interface OpenedResource {}
 
-public class GenericResource {
+public class GenericResource implements OpenedResource {
   
   public static void correct(String name) {
     GenericResource resource = new ResourceFactory().createResource(name);
@@ -17,7 +18,7 @@ public class GenericResource {
   }
   
   public static void wrong(String name) {
-    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant
+    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant [[flows=wrong]] {{Close this "OpenedResource".}} flow@wrong {{OpenedResource is never closed}}
     resource.use();
   }
   
