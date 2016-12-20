@@ -597,7 +597,7 @@ public class ExplodedGraphWalker {
         invocationTypes,
         programState,
         () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue))
-      ).forEach(this::enqueueExceptionalPaths);
+      ).forEach(ps -> enqueueExceptionalPaths(ps.clearStack(), (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue()));
 
       // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
       enqueueUncheckedExceptionalPaths();
@@ -639,54 +639,53 @@ public class ExplodedGraphWalker {
       ProgramState ps = programState.clearStack();
       ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
         .map(constraintManager::createExceptionalSymbolicValue)
-        .map(ps::stackValue)
-        .forEach(this::enqueueExceptionalPaths);
+        .forEach(exceptionSV -> enqueueExceptionalPaths(ps, exceptionSV));
     }
   }
 
   private void enqueueUncheckedExceptionalPaths() {
-    ProgramState ps = programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null));
-    enqueueExceptionalPaths(ps);
+    enqueueExceptionalPaths(programState.clearStack(), constraintManager.createExceptionalSymbolicValue(null));
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps) {
+  private void enqueueExceptionalPaths(ProgramState ps, SymbolicValue.ExceptionalSymbolicValue exceptionSV) {
     Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
     List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
-    SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue();
-    Type thrownType = exceptionSV.exceptionType();
-    if (thrownType != null) {
-      // only consider the first match, as order of catch block is important
-      Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
-        .filter(b -> isValidCatchBlock(b, thrownType))
-        .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
-        .findFirst();
-      if (firstMatchingCatchBlock.isPresent()) {
-        enqueue(new ExplodedGraph.ProgramPoint(firstMatchingCatchBlock.get(), 0), ps.clearStack());
-        return;
-      }
-    } else {
-      // branch to any unchecked exception catch
-      catchBlocks.stream()
-        .filter(ExplodedGraphWalker::isCatchingUncheckedException)
-        .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps.clearStack()));
+
+    // only consider the first match, as order of catch block is important
+    Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
+      .filter(b -> isValidCatchBlock(b, exceptionSV.exceptionType()))
+      .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
+      .findFirst();
+    if (firstMatchingCatchBlock.isPresent()) {
+      enqueue(new ExplodedGraph.ProgramPoint(firstMatchingCatchBlock.get(), 0), ps);
+      return;
     }
+
+    // branch to any unchecked exception catch
+    catchBlocks.stream()
+      .filter(ExplodedGraphWalker::isCatchingUncheckedException)
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps));
+
     // use other exceptional blocks, i.e. finally block and exit blocks
     exceptionBlocks.stream()
       .filter(CFG.Block.IS_CATCH_BLOCK.negate())
-      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps.clearStack(), !b.isCatchBlock()));
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps, true));
 
-    // consider the exception as an exception forcing the exit of the method
+    // store the exception as exit value in case of method exit in next block
     ProgramState newPs = ps.clearStack().stackValue(exceptionSV);
     newPs.storeExitValue();
 
     node.programPoint.block.successors().stream()
       .filter(CFG.Block::isMethodExitBlock)
-      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs.clearStack(), !b.isCatchBlock()));
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));
   }
 
-  private static boolean isValidCatchBlock(CFG.Block catchBlock, Type thrownType) {
-    Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
-    return thrownType.isSubtypeOf(caughtType);
+  private static boolean isValidCatchBlock(CFG.Block catchBlock, @Nullable Type thrownType) {
+    if (thrownType != null) {
+      Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
+      return thrownType.isSubtypeOf(caughtType);
+    }
+    return false;
   }
 
   private static boolean isCatchingUncheckedException(CFG.Block catchBlock) {
