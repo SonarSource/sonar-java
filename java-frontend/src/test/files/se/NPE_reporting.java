@@ -10,7 +10,7 @@ class A {
   void null_assigned(Object b, Object c) {
     if(b == null);
     if(c == null);
-    Object a = null; // flow@fl1 {{...}}
+    Object a = null; // flow@fl1 {{a is assigned null}}
     a.toString(); // Noncompliant [[flows=fl1]] flow@fl1 {{a is dereferenced}}
   }
 
@@ -25,9 +25,9 @@ class A {
   }
 
   void reassignement() {
-    Object a = null; // flow@reass {{...}}
+    Object a = null; // flow@reass {{a is assigned null}}
     Object b = new Object();
-    b = a; // flow@reass {{...}}
+    b = a; // flow@reass {{b is assigned null}}
     b.toString(); // Noncompliant [[flows=reass]] flow@reass {{b is dereferenced}}
   }
 
@@ -40,14 +40,14 @@ class A {
   void combined(Object a) {
     Object b = new Object();
     if (a == null) { // flow@comb {{...}}
-      b = a; // flow@comb {{...}}
+      b = a; // flow@comb {{b is assigned null}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{b is dereferenced}}
     }
   }
 
   void complexRelation(int a, int b, Object c) {
     if (a < b) { // This should be reported as well to highlight context
-      c = null; // flow@cplx {{...}}
+      c = null; // flow@cplx {{c is assigned null}}
     }
     System.out.println("");
     if (b > a) { // This should be reported as well to highlight context
@@ -57,7 +57,7 @@ class A {
 
   void recursiveRelation(Object a, Object b) {
     if ((a == null) == true) { // flow@rec {{...}}
-      b = a; // flow@rec {{...}}
+      b = a; // flow@rec {{b is assigned null}}
       b.toString(); // Noncompliant [[flows=rec]] flow@rec {{b is dereferenced}}
     }
   }
