@@ -35,14 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConstraintTest {
 
-  private enum TestStatus {
+  private enum TestStatus implements ObjectConstraint.Status {
     OPENED, CLOSED
   }
 
   @Test
   public void open_status() {
     final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), 0, 0, false));
-    ObjectConstraint constraint = new ObjectConstraint(TestStatus.OPENED);
+    ObjectConstraint<TestStatus> constraint = new ObjectConstraint<>(TestStatus.OPENED);
     assertThat(constraint.isNull()).as("Opened constraint is not null").isFalse();
     assertThat(constraint.isDisposable()).isTrue();
     assertThat(constraint.inverse().isNull()).as("Inverse of opened constraint is NULL").isTrue();
@@ -83,8 +83,8 @@ public class ConstraintTest {
         return sv3;
       }
     };
-    ObjectConstraint constraint = new ObjectConstraint(TestStatus.OPENED);
-    assertThat(state.getConstraintWithStatus(sv4, constraint)).isNull();
+    ObjectConstraint<TestStatus> constraint = new ObjectConstraint<>(TestStatus.OPENED);
+    assertThat(state.getConstraintWithStatus(sv4, TestStatus.OPENED)).isNull();
     state = state.addConstraint(sv3, constraint);
     assertThat(state.getConstraintWithStatus(sv4, TestStatus.OPENED)).isEqualTo(constraint);
     assertThat(state.getConstraintWithStatus(sv4, TestStatus.CLOSED)).isNull();

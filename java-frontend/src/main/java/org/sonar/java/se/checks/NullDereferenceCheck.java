@@ -56,7 +56,7 @@ public class NullDereferenceCheck extends SECheck {
       currentVal = values.get(numberArguments);
       if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
         SymbolicValue firstArg = values.get(numberArguments - 1);
-        return context.getState().addConstraint(firstArg, ObjectConstraint.NOT_NULL);
+        return context.getState().addConstraint(firstArg, ObjectConstraint.notNull());
       }
     }
     if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
@@ -100,7 +100,7 @@ public class NullDereferenceCheck extends SECheck {
     constraint = programState.getConstraint(currentVal);
     if (constraint == null) {
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
-      return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
+      return programState.addConstraint(currentVal, ObjectConstraint.notNull());
     }
     return programState;
   }
@@ -135,7 +135,7 @@ public class NullDereferenceCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint()));
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.notNull()));
       return states;
     }
     return Lists.newArrayList(context.getState());

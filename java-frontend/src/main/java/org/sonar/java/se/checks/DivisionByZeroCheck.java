@@ -45,7 +45,7 @@ import java.util.List;
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
-  private enum Status {
+  private enum DivByZeroStatus implements ObjectConstraint.Status {
     ZERO, NON_ZERO, UNDETERMINED;
   }
 
@@ -54,22 +54,22 @@ public class DivisionByZeroCheck extends SECheck {
    */
   private static class DeferredStatusHolderSV extends SymbolicValue {
 
-    private final Status deferredStatus;
+    private final DivByZeroStatus deferredStatus;
 
-    public DeferredStatusHolderSV(int id, Status deferredStatus) {
+    public DeferredStatusHolderSV(int id, DivByZeroStatus deferredStatus) {
       super(id);
       this.deferredStatus = deferredStatus;
     }
   }
 
-  private static class ZeroConstraint extends ObjectConstraint {
-    private ZeroConstraint(Status status) {
+  private static class ZeroConstraint extends ObjectConstraint<DivByZeroStatus> {
+    private ZeroConstraint(DivByZeroStatus status) {
       super(false, false, status);
     }
 
     @Override
     public boolean isInvalidWith(@Nullable Constraint constraint) {
-      return hasStatus(Status.ZERO) && constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(Status.ZERO);
+      return hasStatus(DivByZeroStatus.ZERO) && constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(DivByZeroStatus.ZERO);
     }
   }
 
@@ -133,7 +133,7 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void setAsUndetermined(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, new ZeroConstraint(Status.UNDETERMINED));
+      programState = programState.addConstraint(sv, new ZeroConstraint(DivByZeroStatus.UNDETERMINED));
     }
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -160,14 +160,14 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private boolean isZero(SymbolicValue symbolicValue) {
-      return hasStatus(symbolicValue, Status.ZERO);
+      return hasStatus(symbolicValue, DivByZeroStatus.ZERO);
     }
 
     private boolean isNonZero(SymbolicValue symbolicValue) {
-      return hasStatus(symbolicValue, Status.NON_ZERO);
+      return hasStatus(symbolicValue, DivByZeroStatus.NON_ZERO);
     }
 
-    private boolean hasStatus(SymbolicValue symbolicValue, Status status) {
+    private boolean hasStatus(SymbolicValue symbolicValue, DivByZeroStatus status) {
       return programState.getConstraintWithStatus(symbolicValue, status) != null;
     }
 
@@ -176,7 +176,7 @@ public class DivisionByZeroCheck extends SECheck {
       if (leftIsZero || isZero(right)) {
         reuseSymbolicValue(leftIsZero ? left : right);
       } else if (isNonZero(left) && isNonZero(right)) {
-        deferConstraint(Status.NON_ZERO);
+        deferConstraint(DivByZeroStatus.NON_ZERO);
       }
     }
 
@@ -193,21 +193,25 @@ public class DivisionByZeroCheck extends SECheck {
       } else if (isZero(leftOp)) {
         reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
-        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? Status.NON_ZERO : Status.UNDETERMINED);
+        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? DivByZeroStatus.NON_ZERO : DivByZeroStatus.UNDETERMINED);
       }
     }
 
-    private void deferConstraint(Status status) {
+    private void deferConstraint(DivByZeroStatus status) {
       constraintManager.setValueFactory(id -> new DeferredStatusHolderSV(id, status));
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory(id -> new DeferredStatusHolderSV(id, isZero(sv) ? Status.ZERO : (isNonZero(sv) ? Status.NON_ZERO : Status.UNDETERMINED)) {
+      constraintManager.setValueFactory(id -> new DeferredStatusHolderSV(id, statusFromSV(sv)) {
         @Override
         public SymbolicValue wrappedValue() {
           return sv.wrappedValue();
         }
       });
+    }
+
+    private DivisionByZeroCheck.DivByZeroStatus statusFromSV(SymbolicValue sv) {
+      return isZero(sv) ? DivByZeroStatus.ZERO : (isNonZero(sv) ? DivByZeroStatus.NON_ZERO : DivByZeroStatus.UNDETERMINED);
     }
 
     private void reportIssue(Tree tree, SymbolicValue denominator) {
@@ -245,7 +249,7 @@ public class DivisionByZeroCheck extends SECheck {
         if (isZero(sv)) {
           reuseSymbolicValue(sv);
         } else if (isNonZero(sv)) {
-          deferConstraint(Status.NON_ZERO);
+          deferConstraint(DivByZeroStatus.NON_ZERO);
         }
       }
     }
@@ -258,10 +262,10 @@ public class DivisionByZeroCheck extends SECheck {
           if (tree.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
             reuseSymbolicValue(sv);
           } else {
-            deferConstraint(Status.NON_ZERO);
+            deferConstraint(DivByZeroStatus.NON_ZERO);
           }
         } else {
-          deferConstraint(Status.UNDETERMINED);
+          deferConstraint(DivByZeroStatus.UNDETERMINED);
         }
       }
     }
@@ -285,9 +289,9 @@ public class DivisionByZeroCheck extends SECheck {
       String value = tree.value();
       SymbolicValue sv = programState.peekValue();
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
-        addZeroConstraint(sv, Status.ZERO);
+        addZeroConstraint(sv, DivByZeroStatus.ZERO);
       } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
-        addZeroConstraint(sv, isNumberZero(value) ? Status.ZERO : Status.NON_ZERO);
+        addZeroConstraint(sv, isNumberZero(value) ? DivByZeroStatus.ZERO : DivByZeroStatus.NON_ZERO);
       }
     }
 
@@ -326,7 +330,7 @@ public class DivisionByZeroCheck extends SECheck {
       }
     }
 
-    private void addZeroConstraint(SymbolicValue sv, Status status) {
+    private void addZeroConstraint(SymbolicValue sv, DivByZeroStatus status) {
       programState = programState.addConstraint(sv, new ZeroConstraint(status));
     }
   }

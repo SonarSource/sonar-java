@@ -44,13 +44,13 @@ import java.util.List;
 @RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
 
-  class Status {
-    Object OPENED = new Object();
-    Object CLOSED = new Object();
+  static class ResourceStatus implements ObjectConstraint.Status {
+
   }
 
-  private final Status status = new Status();
-
+  //these fields can not be static, because we need different status instance for every instantiation of this rule (template rule) see SONARJAVA-1624
+  private final ResourceStatus OPENED = new ResourceStatus();
+  private final ResourceStatus CLOSED = new ResourceStatus();
 
   @RuleProperty(
     key = "constructor",
@@ -100,12 +100,12 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(status.OPENED).keySet()
+    context.getState().getValuesWithConstraints(OPENED).keySet()
       .forEach(sv -> processUnclosedSymbolicValue(node, sv));
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED)).stream()
+    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(OPENED)).stream()
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }
@@ -143,15 +143,15 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     protected void closeResource(@Nullable SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, status.OPENED);
+        ObjectConstraint<ResourceStatus> oConstraint = programState.getConstraintWithStatus(target, OPENED);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(status.CLOSED));
+          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(CLOSED));
         }
       }
     }
 
     protected void openResource(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, status.OPENED));
+      programState = programState.addConstraint(sv, new ObjectConstraint<>(false, false, OPENED));
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {

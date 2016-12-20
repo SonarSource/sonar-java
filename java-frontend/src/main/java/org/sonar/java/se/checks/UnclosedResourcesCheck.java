@@ -57,7 +57,7 @@ import java.util.Set;
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
 
-  private enum Status {
+  private enum Status implements ObjectConstraint.Status {
     OPENED, CLOSED
   }
 

@@ -23,35 +23,43 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class ObjectConstraint implements Constraint {
+public class ObjectConstraint<S extends ObjectConstraint.Status> implements Constraint {
 
-  public static final ObjectConstraint NOT_NULL = new ObjectConstraint(false, true, null);
+  public interface Status {
+
+  }
+
+  private static final ObjectConstraint<Status> NOT_NULL = new ObjectConstraint<>(false, true, null);
 
   private final boolean isNull;
   private final boolean disposable;
   @Nullable
-  private final Object status;
+  private final S status;
 
-  public ObjectConstraint(Object status) {
+  public ObjectConstraint(S status) {
     this(false, true, status);
   }
 
-  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable Object status) {
+  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable S status) {
     this.isNull = isNull;
     this.disposable = disposable;
     this.status = status;
   }
 
-  public static ObjectConstraint nullConstraint() {
-    return new ObjectConstraint(true, false, null);
+  public static <S extends Status> ObjectConstraint<S> notNull() {
+    return (ObjectConstraint<S>) NOT_NULL;
   }
 
-  public ObjectConstraint inverse() {
-    return new ObjectConstraint(!isNull, disposable, status);
+  public static <S extends ObjectConstraint.Status> ObjectConstraint<S> nullConstraint() {
+    return new ObjectConstraint<>(true, false, null);
   }
 
-  public ObjectConstraint withStatus(Object newStatus) {
-    return new ObjectConstraint(isNull, disposable, newStatus);
+  public ObjectConstraint<S> inverse() {
+    return new ObjectConstraint<>(!isNull, disposable, status);
+  }
+
+  public ObjectConstraint<S> withStatus(S newStatus) {
+    return new ObjectConstraint<>(isNull, disposable, newStatus);
   }
 
   @Override
