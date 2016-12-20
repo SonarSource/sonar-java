@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
@@ -43,6 +44,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +53,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -72,7 +75,7 @@ public class MethodYieldTest {
     ps = ps.put(sym, sv1);
 
     MethodYield methodYield = yields.get(0);
-    Collection<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
+    Stream<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
 
@@ -116,7 +119,8 @@ public class MethodYieldTest {
     ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, YieldStatus.A));
 
     // status of sv2 should be changed from A to B
-    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
+    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3)
+      .collect(Collectors.toList());
     assertThat(generatedStatesFromFirstYield).hasSize(1);
     assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, YieldStatus.B)).isNotNull();
   }
@@ -240,7 +244,7 @@ public class MethodYieldTest {
     MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException2")).findAny().get();
     assertThat(implicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(implicitExceptionYield.resultConstraint).isNull();
-    assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.notNull());
   }
 
   @Test
@@ -275,28 +279,28 @@ public class MethodYieldTest {
     SymbolicValue svResult = new SymbolicValue(43);
 
     // apply constraint NotNull to parameter
-    Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult);
+    Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult).collect(Collectors.toList());
     assertThat(arrayOfA).hasSize(1);
     psResult = arrayOfA.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
     assertThat(psResult.getConstraint(svVarArg1).isNull()).isFalse();
 
     // apply constraint NotNull to parameter (B[] is a subtype of A[])
-    Collection<ProgramState> arrayOfB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(1), ps, () -> svResult);
+    Collection<ProgramState> arrayOfB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(1), ps, () -> svResult).collect(Collectors.toList());
     assertThat(arrayOfB).hasSize(1);
     psResult = arrayOfB.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
     assertThat(psResult.getConstraint(svVarArg1).isNull()).isFalse();
 
     // no constraint, as 'a' is not an array
-    Collection<ProgramState> objectA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(2), ps, () -> svResult);
+    Collection<ProgramState> objectA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(2), ps, () -> svResult).collect(Collectors.toList());
     assertThat(objectA).hasSize(1);
     psResult = objectA.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
     assertThat(psResult.getConstraint(svVarArg1)).isNull();
 
     // no constraint, as 'a' and 'b' can not receive the constraint of the array
-    Collection<ProgramState> objectsAandB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1, svVarArg2), arguments.get(3), ps, () -> svResult);
+    Collection<ProgramState> objectsAandB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1, svVarArg2), arguments.get(3), ps, () -> svResult).collect(Collectors.toList());
     assertThat(objectsAandB).hasSize(1);
     psResult = objectsAandB.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
@@ -304,14 +308,14 @@ public class MethodYieldTest {
     assertThat(psResult.getConstraint(svVarArg2)).isNull();
 
     // no param, we only learn something about the argument which is not variadic
-    Collection<ProgramState> noParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg), arguments.get(4), ps, () -> svResult);
+    Collection<ProgramState> noParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg), arguments.get(4), ps, () -> svResult).collect(Collectors.toList());
     assertThat(noParam).hasSize(1);
     psResult = noParam.iterator().next();
     assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
 
     // null param, contradiction, no resulting program state
     ps = ProgramState.EMPTY_STATE.addConstraint(svFirstArg, ObjectConstraint.nullConstraint());
-    Collection<ProgramState> nullParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(5), ps, () -> svResult);
+    Collection<ProgramState> nullParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(5), ps, () -> svResult).collect(Collectors.toList());
     assertThat(nullParam).isEmpty();
   }
 

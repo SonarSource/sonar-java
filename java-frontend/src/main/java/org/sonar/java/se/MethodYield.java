@@ -36,7 +36,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MethodYield {
@@ -68,7 +67,7 @@ public class MethodYield {
       exceptionType == null ? "" : (" (" + exceptionType + ")"));
   }
 
-  public Collection<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
+  public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
     Supplier<SymbolicValue> svSupplier) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
@@ -83,7 +82,7 @@ public class MethodYield {
       if (programStates.isEmpty()) {
         // constraint can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
-        return programStates;
+        return Stream.empty();
       }
       results = programStates;
     }
@@ -106,7 +105,7 @@ public class MethodYield {
     if (resultConstraint != null) {
       stateStream = stateStream.map(s -> s.addConstraint(sv, resultConstraint));
     }
-    return stateStream.collect(Collectors.toCollection(LinkedHashSet::new));
+    return stateStream.distinct();
   }
 
   @CheckForNull

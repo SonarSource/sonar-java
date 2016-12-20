@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -79,6 +80,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -587,76 +589,59 @@ public class ExplodedGraphWalker {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
 
-      Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = thrownExceptions(methodInvokedBehavior);
+      Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = new HashMap<>();
 
       // Enqueue exceptional paths from exceptional yields
-      methodInvokedBehavior.exceptionalPathYields()
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> thrownExceptionsByExceptionType.get(yield.exceptionType)).stream())
-        .forEach(this::enqueueExceptionalPaths);
+      methodInvokedBehavior.exceptionalPathYields().flatMap(yield -> yield.statesAfterInvocation(
+        invocationArguments,
+        invocationTypes,
+        programState,
+        () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue))
+      ).forEach(this::enqueueExceptionalPaths);
 
       // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
       enqueueUncheckedExceptionalPaths();
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue).stream())
+        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue))
+        .map(psYield -> handleSpecialMethods(psYield, mit, methodSymbol))
         .forEach(psYield -> {
-          ProgramState ps = psYield;
-          if (isNonNullMethod(methodSymbol)) {
-            ps = ps.addConstraint(ps.peekValue(), ObjectConstraint.notNull());
-          } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-            ps = ps.resetFieldValues(constraintManager);
-          }
           checkerDispatcher.syntaxNode = mit;
-          checkerDispatcher.addTransition(ps);
+          checkerDispatcher.addTransition(psYield);
           clearStack(mit);
         });
     } else {
-      Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = thrownExceptions(methodSymbol);
-
       // Enqueue exceptional paths from thrown exceptions
-      thrownExceptionsByExceptionType.values().stream()
-        .map(programState.clearStack()::stackValue)
-        .forEach(this::enqueueExceptionalPaths);
+      enqueueThrownExceptionalPaths(methodSymbol);
 
       // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
       enqueueUncheckedExceptionalPaths();
 
       // Enqueue happy paths
-      programState = programState.stackValue(resultValue);
-      if (isNonNullMethod(methodSymbol)) {
-        programState = programState.addConstraint(resultValue, ObjectConstraint.notNull());
-      } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-        programState = programState.resetFieldValues(constraintManager);
-      }
+      programState = handleSpecialMethods(programState.stackValue(resultValue), mit, methodSymbol);
       checkerDispatcher.executeCheckPostStatement(mit);
       clearStack(mit);
     }
   }
 
-  private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(Symbol methodSymbol) {
-    if (methodSymbol.isMethodSymbol()) {
-      return thrownExceptions(((Symbol.MethodSymbol) methodSymbol).thrownTypes());
+  private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit, Symbol methodSymbol) {
+    if (isNonNullMethod(methodSymbol)) {
+      return ps.addConstraint(ps.peekValue(), ObjectConstraint.notNull());
+    } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
+      return ps.resetFieldValues(constraintManager);
     }
-
-    return new HashMap<>();
+    return ps;
   }
 
-  private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(MethodBehavior methodBehavior) {
-    List<Type> exceptionTypes = methodBehavior
-      .exceptionalPathYields()
-      .map(yield -> yield.exceptionType)
-      .collect(Collectors.toList());
-    return thrownExceptions(exceptionTypes);
-  }
-
-  private Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions(List<Type> exceptionTypes) {
-    Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptions = new HashMap<>();
-    exceptionTypes.stream()
-      .filter(exceptionType -> !thrownExceptions.containsKey(exceptionType))
-      .forEach(exceptionType -> thrownExceptions.put(exceptionType, constraintManager.createExceptionalSymbolicValue(exceptionType)));
-
-    return thrownExceptions;
+  private void enqueueThrownExceptionalPaths(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      ProgramState ps = programState.clearStack();
+      ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
+        .map(constraintManager::createExceptionalSymbolicValue)
+        .map(ps::stackValue)
+        .forEach(this::enqueueExceptionalPaths);
+    }
   }
 
   private void enqueueUncheckedExceptionalPaths() {
