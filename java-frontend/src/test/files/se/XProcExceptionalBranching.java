@@ -14,6 +14,21 @@ abstract class A {
     }
   }
 
+  void tst2(Object o) {
+    Object o1 = gul(o);
+    o1.toString(); // Noncompliant  {{NullPointerException might be thrown as 'o1' is nullable here}}
+  }
+
+  void tst3(Object o) {
+    Object o1 = new Object();
+    try {
+      o1 = qix(o);
+    } catch (MyException2 e) {
+      if (o == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    o1.toString(); // Compliant
+  }
+
   private void foo(Object o) throws MyException1, MyException2 {
     if (o == null) {
       throw new MyException1();
@@ -22,6 +37,30 @@ abstract class A {
   }
 
   abstract void bar() throws MyException2;
+
+  private Object gul(Object o) {
+    Object result = new Object();
+    try {
+      foo(o);
+    } catch (MyException1 e) {
+      result = o;
+    } finally {
+      return result;
+    }
+  }
+
+  private Object qix(Object o) throws MyException2 {
+    Object result;
+    try {
+      foo(o);
+    } catch (MyException1 e) {
+      result = o;
+    } finally {
+      result = new Object();
+    }
+    return result;
+  }
+
 }
 
 class MyException1 extends Exception {}
