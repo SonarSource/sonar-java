@@ -41,7 +41,7 @@ import java.util.Set;
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
-  private enum Status {
+  private enum Status implements ObjectConstraint.Status {
     PRESENT, NOT_PRESENT
   }
 
@@ -66,10 +66,10 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
      */
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      ObjectConstraint optionalConstraint = (ObjectConstraint) programState.getConstraint(optionalSV);
+      ObjectConstraint<Status> optionalConstraint = (ObjectConstraint<Status>) programState.getConstraint(optionalSV);
       if(optionalConstraint == null) {
         // Constraint on the optional SV might have been disposed. But is is necessarily non null because NPE check is ran before.
-        optionalConstraint = ObjectConstraint.NOT_NULL;
+        optionalConstraint = ObjectConstraint.notNull();
       }
       if (isImpossibleState(booleanConstraint, optionalConstraint)) {
         return ImmutableList.of();

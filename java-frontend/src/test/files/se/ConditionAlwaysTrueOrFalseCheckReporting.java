@@ -21,7 +21,7 @@ public class Class {
 
   void reassignement(boolean a, boolean b) {
     if(a) { // flow@reass {{...}}
-      b = a; // flow@reass {{...}}
+      b = a; // flow@reass {{b is assigned true}}
       if(b) { // Noncompliant [[flows=reass]] flow@reass {{Condition is always true}}
       }
     }

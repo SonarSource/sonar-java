@@ -1,10 +1,18 @@
 
 class A {
+
+  void symbolSetToNull() {
+    Object a = new Object();
+    a = null; // flow@npe {{a is assigned null}}
+    a.toString(); // Noncompliant [[flows=npe]] {{NullPointerException might be thrown as 'a' is nullable here}}  flow@npe {{a is dereferenced}}
+  }
+
+
   void combined(Object a) {
     Object b = new Object();
     if (a == null) { // flow@comb {{...}}
-      b = a; // flow@comb {{...}}
-      b.toString(); // Noncompliant [[flows=comb]] flow@comb
+      b = a; // flow@comb {{b is assigned null}}
+      b.toString(); // Noncompliant [[flows=comb]] flow@comb {{b is dereferenced}}
     }
   }
 

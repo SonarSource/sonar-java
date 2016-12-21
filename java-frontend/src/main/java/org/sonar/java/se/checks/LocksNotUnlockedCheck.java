@@ -41,7 +41,7 @@ import java.util.List;
 @Rule(key = "S2222")
 public class LocksNotUnlockedCheck extends SECheck {
 
-  private enum Status {
+  private enum LockStatus implements ObjectConstraint.Status {
     LOCKED, UNLOCKED;
   }
 
@@ -67,9 +67,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(false, false, Status.LOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint<>(false, false, LockStatus.LOCKED)));
       } else {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(Status.UNLOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint<>(LockStatus.UNLOCKED)));
       }
     }
 
@@ -142,9 +142,9 @@ public class LocksNotUnlockedCheck extends SECheck {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
         if (LOCK_METHOD_NAME.equals(methodName) || TRY_LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, Status.LOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint<>(false, false, LockStatus.LOCKED));
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(Status.UNLOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint<>(LockStatus.UNLOCKED));
         }
       }
     }
@@ -171,8 +171,8 @@ public class LocksNotUnlockedCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(Status.LOCKED).keySet().stream()
-      .flatMap(sv -> FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream())
+    context.getState().getValuesWithConstraints(LockStatus.LOCKED).keySet().stream()
+      .flatMap(sv -> FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(LockStatus.LOCKED), ObjectConstraint.statusPredicate(LockStatus.UNLOCKED)).stream())
       .forEach(this::reportIssue);
   }
 

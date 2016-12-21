@@ -393,7 +393,7 @@ public class ProgramState {
   }
 
   @CheckForNull
-  public ObjectConstraint getConstraintWithStatus(SymbolicValue value, Object aState) {
+  public <S extends ObjectConstraint.Status> ObjectConstraint<S> getConstraintWithStatus(SymbolicValue value, S aState) {
     final Object constraint = getConstraint(value.wrappedValue());
     if (constraint instanceof ObjectConstraint) {
       ObjectConstraint oConstraint = (ObjectConstraint) constraint;

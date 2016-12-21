@@ -84,7 +84,7 @@ public class MethodYieldTest {
       "{params: [FALSE, null], result: null (-1), exceptional: false}");
   }
 
-  private static enum Status {
+  private enum YieldStatus implements ObjectConstraint.Status {
     A, B
   }
 
@@ -99,7 +99,7 @@ public class MethodYieldTest {
       .filter(y -> y.parametersConstraints[0] instanceof BooleanConstraint && ((BooleanConstraint) y.parametersConstraints[0]).isTrue())
       .findFirst().get();
     // force status of the arg1 to be B
-    trueYield.parametersConstraints[1] = ((ObjectConstraint) trueYield.parametersConstraints[1]).withStatus(Status.B);
+    trueYield.parametersConstraints[1] = ((ObjectConstraint<YieldStatus>) trueYield.parametersConstraints[1]).withStatus(YieldStatus.B);
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue(41);
@@ -112,12 +112,12 @@ public class MethodYieldTest {
 
     Symbol myVar = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
     ps = ps.put(myVar, sv2);
-    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, Status.A));
+    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, YieldStatus.A));
 
     // status of sv2 should be changed from A to B
     Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
-    assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, Status.B)).isNotNull();
+    assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, YieldStatus.B)).isNotNull();
   }
 
   @Test
@@ -152,13 +152,13 @@ public class MethodYieldTest {
 
     // same arity but different return constraint
     otherYield = new MethodYield(1, false);
-    otherYield.resultConstraint = ObjectConstraint.NOT_NULL;
+    otherYield.resultConstraint = ObjectConstraint.notNull();
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same return constraint
-    yield.resultConstraint = ObjectConstraint.NOT_NULL;
+    yield.resultConstraint = ObjectConstraint.notNull();
     otherYield = new MethodYield(1, false);
-    otherYield.resultConstraint = ObjectConstraint.NOT_NULL;
+    otherYield.resultConstraint = ObjectConstraint.notNull();
     assertThat(yield).isEqualTo(otherYield);
 
     // exceptional yields

@@ -19,37 +19,21 @@
  */
 package org.sonar.java.se.constraint;
 
-public enum BooleanConstraint implements Constraint {
-  TRUE {
-    @Override
-    public String valueAsString() {
-      return "true";
-    }
-  },
-  FALSE {
-    @Override
-    public String valueAsString() {
-      return "false";
-    }
-  };
+import org.junit.Test;
 
-  @Override
-  public boolean isNull() {
-    return false;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ObjectConstraintStatusTest {
+
+  @Test
+  public void valueAsString() throws Exception {
+    Constraint constraint = new Constraint() {
+      @Override
+      public boolean isNull() {
+        return false;
+      }
+    };
+    assertThat(constraint.valueAsString()).isEqualTo("");
   }
 
-  public boolean isTrue() {
-    return this == TRUE;
-  }
-
-  public boolean isFalse() {
-    return this == FALSE;
-  }
-
-  public BooleanConstraint inverse() {
-    if (TRUE == this) {
-      return FALSE;
-    }
-    return TRUE;
-  }
 }

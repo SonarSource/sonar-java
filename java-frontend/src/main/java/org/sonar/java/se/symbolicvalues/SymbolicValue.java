@@ -21,7 +21,6 @@ package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -31,7 +30,6 @@ import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,7 +237,7 @@ public class SymbolicValue {
           return ImmutableList.of();
         }
         // if instanceof is true then we know for sure that expression is not null.
-        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.NOT_NULL);
+        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.notNull());
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
