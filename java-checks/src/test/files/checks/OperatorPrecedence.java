@@ -102,6 +102,6 @@ public class Class {
     }
     if ( a = b == c) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
-
+    String[] array = (value > 0) ? getValue() : new String[0]; // Compliant
   }
 }

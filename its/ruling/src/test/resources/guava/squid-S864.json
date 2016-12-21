@@ -111,10 +111,6 @@
 828,
 856,
 ],
-'com.google.guava:guava:src/com/google/common/io/Files.java':[
-246,
-247,
-],
 'com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java':[
 81,
 103,
@@ -154,9 +150,6 @@
 311,
 312,
 313,
-],
-'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
-160,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
 357,
