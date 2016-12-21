@@ -21,13 +21,10 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -293,7 +291,7 @@ public class JavaCheckVerifier {
 
   private void assertSoleFlowDiscrepancy(String expectedId, List<AnalyzerMessage> actualFlow) {
     Collection<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
-    List<Integer> expectedLines = expected.stream().map(f -> f.line).collect(Collectors.toList());
+    List<Integer> expectedLines = expected.stream().sorted(Comparator.comparingInt(Expectations.FlowComment::order)).map(f -> f.line).collect(Collectors.toList());
     List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
     assertThat(actualLines).as("Flow " + expectedId + " has line differences").isEqualTo(expectedLines);
   }
@@ -312,7 +310,7 @@ public class JavaCheckVerifier {
   }
 
   private void validateFlowAttributes(List<AnalyzerMessage> actual, String flowId) {
-    Collection<Expectations.FlowComment> expected = expectations.flows.get(flowId);
+    List<Expectations.FlowComment> expected = expectations.flows.get(flowId);
 
     validateFlowMessages(actual, flowId, expected);
 
@@ -326,19 +324,23 @@ public class JavaCheckVerifier {
     }
   }
 
-  private void validateFlowMessages(List<AnalyzerMessage> actual, String flowId, Collection<Expectations.FlowComment> expected) {
-    ListMultimap<Integer, String> actualMessages = ArrayListMultimap.create();
-    actual.forEach(m -> actualMessages.put(m.getLine(), m.getMessage()));
+  private void validateFlowMessages(List<AnalyzerMessage> actual, String flowId, List<Expectations.FlowComment> expected) {
+    List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).collect(Collectors.toList());
+    List<String> expectedMessages = expected.stream().map(Expectations.FlowComment::message).collect(Collectors.toList());
 
-    ListMultimap<Integer, String> expectedMessages = ArrayListMultimap.create();
-    expected.stream()
-      .filter(f -> f.get(MESSAGE) != null)
-      .forEach(f -> expectedMessages.put(f.line, f.get(MESSAGE)));
+    replaceExpectedNullWithActual(actualMessages, expectedMessages);
 
-    Multimap<Integer, String> missing = Multimaps.filterEntries(expectedMessages, e -> !actualMessages.containsEntry(e.getKey(), e.getValue()));
-    assertThat(missing.asMap())
-      .overridingErrorMessage("Wrong messages in flow %s\n expected: %s\n actual: %s", flowId, expectedMessages, actualMessages)
-      .isEmpty();
+    assertThat(actualMessages).as("Wrong messages in flow " + flowId + " [" + expectations.flowToLines(flowId) + "]").isEqualTo(expectedMessages);
+  }
+
+  private void replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {
+    if (actualMessages.size() == expectedMessages.size()) {
+      for (int i =0; i < actualMessages.size(); i++) {
+        if (expectedMessages.get(i) == null) {
+          expectedMessages.set(i, actualMessages.get(i));
+        }
+      }
+    }
   }
 
   private static String flowToString(List<AnalyzerMessage> flow) {

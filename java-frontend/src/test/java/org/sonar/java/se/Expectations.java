@@ -24,7 +24,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
@@ -35,12 +37,14 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +70,7 @@ import static org.sonar.java.se.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.se.Expectations.IssueAttribute.FLOWS;
 import static org.sonar.java.se.Expectations.IssueAttribute.LINE;
 import static org.sonar.java.se.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.se.Expectations.IssueAttribute.ORDER;
 import static org.sonar.java.se.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
 import static org.sonar.java.se.Expectations.IssueAttribute.START_COLUMN;
 
@@ -84,10 +89,12 @@ class Expectations {
     .put("endColumn", END_COLUMN)
     .put("secondary", SECONDARY_LOCATIONS)
     .put("flows", FLOWS)
+    .put("order", ORDER)
     .build();
 
   enum IssueAttribute {
     LINE(Function.identity()),
+    ORDER(Integer::valueOf),
     MESSAGE(Function.identity()),
     START_COLUMN(Integer::valueOf),
     END_COLUMN(Integer::valueOf),
@@ -144,6 +151,17 @@ class Expectations {
       return (T) attribute.get(attributes);
     }
 
+
+    int order() {
+      Integer order = ORDER.get(attributes);
+      return order == null ? 0 : order;
+    }
+
+    @CheckForNull
+    String message() {
+      return MESSAGE.get(attributes);
+    }
+
     @Override
     public String toString() {
       return String.format("%d: flow@%s %s", line, id, attributes.toString());
@@ -151,7 +169,7 @@ class Expectations {
   }
 
   final Multimap<Integer, Issue> issues = ArrayListMultimap.create();
-  final Multimap<String, FlowComment> flows = ArrayListMultimap.create();
+  final ListMultimap<String, FlowComment> flows = ArrayListMultimap.create();
   final boolean expectNoIssues;
   final String expectFileIssue;
   final Integer expectFileIssueOnLine;
@@ -185,8 +203,10 @@ class Expectations {
   }
 
   private Map<ImmutableList<Integer>, String> computeFlowLines() {
-    return flows.asMap().entrySet().stream()
-      .collect(Collectors.toMap(e -> flowToLines(e.getValue(), i -> i.line), Map.Entry::getKey));
+    Map<String, List<FlowComment>> flows = Multimaps.asMap(this.flows);
+    flows.forEach((id, flow) -> flow.sort(Comparator.comparingInt(FlowComment::order)));
+    return flows.entrySet().stream()
+      .collect(Collectors.toMap(e -> flowToLines(e.getValue(), flowComment -> flowComment.line), Map.Entry::getKey));
   }
 
   private static <T> ImmutableList<Integer> flowToLines(Collection<T> flow, ToIntFunction<T> toLineFunction) {
@@ -242,9 +262,9 @@ class Expectations {
     }
 
     @VisibleForTesting
-    static Set<FlowComment> parseFlows(@Nullable String comment, int line) {
+    static List<FlowComment> parseFlows(@Nullable String comment, int line) {
       if (comment == null) {
-        return Collections.emptySet();
+        return Collections.emptyList();
       }
       List<List<String>> flowIds = new ArrayList<>();
       List<Integer> flowStarts = new ArrayList<>();
@@ -260,7 +280,7 @@ class Expectations {
       return IntStream.range(0, flowIds.size())
         .mapToObj(i -> createFlows(flowIds.get(i), line, comment.substring(flowStarts.get(i), flowStarts.get(i + 1))))
         .flatMap(Function.identity())
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
     }
 
     private static Stream<FlowComment> createFlows(List<String> ids, int line, String flow) {
@@ -293,7 +313,7 @@ class Expectations {
       if (message != null) {
         issue.put(MESSAGE, message);
       }
-      Set<FlowComment> flows = parseFlows(flow, line);
+      List<FlowComment> flows = parseFlows(flow, line);
       return new ParsedComment(issue, flows);
     }
 
@@ -350,9 +370,9 @@ class Expectations {
 
     static class ParsedComment {
       final Issue issue;
-      final Set<FlowComment> flows;
+      final List<FlowComment> flows;
 
-      private ParsedComment(Issue issue, Set<FlowComment> flows) {
+      private ParsedComment(Issue issue, List<FlowComment> flows) {
         this.issue = issue;
         this.flows = flows;
       }

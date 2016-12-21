@@ -21,7 +21,7 @@ class A {
   void null_assigned(Object b, Object c) {
     if(b == null);
     if(c == null);
-    getA().toString(); // Noncompliant [[flows=mnull]] flow@mnull {{Result of getA() is dereferenced}} flow@mnull {{...}}
+    getA().toString(); // Noncompliant [[flows=mnull]] flow@mnull {{...}} flow@mnull {{Result of getA() is dereferenced}}
   }
 
   void reassignement() {
@@ -32,8 +32,8 @@ class A {
   }
 
   void relationshipLearning(Object a) {
-    if (a == null) { // flow@rela {{...}}
-      a.toString(); // Noncompliant [[flows=rela]] flow@rela {{a is dereferenced}}
+    if (a == null) { // flow@rela [[order=1]] {{...}}
+      a.toString(); // Noncompliant [[flows=rela]] flow@rela [[order=2]] {{a is dereferenced}}
     }
   }
 
@@ -83,5 +83,19 @@ class A {
     a1.hashCode(); // No issue
     a2.hashCode(); // Noncompliant [[flows=a2]] {{NullPointerException might be thrown as 'a2' is nullable here}} flow@a2 {{a2 is dereferenced}}
     a3.hashCode(); // Noncompliant [[flows=a3]] {{NullPointerException might be thrown as 'a3' is nullable here}} flow@a3 {{a3 is dereferenced}}
+  }
+
+  private String getFoo() {
+    return null;
+  }
+
+  public void order() {
+    String foo = getFoo();  // flow@ord [[order=2]] {{foo is assigned null}} flow@ord [[order=1]] {{...}}
+    String bar = foo;
+    boolean cond = (bar == null);
+
+    if (cond) {                     // flow@ord [[order=3]]
+      foo.toCharArray();            // Noncompliant [[flows=ord]] flow@ord [[order=4]]
+    }
   }
 }
