@@ -77,6 +77,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class CFG {
 
@@ -148,6 +149,7 @@ public class CFG {
   }
 
   public static class Block {
+    public static final Predicate<Block> IS_CATCH_BLOCK = Block::isCatchBlock;
     private int id;
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new LinkedHashSet<>();
@@ -901,7 +903,6 @@ public class CFG {
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
             currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
-            break;
           }
         }
       });

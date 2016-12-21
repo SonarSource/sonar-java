@@ -17,9 +17,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ws/SubmitReportWsAction.java':[
 77,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/dashboard/ws/DashboardsShowAction.java':[
-71,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/duplication/ws/ShowAction.java':[
 84,
 ],
@@ -31,9 +28,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/ComponentTagsAction.java':[
 85,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/IssueShowAction.java':[
-112,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
 281,

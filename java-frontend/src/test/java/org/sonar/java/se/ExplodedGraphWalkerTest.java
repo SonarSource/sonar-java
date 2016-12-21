@@ -192,6 +192,16 @@ public class ExplodedGraphWalkerTest {
     JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitException.java", seChecks());
   }
 
+  @Test
+  public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path_and_branching() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitExceptionBranching.java", seChecks());
+  }
+
+  @Test
+  public void xproc_usage_of_exceptional_path_and_branching() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranching.java", seChecks());
+  }
+
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
     @Override

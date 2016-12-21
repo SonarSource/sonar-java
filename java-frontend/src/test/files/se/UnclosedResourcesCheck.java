@@ -153,26 +153,26 @@ public class A {
   }
   
   public void closePrimary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
-    reader.read();
+    reader.read(); // can fail
     fileIn.close();
   }
   
   public void closeSecondary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
-    reader.read();
+    reader.read(); // can fail
     bufferIn.close();
   }
   
   public void closeTertiary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName);
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream".}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");
-    reader.read();
+    reader.read(); // can fail
     reader.close();
   }
 
@@ -180,7 +180,7 @@ public class A {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=for]] {{Close this "FileInputStream".}} flow@for {{FileInputStream is never closed}}
     for(int i = 0; i < maxLoop; i++) {
       stream = new FileInputStream("myFile");
-      stream.read();
+      stream.read();  // can fail
       stream.close();
     }
    return;

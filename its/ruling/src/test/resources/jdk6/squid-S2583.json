@@ -5,9 +5,6 @@
 'jdk6:java/awt/Container.java':[
 4021,
 ],
-'jdk6:java/awt/Desktop.java':[
-367,
-],
 'jdk6:java/awt/KeyboardFocusManager.java':[
 214,
 2226,
@@ -59,6 +56,9 @@
 ],
 'jdk6:java/net/Socket.java':[
 374,
+],
+'jdk6:java/net/SocketInputStream.java':[
+143,
 ],
 'jdk6:java/net/URI.java':[
 3333,

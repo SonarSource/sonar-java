@@ -58,7 +58,7 @@ public class MethodBehavior {
     SymbolicValue resultSV = programState.exitValue();
     if (resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
       yield.exception = true;
-      yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType().fullyQualifiedName();
+      yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
     } else if (!isConstructor() && !isVoidMethod()) {
       if (resultSV == null) {
         // if there is no return value but we are not in a void method or constructor, we are not in a happy path

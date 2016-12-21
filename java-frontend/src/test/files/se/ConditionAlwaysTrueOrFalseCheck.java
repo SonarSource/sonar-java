@@ -1613,12 +1613,13 @@ class SuperClass {
   }
 }
 
-abstract class TryCatchCFG {
+public class TryCatchCFG {
 
   private Object monitor;
   private boolean shutdown;
 
-  abstract void doSomething();
+  private void doSomething() {
+  }
 
   void fun(boolean abort) {
     while (!abort) {

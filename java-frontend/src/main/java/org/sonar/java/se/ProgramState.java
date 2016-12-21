@@ -179,6 +179,7 @@ public class ProgramState {
     ProgramState that = (ProgramState) o;
     return Objects.equals(values, that.values) &&
       Objects.equals(constraints, that.constraints) &&
+      Objects.equals(exitSymbolicValue, that.exitSymbolicValue) &&
       Objects.equals(peekValue(), that.peekValue());
   }
 
@@ -411,5 +412,9 @@ public class ProgramState {
   @CheckForNull
   public SymbolicValue exitValue() {
     return this.exitSymbolicValue;
+  }
+
+  public boolean exitingOnRuntimeException() {
+    return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
   }
 }

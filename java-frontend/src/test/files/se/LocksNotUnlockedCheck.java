@@ -59,12 +59,14 @@ public class MyClass {
     Lock lock = new ReentrantLock();
     try {
       lock.tryLock();  // Noncompliant [[flows=doOther]] {{Unlock this lock along all executions paths of this method.}} flow@doOther {{Lock 'lock' is never unlocked}}
-      // do work...
+      doSomething();
       lock.unlock(); // an exception will keep this line from being reached
-    } catch (ExceptionType e) {
+    } catch (Exception e) {
       // ...
     }
   }
+
+  abstract void doSomething() throws Exception;
 
   public void reassigned_lock() {
     Lock lock = new ReentrantLock();
