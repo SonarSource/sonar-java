@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -114,13 +113,13 @@ public class ExpectationsParserTest {
 
   @Test
   public void no_flows() {
-    Set<Expectations.FlowComment> flows = Expectations.Parser.parseFlows(null, 0);
+    List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows(null, 0);
     assertThat(flows).isEmpty();
   }
 
   @Test
   public void flow_without_details() {
-    Set<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1", LINE);
+    List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
     assertThat(flow.id).isEqualTo("npe1");
@@ -129,7 +128,7 @@ public class ExpectationsParserTest {
 
   @Test
   public void flow_with_message() throws Exception {
-    Set<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 {{message}}", LINE);
+    List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 {{message}}", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
     assertThat(flow.id).isEqualTo("npe1");
@@ -139,7 +138,7 @@ public class ExpectationsParserTest {
 
   @Test
   public void flow_with_attributes_and_message() throws Exception {
-    Set<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 [[sc=1;ec=6]] {{message}}", LINE);
+    List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 [[sc=1;ec=6]] {{message}}", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
     assertThat(flow.id).isEqualTo("npe1");

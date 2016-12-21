@@ -315,9 +315,7 @@ public class JavaCheckVerifierTest {
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
-      .hasMessage("Wrong messages in flow npe1\n"
-        + " expected: {3=[a is assigned to null here], 9=[a is assigned to b here]}\n"
-        + " actual: {3=[invalid 1], 9=[invalid 2]}");
+      .hasMessage("[Wrong messages in flow npe1 [3,9]] expected:<[\"[a is assigned to null here\", \"a is assigned to b here]\"]> but was:<[\"[invalid 1\", \"invalid 2]\"]>");
   }
 
   @Test

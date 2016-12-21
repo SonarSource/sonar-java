@@ -76,8 +76,8 @@ class NullPointerTest {
 
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
-    Object[] array2 = checkForNullMethod();
-    i = array2.length; // Noncompliant [[secondary=79]] {{NullPointerException might be thrown as 'array2' is nullable here}}
+    Object[] array2 = checkForNullMethod(); // flow@array {{...}} flow@array {{array2 is assigned null}}
+    i = array2.length; // Noncompliant [[flows=array]] {{NullPointerException might be thrown as 'array2' is nullable here}} flow@array
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
