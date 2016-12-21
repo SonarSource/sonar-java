@@ -86,6 +86,13 @@ public class TypeSubstitutionSolver {
         return defSite;
       }
     }
+    // As per getClass javadoc:
+    // The actual result type [of getClass] is Class<? extends |X|> where |X| is the erasure of the static type of the expression on which getClass is called.
+    if(defSite == symbols.objectType && "getClass".equals(method.name())) {
+      TypeJavaSymbol classSymbol = symbols.classType.symbol;
+      JavaType wildcardType = parametrizedTypeCache.getWildcardType(callSite.erasure(), WildCardType.BoundType.EXTENDS);
+      resultType = parametrizedTypeCache.getParametrizedTypeType(classSymbol, new TypeSubstitution().add(classSymbol.typeVariableTypes.get(0), wildcardType));
+    }
     resultType = applySiteSubstitution(resultType, defSite);
     if (callSite != defSite) {
       resultType = applySiteSubstitution(resultType, callSite);
