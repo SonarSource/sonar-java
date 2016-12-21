@@ -177,29 +177,16 @@ public class LocksNotUnlockedCheck extends SECheck {
   }
 
   private void reportIssue(JavaFileScannerContext.Location location) {
-    String flowMsg = "Lock " + quoteOrEmpty(lockName(location.syntaxNode)) + "is never unlocked";
-    Tree tree = issueTree(location.syntaxNode);
+    MethodInvocationTree syntaxNode = (MethodInvocationTree) location.syntaxNode;
+    String flowMsg = "Lock '" + SyntaxTreeNameFinder.getName(syntaxNode.methodSelect()) + "' is never unlocked";
+    Tree tree = issueTree(syntaxNode);
     reportIssue(tree, "Unlock this lock along all executions paths of this method.", FlowComputation.singleton(flowMsg, tree));
   }
 
-  private static String lockName(Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
-      return SyntaxTreeNameFinder.getName(methodSelect);
-    }
-    return SyntaxTreeNameFinder.getName(syntaxNode);
-  }
-
-  private static String quoteOrEmpty(String input) {
-    return input.isEmpty() ? "" : ("'" + input + "' ");
-  }
-
-  private static Tree issueTree(Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) methodSelect).expression();
-      }
+  private static Tree issueTree(MethodInvocationTree syntaxNode) {
+    ExpressionTree methodSelect = syntaxNode.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) methodSelect).expression();
     }
     return syntaxNode;
   }

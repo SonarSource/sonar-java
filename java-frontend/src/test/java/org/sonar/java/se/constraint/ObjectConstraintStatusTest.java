@@ -21,6 +21,8 @@ package org.sonar.java.se.constraint;
 
 import org.junit.Test;
 
+import java.util.function.Predicate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ObjectConstraintStatusTest {
@@ -36,4 +38,18 @@ public class ObjectConstraintStatusTest {
     assertThat(constraint.valueAsString()).isEqualTo("");
   }
 
+  @Test
+  public void statusPredicate() throws Exception {
+    Constraint notObjectConstraint = () -> false;
+    ObjectConstraint<MyStatus> status2Constraint = new ObjectConstraint<>(MyStatus.STATUS2);
+    Predicate<Constraint> predicate = ObjectConstraint.statusPredicate(MyStatus.STATUS1);
+    assertThat(predicate.test(notObjectConstraint)).isFalse();
+    assertThat(predicate.test(status2Constraint)).isFalse();
+    ObjectConstraint<MyStatus> status1Constraint = status2Constraint.withStatus(MyStatus.STATUS1);
+    assertThat(predicate.test(status1Constraint)).isTrue();
+  }
+
+  enum MyStatus implements ObjectConstraint.Status {
+    STATUS1, STATUS2
+  }
 }
