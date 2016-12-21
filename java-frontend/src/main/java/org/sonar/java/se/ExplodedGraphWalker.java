@@ -667,15 +667,16 @@ public class ExplodedGraphWalker {
       .filter(ExplodedGraphWalker::isCatchingUncheckedException)
       .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps));
 
-    // use other exceptional blocks, i.e. finally block and exit blocks
-    exceptionBlocks.stream()
-      .filter(CFG.Block.IS_CATCH_BLOCK.negate())
-      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps, true));
-
     // store the exception as exit value in case of method exit in next block
     ProgramState newPs = ps.clearStack().stackValue(exceptionSV);
     newPs.storeExitValue();
 
+    // use other exceptional blocks, i.e. finally block and exit blocks
+    exceptionBlocks.stream()
+      .filter(CFG.Block.IS_CATCH_BLOCK.negate())
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));
+
+    // explicitly add the exception if next block is method exit
     node.programPoint.block.successors().stream()
       .filter(CFG.Block::isMethodExitBlock)
       .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));

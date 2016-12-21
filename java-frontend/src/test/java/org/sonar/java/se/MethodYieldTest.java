@@ -203,27 +203,34 @@ public class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
 
     List<MethodYield> yields = getMethodBehavior(sev, "myMethod").getValue().yields();
-    assertThat(yields).hasSize(3);
+    assertThat(yields).hasSize(4);
 
     List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(2);
+    assertThat(exceptionalYields).hasSize(3);
 
-    // implicit exception
-    Optional<MethodYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType == null).findFirst();
+    // runtime exception
+    Optional<MethodYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType == null).findFirst();
+    assertThat(runtimeException.isPresent()).isTrue();
+    MethodYield runtimeExceptionYield = runtimeException.get();
+    assertThat(runtimeExceptionYield.resultIndex).isEqualTo(-1);
+    assertThat(runtimeExceptionYield.resultConstraint).isNull();
+    assertThat(runtimeExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.FALSE);
+
+    // exception from other method call
+    Optional<MethodYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException2")).findFirst();
     assertThat(implicitException.isPresent()).isTrue();
     MethodYield implicitExceptionYield = implicitException.get();
     assertThat(implicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(implicitExceptionYield.resultConstraint).isNull();
     assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.FALSE);
 
-    // explicit exception
-    Optional<MethodYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null).findFirst();
+    // explicitly thrown exception
+    Optional<MethodYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException1")).findFirst();
     assertThat(explicitException.isPresent()).isTrue();
     MethodYield explicitExceptionYield = explicitException.get();
     assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
     assertThat(explicitExceptionYield.resultConstraint).isNull();
     assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.TRUE);
-    assertThat(explicitExceptionYield.exceptionType.is("org.foo.MyException1")).isTrue();
   }
 
   @Test
