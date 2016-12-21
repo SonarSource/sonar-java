@@ -130,12 +130,10 @@ public class FlowComputation {
       .findFirst();
     if (learnedValue.isPresent()) {
       ExplodedGraph.Node.LearnedValue lv = learnedValue.get();
-      Constraint constraintForSV = parent.programState.getConstraint(lv.getSv());
-      if (constraintForSV == null) {
-        flow.add(location(parent));
-      } else {
-        flow.add(location(parent, lv.getSymbol().name() + " is assigned " + constraintForSV.valueAsString()));
-      }
+      Constraint constraint = parent.programState.getConstraint(lv.getSv());
+      JavaFileScannerContext.Location location = constraint == null ? location(parent) :
+        location(parent, lv.getSymbol().name() + " is assigned " + constraint.valueAsString());
+      flow.add(location);
       return parent.programState.getLastEvaluated();
     }
     return trackSymbol;

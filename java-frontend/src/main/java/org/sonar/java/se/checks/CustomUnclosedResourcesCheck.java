@@ -48,7 +48,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   }
 
-  //these fields can not be static, because we need different status instance for every instantiation of this rule (template rule) see SONARJAVA-1624
+  //see SONARJAVA-1624 fields cannot be static, different instances are needed for every instance of this template rule
   private final ResourceStatus OPENED = new ResourceStatus();
   private final ResourceStatus CLOSED = new ResourceStatus();
 

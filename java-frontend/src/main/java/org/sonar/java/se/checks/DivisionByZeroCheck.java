@@ -49,7 +49,7 @@ public class DivisionByZeroCheck extends SECheck {
     ZERO {
       @Override
       public String valueAsString() {
-        return "zero value";
+        return "zero";
       }
     },
     NON_ZERO,
