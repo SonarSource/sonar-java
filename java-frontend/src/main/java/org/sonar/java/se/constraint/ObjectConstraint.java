@@ -26,7 +26,9 @@ import java.util.function.Predicate;
 public class ObjectConstraint<S extends ObjectConstraint.Status> implements Constraint {
 
   public interface Status {
-
+    default String valueAsString() {
+      return "";
+    }
   }
 
   private static final ObjectConstraint<Status> NOT_NULL = new ObjectConstraint<>(false, true, null);
@@ -69,7 +71,10 @@ public class ObjectConstraint<S extends ObjectConstraint.Status> implements Cons
 
   @Override
   public String valueAsString() {
-    return isNull ? "null" : String.valueOf(status);
+    if (isNull) {
+      return "null";
+    }
+    return status == null ? "" : status.valueAsString();
   }
 
   public boolean isInvalidWith(@Nullable Constraint target) {

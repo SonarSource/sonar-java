@@ -46,7 +46,14 @@ import java.util.List;
 public class DivisionByZeroCheck extends SECheck {
 
   private enum DivByZeroStatus implements ObjectConstraint.Status {
-    ZERO, NON_ZERO, UNDETERMINED;
+    ZERO {
+      @Override
+      public String valueAsString() {
+        return "zero value";
+      }
+    },
+    NON_ZERO,
+    UNDETERMINED
   }
 
   /**
