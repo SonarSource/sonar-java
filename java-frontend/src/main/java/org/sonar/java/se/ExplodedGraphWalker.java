@@ -584,6 +584,10 @@ public class ExplodedGraphWalker {
     if(declaration != null) {
       methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
     }
+
+    // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
+    enqueueUncheckedExceptionalPaths();
+
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
@@ -592,20 +596,18 @@ public class ExplodedGraphWalker {
       Map<Type, SymbolicValue.ExceptionalSymbolicValue> thrownExceptionsByExceptionType = new HashMap<>();
 
       // Enqueue exceptional paths from exceptional yields
-      methodInvokedBehavior.exceptionalPathYields().flatMap(yield -> yield.statesAfterInvocation(
-        invocationArguments,
-        invocationTypes,
-        programState,
-        () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue))
-      ).forEach(ps -> enqueueExceptionalPaths(ps.clearStack(), (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue()));
-
-      // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
-      enqueueUncheckedExceptionalPaths();
+      methodInvokedBehavior.exceptionalPathYields()
+        .flatMap(yield -> yield.statesAfterInvocation(
+          invocationArguments,
+          invocationTypes,
+          programState,
+          () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue)))
+        .forEach(ps -> enqueueExceptionalPaths(ps.clearStack(), (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue()));
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
         .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue))
-        .map(psYield -> handleSpecialMethods(psYield, mit, methodSymbol))
+        .map(psYield -> handleSpecialMethods(psYield, mit))
         .forEach(psYield -> {
           checkerDispatcher.syntaxNode = mit;
           checkerDispatcher.addTransition(psYield);
@@ -615,18 +617,15 @@ public class ExplodedGraphWalker {
       // Enqueue exceptional paths from thrown exceptions
       enqueueThrownExceptionalPaths(methodSymbol);
 
-      // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
-      enqueueUncheckedExceptionalPaths();
-
       // Enqueue happy paths
-      programState = handleSpecialMethods(programState.stackValue(resultValue), mit, methodSymbol);
+      programState = handleSpecialMethods(programState.stackValue(resultValue), mit);
       checkerDispatcher.executeCheckPostStatement(mit);
       clearStack(mit);
     }
   }
 
-  private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit, Symbol methodSymbol) {
-    if (isNonNullMethod(methodSymbol)) {
+  private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
+    if (isNonNullMethod(mit.symbol())) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.notNull());
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager);
@@ -635,12 +634,14 @@ public class ExplodedGraphWalker {
   }
 
   private void enqueueThrownExceptionalPaths(Symbol symbol) {
-    if (symbol.isMethodSymbol()) {
-      ProgramState ps = programState.clearStack();
-      ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
-        .map(constraintManager::createExceptionalSymbolicValue)
-        .forEach(exceptionSV -> enqueueExceptionalPaths(ps, exceptionSV));
+    if (!symbol.isMethodSymbol()) {
+      // do nothing for unknown methods
+      return;
     }
+    ProgramState ps = programState.clearStack();
+    ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
+      .map(constraintManager::createExceptionalSymbolicValue)
+      .forEach(exceptionSV -> enqueueExceptionalPaths(ps, exceptionSV));
   }
 
   private void enqueueUncheckedExceptionalPaths() {
@@ -653,7 +654,7 @@ public class ExplodedGraphWalker {
 
     // only consider the first match, as order of catch block is important
     Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
-      .filter(b -> isValidCatchBlock(b, exceptionSV.exceptionType()))
+      .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
       .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
       .findFirst();
     if (firstMatchingCatchBlock.isPresent()) {
@@ -680,7 +681,7 @@ public class ExplodedGraphWalker {
       .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));
   }
 
-  private static boolean isValidCatchBlock(CFG.Block catchBlock, @Nullable Type thrownType) {
+  private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
     if (thrownType != null) {
       Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
       return thrownType.isSubtypeOf(caughtType);
