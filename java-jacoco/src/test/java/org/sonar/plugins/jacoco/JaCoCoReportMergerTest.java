@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import org.jacoco.core.data.ExecutionDataStore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,6 +29,7 @@ import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -68,6 +70,13 @@ public class JaCoCoReportMergerTest {
   @Test
   public void merge_same_format_should_not_fail() throws Exception {
     merge("jacoco-0.7.5.exec", "jacoco-it-0.7.5.exec");
+    File mergedReport = new File(testFolder.getRoot(), "dummy");
+    ExecutionDataVisitor edv = new ExecutionDataVisitor();
+    new JacocoReportReader(mergedReport).readJacocoReport(edv, edv);
+    for (Map.Entry<String, ExecutionDataStore> entry : edv.getSessions().entrySet()) {
+      // Verify that each sessions has kept only two elements and that they were not mangled: required for coverage per tests.
+      assertThat(entry.getValue().getContents()).hasSize(2);
+    }
   }
 
   @Test

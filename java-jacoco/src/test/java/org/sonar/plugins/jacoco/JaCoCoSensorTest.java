@@ -156,6 +156,19 @@ public class JaCoCoSensorTest {
   }
 
   @Test
+  public void test_read_execution_data_after_6_2_should_merge_reports() throws Exception {
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
+    String path1 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-0.7.5.exec").getPath();
+    String path2 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-it-0.7.5.exec").getPath();
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, path1+","+path2);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    sensor.execute(context);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+path1);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+path2);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+new File(context.fileSystem().workDir(), "jacoco-merged.exec").getAbsolutePath());
+  }
+
+  @Test
   public void should_execute_if_report_exists() {
     JacocoConfiguration configuration = mock(JacocoConfiguration.class);
     JaCoCoSensor sensor = new JaCoCoSensor(configuration, perspectives, context.fileSystem(), pathResolver, javaResourceLocator, javaClasspath);
