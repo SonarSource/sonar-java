@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -1468,4 +1467,10 @@ public class SymbolTableTest {
     assertThat(((WildCardType) param).bound.is("ISuiteListener")).isTrue();
   }
 
+  @Test
+  public void lambda_on_sam_interface_defining_object_methods() throws Exception {
+    Result result = Result.createFor("SAMResolution");
+    assertThat(((VariableTree) result.symbol("var").declaration()).initializer().symbolType().is("A$MySAM")).isTrue();
+    assertThat(((VariableTree) result.symbol("var2").declaration()).initializer().symbolType().is("A$MySAM2")).isTrue();
+  }
 }

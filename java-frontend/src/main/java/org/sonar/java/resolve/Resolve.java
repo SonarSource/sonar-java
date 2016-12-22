@@ -989,7 +989,11 @@ public class Resolve {
   public Optional<JavaSymbol.MethodJavaSymbol> getSamMethod(JavaType lambdaType) {
     for (Symbol member : lambdaType.symbol().memberSymbols()) {
       if (isAbstractMethod(member)) {
-        return Optional.of((JavaSymbol.MethodJavaSymbol) member);
+        JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) member;
+        boolean isObjectMethod = isObjectMethod(methodJavaSymbol);
+        if(!isObjectMethod) {
+          return Optional.of(methodJavaSymbol);
+        }
       }
     }
     for (ClassJavaType type : lambdaType.symbol.superTypes()) {
@@ -999,6 +1003,16 @@ public class Resolve {
       }
     }
     return Optional.empty();
+  }
+
+  private boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodJavaSymbol) {
+    JavaSymbol.MethodJavaSymbol overriddenSymbol = methodJavaSymbol.overriddenSymbol();
+    boolean isObjectMethod = false;
+    while (overriddenSymbol != null && !isObjectMethod) {
+      isObjectMethod = overriddenSymbol.owner.type == symbols.objectType;
+      overriddenSymbol = overriddenSymbol.overriddenSymbol();
+    }
+    return isObjectMethod;
   }
 
   private static boolean isAbstractMethod(Symbol member) {
