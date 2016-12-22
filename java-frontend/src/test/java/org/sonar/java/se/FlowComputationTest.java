@@ -17,11 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se;
 
 import org.junit.Test;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.List;
