@@ -1,5 +1,6 @@
 import java.lang.Deprecated;
 import org.junit.experimental.runners.Enclosed;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class A extends junit.framework.TestCase {
   void testFoo() {
@@ -89,4 +90,14 @@ public class MyNewTest { // should not raise an issue
 public class MyNewTest2 { // no issue
 }
 
-
+public class CTest {
+  @org.junit.jupiter.api.Test // no issue, junit5 annotation
+  public void testFoo() {
+    assertThat(new A().foo(null)).isEqualTo(0);
+  }
+}
+public class DTest { // Noncompliant {{Add some tests to this class.}}
+  public void testFoo() {
+    assertThat(new A().foo(null)).isEqualTo(0);
+  }
+}
