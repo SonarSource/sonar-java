@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
@@ -99,16 +100,19 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkJunit4AndAboveTestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
-    if (symbol.name().endsWith("Test") && !runWithEnclosedRunner(symbol)) {
+    if (symbol.name().endsWith("Test") && !runWithEnclosedOrCucumberRunner(symbol)) {
       checkMethods(className, members, true);
     }
   }
 
-  private static boolean runWithEnclosedRunner(JavaSymbol.TypeJavaSymbol symbol) {
+  private static boolean runWithEnclosedOrCucumberRunner(JavaSymbol.TypeJavaSymbol symbol) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if(annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      return value instanceof MemberSelectExpressionTree && ExpressionsHelper.concatenate((ExpressionTree) value).endsWith("Enclosed.class");
+      if (value instanceof MemberSelectExpressionTree) {
+        String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
+        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class");
+      }
     }
     return false;
   }

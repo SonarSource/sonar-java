@@ -1,5 +1,7 @@
 import java.lang.Deprecated;
 import org.junit.experimental.runners.Enclosed;
+import cucumber.api.junit.Cucumber;
+import org.junit.runner.RunWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class A extends junit.framework.TestCase {
@@ -86,8 +88,14 @@ class OtherTest extends BaseTest {
 @org.junit.runner.RunWith(org.junit.experimental.runners.Enclosed.class)
 public class MyNewTest { // should not raise an issue
 }
-@org.junit.runner.RunWith(Enclosed.class)
-public class MyNewTest2 { // no issue
+@RunWith(Enclosed.class)
+public class MyNew2Test { // no issue
+}
+@org.junit.runner.RunWith(cucumber.api.junit.Cucumber.class)
+public class MyCucumberTest { // should not raise an issue
+}
+@RunWith(Cucumber.class)
+public class MyCucumber2Test { // no issue
 }
 
 public class CTest {
