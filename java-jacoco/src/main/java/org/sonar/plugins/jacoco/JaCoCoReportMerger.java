@@ -24,13 +24,14 @@ import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
 import org.jacoco.core.data.ISessionInfoVisitor;
-import org.jacoco.core.data.SessionInfoStore;
+import org.jacoco.core.data.SessionInfo;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Utility class to merge JaCoCo reports.
@@ -48,9 +49,8 @@ public final class JaCoCoReportMerger {
    * @param reports files to be merged.
    */
   public static void mergeReports(File reportOverall, File... reports) {
-    SessionInfoStore infoStore = new SessionInfoStore();
-    ExecutionDataStore dataStore = new ExecutionDataStore();
-    boolean isCurrentVersionFormat = loadSourceFiles(infoStore, dataStore, reports);
+    ExecutionDataVisitor edv = new ExecutionDataVisitor();
+    boolean isCurrentVersionFormat = loadSourceFiles(edv, reports);
 
     try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(reportOverall))) {
       Object visitor;
@@ -59,18 +59,21 @@ public final class JaCoCoReportMerger {
       } else {
         visitor = new org.jacoco.previous.core.data.ExecutionDataWriter(outputStream);
       }
-      infoStore.accept((ISessionInfoVisitor) visitor);
-      dataStore.accept((IExecutionDataVisitor) visitor);
+      for (Map.Entry<String, ExecutionDataStore> entry : edv.getSessions().entrySet()) {
+        SessionInfo sessionInfo = new SessionInfo(entry.getKey(), 0, 0);
+        ((ISessionInfoVisitor) visitor).visitSessionInfo(sessionInfo);
+        entry.getValue().accept((IExecutionDataVisitor) visitor);
+      }
     } catch (IOException e) {
       throw new AnalysisException(String.format("Unable to write overall coverage report %s", reportOverall.getAbsolutePath()), e);
     }
   }
 
-  private static boolean loadSourceFiles(ISessionInfoVisitor infoStore, IExecutionDataVisitor dataStore, File... reports) {
+  private static boolean loadSourceFiles(ExecutionDataVisitor executionDataVisitor, File... reports) {
     Boolean isCurrentVersionFormat = null;
     for (File report : reports) {
       if (report.isFile()) {
-        JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(dataStore, infoStore);
+        JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(executionDataVisitor, executionDataVisitor);
         boolean reportFormatIsCurrent = jacocoReportReader.useCurrentBinaryFormat();
         if (isCurrentVersionFormat == null) {
           isCurrentVersionFormat = reportFormatIsCurrent;

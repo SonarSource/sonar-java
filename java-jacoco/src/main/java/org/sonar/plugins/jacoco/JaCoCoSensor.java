@@ -76,9 +76,14 @@ public class JaCoCoSensor implements Sensor {
         return;
       }
       // Merge JaCoCo reports
-      File reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
-      reportMerged.getParentFile().mkdirs();
-      JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
+      File reportMerged;
+      if(reportPaths.size() == 1) {
+        reportMerged = reportPaths.iterator().next();
+      } else {
+        reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
+        reportMerged.getParentFile().mkdirs();
+        JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
+      }
       new UnitTestsAnalyzer(reportMerged).analyse(context);
     } else {
       // JaCoCo analysis for SQ prior to 6.2
