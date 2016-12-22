@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
@@ -71,7 +70,7 @@ public class FlowComputation {
       flowComputation.flow.addAll(binSVFlow);
     }
     flowComputation.run(currentNode, trackSymbol);
-    return Lists.reverse(flowComputation.flow);
+    return flowComputation.flow;
   }
 
   private Set<JavaFileScannerContext.Location> flowFromBinarySV(ExplodedGraph.Node currentNode, BinarySymbolicValue binarySV, Symbol trackSymbol) {

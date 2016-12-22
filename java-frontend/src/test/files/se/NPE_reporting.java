@@ -32,8 +32,8 @@ class A {
   }
 
   void relationshipLearning(Object a) {
-    if (a == null) { // flow@rela [[order=1]] {{...}}
-      a.toString(); // Noncompliant [[flows=rela]] flow@rela [[order=2]] {{a is dereferenced}}
+    if (a == null) { // flow@rela [[order=2]] {{...}}
+      a.toString(); // Noncompliant [[flows=rela]] flow@rela [[order=1]] {{a is dereferenced}}
     }
   }
 
@@ -90,12 +90,12 @@ class A {
   }
 
   public void order() {
-    String foo = getFoo();  // flow@ord [[order=2]] {{foo is assigned null}} flow@ord [[order=1]] {{...}}
+    String foo = getFoo();  // flow@ord [[order=3]] {{foo is assigned null}} flow@ord [[order=4]] {{...}}
     String bar = foo;
     boolean cond = (bar == null);
 
-    if (cond) {                     // flow@ord [[order=3]]
-      foo.toCharArray();            // Noncompliant [[flows=ord]] flow@ord [[order=4]]
+    if (cond) {                     // flow@ord [[order=2]]
+      foo.toCharArray();            // Noncompliant [[flows=ord]] flow@ord [[order=1]]
     }
   }
 }

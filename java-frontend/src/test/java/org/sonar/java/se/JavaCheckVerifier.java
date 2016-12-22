@@ -205,6 +205,7 @@ public class JavaCheckVerifier {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
     Multimap<Integer, Expectations.Issue> expected = expectations.issues;
+    expectations.reverseFlows(); // platform expects the flows in reversed order compared to the order they appear in the file
     for (AnalyzerMessage issue : issues) {
       validateIssue(expected, unexpectedLines, issue);
     }
