@@ -1,3 +1,4 @@
+package foo.bar;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.common.collect.ImmutableMap;
@@ -6,9 +7,10 @@ import java.awt.ActiveEvent;
 import java.nio.charset.Charset;
 import B;
 import java.util.List1;
-
+;
 class A {
-
+  foo.bar.A field; // Noncompliant
+  ;
   void notWildcardImport() {
     com.google.common.collect.ImmutableList list;      // Noncompliant
     com.google.common.collect.ImmutableList.Builder<Object> builder =  // Noncompliant [[startColumn=5;endColumn=44]]
@@ -29,3 +31,4 @@ class A {
     java.nio.charset.Charset.defaultCharset().name(); // Noncompliant
   }
 }
+;

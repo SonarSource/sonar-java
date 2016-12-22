@@ -1,9 +1,9 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/activity/index/ActivityIndexer.java':[
-52,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/DbClient.java':[
 259,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/SelectImpl.java':[
+95,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java':[
 67,

@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class StrutsTest {
@@ -90,7 +90,6 @@ public class StrutsTest {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
-    assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
     assertThat(metrics.get("statements").intValue()).isEqualTo(6403 /* empty statements between members of class */+ 3);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);

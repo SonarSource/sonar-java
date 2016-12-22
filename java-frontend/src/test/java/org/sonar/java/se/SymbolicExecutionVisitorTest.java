@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -100,18 +100,19 @@ public class SymbolicExecutionVisitorTest {
     assertThat(sev.behaviorCache.entrySet()).hasSize(3);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
-    assertThat(foo.yields()).hasSize(3);
+    assertThat(foo.yields()).hasSize(4);
     assertThat(foo.yields().stream().filter(y -> !y.exception).count()).isEqualTo(2);
-    assertThat(foo.yields().stream().filter(y -> y.exception).count()).isEqualTo(1);
+    assertThat(foo.yields().stream().filter(y -> y.exception).count()).isEqualTo(2);
 
     MethodBehavior qix = getMethodBehavior(sev, "qix");
     List<MethodYield> qixYield = qix.yields();
     assertThat(qixYield.stream()
       .filter(y -> !y.parametersConstraints[0].isNull())
       .allMatch(y -> y.exception)).isTrue();
+
     assertThat(qixYield.stream()
       .filter(y -> y.parametersConstraints[0].isNull() && y.exception)
-      .count()).isEqualTo(1);
+      .count()).isEqualTo(2);
 
     assertThat(qixYield.stream()
       .filter(y -> !y.exception)
@@ -129,10 +130,17 @@ public class SymbolicExecutionVisitorTest {
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
     List<MethodYield> yields = sev.behaviorCache.values().iterator().next().yields();
-    assertThat(yields).hasSize(3);
+    assertThat(yields).hasSize(5);
     yields.stream().map(y -> y.resultConstraint).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
     assertThat(yields.stream().filter(y -> !y.exception).count()).isEqualTo(2);
-    assertThat(yields.stream().filter(y -> y.exception).count()).isEqualTo(1);
+    List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(3);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType == null)).hasSize(1);
+    // exception thrown by System.getProperty()
+    assertThat(exceptionalYields.stream()
+      .filter(y -> y.exceptionType != null)
+      .map(y -> y.exceptionType.fullyQualifiedName()))
+        .containsOnly("java.lang.SecurityException", "java.lang.IllegalArgumentException");
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {

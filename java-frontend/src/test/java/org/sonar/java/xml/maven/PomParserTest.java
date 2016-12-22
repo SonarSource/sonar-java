@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PomParserTest {
   private static final File UNRELATED_XML_FILE = new File("src/test/files/xml/parsing.xml");

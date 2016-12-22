@@ -179,6 +179,7 @@ public class ProgramState {
     ProgramState that = (ProgramState) o;
     return Objects.equals(values, that.values) &&
       Objects.equals(constraints, that.constraints) &&
+      Objects.equals(exitSymbolicValue, that.exitSymbolicValue) &&
       Objects.equals(peekValue(), that.peekValue());
   }
 
@@ -393,7 +394,7 @@ public class ProgramState {
   }
 
   @CheckForNull
-  public ObjectConstraint getConstraintWithStatus(SymbolicValue value, Object aState) {
+  public <S extends ObjectConstraint.Status> ObjectConstraint<S> getConstraintWithStatus(SymbolicValue value, S aState) {
     final Object constraint = getConstraint(value.wrappedValue());
     if (constraint instanceof ObjectConstraint) {
       ObjectConstraint oConstraint = (ObjectConstraint) constraint;
@@ -411,5 +412,9 @@ public class ProgramState {
   @CheckForNull
   public SymbolicValue exitValue() {
     return this.exitSymbolicValue;
+  }
+
+  public boolean exitingOnRuntimeException() {
+    return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
   }
 }

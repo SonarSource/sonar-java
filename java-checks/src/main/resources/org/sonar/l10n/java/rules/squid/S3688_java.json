@@ -1,9 +1,9 @@
 {
-  "title": "Disallowed classes should not be used",
+  "title": "Track uses of disallowed classes",
   "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
-
+    
   ],
   "defaultSeverity": "Info"
 }

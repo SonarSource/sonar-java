@@ -22,6 +22,7 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -67,6 +68,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -75,6 +77,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class CFG {
 
@@ -112,7 +115,7 @@ public class CFG {
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
 
-  private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
+  private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
@@ -120,7 +123,7 @@ public class CFG {
     outerTry.successorBlock = exitBlocks.peek();
     enclosingTry.add(outerTry);
     enclosedByCatch.push(false);
-    build(tree.body());
+    build(trees);
     prune();
     computePredecessors(blocks);
   }
@@ -146,6 +149,7 @@ public class CFG {
   }
 
   public static class Block {
+    public static final Predicate<Block> IS_CATCH_BLOCK = Block::isCatchBlock;
     private int id;
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new LinkedHashSet<>();
@@ -331,11 +335,13 @@ public class CFG {
     blocks.add(result);
     return result;
   }
-
+  public static CFG buildCFG(List<? extends Tree> trees) {
+    return new CFG(trees, null);
+  }
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block, tree.symbol());
+    return new CFG(block.body(), tree.symbol());
   }
 
   private void build(ListTree<? extends Tree> trees) {
@@ -813,13 +819,13 @@ public class CFG {
     tryStatement.successorBlock = finallyOrEndBlock;
     enclosingTry.push(tryStatement);
     enclosedByCatch.push(false);
-    for (CatchTree catchTree : tryStatementTree.catches()) {
+    for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
-      currentBlock.isCatchBlock = true;
       if (!catchTree.block().body().isEmpty()) {
         enclosedByCatch.push(true);
         build(catchTree.block());
         buildVariable(catchTree.parameter());
+        currentBlock.isCatchBlock = true;
         enclosedByCatch.pop();
       }
       tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
@@ -897,7 +903,6 @@ public class CFG {
         for (Type caughtType : tryStatement.catches.keySet()) {
           if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
             currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
-            break;
           }
         }
       });

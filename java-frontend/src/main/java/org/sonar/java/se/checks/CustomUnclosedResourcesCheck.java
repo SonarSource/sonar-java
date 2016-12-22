@@ -38,20 +38,19 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3546")
 @RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
 
-  class Status {
-    Object OPENED = new Object();
-    Object CLOSED = new Object();
+  static class ResourceStatus implements ObjectConstraint.Status {
+
   }
 
-  private final Status status = new Status();
-
+  //see SONARJAVA-1624 fields cannot be static, different instances are needed for every instance of this template rule
+  private final ResourceStatus OPENED = new ResourceStatus();
+  private final ResourceStatus CLOSED = new ResourceStatus();
 
   @RuleProperty(
     key = "constructor",
@@ -101,23 +100,31 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(status.OPENED).keySet()
+    context.getState().getValuesWithConstraints(OPENED).keySet()
       .forEach(sv -> processUnclosedSymbolicValue(node, sv));
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(status.OPENED));
-    flow.stream()
-      .filter(loc -> loc.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
-      .findFirst()
-      .ifPresent(loc -> reportIssue(loc.syntaxNode, String.format("Close this \"%s\".", name(loc.syntaxNode)), Collections.emptySet()));
+    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(OPENED)).stream()
+      .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
+      .forEach(this::reportIssue);
+  }
+
+  private void reportIssue(JavaFileScannerContext.Location location) {
+    String message = "Close this \"" + name(location.syntaxNode) + "\".";
+    String flowMessage = name(location.syntaxNode) +  " is never closed";
+    reportIssue(location.syntaxNode, message, FlowComputation.singleton(flowMessage, location.syntaxNode));
   }
 
   private static String name(Tree tree) {
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       return ((NewClassTree) tree).symbolType().name();
     }
-    return ((MethodInvocationTree) tree).symbolType().name();
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (mit.symbolType().isVoid()) {
+      return mit.symbol().owner().name();
+    }
+    return mit.symbolType().name();
   }
 
   private static MethodMatcherCollection createMethodMatchers(String rule) {
@@ -136,15 +143,15 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     protected void closeResource(@Nullable SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, status.OPENED);
+        ObjectConstraint<ResourceStatus> oConstraint = programState.getConstraintWithStatus(target, OPENED);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(status.CLOSED));
+          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(CLOSED));
         }
       }
     }
 
     protected void openResource(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, status.OPENED));
+      programState = programState.addConstraint(sv, new ObjectConstraint<>(false, false, OPENED));
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {

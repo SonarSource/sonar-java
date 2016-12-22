@@ -2,8 +2,8 @@
 instead contravenes the method's implicit contract.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public override string ToString () {
-  if (this.collection.Count == 0) {
+public String toString () {
+  if (this.collection.isEmpty()) {
     return null; // Noncompliant
   } else {
     // ...
@@ -11,12 +11,11 @@ public override string ToString () {
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-public override string ToString () {
-  if (this.collection.Count == 0) {
+public String toString () {
+  if (this.collection.isEmpty()) {
     return "";
   } else {
     // ...
- {code}
 </pre>
 <h2>See</h2>
 <ul>

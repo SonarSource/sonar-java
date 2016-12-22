@@ -74,7 +74,7 @@ public class JaCoCoItSensor implements Sensor {
 
   class ITAnalyzer extends AbstractAnalyzer {
     public ITAnalyzer() {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
+      super(perspectives, javaResourceLocator, javaClasspath);
     }
 
     @Override
@@ -83,8 +83,8 @@ public class JaCoCoItSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath() {
-      return configuration.getItReportPath();
+    protected File getReport() {
+      return pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
     }
   }
 

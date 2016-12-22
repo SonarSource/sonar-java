@@ -20,12 +20,12 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymbolsTest {
 
@@ -132,7 +132,7 @@ public class SymbolsTest {
     assertThat(symbols.getPrimitiveFromDescriptor('V')).isSameAs(symbols.voidType);
     try {
       symbols.getPrimitiveFromDescriptor('P');
-      Fail.failure("should have thrown an exception");
+      Fail.fail("should have thrown an exception");
     }catch (IllegalStateException ise) {
       assertThat(ise.getMessage()).contains("'P'");
     }

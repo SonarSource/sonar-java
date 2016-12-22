@@ -17,12 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 import com.google.common.base.Preconditions;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.SonarRunner;
 import com.sonar.orchestrator.locator.FileLocation;
-import org.fest.assertions.Delta;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 public class JavaPerformanceTest {
 
@@ -63,7 +64,7 @@ public class JavaPerformanceTest {
     double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
 
     double expected = 170;
-    assertThat(time).isEqualTo(expected, Delta.delta(expected * 0.04));
+    assertThat(time).isEqualTo(expected, offset(expected * 0.04));
   }
 
   private static double sensorTime(File projectDir, String logs, String sensor) throws IOException {

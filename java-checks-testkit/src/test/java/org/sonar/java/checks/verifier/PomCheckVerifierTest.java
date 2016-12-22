@@ -20,7 +20,7 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.maven.PomCheck;
@@ -28,7 +28,7 @@ import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.maven.model.maven2.Dependency;
 import org.sonar.maven.model.maven2.MavenProject;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PomCheckVerifierTest {
   private static final String POM_WITH_ISSUES = "src/test/files/xml/PomCheckVerifier.xml";
@@ -159,7 +159,7 @@ public class PomCheckVerifierTest {
           // do nothing
         }
       });
-      Fail.fail();
+      Fail.fail("");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("At least one issue expected");
     }
@@ -177,7 +177,7 @@ public class PomCheckVerifierTest {
           context.reportIssue(this, 41, "extraMessage");
         }
       });
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [41]");
     }

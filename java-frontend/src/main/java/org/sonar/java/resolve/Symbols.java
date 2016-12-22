@@ -208,6 +208,11 @@ public class Symbols {
     arrayClass.members().enter(new JavaSymbol.VariableJavaSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
     // TODO arrayClass implements clone() method
 
+    // java.lang.Synthetic is a virtual annotation added by ASM to workaround a bug in javac on inner classes parameter numbers.
+    // Predefining this type avoids to look it up in classpath where it will not be found. We rely on this to detect synthetic parameters on some enum constructor for instance.
+    JavaSymbol.TypeJavaSymbol syntheticAnnotation = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC | Flags.ANNOTATION, "Synthetic", javalang);
+    javalang.members.enter(syntheticAnnotation);
+    bytecodeCompleter.registerClass(syntheticAnnotation);
     enterOperators();
   }
 

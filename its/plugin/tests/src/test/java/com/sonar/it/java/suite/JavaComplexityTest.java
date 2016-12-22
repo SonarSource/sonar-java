@@ -36,7 +36,7 @@ import org.sonar.wsclient.services.ResourceQuery;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaComplexityTest {
 

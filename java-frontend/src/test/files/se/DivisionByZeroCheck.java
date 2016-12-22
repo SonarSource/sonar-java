@@ -1,8 +1,8 @@
 class A {
   void foo(int r) {
-    int z1 = 0;
-    int z2 = z1;
-    r = 1 / z2; // Noncompliant {{Make sure 'z2' can't be zero before doing this division.}}
+    int z1 = 0; // flow@foo {{z1 is assigned zero}} flow@foo {{...}}
+    int z2 = z1; // flow@foo {{z2 is assigned zero}}
+    r = 1 / z2; // Noncompliant [[flows=foo]] {{Make sure 'z2' can't be zero before doing this division.}} flow@foo {{z2 is divided by zero}}
   }
 
   void roo(int r) {
@@ -12,7 +12,7 @@ class A {
   }
 
   void boo(int r) {
-    r = 1 / '\0'; // Noncompliant [[sc=13;ec=17]] {{Make sure this expression can't be zero before doing this division.}}
+    r = 1 / '\0'; // Noncompliant [[sc=13;ec=17;flows=boo]] {{Make sure this expression can't be zero before doing this division.}} flow@boo {{this expression contains division by zero}} flow@boo {{...}}
   }
 
   void choo(int r) {
@@ -27,7 +27,7 @@ class A {
   }
 
   void goo(int r) {
-    r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
+    r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27;flows=goo]] {{Make sure this expression can't be zero before doing this division.}} flow@goo {{this expression contains division by zero}} flow@goo {{...}}
   }
 
   void moo(int r) {

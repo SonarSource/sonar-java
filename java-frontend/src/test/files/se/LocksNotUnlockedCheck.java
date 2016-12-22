@@ -9,7 +9,7 @@ public class MyClass {
 
   public void acquireLock() {
     Lock local = new ReentrantLock();
-    local.lock();  // Noncompliant  {{Unlock this lock along all executions paths of this method.}}
+    local.lock();  // Noncompliant [[flows=acquire]] {{Unlock this lock along all executions paths of this method.}} flow@acquire {{Lock 'local' is never unlocked}}
     l1.lock();
   }
 
@@ -28,7 +28,7 @@ public class MyClass {
 
   public void unrelatedMethod() {
     Lock lock = new ReentrantLock();
-    lock.lock(); // Noncompliant
+    lock.lock(); // Noncompliant [[flows=unrelated]] {{Unlock this lock along all executions paths of this method.}} flow@unrelated {{Lock 'lock' is never unlocked}}
     lock.toString();
   }
 
@@ -49,26 +49,28 @@ public class MyClass {
   public void multipleLockState() {
     Lock lock = new ReentrantLock();
     if(foo) {
-      lock.lock();// Noncompliant
+      lock.lock();// Noncompliant [[flows=multiple1]] {{Unlock this lock along all executions paths of this method.}} flow@multiple1 {{Lock 'lock' is never unlocked}}
     } else {
-      lock.lock();// Noncompliant
+      lock.lock();// Noncompliant [[flows=multiple2]] {{Unlock this lock along all executions paths of this method.}} flow@multiple2 {{Lock 'lock' is never unlocked}}
     }
   }
 
   public void doTheOtherThing() {
     Lock lock = new ReentrantLock();
     try {
-      lock.tryLock();  // Noncompliant
-      // do work...
+      lock.tryLock();  // Noncompliant [[flows=doOther]] {{Unlock this lock along all executions paths of this method.}} flow@doOther {{Lock 'lock' is never unlocked}}
+      doSomething();
       lock.unlock(); // an exception will keep this line from being reached
-    } catch (ExceptionType e) {
+    } catch (Exception e) {
       // ...
     }
   }
 
+  abstract void doSomething() throws Exception;
+
   public void reassigned_lock() {
     Lock lock = new ReentrantLock();
-    lock.tryLock(); // Noncompliant
+    lock.tryLock(); // Noncompliant [[flows=reassigned]] {{Unlock this lock along all executions paths of this method.}} flow@reassigned {{Lock 'lock' is never unlocked}}
     lock = new ReentrantLock();
     lock.lock();
     lock.unlock();
@@ -97,9 +99,9 @@ public class MyClass {
 
   public void if_statement_missing() {
     Lock lock = new ReentrantLock();
-    lock.lock(); // Noncompliant
+    lock.lock(); // Noncompliant [[flows=ifMissing]] {{Unlock this lock along all executions paths of this method.}} flow@ifMissing {{Lock 'lock' is never unlocked}}
     if(a) {
-      //lock not unlocked.
+      //lock never unlocked.
     } else {
       lock.unlock();
     }
@@ -107,7 +109,7 @@ public class MyClass {
 
   public void if_statement_overwrite() {
     Lock l1 = new ReentrantLock();
-    l1.lock(); // Noncompliant
+    l1.lock(); // Noncompliant [[flows=ifOverwrite]] {{Unlock this lock along all executions paths of this method.}} flow@ifOverwrite {{Lock 'l1' is never unlocked}}
     if(a){
       l1 = new ReentrantLock();
     } else {
@@ -117,7 +119,7 @@ public class MyClass {
 
   public void switch_statement() {
     Lock lock = new ReentrantLock();
-    lock.tryLock(); // Noncompliant
+    lock.tryLock(); // Noncompliant [[flows=switch]] {{Unlock this lock along all executions paths of this method.}} flow@switch {{Lock 'lock' is never unlocked}}
     switch (foo) {
       case 0:
         System.out.println("");
@@ -137,7 +139,7 @@ public class MyClass {
         lock.unlock();
     }
     lock = new ReentrantLock();
-    lock.tryLock(); // Noncompliant
+    lock.tryLock(); // Noncompliant [[flows=switch2]] {{Unlock this lock along all executions paths of this method.}} flow@switch2 {{Lock 'lock' is never unlocked}}
     switch (foo) {
       case 0:
         System.out.println("");
@@ -161,7 +163,7 @@ public class MyClass {
     }
     lock = new ReentrantLock();
     try {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=try]] {{Unlock this lock along all executions paths of this method.}} flow@try {{Lock 'lock' is never unlocked}}
     } catch (MyException e) {
       lock.unlock();
     } catch (MyOtherException e) {
@@ -169,7 +171,7 @@ public class MyClass {
     }
     lock = new ReentrantLock();
     try {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=try2]] {{Unlock this lock along all executions paths of this method.}} flow@try2 {{Lock 'lock' is never unlocked}}
     } catch (MyException e) {
     } catch (MyOtherException e) {
       lock.unlock();
@@ -190,7 +192,7 @@ public class MyClass {
     }
     lock.unlock();
     while (foo) {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=while]] {{Unlock this lock along all executions paths of this method.}} flow@while {{Lock 'lock' is never unlocked}}
       lock =  new ReentrantLock();
     }
     lock.unlock();
@@ -210,7 +212,7 @@ public class MyClass {
     } while (foo);
     lock.unlock();
     do {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=doWhile]] {{Unlock this lock along all executions paths of this method.}} flow@doWhile {{Lock 'lock' is never unlocked}}
       lock =  new ReentrantLock();
     } while (foo);
     lock.unlock();
@@ -219,13 +221,13 @@ public class MyClass {
   public void for_statement() {
     Lock lock = new ReentrantLock();
     for (int i = 0; i <10; i++) {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=for]] {{Unlock this lock along all executions paths of this method.}} flow@for {{Lock 'lock' is never unlocked}}
       lock =  new ReentrantLock();
     }
     lock.unlock();
 
     for (Foo foo : foos) {
-      lock.tryLock(); // Noncompliant
+      lock.tryLock(); // Noncompliant [[flows=foreach]] {{Unlock this lock along all executions paths of this method.}} flow@foreach {{Lock 'lock' is never unlocked}}
       lock =  new ReentrantLock();
     }
     lock.unlock();
@@ -234,7 +236,7 @@ public class MyClass {
   public void unlockingInTryCatch() {
     Lock lock = new ReentrantLock();
     try {
-      lock.lock(); // Noncompliant
+      lock.lock(); // Noncompliant [[flows=unlocking]] {{Unlock this lock along all executions paths of this method.}} flow@unlocking {{Lock 'lock' is never unlocked}}
     } finally {
       try {
         lock.unlock();
@@ -247,7 +249,7 @@ public class MyClass {
   public void unlockingInTryCatchButMissed() {
     Lock lock = new ReentrantLock();
     try {
-      lock.lock(); // Noncompliant
+      lock.lock(); // Noncompliant [[flows=unlockingTry]] {{Unlock this lock along all executions paths of this method.}} flow@unlockingTry {{Lock 'lock' is never unlocked}}
     } finally {
       try {
         lock.unlock();

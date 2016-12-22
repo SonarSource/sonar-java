@@ -28,13 +28,11 @@ import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
@@ -43,7 +41,6 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,8 +51,6 @@ import java.util.Map;
 public abstract class AbstractAnalyzer {
 
   private final ResourcePerspectives perspectives;
-  private final FileSystem fileSystem;
-  private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final boolean readCoveragePerTests;
 
@@ -63,16 +58,12 @@ public abstract class AbstractAnalyzer {
   private JavaClasspath javaClasspath;
   private JacocoReportReader jacocoReportReader;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
-    JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
-    this(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, true);
+  public AbstractAnalyzer(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+    this(perspectives, javaResourceLocator, javaClasspath, true);
   }
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, FileSystem fileSystem,
-    PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
+  public AbstractAnalyzer(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
-    this.fileSystem = fileSystem;
-    this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
     this.readCoveragePerTests = readCoveragePerTests;
     this.javaClasspath = javaClasspath;
@@ -107,9 +98,7 @@ public abstract class AbstractAnalyzer {
       JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no class files.");
       return;
     }
-    String path = getReportPath();
-    File jacocoExecutionData = pathResolver.relativeFile(fileSystem.baseDir(), path);
-
+    File jacocoExecutionData = getReport();
     readExecutionData(jacocoExecutionData, context);
 
     classFilesCache = null;
@@ -276,6 +265,6 @@ public abstract class AbstractAnalyzer {
 
   protected abstract CoverageType coverageType();
 
-  protected abstract String getReportPath();
+  protected abstract File getReport();
 
 }

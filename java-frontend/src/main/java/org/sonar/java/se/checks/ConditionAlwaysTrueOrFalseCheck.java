@@ -26,11 +26,15 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Rule(key = "S2583")
@@ -48,12 +52,22 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
     EvaluatedConditions ec = evaluatedConditions.pop();
     for (Tree condition : Sets.difference(ec.evaluatedToFalse.keySet(), ec.evaluatedToTrue.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"",
-        ec.evaluatedToFalse.get(condition).stream().map(node -> FlowComputation.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
+        collectFlow(ec.evaluatedToFalse.get(condition), false));
     }
     for (Tree condition : Sets.difference(ec.evaluatedToTrue.keySet(), ec.evaluatedToFalse.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"",
-        ec.evaluatedToTrue.get(condition).stream().map(node -> FlowComputation.flow(node.parent(), node.programState.peekValue())).collect(Collectors.toSet()));
+        collectFlow(ec.evaluatedToTrue.get(condition), true));
     }
+  }
+
+  private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes, boolean conditionIsAlwaysTrue) {
+    return nodes.stream().map(node -> flowFromNode(node, conditionIsAlwaysTrue)).collect(Collectors.toSet());
+  }
+
+  private static List<JavaFileScannerContext.Location> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue());
+    flow.add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue, node.programPoint.syntaxTree()));
+    return flow;
   }
 
   public void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {

@@ -29,7 +29,8 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import no.finn.lambdacompanion.Try;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Fail;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -236,9 +237,7 @@ public class JavaRulingTest {
 
   private static void assertNoDifferences(String projectName) throws IOException {
     String differences = new String(Files.readAllBytes(Paths.get(litsDifferencesPath(projectName))), StandardCharsets.UTF_8);
-    if (!differences.isEmpty()) {
-      throw Fail.fail(differences + " -> file://" + htmlReportPath(projectName) + "/issues-report.html");
-    }
+    Assertions.assertThat(differences).overridingErrorMessage(differences + " -> file://" + htmlReportPath(projectName) + "/issues-report.html").isEmpty();
   }
 
   private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params, Set<String> activatedRuleKeys) {

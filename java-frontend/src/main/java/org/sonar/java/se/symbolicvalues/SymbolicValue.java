@@ -31,9 +31,11 @@ import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SymbolicValue {
 
@@ -191,20 +193,33 @@ public class SymbolicValue {
   }
 
   public static class ExceptionalSymbolicValue extends SymbolicValue {
+    @Nullable
     private final Type exceptionType;
 
-    public ExceptionalSymbolicValue(int id, Type exceptionType) {
+    public ExceptionalSymbolicValue(int id, @Nullable Type exceptionType) {
       super(id);
       this.exceptionType = exceptionType;
     }
 
+    @CheckForNull
     public Type exceptionType() {
       return exceptionType;
     }
 
     @Override
     public String toString() {
-      return super.toString() + "_" + exceptionType.fullyQualifiedName() + "!";
+      return super.toString() + "_" + (exceptionType == null ? "!unknownException" : exceptionType.fullyQualifiedName()) + "!";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      return Objects.equals(exceptionType, ((ExceptionalSymbolicValue) o).exceptionType);
     }
   }
 
@@ -239,7 +254,7 @@ public class SymbolicValue {
           return ImmutableList.of();
         }
         // if instanceof is true then we know for sure that expression is not null.
-        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.NOT_NULL);
+        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.notNull());
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.

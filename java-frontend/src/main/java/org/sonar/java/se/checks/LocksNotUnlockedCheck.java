@@ -29,19 +29,19 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2222")
 public class LocksNotUnlockedCheck extends SECheck {
 
-  private enum Status {
+  private enum LockStatus implements ObjectConstraint.Status {
     LOCKED, UNLOCKED;
   }
 
@@ -67,9 +67,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(false, false, Status.LOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint<>(false, false, LockStatus.LOCKED)));
       } else {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(Status.UNLOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint<>(LockStatus.UNLOCKED)));
       }
     }
 
@@ -142,9 +142,9 @@ public class LocksNotUnlockedCheck extends SECheck {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
         if (LOCK_METHOD_NAME.equals(methodName) || TRY_LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, Status.LOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint<>(false, false, LockStatus.LOCKED));
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(Status.UNLOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint<>(LockStatus.UNLOCKED));
         }
       }
     }
@@ -171,17 +171,22 @@ public class LocksNotUnlockedCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(Status.LOCKED).keySet().stream()
-      .flatMap(sv -> FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(Status.LOCKED), ObjectConstraint.statusPredicate(Status.UNLOCKED)).stream())
-      .forEach(loc -> reportIssue(reportOn(loc.syntaxNode), "Unlock this lock along all executions paths of this method.", Collections.emptySet()));
+    context.getState().getValuesWithConstraints(LockStatus.LOCKED).keySet().stream()
+      .flatMap(sv -> FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(LockStatus.LOCKED), ObjectConstraint.statusPredicate(LockStatus.UNLOCKED)).stream())
+      .forEach(this::reportIssue);
   }
 
-  private static Tree reportOn(Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) syntaxNode).methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) methodSelect).expression();
-      }
+  private void reportIssue(JavaFileScannerContext.Location location) {
+    MethodInvocationTree syntaxNode = (MethodInvocationTree) location.syntaxNode;
+    String flowMsg = "Lock '" + SyntaxTreeNameFinder.getName(syntaxNode.methodSelect()) + "' is never unlocked";
+    Tree tree = issueTree(syntaxNode);
+    reportIssue(tree, "Unlock this lock along all executions paths of this method.", FlowComputation.singleton(flowMsg, tree));
+  }
+
+  private static Tree issueTree(MethodInvocationTree syntaxNode) {
+    ExpressionTree methodSelect = syntaxNode.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) methodSelect).expression();
     }
     return syntaxNode;
   }

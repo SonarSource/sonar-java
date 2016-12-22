@@ -39,8 +39,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class ExplodedGraphWalkerTest {
 
@@ -185,6 +185,21 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void xproc_usage_of_method_behaviors() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehavior.java", seChecks());
+  }
+
+  @Test
+  public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitException.java", seChecks());
+  }
+
+  @Test
+  public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path_and_branching() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitExceptionBranching.java", seChecks());
+  }
+
+  @Test
+  public void xproc_usage_of_exceptional_path_and_branching() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranching.java", seChecks());
   }
 
   static class MethodAsInstruction extends SECheck {

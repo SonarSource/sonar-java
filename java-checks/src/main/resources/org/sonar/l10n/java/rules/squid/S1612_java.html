@@ -3,20 +3,30 @@ can be replaced with references to the <code>Objects::isNull</code> and <code>Ob
 <p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>8</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-  List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
-  list.add(0);
-  list.add(1);
-  list.add(2);
+class A {
+  void process(List&lt;A&gt; list) {
+    list.stream()
+      .map(a -&gt; a.&lt;String&gt;getObject())
+      .forEach(a -&gt; { System.out.println(a); });
+  }
 
-  list.forEach(n -&gt; { System.out.println(n); });
+  &lt;T&gt; T getObject() {
+    return null;
+  }
+}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-  List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
-  list.add(0);
-  list.add(1);
-  list.add(2);
+class A {
+  void process(List&lt;A&gt; list) {
+    list.stream()
+      .map(A::&lt;String&gt;getObject)
+      .forEach(System.out::println);
+  }
 
-  list.forEach(System.out::println);
+  &lt;T&gt; T getObject() {
+    return null;
+  }
+}
 </pre>
 

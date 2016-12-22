@@ -21,9 +21,11 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.targets.Annotations;
 import org.sonar.java.resolve.targets.AnonymousClass;
@@ -42,10 +44,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class BytecodeCompleterTest {
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   //used to load classes in same package
   public BytecodeCompleterPackageVisibility bytecodeCompleterPackageVisibility = new BytecodeCompleterPackageVisibility();
@@ -362,6 +367,7 @@ public class BytecodeCompleterTest {
       assertThat(arg.metadata().annotations()).hasSize(1);
       assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable")).isTrue();
     }
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Class not found: java.lang.Synthetic");
   }
 
   @Test

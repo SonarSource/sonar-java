@@ -19,21 +19,30 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.Settings;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.LOG;
+import static org.sonar.plugins.jacoco.JacocoConfiguration.IT_REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_MISSING_FORCE_ZERO;
+import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATHS_PROPERTY;
+import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATH_PROPERTY;
 
 public class JaCoCoSensor implements Sensor {
 
+  private static final String JACOCO_MERGED_FILENAME = "jacoco-merged.exec";
   private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
   private final FileSystem fileSystem;
@@ -58,25 +67,75 @@ public class JaCoCoSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    if(shouldExecuteOnProject()) {
-      new UnitTestsAnalyzer().analyse(context);
+    if(context.getSonarQubeVersion().isGreaterThanOrEqual(JacocoConfiguration.SQ_6_2)) {
+      if (context.settings().hasKey(REPORT_MISSING_FORCE_ZERO)) {
+        LOG.warn("Property '{}' is deprecated and its value will be ignored.", REPORT_MISSING_FORCE_ZERO);
+      }
+      Set<File> reportPaths = getReportPaths(context);
+      if (reportPaths.isEmpty()) {
+        return;
+      }
+      // Merge JaCoCo reports
+      File reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
+      reportMerged.getParentFile().mkdirs();
+      JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
+      new UnitTestsAnalyzer(reportMerged).analyse(context);
+    } else {
+      // JaCoCo analysis for SQ prior to 6.2
+      String reportPath = context.settings().getString(REPORT_PATH_PROPERTY);
+      File report = pathResolver.relativeFile(fileSystem.baseDir(), reportPath);
+      boolean foundReport = report.isFile();
+      if(!foundReport) {
+        LOG.info("JaCoCoSensor: JaCoCo report not found : "+report.getPath());
+      }
+      if(configuration.shouldExecuteOnProject(foundReport)) {
+        new UnitTestsAnalyzer(report).analyse(context);
+      }
     }
   }
 
-  @VisibleForTesting
-  boolean shouldExecuteOnProject() {
-    File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
-    boolean foundReport = report.isFile();
-    if(!foundReport) {
-      JaCoCoExtensions.LOG.info("JaCoCoSensor: JaCoCo report not found : "+report.getPath());
+  private static Set<File> getReportPaths(SensorContext context) {
+    Set<File> reportPaths = new HashSet<>();
+    Settings settings = context.settings();
+    FileSystem fs = context.fileSystem();
+    for (String reportPath : settings.getStringArray(REPORT_PATHS_PROPERTY)) {
+      File report = fs.resolvePath(reportPath);
+      if (!report.isFile()) {
+        if (settings.hasKey(REPORT_PATHS_PROPERTY)) {
+          LOG.info("JaCoCo report not found: '{}'", reportPath);
+        }
+      } else {
+        reportPaths.add(report);
+      }
     }
-    return configuration.shouldExecuteOnProject(foundReport);
+    if (settings.hasKey(REPORT_PATH_PROPERTY)) {
+      LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", REPORT_PATH_PROPERTY, REPORT_PATHS_PROPERTY);
+      File report = fs.resolvePath(settings.getString(REPORT_PATH_PROPERTY));
+      if (!report.isFile()) {
+        LOG.info("JaCoCo UT report not found: '{}'", settings.getString(REPORT_PATH_PROPERTY));
+      } else {
+        reportPaths.add(report);
+      }
+    }
+    if (settings.hasKey(IT_REPORT_PATH_PROPERTY)) {
+      LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", IT_REPORT_PATH_PROPERTY, REPORT_PATHS_PROPERTY);
+      File report = fs.resolvePath(settings.getString(IT_REPORT_PATH_PROPERTY));
+      if (!report.isFile()) {
+        LOG.info("JaCoCo IT report not found: '{}'", settings.getString(IT_REPORT_PATH_PROPERTY));
+      } else {
+        reportPaths.add(report);
+      }
+    }
+    return reportPaths;
   }
 
 
   class UnitTestsAnalyzer extends AbstractAnalyzer {
-    public UnitTestsAnalyzer() {
-      super(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
+    private final File report;
+
+    public UnitTestsAnalyzer(File report) {
+      super(perspectives, javaResourceLocator, javaClasspath);
+      this.report = report;
     }
 
     @Override
@@ -85,8 +144,8 @@ public class JaCoCoSensor implements Sensor {
     }
 
     @Override
-    protected String getReportPath() {
-      return configuration.getReportPath();
+    protected File getReport() {
+      return report;
     }
 
   }

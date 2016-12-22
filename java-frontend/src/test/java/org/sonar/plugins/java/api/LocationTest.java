@@ -22,7 +22,7 @@ package org.sonar.plugins.java.api;
 import org.junit.Test;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class LocationTest {

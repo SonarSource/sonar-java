@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
@@ -34,9 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
@@ -57,7 +56,7 @@ public class NullDereferenceCheck extends SECheck {
       currentVal = values.get(numberArguments);
       if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
         SymbolicValue firstArg = values.get(numberArguments - 1);
-        return context.getState().addConstraint(firstArg, ObjectConstraint.NOT_NULL);
+        return context.getState().addConstraint(firstArg, ObjectConstraint.notNull());
       }
     }
     if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
@@ -87,22 +86,34 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     Constraint constraint = programState.getConstraint(currentVal);
     if (constraint != null && constraint.isNull()) {
-      String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
-      Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
+      String symbolName = SyntaxTreeNameFinder.getName(syntaxNode);
+      String message = "NullPointerException might be thrown as '" + symbolName + "' is nullable here";
       SymbolicValue val = null;
       if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
         val = currentVal;
       }
-      flows.add(FlowComputation.flow(context.getNode(), val));
-      context.reportIssue(syntaxNode, this, message, flows);
+      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), val);
+      addDereferenceMessage(flow, syntaxNode);
+      reportIssue(syntaxNode, message, ImmutableSet.of(flow));
       return null;
     }
     constraint = programState.getConstraint(currentVal);
     if (constraint == null) {
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
-      return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
+      return programState.addConstraint(currentVal, ObjectConstraint.notNull());
     }
     return programState;
+  }
+
+  private static void addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {
+    String symbolName = SyntaxTreeNameFinder.getName(syntaxNode);
+    String msg;
+    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) syntaxNode).expression().is(Tree.Kind.METHOD_INVOCATION)) {
+      msg = String.format("Result of %s() is dereferenced", symbolName);
+    } else {
+      msg = String.format("%s is dereferenced", symbolName);
+    }
+    flow.add(new JavaFileScannerContext.Location(msg, syntaxNode));
   }
 
   @Override
@@ -124,7 +135,7 @@ public class NullDereferenceCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint()));
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.notNull()));
       return states;
     }
     return Lists.newArrayList(context.getState());

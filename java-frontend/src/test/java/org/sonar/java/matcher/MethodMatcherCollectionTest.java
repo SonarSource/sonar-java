@@ -19,12 +19,13 @@
  */
 package org.sonar.java.matcher;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,5 +83,18 @@ public class MethodMatcherCollectionTest {
     assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
     assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
 
+  }
+
+  @Test
+  public void should_add_all_matchers() throws Exception {
+    MethodMatcher matcher1 = mock(MethodMatcher.class);
+    when(matcher1.matches(any(MethodTree.class))).thenReturn(false);
+    MethodMatcher matcher2 = mock(MethodMatcher.class);
+    when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
+    MethodMatcherCollection mmc = MethodMatcherCollection.create();
+    mmc.addAll(ImmutableList.of(matcher1));
+    assertThat(mmc.anyMatch(mock(MethodTree.class))).isFalse();
+    mmc.addAll(ImmutableList.of(matcher1, matcher2));
+    assertThat(mmc.anyMatch(mock(MethodTree.class))).isTrue();
   }
 }

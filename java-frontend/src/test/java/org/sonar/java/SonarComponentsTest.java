@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -285,6 +285,17 @@ public class SonarComponentsTest {
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
 
 
+  }
+
+  @Test
+  public void verify_sq_version() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    sonarComponents.setSensorContext(context);
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(5, 6)));
+    assertThat(sonarComponents.isSQGreaterThan62()).isFalse();
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
+    assertThat(sonarComponents.isSQGreaterThan62()).isTrue();
   }
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {

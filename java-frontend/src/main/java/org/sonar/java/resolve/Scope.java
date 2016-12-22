@@ -51,7 +51,7 @@ public class Scope {
   public void enter(JavaSymbol symbol) {
     if(!symbol.isMethodSymbol() && symbols.containsKey(symbol.name)) {
       for (JavaSymbol symInScope : symbols.get(symbol.name)) {
-        Preconditions.checkState(symInScope.kind != symbol.kind, "Registering symbol: '"+ symbol.name +"' twice in the same scope");
+        Preconditions.checkState(symInScope.kind != symbol.kind, "Registering symbol: '%s' twice in the same scope", symbol.name);
       }
     }
     symbols.put(symbol.name, symbol);

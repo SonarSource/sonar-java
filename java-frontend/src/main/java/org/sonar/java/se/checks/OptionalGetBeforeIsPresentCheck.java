@@ -28,6 +28,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -35,11 +36,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
-  private enum Status {
+  private enum Status implements ObjectConstraint.Status {
     PRESENT, NOT_PRESENT
   }
 
@@ -64,10 +66,10 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
      */
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      ObjectConstraint optionalConstraint = (ObjectConstraint) programState.getConstraint(optionalSV);
+      ObjectConstraint<Status> optionalConstraint = (ObjectConstraint<Status>) programState.getConstraint(optionalSV);
       if(optionalConstraint == null) {
         // Constraint on the optional SV might have been disposed. But is is necessarily non null because NPE check is ran before.
-        optionalConstraint = ObjectConstraint.NOT_NULL;
+        optionalConstraint = ObjectConstraint.notNull();
       }
       if (isImpossibleState(booleanConstraint, optionalConstraint)) {
         return ImmutableList.of();
@@ -107,7 +109,18 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
         constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, programState.peekValue()));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
-        context.reportIssue(tree, check, "Call \"" + getIdentifierPart(tree.methodSelect()) + "isPresent()\" before accessing the value.");
+        String identifier = getIdentifierPart(tree.methodSelect());
+        String issueMsg;
+        String flowMsg;
+        if (identifier.isEmpty()) {
+          issueMsg = "Optional#";
+          flowMsg = "";
+        } else {
+          issueMsg = identifier + ".";
+          flowMsg = identifier + " ";
+        }
+        Set<List<JavaFileScannerContext.Location>> flow = FlowComputation.singleton("Optional " + flowMsg + "is accessed", tree.methodSelect());
+        context.reportIssue(tree, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.", flow);
         programState = null;
       }
     }
@@ -120,7 +133,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          return ((IdentifierTree) expression).name() + ".";
+          return ((IdentifierTree) expression).name();
         }
       }
       return "";

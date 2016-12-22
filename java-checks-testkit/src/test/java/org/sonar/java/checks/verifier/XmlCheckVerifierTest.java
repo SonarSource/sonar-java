@@ -20,7 +20,7 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.check.Rule;
@@ -37,10 +37,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.File;
 import java.io.IOException;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class XmlCheckVerifierTest {
 
@@ -75,7 +76,7 @@ public class XmlCheckVerifierTest {
           context.reportIssue(this, firstNode(context, "//test2"), "message1");
           context.reportIssue(this, firstNode(context, "//test4"), "message2");
         } catch (Exception e) {
-          Fail.fail();
+          Fail.fail("");
         }
       }
     });
@@ -93,7 +94,7 @@ public class XmlCheckVerifierTest {
             "Message1",
             Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("Message2", firstNode(context, "//test4"))));
         } catch (Exception e) {
-          Fail.fail();
+          Fail.fail("");
         }
       }
     });
@@ -119,7 +120,7 @@ public class XmlCheckVerifierTest {
             Node node = ((NodeList) XPathFactory.newInstance().newXPath().compile("//test2").evaluate(doc, XPathConstants.NODESET)).item(0);
             context.reportIssue(this, node, "Message1");
           } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
-            Fail.fail();
+            Fail.fail("");
           }
         }
       });

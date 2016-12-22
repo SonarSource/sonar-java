@@ -22,7 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.fest.assertions.ObjectAssert;
+import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -40,7 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodJavaSymbolTest {
 
@@ -103,7 +103,7 @@ public class MethodJavaSymbolTest {
     public void visitNode(Tree tree) {
       int line = ((JavaTree) tree).getLine();
       JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) ((MethodTree) tree).symbol();
-      ObjectAssert assertion = assertThat(symbol.overriddenSymbol()).as("Method at line " + line);
+      AbstractObjectAssert<?, JavaSymbol.MethodJavaSymbol> assertion = assertThat(symbol.overriddenSymbol()).as("Method at line " + line);
       if (overrides.contains(line)) {
         assertion.isNotNull();
       } else if (unknowns.contains(line)) {

@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
@@ -49,7 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

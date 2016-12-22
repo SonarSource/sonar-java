@@ -49,8 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class SymbolTableTest {
 
@@ -1451,6 +1451,21 @@ public class SymbolTableTest {
 
     JavaType substitution = ((ParametrizedTypeJavaType) returnType).typeSubstitution.substitutedTypes().get(0);
     assertThat(substitution.is("java.lang.Integer")).isTrue();
+  }
+
+  @Test
+  public void getClass_return_type() {
+    Result result = Result.createFor("GetClassReturnType");
+    JavaSymbol maybeAddListener = result.symbol("maybeAddListener");
+    assertThat(maybeAddListener.isMethodSymbol()).isTrue();
+    List<IdentifierTree> usages = maybeAddListener.usages();
+    assertThat(usages).hasSize(1);
+    Type getClassType = ((MethodInvocationTree) usages.get(0).parent()).arguments().get(1).symbolType();
+    assertThat(getClassType).isInstanceOf(ParametrizedTypeJavaType.class);
+    Type param = ((ParametrizedTypeJavaType) getClassType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(param).isInstanceOf(WildCardType.class);
+    assertThat(((WildCardType) param).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) param).bound.is("ISuiteListener")).isTrue();
   }
 
 }

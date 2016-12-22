@@ -19,12 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -122,18 +125,29 @@ public class FlowComputation {
     if (trackSymbol == null || parent == null) {
       return null;
     }
-    Optional<Symbol> learnedSymbol = currentNode.getLearnedSymbols().stream()
-      .map(ExplodedGraph.Node.LearnedValue::getSymbol)
-      .filter(symbol -> symbol.equals(trackSymbol))
+    Optional<ExplodedGraph.Node.LearnedValue> learnedValue = currentNode.getLearnedSymbols().stream()
+      .filter(lv -> lv.getSymbol().equals(trackSymbol))
       .findFirst();
-    if (learnedSymbol.isPresent()) {
-      flow.add(location(parent));
+    if (learnedValue.isPresent()) {
+      ExplodedGraph.Node.LearnedValue lv = learnedValue.get();
+      Constraint constraint = parent.programState.getConstraint(lv.getSv());
+      JavaFileScannerContext.Location location = constraint == null ? location(parent) :
+        location(parent, lv.getSymbol().name() + " is assigned " + constraint.valueAsString());
+      flow.add(location);
       return parent.programState.getLastEvaluated();
     }
     return trackSymbol;
   }
 
   private static JavaFileScannerContext.Location location(ExplodedGraph.Node node) {
-    return new JavaFileScannerContext.Location("...", node.programPoint.syntaxTree());
+    return location(node, "...");
+  }
+
+  private static JavaFileScannerContext.Location location(ExplodedGraph.Node node, String message) {
+    return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
+  }
+
+  static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
+    return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
   }
 }

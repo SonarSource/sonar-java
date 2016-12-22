@@ -24,8 +24,9 @@ import org.junit.Test;
 import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
+import org.sonar.api.utils.Version;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JacocoConfigurationTest {
 
@@ -34,7 +35,7 @@ public class JacocoConfigurationTest {
 
   @Before
   public void setUp() {
-    settings = new MapSettings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
+    settings = new MapSettings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions(Version.create(5, 6))));
     jacocoConfiguration = new JacocoConfiguration(settings);
   }
 

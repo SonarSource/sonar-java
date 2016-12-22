@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
@@ -57,7 +58,7 @@ public class MethodBehavior {
     SymbolicValue resultSV = programState.exitValue();
     if (resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
       yield.exception = true;
-      yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType().fullyQualifiedName();
+      yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
     } else if (!isConstructor() && !isVoidMethod()) {
       if (resultSV == null) {
         // if there is no return value but we are not in a void method or constructor, we are not in a happy path
@@ -81,6 +82,14 @@ public class MethodBehavior {
 
   List<MethodYield> yields() {
     return ImmutableList.<MethodYield>builder().addAll(yields).build();
+  }
+
+  Stream<MethodYield> exceptionalPathYields() {
+    return yields.stream().filter(y -> y.exception);
+  }
+
+  Stream<MethodYield> happyPathYields() {
+    return yields.stream().filter(y -> !y.exception);
   }
 
   public void addParameter(Symbol symbol, SymbolicValue sv) {

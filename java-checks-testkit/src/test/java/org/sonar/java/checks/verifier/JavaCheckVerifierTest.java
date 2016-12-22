@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.check.Rule;
@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaCheckVerifierTest {
   @org.junit.Rule
@@ -93,7 +93,7 @@ public class JavaCheckVerifierTest {
 
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [4]");
     }
@@ -105,7 +105,7 @@ public class JavaCheckVerifierTest {
 
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Expected {1=[{MESSAGE=message}]}, Unexpected at [4]");
     }
@@ -117,7 +117,7 @@ public class JavaCheckVerifierTest {
 
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Expected {1=[{MESSAGE=message}]}");
     }
@@ -139,7 +139,7 @@ public class JavaCheckVerifierTest {
   public void verify_no_issue_fail_if_noncompliant() {
     try {
       JavaCheckVerifier.verifyNoIssue(FILENAME_ISSUES, NO_EFFECT_VISITOR);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("The file should not declare noncompliants when no issues are expected");
     }
@@ -172,7 +172,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
       file.delete();
     } else {
-      Fail.fail();
+      Fail.fail("");
     }
   }
 
@@ -189,7 +189,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor, testJarsPathname);
       file.delete();
     } else {
-      Fail.fail();
+      Fail.fail("");
     }
   }
 
@@ -197,7 +197,7 @@ public class JavaCheckVerifierTest {
   public void verify_with_unknown_directory_should_fail() throws IOException {
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, NO_EFFECT_VISITOR, "unknown/test-jars");
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       String message = e.getMessage();
       assertThat(message).startsWith("The directory to be used to extend class path does not exists (");
@@ -210,7 +210,7 @@ public class JavaCheckVerifierTest {
   public void verify_should_fail_when_using_incorrect_shift() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectShift.java", NO_EFFECT_VISITOR);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Use only '@+N' or '@-N' to shifts messages.");
     }
@@ -220,7 +220,7 @@ public class JavaCheckVerifierTest {
   public void verify_should_fail_when_using_incorrect_attribute() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectAttribute.java", NO_EFFECT_VISITOR);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: invalid=1");
     }
@@ -230,7 +230,7 @@ public class JavaCheckVerifierTest {
   public void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectAttribute2.java", NO_EFFECT_VISITOR);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: invalid=1=2");
     }
@@ -240,7 +240,7 @@ public class JavaCheckVerifierTest {
   public void verify_should_fail_when_using_incorrect_endLine() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectEndLine.java", NO_EFFECT_VISITOR);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
     }
@@ -251,7 +251,7 @@ public class JavaCheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java", visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java:10");
     }
@@ -262,7 +262,7 @@ public class JavaCheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java", visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
     }
@@ -275,7 +275,7 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor);
     try {
       JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues());
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got:");
     }
@@ -289,7 +289,7 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor, java_8);
     try {
       JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues(), java_8);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got:");
     }
@@ -300,7 +300,7 @@ public class JavaCheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new LinearFakeVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
-      Fail.fail();
+      Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("A cost should be provided for a rule with linear remediation function");
     }
@@ -312,7 +312,7 @@ public class JavaCheckVerifierTest {
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
     } catch (Exception e) {
-      Fail.fail();
+      Fail.fail("");
     }
   }
 

@@ -52,11 +52,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
 
-  private enum Status {
+  private enum Status implements ObjectConstraint.Status {
     OPENED, CLOSED
   }
 
@@ -108,11 +109,16 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, sv,
-      constraint -> constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).hasStatus(Status.OPENED));
-    flow.stream()
-      .filter(loc -> loc.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
-      .forEach(loc -> reportIssue(loc.syntaxNode, String.format("Close this \"%s\".", name(loc.syntaxNode)), Collections.emptySet()));
+    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(Status.OPENED)).stream()
+      .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
+      .forEach(this::reportIssue);
+  }
+
+  private void reportIssue(JavaFileScannerContext.Location location) {
+    String message = "Close this \"" + name(location.syntaxNode) + "\".";
+    String flowMessage = name(location.syntaxNode) +  " is never closed";
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.singleton(flowMessage, location.syntaxNode);
+    reportIssue(location.syntaxNode, message, flows);
   }
 
   private static String name(Tree tree) {

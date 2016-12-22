@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 // FIXME(Godin): must not depend on real files
 public class ImportResolutionTest {

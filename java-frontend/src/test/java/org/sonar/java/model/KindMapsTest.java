@@ -28,7 +28,7 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class KindMapsTest {
 

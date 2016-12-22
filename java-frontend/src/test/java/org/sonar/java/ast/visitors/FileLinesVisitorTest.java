@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,7 +34,6 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,9 +41,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,19 +59,27 @@ public class FileLinesVisitorTest {
     conf = new JavaConfiguration(StandardCharsets.UTF_8);
     baseDir = new File("src/test/files/metrics");
   }
-
   private void checkLines(String filename, FileLinesContext context) {
+    checkLines(filename, context, false);
+  }
+
+  private void checkLines(String filename, FileLinesContext context, boolean sqGreaterThan62) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
+    when(sonarComponents.fileLength(Mockito.any(File.class))).thenAnswer(invocation -> {
+      File arg = (File) invocation.getArguments()[0];
+      return Files.readLines(arg, StandardCharsets.UTF_8).size();
+    });
+    when(sonarComponents.isSQGreaterThan62()).thenReturn(sqGreaterThan62);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new CodeVisitor[] {new FileLinesVisitor(sonarComponents, conf.getCharset())});
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
+    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new FileLinesVisitor(sonarComponents));
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
   }
 
   private int countTrivia(String filename) {
     TriviaVisitor triviaVisitor = new TriviaVisitor();
-    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new CodeVisitor[] {triviaVisitor});
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList());
+    JavaSquid squid = new JavaSquid(conf, null, null, null, null, triviaVisitor);
+    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     return triviaVisitor.numberTrivia;
   }
 
@@ -133,15 +143,36 @@ public class FileLinesVisitorTest {
       + 1);
   }
 
+  @Test
+  public void executable_lines_should_be_counted_withSQGreaterThan62() throws Exception {
+    FileLinesContext context = mock(FileLinesContext.class);
+    checkLines("ExecutableLines.java", context, true);
+    int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0};
+    assertThat(expected).hasSize(47);
+    for (int i = 0; i < expected.length; i++) {
+      int line = i + 1;
+      verify(context).setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, expected[i]);
+    }
+    verify(context).save();
+  }
+  @Test
+  public void executable_lines_should_NOT_be_counted_withSQLessThan62() throws Exception {
+    FileLinesContext context = mock(FileLinesContext.class);
+    checkLines("ExecutableLines.java", context);
+    verify(context, times(0)).setIntValue(eq(CoreMetrics.EXECUTABLE_LINES_DATA_KEY), anyInt(), anyInt());
+    verify(context).save();
+  }
+
+
   private static void assertThatContainsAllLines(CommentsCounter counter, List<Integer> reportedCommentLines) {
     for (Integer line : reportedCommentLines) {
       if (counter.commentedLines.contains(line)) {
         counter.commentedLines.remove(line);
       } else {
-        fail("should not have extra lines");
+        Fail.fail("should not have extra lines");
       }
     }
-    assertThat(counter.commentedLines).containsExactly(counter.casesNotCoveredLines.toArray());
+    assertThat(counter.commentedLines).containsExactly(counter.casesNotCoveredLines.toArray(new Integer[0]));
   }
 
   private static class CommentsCounter {
@@ -171,7 +202,7 @@ public class FileLinesVisitorTest {
           lineNumber++;
         }
       } catch (IOException e) {
-        fail();
+        Fail.fail(e.getMessage());
       }
       return counter;
     }

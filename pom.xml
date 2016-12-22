@@ -74,7 +74,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>6.1</sonar.version>
+    <sonar.version>6.2</sonar.version>
     <orchestrator.version>3.13</orchestrator.version>
     <sslr.version>1.21</sslr.version>
     <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
@@ -200,9 +200,9 @@
         <version>1.9.0</version>
       </dependency>
       <dependency>
-        <groupId>org.easytesting</groupId>
-        <artifactId>fest-assert</artifactId>
-        <version>1.4</version>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>3.6.1</version>
       </dependency>
 
       <dependency>

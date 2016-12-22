@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TypeSubstitutionSolverTest {
 
@@ -172,7 +172,7 @@ public class TypeSubstitutionSolverTest {
   @Test
   public void substitutionFromSuperType_from_same_type() {
     Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
-    Type stringType = result.symbol("string").type();
+    JavaType stringType = (JavaType) result.symbol("string").type();
     ParametrizedTypeJavaType aString = (ParametrizedTypeJavaType) result.symbol("aString").type();
 
     ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
@@ -187,7 +187,7 @@ public class TypeSubstitutionSolverTest {
   @Test
   public void substitutionFromSuperType_direct_inheritance() {
     Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
-    Type stringType = result.symbol("string").type();
+    JavaType stringType = (JavaType) result.symbol("string").type();
     ParametrizedTypeJavaType iString = (ParametrizedTypeJavaType) result.symbol("iString").type();
 
     ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
@@ -249,7 +249,7 @@ public class TypeSubstitutionSolverTest {
   @Test
   public void substitutionFromSuperType_with_2_level_inheritance() {
     Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
-    Type stringType = result.symbol("string").type();
+    JavaType stringType = (JavaType) result.symbol("string").type();
     ParametrizedTypeJavaType iString = (ParametrizedTypeJavaType) result.symbol("iString").type();
 
     ParametrizedTypeJavaType dV = (ParametrizedTypeJavaType) result.symbol("dX").type();

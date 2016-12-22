@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModifiersUtilsTest {
 

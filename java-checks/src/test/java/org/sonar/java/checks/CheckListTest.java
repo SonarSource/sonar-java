@@ -42,8 +42,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 public class CheckListTest {
 
@@ -135,7 +135,7 @@ public class CheckListTest {
     definition.define(context);
     List<RulesDefinition.Rule> rules = context.repository(CheckList.REPOSITORY_KEY).rules();
     for (RulesDefinition.Rule rule : rules) {
-      assertThat(keys).as("Duplicate key " + rule.key()).excludes(rule.key());
+      assertThat(keys).as("Duplicate key " + rule.key()).doesNotContain(rule.key());
       keys.add(rule.key());
       names.add(rule.name());
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.html"))
