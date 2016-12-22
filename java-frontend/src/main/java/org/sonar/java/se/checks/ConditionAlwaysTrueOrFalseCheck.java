@@ -66,7 +66,7 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
 
   private static List<JavaFileScannerContext.Location> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
     List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue());
-    flow.add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue, node.programPoint.syntaxTree()));
+    flow.add(0, new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue, node.programPoint.syntaxTree()));
     return flow;
   }
 

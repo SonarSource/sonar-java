@@ -188,6 +188,10 @@ class Expectations {
     this.expectFileIssueOnLine = expectFileIssueOnLine;
   }
 
+  void reverseFlows() {
+    Multimaps.asMap(flows).forEach((id, flow) -> Collections.reverse(flow));
+  }
+
   Optional<String> containFlow(List<AnalyzerMessage> flow) {
     if (flowLines == null) {
       flowLines = computeFlowLines();

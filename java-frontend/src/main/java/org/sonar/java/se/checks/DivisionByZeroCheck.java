@@ -236,7 +236,7 @@ public class DivisionByZeroCheck extends SECheck {
       }
 
       List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), denominator);
-      flow.add(new JavaFileScannerContext.Location(flowMessage, tree));
+      flow.add(0, new JavaFileScannerContext.Location(flowMessage, tree));
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
         ImmutableSet.of(flow));
 

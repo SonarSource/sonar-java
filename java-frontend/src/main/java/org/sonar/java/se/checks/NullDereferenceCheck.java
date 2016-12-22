@@ -113,7 +113,7 @@ public class NullDereferenceCheck extends SECheck {
     } else {
       msg = String.format("%s is dereferenced", symbolName);
     }
-    flow.add(new JavaFileScannerContext.Location(msg, syntaxNode));
+    flow.add(0, new JavaFileScannerContext.Location(msg, syntaxNode));
   }
 
   @Override

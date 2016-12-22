@@ -22,8 +22,8 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
@@ -256,7 +256,12 @@ public class JavaCheckVerifierTest {
         .flow(41, "When", 42, "Given")
       .add()
     ;
+    reverseFlows(fakeVisitor);
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
+  }
+
+  private void reverseFlows(FakeVisitor fakeVisitor) {
+    fakeVisitor.preciseIssues.values().forEach(issue -> issue.flows.forEach(Collections::reverse));
   }
 
   @Test
@@ -273,10 +278,11 @@ public class JavaCheckVerifierTest {
         .flow(17, "msg", 19, null)
         .add()
       ;
+    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("[Flow npe1 has line differences] expected:<[[3, 9]]> but was:<[[5, 6]]>");
+      assertThat(e).hasMessage("[Flow npe1 has line differences] expected:<[[9, 3]]> but was:<[[6, 5]]>");
     }
   }
 
@@ -290,11 +296,11 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-
+    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Missing flows: npe1 [3,9].");
+      assertThat(e).hasMessage("Missing flows: npe1 [9,3].");
     }
   }
 
@@ -311,11 +317,11 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-
+    reverseFlows(fakeVisitor);
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
-      .hasMessage("[Wrong messages in flow npe1 [3,9]] expected:<[\"[a is assigned to null here\", \"a is assigned to b here]\"]> but was:<[\"[invalid 1\", \"invalid 2]\"]>");
+      .hasMessage("[Wrong messages in flow npe1 [9,3]] expected:<[\"[a is assigned to b here\", \"a is assigned to null here]\"]> but was:<[\"[invalid 2\", \"invalid 1]\"]>");
   }
 
   @Test
@@ -331,11 +337,11 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-    try {
-      JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("[attribute mismatch for START_COLUMN: {MESSAGE=a is assigned to null here, START_COLUMN=12, END_COLUMN=20}] expected:<[12]> but was:<[6]>");
-    }
+    reverseFlows(fakeVisitor);
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
+    assertThat(throwable)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("[attribute mismatch for START_COLUMN: {MESSAGE=a is assigned to null here, START_COLUMN=12, END_COLUMN=20}] expected:<[12]> but was:<[6]>");
   }
 
   @Test
@@ -347,18 +353,19 @@ public class JavaCheckVerifierTest {
           .flowItem(9, "a is assigned to b here", 7, 12)
         .add()
     ;
+    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsSuperfluous.java", fakeVisitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=4,6,8, npe2=7}");
+      assertThat(e).hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
     }
   }
 
   private static class FakeVisitor extends IssuableSubscriptionVisitor implements IssueWithFlowBuilder {
 
-    Multimap<Integer, String> issues = LinkedListMultimap.create();
-    Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
+    ListMultimap<Integer, String> issues = LinkedListMultimap.create();
+    ListMultimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
     List<String> issuesOnFile = Lists.newLinkedList();
     private AnalyzerMessage issueWithFlow;
 
