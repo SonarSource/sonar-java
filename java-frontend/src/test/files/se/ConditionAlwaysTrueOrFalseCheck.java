@@ -811,7 +811,7 @@ public class Class extends SuperClass {
 
     this.field1 = false;
     this.field2 = this.field1;
-    if (field1 || field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (field1 || field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
 
     if (super.field && !super.field) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -2031,6 +2031,57 @@ class CheckingLoops {
       if(x) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
         System.out.println("");
       }
+    }
+  }
+}
+
+class SimpleAssignments {
+  Object myField;
+
+  void foo() {
+    this.myField = null;
+    if (this.myField == null) { // FIXME: false negative Noncompliant
+    }
+  }
+
+  void foobarbar() {
+    myField = null;
+    if (myField == null) { // Noncompliant
+    }
+  }
+
+  void bar() {
+    this.myField = null;
+    if (myField == null) { // Noncompliant
+    }
+  }
+
+  void foobar() {
+    myField = null;
+    if (this.myField == null) { // FIXME: false negative Noncompliant
+    }
+  }
+
+  void foofoo() {
+    if (myField == this.myField) { // false negative Noncompliant
+    }
+    if (this.myField == myField) { // false negative Noncompliant
+    }
+  }
+
+  void foofoobar() {
+    Object myField = null;
+    if (myField == this.myField) { // Compliant
+    }
+    if (this.myField == myField) { // Compliant
+    }
+  }
+
+  void foobarfoo() {
+    SimpleAssignments a = new SimpleAssignments();
+    if (a.myField == myField) { // Compliant
+    }
+    if (a.myField == this.myField) { // Compliant
     }
   }
 }

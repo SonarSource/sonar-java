@@ -825,11 +825,11 @@ public class ExplodedGraphWalker {
   }
 
   private void executeAssignement(AssignmentExpressionTree tree) {
-    ExpressionTree variable = tree.variable();
     ProgramState.Pop unstack;
     SymbolicValue value;
 
-    if (ExpressionUtils.isSimpleAssignment(tree)) {
+    boolean isSimpleAssignment = ExpressionUtils.isSimpleAssignment(tree);
+    if (isSimpleAssignment) {
       unstack = programState.unstackValue(1);
       value = unstack.values.get(0);
     } else {
@@ -839,10 +839,8 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     programState = programState.stackValue(value);
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      // only local variables or fields are added to table of values
-      // FIXME SONARJAVA-1776 fields accessing using "this." should be handled
-      programState = programState.put(((IdentifierTree) variable).symbol(), value);
+    if (isSimpleAssignment || tree.variable().is(Tree.Kind.IDENTIFIER)) {
+      programState = programState.put(ExpressionUtils.extractIdentifier(tree).symbol(), value);
     }
   }
 
