@@ -47,8 +47,12 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private static final Predicate<SymbolMetadata.AnnotationInstance> PREDICATE_ANNOTATION_TEST_OR_UNKNOWN = input -> {
     Type type = input.symbol().type();
-    return type.isUnknown() || type.is("org.junit.Test") || type.is("org.testng.annotations.Test");
+    return type.isUnknown() || isTestAnnotation(type);
   };
+
+  private static boolean isTestAnnotation(Type type) {
+    return type.is("org.junit.Test") || type.is("org.testng.annotations.Test") || type.is("org.junit.jupiter.api.Test");
+  }
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -75,7 +79,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         if (isJunit3TestClass) {
           checkJunit3TestClass(simpleName, members);
         } else {
-          checkJunit4TestClass(simpleName, symbol, members);
+          checkJunit4AndAboveTestClass(simpleName, symbol, members);
         }
       }
     }
@@ -94,7 +98,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     checkMethods(className, members, false);
   }
 
-  private void checkJunit4TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
+  private void checkJunit4AndAboveTestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
     if (symbol.name().endsWith("Test") && !runWithEnclosedRunner(symbol)) {
       checkMethods(className, members, true);
     }
@@ -109,17 +113,17 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private void checkMethods(IdentifierTree simpleName, Iterable<Symbol> members, boolean forJunit4) {
+  private void checkMethods(IdentifierTree simpleName, Iterable<Symbol> members, boolean forJunit4AndAbove) {
     for (Symbol member : members) {
-      if (member.isMethodSymbol() && isTestMethod(forJunit4, member)) {
+      if (member.isMethodSymbol() && isTestMethod(forJunit4AndAbove, member)) {
         return;
       }
     }
     reportIssue(simpleName, "Add some tests to this class.");
   }
 
-  private static boolean isTestMethod(boolean forJunit4, Symbol member) {
-    if (forJunit4) {
+  private static boolean isTestMethod(boolean forJunit4AndAbove, Symbol member) {
+    if (forJunit4AndAbove) {
       return member.metadata().annotations().stream().anyMatch(PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
     }
     return member.name().startsWith("test");

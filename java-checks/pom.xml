@@ -224,6 +224,11 @@
                   <artifactId>slf4j-api</artifactId>
                   <version>1.7.21</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.junit.jupiter</groupId>
+                  <artifactId>junit-jupiter-api</artifactId>
+                  <version>5.0.0-M3</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
