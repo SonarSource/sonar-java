@@ -21,7 +21,10 @@ package org.sonar.java.model;
 
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public final class ExpressionUtils {
@@ -33,12 +36,40 @@ public final class ExpressionUtils {
    * In case of simple assignments, only the expression is evaluated, as we only use the reference to the variable to store the result.
    * For SE-Based checks, only a single value should be unstacked if its the case. For other cases, two values should be unstacked.
    * See JLS8-15.26
-   * 
+   *
    * @param tree The assignment tree
-   * @return true if the tree is a simple assignment 
+   * @return true if the tree is a simple assignment
+   * @see #extractIdentifier(AssignmentExpressionTree)
    */
   public static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.ASSIGNMENT) && ExpressionUtils.skipParentheses(tree.variable()).is(Tree.Kind.IDENTIFIER);
+    if (tree.is(Tree.Kind.ASSIGNMENT) && ExpressionUtils.skipParentheses(tree.variable()).is(Tree.Kind.IDENTIFIER)) {
+      return true;
+    }
+
+    ExpressionTree variable = tree.variable();
+    return variable.is(Tree.Kind.MEMBER_SELECT) && isThisAssignment((MemberSelectExpressionTree) variable);
+  }
+
+  public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
+    ExpressionTree variable = skipParentheses(tree.variable());
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      return (IdentifierTree) variable;
+    }
+
+    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
+      if (isThisAssignment(selectTree)) {
+        return selectTree.identifier();
+      }
+    }
+
+    // This should not be possible.
+    throw new IllegalArgumentException("Can not extract identifier.");
+  }
+
+  private static boolean isThisAssignment(MemberSelectExpressionTree tree) {
+    SyntaxToken variableToken = tree.firstToken();
+    return variableToken != null && "this".equalsIgnoreCase(variableToken.text());
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {

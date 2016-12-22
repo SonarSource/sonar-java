@@ -74,13 +74,7 @@ public class ExpressionUtilsTest {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
-    List<AssignmentExpressionTree> assignments = methodTree.block().body().stream()
-      .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
-      .map(ExpressionStatementTree.class::cast)
-      .map(ExpressionStatementTree::expression)
-      .filter(e -> e instanceof AssignmentExpressionTree)
-      .map(AssignmentExpressionTree.class::cast)
-      .collect(Collectors.toList());
+    List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
     assertThat(assignments).hasSize(4);
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(0))).isTrue();
@@ -97,5 +91,33 @@ public class ExpressionUtilsTest {
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
+  }
+
+  @Test
+  public void test_extract_identifier_mixed_access() throws Exception {
+    File file = new File("src/test/files/model/ExpressionUtilsTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
+    List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
+
+    // The method 'mixedReference' has 2 assignments. Both should be considered simple.
+    assertThat(assignments).hasSize(2);
+    assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(0))).isTrue();
+    assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
+
+    // The returned identifier should have the same symbol regardless of the explicit usage of this.
+    assertThat(ExpressionUtils.extractIdentifier(assignments.get(0)).symbol())
+      .isEqualTo(ExpressionUtils.extractIdentifier(assignments.get(1)).symbol());
+
+  }
+
+  private List<AssignmentExpressionTree> findAssignmentExpressionTrees(MethodTree methodTree) {
+    return methodTree.block().body().stream()
+          .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
+          .map(ExpressionStatementTree.class::cast)
+          .map(ExpressionStatementTree::expression)
+          .filter(e -> e instanceof AssignmentExpressionTree)
+          .map(AssignmentExpressionTree.class::cast)
+          .collect(Collectors.toList());
   }
 }
