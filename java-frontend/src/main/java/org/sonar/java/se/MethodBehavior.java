@@ -47,12 +47,13 @@ public class MethodBehavior {
   }
 
   public void createYield(ExplodedGraph.Node node) {
-    MethodYield yield = new MethodYield(node, parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
+    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
     yield.exception = !node.happyPath;
     List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
       yield.parametersConstraints[i] = node.programState.getConstraint(parameterSymbolicValues.get(i));
+      yield.flowForParam(i, FlowComputation.flow(node, parameterSymbolicValues.get(i)));
     }
 
     SymbolicValue resultSV = node.programState.exitValue();
@@ -66,6 +67,10 @@ public class MethodBehavior {
       } else {
         yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
         yield.resultConstraint = node.programState.getConstraint(resultSV);
+        if (yield.resultIndex < 0) {
+          // if the returned value is one of the parameter, the flow has already beeb calculated
+          yield.flowForParam(yield.resultIndex, FlowComputation.flow(node, resultSV));
+        }
       }
     }
 

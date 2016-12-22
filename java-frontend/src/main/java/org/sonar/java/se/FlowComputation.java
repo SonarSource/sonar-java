@@ -23,13 +23,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
@@ -131,46 +131,33 @@ public class FlowComputation {
   }
 
   private void flowFromMethodInvocation(MethodYield selectedYield, ExplodedGraph.Node parentNode) {
-    List<JavaFileScannerContext.Location> flowFromMethodInvocation;
     String message;
-    Symbol argumentSymbol = correspondingArgumentSymbol(symbolicValue, parentNode);
+    int argumentIndex = correspondingArgumentIndex(symbolicValue, parentNode);
     if (selectedYield.exception) {
-      Preconditions.checkNotNull(argumentSymbol, "If an exception occurs, the method does not return correctly and the impacted symbolic value can only be from arguments");
-      message = String.format("Exception '%s' thrown from method invocation", selectedYield.exceptionType.name());
-      flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.getValue(argumentSymbol));
+      Preconditions.checkState(argumentIndex != -1, "Only arguments should be considered when exception occurs");
+      String exceptionName = selectedYield.exceptionType == null ? "Runtime exception" : selectedYield.exceptionType.name();
+      message = String.format("Exception '%s' thrown from method invocation", exceptionName);
     } else {
-      if (argumentSymbol != null) {
-        message = "Learns from method call";
-        flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.getValue(argumentSymbol));
-      } else {
-        message = "Uses return value";
-        flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.exitValue());
-      }
+      message = argumentIndex >= 0 ? "Learns from method call" : "Uses return value";
     }
     flow.add(location(parentNode, String.format("%s [see L#%d].", message, methodDeclarationLine(parentNode))));
-    flow.addAll(flowFromMethodInvocation);
+    flow.addAll(selectedYield.getFlow(argumentIndex));
   }
 
   private static int methodDeclarationLine(ExplodedGraph.Node methodInvocationNode) {
-    return ((MethodInvocationTree) methodInvocationNode.programPoint.syntaxTree()).symbol().declaration().firstToken().line();
+    MethodTree method = (MethodTree) ((MethodInvocationTree) methodInvocationNode.programPoint.syntaxTree()).symbol().declaration();
+    return method.simpleName().identifierToken().line();
   }
 
   @CheckForNull
-  private static Symbol correspondingArgumentSymbol(SymbolicValue candidate, ExplodedGraph.Node invocationNode) {
+  private static int correspondingArgumentIndex(SymbolicValue candidate, ExplodedGraph.Node invocationNode) {
     MethodInvocationTree mit = (MethodInvocationTree) invocationNode.programPoint.syntaxTree();
     List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
-
-    int indexOfCandidate = arguments.indexOf(candidate);
-    if (indexOfCandidate >= 0) {
-      return ((JavaSymbol.MethodJavaSymbol) mit.symbol()).getParameters().scopeSymbols().get(indexOfCandidate);
-    }
-    return null;
+    return arguments.indexOf(candidate);
   }
 
   private static List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {
-    List<SymbolicValue> values = new ArrayList<>(invocationNode.programState.peekValues(mit.arguments().size() + 1));
-
-    values.remove(values.size() - 1);
+    List<SymbolicValue> values = new ArrayList<>(invocationNode.programState.peekValues(mit.arguments().size()));
     Collections.reverse(values);
     return values;
   }

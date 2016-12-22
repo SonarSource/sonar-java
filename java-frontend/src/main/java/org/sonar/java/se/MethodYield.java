@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -26,10 +27,12 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -39,7 +42,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class MethodYield {
-  final ExplodedGraph.Node node;
+  final List<List<JavaFileScannerContext.Location>> flowByParameters;
   private final boolean varArgs;
   Constraint[] parametersConstraints;
   int resultIndex;
@@ -49,14 +52,23 @@ public class MethodYield {
   Type exceptionType;
   boolean exception;
 
-  public MethodYield(ExplodedGraph.Node node, int arity, boolean varArgs) {
-    this.node = node;
+  public MethodYield(int arity, boolean varArgs) {
+    this.flowByParameters = initFlows(arity);
     this.parametersConstraints = new Constraint[arity];
     this.varArgs = varArgs;
     this.resultIndex = -1;
     this.resultConstraint = null;
     this.exception = false;
     this.exceptionType = null;
+  }
+
+  private static List<List<JavaFileScannerContext.Location>> initFlows(int arity) {
+    // n parameters + 1 for the return value
+    List<List<JavaFileScannerContext.Location>> result = new ArrayList<>(arity + 1);
+    for (int i = 0; i < arity + 1; i++) {
+      result.add(0, ImmutableList.of());
+    }
+    return result;
   }
 
   @Override
@@ -116,6 +128,15 @@ public class MethodYield {
       return parametersConstraints[index];
     }
     return null;
+  }
+
+  void flowForParam(int parameterIndex, List<JavaFileScannerContext.Location> flow) {
+    flowByParameters.set(parameterIndex + 1, flow);
+  }
+
+  List<JavaFileScannerContext.Location> getFlow(int argumentIndex) {
+    // first element is the flow related to the return value
+    return flowByParameters.get(argumentIndex + 1);
   }
 
   /**
