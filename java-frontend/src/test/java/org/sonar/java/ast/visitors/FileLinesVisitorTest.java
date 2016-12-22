@@ -147,8 +147,9 @@ public class FileLinesVisitorTest {
   public void executable_lines_should_be_counted_withSQGreaterThan62() throws Exception {
     FileLinesContext context = mock(FileLinesContext.class);
     checkLines("ExecutableLines.java", context, true);
-    int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0};
-    assertThat(expected).hasSize(47);
+    int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,
+      0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0};
+    assertThat(expected).hasSize(56);
     for (int i = 0; i < expected.length; i++) {
       int line = i + 1;
       verify(context).setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, expected[i]);

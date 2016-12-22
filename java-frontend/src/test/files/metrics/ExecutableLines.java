@@ -45,3 +45,12 @@ public class HelloWorld {
 interface I {
   String s = "s"; // Wrongly counted as executable because it is implicitely static final
 }
+abstract class B {
+  static long l1 = 1L;
+  static final long l2 = 1L;
+  final long l3 = 1L;
+  abstract void method();
+  String method2() {
+    return null;
+  }
+}

@@ -193,9 +193,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
           if (t.is(NEW_CLASS)) {
             NewClassTree newClassTree = (NewClassTree) t;
             new ExecutableLinesTokenVisitor().scanTree(newClassTree.identifier());
-            if (newClassTree.newKeyword() != null) {
-              executableLines.add(newClassTree.newKeyword().line());
-            }
+            executableLines.add(newClassTree.newKeyword().line());
           } else if (t.is(TRY_STATEMENT)) {
             // add last token of try statements
             executableLines.add(t.lastToken().line());
