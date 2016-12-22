@@ -202,6 +202,11 @@ public class ExplodedGraphWalkerTest {
     JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranching.java", seChecks());
   }
 
+  @Test
+  public void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranchingReporting.java", seChecks());
+  }
+
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
     @Override

@@ -278,7 +278,7 @@ public class ExplodedGraphWalker {
       if (!programState.exitingOnRuntimeException()) {
         checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
       }
-      methodBehavior.createYield(programState, node.happyPath);
+      methodBehavior.createYield(node);
     });
     setNode(savedNode);
   }
@@ -614,6 +614,8 @@ public class ExplodedGraphWalker {
           clearStack(mit);
         });
     } else {
+      programState = programState.setSelectedYield(null);
+
       // Enqueue exceptional paths from thrown exceptions
       enqueueThrownExceptionalPaths(methodSymbol);
 

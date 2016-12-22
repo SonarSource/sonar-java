@@ -17,20 +17,26 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import org.sonar.java.se.ExplodedGraph;
+
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -114,9 +120,59 @@ public class FlowComputation {
       .collect(Collectors.toList());
 
     if (learnedConstraints.stream().anyMatch(addToFlow)) {
-      flow.add(location(currentNode.parent()));
+      ExplodedGraph.Node parentNode = currentNode.parent();
+      if (parentNode.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION) && currentNode.programState.selectedYield() != null) {
+        flowFromMethodInvocation(currentNode.programState.selectedYield(), parentNode);
+      } else {
+        flow.add(location(parentNode));
+      }
     }
     return learnedConstraints;
+  }
+
+  private void flowFromMethodInvocation(MethodYield selectedYield, ExplodedGraph.Node parentNode) {
+    List<JavaFileScannerContext.Location> flowFromMethodInvocation;
+    String message;
+    Symbol argumentSymbol = correspondingArgumentSymbol(symbolicValue, parentNode);
+    if (selectedYield.exception) {
+      Preconditions.checkNotNull(argumentSymbol, "If an exception occurs, the method does not return correctly and the impacted symbolic value can only be from arguments");
+      message = String.format("Exception '%s' thrown from method invocation", selectedYield.exceptionType.name());
+      flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.getValue(argumentSymbol));
+    } else {
+      if (argumentSymbol != null) {
+        message = "Learns from method call";
+        flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.getValue(argumentSymbol));
+      } else {
+        message = "Uses return value";
+        flowFromMethodInvocation = FlowComputation.flow(selectedYield.node, selectedYield.node.programState.exitValue());
+      }
+    }
+    flow.add(location(parentNode, String.format("%s [see L#%d].", message, methodDeclarationLine(parentNode))));
+    flow.addAll(flowFromMethodInvocation);
+  }
+
+  private static int methodDeclarationLine(ExplodedGraph.Node methodInvocationNode) {
+    return ((MethodInvocationTree) methodInvocationNode.programPoint.syntaxTree()).symbol().declaration().firstToken().line();
+  }
+
+  @CheckForNull
+  private static Symbol correspondingArgumentSymbol(SymbolicValue candidate, ExplodedGraph.Node invocationNode) {
+    MethodInvocationTree mit = (MethodInvocationTree) invocationNode.programPoint.syntaxTree();
+    List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
+
+    int indexOfCandidate = arguments.indexOf(candidate);
+    if (indexOfCandidate >= 0) {
+      return ((JavaSymbol.MethodJavaSymbol) mit.symbol()).getParameters().scopeSymbols().get(indexOfCandidate);
+    }
+    return null;
+  }
+
+  private static List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {
+    List<SymbolicValue> values = new ArrayList<>(invocationNode.programState.peekValues(mit.arguments().size() + 1));
+
+    values.remove(values.size() - 1);
+    Collections.reverse(values);
+    return values;
   }
 
   @Nullable
@@ -147,7 +203,7 @@ public class FlowComputation {
     return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
   }
 
-  static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
+  public static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
     return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
   }
 }

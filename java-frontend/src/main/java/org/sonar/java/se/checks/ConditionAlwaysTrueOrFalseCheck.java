@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
