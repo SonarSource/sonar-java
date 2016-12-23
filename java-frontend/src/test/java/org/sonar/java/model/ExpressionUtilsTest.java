@@ -100,10 +100,12 @@ public class ExpressionUtilsTest {
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
-    // The method 'mixedReference' has 2 assignments. Both should be considered simple.
-    assertThat(assignments).hasSize(2);
+    // This should reflect method 'mixedReference'.
+    assertThat(assignments).hasSize(3);
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(0))).isTrue();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
+    // Contains method invocation.
+    assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(2))).isFalse();
 
     // The returned identifier should have the same symbol regardless of the explicit usage of this.
     assertThat(ExpressionUtils.extractIdentifier(assignments.get(0)).symbol())

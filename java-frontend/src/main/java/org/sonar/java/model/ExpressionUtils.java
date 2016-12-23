@@ -68,6 +68,11 @@ public final class ExpressionUtils {
   }
 
   private static boolean isThisAssignment(MemberSelectExpressionTree tree) {
+    if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      // This is no longer simple.
+      return false;
+    }
+
     SyntaxToken variableToken = tree.firstToken();
     return variableToken != null && "this".equalsIgnoreCase(variableToken.text());
   }
