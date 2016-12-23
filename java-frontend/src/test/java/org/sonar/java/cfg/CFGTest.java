@@ -49,7 +49,9 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.MULTIPLY_ASSIGNMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
@@ -314,6 +316,7 @@ public class CFGTest {
         case ASSIGNMENT:
         case ARRAY_ACCESS_EXPRESSION:
         case LOGICAL_COMPLEMENT:
+        case MULTIPLY_ASSIGNMENT:
         case PLUS:
           break;
         default:
@@ -1086,6 +1089,41 @@ public class CFGTest {
         element(Tree.Kind.INT_LITERAL, 0),
         element(Tree.Kind.ASSIGNMENT),
         element(Tree.Kind.ASSIGNMENT)).successors(0));
+    checker.check(cfg);
+  }
+
+  @Test
+  public void compound_assignment() throws Exception {
+    CFG cfg = buildCFG("void foo() {\n" +
+      "  myField *= 0;\n" +
+      "}\n" +
+      "int myField;");
+
+    CFGChecker checker = checker(
+      block(
+        element(IDENTIFIER, "myField"),
+        element(INT_LITERAL, 0),
+        element(MULTIPLY_ASSIGNMENT)
+        ).successors(0));
+
+    checker.check(cfg);
+  }
+
+  @Test
+  public void compound_assignment_member_select() throws Exception {
+    CFG cfg = buildCFG("void foo() {\n" +
+      "  this.myField *= 0;\n" +
+      "}\n" +
+      "int myField;");
+
+    CFGChecker checker = checker(
+      block(
+        element(IDENTIFIER, "this"),
+        element(MEMBER_SELECT),
+        element(INT_LITERAL, 0),
+        element(MULTIPLY_ASSIGNMENT)
+      ).successors(0));
+
     checker.check(cfg);
   }
 
