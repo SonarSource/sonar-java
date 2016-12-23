@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -283,8 +284,38 @@ public class SonarComponentsTest {
 
     context.setRuntime(SonarRuntimeImpl.forSonarQube(version56, SonarQubeSide.SCANNER));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
+  }
 
+  @Test
+  public void fail_on_empty_location() {
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+    RuleKey ruleKey = RuleKey.of("MyRepo", "CustomCheck");
 
+    File file = new File("file.java");
+    DefaultInputFile inputFile = new DefaultInputFile("", file.getPath());
+    inputFile.initMetadata("class A {\n"
+      + "  void foo() {\n"
+      + "    System.out.println();\n"
+      + "  }\n"
+      + "}\n");
+
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    DefaultFileSystem fileSystem = context.fileSystem();
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+    sonarComponents.setSensorContext(context);
+
+    AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
+    AnalyzerMessage analyzerMessageEmptyLocation = new AnalyzerMessage(expectedCheck, file, emptyTextSpan, "message", 0);
+
+    assertThatThrownBy(() -> sonarComponents.reportIssue(analyzerMessageEmptyLocation, ruleKey, inputFile, 0.0))
+      .isInstanceOf(IllegalStateException.class).hasMessageContaining("Issue location should not be empty");
+    assertThat(context.allIssues()).isEmpty();
+
+    AnalyzerMessage.TextSpan nonEmptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 15);
+    AnalyzerMessage analyzerMessageValidLocation = new AnalyzerMessage(expectedCheck, file, nonEmptyTextSpan, "message", 0);
+    sonarComponents.reportIssue(analyzerMessageValidLocation, ruleKey, inputFile, 0.0);
+    assertThat(context.allIssues()).isNotEmpty();
   }
 
   @Test
