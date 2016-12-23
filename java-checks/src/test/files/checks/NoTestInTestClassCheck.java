@@ -98,6 +98,19 @@ public class MyCucumberTest { // should not raise an issue
 public class MyCucumber2Test { // no issue
 }
 
+@RunWith(MyRunner.class)
+public class MyCucumber3Test { // Noncompliant - not recognized
+}
+@RunWith(getRunner())
+public class MyCucumber4Test { // Noncompliant - does not compile, not a class literal
+  public Class<? extends Runner> getRunner() {
+    return null;
+  }
+}
+@RunWith(value1= MyRunner.class, value2= YourRunner.class)
+public class MyCucumber5Test { // Noncompliant - does not compile, not a class literal
+}
+
 public class CTest {
   @org.junit.jupiter.api.Test // no issue, junit5 annotation
   public void testFoo() {

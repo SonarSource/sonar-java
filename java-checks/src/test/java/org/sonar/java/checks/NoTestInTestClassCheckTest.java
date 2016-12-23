@@ -30,6 +30,7 @@ public class NoTestInTestClassCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
   }
 
   @Test
