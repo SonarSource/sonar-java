@@ -42,12 +42,13 @@ public final class ExpressionUtils {
    * @see #extractIdentifier(AssignmentExpressionTree)
    */
   public static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    if (tree.is(Tree.Kind.ASSIGNMENT) && ExpressionUtils.skipParentheses(tree.variable()).is(Tree.Kind.IDENTIFIER)) {
-      return true;
+    if (!tree.is(Tree.Kind.ASSIGNMENT)) {
+      // This can't possibly be a simple assignment.
+      return false;
     }
 
-    ExpressionTree variable = tree.variable();
-    return variable.is(Tree.Kind.MEMBER_SELECT) && isThisAssignment((MemberSelectExpressionTree) variable);
+    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isThisAssignment((MemberSelectExpressionTree) variable));
   }
 
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
@@ -58,7 +59,7 @@ public final class ExpressionUtils {
 
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
-      if (isThisAssignment(selectTree)) {
+      if (isThisAssignment(selectTree)) { // FIXME(Johan): Is this check needed?
         return selectTree.identifier();
       }
     }

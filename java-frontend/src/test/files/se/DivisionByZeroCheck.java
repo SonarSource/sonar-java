@@ -387,3 +387,17 @@ class A {
     lowBits = -lowBits;
   }
 }
+
+class Assignment {
+  int myField;
+
+  public int calculate(int i) {
+    this.myField *= 0;
+    return i / myField; // FIXME false negative Noncompliant
+  }
+
+  public int calculateTwo(int i) {
+    myField *= 0;
+    return i / this.myField; // FIXME false negative Noncompliant
+  }
+}

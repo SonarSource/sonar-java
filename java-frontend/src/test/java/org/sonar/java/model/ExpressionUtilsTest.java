@@ -101,10 +101,12 @@ public class ExpressionUtilsTest {
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
     // This should reflect method 'mixedReference'.
-    assertThat(assignments).hasSize(3);
+    assertThat(assignments).hasSize(4);
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(0))).isTrue();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
     // Contains method invocation.
+    assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(2))).isFalse();
+    // Compound assignment
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(2))).isFalse();
 
     // The returned identifier should have the same symbol regardless of the explicit usage of this.
