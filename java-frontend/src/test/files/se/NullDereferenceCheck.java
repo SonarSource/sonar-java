@@ -725,12 +725,12 @@ class SimpleAssignments {
 
   void bar() {
     myField = null;
-    this.myField.toString(); // FIXME: false negative Noncompliant
+    this.myField.toString(); // Noncompliant
   }
 
   void gul() {
     this.myField = null;
-    this.myField.toString(); // FIXME: false negative Noncompliant
+    this.myField.toString(); // Noncompliant
   }
 
   void qix() {

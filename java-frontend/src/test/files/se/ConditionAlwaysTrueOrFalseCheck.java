@@ -770,7 +770,7 @@ public class Class extends SuperClass {
 
   public test_instance_fields(boolean local, boolean local1, boolean local2) {
     if (field && this.field1 == field2) {
-      if (this.field) { // False negative Noncompliant
+      if (this.field) { // Noncompliant
       }
       if (field1 == this.field2) { //False negative Noncompliant
       }
@@ -811,6 +811,7 @@ public class Class extends SuperClass {
 
     this.field1 = false;
     this.field2 = this.field1;
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (field1 || field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
 
@@ -2040,7 +2041,7 @@ class SimpleAssignments {
 
   void foo() {
     this.myField = null;
-    if (this.myField == null) { // FIXME: false negative Noncompliant
+    if (this.myField == null) { // Noncompliant
     }
   }
 
@@ -2058,14 +2059,14 @@ class SimpleAssignments {
 
   void foobar() {
     myField = null;
-    if (this.myField == null) { // FIXME: false negative Noncompliant
+    if (this.myField == null) { // Noncompliant
     }
   }
 
   void foofoo() {
-    if (myField == this.myField) { // false negative Noncompliant
+    if (myField == this.myField) { // Noncompliant
     }
-    if (this.myField == myField) { // false negative Noncompliant
+    if (this.myField == myField) { // Noncompliant
     }
   }
 

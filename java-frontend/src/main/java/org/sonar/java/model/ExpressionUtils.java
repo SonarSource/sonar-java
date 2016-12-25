@@ -51,6 +51,10 @@ public final class ExpressionUtils {
     return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isThisAssignment((MemberSelectExpressionTree) variable));
   }
 
+  public static boolean isSimpleAssignment(MemberSelectExpressionTree memberSelectExpressionTree) {
+      return isThisAssignment(memberSelectExpressionTree);
+  }
+
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
     ExpressionTree variable = skipParentheses(tree.variable());
     if (variable.is(Tree.Kind.IDENTIFIER)) {

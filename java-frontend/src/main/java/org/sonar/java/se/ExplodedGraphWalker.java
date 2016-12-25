@@ -976,7 +976,19 @@ public class ExplodedGraphWalker {
       ProgramState.Pop unstackMSE = programState.unstackValue(1);
       programState = unstackMSE.state;
     }
-    SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
+
+    SymbolicValue mseValue = null;
+
+    // TODO(Johan): Should this have an exception for when the symbol is unknown?
+    if (ExpressionUtils.isSimpleAssignment(mse)) {
+      // If the variable is already known, stack that value instead of creating a new one.
+      mseValue = programState.getValue(mse.identifier().symbol());
+    }
+
+    if (mseValue == null) {
+      mseValue = constraintManager.createSymbolicValue(mse);
+    }
+
     programState = programState.stackValue(mseValue);
   }
 
