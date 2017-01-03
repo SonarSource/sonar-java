@@ -71,7 +71,8 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
   }
   
   private static boolean isMutableFinalMember(VariableTree variableTree) {
-    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL) && isMutableMember(variableTree);
+    ModifiersTree modifiersTree = variableTree.modifiers();
+    return !ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL) && isMutableMember(variableTree);
   }
   
   private static boolean isMutableMember(VariableTree variableTree) {

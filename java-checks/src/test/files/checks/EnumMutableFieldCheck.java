@@ -50,7 +50,8 @@ public enum Continent3 {
   private int landMass;
   public final String[] regions; // Noncompliant {{Lower the visibility of this field.}}
   public final java.util.Date date; // Noncompliant {{Lower the visibility of this field.}}
-  
+  public static final String[] regions2;
+
   Continent3(int countryCount, int landMass) {
     this.countryCount = countryCount;
     this.landMass = landMass;
