@@ -119,12 +119,16 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   @CheckForNull
   private static String getReferencedCalendarName(ExpressionTree argument) {
+    Symbol reference = null;
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
-      Symbol reference = mse.identifier().symbol();
-      if (reference.owner().type().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.name()) != null) {
-        return reference.name();
-      }
+      reference = ((MemberSelectExpressionTree) argument).identifier().symbol();
+    } else if (argument.is(Tree.Kind.IDENTIFIER)) {
+      reference = ((IdentifierTree) argument).symbol();
+    }
+    if (reference != null &&
+        reference.owner().type().is(JAVA_UTIL_CALENDAR) &&
+        Threshold.getThreshold(reference.name()) != null) {
+      return reference.name();
     }
     return null;
   }

@@ -1,6 +1,11 @@
 package java.util;
 
+import static java.util.Calendar.MONTH;
+
 class A {
+
+  public final static int MINUTE = Calendar.MINUTE;
+
   int foo() {
     Date d = new Date();
     d.setDate(25);
@@ -25,12 +30,15 @@ class A {
     Calendar cal = Calendar.getInstance();
     cal.set(Calendar.MONTH, 11);
     cal.set(Calendar.MONTH, 12);// Noncompliant {{"12" is not a valid value for setting "MONTH".}}
+    cal.set(MONTH, 12);// Noncompliant {{"12" is not a valid value for setting "MONTH".}}
+    cal.set(2, 12);// literal arguments aren't supported
     cal.set(Calendar.DAY_OF_MONTH, 11);
     cal.set(Calendar.DAY_OF_MONTH, 32);// Noncompliant {{"32" is not a valid value for setting "DAY_OF_MONTH".}}
     cal.set(Calendar.HOUR_OF_DAY, 11);
     cal.set(Calendar.HOUR_OF_DAY, 24);// Noncompliant {{"24" is not a valid value for setting "HOUR_OF_DAY".}}
     cal.set(Calendar.MINUTE, 59);
     cal.set(Calendar.MINUTE, 61);// Noncompliant {{"61" is not a valid value for setting "MINUTE".}}
+    cal.set(A.MINUTE, 61);// support only Calendar members
     cal.set(Calendar.SECOND, 61);
     cal.set(Calendar.SECOND, 63);// Noncompliant {{"63" is not a valid value for setting "SECOND".}}
     cal.set(Calendar.HOUR_OF_DAY, -2);// Noncompliant {{"-2" is not a valid value for setting "HOUR_OF_DAY".}}
