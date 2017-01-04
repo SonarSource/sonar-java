@@ -28,7 +28,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import com.google.common.io.Resources;
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.utils.AnnotationUtils;
@@ -36,16 +36,16 @@ import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +64,6 @@ public abstract class CheckVerifier {
     .put("endColumn", IssueAttribute.END_COLUMN)
     .put("secondary", IssueAttribute.SECONDARY_LOCATIONS)
     .build();
-  private static final Pattern LINEAR_FUNC_PATTERN = Pattern.compile("\\\"func\\\"\\s*:\\s*\\\"Linear");
 
   public enum IssueAttribute {
     MESSAGE,
@@ -170,9 +169,9 @@ public abstract class CheckVerifier {
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
-    boolean isLinear = isLinear(issues.iterator().next());
+    RemediationFunction remediationFunction = remediationFunction(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
-      validateIssue(expected, unexpectedLines, issue, isLinear);
+      validateIssue(expected, unexpectedLines, issue, remediationFunction);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
@@ -182,7 +181,50 @@ public abstract class CheckVerifier {
     }
   }
 
-  private static boolean isLinear(AnalyzerMessage issue) {
+  enum RemediationFunction {
+    LINEAR, CONST
+  }
+
+  static class RuleJSON {
+    static class Remediation {
+      String func;
+    }
+    Remediation remediation;
+  }
+
+  @CheckForNull
+  private static RemediationFunction remediationFunction(AnalyzerMessage issue) {
+    String ruleKey = ruleKey(issue);
+    try {
+      RuleJSON rule = getRuleJSON(ruleKey);
+      if (rule.remediation == null) {
+        return null;
+      }
+      switch (rule.remediation.func) {
+        case "Linear":
+          return RemediationFunction.LINEAR;
+        case "Constant/Issue":
+          return RemediationFunction.CONST;
+        default:
+          return null;
+      }
+    } catch (IOException e) {
+      // Failed to open json file, as this is not part of API yet, we should not fail because of this
+      return null;
+    }
+  }
+
+  private static RuleJSON getRuleJSON(String ruleKey) throws IOException {
+    String ruleJson = "/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json";
+    URL resource = CheckVerifier.class.getResource(ruleJson);
+    if(resource == null) {
+      throw new IOException(ruleJson + " not found");
+    }
+    Gson gson = new Gson();
+    return gson.fromJson(new InputStreamReader(resource.openStream(), "UTF-8"), RuleJSON.class);
+  }
+
+  private static String ruleKey(AnalyzerMessage issue) {
     String ruleKey;
     RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), RspecKey.class);
     if(rspecKeyAnnotation != null) {
@@ -190,28 +232,20 @@ public abstract class CheckVerifier {
     } else {
       ruleKey = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class).key();
     }
-    try {
-      URL resource = CheckVerifier.class.getResource("/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json");
-      if(resource == null) {
-        throw new IOException();
-      }
-      String json = Resources.toString(resource, StandardCharsets.UTF_8);
-      return LINEAR_FUNC_PATTERN.matcher(json).find();
-    } catch (IOException e) {
-      // Failed to open json file, as this is not part of API yet, we should not fail because of this
-    }
-    return false;
+    return ruleKey;
   }
 
-  private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue, boolean isLinear) {
+  private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue,
+    RemediationFunction remediationFunction) {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
       assertEquals(issue.getMessage(), attrs, IssueAttribute.MESSAGE);
       Double cost = issue.getCost();
       if (cost != null) {
+        Preconditions.checkState(remediationFunction != RemediationFunction.CONST, "Rule with constant remediation function shall not provide cost");
         assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
-      } else if(isLinear){
+      } else if(remediationFunction == RemediationFunction.LINEAR){
         Fail.fail("A cost should be provided for a rule with linear remediation function");
       }
       validateAnalyzerMessage(attrs, issue);

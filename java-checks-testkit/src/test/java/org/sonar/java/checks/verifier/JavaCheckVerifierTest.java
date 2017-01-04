@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class JavaCheckVerifierTest {
   @org.junit.Rule
@@ -316,6 +317,16 @@ public class JavaCheckVerifierTest {
     }
   }
 
+  @Test
+  public void rule_with_constant_remediation_function_should_not_provide_cost() throws Exception {
+    FakeVisitor fakeVisitor = new FakeVisitor();
+    fakeVisitor.withPreciseIssue(new AnalyzerMessage(fakeVisitor, new File("a"), new AnalyzerMessage.TextSpan(1), "message", 1));
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", fakeVisitor));
+    assertThat(throwable)
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Rule with constant remediation function shall not provide cost");
+  }
+
   @RspecKey("Dummy_fake_JSON")
   private static class NoJsonVisitor extends FakeVisitor {
   }
@@ -332,7 +343,7 @@ public class JavaCheckVerifierTest {
     List<String> issuesOnFile = Lists.newLinkedList();
 
     protected FakeVisitor withDefaultIssues() {
-      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
+      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 0);
       withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 3, "no message", 0)));
       withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 4, "no message", 0)));
       return this.withIssue(1, "message")
@@ -341,7 +352,7 @@ public class JavaCheckVerifierTest {
         .withIssue(8, "message3")
         .withIssue(8, "message3")
         .withPreciseIssue(withMultipleLocation)
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 11, "no message", 4))
+        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 11, "no message", 0))
         .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 12, "message12", 0))
         .withPreciseIssue(new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
         .withIssue(17, "message17");
