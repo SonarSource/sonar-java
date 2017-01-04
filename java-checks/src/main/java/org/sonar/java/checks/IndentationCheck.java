@@ -58,7 +58,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private int expectedLevel;
   private boolean isBlockAlreadyReported;
-  private int lastCheckedLine;
+  private int excludeIssueAtLine;
   private Deque<Boolean> isInAnonymousClass = new LinkedList<>();
   private JavaFileScannerContext context;
 
@@ -66,7 +66,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   public void scanFile(JavaFileScannerContext context) {
     expectedLevel = 0;
     isBlockAlreadyReported = false;
-    lastCheckedLine = 0;
+    excludeIssueAtLine = 0;
     this.context = context;
     scan(context.getTree());
     isInAnonymousClass.clear();
@@ -131,14 +131,17 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    int previousTokenLine = getPreviousToken(lambdaExpressionTree).line();
-    int lambdaFirstTokenLine = lambdaExpressionTree.firstToken().line();
-    if (previousTokenLine != lambdaFirstTokenLine) {
-      expectedLevel += indentationLevel;
-    }
-    super.visitLambdaExpression(lambdaExpressionTree);
-    if (previousTokenLine != lambdaFirstTokenLine) {
-      expectedLevel -= indentationLevel;
+    // doesn't scan lambda parameters because there's no indentation check on types and identifiers
+    Tree body = lambdaExpressionTree.body();
+    if (body.is(Kind.BLOCK)) {
+      BlockTree block = (BlockTree) body;
+      excludeIssueAtLine = block.openBraceToken().line();
+      int previousLevel = expectedLevel;
+      expectedLevel = block.closeBraceToken().column();
+      scan(block);
+      expectedLevel = previousLevel;
+    } else {
+      scan(body);
     }
   }
 
@@ -150,28 +153,14 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   private void leaveNode(Tree tree) {
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
-    lastCheckedLine = tree.lastToken().line();
-  }
-
-  private static SyntaxToken getPreviousToken(Tree tree) {
-    Tree previous = null;
-    for (Tree children : ((JavaTree) tree.parent()).getChildren()) {
-      if (children.equals(tree)) {
-        break;
-      }
-      previous = children;
-    }
-    if(previous == null) {
-      return getPreviousToken(tree.parent());
-    }
-    return previous.lastToken();
+    excludeIssueAtLine = tree.lastToken().line();
   }
 
   private void checkCaseGroup(CaseGroupTree tree) {
     List<CaseLabelTree> labels = tree.labels();
     if (labels.size() >= 2) {
       CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
-      lastCheckedLine = previousCaseLabelTree.lastToken().line();
+      excludeIssueAtLine = previousCaseLabelTree.lastToken().line();
     }
     List<StatementTree> body = tree.body();
     List<StatementTree> newBody = body;
@@ -211,11 +200,11 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       context.addIssue(((JavaTree) tree).getLine(), this, "Make this line start at column " + (expectedLevel + 1) + ".");
       isBlockAlreadyReported = true;
     }
-    lastCheckedLine = tree.lastToken().line();
+    excludeIssueAtLine = tree.lastToken().line();
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {
-    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || lastCheckedLine == nodeLine || isInAnonymousClass.peek();
+    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || excludeIssueAtLine == nodeLine || isInAnonymousClass.peek();
   }
 
 }

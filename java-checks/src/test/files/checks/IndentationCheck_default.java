@@ -121,6 +121,19 @@ if (0) {                          // Compliant - already reported
     IntStream.range(1, 5).map(a -> {
       return a + 1;
     });
+
+    IntStream.range(1, 2).forEach(x -> { System.out.println(x); });
+
+    IntStream.range(1, 2).forEach(x -> {
+            System.out.println(x);
+          });
+
+    Math.abs(
+      IntStream.range(1, 2)
+        .map(a -> {
+          return a + 1;
+        }).sum()
+    );
   }
 }
 
@@ -175,6 +188,10 @@ static class Baz {
         ); Sysout.out.println(); // Compliant
 
     switch (foo) { // Compliant
+    }
+
+    switch (foo) { // Compliant
+      case 0:
     }
 
     switch (foo) {
