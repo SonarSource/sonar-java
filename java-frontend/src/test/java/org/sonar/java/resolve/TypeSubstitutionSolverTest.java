@@ -302,4 +302,29 @@ public class TypeSubstitutionSolverTest {
     Type type = result.referenceTree(6, 5).symbolType();
     assertThat(((MethodJavaType) type).resultType.is("java.lang.String")).isTrue();
   }
+
+  @Test
+  public void compute_function_types() throws Exception {
+    Result result = Result.createForJavaFile("src/test/files/sym/FunctionTypes");
+    ParametrizedTypeJavaType lowerBound = (ParametrizedTypeJavaType) result.symbol("lowerBound").type;
+    ParametrizedTypeJavaType upperBound = (ParametrizedTypeJavaType) result.symbol("upperBound").type;
+    ParametrizedTypeJavaType unbounded = (ParametrizedTypeJavaType) result.symbol("unbounded").type;
+    ParametrizedTypeJavaType ref = (ParametrizedTypeJavaType) result.symbol("ref").type;
+
+    ParametrizedTypeJavaType lowerBoundFuncType = (ParametrizedTypeJavaType) typeSubstitutionSolver.functionType(lowerBound);
+    assertThat(lowerBoundFuncType.rawType).isEqualTo(ref.rawType);
+    assertThat(lowerBoundFuncType.typeSubstitution.substitutedTypes()).containsExactly(ref.typeSubstitution.substitutedTypes().get(0));
+
+    ParametrizedTypeJavaType upperBoundFuncType = (ParametrizedTypeJavaType) typeSubstitutionSolver.functionType(upperBound);
+    assertThat(upperBoundFuncType.rawType).isEqualTo(ref.rawType);
+    assertThat(upperBoundFuncType.typeSubstitution.substitutedTypes()).containsExactly(ref.typeSubstitution.substitutedTypes().get(0));
+
+    ParametrizedTypeJavaType unboundFuncType = (ParametrizedTypeJavaType) typeSubstitutionSolver.functionType(unbounded);
+    assertThat(unboundFuncType.rawType).isEqualTo(ref.rawType);
+    assertThat(unboundFuncType.typeSubstitution.substitutedTypes()).hasSize(1);
+    assertThat(unboundFuncType.typeSubstitution.substitutedTypes().get(0).is("java.lang.Object")).isTrue();
+
+    ParametrizedTypeJavaType emptySubstitution = (ParametrizedTypeJavaType) parametrizedTypeCache.getParametrizedTypeType(ref.symbol, new TypeSubstitution());
+    assertThat(typeSubstitutionSolver.functionType(emptySubstitution)).isEqualTo(emptySubstitution);
+  }
 }

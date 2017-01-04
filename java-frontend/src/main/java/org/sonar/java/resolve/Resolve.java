@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
@@ -38,7 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -976,7 +974,11 @@ public class Resolve {
   }
 
   private List<JavaType> applySamSubstitution(Type type, List<JavaType> samTypes) {
-    List<JavaType> argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(samTypes, (JavaType) type);
+    JavaType functionType = (JavaType) type;
+    if(functionType instanceof ParametrizedTypeJavaType) {
+      functionType = typeSubstitutionSolver.functionType((ParametrizedTypeJavaType) functionType);
+    }
+    List<JavaType> argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(samTypes, functionType);
     return argTypes.stream().map(argType -> {
       if (argType.isTagged(JavaType.WILDCARD)) {
         // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
