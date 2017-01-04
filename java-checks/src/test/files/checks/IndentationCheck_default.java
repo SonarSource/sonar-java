@@ -161,11 +161,12 @@ static class Baz {
 
   void foo() {
     new MyInterface() {
-      public void foo() {         // Compliant - not checked
+      public void foo() {         // Compliant
+        System.out.println();     // Compliant
+          System.out.println();   // Noncompliant
       }
-
-     public void foo() {          // Compliant - not checked
-     }
+        public void bar() {       // Noncompliant
+        }
     };
   }
 

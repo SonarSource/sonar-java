@@ -63,11 +63,10 @@ static class Baz {
 
   void foo() {                    // Noncompliant {{Make this line start at column 5.}}
     new MyInterface() {           // Noncompliant {{Make this line start at column 9.}}
-      public void foo() {         // Compliant - not checked
-      }
-
-     public void foo() {          // Compliant - not checked
-     }
+        public void foo() {       // Compliant
+        }
+          public void bar() {     // Noncompliant
+          }
     };
   }
 
