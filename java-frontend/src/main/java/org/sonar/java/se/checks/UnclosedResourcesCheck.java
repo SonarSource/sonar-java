@@ -166,8 +166,13 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private static boolean isWithinTryHeader(Tree syntaxNode) {
-    final Tree parent = syntaxNode.parent();
-    if (parent.is(Tree.Kind.VARIABLE)) {
+    Tree parent = syntaxNode;
+    while ((parent = parent.parent()) != null) {
+      if (parent.is(Tree.Kind.VARIABLE)) {
+        break;
+      }
+    }
+    if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
       return isTryStatementResource((VariableTree) parent);
     }
     return false;
