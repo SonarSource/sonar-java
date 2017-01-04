@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -40,8 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(key = "IndentationCheck")
@@ -59,7 +56,6 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   private int expectedLevel;
   private boolean isBlockAlreadyReported;
   private int excludeIssueAtLine;
-  private Deque<Boolean> isInAnonymousClass = new LinkedList<>();
   private JavaFileScannerContext context;
 
   @Override
@@ -69,25 +65,25 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     excludeIssueAtLine = 0;
     this.context = context;
     scan(context.getTree());
-    isInAnonymousClass.clear();
   }
 
   @Override
   public void visitClass(ClassTree tree) {
     // Exclude anonymous classes
     boolean isAnonymous = tree.simpleName() == null;
-    isInAnonymousClass.push(isAnonymous);
     if (!isAnonymous) {
       checkIndentation(Collections.singletonList(tree));
     }
-    newBlock();
-    // Exclude anonymous classes
-    if (!isAnonymous) {
-      checkIndentation(tree.members());
+    int previousLevel = expectedLevel;
+    if (isAnonymous && tree.openBraceToken() != null) {
+      excludeIssueAtLine = tree.openBraceToken().line();
+      expectedLevel = tree.closeBraceToken().column();
     }
+    newBlock();
+    checkIndentation(tree.members());
     super.visitClass(tree);
     leaveNode(tree);
-    isInAnonymousClass.pop();
+    expectedLevel = previousLevel;
   }
 
   @Override
@@ -111,22 +107,6 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       leaveNode(caseGroupTree);
     }
     leaveNode(tree);
-  }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    SyntaxToken firstToken = tree.firstToken();
-    int parenthesisLine = tree.arguments().openParenToken().line();
-    boolean shouldIndentArgs = firstToken.line() != parenthesisLine;
-    scan(tree.methodSelect());
-    scan(tree.typeArguments());
-    if (shouldIndentArgs) {
-      expectedLevel += indentationLevel;
-    }
-    scan(tree.arguments());
-    if (shouldIndentArgs) {
-      expectedLevel -= indentationLevel;
-    }
   }
 
   @Override
@@ -204,7 +184,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {
-    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || excludeIssueAtLine == nodeLine || isInAnonymousClass.peek();
+    return excludeIssueAtLine == nodeLine || isBlockAlreadyReported || node.is(Kind.ENUM_CONSTANT);
   }
 
 }

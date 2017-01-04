@@ -1,4 +1,7 @@
 {
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
+526,
+],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanUtilsBean.java':[
 1015,
 ],
@@ -37,6 +40,10 @@
 1815,
 1818,
 1822,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/WrapDynaClass.java':[
+134,
+135,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/AbstractConverter.java':[
 356,
