@@ -29,9 +29,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
@@ -52,6 +55,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class CheckVerifier {
+  private static final Logger LOG = Loggers.get(CheckVerifier.class);
+
   public static final String ISSUE_MARKER = "Noncompliant";
 
   public static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
@@ -209,8 +214,9 @@ public abstract class CheckVerifier {
         default:
           return null;
       }
-    } catch (IOException e) {
+    } catch (IOException | JsonParseException e) {
       // Failed to open json file, as this is not part of API yet, we should not fail because of this
+      LOG.warn("Exception parsing JSON for rule " + ruleKey, e);
       return null;
     }
   }
