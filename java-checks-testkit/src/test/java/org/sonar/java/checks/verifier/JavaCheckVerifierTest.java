@@ -327,6 +327,42 @@ public class JavaCheckVerifierTest {
       .hasMessage("Rule with constant remediation function shall not provide cost");
   }
 
+  @Test
+  public void rule_metadata_remediation_function() {
+    @Rule(key = "DoesntExists")
+    class WrongJson extends FakeVisitor {}
+    WrongJson check = new WrongJson();
+    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
+  }
+
+  @Test
+  public void rule_metadata_unparsable() {
+    @Rule(key = "BrokenJSON")
+    class WrongJson extends FakeVisitor {}
+    WrongJson check = new WrongJson();
+    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
+  }
+
+  @Test
+  public void rule_metadata_unknown_remediation_function() {
+    @Rule(key = "ExponentialRemediationFunc")
+    class WrongJson extends FakeVisitor {}
+    WrongJson check = new WrongJson();
+    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
+  }
+
+  @Test
+  public void rule_metadata_undefined_remediation_function() {
+    @Rule(key = "UndefinedRemediationFunc")
+    class WrongJson extends FakeVisitor {}
+    WrongJson check = new WrongJson();
+    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
+  }
+
   @RspecKey("Dummy_fake_JSON")
   private static class NoJsonVisitor extends FakeVisitor {
   }
@@ -358,7 +394,7 @@ public class JavaCheckVerifierTest {
         .withIssue(17, "message17");
     }
 
-    private FakeVisitor withPreciseIssue(AnalyzerMessage message) {
+    protected FakeVisitor withPreciseIssue(AnalyzerMessage message) {
       preciseIssues.put(message.getLine(), message);
       return this;
     }

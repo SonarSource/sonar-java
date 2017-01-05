@@ -37,6 +37,7 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -236,7 +237,7 @@ public abstract class CheckVerifier {
   }
 
   private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue,
-    RemediationFunction remediationFunction) {
+    @Nullable RemediationFunction remediationFunction) {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
