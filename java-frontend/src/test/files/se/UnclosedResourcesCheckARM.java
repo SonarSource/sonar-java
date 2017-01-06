@@ -25,4 +25,38 @@ public class A {
       // ...
     }
   }
+
+  void falseNegative() {
+    class Foo implements AutoCloseable {
+
+      Foo() {
+        System.out.println("opening resource in foo");
+      }
+
+      @Override
+      public void close() {
+        System.out.println("foo is closed");
+      }
+    }
+
+    class Bar implements AutoCloseable {
+      private final Foo foo;
+
+      public Bar(Foo foo) {
+        this.foo = foo;
+        throw new RuntimeException("Huho");
+      }
+
+      @Override
+      public void close() {
+        System.out.println("Bar closed (no more beers)");
+        foo.close();
+      }
+    }
+
+    // Foo will not be closed due to exception in Bar constructor, this is not detected because we assume all resources within resource block will be closed
+    try (Bar bar = new Bar(new Foo())) {  // FN
+      System.out.println("inside try");
+    }
+  }
 }
