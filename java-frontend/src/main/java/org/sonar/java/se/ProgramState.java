@@ -365,11 +365,11 @@ public class ProgramState {
     return values.get(symbol);
   }
 
-  public Map<SymbolicValue, ObjectConstraint> getValuesWithConstraints(final Object state) {
-    final Map<SymbolicValue, ObjectConstraint> result = new HashMap<>();
+  public Map<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> getValuesWithConstraints(final Object state) {
+    final Map<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> result = new HashMap<>();
     constraints.forEach((symbolicValue, valueConstraint) -> {
       if (valueConstraint instanceof ObjectConstraint) {
-        ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
+        ObjectConstraint<ObjectConstraint.Status> constraint = (ObjectConstraint<ObjectConstraint.Status>) valueConstraint;
         if (constraint.hasStatus(state)) {
           result.put(symbolicValue, constraint);
         }
