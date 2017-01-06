@@ -318,7 +318,7 @@ public class LeastUpperBound {
    * @param types
    * @return
    */
-  private static Type greatestLowerBound(List<Type> types) {
+  public static Type greatestLowerBound(List<Type> types) {
     // TODO SONARJAVA-1632 implement, should return intersection of all types, not only first one
     return types.iterator().next();
   }

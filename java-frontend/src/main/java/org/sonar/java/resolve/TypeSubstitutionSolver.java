@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Lists;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -305,6 +306,32 @@ public class TypeSubstitutionSolver {
     }
     return parametrizedTypeCache.getParametrizedTypeType(type.symbol, substitution);
   }
+
+  JavaType functionType(ParametrizedTypeJavaType type) {
+    TypeSubstitution substitution = new TypeSubstitution();
+    for (Map.Entry<TypeVariableJavaType, JavaType> entry : type.typeSubstitution.substitutionEntries()) {
+      JavaType value = entry.getValue();
+      if(value.isTagged(JavaType.WILDCARD)) {
+        // JLS8 9.9 function types
+        WildCardType wildcardType = (WildCardType) value;
+        switch (wildcardType.boundType) {
+          case UNBOUNDED:
+            // This is only an approximation of the real bound type (the case with multiple bounds is not covered).
+            value = entry.getKey().bounds.get(0);
+            break;
+          case EXTENDS:
+            value = (JavaType) LeastUpperBound.greatestLowerBound(Lists.newArrayList(wildcardType.bound, entry.getKey().bounds.get(0)));
+            break;
+          case SUPER:
+            value = wildcardType.bound;
+            break;
+        }
+      }
+      substitution.add(entry.getKey(), value);
+    }
+    return parametrizedTypeCache.getParametrizedTypeType(type.symbol, substitution);
+  }
+
 
   static TypeSubstitution substitutionFromSuperType(ParametrizedTypeJavaType target, ParametrizedTypeJavaType source) {
     TypeSubstitution result = new TypeSubstitution(target.typeSubstitution);

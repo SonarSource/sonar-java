@@ -1473,4 +1473,10 @@ public class SymbolTableTest {
     assertThat(((VariableTree) result.symbol("var").declaration()).initializer().symbolType().is("A$MySAM")).isTrue();
     assertThat(((VariableTree) result.symbol("var2").declaration()).initializer().symbolType().is("A$MySAM2")).isTrue();
   }
+
+  @Test
+  public void functionTypes_should_respect_JLS_in_regard_to_wildcards() throws Exception {
+    Result result = Result.createFor("FunctionTypesComputation");
+    assertThat(result.symbol("method").usages()).hasSize(1);
+  }
 }
