@@ -75,12 +75,10 @@ public interface ClassTree extends StatementTree {
 
   ListTree<TypeTree> superInterfaces();
 
-  @Nullable
   SyntaxToken openBraceToken();
 
   List<Tree> members();
 
-  @Nullable
   SyntaxToken closeBraceToken();
 
   Symbol.TypeSymbol symbol();
