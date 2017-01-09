@@ -38,6 +38,11 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void catof() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationCATOF.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
   public void test_singleton() throws Exception {
     MethodInvocationTreeImpl mockTree = mock(MethodInvocationTreeImpl.class);
     Set<List<JavaFileScannerContext.Location>> singleton = FlowComputation.singleton("singleton msg", mockTree);
