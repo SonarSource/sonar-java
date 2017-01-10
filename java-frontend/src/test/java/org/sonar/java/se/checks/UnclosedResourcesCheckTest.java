@@ -50,4 +50,10 @@ public class UnclosedResourcesCheckTest {
     unclosedResourcesCheck.excludedTypes = "java.io.FileInputStream, java.sql.Statement";
     JavaCheckVerifier.verify("src/test/files/se/ExcludedResourcesTestFile.java", unclosedResourcesCheck);
   }
+
+  @Test
+  public void try_with_resources() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/UnclosedResourcesCheckARM.java", new UnclosedResourcesCheck());
+  }
+
 }

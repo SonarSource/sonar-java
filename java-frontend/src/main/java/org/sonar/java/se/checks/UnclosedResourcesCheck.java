@@ -166,8 +166,11 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private static boolean isWithinTryHeader(Tree syntaxNode) {
-    final Tree parent = syntaxNode.parent();
-    if (parent.is(Tree.Kind.VARIABLE)) {
+    Tree parent = syntaxNode;
+    while (parent != null && !parent.is(Tree.Kind.VARIABLE) ) {
+      parent = parent.parent();
+    }
+    if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
       return isTryStatementResource((VariableTree) parent);
     }
     return false;
@@ -327,7 +330,7 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private void closeResultSetsRelatedTo(SymbolicValue value) {
-      for (Map.Entry<SymbolicValue, ObjectConstraint> constrainedValue : programState.getValuesWithConstraints(Status.OPENED).entrySet()) {
+      for (Map.Entry<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> constrainedValue : programState.getValuesWithConstraints(Status.OPENED).entrySet()) {
         if (constrainedValue.getKey() instanceof ResourceWrapperSymbolicValue) {
           ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue.getKey();
           if (value.equals(rValue.dependent)) {
@@ -343,7 +346,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
     private void closeResource(@Nullable final SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
+        ObjectConstraint<ObjectConstraint.Status> oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
         if (oConstraint != null) {
           programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
         }
@@ -362,7 +365,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
         if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraint(instanceValue, new ObjectConstraint(false, false, Status.OPENED));
+          programState = programState.addConstraint(instanceValue, new ObjectConstraint<>(false, false, Status.OPENED));
         }
       }
     }
@@ -378,7 +381,7 @@ public class UnclosedResourcesCheck extends SECheck {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
-          programState = programState.addConstraint(programState.peekValue(), new ObjectConstraint(false, false, Status.OPENED));
+          programState = programState.addConstraint(programState.peekValue(), new ObjectConstraint<>(false, false, Status.OPENED));
         }
       }
     }
