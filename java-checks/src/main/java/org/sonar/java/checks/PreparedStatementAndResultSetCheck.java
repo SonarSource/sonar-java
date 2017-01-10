@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S2695")
@@ -102,7 +103,17 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Arguments arguments = ((MethodInvocationTree) tree).arguments();
       if (!arguments.isEmpty()) {
-        return getNumberQuery(arguments.get(0));
+        ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
+        String methodName = null;
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+          methodName = ((MemberSelectExpressionTree) methodSelect).identifier().name();
+        }
+        if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+          methodName = ((IdentifierTree) methodSelect).name();
+        }
+        if ("prepareStatement".equals(methodName)) {
+          return getNumberQuery(arguments.get(0));
+        }
       }
     }
     return null;
