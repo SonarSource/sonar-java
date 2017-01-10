@@ -49,6 +49,8 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   private static final String INT = "int";
   private static final String JAVA_SQL_RESULTSET = "java.sql.ResultSet";
+  private static final MethodMatcher PREPARE_STATEMENT = MethodMatcher.create()
+    .typeDefinition("java.sql.Connection").name(NameCriteria.startsWith("prepareStatement")).withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -102,18 +104,8 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   private static Integer getPreparedStatementNumberOfParameters(@Nullable ExpressionTree tree) {
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Arguments arguments = ((MethodInvocationTree) tree).arguments();
-      if (!arguments.isEmpty()) {
-        ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
-        String methodName = null;
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          methodName = ((MemberSelectExpressionTree) methodSelect).identifier().name();
-        }
-        if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-          methodName = ((IdentifierTree) methodSelect).name();
-        }
-        if ("prepareStatement".equals(methodName)) {
-          return getNumberQuery(arguments.get(0));
-        }
+      if (!arguments.isEmpty() && PREPARE_STATEMENT.matches((MethodInvocationTree) tree)) {
+        return getNumberQuery(arguments.get(0));
       }
     }
     return null;
