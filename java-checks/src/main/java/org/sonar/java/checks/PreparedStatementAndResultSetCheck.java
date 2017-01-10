@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S2695")
@@ -48,6 +49,8 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   private static final String INT = "int";
   private static final String JAVA_SQL_RESULTSET = "java.sql.ResultSet";
+  private static final MethodMatcher PREPARE_STATEMENT = MethodMatcher.create()
+    .typeDefinition("java.sql.Connection").name(NameCriteria.startsWith("prepareStatement")).withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -101,7 +104,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   private static Integer getPreparedStatementNumberOfParameters(@Nullable ExpressionTree tree) {
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Arguments arguments = ((MethodInvocationTree) tree).arguments();
-      if (!arguments.isEmpty()) {
+      if (!arguments.isEmpty() && PREPARE_STATEMENT.matches((MethodInvocationTree) tree)) {
         return getNumberQuery(arguments.get(0));
       }
     }

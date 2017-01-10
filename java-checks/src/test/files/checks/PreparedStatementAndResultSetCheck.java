@@ -186,4 +186,22 @@ abstract class A extends UnknownClassFromSamePackage {
     }
 
   }
+
+  private class IndirectInititalization {
+    Connection conn;
+
+    void foo() {
+      PreparedStatement ps = null;
+      try {
+        ps = prepareInsertRequest("SomeTable", 2);
+        ps.setString(1, "someValue");
+        ps.setInt(2, 4);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+    public PreparedStatement prepareInsertRequest(String tableName, int argsNum) throws SQLException {
+      return conn.prepareStatement("INSERT INTO " + tableName + " VALUES (?" + Strings.repeat(",?", argsNum - 1) + ")");
+    }
+  }
 }
