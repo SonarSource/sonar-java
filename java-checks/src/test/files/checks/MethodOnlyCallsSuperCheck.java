@@ -179,3 +179,17 @@ class C extends A {
     super.bar4();
   }
 }
+public class finalMethodsExclusion {
+  static class BaseClass {
+    public void methodA() { }
+    public void methodB() { }
+  }
+  static class OverrideClass extends BaseClass {
+    public final void methodA() { // compliant : override to make the method final.
+      super.methodA();
+    }
+    public void methodB() { // Noncompliant
+      super.methodB();
+    }
+  }
+}
