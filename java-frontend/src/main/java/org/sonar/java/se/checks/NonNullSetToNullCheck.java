@@ -45,7 +45,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,11 +89,15 @@ public class NonNullSetToNullCheck extends SECheck {
     if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
+        if (member.is(Tree.Kind.VARIABLE) && !isInitialized((VariableTree) member)) {
           checkVariable(context, methodTree, ((VariableTree) member).symbol());
         }
       }
     }
+  }
+
+  private static boolean isInitialized(VariableTree member) {
+    return member.initializer() != null;
   }
 
   private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {
