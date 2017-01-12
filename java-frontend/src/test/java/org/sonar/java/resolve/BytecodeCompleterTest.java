@@ -556,4 +556,12 @@ public class BytecodeCompleterTest {
     Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.MethodSymbols");
     assertThat(((TypeJavaSymbol) clazz).packge().metadata().isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault")).isTrue();
   }
+
+  @Test
+  public void bridge_method_not_synthetic_should_not_be_created_as_symbol_nor_fail_analysis() throws Exception {
+    TypeJavaSymbol prezModel42 = bytecodeCompleter.getClassSymbol("model42.PresentationModel42");
+    prezModel42.complete();
+    assertThat(prezModel42.members().lookup("setSliderMinValue")).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("bridge method setSliderMinValue not marked as synthetic in class model42/PresentationModel42");
+  }
 }
