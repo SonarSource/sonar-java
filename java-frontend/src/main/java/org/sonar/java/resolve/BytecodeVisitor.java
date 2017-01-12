@@ -31,6 +31,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import javax.annotation.Nullable;
 
@@ -40,6 +42,7 @@ import java.util.stream.Collectors;
 
 public class BytecodeVisitor extends ClassVisitor {
 
+  private static final Logger LOG = Loggers.get(BytecodeVisitor.class);
   private final Symbols symbols;
   private final JavaSymbol.TypeJavaSymbol classSymbol;
   private final ParametrizedTypeCache parametrizedTypeCache;
@@ -208,7 +211,10 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkNotNull(name);
     Preconditions.checkNotNull(desc);
     if (!BytecodeCompleter.isSynthetic(flags)) {
-      Preconditions.checkState((flags & Opcodes.ACC_BRIDGE) == 0, "bridge method not marked as synthetic in class %s", className);
+      if((flags & Opcodes.ACC_BRIDGE) != 0) {
+        LOG.warn("bridge method {} not marked as synthetic in class {}", name, className);
+        return null;
+      }
       // TODO(Godin): according to JVMS 4.7.24 - parameter can be marked as synthetic
       MethodJavaType type = new MethodJavaType(
           convertAsmTypes(org.objectweb.asm.Type.getArgumentTypes(desc)),
