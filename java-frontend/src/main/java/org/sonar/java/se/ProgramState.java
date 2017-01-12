@@ -193,7 +193,7 @@ public class ProgramState {
 
   @Override
   public String toString() {
-    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
+    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }" + " { " + getLastEvaluated() + " } ";
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {

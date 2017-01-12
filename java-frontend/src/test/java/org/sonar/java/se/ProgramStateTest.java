@@ -76,7 +76,8 @@ public class ProgramStateTest {
     state = state.put(variable, sv4);
     SymbolicValue sv5 = new SymbolicValue(5);
     state = state.stackValue(sv5);
-    assertThat(state.toString()).isEqualTo("{ A#x->SV_4}  { SV_0_NULL->NULL SV_1_TRUE->TRUE SV_2_FALSE->FALSE} { [SV_5, SV_3] }");
+    state.lastEvaluated = variable;
+    assertThat(state.toString()).isEqualTo("{ A#x->SV_4}  { SV_0_NULL->NULL SV_1_TRUE->TRUE SV_2_FALSE->FALSE} { [SV_5, SV_3] } { A#x } ");
   }
 
   @Test

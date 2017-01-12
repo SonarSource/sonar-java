@@ -11,7 +11,7 @@ function loadCFG(DOTstring) {
 };
 
 function loadDot(DOTstring, useProgramStates, displayAsTree) {
-  var DEFAULT_PROGRAM_STATE_HTML= '<h3>Program State:</h2><em>Select a node from the graph to display its program state...</em>';
+  var DEFAULT_PROGRAM_STATE_HTML= '<h3>Program State:</h3><em>Select a node from the graph to display its program state...</em>';
 
   if (!useProgramStates) {
     removeProgramStateDiv();
@@ -85,12 +85,13 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
         // ugly hack to get differents parts of the program state based on its toString() method. 
         // Should be refactored in order to get correctly each object
         var groups = programStateAsString.split('{');
-        if (groups.length == 4) {
-          result = '<h3>Program State:</h2>';
+        if (groups.length == 5) {
+          result = '<h3>Program State:</h3>';
           result += '<table>';
           result += tableLine('values',groups[1]);
           result += tableLine('constraints', groups[2]);
           result += tableLine('stack', groups[3]);
+          result += tableLine('lastEvaluatedSymbol', groups[4]);
           result += '</table>';
         }
       }
