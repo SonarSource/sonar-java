@@ -45,7 +45,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,11 +88,11 @@ public class NonNullSetToNullCheck extends SECheck {
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          checkVariable(context, methodTree, ((VariableTree) member).symbol());
-        }
-      }
+      classTree.members().stream()
+        .filter(m -> m.is(Tree.Kind.VARIABLE))
+        .map(m-> (VariableTree) m)
+        .filter(v->v.initializer() == null)
+        .forEach(v -> checkVariable(context, methodTree, v.symbol()));
     }
   }
 

@@ -183,3 +183,17 @@ public class JpaEmbeddable {
   }
 
 }
+
+class FieldWithInitializer {
+  @Nonnull
+  private final Integer val1 = calculate();
+  @Nonnull
+  private Integer val2 = calculate();
+
+  public FieldWithInitializer() {} // Compliant, the field has an initializer
+
+  @Nonnull
+  private Integer calculate() {
+    return 42;
+  }
+}
