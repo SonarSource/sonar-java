@@ -168,4 +168,37 @@ class Fields {
   private static ImmutableCollection getImmutableCollection() {
     return null;
   }
+
+  public class EmptyArrayExample {
+
+    private static final int[] EMPTY = new int[0];
+    private static final int[][][] EMPTY_SEVERAL_DIMS = new int[0][0][0];
+    private static final int[] NOT_EMPTY = new int[foo()];
+    private static final int[][][] NOT_EMPTY_SEVERAL_DIMS = new int[0][foo()][1];
+    private static final int[] NOT_EMPTY_INIT = new int[]{ 1, 2};
+    private static final char[] PLUS_SIGN = { '+' };
+
+    public int[] getValues() {
+      return EMPTY;
+    }
+    public int[] getValues2() {
+      return EMPTY_SEVERAL_DIMS;
+    }
+    public int[] getValues3() {
+      return NOT_EMPTY;// Noncompliant
+    }
+    public int[] getValues4() {
+      return NOT_EMPTY_SEVERAL_DIMS; // Noncompliant
+    }
+    public int[] getValues5() {
+      return NOT_EMPTY_INIT; // Noncompliant
+    }
+    public int[] getValues6() {
+      return PLUS_SIGN; // Noncompliant
+    }
+
+
+
+  }
+
 }
