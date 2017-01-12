@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,9 +35,12 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -137,13 +140,28 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     if (symbol.isStatic() && symbol.isFinal()) {
       VariableTree declaration = symbol.declaration();
       // symbol is private, so declaration can only be null if assignment is done in static block
-      if (declaration.initializer() != null) {
-        return !isMutableType(declaration.initializer());
+      ExpressionTree initializer = declaration.initializer();
+      if (initializer != null) {
+        return !isMutableType(initializer) || isEmptyArray(initializer);
       }
       return !assignementsOfMutableType(symbol.usages());
     }
 
     return false;
+  }
+
+  private static boolean isEmptyArray(ExpressionTree initializer) {
+    return initializer.is(Tree.Kind.NEW_ARRAY) &&
+      !((NewArrayTree) initializer).dimensions().isEmpty() &&
+      ((NewArrayTree) initializer).dimensions().stream().allMatch(adt -> isZeroLiteralValue(adt.expression()));
+  }
+
+  private static boolean isZeroLiteralValue(@Nullable ExpressionTree expressionTree) {
+    if (expressionTree == null) {
+      return false;
+    }
+    Integer integer = LiteralUtils.intLiteralValue(expressionTree);
+    return integer != null && integer == 0;
   }
 
   private static boolean assignementsOfMutableType(List<IdentifierTree> usages) {
