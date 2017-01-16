@@ -27,7 +27,7 @@ public class ObjectConstraint<S extends ObjectConstraint.Status> implements Cons
 
   public interface Status {
     default String valueAsString() {
-      return "";
+      return null;
     }
   }
 
@@ -52,7 +52,7 @@ public class ObjectConstraint<S extends ObjectConstraint.Status> implements Cons
     return (ObjectConstraint<S>) NOT_NULL;
   }
 
-  public static <S extends ObjectConstraint.Status> ObjectConstraint<S> nullConstraint() {
+  public static <S extends Status> ObjectConstraint<S> nullConstraint() {
     return new ObjectConstraint<>(true, false, null);
   }
 
@@ -74,7 +74,7 @@ public class ObjectConstraint<S extends ObjectConstraint.Status> implements Cons
     if (isNull) {
       return "null";
     }
-    return status == null ? "" : status.valueAsString();
+    return (status == null || status.valueAsString() == null)  ? "non-null" : status.valueAsString();
   }
 
   public boolean isInvalidWith(@Nullable Constraint target) {

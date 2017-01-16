@@ -109,9 +109,9 @@ public class NullDereferenceCheck extends SECheck {
     String symbolName = SyntaxTreeNameFinder.getName(syntaxNode);
     String msg;
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) syntaxNode).expression().is(Tree.Kind.METHOD_INVOCATION)) {
-      msg = String.format("Result of %s() is dereferenced", symbolName);
+      msg = String.format("Result of '%s()' is dereferenced", symbolName);
     } else {
-      msg = String.format("%s is dereferenced", symbolName);
+      msg = String.format("'%s' is dereferenced", symbolName);
     }
     flow.add(0, new JavaFileScannerContext.Location(msg, syntaxNode));
   }

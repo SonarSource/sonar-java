@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class SyntaxTreeNameFinder extends BaseTreeVisitor {
 
@@ -75,6 +76,15 @@ public class SyntaxTreeNameFinder extends BaseTreeVisitor {
       name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
     } else {
       methodSelect.accept(this);
+    }
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    if (tree.initializer() == null) {
+      name = tree.simpleName().name();
+    } else {
+      super.visitVariable(tree);
     }
   }
 }

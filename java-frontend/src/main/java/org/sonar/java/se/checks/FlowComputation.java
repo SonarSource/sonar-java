@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -46,21 +47,21 @@ public class FlowComputation {
   private final SymbolicValue symbolicValue;
   private final Set<ExplodedGraph.Node> visited = new HashSet<>();
 
-  private FlowComputation(SymbolicValue symbolicValue, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
+  private FlowComputation(@Nullable SymbolicValue symbolicValue, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
     this.addToFlow = addToFlow;
     this.terminateTraversal = terminateTraversal;
     this.symbolicValue = symbolicValue;
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal) {
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal) {
     return flow(currentNode, currentVal, constraint -> true);
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow) {
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow) {
     return flow(currentNode, currentVal, addToFlow, c -> false);
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
     Predicate<Constraint> terminateTraversal) {
     FlowComputation flowComputation = new FlowComputation(currentVal, addToFlow, terminateTraversal);
 
@@ -113,10 +114,23 @@ public class FlowComputation {
       .map(ExplodedGraph.Node.LearnedConstraint::getConstraint)
       .collect(Collectors.toList());
 
-    if (learnedConstraints.stream().anyMatch(addToFlow)) {
-      flow.add(location(currentNode.parent()));
-    }
+    final ExplodedGraph.Node parent = currentNode.parent();
+    learnedConstraints.stream()
+      .filter(addToFlow.and(Objects::nonNull))
+      .forEach(lc -> flow.add(location(parent, learnedConstraintMessage(lc, parent))));
     return learnedConstraints;
+  }
+
+  private static String learnedConstraintMessage(Constraint lc, ExplodedGraph.Node currentNode) {
+    Tree nodeTree = currentNode.programPoint.syntaxTree();
+    String name = SyntaxTreeNameFinder.getName(nodeTree);
+    if (nodeTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return String.format("'%s' returns %s", name, lc.valueAsString());
+    }
+    if (nodeTree.is(Tree.Kind.NEW_CLASS)) {
+      return String.format("Constructor call creates '%s'", lc.valueAsString());
+    }
+    return name == null ? lc.valueAsString() : String.format("Implies '%s' is %s", name, lc.valueAsString());
   }
 
   @Nullable
@@ -132,7 +146,7 @@ public class FlowComputation {
       ExplodedGraph.Node.LearnedValue lv = learnedValue.get();
       Constraint constraint = parent.programState.getConstraint(lv.getSv());
       JavaFileScannerContext.Location location = constraint == null ? location(parent) :
-        location(parent, lv.getSymbol().name() + " is assigned " + constraint.valueAsString());
+        location(parent, String.format("'%s' is assigned %s", lv.getSymbol().name(), constraint.valueAsString()));
       flow.add(location);
       return parent.programState.getLastEvaluated();
     }

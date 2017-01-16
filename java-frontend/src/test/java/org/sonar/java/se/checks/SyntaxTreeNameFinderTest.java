@@ -84,4 +84,16 @@ public class SyntaxTreeNameFinderTest {
     StatementTree statementTree = block.body().get(0);
     assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("checkForNullMethod");
   }
+
+  @Test
+  public void testCatchParameter() {
+    MethodTree tree = buildSyntaxTree("public void test() {try {} catch (Exception ex) {} }");
+    assertThat(SyntaxTreeNameFinder.getName(tree)).isEqualTo("ex");
+  }
+
+  @Test
+  public void testVariableWithInitializer() {
+    MethodTree tree = buildSyntaxTree("public void test() {int i = length;}");
+    assertThat(SyntaxTreeNameFinder.getName(tree)).isEqualTo("length");
+  }
 }

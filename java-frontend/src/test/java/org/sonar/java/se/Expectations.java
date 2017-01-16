@@ -250,7 +250,10 @@ class Expectations {
 
     @Override
     public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-      collectExpectedIssues(syntaxTrivia.comment(), syntaxTrivia.startLine());
+      // ignore whole commented lines
+      if (syntaxTrivia.column() != 0) {
+        collectExpectedIssues(syntaxTrivia.comment(), syntaxTrivia.startLine());
+      }
     }
 
     @VisibleForTesting
