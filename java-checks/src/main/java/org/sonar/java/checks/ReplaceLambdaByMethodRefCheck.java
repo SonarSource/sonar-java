@@ -155,10 +155,32 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
         }
         arguments = ((NewClassTree) tree).arguments();
       } else {
-        arguments = ((MethodInvocationTree) tree).arguments();
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        if (hasMethodInvocationInMethodSelect(mit)) {
+          return false;
+        }
+        arguments = mit.arguments();
       }
       List<VariableTree> parameters = lambdaTree.parameters();
       return matchingParameters(parameters, arguments) || (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters));
+    }
+    return false;
+  }
+
+  private static boolean hasMethodInvocationInMethodSelect(MethodInvocationTree mit) {
+    if (!mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      return false;
+    }
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+    while (mse != null) {
+      if (mse.expression().is(Tree.Kind.METHOD_INVOCATION)) {
+        return true;
+      }
+      if (mse.expression().is(Tree.Kind.MEMBER_SELECT)) {
+        mse = (MemberSelectExpressionTree) mse.expression();
+      } else {
+        mse = null;
+      }
     }
     return false;
   }
