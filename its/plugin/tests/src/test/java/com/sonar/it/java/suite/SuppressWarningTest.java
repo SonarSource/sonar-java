@@ -23,15 +23,16 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.locator.FileLocation;
-
+import java.io.File;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.services.Measure;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
+import org.sonarqube.ws.WsMeasures;
+import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
-import java.io.File;
-
+import static java.lang.Integer.parseInt;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SuppressWarningTest {
@@ -58,12 +59,16 @@ public class SuppressWarningTest {
       .setProperty("sonar.profile", "suppress-warnings");
     ORCHESTRATOR.executeBuild(build);
 
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(3);
+    assertThat(parseInt(getMeasure("org.example:example", "violations").getValue())).isEqualTo(3);
   }
 
-  private static Measure getMeasure(String resourceKey, String metricKey) {
-    Resource resource = ORCHESTRATOR.getServer().getWsClient().find(ResourceQuery.createForMetrics(resourceKey, metricKey));
-    return resource != null ? resource.getMeasure(metricKey) : null;
+  @CheckForNull
+  static WsMeasures.Measure getMeasure(String componentKey, String metricKey) {
+    WsMeasures.ComponentWsResponse response = TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentWsRequest()
+      .setComponentKey(componentKey)
+      .setMetricKeys(singletonList(metricKey)));
+    List<WsMeasures.Measure> measures = response.getComponent().getMeasuresList();
+    return measures.size() == 1 ? measures.get(0) : null;
   }
 
 }
