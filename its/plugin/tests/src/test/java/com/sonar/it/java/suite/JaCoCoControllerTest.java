@@ -23,21 +23,22 @@ import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.SonarClient;
+import org.sonarqube.ws.client.GetRequest;
 
+import static com.sonar.it.java.suite.TestUtils.newAdminWsClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JaCoCoControllerTest {
 
-
   @ClassRule
   public static final Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
   private String javaVersion;
-
 
   @BeforeClass
   public static void analyzeProject() {
@@ -46,17 +47,14 @@ public class JaCoCoControllerTest {
 
   @Before
   public void setUp() throws Exception {
-    SonarClient sonarClient = orchestrator.getServer().adminWsClient();
-    String json = sonarClient.get("api/updatecenter/installed_plugins");
-    Plugin[] plugins = new Gson().fromJson(json, Plugin[].class);
-    javaVersion = "";
-    for (Plugin plugin : plugins) {
-      if(plugin.key.equals("java")) {
-        javaVersion = plugin.version;
-        break;
-      }
-    }
-    assertThat(javaVersion).isNotEmpty();
+    String json = newAdminWsClient(orchestrator).wsConnector().call(new GetRequest("api/plugins/installed")).content();
+    Optional<String> javaVersion = new Gson().fromJson(json, Plugins.class).getPlugins()
+      .stream()
+      .filter(plugin -> plugin.getKey().equals("java"))
+      .map(Plugins.Plugin::getVersion)
+      .findFirst();
+    assertThat(javaVersion).isPresent();
+    this.javaVersion = javaVersion.get();
   }
 
   @Test
@@ -71,7 +69,6 @@ public class JaCoCoControllerTest {
     assertThat(buildResult.getLogs()).contains("JacocoControllerError");
   }
 
-
   @Test
   public void test_coverage_per_test() throws Exception {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("coverage_error"))
@@ -81,12 +78,26 @@ public class JaCoCoControllerTest {
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
     assertThat(buildResult.isSuccess()).isTrue();
 
-
   }
 
-  private static class Plugin {
-    String key;
-    String name;
-    String version;
+  private static class Plugins {
+    List<Plugin> plugins;
+
+    List<Plugin> getPlugins() {
+      return plugins;
+    }
+
+    static class Plugin {
+      String key;
+      String version;
+
+      String getKey() {
+        return key;
+      }
+
+      String getVersion() {
+        return version;
+      }
+    }
   }
 }
