@@ -20,11 +20,18 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.collect.Iterables;
+import com.sonar.orchestrator.Orchestrator;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import org.sonarqube.ws.client.HttpConnector;
+import org.sonarqube.ws.client.WsClient;
+import org.sonarqube.ws.client.WsClientFactories;
+
+import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
+import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
 
 public class TestUtils {
   private static final File home;
@@ -57,5 +64,18 @@ public class TestUtils {
 
   public static File projectPom(String projectName) {
     return new File(homeDir(), "projects/" + projectName + "/pom.xml");
+  }
+
+  static WsClient newWsClient(Orchestrator orchestrator) {
+    return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
+      .url(orchestrator.getServer().getUrl())
+      .build());
+  }
+
+  static WsClient newAdminWsClient(Orchestrator orchestrator) {
+    return WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
+      .credentials(ADMIN_LOGIN, ADMIN_PASSWORD)
+      .url(orchestrator.getServer().getUrl())
+      .build());
   }
 }

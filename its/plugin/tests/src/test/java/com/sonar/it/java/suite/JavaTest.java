@@ -25,6 +25,8 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
+import java.io.File;
+import java.util.List;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -33,13 +35,10 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueClient;
 import org.sonar.wsclient.issue.IssueQuery;
-import org.sonar.wsclient.services.Measure;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
+import org.sonarqube.ws.WsComponents;
 
-import java.io.File;
-import java.util.List;
-
+import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
+import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTest {
@@ -65,10 +64,9 @@ public class JavaTest {
       .setProperty("sonar.dynamicAnalysis", "false");
     orchestrator.executeBuild(build);
 
-    Resource file = orchestrator.getServer().getWsClient()
-      .find(ResourceQuery.createForMetrics(JavaTestSuite.keyFor("org.sonar.it.core:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"), "files"));
+    WsComponents.Component file = getComponent(JavaTestSuite.keyFor("org.sonar.it.core:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"));
     assertThat(file).isNotNull();
-    assertThat(file.getLongName()).contains("FilenameWith$Dollar");
+    assertThat(file.getName()).contains("FilenameWith$Dollar");
   }
 
   /**
@@ -82,10 +80,8 @@ public class JavaTest {
       .setProperty("sonar.dynamicAnalysis", "false");
     orchestrator.executeBuild(build);
 
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:commented-out-java-code",
-      "commented_out_code_lines", "ncloc"));
-    assertThat(project.getMeasureIntValue("ncloc")).isEqualTo(7);
-    assertThat(project.getMeasureIntValue("commented_out_code_lines")).isNull();
+    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:commented-out-java-code", "ncloc")).isEqualTo(7);
+    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:commented-out-java-code", "commented_out_code_lines")).isNull();
   }
 
   /**
@@ -137,7 +133,7 @@ public class JavaTest {
       .setProperty("sonar.profile", "filtered-issues");
     orchestrator.executeBuild(build);
 
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(2);
+    assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(2);
 
     IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
     List<Issue> issues = issueClient.find(IssueQuery.create().components("org.example:example:src/main/java/EclispeI18NFiltered.java")).list();
@@ -147,11 +143,6 @@ public class JavaTest {
 
       assertThat(issue.line()).isEqualTo(17);
     }
-  }
-
-  private static Measure getMeasure(String resourceKey, String metricKey) {
-    Resource resource = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics(resourceKey, metricKey));
-    return resource != null ? resource.getMeasure(metricKey) : null;
   }
 
   /**
@@ -166,9 +157,8 @@ public class JavaTest {
       .setProperty("sonar.sources", "src");
     orchestrator.executeBuild(scan);
 
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("jav-file-extension", "files", "ncloc"));
-    assertThat(project.getMeasureIntValue("files")).isEqualTo(1);
-    assertThat(project.getMeasureIntValue("ncloc")).isGreaterThan(0);
+    assertThat(getMeasureAsInteger("jav-file-extension", "files")).isEqualTo(1);
+    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isGreaterThan(0);
   }
 
   @Test
@@ -181,9 +171,8 @@ public class JavaTest {
       .setProperty("sonar.sources", "src");
     orchestrator.executeBuild(scan);
 
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("jav-file-extension", "files", "ncloc"));
-    assertThat(project.getMeasureIntValue("files")).isEqualTo(2);
-    assertThat(project.getMeasureIntValue("ncloc")).isGreaterThan(0);
+    assertThat(getMeasureAsInteger("jav-file-extension", "files")).isEqualTo(2);
+    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isGreaterThan(0);
   }
 
   @Test
@@ -198,8 +187,7 @@ public class JavaTest {
       .setCleanPackageSonarGoals();
 
     orchestrator.executeBuild(build);
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:java-inner-classes", "violations"));
-    assertThat(project.getMeasureIntValue("violations")).isEqualTo(1);
+    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:java-inner-classes", "violations")).isEqualTo(1);
   }
 
   @Test
@@ -212,7 +200,7 @@ public class JavaTest {
 
     // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(0);
+    assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(0);
 
     // invalid java version. got issue on java 7 code
     build.setProperty(sonarJavaSource, "jdk_1.6");
@@ -221,17 +209,17 @@ public class JavaTest {
     assertThat(buildResult.getStatus()).isEqualTo(0);
     // build logs should contains warning related to sources
     assertThat(buildResult.getLogs()).contains("Invalid java version");
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+    assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(1);
 
     // upper version. got issue on java 7 code
     build.setProperty(sonarJavaSource, "1.8");
     orchestrator.executeBuild(build);
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+    assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(1);
 
     // lower version. no issue on java 7 code
     build.setProperty(sonarJavaSource, "1.6");
     orchestrator.executeBuild(build);
-    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(0);
+    assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(0);
 
     SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-version-aware-visitor"))
       .setProperty("sonar.projectKey", "org.example:example-scanner")
@@ -241,6 +229,6 @@ public class JavaTest {
       .setProperty("sonar.sources", "src/main/java");
     orchestrator.executeBuild(scan);
     // no java version specified, got issue on java 7 code
-    assertThat(getMeasure("org.example:example-scanner", "violations").getValue()).isEqualTo(1);
+    assertThat(getMeasureAsInteger("org.example:example-scanner", "violations")).isEqualTo(1);
   }
 }
