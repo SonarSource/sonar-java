@@ -96,7 +96,7 @@ public class ExplodedGraphWalkerTest {
       private ExplodedGraph.Node firstExceptionalNode = null;
 
       @Override
-      public void enqueue(org.sonar.java.se.ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath) {
+      public void enqueue(org.sonar.java.se.ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath, MethodYield methodYield) {
         SymbolicValue.ExceptionalSymbolicValue exceptionSV = null;
         SymbolicValue peekValue = programState.peekValue();
         boolean getNode = false;
@@ -109,7 +109,7 @@ public class ExplodedGraphWalkerTest {
           }
         }
         int workListSize = workList.size();
-        super.enqueue(newProgramPoint, programState, exitPath);
+        super.enqueue(newProgramPoint, programState, exitPath, methodYield);
 
         if (getNode) {
           if (firstExceptionalNode == null) {

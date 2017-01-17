@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.constraint.BooleanConstraint;
