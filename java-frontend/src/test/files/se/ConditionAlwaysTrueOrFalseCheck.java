@@ -772,7 +772,7 @@ public class Class extends SuperClass {
     if (field && this.field1 == field2) {
       if (this.field) { // Noncompliant
       }
-      if (field1 == this.field2) { //False negative Noncompliant
+      if (field1 == this.field2) { // Noncompliant
       }
     }
   }
@@ -814,16 +814,20 @@ public class Class extends SuperClass {
     // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (field1 || field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
+    if (field1 && !field1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (this.field1 && !this.field1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
 
-    if (super.field && !super.field) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (super.field && !super.field) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (super.field && !this.field) { // Compliant
     }
 
     if (super.field && super.field1 == super.field2) {
-      if (super.field) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (super.field) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (super.field1 == super.field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (super.field1 == super.field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       otherMethod();
       if (super.field) { // Compliant
@@ -837,7 +841,8 @@ public class Class extends SuperClass {
 
     super.field1 = false;
     super.field2 = super.field1;
-    if (super.field1 || super.field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    if (super.field1 || super.field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
 
     SuperClass instance1, instance2;

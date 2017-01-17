@@ -48,11 +48,11 @@ public final class ExpressionUtils {
     }
 
     ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
-    return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isThisAssignment((MemberSelectExpressionTree) variable));
+    return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isOwningInstanceAssignment((MemberSelectExpressionTree) variable));
   }
 
   public static boolean isSimpleAssignment(MemberSelectExpressionTree memberSelectExpressionTree) {
-      return isThisAssignment(memberSelectExpressionTree);
+    return isOwningInstanceAssignment(memberSelectExpressionTree);
   }
 
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
@@ -63,7 +63,7 @@ public final class ExpressionUtils {
 
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
-      if (isThisAssignment(selectTree)) { // FIXME(Johan): Is this check needed?
+      if (isOwningInstanceAssignment(selectTree)) {
         return selectTree.identifier();
       }
     }
@@ -72,14 +72,14 @@ public final class ExpressionUtils {
     throw new IllegalArgumentException("Can not extract identifier.");
   }
 
-  private static boolean isThisAssignment(MemberSelectExpressionTree tree) {
+  private static boolean isOwningInstanceAssignment(MemberSelectExpressionTree tree) {
     if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
       // This is no longer simple.
       return false;
     }
 
     SyntaxToken variableToken = tree.firstToken();
-    return variableToken != null && "this".equalsIgnoreCase(variableToken.text());
+    return variableToken != null && ("this".equalsIgnoreCase(variableToken.text()) || "super".equalsIgnoreCase(variableToken.text()));
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
