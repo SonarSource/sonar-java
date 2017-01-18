@@ -108,4 +108,10 @@ class A {
     strings.stream().filter(s -> (((s2 == null)))); // Compliant
     strings.stream().filter(s -> (((null == null)))); // Compliant
   }
+
+  void append(StringBuilder sb, List<Object> list) {
+    list.forEach(item -> sb.append("\n").append(item));
+    list.forEach(item -> sb.append("\n").foo.append(item));
+    list.forEach(item -> this.append(item)); // Noncompliant
+  }
 }
