@@ -196,4 +196,13 @@ public class MethodYield {
   public void flowForParameter(int parameterIndex, List<JavaFileScannerContext.Location> flow) {
     flowByParameters.set(parameterIndex + 1, flow);
   }
+
+  public List<JavaFileScannerContext.Location> flow(int parameterIndex) {
+    return flowByParameters.get(parameterIndex + 1);
+  }
+
+  @CheckForNull
+  public Type exceptionType() {
+    return exceptionType;
+  }
 }

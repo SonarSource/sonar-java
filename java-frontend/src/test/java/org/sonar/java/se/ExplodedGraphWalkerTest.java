@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.reflect.ClassPath;
+
 import org.junit.Test;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -261,6 +262,11 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void xproc_usage_of_exceptional_path_and_branching() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranching.java", seChecks());
+  }
+
+  @Test
+  public void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranchingReporting.java", seChecks());
   }
 
   static class MethodAsInstruction extends SECheck {
