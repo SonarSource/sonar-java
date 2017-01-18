@@ -21,13 +21,14 @@ package org.sonar.java.viewer;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
-import javafx.scene.web.WebEngine;
+
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.MethodBehavior;
+import org.sonar.java.se.MethodYield;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javafx.scene.web.WebEngine;
 
 public class EGViewer {
 
@@ -83,7 +86,7 @@ public class EGViewer {
         if (SHOW_CACHE && nbParents > 1) {
           List<ExplodedGraph.Node> cacheHits = node.getParents().subList(1, nbParents);
           for (ExplodedGraph.Node cacheHit : cacheHits) {
-            result += cacheEdge(nodes.indexOf(cacheHit), index, cacheHit);
+            result += cacheEdge(nodes.indexOf(cacheHit), index, node, cacheHit);
           }
         }
       }
@@ -94,7 +97,7 @@ public class EGViewer {
   }
 
   private static String graphNode(int index, ExplodedGraph.Node node) {
-    return index + "[label = \"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node) + "] ";
+    return index + "[label=\"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node) + "] ";
   }
 
   private static String specialHighlight(ExplodedGraph.Node node) {
@@ -110,12 +113,23 @@ public class EGViewer {
     return from + "->" + to
       + "[label=\""
       + node.getLearnedSymbols().stream().map(ExplodedGraph.Node.LearnedValue::toString).collect(Collectors.joining(","))
-      + " "
+      + "\\n"
       + node.getLearnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString).collect(Collectors.joining(","))
-      + "\"] ";
+      + "\""
+      + yield(node, firstParent)
+      + "] ";
   }
 
-  private static String cacheEdge(int from, int to, ExplodedGraph.Node cacheHit) {
-    return from + "->" + to + "[label=\"CACHE\", color=\"red\", fontcolor=\"red\"] ";
+  private static String cacheEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node cacheHit) {
+    String yield = yield(node, cacheHit);
+    return from + "->" + to + "[label=\"CACHE\"" + (yield.isEmpty() ? ",color=\"red\",fontcolor=\"red\"" : yield) + "] ";
+  }
+
+  private static String yield(ExplodedGraph.Node node, ExplodedGraph.Node parent) {
+    MethodYield usedMethodYield = node.usedMethodYield(parent);
+    if (usedMethodYield != null) {
+      return String.format(",color=\"purple\",fontcolor=\"purple\",usedMethodYield=\"%s\"", usedMethodYield);
+    }
+    return "";
   }
 }

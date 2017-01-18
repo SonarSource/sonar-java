@@ -63,37 +63,54 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
   var network = new vis.Network(container, data, options);
 
   if (useProgramStates) {
-    network.on("selectNode", function(params) {
-      document.getElementById('programstate').innerHTML = getProgramState(params.nodes);
+    network.on("click", function(params) {
+      document.getElementById('programstate').innerHTML = clickAction(params);
     });
 
-    network.on("deselectNode", function(params) {
-      document.getElementById('programstate').innerHTML = DEFAULT_PROGRAM_STATE_HTML;
-    });
-
-    function getProgramState(nodeIds) {
+    function clickAction(params) {
       var result = DEFAULT_PROGRAM_STATE_HTML;
-      if (nodeIds.length == 1) {
-        var nodeId = nodeIds[0];
-        var programStateAsString;
-        data.nodes.forEach(function(node) {
-          if (nodeId == node.id) {
-            programStateAsString = node.programState;
-          }
-        })
+      if (params.nodes.length == 1) {
+        result = getProgramState(params.nodes[0]);
+      } else if (params.edges.length == 1) {
+        result = getYield(params.edges[0]);
+      }
+      return result;
+    }
 
-        // ugly hack to get differents parts of the program state based on its toString() method. 
-        // Should be refactored in order to get correctly each object
-        var groups = programStateAsString.split('{');
-        if (groups.length == 5) {
-          result = '<h3>Program State:</h3>';
-          result += '<table>';
-          result += tableLine('values',groups[1]);
-          result += tableLine('constraints', groups[2]);
-          result += tableLine('stack', groups[3]);
-          result += tableLine('lastEvaluatedSymbol', groups[4]);
-          result += '</table>';
+    function getProgramState(nodeId) {
+      var programStateAsString;
+      data.nodes.forEach(function(node) {
+        if (nodeId == node.id) {
+          programStateAsString = node.programState;
         }
+      });
+
+      // ugly hack to get differents parts of the program state based on its toString() method. 
+      // Should be refactored in order to get correctly each object
+      var groups = programStateAsString.split('{');
+      if (groups.length == 5) {
+        result = '<h3>Program State:</h3>';
+        result += '<table>';
+        result += tableLine('values',groups[1]);
+        result += tableLine('constraints', groups[2]);
+        result += tableLine('stack', groups[3]);
+        result += tableLine('lastEvaluatedSymbol', groups[4]);
+        result += '</table>';
+      }
+      return result;
+    }
+
+    function getYield(edgeId) {
+      var usedMethodYieldAsString;
+      data.edges.forEach(function(edge) {
+        if (edgeId == edge.id) {
+          usedMethodYieldAsString = edge.usedMethodYield;
+        }
+      });
+
+      if (usedMethodYieldAsString) {
+        result = '<h3>Used Method Yield:</h3>';
+        result += '<code>' + usedMethodYieldAsString + '</code>';
       }
       return result;
     }
