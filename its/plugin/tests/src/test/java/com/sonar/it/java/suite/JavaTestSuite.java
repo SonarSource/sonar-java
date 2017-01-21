@@ -22,11 +22,28 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.sonarqube.ws.WsComponents.Component;
+import org.sonarqube.ws.WsMeasures;
+import org.sonarqube.ws.WsMeasures.Measure;
+import org.sonarqube.ws.client.HttpConnector;
+import org.sonarqube.ws.client.WsClient;
+import org.sonarqube.ws.client.WsClientFactories;
+import org.sonarqube.ws.client.component.ShowWsRequest;
+import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
-import java.io.File;
+import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
+import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -67,8 +84,43 @@ public class JavaTestSuite {
     return projectKey + ":src/main/java/" + pkgDir + cls;
   }
 
-
   public static boolean sonarqube_version_is_prior_to_6_2() {
     return !ORCHESTRATOR.getServer().version().isGreaterThanOrEquals("6.2");
   }
+
+  @CheckForNull
+  static Measure getMeasure(String componentKey, String metricKey) {
+    WsMeasures.ComponentWsResponse response = TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentWsRequest()
+      .setComponentKey(componentKey)
+      .setMetricKeys(singletonList(metricKey)));
+    List<Measure> measures = response.getComponent().getMeasuresList();
+    return measures.size() == 1 ? measures.get(0) : null;
+  }
+
+  @CheckForNull
+  static Map<String, Measure> getMeasures(String componentKey, String... metricKeys) {
+    return TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentWsRequest()
+      .setComponentKey(componentKey)
+      .setMetricKeys(asList(metricKeys)))
+      .getComponent().getMeasuresList()
+      .stream()
+      .collect(Collectors.toMap(Measure::getMetric, Function.identity()));
+  }
+
+  @CheckForNull
+  static Integer getMeasureAsInteger(String componentKey, String metricKey) {
+    Measure measure = getMeasure(componentKey, metricKey);
+    return (measure == null) ? null : Integer.parseInt(measure.getValue());
+  }
+
+  @CheckForNull
+  static Double getMeasureAsDouble(String componentKey, String metricKey) {
+    Measure measure = getMeasure(componentKey, metricKey);
+    return (measure == null) ? null : Double.parseDouble(measure.getValue());
+  }
+
+  static Component getComponent(String componentKey) {
+    return TestUtils.newWsClient(ORCHESTRATOR).components().show(new ShowWsRequest().setKey(componentKey)).getComponent();
+  }
+
 }

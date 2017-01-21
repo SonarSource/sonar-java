@@ -21,12 +21,15 @@ package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
+import org.sonarqube.ws.WsMeasures.Measure;
 
+import static com.sonar.it.java.suite.JavaTestSuite.getMeasures;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UnitTestsTest {
@@ -46,33 +49,33 @@ public class UnitTestsTest {
       .setGoals("clean test-compile surefire:test", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:tests-without-main-code",
-      "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density"));
+    Map<String, Measure> measures = getMeasures("com.sonarsource.it.samples:tests-without-main-code",
+      "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density");
 
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(1);
-    assertThat(project.getMeasure("test_errors").getIntValue()).isEqualTo(0);
-    assertThat(project.getMeasure("test_failures").getIntValue()).isEqualTo(0);
-    assertThat(project.getMeasure("skipped_tests").getIntValue()).isEqualTo(1);
-    assertThat(project.getMeasure("test_execution_time").getIntValue()).isGreaterThan(0);
-    assertThat(project.getMeasure("test_success_density").getValue()).isEqualTo(100.0);
+    assertThat(parseInt(measures.get("tests").getValue())).isEqualTo(1);
+    assertThat(parseInt(measures.get("test_errors").getValue())).isEqualTo(0);
+    assertThat(parseInt(measures.get("test_failures").getValue())).isEqualTo(0);
+    assertThat(parseInt(measures.get("skipped_tests").getValue())).isEqualTo(1);
+    assertThat(parseInt(measures.get("test_execution_time").getValue())).isGreaterThan(0);
+    assertThat(parseDouble(measures.get("test_success_density").getValue())).isEqualTo(100.0);
   }
 
   @Test
   public void tests_with_report_name_suffix() {
     MavenBuild build = MavenBuild.create()
-        .setPom(TestUtils.projectPom("tests-surefire-suffix"))
-        .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1","test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
+      .setPom(TestUtils.projectPom("tests-surefire-suffix"))
+      .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:tests-surefire-suffix",
-        "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density"));
+    Map<String, Measure> measures = getMeasures("com.sonarsource.it.samples:tests-surefire-suffix",
+      "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density");
 
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(2);
-    assertThat(project.getMeasure("test_errors").getIntValue()).isEqualTo(0);
-    assertThat(project.getMeasure("test_failures").getIntValue()).isEqualTo(0);
-    assertThat(project.getMeasure("skipped_tests").getIntValue()).isEqualTo(2);
-    assertThat(project.getMeasure("test_execution_time").getIntValue()).isGreaterThan(0);
-    assertThat(project.getMeasure("test_success_density").getValue()).isEqualTo(100.0);
+    assertThat(parseInt(measures.get("tests").getValue())).isEqualTo(2);
+    assertThat(parseInt(measures.get("test_errors").getValue())).isEqualTo(0);
+    assertThat(parseInt(measures.get("test_failures").getValue())).isEqualTo(0);
+    assertThat(parseInt(measures.get("skipped_tests").getValue())).isEqualTo(2);
+    assertThat(parseInt(measures.get("test_execution_time").getValue())).isGreaterThan(0);
+    assertThat(parseDouble(measures.get("test_success_density").getValue())).isEqualTo(100.0);
   }
 
 }

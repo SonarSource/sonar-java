@@ -25,17 +25,15 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
+import java.io.File;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
 
-import java.io.File;
-
+import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -101,7 +99,7 @@ public class JavaClasspathTest {
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
   }
-  
+
   @Test
   public void should_use_aar_library() {
     SonarScanner scanner = aarProjectSonarScanner();
@@ -118,7 +116,7 @@ public class JavaClasspathTest {
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
   }
-  
+
   @Test
   public void should_keep_order_libs() {
     SonarScanner scanner = ditProjectSonarScanner();
@@ -127,9 +125,9 @@ public class JavaClasspathTest {
     scanner.setProperty("sonar.verbose", "true");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
-    
+
     ORCHESTRATOR.resetData();
-    
+
     scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPath);
@@ -179,7 +177,7 @@ public class JavaClasspathTest {
       .setProperty("sonar.dynamicAnalysis", "false");
     ORCHESTRATOR.executeBuild(build);
   }
-  
+
   private static SonarScanner aarProjectSonarScanner() {
     return SonarScanner.create(TestUtils.projectDir("using-aar-dep"))
       .setProperty("sonar.projectKey", PROJECT_KEY_AAR)
@@ -199,8 +197,7 @@ public class JavaClasspathTest {
   }
 
   private int getNumberOfViolations(String projectKey) {
-    Resource resource = ORCHESTRATOR.getServer().getWsClient().find(ResourceQuery.createForMetrics(projectKey, "violations"));
-    return resource != null ? resource.getMeasure("violations").getValue().intValue() : -1;
+    return getMeasureAsInteger(projectKey, "violations");
   }
 
 }

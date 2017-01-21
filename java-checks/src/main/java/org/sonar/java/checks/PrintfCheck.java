@@ -347,9 +347,9 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private void checkTimeTypeArgument(MethodInvocationTree mit, Type argType) {
     if (!(argType.isNumerical()
-      || isTypeOfAny(argType, "java.lang.Long", "java.time.LocalDate")
-      || isSubtypeOfAny(argType, "java.util.Date", "java.util.Calendar"))) {
-      reportIssue(mit, "Time argument is expected (long, Long, LocalDate, Date or Calendar).");
+      || isTypeOfAny(argType, "java.lang.Long")
+      || isSubtypeOfAny(argType, "java.util.Date", "java.util.Calendar", "java.time.temporal.TemporalAccessor"))) {
+      reportIssue(mit, "Time argument is expected (long, Long, Calendar, Date and TemporalAccessor).");
     }
   }
 
