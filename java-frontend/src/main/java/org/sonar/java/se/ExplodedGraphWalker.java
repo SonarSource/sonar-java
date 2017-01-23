@@ -615,7 +615,7 @@ public class ExplodedGraphWalker {
           invocationTypes,
           programState,
           () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue)))
-        .forEach(ps -> enqueueExceptionalPaths(ps.clearStack(), (SymbolicValue.ExceptionalSymbolicValue) ps.peekValue()));
+        .forEach(this::enqueueExceptionalPaths);
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
@@ -654,16 +654,21 @@ public class ExplodedGraphWalker {
     ProgramState ps = programState.clearStack();
     ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
       .map(constraintManager::createExceptionalSymbolicValue)
-      .forEach(exceptionSV -> enqueueExceptionalPaths(ps, exceptionSV));
+      .map(ps::stackValue)
+      .forEach(this::enqueueExceptionalPaths);
   }
 
   private void enqueueUncheckedExceptionalPaths() {
-    enqueueExceptionalPaths(programState.clearStack(), constraintManager.createExceptionalSymbolicValue(null));
+    enqueueExceptionalPaths(programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null)));
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps, SymbolicValue.ExceptionalSymbolicValue exceptionSV) {
+  private void enqueueExceptionalPaths(ProgramState ps) {
     Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
     List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
+    SymbolicValue peekValue = ps.peekValue();
+
+    Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
+    SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
 
     // only consider the first match, as order of catch block is important
     Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
@@ -681,18 +686,17 @@ public class ExplodedGraphWalker {
       .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps));
 
     // store the exception as exit value in case of method exit in next block
-    ProgramState newPs = ps.clearStack().stackValue(exceptionSV);
-    newPs.storeExitValue();
+    ps.storeExitValue();
 
     // use other exceptional blocks, i.e. finally block and exit blocks
     exceptionBlocks.stream()
       .filter(CFG.Block.IS_CATCH_BLOCK.negate())
-      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps, true));
 
     // explicitly add the exception if next block is method exit
     node.programPoint.block.successors().stream()
       .filter(CFG.Block::isMethodExitBlock)
-      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), newPs, true));
+      .forEach(b -> enqueue(new ExplodedGraph.ProgramPoint(b, 0), ps, true));
   }
 
   private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
@@ -734,14 +738,15 @@ public class ExplodedGraphWalker {
     ExpressionTree initializer = variableTree.initializer();
     if (initializer == null) {
       SymbolicValue sv = null;
+      Type variableType = variableTree.symbol().type();
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
-      } else if (variableTree.type().symbolType().is("boolean")) {
+      } else if (variableType.is("boolean")) {
         sv = SymbolicValue.FALSE_LITERAL;
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = constraintManager.createSymbolicValue(variableTree);
+        sv = getCaughtException(variableType);
         programState = programState.addConstraint(sv, ObjectConstraint.notNull());
-      } else if (!variableTree.type().symbolType().isPrimitive()) {
+      } else if (!variableType.isPrimitive()) {
         sv = SymbolicValue.NULL_LITERAL;
       }
       if (sv != null) {
@@ -752,6 +757,24 @@ public class ExplodedGraphWalker {
       programState = unstack.state;
       programState = programState.put(variableTree.symbol(), unstack.values.get(0));
     }
+  }
+
+  private SymbolicValue getCaughtException(Type caughtType) {
+    SymbolicValue sv = null;
+    Type exceptionType = null;
+    // FIXME SONARJAVA-2069 every path conducting to a catch block should have an exceptional symbolic value on top of the stack
+    if (programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      ProgramState.Pop unstack = programState.unstackValue(1);
+      programState = unstack.state;
+      // use the Exceptional SV from the stack
+      sv = unstack.values.get(0);
+      exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) sv).exceptionType();
+    }
+    if (exceptionType == null || exceptionType.isUnknown()) {
+      // unknown exception, create an exception of the adequate type
+      sv = constraintManager.createExceptionalSymbolicValue(caughtType);
+    }
+    return sv;
   }
 
   private void executeTypeCast(TypeCastTree typeCast) {

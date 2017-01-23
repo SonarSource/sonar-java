@@ -29,6 +29,8 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +38,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +79,58 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void reproducer() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", seChecks());
+  }
+
+  @Test
+  public void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
+    Set<Type> encounteredExceptions = new HashSet<>();
+    int[] tested = {0};
+
+    ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker() {
+
+      private ExplodedGraph.Node firstExceptionalNode = null;
+
+      @Override
+      public void enqueue(org.sonar.java.se.ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath) {
+        SymbolicValue.ExceptionalSymbolicValue exceptionSV = null;
+        SymbolicValue peekValue = programState.peekValue();
+        boolean getNode = false;
+        if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+          exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
+          Type exceptionType = exceptionSV.exceptionType();
+          if (exceptionType != null && (exceptionType.is("org.foo.MyException1") || exceptionType.is("org.foo.MyException2"))) {
+            encounteredExceptions.add(exceptionType);
+            getNode = true;
+          }
+        }
+        int workListSize = workList.size();
+        super.enqueue(newProgramPoint, programState, exitPath);
+
+        if (getNode) {
+          if (firstExceptionalNode == null) {
+            firstExceptionalNode = workList.peekFirst();
+          }
+          assertThat(workList.size()).as("Should have created a new node in the graph for each of the exceptions").isEqualTo(workListSize + 1);
+          assertThat(workList.peekFirst().programState.peekValue()).as("Exceptional Symbolic Value should stay on the stack").isEqualTo(exceptionSV);
+          tested[0]++;
+        }
+      };
+    };
+
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExceptionalSymbolicValueStacked.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
+      @Override
+      public void visitNode(Tree tree) {
+        MethodTree methodTree = (MethodTree) tree;
+        if ("foo".equals(methodTree.symbol().name())) {
+          explodedGraphWalker.visitMethod((MethodTree) tree, new MethodBehavior(((MethodTree) tree).symbol()));
+        } else {
+          super.visitNode(methodTree);
+        }
+      };
+    });
+
+    assertThat(encounteredExceptions).hasSize(2);
+    assertThat(tested[0]).isEqualTo(2);
   }
 
   @Test
