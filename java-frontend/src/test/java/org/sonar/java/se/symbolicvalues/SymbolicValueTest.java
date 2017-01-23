@@ -61,7 +61,7 @@ public class SymbolicValueTest {
     assertThat(sv).isNotEqualTo(new SymbolicValue(sv.id()));
 
     // different IDs but same exception
-    assertThat(sv).isEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id() + 1, sv.exceptionType()));
+    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id() + 1, sv.exceptionType()));
     // same IDs but different exception
     assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id(), null));
   }

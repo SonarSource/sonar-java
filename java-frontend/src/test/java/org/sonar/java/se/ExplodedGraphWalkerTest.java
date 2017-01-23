@@ -82,6 +82,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void exception_catched_in_loop() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/LoopExceptionField.java", seChecks());
+  }
+
+  @Test
   public void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();
     int[] tested = {0};

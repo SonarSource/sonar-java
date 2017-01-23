@@ -219,7 +219,8 @@ public class SymbolicValue {
       if (o == null || getClass() != o.getClass()) {
         return false;
       }
-      return Objects.equals(exceptionType, ((ExceptionalSymbolicValue) o).exceptionType);
+      ExceptionalSymbolicValue that = (ExceptionalSymbolicValue) o;
+      return id() == that.id() && Objects.equals(exceptionType, that.exceptionType);
     }
   }
 
