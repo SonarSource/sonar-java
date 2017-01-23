@@ -2027,4 +2027,13 @@ class CheckingLoops {
       return word.startsWith("hello") && word.endsWith("word");
     }
   }
+
+  private class AssertLearning {
+    void method(boolean x) {
+      assert x;
+      if(x) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+        System.out.println("");
+      }
+    }
+  }
 }

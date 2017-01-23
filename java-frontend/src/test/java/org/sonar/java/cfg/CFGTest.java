@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
@@ -291,6 +292,7 @@ public class CFGTest {
       name = null;
       switch (kind) {
         case METHOD_INVOCATION:
+        case ASSERT_STATEMENT:
         case METHOD_REFERENCE:
         case MEMBER_SELECT:
         case NULL_LITERAL:
@@ -1801,4 +1803,17 @@ public class CFGTest {
     cfgChecker.check(cfg);
   }
 
+  @Test
+  public void assert_statement() throws Exception {
+    CFG cfg = buildCFG("private void fun(boolean x) {\n" +
+      "assert x;\n" +
+      "} "
+    );
+    CFGChecker cfgChecker = checker(
+      block(element(IDENTIFIER, "x"),
+        element(ASSERT_STATEMENT))
+    );
+    cfgChecker.check(cfg);
+
+  }
 }

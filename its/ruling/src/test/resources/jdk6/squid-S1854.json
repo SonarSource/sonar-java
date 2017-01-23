@@ -352,8 +352,6 @@
 2636,
 2736,
 2763,
-2776,
-2778,
 3266,
 ],
 'jdk6:java/net/URL.java':[
@@ -479,8 +477,6 @@
 446,
 ],
 'jdk6:java/util/Formatter.java':[
-3393,
-3527,
 3748,
 ],
 'jdk6:java/util/GregorianCalendar.java':[

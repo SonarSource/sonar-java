@@ -45,6 +45,7 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -561,11 +562,25 @@ public class ExplodedGraphWalker {
       case METHOD_REFERENCE:
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
+      case ASSERT_STATEMENT:
+        executeAssertStatement(tree);
+        return;
       default:
     }
 
     checkerDispatcher.executeCheckPostStatement(tree);
     clearStack(tree);
+  }
+
+  private void executeAssertStatement(Tree tree) {
+    // After an assert statement we know that the evaluated expression is true.
+    ProgramState.Pop pop = programState.unstackValue(1);
+    pop.values.forEach(v -> v.setConstraint(pop.state, BooleanConstraint.TRUE)
+      .forEach(ps -> {
+        checkerDispatcher.syntaxNode = tree;
+        checkerDispatcher.addTransition(ps);
+        ps.clearStack();
+      }));
   }
 
   private void executeMethodInvocation(MethodInvocationTree mit) {

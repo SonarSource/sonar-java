@@ -1,7 +1,4 @@
 {
-'jdk6:java/awt/AWTKeyStroke.java':[
-258,
-],
 'jdk6:java/awt/Component.java':[
 4778,
 7424,
@@ -74,6 +71,9 @@
 'jdk6:java/io/ObjectStreamClass.java':[
 2205,
 ],
+'jdk6:java/io/UnixFileSystem.java':[
+175,
+],
 'jdk6:java/lang/reflect/Proxy.java':[
 361,
 ],
@@ -84,10 +84,6 @@
 'jdk6:java/net/SocksSocketImpl.java':[
 398,
 714,
-],
-'jdk6:java/net/URI.java':[
-2623,
-2694,
 ],
 'jdk6:java/nio/channels/spi/AbstractSelectableChannel.java':[
 205,
@@ -124,10 +120,6 @@
 ],
 'jdk6:java/util/TreeMap.java':[
 2123,
-],
-'jdk6:java/util/XMLUtils.java':[
-117,
-156,
 ],
 'jdk6:java/util/jar/Attributes.java':[
 377,
