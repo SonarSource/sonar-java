@@ -22,11 +22,11 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class EnumAsIdentifierCheckTest {
+public class KeywordAsIdentifierCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/EnumAsIdentifierCheck.java", new EnumAsIdentifierCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/KeywordAsIdentifierCheck.java", new KeywordAsIdentifierCheck());
   }
 
 }
