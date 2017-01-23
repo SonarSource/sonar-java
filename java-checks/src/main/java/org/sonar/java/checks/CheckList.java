@@ -33,7 +33,7 @@ import org.sonar.java.checks.naming.BadTestClassNameCheck;
 import org.sonar.java.checks.naming.BadTestMethodNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
-import org.sonar.java.checks.naming.EnumAsIdentifierCheck;
+import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
@@ -176,7 +176,7 @@ public final class CheckList {
       .add(SwitchCaseWithoutBreakCheck.class)
       .add(CatchUsesExceptionWithContextCheck.class)
       .add(MethodTooBigCheck.class)
-      .add(EnumAsIdentifierCheck.class)
+      .add(KeywordAsIdentifierCheck.class)
       .add(AnonymousClassesTooBigCheck.class)
       .add(SunPackagesUsedCheck.class)
       .add(SeveralBreakOrContinuePerLoopCheck.class)

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.naming;
 
+import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -26,10 +27,14 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Set;
+
 @Rule(key = "S1190")
-public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class KeywordAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
+
+  private static final Set<String> FORBIDDEN_IDENTIFIERS = ImmutableSet.of("enum", "_");
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -40,8 +45,8 @@ public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileSc
   @Override
   public void visitVariable(VariableTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if ("enum".equals(simpleName.name())) {
-      context.reportIssue(this, simpleName, "Use a different name than \"enum\".");
+    if (FORBIDDEN_IDENTIFIERS.contains(simpleName.name())) {
+      context.reportIssue(this, simpleName, "Use a different name than \"" + simpleName.name() + "\".");
     }
     super.visitVariable(tree);
   }
