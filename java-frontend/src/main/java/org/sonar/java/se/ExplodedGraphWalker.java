@@ -293,7 +293,7 @@ public class ExplodedGraphWalker {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
       Symbol variableSymbol = variableTree.symbol();
-      methodBehavior.addParameter(variableSymbol, sv);
+      methodBehavior.addParameter(sv);
       stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
