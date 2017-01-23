@@ -20,39 +20,35 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
   private final Set<MethodYield> yields;
-  private final Map<Symbol, SymbolicValue> parameters;
+  private final List<SymbolicValue> parameters;
   private boolean complete = false;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
     this.yields = new LinkedHashSet<>();
-    this.parameters = new LinkedHashMap<>();
+    this.parameters = new ArrayList<>();
   }
 
   public void createYield(ProgramState programState, boolean happyPathYield) {
     MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
     yield.exception = !happyPathYield;
-    List<SymbolicValue> parameterSymbolicValues = new ArrayList<>(parameters.values());
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
-      yield.parametersConstraints[i] = programState.getConstraint(parameterSymbolicValues.get(i));
+      yield.parametersConstraints[i] = programState.getConstraint(parameters.get(i));
     }
 
     SymbolicValue resultSV = programState.exitValue();
@@ -64,7 +60,7 @@ public class MethodBehavior {
         // if there is no return value but we are not in a void method or constructor, we are not in a happy path
         yield.exception = true;
       } else {
-        yield.resultIndex = parameterSymbolicValues.indexOf(resultSV);
+        yield.resultIndex = parameters.indexOf(resultSV);
         yield.resultConstraint = programState.getConstraint(resultSV);
       }
     }
@@ -92,12 +88,12 @@ public class MethodBehavior {
     return yields.stream().filter(y -> !y.exception);
   }
 
-  public void addParameter(Symbol symbol, SymbolicValue sv) {
-    parameters.put(symbol, sv);
+  public void addParameter(SymbolicValue sv) {
+    parameters.add(sv);
   }
 
   public Collection<SymbolicValue> parameters() {
-    return parameters.values();
+    return parameters;
   }
 
   public boolean isComplete() {
