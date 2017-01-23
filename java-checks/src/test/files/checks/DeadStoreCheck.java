@@ -239,4 +239,10 @@ class Stuff {
     x = b1 && b2;       // Noncompliant
     ((x)) = b1 && b2;   // Noncompliant
   }
+
+  void assertStatement(boolean x) {
+    boolean y = !x; // compliant, y is used in assert statement.
+    assert y;
+  }
+
 }
