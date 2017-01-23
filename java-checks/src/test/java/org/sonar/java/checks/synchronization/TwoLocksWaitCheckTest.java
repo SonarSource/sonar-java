@@ -22,12 +22,12 @@ package org.sonar.java.checks.synchronization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class TwoLocksWaitNotifyCheckTest {
+public class TwoLocksWaitCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TwoLocksWaitNotifyCheck.java", new TwoLocksWaitNotifyCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TwoLocksWaitNotifyCheck.java", new TwoLocksWaitNotifyCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/TwoLocksWaitCheck.java", new TwoLocksWaitCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TwoLocksWaitCheck.java", new TwoLocksWaitCheck());
   }
 
 

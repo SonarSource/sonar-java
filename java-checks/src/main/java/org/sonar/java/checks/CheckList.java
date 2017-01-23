@@ -48,7 +48,7 @@ import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
-import org.sonar.java.checks.synchronization.TwoLocksWaitNotifyCheck;
+import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
@@ -457,7 +457,7 @@ public final class CheckList {
       .add(ClassFieldCountCheck.class)
       .add(DoubleCheckedLockingCheck.class)
       .add(WriteObjectTheOnlySynchronizedMethodCheck.class)
-      .add(TwoLocksWaitNotifyCheck.class)
+      .add(TwoLocksWaitCheck.class)
       .add(SynchronizationOnGetClassCheck.class)
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)

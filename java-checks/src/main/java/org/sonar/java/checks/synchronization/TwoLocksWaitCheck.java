@@ -46,10 +46,9 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 
 @Rule(key = "S3046")
-public class TwoLocksWaitNotifyCheck extends IssuableSubscriptionVisitor {
+public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher WAIT_MATCHER = MethodMatcher.create().name("wait").withoutParameter();
-  private static final MethodMatcher NOTIFY_MATCHER = MethodMatcher.create().name("notify").withoutParameter();
 
   private Deque<Counter> synchronizedStack = new LinkedList<>();
 
@@ -67,7 +66,7 @@ public class TwoLocksWaitNotifyCheck extends IssuableSubscriptionVisitor {
       MethodTree methodTree = (MethodTree) tree;
       int initialCounter = findModifier(methodTree.modifiers(), SYNCHRONIZED).map(m -> 1).orElse(0);
       synchronizedStack.push(new Counter(initialCounter));
-      findWaitOrNotifyInvocation(methodTree);
+      findWaitInvocation(methodTree);
     }
   }
 
@@ -81,11 +80,9 @@ public class TwoLocksWaitNotifyCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void findWaitOrNotifyInvocation(MethodTree tree) {
+  private void findWaitInvocation(MethodTree tree) {
     findMethodCall(tree, WAIT_MATCHER)
       .ifPresent(wait -> reportIssue(wait, "Don't use \"wait()\" here; multiple locks are held.", flowFromTree(tree), null));
-    findMethodCall(tree, NOTIFY_MATCHER)
-      .ifPresent(notify -> reportIssue(notify, "Use \"notifyAll()\" here; multiple locks are held.", flowFromTree(tree), null));
   }
 
   private Optional<MethodInvocationTree> findMethodCall(Tree tree, MethodMatcher methodMatcher) {
