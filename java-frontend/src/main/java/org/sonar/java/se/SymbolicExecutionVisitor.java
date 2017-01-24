@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +86,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       if (!behaviors.containsKey(symbol)) {
         if (isObjectsRequireNonNullMethod(symbol)) {
           behaviors.put(symbol, createRequireNonNullBehavior(symbol));
+        } else if(isObjectsNullMethod(symbol)) {
+          behaviors.put(symbol, createIsNullBehavior(symbol));
         } else {
           MethodTree declaration = symbol.declaration();
           if (declaration != null) {
@@ -92,6 +96,10 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         }
       }
       return behaviors.get(symbol);
+    }
+
+    private boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {
+      return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || "isNull".equals(symbol.name()));
     }
 
     private boolean isObjectsRequireNonNullMethod(Symbol symbol) {
@@ -116,6 +124,34 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       exceptionalYield.exception = true;
       exceptionalYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
       behavior.addYield(exceptionalYield);
+
+      behavior.completed();
+      return behavior;
+    }
+
+    /**
+     * Create behavior for java.util.Objects.isNull and nonNull methods
+     * @param symbol the symbol of the associated method.
+     * @return the behavior corresponding to the symbol passed as parameter.
+     */
+    private MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
+      boolean isNull = "isNull".equals(symbol.name());
+      ObjectConstraint<ObjectConstraint.Status> trueConstraint = isNull ? ObjectConstraint.nullConstraint() : ObjectConstraint.notNull();
+      ObjectConstraint<ObjectConstraint.Status> falseConstraint = isNull ? ObjectConstraint.notNull() : ObjectConstraint.nullConstraint();
+
+      MethodBehavior behavior = new MethodBehavior(symbol);
+
+      MethodYield trueYield = new MethodYield(symbol.parameterTypes().size(), false);
+      trueYield.exception = false;
+      trueYield.parametersConstraints[0] = trueConstraint;
+      trueYield.resultConstraint = BooleanConstraint.TRUE;
+      behavior.addYield(trueYield);
+
+      MethodYield falseYield = new MethodYield(symbol.parameterTypes().size(), false);
+      falseYield.exception = false;
+      falseYield.parametersConstraints[0] = falseConstraint;
+      falseYield.resultConstraint = BooleanConstraint.FALSE;
+      behavior.addYield(falseYield);
 
       behavior.completed();
       return behavior;

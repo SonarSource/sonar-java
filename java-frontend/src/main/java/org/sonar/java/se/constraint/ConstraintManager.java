@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
-import org.sonar.java.se.symbolicvalues.NullCheckSymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,7 +35,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class ConstraintManager {
@@ -109,19 +107,11 @@ public class ConstraintManager {
 
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
     SymbolicValue result;
-    if (isEqualsMethod(syntaxNode) || isObjectsMethod(syntaxNode.symbol(), "equals")) {
+    if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
       result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.METHOD_EQUALS);
       SymbolicValue leftOp = values.get(1);
       SymbolicValue rightOp = values.get(0);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
-    } else if (isObjectsMethod(syntaxNode.symbol(), "isNull")) {
-      result = new NullCheckSymbolicValue(counter, true);
-      SymbolicValue operand = values.get(0);
-      result.computedFrom(ImmutableList.of(operand));
-    } else if (isObjectsMethod(syntaxNode.symbol(), "nonNull")) {
-      result = new NullCheckSymbolicValue(counter, false);
-      SymbolicValue operand = values.get(0);
-      result.computedFrom(ImmutableList.of(operand));
     } else {
       result = createDefaultSymbolicValue();
     }
@@ -129,8 +119,8 @@ public class ConstraintManager {
     return result;
   }
 
-  private static boolean isObjectsMethod(Symbol symbol, String methodName) {
-    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && methodName.equals(symbol.name());
+  private static boolean isObjectsEqualsMethod(Symbol symbol) {
+    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && "equals".equals(symbol.name());
   }
 
   private static boolean isEqualsMethod(MethodInvocationTree syntaxNode) {
