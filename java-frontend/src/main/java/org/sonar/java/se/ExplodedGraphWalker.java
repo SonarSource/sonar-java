@@ -125,7 +125,7 @@ public class ExplodedGraphWalker {
   private LiveVariables liveVariables;
   private CheckerDispatcher checkerDispatcher;
 
-  private final SymbolicExecutionVisitor symbolicExecutionVisitor;
+  private final SymbolicExecutionVisitor.BehaviorCache behaviorCache;
   @VisibleForTesting
   int steps;
 
@@ -159,7 +159,7 @@ public class ExplodedGraphWalker {
     List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
     this.checkerDispatcher = new CheckerDispatcher(this, checks);
-    symbolicExecutionVisitor = new SymbolicExecutionVisitor((List) checks);
+    behaviorCache = new SymbolicExecutionVisitor((List) checks).behaviorCache;
   }
 
   @VisibleForTesting
@@ -168,10 +168,10 @@ public class ExplodedGraphWalker {
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, SymbolicExecutionVisitor symbolicExecutionVisitor) {
+  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, SymbolicExecutionVisitor.BehaviorCache behaviorCache) {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
-    this.symbolicExecutionVisitor = symbolicExecutionVisitor;
+    this.behaviorCache = behaviorCache;
   }
 
   public ExplodedGraph getExplodedGraph() {
@@ -594,9 +594,8 @@ public class ExplodedGraphWalker {
     // get method behavior for method with known declaration (ie: within the same file)
     MethodBehavior methodInvokedBehavior = null;
     Symbol methodSymbol = mit.symbol();
-    Tree declaration = methodSymbol.declaration();
-    if(declaration != null) {
-      methodInvokedBehavior = symbolicExecutionVisitor.execute((MethodTree) declaration);
+    if(methodSymbol.isMethodSymbol()) {
+      methodInvokedBehavior = behaviorCache.get((Symbol.MethodSymbol) methodSymbol);
     }
 
     // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
@@ -1045,8 +1044,8 @@ public class ExplodedGraphWalker {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker(SymbolicExecutionVisitor symbolicExecutionVisitor) {
-      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks, symbolicExecutionVisitor);
+    public ExplodedGraphWalker createWalker(SymbolicExecutionVisitor.BehaviorCache behaviorCache) {
+      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks, behaviorCache);
     }
 
     @SuppressWarnings("unchecked")

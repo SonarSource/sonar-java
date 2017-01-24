@@ -103,4 +103,8 @@ public class MethodBehavior {
   void completed() {
     this.complete = true;
   }
+
+  void addYield(MethodYield yield) {
+    yields.add(yield);
+  }
 }
