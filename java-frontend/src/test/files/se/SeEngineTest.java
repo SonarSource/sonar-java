@@ -31,6 +31,7 @@ class A0 {
 
   void local_variable() {
     Object a;
+    a = null;
     a.toString(); // Noncompliant
   }
 
@@ -77,7 +78,7 @@ class A0 {
   }
 
   void instance_of_set_not_null_constraint(Object d) {
-    Object c;
+    Object c = null;
     if (c instanceof Object) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       c.toString();
     }

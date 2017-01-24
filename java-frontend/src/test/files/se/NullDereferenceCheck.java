@@ -534,7 +534,7 @@ class NullPointerTest {
   }
 
   public void testAssignSelfMember() {
-    LinkedListEntry entry2;
+    LinkedListEntry entry2 = null;
     entry2 = entry2.parent(); // Noncompliant
   }
 
@@ -713,4 +713,12 @@ class FooBar {
   private static void bar(Object o, byte[] b) {
     FooBar.bar(null, new byte[10]); // Compliant
   }
+}
+
+class Params {
+
+  void foo(int a) {
+    a.toString(); // Compliant, primitives are non-null
+  }
+
 }
