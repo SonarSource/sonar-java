@@ -22,10 +22,13 @@ package org.sonar.java.se;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -41,10 +44,26 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SymbolicExecutionVisitorTest {
+
+  private static List<File> classPath;
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    File testJars = new File("target/test-jars");
+    classPath = new ArrayList<>(FileUtils.listFiles(testJars, new String[]{"jar", "zip"}, true));
+    classPath.add(new File("target/test-classes"));
+  }
 
   @Test
   public void method_behavior_cache_should_be_filled() {
@@ -143,11 +162,25 @@ public class SymbolicExecutionVisitorTest {
         .containsOnly("java.lang.SecurityException", "java.lang.IllegalArgumentException");
   }
 
+  @Test
+  public void string_utils_method_should_be_handled() throws Exception {
+    NullDereferenceCheck seCheck = new NullDereferenceCheck();
+    createSymbolicExecutionVisitor("src/test/files/se/StringUtilsMethods.java", seCheck);
+    // verify we did not raise any issue, if we did, the context will get them reported.
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    seCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+  }
+
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
+    return createSymbolicExecutionVisitor(fileName, new NullDereferenceCheck());
+  }
+
+  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck seCheck) {
     ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new ArrayList<>());
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new NullDereferenceCheck()));
+    SemanticModel semanticModel = SemanticModel.createFor(cut, classPath);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(seCheck));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);

@@ -88,6 +88,11 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
           behaviors.put(symbol, createRequireNonNullBehavior(symbol));
         } else if(isObjectsNullMethod(symbol)) {
           behaviors.put(symbol, createIsNullBehavior(symbol));
+        } else if(isStringUtilsMethod(symbol)) {
+          MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
+          if(stringUtilsMethod != null) {
+            behaviors.put(symbol, stringUtilsMethod);
+          }
         } else {
           MethodTree declaration = symbol.declaration();
           if (declaration != null) {
@@ -98,12 +103,42 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       return behaviors.get(symbol);
     }
 
+    private boolean isStringUtilsMethod(Symbol.MethodSymbol symbol) {
+      return symbol.owner().type().is("org.apache.commons.lang3.StringUtils");
+    }
+
     private boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {
       return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || "isNull".equals(symbol.name()));
     }
 
     private boolean isObjectsRequireNonNullMethod(Symbol symbol) {
       return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+    }
+
+    @CheckForNull
+    private MethodBehavior createStringUtilMethodBehavior(Symbol.MethodSymbol symbol) {
+      MethodBehavior behavior;
+      switch (symbol.name()) {
+        case "isEmpty" :
+        case "isBlank" :
+        case "isNotEmpty" :
+        case "isNotBlank" :
+          behavior = new MethodBehavior(symbol);
+          MethodYield nullYield = new MethodYield(symbol.parameterTypes().size(), false);
+          nullYield.exception = false;
+          nullYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
+          nullYield.resultConstraint = symbol.name().contains("Not") ? BooleanConstraint.FALSE : BooleanConstraint.TRUE;
+          behavior.addYield(nullYield);
+          MethodYield notNullYield = new MethodYield(symbol.parameterTypes().size(), false);
+          notNullYield.exception = false;
+          notNullYield.parametersConstraints[0] = ObjectConstraint.notNull();
+          behavior.addYield(notNullYield);
+          behavior.completed();
+          break;
+        default:
+          behavior = null;
+      }
+      return behavior;
     }
 
     /**
