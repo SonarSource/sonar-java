@@ -49,16 +49,16 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void method_behavior_cache_should_be_filled() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.entrySet()).hasSize(6);
-    assertThat(sev.behaviorCache.values().stream().filter(mb -> mb != null).count()).isEqualTo(6);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(6);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(6);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
-    assertThat(sev.behaviorCache.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList()))
+    assertThat(sev.behaviorCache.behaviors.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList()))
       .containsSequence("topMethod", "bar", "qix", "foo", "independent", "nativeMethod");
 
-    MethodBehavior nativeMethod = sev.behaviorCache.keySet().stream()
+    MethodBehavior nativeMethod = sev.behaviorCache.behaviors.keySet().stream()
       .filter(s -> s.name().equals("nativeMethod"))
-      .map(s -> sev.behaviorCache.get(s))
+      .map(s -> sev.behaviorCache.behaviors.get(s))
       .findFirst()
       .orElseThrow(IllegalStateException::new);
     assertThat(nativeMethod.yields()).isEmpty();
@@ -97,7 +97,7 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void method_behavior_handling_finally() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
-    assertThat(sev.behaviorCache.entrySet()).hasSize(3);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(3);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);
@@ -122,14 +122,14 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
-    assertThat(sev.behaviorCache.entrySet()).hasSize(1);
-    assertThat(sev.behaviorCache.keySet().iterator().next().name()).isEqualTo("foo");
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
+    assertThat(sev.behaviorCache.behaviors.keySet().iterator().next().name()).isEqualTo("foo");
   }
 
   @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
-    List<MethodYield> yields = sev.behaviorCache.values().iterator().next().yields();
+    List<MethodYield> yields = sev.behaviorCache.behaviors.values().iterator().next().yields();
     assertThat(yields).hasSize(5);
     yields.stream().map(y -> y.resultConstraint).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
     assertThat(yields.stream().filter(y -> !y.exception).count()).isEqualTo(2);
@@ -156,7 +156,7 @@ public class SymbolicExecutionVisitorTest {
   }
 
   private static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<MethodBehavior> mb = sev.behaviorCache.entrySet().stream()
+    Optional<MethodBehavior> mb = sev.behaviorCache.behaviors.entrySet().stream()
       .filter(e -> methodName.equals(e.getKey().name()))
       .map(Map.Entry::getValue)
       .findFirst();

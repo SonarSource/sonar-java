@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -39,8 +40,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
-  final Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = new LinkedHashMap<>();
-
+  final BehaviorCache behaviorCache = new BehaviorCache();
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
@@ -60,19 +60,66 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @CheckForNull
   public MethodBehavior execute(MethodTree methodTree) {
     try {
-      MethodBehavior methodBehavior = behaviorCache.get(methodTree.symbol());
-      if(methodBehavior == null) {
-        methodBehavior = new MethodBehavior(methodTree.symbol());
-        behaviorCache.put(methodTree.symbol(), methodBehavior);
-        ExplodedGraphWalker walker = egwFactory.createWalker(this);
-        methodBehavior = walker.visitMethod(methodTree, methodBehavior);
-        methodBehavior.completed();
-      }
+      MethodBehavior methodBehavior = new MethodBehavior(methodTree.symbol());
+      behaviorCache.add(methodTree.symbol(), methodBehavior);
+      ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache);
+      methodBehavior = walker.visitMethod(methodTree, methodBehavior);
+      methodBehavior.completed();
       return methodBehavior;
     } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
     }
     return null;
+  }
+
+  class BehaviorCache {
+    final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
+
+    void add(Symbol.MethodSymbol symbol, MethodBehavior behavior) {
+      behaviors.put(symbol, behavior);
+    }
+
+    @CheckForNull
+    public MethodBehavior get(Symbol.MethodSymbol symbol) {
+      if (!behaviors.containsKey(symbol)) {
+        if (isObjectsRequireNonNullMethod(symbol)) {
+          behaviors.put(symbol, createRequireNonNullBehavior(symbol));
+        } else {
+          MethodTree declaration = symbol.declaration();
+          if (declaration != null) {
+            SymbolicExecutionVisitor.this.execute(declaration);
+          }
+        }
+      }
+      return behaviors.get(symbol);
+    }
+
+    private boolean isObjectsRequireNonNullMethod(Symbol symbol) {
+      return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+    }
+
+    /**
+     * Creates method behavior for the three requireNonNull methods define in java.util.Objects
+     * @param symbol the proper method symbol.
+     * @return the behavior corresponding to that symbol.
+     */
+    private MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
+      MethodBehavior behavior = new MethodBehavior(symbol);
+      MethodYield happyYield = new MethodYield(symbol.parameterTypes().size(), false);
+      happyYield.exception = false;
+      happyYield.parametersConstraints[0] = ObjectConstraint.notNull();
+      happyYield.resultIndex = 0;
+      happyYield.resultConstraint = happyYield.parametersConstraints[0];
+      behavior.addYield(happyYield);
+
+      MethodYield exceptionalYield = new MethodYield(symbol.parameterTypes().size(), false);
+      exceptionalYield.exception = true;
+      exceptionalYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
+      behavior.addYield(exceptionalYield);
+
+      behavior.completed();
+      return behavior;
+    }
   }
 
 

@@ -28,7 +28,6 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -54,10 +53,6 @@ public class NullDereferenceCheck extends SECheck {
       int numberArguments = methodInvocation.arguments().size();
       List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
       currentVal = values.get(numberArguments);
-      if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
-        SymbolicValue firstArg = values.get(numberArguments - 1);
-        return context.getState().addConstraint(firstArg, ObjectConstraint.notNull());
-      }
     }
     if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
       toCheck = ((ArrayAccessExpressionTree) toCheck).expression();
@@ -68,10 +63,6 @@ public class NullDereferenceCheck extends SECheck {
       return checkMemberSelect(context, (MemberSelectExpressionTree) toCheck, currentVal);
     }
     return context.getState();
-  }
-
-  private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
-    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
   }
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree mse, SymbolicValue currentVal) {
