@@ -19,26 +19,33 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MethodYield {
+  final List<List<JavaFileScannerContext.Location>> flowByParameters;
   private final boolean varArgs;
   Constraint[] parametersConstraints;
   int resultIndex;
@@ -49,12 +56,21 @@ public class MethodYield {
   boolean exception;
 
   public MethodYield(int arity, boolean varArgs) {
+    this.flowByParameters = initFlows(arity);
     this.parametersConstraints = new Constraint[arity];
     this.varArgs = varArgs;
     this.resultIndex = -1;
     this.resultConstraint = null;
     this.exception = false;
     this.exceptionType = null;
+  }
+
+  private static List<List<JavaFileScannerContext.Location>> initFlows(int arity) {
+    // n parameters + 1 for the return value
+    return IntStream
+      .range(0, arity + 1)
+      .mapToObj(i -> ImmutableList.<JavaFileScannerContext.Location>of())
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -175,5 +191,18 @@ public class MethodYield {
       .append(exception, other.exception)
       .append(exceptionType, other.exceptionType)
       .isEquals();
+  }
+
+  public void flowForParameter(int parameterIndex, List<JavaFileScannerContext.Location> flow) {
+    flowByParameters.set(parameterIndex + 1, flow);
+  }
+
+  public List<JavaFileScannerContext.Location> flow(int parameterIndex) {
+    return flowByParameters.get(parameterIndex + 1);
+  }
+
+  @CheckForNull
+  public Type exceptionType() {
+    return exceptionType;
   }
 }

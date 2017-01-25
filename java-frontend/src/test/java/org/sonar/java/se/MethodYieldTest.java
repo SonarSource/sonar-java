@@ -145,6 +145,11 @@ public class MethodYieldTest {
     // varargs is taken into account
     assertThat(yield).isNotEqualTo(new MethodYield(1, true));
 
+    // flows are not taken into account
+    otherYield = new MethodYield(1, false);
+    otherYield.flowForParameter(yield.resultIndex, Lists.newArrayList(new JavaFileScannerContext.Location("message", null)));
+    assertThat(yield).isEqualTo(otherYield);
+
     // same arity and constraints but exceptional path
     otherYield = new MethodYield(1, false);
     otherYield.exception = true;
