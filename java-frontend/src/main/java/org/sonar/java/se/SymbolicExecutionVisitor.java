@@ -25,6 +25,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -88,6 +89,11 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
           behaviors.put(symbol, createRequireNonNullBehavior(symbol));
         } else if(isObjectsNullMethod(symbol)) {
           behaviors.put(symbol, createIsNullBehavior(symbol));
+        } else if(isStringUtilsMethod(symbol)) {
+          MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
+          if(stringUtilsMethod != null) {
+            behaviors.put(symbol, stringUtilsMethod);
+          }
         } else {
           MethodTree declaration = symbol.declaration();
           if (declaration != null) {
@@ -98,12 +104,50 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       return behaviors.get(symbol);
     }
 
+    private boolean isStringUtilsMethod(Symbol.MethodSymbol symbol) {
+      return symbol.owner().type().is("org.apache.commons.lang3.StringUtils");
+    }
+
     private boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {
       return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || "isNull".equals(symbol.name()));
     }
 
     private boolean isObjectsRequireNonNullMethod(Symbol symbol) {
       return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+    }
+
+    @CheckForNull
+    private MethodBehavior createStringUtilMethodBehavior(Symbol.MethodSymbol symbol) {
+      MethodBehavior behavior;
+      switch (symbol.name()) {
+        case "isNotEmpty" :
+        case "isNotBlank" :
+          behavior = createIsEmptyOrBlankMethodBehavior(symbol, BooleanConstraint.FALSE);
+          break;
+        case "isEmpty" :
+        case "isBlank" :
+          behavior = createIsEmptyOrBlankMethodBehavior(symbol, BooleanConstraint.TRUE);
+          break;
+        default:
+          behavior = null;
+      }
+      return behavior;
+    }
+
+    private MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
+      MethodBehavior behavior;
+      behavior = new MethodBehavior(symbol);
+      MethodYield nullYield = new MethodYield(symbol.parameterTypes().size(), false);
+      nullYield.exception = false;
+      nullYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
+      nullYield.resultConstraint = constraint;
+      behavior.addYield(nullYield);
+      MethodYield notNullYield = new MethodYield(symbol.parameterTypes().size(), false);
+      notNullYield.exception = false;
+      notNullYield.parametersConstraints[0] = ObjectConstraint.notNull();
+      behavior.addYield(notNullYield);
+      behavior.completed();
+      return behavior;
     }
 
     /**
