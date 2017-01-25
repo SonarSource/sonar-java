@@ -127,9 +127,9 @@ public class FlowComputation {
       .forEach(lc -> {
         flow.add(location(parent, learnedConstraintMessage(lc, currentNode, parent)));
         if (parent.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION)) {
-          MethodYield usedMethodYields = currentNode.usedMethodYield(parent);
-          if (usedMethodYields != null) {
-            flow.addAll(flowFromMethodInvocation(usedMethodYields, parent));
+          MethodYield selectedMethodYields = currentNode.selectedMethodYield(parent);
+          if (selectedMethodYields != null) {
+            flow.addAll(flowFromMethodInvocation(selectedMethodYields, parent));
           }
         }
       });
@@ -158,9 +158,9 @@ public class FlowComputation {
     Tree nodeTree = parent.programPoint.syntaxTree();
     String name = SyntaxTreeNameFinder.getName(nodeTree);
     if (nodeTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodYield usedMethodYield = currentNode.usedMethodYield(parent);
-      if (usedMethodYield != null) {
-        Type exceptionType = usedMethodYield.exceptionType();
+      MethodYield selectedMethodYield = currentNode.selectedMethodYield(parent);
+      if (selectedMethodYield != null) {
+        Type exceptionType = selectedMethodYield.exceptionType();
         // Only considering exceptional flows
         if (exceptionType != null) {
           return exceptionType.isUnknown() ? String.format("Exception thrown by '%s'", name) : String.format("Exception '%s' thrown by '%s'", exceptionType.name(), name);

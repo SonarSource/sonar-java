@@ -34,13 +34,14 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MethodYield {
@@ -66,11 +67,10 @@ public class MethodYield {
 
   private static List<List<JavaFileScannerContext.Location>> initFlows(int arity) {
     // n parameters + 1 for the return value
-    List<List<JavaFileScannerContext.Location>> result = new ArrayList<>(arity + 1);
-    for (int i = 0; i < arity + 1; i++) {
-      result.add(0, ImmutableList.of());
-    }
-    return result;
+    return IntStream
+      .range(0, arity + 1)
+      .mapToObj(i -> ImmutableList.<JavaFileScannerContext.Location>of())
+      .collect(Collectors.toList());
   }
 
   @Override

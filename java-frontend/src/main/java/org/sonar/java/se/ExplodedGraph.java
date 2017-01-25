@@ -164,7 +164,7 @@ public class ExplodedGraph {
 
     @Nullable
     public Node parent() {
-      return parents.isEmpty() ? null : Lists.newArrayList(parents.keySet()).get(0);
+      return parents.isEmpty() ? null : getParents().get(0);
     }
 
     public List<Node> getParents() {
@@ -249,7 +249,7 @@ public class ExplodedGraph {
     }
 
     @CheckForNull
-    public MethodYield usedMethodYield(Node from) {
+    public MethodYield selectedMethodYield(Node from) {
       return parents.get(from);
     }
   }

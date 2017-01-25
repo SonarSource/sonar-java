@@ -101,16 +101,16 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
     }
 
     function getYield(edgeId) {
-      var usedMethodYieldAsString;
+      var selectedMethodYieldAsString;
       data.edges.forEach(function(edge) {
         if (edgeId == edge.id) {
-          usedMethodYieldAsString = edge.usedMethodYield;
+          selectedMethodYieldAsString = edge.selectedMethodYield;
         }
       });
 
-      if (usedMethodYieldAsString) {
-        result = '<h3>Used Method Yield:</h3>';
-        result += '<code>' + usedMethodYieldAsString + '</code>';
+      if (selectedMethodYieldAsString) {
+        result = '<h3>Selected Method Yield:</h3>';
+        result += '<code>' + selectedMethodYieldAsString + '</code>';
       }
       return result;
     }

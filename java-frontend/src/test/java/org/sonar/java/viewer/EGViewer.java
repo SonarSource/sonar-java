@@ -126,9 +126,9 @@ public class EGViewer {
   }
 
   private static String yield(ExplodedGraph.Node node, ExplodedGraph.Node parent) {
-    MethodYield usedMethodYield = node.usedMethodYield(parent);
-    if (usedMethodYield != null) {
-      return String.format(",color=\"purple\",fontcolor=\"purple\",usedMethodYield=\"%s\"", usedMethodYield);
+    MethodYield selectedMethodYield = node.selectedMethodYield(parent);
+    if (selectedMethodYield != null) {
+      return String.format(",color=\"purple\",fontcolor=\"purple\",selectedMethodYield=\"%s\"", selectedMethodYield);
     }
     return "";
   }
