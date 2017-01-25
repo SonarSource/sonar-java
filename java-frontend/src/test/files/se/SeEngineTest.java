@@ -29,11 +29,6 @@ class A0 {
     a.toString(); // Noncompliant
   }
 
-  void local_variable() {
-    Object a;
-    a = null;
-    a.toString(); // Noncompliant
-  }
 
   void tracking_symbolic_value() {
     Object a = null;
@@ -113,10 +108,10 @@ class A0 {
 class DefaultValues {
 
   void localVars() {
-    boolean a; // this is basically noop
+    boolean a;  // no SV is created on local variable declaration, value is undefined as per JLS
     Object b;
     manyStatementsLater();
-    inTheGalaxyFarAway();
+    inTheGalaxyFarFarAway();
     variablesAreInitialized();
     a = true; // flow@vars
     if (a) {  // Noncompliant [[flows=vars]] flow@vars
