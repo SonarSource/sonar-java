@@ -741,24 +741,16 @@ public class ExplodedGraphWalker {
   }
 
   /**
-   * We do nothing for local variables without initializers, for other variables we use default value or initializer if there is one
-   *
-   * See <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.12.5">JLS 4.12.5</a> for details
+   * @see JLS8 4.12.5 for details
    */
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
     if (variableTree.initializer() == null) {
       SymbolicValue sv = null;
-      Type variableType = variableTree.symbol().type();
-      boolean isField = ProgramState.isField(variableTree.symbol());
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
-      } else if (isField && variableType.is("boolean")) {
-        sv = SymbolicValue.FALSE_LITERAL;
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = getCaughtException(variableType);
+        sv = getCaughtException(variableTree.symbol().type());
         programState = programState.addConstraint(sv, ObjectConstraint.notNull());
-      } else if (isField && variableType.isClass()) {
-        sv = SymbolicValue.NULL_LITERAL;
       }
       if (sv != null) {
         programState = programState.put(variableTree.symbol(), sv);

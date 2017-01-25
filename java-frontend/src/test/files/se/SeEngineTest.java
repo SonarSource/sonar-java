@@ -109,3 +109,38 @@ class A0 {
   }
 
 }
+
+class DefaultValues {
+
+  void localVars() {
+    boolean a; // this is basically noop
+    Object b;
+    manyStatementsLater();
+    inTheGalaxyFarAway();
+    variablesAreInitialized();
+    a = true; // flow@vars
+    if (a) {  // Noncompliant [[flows=vars]] flow@vars
+
+    }
+    b = new Object();  // flow@vars2
+    if (b != null) {  // Noncompliant [[flows=vars2]] flow@vars2
+
+    }
+    try {
+      Thread.sleep(10);
+    } catch (Exception ex) {
+      if (ex != null) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+
+      }
+    }
+    for (Integer i : Arrays.asList(1,2,null)) {
+      if (i == null) { // Compliant
+
+      }
+      if (i != null) { // Compliant
+
+      }
+    }
+  }
+
+}
