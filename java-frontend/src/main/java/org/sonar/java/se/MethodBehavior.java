@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.se.checks.FlowComputation;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 

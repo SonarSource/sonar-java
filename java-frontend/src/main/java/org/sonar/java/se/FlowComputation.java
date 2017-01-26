@@ -17,13 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.sonar.java.se.ExplodedGraph;
-import org.sonar.java.se.MethodYield;
+import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -209,7 +208,7 @@ public class FlowComputation {
     return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
   }
 
-  static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
+  public static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
     return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
   }
 }
