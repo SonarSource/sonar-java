@@ -144,7 +144,7 @@ public class ExplodedGraph {
             }
           });
         }
-        parents.put(parent, methodYield);
+        addParent(parent, methodYield);
       }
     }
 
@@ -159,7 +159,7 @@ public class ExplodedGraph {
     }
 
     public void addParent(Node node, @Nullable MethodYield methodYield) {
-      parents.put(node, methodYield);
+      parents.putIfAbsent(node, methodYield);
     }
 
     @Nullable
