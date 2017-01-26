@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.sonar.java.cfg.CFG;
@@ -33,10 +32,11 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class ExplodedGraph {
 
@@ -127,7 +127,7 @@ public class ExplodedGraph {
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
       learnedSymbols = new ArrayList<>();
-      parents = new HashMap<>();
+      parents = new LinkedHashMap<>();
     }
 
     public void setParent(@Nullable Node parent, @Nullable MethodYield methodYield) {
@@ -164,11 +164,14 @@ public class ExplodedGraph {
 
     @Nullable
     public Node parent() {
-      return parents.isEmpty() ? null : getParents().get(0);
+      return parents.isEmpty() ? null : parents.keySet().iterator().next();
     }
 
-    public List<Node> getParents() {
-      return Lists.newArrayList(parents.keySet());
+    /**
+     * @return the ordered (by insertion) sets of parents
+     */
+    public Set<Node> getParents() {
+      return parents.keySet();
     }
 
     public List<LearnedConstraint> getLearnedConstraints() {

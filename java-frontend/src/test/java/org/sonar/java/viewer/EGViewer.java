@@ -77,14 +77,15 @@ public class EGViewer {
     List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.getNodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
-      result += graphNode(index, node);
-      if (!node.getParents().isEmpty()) {
+      List<ExplodedGraph.Node> parents = Lists.newArrayList(node.getParents());
+      result += graphNode(index, node, parents);
+      if (!parents.isEmpty()) {
         ExplodedGraph.Node firstParent = node.parent();
         result += parentEdge(nodes.indexOf(firstParent), index, node, firstParent);
 
-        int nbParents = node.getParents().size();
+        int nbParents = parents.size();
         if (SHOW_CACHE && nbParents > 1) {
-          List<ExplodedGraph.Node> cacheHits = node.getParents().subList(1, nbParents);
+          List<ExplodedGraph.Node> cacheHits = parents.subList(1, nbParents);
           for (ExplodedGraph.Node cacheHit : cacheHits) {
             result += cacheEdge(nodes.indexOf(cacheHit), index, node, cacheHit);
           }
@@ -96,12 +97,12 @@ public class EGViewer {
 
   }
 
-  private static String graphNode(int index, ExplodedGraph.Node node) {
-    return index + "[label=\"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node) + "] ";
+  private static String graphNode(int index, ExplodedGraph.Node node, List<ExplodedGraph.Node> parents) {
+    return index + "[label=\"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node, parents) + "] ";
   }
 
-  private static String specialHighlight(ExplodedGraph.Node node) {
-    if (node.getParents().isEmpty()) {
+  private static String specialHighlight(ExplodedGraph.Node node, List<ExplodedGraph.Node> parents) {
+    if (parents.isEmpty()) {
       return ",color=\"green\",fontcolor=\"white\"";
     } else if (node.programPoint.toString().startsWith("B0.0")) {
       return ",color=\"black\",fontcolor=\"white\"";
