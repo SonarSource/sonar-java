@@ -34,13 +34,18 @@ import static org.mockito.Mockito.mock;
 public class FlowComputationTest {
 
   @Test
-  public void learned_symbol() throws Exception {
+  public void test() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputation.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 
   @Test
-  public void catof() throws Exception {
+  public void test_catof() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationCATOF.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
+  public void test_messages_on_method_invocation() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMIT.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 
   @Test

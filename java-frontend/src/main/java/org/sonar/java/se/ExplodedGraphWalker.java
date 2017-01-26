@@ -125,7 +125,8 @@ public class ExplodedGraphWalker {
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
   private LiveVariables liveVariables;
-  private CheckerDispatcher checkerDispatcher;
+  @VisibleForTesting
+  CheckerDispatcher checkerDispatcher;
 
   private final SymbolicExecutionVisitor.BehaviorCache behaviorCache;
   @VisibleForTesting
@@ -628,17 +629,14 @@ public class ExplodedGraphWalker {
           invocationTypes,
           programState,
           () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue))
-        .forEach(psYield -> enqueueExceptionalPaths(psYield, yield)));
+          .forEach(psYield -> enqueueExceptionalPaths(psYield, yield)));
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
-        .flatMap(yield -> yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue))
-        .map(psYield -> handleSpecialMethods(psYield, mit))
-        .forEach(psYield -> {
-          checkerDispatcher.syntaxNode = mit;
-          checkerDispatcher.addTransition(psYield);
-          clearStack(mit);
-        });
+        .forEach(yield ->
+          yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue)
+            .map(psYield -> handleSpecialMethods(psYield, mit))
+            .forEach(psYield -> enqueueHappyPath(psYield, mit,  yield)));
     } else {
       // Enqueue exceptional paths from thrown exceptions
       enqueueThrownExceptionalPaths(methodSymbol);
@@ -648,6 +646,14 @@ public class ExplodedGraphWalker {
       checkerDispatcher.executeCheckPostStatement(mit);
       clearStack(mit);
     }
+  }
+
+  private void enqueueHappyPath(ProgramState programState, MethodInvocationTree mit, MethodYield yield) {
+    checkerDispatcher.syntaxNode = mit;
+    checkerDispatcher.methodYield = yield;
+    checkerDispatcher.addTransition(programState);
+    checkerDispatcher.methodYield = null;
+    clearStack(mit);
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {

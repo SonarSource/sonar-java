@@ -20,8 +20,8 @@
 package org.sonar.java.se;
 
 import com.google.common.reflect.ClassPath;
-
 import org.junit.Test;
+
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -268,6 +268,22 @@ public class ExplodedGraphWalkerTest {
   public void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranchingReporting.java", seChecks());
   }
+
+  @Test
+  public void xproc_keep_yield_for_reporting() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/YieldReporting.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
+      @Override
+      public void visitNode(Tree tree) {
+        MethodTree methodTree = (MethodTree) tree;
+        if ("test".equals(methodTree.symbol().name())) {
+          ExplodedGraphWalker egw = new ExplodedGraphWalker();
+          egw.visitMethod(methodTree, null);
+          assertThat(egw.checkerDispatcher.methodYield).isNull();
+        }
+      }
+    });
+  }
+
 
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
