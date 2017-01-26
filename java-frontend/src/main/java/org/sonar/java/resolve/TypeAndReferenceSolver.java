@@ -953,6 +953,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           if ("<init>".equals(methodSymbol.name)) {
             refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
           }
+          if(refinedReturnType instanceof DeferredType) {
+            ((DeferredType) refinedReturnType).setTree((AbstractTypedTree) methodRefTree.method());
+          }
           refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
         } else {
           handleNewArray(methodRefTree, methodRefType, samReturnType);

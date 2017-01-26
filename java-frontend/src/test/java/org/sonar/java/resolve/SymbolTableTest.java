@@ -1118,6 +1118,19 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void method_references_type_defered_should_not_raise_npe() throws Exception {
+    Result result = Result.createFor("MethodReferencesDeferedType");
+    LambdaExpressionTree lambda = (LambdaExpressionTree) result.symbol("qualifier").declaration().parent();
+    Type symbolType = ((MethodInvocationTree) lambda.body()).symbolType();
+    assertThat(symbolType.is("java.util.stream.Stream")).isTrue() ;
+    assertThat(symbolType).isInstanceOf(ParametrizedTypeJavaType.class);
+    List<JavaType> substitutedTypes = ((ParametrizedTypeJavaType) symbolType).typeSubstitution.substitutedTypes();
+    assertThat(substitutedTypes).hasSize(1);
+    assertThat(substitutedTypes.get(0).is("Qualifier")).isTrue();
+
+  }
+
+  @Test
   public void MethodReferencesNoArguments() throws Exception {
     Result result = Result.createFor("MethodReferencesNoArguments");
 
