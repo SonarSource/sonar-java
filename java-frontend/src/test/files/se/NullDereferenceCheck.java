@@ -534,7 +534,7 @@ class NullPointerTest {
   }
 
   public void testAssignSelfMember() {
-    LinkedListEntry entry2;
+    LinkedListEntry entry2 = null;
     entry2 = entry2.parent(); // Noncompliant
   }
 
@@ -568,7 +568,7 @@ class NullPointerTest {
     a.length();
     b.length(); // Noncompliant {{NullPointerException might be thrown as 'b' is nullable here}}
   }
-  
+
   public void test(@CheckForNull A a, @CheckForNull A b) {
     a.hashCode(); // Noncompliant
     b.hashCode(); // Noncompliant
@@ -588,14 +588,14 @@ class NullPointerTest {
   void foo(Object qix, @Nullable Object bar) {
     foo(bar, NullPointerTest.class);
   }
-  
+
 
   public void maybePropagateCancellation(@Nullable Object related) {
     if (related != null & isCancelled()) {
       related.toString();
     }
   }
-  
+
     void while_loop() {
     Object currentParent = new Object();
     while (currentParent != null) {
@@ -609,7 +609,7 @@ class NullPointerTest {
   public boolean equals(Object obj) {
     return getValue() == ((MyClass) obj).getValue(); // Noncompliant {{NullPointerException might be thrown as 'obj' is nullable here}}
   }
-  
+
   private void equalsToCheckForNull(Integer a) {
     Objeect b = checkForNullMethod();
     if (a.equals(b)) {
@@ -618,12 +618,12 @@ class NullPointerTest {
     a.toString(); // Compliant: a cannot be null hereafter
     this.checkForNullMethod().toString(); // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
-  
+
   @Nonnull
   public static String getNonNullString() {
     return "Rachmaninov";
   }
-  
+
   public static void useNonNullString() {
     String nonNullString = getNonNullString();
     if (nonNullString != null) {

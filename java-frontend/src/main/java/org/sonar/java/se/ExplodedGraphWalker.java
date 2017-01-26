@@ -740,20 +740,17 @@ public class ExplodedGraphWalker {
     return !symbol.isUnknown() && symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull");
   }
 
+  /**
+   * @see JLS8 4.12.5 for details
+   */
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
-    ExpressionTree initializer = variableTree.initializer();
-    if (initializer == null) {
+    if (variableTree.initializer() == null) {
       SymbolicValue sv = null;
-      Type variableType = variableTree.symbol().type();
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
-      } else if (variableType.is("boolean")) {
-        sv = SymbolicValue.FALSE_LITERAL;
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = getCaughtException(variableType);
+        sv = getCaughtException(variableTree.symbol().type());
         programState = programState.addConstraint(sv, ObjectConstraint.notNull());
-      } else if (!variableType.isPrimitive()) {
-        sv = SymbolicValue.NULL_LITERAL;
       }
       if (sv != null) {
         programState = programState.put(variableTree.symbol(), sv);

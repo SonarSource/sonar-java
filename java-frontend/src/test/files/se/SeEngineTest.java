@@ -29,10 +29,6 @@ class A0 {
     a.toString(); // Noncompliant
   }
 
-  void local_variable() {
-    Object a;
-    a.toString(); // Noncompliant
-  }
 
   void tracking_symbolic_value() {
     Object a = null;
@@ -77,7 +73,7 @@ class A0 {
   }
 
   void instance_of_set_not_null_constraint(Object d) {
-    Object c;
+    Object c = null;
     if (c instanceof Object) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       c.toString();
     }
@@ -104,6 +100,41 @@ class A0 {
       return (booleanField ? other.booleanField : (other.objectField1 != null) && (objectField1 == other.objectField1)) && objectField2.equals(other.objectField2);
     } else {
       return false;
+    }
+  }
+
+}
+
+class DefaultValues {
+
+  void localVars() {
+    boolean a;  // no SV is created on local variable declaration, value is undefined as per JLS
+    Object b;
+    manyStatementsLater();
+    inTheGalaxyFarFarAway();
+    variablesAreInitialized();
+    a = true; // flow@vars
+    if (a) {  // Noncompliant [[flows=vars]] flow@vars
+
+    }
+    b = new Object();  // flow@vars2
+    if (b != null) {  // Noncompliant [[flows=vars2]] flow@vars2
+
+    }
+    try {
+      Thread.sleep(10);
+    } catch (Exception ex) {
+      if (ex != null) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+
+      }
+    }
+    for (Integer i : Arrays.asList(1,2,null)) {
+      if (i == null) { // Compliant
+
+      }
+      if (i != null) { // Compliant
+
+      }
     }
   }
 
