@@ -565,16 +565,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (refinedReturnType != capturedReturnType) {
       // found a lambda return type different from the one infered : update infered type
       if (expressionType.isTagged(JavaType.PARAMETERIZED)) {
+        ParametrizedTypeJavaType functionType = (ParametrizedTypeJavaType) resolve.functionType((ParametrizedTypeJavaType) expressionType);
         TypeSubstitution typeSubstitution = ((ParametrizedTypeJavaType) expressionType).typeSubstitution;
         typeSubstitution.substitutionEntries().stream()
           .filter(e -> e.getValue() == capturedReturnType)
+          .map(Map.Entry::getKey)
           .findFirst()
-          .ifPresent(e -> {
-            TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(e.getKey(), refinedReturnType);
-            JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
+          .ifPresent(t -> {
             if(refinedReturnType instanceof DeferredType) {
-              setInferedType(refinedType, (DeferredType) refinedReturnType);
+              setInferedType(functionType.typeSubstitution.substitutedType(t), (DeferredType) refinedReturnType);
             } else  {
+              TypeSubstitution refinedSubstitution = new TypeSubstitution(typeSubstitution).add(t, refinedReturnType);
+              JavaType refinedType = parametrizedTypeCache.getParametrizedTypeType(expressionType.symbol, refinedSubstitution);
               expression.setType(refinedType);
             }
           });

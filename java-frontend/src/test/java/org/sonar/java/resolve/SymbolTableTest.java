@@ -1391,6 +1391,9 @@ public class SymbolTableTest {
     Result result = Result.createFor("DoubleLambda");
     JavaSymbol my = result.symbol("my");
     assertThat(my.usages()).hasSize(2);
+    LambdaExpressionTree outerLambda = ((LambdaExpressionTree) result.symbol("l").declaration().parent());
+    Type nestedLambdaType = ((ExpressionTree) outerLambda.body()).symbolType();
+    assertThat(nestedLambdaType.is("Issue$Flow")).as("Issue$Flow was expected but got : " + nestedLambdaType.fullyQualifiedName()).isTrue();
   }
 
   @Test

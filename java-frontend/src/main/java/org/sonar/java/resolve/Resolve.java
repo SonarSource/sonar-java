@@ -91,6 +91,10 @@ public class Resolve {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
+  public JavaType functionType(ParametrizedTypeJavaType javaType) {
+    return typeSubstitutionSolver.functionType(javaType);
+  }
+
   public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
     return typeSubstitutionSolver.applySiteSubstitution(type, definition);
   }
