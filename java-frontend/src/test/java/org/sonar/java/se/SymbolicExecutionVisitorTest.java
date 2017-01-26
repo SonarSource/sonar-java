@@ -172,6 +172,16 @@ public class SymbolicExecutionVisitorTest {
     verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
   }
 
+  @Test
+  public void guava_preconditions_methods_should_be_handled() throws Exception {
+    NullDereferenceCheck seCheck = new NullDereferenceCheck();
+    createSymbolicExecutionVisitor("src/test/files/se/GuavaPreconditionsMethods.java", seCheck);
+    // verify we did not raise any issue, if we did, the context will get them reported.
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    seCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+  }
+
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
     return createSymbolicExecutionVisitor(fileName, new NullDereferenceCheck());
   }

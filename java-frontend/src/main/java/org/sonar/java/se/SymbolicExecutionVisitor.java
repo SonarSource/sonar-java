@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -94,6 +95,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
           if(stringUtilsMethod != null) {
             behaviors.put(symbol, stringUtilsMethod);
           }
+        } else if(isGuavaPrecondition(symbol)) {
+          behaviors.put(symbol, createGuavaPreconditionsBehavior(symbol, "checkNotNull".equals(symbol.name())));
         } else {
           MethodTree declaration = symbol.declaration();
           if (declaration != null) {
@@ -102,6 +105,12 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         }
       }
       return behaviors.get(symbol);
+    }
+
+    private boolean isGuavaPrecondition(Symbol.MethodSymbol symbol) {
+      String name = symbol.name();
+      return symbol.owner().type().is("com.google.common.base.Preconditions")
+        && ("checkNotNull".equals(name) || "checkArgument".equals(name) || "checkState".equals(name) );
     }
 
     private boolean isStringUtilsMethod(Symbol.MethodSymbol symbol) {
@@ -196,6 +205,19 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       falseYield.parametersConstraints[0] = falseConstraint;
       falseYield.resultConstraint = BooleanConstraint.FALSE;
       behavior.addYield(falseYield);
+
+      behavior.completed();
+      return behavior;
+    }
+
+    private MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
+      MethodBehavior behavior = new MethodBehavior(symbol);
+      MethodYield happyPathYield = new MethodYield(symbol.parameterTypes().size(), ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs());
+      happyPathYield.exception = false;
+      happyPathYield.parametersConstraints[0] = isCheckNotNull ? ObjectConstraint.notNull() : BooleanConstraint.TRUE;
+      happyPathYield.resultConstraint = isCheckNotNull ? happyPathYield.parametersConstraints[0] : null;
+      happyPathYield.resultIndex = isCheckNotNull ? 0 : -1;
+      behavior.addYield(happyPathYield);
 
       behavior.completed();
       return behavior;
