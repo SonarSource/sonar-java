@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.junit.Test;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 

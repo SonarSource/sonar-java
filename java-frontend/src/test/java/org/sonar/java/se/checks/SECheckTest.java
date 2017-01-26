@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
