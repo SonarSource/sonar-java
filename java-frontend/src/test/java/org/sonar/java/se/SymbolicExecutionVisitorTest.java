@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,19 +69,17 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void method_behavior_cache_should_be_filled() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(6);
-    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(6);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.behaviors.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList()))
-      .containsSequence("topMethod", "bar", "qix", "foo", "independent", "nativeMethod");
+      .containsSequence("topMethod", "bar", "foo", "independent");
 
-    MethodBehavior nativeMethod = sev.behaviorCache.behaviors.keySet().stream()
-      .filter(s -> s.name().equals("nativeMethod"))
-      .map(s -> sev.behaviorCache.behaviors.get(s))
-      .findFirst()
-      .orElseThrow(IllegalStateException::new);
-    assertThat(nativeMethod.yields()).isEmpty();
+    // method which can be overriden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
+    assertThat(sev.behaviorCache.behaviors.keySet().stream()
+      .filter(s -> "nativeMethod".equals(s.name()) || "abstractMethod".equals(s.name()) || "publicMethod".equals(s.name()))
+      .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
   }
 
   @Test
@@ -116,7 +115,7 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void method_behavior_handling_finally() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(3);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);

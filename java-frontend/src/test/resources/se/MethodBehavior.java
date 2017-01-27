@@ -1,12 +1,12 @@
 abstract class MethodBehavior {
-  public boolean topMethod(boolean a) {
+  static boolean topMethod(boolean a) {
     boolean result = false;
     if(a) {
       result = bar(a);
     } else {
       result = foo(a);
     }
-    qix();
+    abstractMethod();
     int i = "".length();
     return result;
   }
@@ -19,11 +19,20 @@ abstract class MethodBehavior {
     return !a;
   }
 
-  private abstract void qix();
+  abstract void abstractMethod();
 
   private void independent(){
   }
 
   private native int nativeMethod();
+
+  public void publicMethod() {
+    boolean result = false;
+    if(a) {
+      result = bar(a);
+    } else {
+      result = foo(a);
+    }
+  }
 
 }

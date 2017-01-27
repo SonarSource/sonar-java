@@ -21,9 +21,11 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -64,16 +66,29 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @CheckForNull
   public MethodBehavior execute(MethodTree methodTree) {
     try {
-      MethodBehavior methodBehavior = new MethodBehavior(methodTree.symbol());
-      behaviorCache.add(methodTree.symbol(), methodBehavior);
+      Symbol.MethodSymbol methodSymbol = methodTree.symbol();
       ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache);
-      methodBehavior = walker.visitMethod(methodTree, methodBehavior);
-      methodBehavior.completed();
-      return methodBehavior;
+      if (methodCanNotBeOverriden(methodSymbol)) {
+        MethodBehavior methodBehavior = new MethodBehavior(methodSymbol);
+        behaviorCache.add(methodSymbol, methodBehavior);
+        methodBehavior = walker.visitMethod(methodTree, methodBehavior);
+        methodBehavior.completed();
+        return methodBehavior;
+      } else {
+        return walker.visitMethod(methodTree);
+      }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
     }
     return null;
+  }
+
+  private static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
+    if ((((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.NATIVE) != 0) {
+      return false;
+    }
+    return !methodSymbol.isAbstract() &&
+      (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
 
   class BehaviorCache {
@@ -99,7 +114,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
           behaviors.put(symbol, createGuavaPreconditionsBehavior(symbol, "checkNotNull".equals(symbol.name())));
         } else {
           MethodTree declaration = symbol.declaration();
-          if (declaration != null) {
+          if (declaration != null && methodCanNotBeOverriden(symbol)) {
             SymbolicExecutionVisitor.this.execute(declaration);
           }
         }

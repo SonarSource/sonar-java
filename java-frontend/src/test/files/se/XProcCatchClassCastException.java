@@ -1,5 +1,5 @@
 class A {
-  String foo(Object object) {
+  static String foo(Object object) {
     try {
       return (String) object;
     } catch (ClassCastException cce) {
