@@ -61,6 +61,28 @@ public class JavaRulesDefinition implements RulesDefinition {
     repository.done();
   }
 
+  /**
+   * Override this method to externalize rule metadata
+   *
+   * @param metadataKey the rule key for a given rule
+   * @return a URL to the JSON-formatted file containing rule metadata, or null
+   * if it can't be found
+   */
+  protected URL getMetadataUrl(String metadataKey) {
+    return ExternalDescriptionLoader.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
+  }
+
+  /**
+   * Override this method to externalize rule description
+   *
+   * @param metadataKey the rule key for a given rule
+   * @return a URL to a UTF-8 file that will be read into the rule description,
+   * or null if it can't be found
+   */
+  protected URL getHtmlDescriptionUrl(String metadataKey) {
+    return JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html");
+  }
+
   @VisibleForTesting
   protected void newRule(Class<?> ruleClass, NewRepository repository) {
 
@@ -96,7 +118,7 @@ public class JavaRulesDefinition implements RulesDefinition {
   }
 
   private void addMetadata(NewRule rule, String metadataKey) {
-    URL resource = ExternalDescriptionLoader.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
+    URL resource = getMetadataUrl(metadataKey);
     if (resource != null) {
       RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
       rule.setSeverity(metatada.defaultSeverity.toUpperCase());
@@ -111,8 +133,8 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
   }
 
-  private static void addHtmlDescription(NewRule rule, String metadataKey) {
-    URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html");
+  private void addHtmlDescription(NewRule rule, String metadataKey) {
+    URL resource = getHtmlDescriptionUrl(metadataKey);
     if (resource != null) {
       rule.setHtmlDescription(readResource(resource));
     }
