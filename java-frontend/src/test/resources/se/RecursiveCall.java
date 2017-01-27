@@ -1,6 +1,6 @@
 class RecursiveCall {
 
-  int foo(int a) {
+  static int foo(int a) {
     if(a == 0) {
       return a;
     }

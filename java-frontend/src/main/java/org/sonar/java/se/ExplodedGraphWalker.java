@@ -33,7 +33,6 @@ import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Types;
@@ -83,6 +82,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -133,6 +133,7 @@ public class ExplodedGraphWalker {
 
   ConstraintManager constraintManager;
   private boolean cleanup = true;
+  @Nullable
   MethodBehavior methodBehavior;
   private Set<ExplodedGraph.Node> endOfExecutionPath;
 
@@ -180,7 +181,11 @@ public class ExplodedGraphWalker {
     return explodedGraph;
   }
 
-  public MethodBehavior visitMethod(MethodTree tree, MethodBehavior methodBehavior) {
+  public MethodBehavior visitMethod(MethodTree tree) {
+    return visitMethod(tree, null);
+  }
+
+  public MethodBehavior visitMethod(MethodTree tree, @Nullable MethodBehavior methodBehavior) {
     BlockTree body = tree.block();
     this.methodBehavior = methodBehavior;
     if (body != null) {
@@ -280,7 +285,9 @@ public class ExplodedGraphWalker {
       if (!programState.exitingOnRuntimeException()) {
         checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
       }
-      methodBehavior.createYield(node);
+      if (methodBehavior != null) {
+        methodBehavior.createYield(node);
+      }
     });
     setNode(savedNode);
   }
@@ -291,11 +298,14 @@ public class ExplodedGraphWalker {
     SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
     boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
     boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
+    boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
       Symbol variableSymbol = variableTree.symbol();
-      methodBehavior.addParameter(sv);
+      if (hasMethodBehavior) {
+        methodBehavior.addParameter(sv);
+      }
       stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
@@ -319,7 +329,8 @@ public class ExplodedGraphWalker {
 
   private void cleanUpProgramState(CFG.Block block) {
     if (cleanup) {
-      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), methodBehavior.parameters());
+      Collection<SymbolicValue> protectedSymbols = methodBehavior == null ? Collections.emptyList() : methodBehavior.parameters();
+      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), protectedSymbols);
       programState = programState.cleanupConstraints();
     }
   }
@@ -604,7 +615,7 @@ public class ExplodedGraphWalker {
     enqueueUncheckedExceptionalPaths();
 
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
-    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && methodCanNotBeOverriden(methodSymbol)) {
+    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
 
@@ -719,14 +730,6 @@ public class ExplodedGraphWalker {
       || caughtType.isSubtypeOf("java.lang.Error")
       || caughtType.is("java.lang.Exception")
       || caughtType.is("java.lang.Throwable");
-  }
-
-  private static boolean methodCanNotBeOverriden(Symbol methodSymbol) {
-    if ((((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.NATIVE) != 0) {
-      return false;
-    }
-    return !methodSymbol.isAbstract() &&
-      (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {

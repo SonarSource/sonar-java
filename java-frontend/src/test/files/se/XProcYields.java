@@ -1,5 +1,5 @@
 class A {
-  Object foo(Object o, boolean b) {
+  static Object foo(Object o, boolean b) {
     if (b) {
 
       return o.toString();
@@ -8,7 +8,7 @@ class A {
     return null;
   }
 
-  void bar(boolean b, Object o) {
+  static void bar(boolean b, Object o) {
     if (b) {
       o.toString();
     }

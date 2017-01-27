@@ -1,5 +1,5 @@
 class MethodYields {
-  public boolean method(Object a, boolean b) {
+  static boolean method(Object a, boolean b) {
     boolean result = true;
     if(a != null) {
       if (b == true) {

@@ -4,7 +4,7 @@ import java.lang.reflect.NoSuchMethodException;
 
 class A {
 
-  boolean foo() {
+  static boolean foo() {
     if (System.getProperty("com.google.appengine.runtime.environment") == null) {
       return false;
     }
