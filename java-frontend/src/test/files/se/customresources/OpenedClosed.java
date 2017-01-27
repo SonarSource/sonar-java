@@ -19,7 +19,7 @@ public class GenericResource {
   
   public static void wrong(String name) {
     GenericResource resource = new GenericResource();
-    resource.open(name);  // Noncompliant [[flows=wrong]] {{Close this "GenericResource".}} flow@wrong {{GenericResource is never closed}}
+    resource.open(name);  // Noncompliant [[flows=wrong]] {{Close this "GenericResource".}} flow@wrong {{GenericResource is never closed.}}
     resource.use();
   }
   

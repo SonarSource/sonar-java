@@ -16,14 +16,14 @@ class A {
 
   void exceptions2(Object o) {
     throwIfNull(o); // flow@ex2  {{Implies 'o' is non-null.}}
-    if (o != null) { // Noncompliant [[flows=ex2]] {{Change this condition so that it does not always evaluate to "true"}} flow@ex2 {{Condition is always true}}
+    if (o != null) { // Noncompliant [[flows=ex2]] {{Change this condition so that it does not always evaluate to "true"}} flow@ex2 {{Condition is always true.}}
 
     }
   }
 
   void test(Object a) {
     if (trueIfNull(a)) { // flow@arg {{Implies 'a' is null.}}
-      a.toString(); // Noncompliant [[flows=arg]] {{NullPointerException might be thrown as 'a' is nullable here}}  flow@arg {{'a' is dereferenced}}
+      a.toString(); // Noncompliant [[flows=arg]] {{NullPointerException might be thrown as 'a' is nullable here}}  flow@arg {{'a' is dereferenced.}}
     }
   }
 
@@ -31,7 +31,7 @@ class A {
      try {
        throwIfNull(o); // flow@ex {{Implies 'o' is null.}}
      } catch (IllegalStateException ex) {
-       o.toString(); // Noncompliant [[flows=ex]] {{NullPointerException might be thrown as 'o' is nullable here}} flow@ex {{'o' is dereferenced}}
+       o.toString(); // Noncompliant [[flows=ex]] {{NullPointerException might be thrown as 'o' is nullable here}} flow@ex {{'o' is dereferenced.}}
      }
   }
 
