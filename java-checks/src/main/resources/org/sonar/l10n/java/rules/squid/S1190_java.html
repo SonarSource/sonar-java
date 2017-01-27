@@ -1,5 +1,6 @@
 <p>Through Java's evolution keywords have been added. While code that uses those words as identifiers may be compilable under older versions of Java,
 it will not be under modern versions. </p>
+<p>Following keywords are marked as invalid identifiers </p>
 <table>
   <tbody>
     <tr>
@@ -7,31 +8,23 @@ it will not be under modern versions. </p>
       <th>Added</th>
     </tr>
     <tr>
-      <td>assert</td>
-      <td>1.4</td>
+      <td><code>_</code></td>
+      <td>9</td>
     </tr>
     <tr>
-      <td>const</td>
-      <td>reserved</td>
-    </tr>
-    <tr>
-      <td>enum</td>
+      <td><code>enum</code></td>
       <td>5.0</td>
-    </tr>
-    <tr>
-      <td>goto</td>
-      <td>reserved</td>
-    </tr>
-    <tr>
-      <td>strictfp</td>
-      <td>1.2</td>
     </tr>
   </tbody>
 </table>
+<p><code>assert</code> and <code>strictfp</code> are another example of valid identifiers which became keywords in later versions, however as
+documented in SONARJAVA-285, it is not easily possible to support parsing of the code for such old versions, therefore they are not supported by this
+rule.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomething() {
   int enum = 42;            // Noncompliant
+  String _ = "";   // Noncompliant
 }
 </pre>
 <h2>Compliant Solution</h2>

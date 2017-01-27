@@ -6,10 +6,6 @@ for (;;) {  // Noncompliant; end condition omitted
   // ...
 }
 
-for (int i = 0; i &lt; 10; i--) { // Noncompliant; end condition but unreachable
-  //...
-}
-
 int j;
 while (true) { // Noncompliant; end condition omitted
   j++;
@@ -23,10 +19,6 @@ while (b) { // Noncompliant; b never written to in loop
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-for (int i = 0; i &lt; 10; i++) { // end condition now reachable
-  //...
-}
-
 int j;
 while (true) { // reachable end condition added
   j++;
