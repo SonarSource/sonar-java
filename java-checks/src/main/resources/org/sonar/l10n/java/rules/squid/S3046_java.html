@@ -1,17 +1,8 @@
-<p>The <code>notify</code> call releases the object on which it was called and wakes up the first thread waiting for the lock on that object.
-Significantly, it only releases <em>one</em> lock, and if multiple locks are held when it is called deadlocks could result.</p>
-<p>Similarly, when two locks are held simultaneously, a <code>wait</code> call only releases one of them. The other will be held until some other
-thread requests a lock on the awaited object. If no unrelated code tries to lock on that object, then all other threads will be locked out, resulting
-in a deadlock.</p>
+<p>When two locks are held simultaneously, a <code>wait</code> call only releases one of them. The other will be held until some other thread requests
+a lock on the awaited object. If no unrelated code tries to lock on that object, then all other threads will be locked out, resulting in a
+deadlock.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public synchronized void doSomething(Object obj) {  // first lock
-  synchronized (obj) {  // second lock
-    // ...
-    obj.notify(); // Noncompliant; only the second lock is released
-  }
-}
-
 synchronized (this.mon1) {  // threadB can't enter this block to request this.mon2 lock &amp; release threadA
 	synchronized (this.mon2) {
 		this.mon2.wait();  // Noncompliant; threadA is stuck here holding lock on this.mon1

@@ -1,5 +1,5 @@
 {
-  "title": "\"wait\" and \"notify\" should not be called when multiple locks are held",
+  "title": "\"wait\" should not be called when multiple locks are held",
   "type": "BUG",
   "status": "ready",
   "remediation": {
