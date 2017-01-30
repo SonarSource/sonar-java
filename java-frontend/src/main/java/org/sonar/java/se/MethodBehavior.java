@@ -20,13 +20,11 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,12 +43,11 @@ public class MethodBehavior {
   }
 
   public void createYield(ExplodedGraph.Node node) {
-    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs());
+    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs(), node, this);
     yield.exception = !node.happyPath;
 
     for (int i = 0; i < yield.parametersConstraints.length; i++) {
       yield.parametersConstraints[i] = node.programState.getConstraint(parameters.get(i));
-      yield.flowForParameter(i, FlowComputation.flow(node, parameters.get(i)));
     }
 
     SymbolicValue resultSV = node.programState.exitValue();
@@ -64,10 +61,6 @@ public class MethodBehavior {
       } else {
         yield.resultIndex = parameters.indexOf(resultSV);
         yield.resultConstraint = node.programState.getConstraint(resultSV);
-        if (yield.resultIndex < 0) {
-          // if the returned value is one of the parameter, the flow has already been calculated
-          yield.flowForParameter(yield.resultIndex, FlowComputation.flow(node, resultSV));
-        }
       }
     }
 
@@ -98,7 +91,7 @@ public class MethodBehavior {
     parameters.add(sv);
   }
 
-  public Collection<SymbolicValue> parameters() {
+  public List<SymbolicValue> parameters() {
     return parameters;
   }
 

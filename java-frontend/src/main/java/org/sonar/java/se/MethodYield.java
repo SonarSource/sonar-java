@@ -19,9 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -33,20 +31,18 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MethodYield {
-  final List<List<JavaFileScannerContext.Location>> flowByParameters;
   private final boolean varArgs;
+  private final ExplodedGraph.Node node;
+  private final MethodBehavior behavior;
   Constraint[] parametersConstraints;
   int resultIndex;
   @Nullable
@@ -55,22 +51,26 @@ public class MethodYield {
   Type exceptionType;
   boolean exception;
 
-  public MethodYield(int arity, boolean varArgs) {
-    this.flowByParameters = initFlows(arity);
+  public MethodYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
     this.parametersConstraints = new Constraint[arity];
     this.varArgs = varArgs;
+    this.node = node;
+    this.behavior = behavior;
     this.resultIndex = -1;
     this.resultConstraint = null;
     this.exception = false;
     this.exceptionType = null;
   }
 
-  private static List<List<JavaFileScannerContext.Location>> initFlows(int arity) {
-    // n parameters + 1 for the return value
-    return IntStream
-      .range(0, arity + 1)
-      .mapToObj(i -> ImmutableList.<JavaFileScannerContext.Location>of())
-      .collect(Collectors.toList());
+  public MethodYield(int arity, boolean varArgs) {
+    this.parametersConstraints = new Constraint[arity];
+    this.varArgs = varArgs;
+    this.node = null;
+    this.behavior = null;
+    this.resultIndex = -1;
+    this.resultConstraint = null;
+    this.exception = false;
+    this.exceptionType = null;
   }
 
   @Override
@@ -193,12 +193,14 @@ public class MethodYield {
       .isEquals();
   }
 
-  public void flowForParameter(int parameterIndex, List<JavaFileScannerContext.Location> flow) {
-    flowByParameters.set(parameterIndex + 1, flow);
-  }
-
   public List<JavaFileScannerContext.Location> flow(int parameterIndex) {
-    return flowByParameters.get(parameterIndex + 1);
+    if(node == null || behavior == null) {
+      return Lists.newArrayList();
+    }
+    if(parameterIndex < 0) {
+      return FlowComputation.flow(node, node.programState.exitValue());
+    }
+    return FlowComputation.flow(node, behavior.parameters().get(parameterIndex));
   }
 
   @CheckForNull
