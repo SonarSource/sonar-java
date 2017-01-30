@@ -96,7 +96,7 @@ public class JavaTest {
       .setCleanSonarGoals();
 
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
-    assertThat(buildResult.getStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isEqualTo(0);
   }
 
   @Test
@@ -125,7 +125,7 @@ public class JavaTest {
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(build);
     // since sonar-java 2.1 does not fail if multiple package in same directory.
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
   }
 
   @Test
@@ -134,13 +134,13 @@ public class JavaTest {
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
     inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setProperty("sonar.skipPackageDesign", "true")
       .setGoals("sonar:sonar");
     result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
 
   }
 
@@ -227,7 +227,7 @@ public class JavaTest {
     build.setProperty(sonarJavaSource, "jdk_1.6");
     BuildResult buildResult = orchestrator.executeBuild(build);
     // build should not fail
-    assertThat(buildResult.getStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isEqualTo(0);
     // build logs should contains warning related to sources
     assertThat(buildResult.getLogs()).contains("Invalid java version");
     assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(1);
