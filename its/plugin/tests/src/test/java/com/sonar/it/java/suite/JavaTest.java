@@ -23,6 +23,7 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
 import java.io.File;
@@ -40,6 +41,7 @@ import org.sonarqube.ws.WsComponents;
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 public class JavaTest {
 
@@ -95,6 +97,25 @@ public class JavaTest {
 
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
     assertThat(buildResult.getStatus()).isEqualTo(0);
+  }
+
+  @Test
+  public void should_create_issue_pom_xml() {
+    assumeTrue(orchestrator.getServer().version().isGreaterThanOrEquals("6.3"));
+    
+    orchestrator.getServer().restoreProfile(FileLocation.ofClasspath("/profile-pom-xml.xml"));
+    orchestrator.getServer().provisionProject("org.sonarsource.java:test-project", "Test Project");
+    orchestrator.getServer().associateProjectToQualityProfile("org.sonarsource.java:test-project", "java", "java-pom-xml");
+
+    MavenBuild build = MavenBuild.create()
+      .setPom(TestUtils.projectPom("pom-xml"))
+      .setCleanPackageSonarGoals();
+    orchestrator.executeBuild(build);
+
+    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
+    List<Issue> issues = issueClient.find(IssueQuery.create().components("org.sonarsource.java:test-project:pom.xml")).list();
+    assertThat(issues).hasSize(1);
+    assertThat(issues.iterator().next().ruleKey()).isEqualTo("squid:S3423");
   }
 
   @Test
