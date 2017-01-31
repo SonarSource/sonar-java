@@ -244,7 +244,7 @@ public class ExplodedGraphWalker {
       }
     }
 
-    handleEndOfExecutionPath();
+    handleEndOfExecutionPath(false);
     checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
     workList = null;
@@ -268,7 +268,7 @@ public class ExplodedGraphWalker {
   }
 
   private void interrupted() {
-    handleEndOfExecutionPath();
+    handleEndOfExecutionPath(true);
     checkerDispatcher.interruptedExecution();
   }
 
@@ -278,14 +278,14 @@ public class ExplodedGraphWalker {
     programState = this.node.programState;
   }
 
-  private void handleEndOfExecutionPath() {
+  private void handleEndOfExecutionPath(boolean interrupted) {
     ExplodedGraph.Node savedNode = node;
     endOfExecutionPath.forEach(n -> {
       setNode(n);
       if (!programState.exitingOnRuntimeException()) {
         checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
       }
-      if (methodBehavior != null) {
+      if (!interrupted && methodBehavior != null) {
         methodBehavior.createYield(node);
       }
     });

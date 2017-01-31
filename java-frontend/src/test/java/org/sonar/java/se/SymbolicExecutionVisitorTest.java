@@ -145,6 +145,20 @@ public class SymbolicExecutionVisitorTest {
   }
 
   @Test
+  public void interrupted_exploration_does_not_create_method_yields() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java");
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
+
+    MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
+    assertThat(plopMethod.isComplete()).isFalse();
+    assertThat(plopMethod.yields()).isEmpty();
+
+    MethodBehavior barMethod = getMethodBehavior(sev, "bar");
+    assertThat(barMethod.isComplete()).isTrue();
+    assertThat(barMethod.yields()).hasSize(2);
+  }
+
+  @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
     List<MethodYield> yields = sev.behaviorCache.behaviors.values().iterator().next().yields();
