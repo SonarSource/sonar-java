@@ -20,10 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
@@ -38,6 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static org.sonar.java.se.ProgramState.isField;
 
 /**
@@ -101,7 +104,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
       Tree containingClassOrMethod = containingClassOrMethod(usageIdentifier);
 
-      if (containingClassOrMethod.is(Kind.CLASS)
+      if (noContainerOrClassContainer(containingClassOrMethod)
         || !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol)
         || (method != null && !method.equals(containingClassOrMethod))) {
         return null;
@@ -115,11 +118,15 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     return method;
   }
 
+  private static boolean noContainerOrClassContainer(@Nullable Tree containingClassOrMethod) {
+    return containingClassOrMethod == null || containingClassOrMethod.is(Kind.CLASS, Kind.INTERFACE, Kind.ENUM, Kind.ANNOTATION_TYPE);
+  }
+
   private static Tree containingClassOrMethod(IdentifierTree usageIdentifier) {
     Tree parent = usageIdentifier;
     do {
       parent = parent.parent();
-    } while (!parent.is(Kind.METHOD, Kind.CLASS));
+    } while (!parent.is(Kind.METHOD, Kind.CLASS, Kind.INTERFACE, Kind.ENUM, Kind.ANNOTATION_TYPE));
 
     return parent;
   }
