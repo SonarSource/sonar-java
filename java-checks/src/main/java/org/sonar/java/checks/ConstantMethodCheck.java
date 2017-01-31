@@ -23,13 +23,12 @@ import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -51,7 +50,7 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     BlockTree body = methodTree.block();
-    if (!methodTree.modifiers().annotations().isEmpty() || hasDefaultKeyword(methodTree)) {
+    if (!methodTree.modifiers().annotations().isEmpty() || ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.DEFAULT)) {
       return;
     }
     if (BooleanUtils.isFalse(methodTree.isOverriding()) && body != null && body.body().size() == 1) {
@@ -63,15 +62,6 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
         }
       }
     }
-  }
-
-  private static boolean hasDefaultKeyword(MethodTreeImpl methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (symbol instanceof  JavaSymbol.MethodJavaSymbol) {
-      JavaSymbol.MethodJavaSymbol javaSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
-      return (javaSymbol.flags() & Flags.DEFAULT) != 0;
-    }
-    return false;
   }
 
   private static boolean isConstant(@Nullable ExpressionTree returnedExpression) {
