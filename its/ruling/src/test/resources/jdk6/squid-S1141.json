@@ -11,14 +11,10 @@
 'jdk6:java/awt/font/StyledParagraph.java':[
 418,
 ],
-'jdk6:java/beans/SimpleBeanInfo.java':[
-110,
-],
 'jdk6:java/net/Inet6Address.java':[
 405,
 ],
 'jdk6:java/net/InetAddress.java':[
-873,
 1356,
 ],
 'jdk6:java/net/PlainSocketImpl.java':[
@@ -26,9 +22,6 @@
 ],
 'jdk6:java/net/URL.java':[
 1139,
-],
-'jdk6:java/net/URLClassLoader.java':[
-196,
 ],
 'jdk6:java/net/URLConnection.java':[
 1261,
@@ -45,10 +38,6 @@
 163,
 360,
 740,
-],
-'jdk6:java/util/prefs/FileSystemPreferences.java':[
-558,
-602,
 ],
 'jdk6:java/util/prefs/XmlSupport.java':[
 247,
