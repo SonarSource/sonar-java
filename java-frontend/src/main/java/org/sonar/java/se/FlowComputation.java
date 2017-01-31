@@ -96,37 +96,36 @@ public class FlowComputation {
     return new FlowComputation(symbolicValue, addToFlow, terminateTraversal);
   }
 
-  private void run(@Nullable final ExplodedGraph.Node aNode, @Nullable final Symbol aSymbol) {
-    class NodeSymbol {
-      ExplodedGraph.Node node;
-      Symbol trackSymbol;
+  private static class NodeSymbol {
+    final ExplodedGraph.Node node;
+    final Symbol trackSymbol;
 
-      public NodeSymbol(@Nullable ExplodedGraph.Node node, @Nullable Symbol trackSymbol) {
-        this.node = node;
-        this.trackSymbol = trackSymbol;
-      }
+    public NodeSymbol(@Nullable ExplodedGraph.Node node, @Nullable Symbol trackSymbol) {
+      this.node = node;
+      this.trackSymbol = trackSymbol;
     }
+  }
 
+  private void run(@Nullable final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
     Deque<NodeSymbol> workList = new ArrayDeque<>();
-    workList.add(new NodeSymbol(aNode, aSymbol));
+    workList.add(new NodeSymbol(node, trackSymbol));
     while (!workList.isEmpty()) {
       NodeSymbol nodeSymbol = workList.pop();
-      ExplodedGraph.Node node = nodeSymbol.node;
-      Symbol symbol = nodeSymbol.trackSymbol;
-      if (node == null || visited.contains(node)) {
+      ExplodedGraph.Node currentNode = nodeSymbol.node;
+      if (currentNode == null || visited.contains(currentNode)) {
         continue;
       }
-      visited.add(node);
+      visited.add(currentNode);
 
-      Symbol newTrackSymbol = symbol;
-      if (node.programPoint.syntaxTree() != null) {
-        newTrackSymbol = addFlowFromLearnedSymbols(node, symbol);
-        Stream<Constraint> learnedConstraints = addFlowFromLearnedConstraints(node);
+      Symbol newTrackSymbol = nodeSymbol.trackSymbol;
+      if (currentNode.programPoint.syntaxTree() != null) {
+        newTrackSymbol = addFlowFromLearnedSymbols(currentNode, newTrackSymbol);
+        Stream<Constraint> learnedConstraints = addFlowFromLearnedConstraints(currentNode);
         if (learnedConstraints.anyMatch(terminateTraversal)) {
           continue;
         }
       }
-      for (ExplodedGraph.Node parent : node.getParents()) {
+      for (ExplodedGraph.Node parent : currentNode.getParents()) {
         workList.push(new NodeSymbol(parent, newTrackSymbol));
       }
     }
