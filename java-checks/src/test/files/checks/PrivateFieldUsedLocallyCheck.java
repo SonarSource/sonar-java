@@ -270,3 +270,20 @@ class Example {
   }
 
 }
+
+enum A {
+  VALUE_1(1),
+  VALUE_2(2);
+
+  static class Inner {
+    private static java.util.HashMap<Integer, A> INDEX = new java.util.HashMap<>();
+  }
+  java.util.HashMap field = Inner.INDEX;
+  A(int indexValue) {
+    Inner.INDEX.put(indexValue, this);
+  }
+
+  public static A lookup(int indexValue) {
+    return Inner.INDEX.get(indexValue);
+  }
+}
