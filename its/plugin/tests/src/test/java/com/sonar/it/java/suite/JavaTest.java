@@ -23,6 +23,7 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
 import java.io.File;
@@ -40,6 +41,7 @@ import org.sonarqube.ws.WsComponents;
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 public class JavaTest {
 
@@ -94,7 +96,26 @@ public class JavaTest {
       .setCleanSonarGoals();
 
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
-    assertThat(buildResult.getStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isEqualTo(0);
+  }
+
+  @Test
+  public void should_create_issue_pom_xml() {
+    assumeTrue(orchestrator.getServer().version().isGreaterThanOrEquals("6.3"));
+    
+    orchestrator.getServer().restoreProfile(FileLocation.ofClasspath("/profile-pom-xml.xml"));
+    orchestrator.getServer().provisionProject("org.sonarsource.java:test-project", "Test Project");
+    orchestrator.getServer().associateProjectToQualityProfile("org.sonarsource.java:test-project", "java", "java-pom-xml");
+
+    MavenBuild build = MavenBuild.create()
+      .setPom(TestUtils.projectPom("pom-xml"))
+      .setCleanPackageSonarGoals();
+    orchestrator.executeBuild(build);
+
+    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
+    List<Issue> issues = issueClient.find(IssueQuery.create().components("org.sonarsource.java:test-project:pom.xml")).list();
+    assertThat(issues).hasSize(1);
+    assertThat(issues.iterator().next().ruleKey()).isEqualTo("squid:S3423");
   }
 
   @Test
@@ -104,7 +125,7 @@ public class JavaTest {
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(build);
     // since sonar-java 2.1 does not fail if multiple package in same directory.
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
   }
 
   @Test
@@ -113,13 +134,13 @@ public class JavaTest {
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
     inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setProperty("sonar.skipPackageDesign", "true")
       .setGoals("sonar:sonar");
     result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isEqualTo(0);
 
   }
 
@@ -206,7 +227,7 @@ public class JavaTest {
     build.setProperty(sonarJavaSource, "jdk_1.6");
     BuildResult buildResult = orchestrator.executeBuild(build);
     // build should not fail
-    assertThat(buildResult.getStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isEqualTo(0);
     // build logs should contains warning related to sources
     assertThat(buildResult.getLogs()).contains("Invalid java version");
     assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(1);

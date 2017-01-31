@@ -55,6 +55,7 @@ public class Struts139Test {
     build.setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify");
     MavenBuild analysis = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite"))
       .setProperty("sonar.scm.disabled", "true")
+      .setProperty("sonar.exclusions", "**/pom.xml")
       .setGoals("sonar:sonar");
     orchestrator.executeBuilds(build, analysis);
   }
