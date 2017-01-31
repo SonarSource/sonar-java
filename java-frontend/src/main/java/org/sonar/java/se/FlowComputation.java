@@ -35,7 +35,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -94,22 +96,38 @@ public class FlowComputation {
     return new FlowComputation(symbolicValue, addToFlow, terminateTraversal);
   }
 
-  private void run(@Nullable final ExplodedGraph.Node currentNode, @Nullable final Symbol trackSymbol) {
-    if (currentNode == null || visited.contains(currentNode)) {
-      return;
-    }
-    visited.add(currentNode);
+  private static class NodeSymbol {
+    final ExplodedGraph.Node node;
+    final Symbol trackSymbol;
 
-    Symbol newTrackSymbol = trackSymbol;
-    if (currentNode.programPoint.syntaxTree() != null) {
-      newTrackSymbol = addFlowFromLearnedSymbols(currentNode, trackSymbol);
-      Stream<Constraint> learnedConstraints = addFlowFromLearnedConstraints(currentNode);
-      if (learnedConstraints.anyMatch(terminateTraversal)) {
-        return;
-      }
+    public NodeSymbol(@Nullable ExplodedGraph.Node node, @Nullable Symbol trackSymbol) {
+      this.node = node;
+      this.trackSymbol = trackSymbol;
     }
-    for (ExplodedGraph.Node parent : currentNode.getParents()) {
-      run(parent, newTrackSymbol);
+  }
+
+  private void run(@Nullable final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
+    Deque<NodeSymbol> workList = new ArrayDeque<>();
+    workList.add(new NodeSymbol(node, trackSymbol));
+    while (!workList.isEmpty()) {
+      NodeSymbol nodeSymbol = workList.pop();
+      ExplodedGraph.Node currentNode = nodeSymbol.node;
+      if (currentNode == null || visited.contains(currentNode)) {
+        continue;
+      }
+      visited.add(currentNode);
+
+      Symbol newTrackSymbol = nodeSymbol.trackSymbol;
+      if (currentNode.programPoint.syntaxTree() != null) {
+        newTrackSymbol = addFlowFromLearnedSymbols(currentNode, newTrackSymbol);
+        Stream<Constraint> learnedConstraints = addFlowFromLearnedConstraints(currentNode);
+        if (learnedConstraints.anyMatch(terminateTraversal)) {
+          continue;
+        }
+      }
+      for (ExplodedGraph.Node parent : currentNode.getParents()) {
+        workList.push(new NodeSymbol(parent, newTrackSymbol));
+      }
     }
   }
 
