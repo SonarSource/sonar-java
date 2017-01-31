@@ -74,3 +74,58 @@ class A {
     } catch (Exception e) {}
   }
 }
+
+class AnonymousClass {
+
+  static {
+    try {
+      try { // Noncompliant {{Extract this nested try block into a separate method.}}
+      } catch (Exception e) {
+      }
+    } catch (Exception e) {
+    }
+  }
+
+  void foo() {
+    try {
+      new AnonymousClass() {
+
+        {
+          try {
+            try { // Noncompliant {{Extract this nested try block into a separate method.}}
+            } catch (Exception e) {
+            }
+          } catch (Exception e) {
+          }
+        }
+
+        {
+          try { // compliant - not included in count of parent method
+          } catch (Exception e) {
+          }
+        }
+
+        @Override
+        void foo() {
+          try { // Compliant - not included in count of parent method
+          } catch (Exception e) {
+          }
+        }
+
+        @Override
+        void bar() {
+          try {
+            try { // Noncompliant {{Extract this nested try block into a separate method.}}
+            } catch (Exception e) {
+            }
+          } catch (Exception e) {
+          }
+        }
+      };
+    } catch (Exception e) {
+    }
+  }
+
+  void bar() {
+  }
+}

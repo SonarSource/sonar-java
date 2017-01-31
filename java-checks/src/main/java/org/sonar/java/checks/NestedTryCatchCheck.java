@@ -23,6 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
@@ -35,7 +36,7 @@ import java.util.List;
 public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Tree> nestingLevel = new ArrayDeque<>();
+  private Deque<Deque<Tree>> nestingLevel = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -45,22 +46,31 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
   }
 
   @Override
+  public void visitClass(ClassTree tree) {
+    nestingLevel.push(new ArrayDeque<>());
+    super.visitClass(tree);
+    nestingLevel.pop();
+  }
+
+  @Override
   public void visitTryStatement(TryStatementTree tree) {
     scan(tree.resources());
+    Deque<Tree> currentNestingLevel = nestingLevel.peek();
+
     if (!tree.catches().isEmpty()) {
-      int size = nestingLevel.size();
+      int size = currentNestingLevel.size();
       if (size > 0) {
         List<JavaFileScannerContext.Location> secondary = new ArrayList<>(size);
-        for (Tree element : nestingLevel) {
+        for (Tree element : currentNestingLevel) {
           secondary.add(new JavaFileScannerContext.Location("Nesting + 1", element));
         }
         context.reportIssue(this, tree.tryKeyword(), "Extract this nested try block into a separate method.", secondary, null);
       }
-      nestingLevel.push(tree.tryKeyword());
+      currentNestingLevel.push(tree.tryKeyword());
     }
     scan(tree.block());
     if (!tree.catches().isEmpty()) {
-      nestingLevel.pop();
+      currentNestingLevel.pop();
     }
     scan(tree.catches());
     scan(tree.finallyBlock());
