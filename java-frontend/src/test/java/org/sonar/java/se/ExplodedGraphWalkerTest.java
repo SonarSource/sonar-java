@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 import org.junit.Test;
 
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -38,8 +39,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -279,6 +283,46 @@ public class ExplodedGraphWalkerTest {
           ExplodedGraphWalker egw = new ExplodedGraphWalker();
           egw.visitMethod(methodTree, null);
           assertThat(egw.checkerDispatcher.methodYield).isNull();
+        }
+      }
+    });
+  }
+
+  @Test
+  public void test_method_invocation_stack() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MethodInvocationStack.java", new SECheck() {
+      private String methodName;
+      Deque<Integer> expectedStackDepth;
+
+      @Override
+      public void init(MethodTree methodTree, CFG cfg) {
+        methodName = methodTree.symbol().name();
+        if (isTestMethod()) {
+          String[] depths = methodTree.firstToken().trivias().get(0).comment().substring(3).split(",");
+          expectedStackDepth = Arrays.stream(depths).map(Integer::parseInt).collect(Collectors.toCollection(LinkedList::new));
+        }
+      }
+
+      private boolean isTestMethod() {
+        return methodName.startsWith("test");
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState programState = context.getState();
+        if (isTestMethod()) {
+          int actual = programState.stackDepth();
+          int expected = expectedStackDepth.pop();
+          assertThat(actual).as("%s: stack should have depth %d after %s", methodName, expected, context.getNode()).isEqualTo(expected);
+        }
+        return programState;
+      }
+
+      @Override
+      public void checkEndOfExecution(CheckerContext context) {
+        if (isTestMethod()) {
+          assertThat(expectedStackDepth).isEmpty();
+          assertThat(context.getState().stackDepth()).as(methodName).isEqualTo(1); // should be zero instead?
         }
       }
     });
