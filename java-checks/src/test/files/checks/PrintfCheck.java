@@ -44,6 +44,8 @@ class A {
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  // Noncompliant {{4th argument is not used.}}
     String.format("normal %d%% ", 1);  //Compliant
     String.format("Duke's Birthday year is %t", 12l);  // Noncompliant {{Time conversion requires a second character.}}
+    String.format("Duke's Birthday year is %tH", 12l);  // Compliant
+    String.format("Duke's Birthday year is %tH", Long.valueOf(12L));  // Compliant
     String.format("Duke's Birthday year is %tH", loc);  // Noncompliant {{Time argument is expected (long, Long, Calendar, Date and TemporalAccessor).}}
     String.format("%08d%n", 1);
     GregorianCalendar gc;
