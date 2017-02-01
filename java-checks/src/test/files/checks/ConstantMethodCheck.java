@@ -43,3 +43,9 @@ class A implements Comparable<A> {
 }
 
 @interface MyAnnotation {}
+
+interface B {
+  default String defaultMethodReturningConstant() {
+    return "";
+  }
+}
