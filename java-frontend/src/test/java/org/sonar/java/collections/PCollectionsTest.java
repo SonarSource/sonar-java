@@ -32,6 +32,7 @@ public class PCollectionsTest {
   public void test() {
     assertThat(PCollections.emptySet()).isSameAs(AVLTree.create());
     assertThat(PCollections.emptyMap()).isSameAs(AVLTree.create());
+    assertThat(PCollections.emptyStack()).isSameAs(SinglyLinkedList.EMPTY);
   }
 
   @Test
