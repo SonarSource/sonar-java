@@ -39,6 +39,16 @@
       <name>Nicolas Peru</name>
       <organization>SonarSource</organization>
     </developer>
+    <developer>
+      <id>m-g-sonar</id>
+      <name>Michael Gumowski</name>
+      <organization>SonarSource</organization>
+    </developer>
+    <developer>
+      <id>saberduck</id>
+      <name>Tibor Blenessy</name>
+      <organization>SonarSource</organization>
+    </developer>
   </developers>
 
   <modules>
