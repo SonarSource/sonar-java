@@ -159,7 +159,7 @@ abstract class WithinLambda {
     a.doSomething(
       (Action<Void>) () -> {
         new Thread(
-          new Runnable() { // FN: not handled
+          new Runnable() { // Noncompliant
             @Override
             public void run() {
               // do somehting

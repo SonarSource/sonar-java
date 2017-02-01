@@ -156,4 +156,14 @@ class G<T> {
       return takeFirst ? (Number) i : f;
     }
   }
+
+  class I {
+    <K> K getValue(String s) {
+      return s;
+    }
+    String foo() {
+      return (String) getValue(""); // Noncompliant
+    }
+  }
+
 }

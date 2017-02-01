@@ -861,7 +861,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitTypeCast(TypeCastTree tree) {
     resolveAs(tree.type(), JavaSymbol.TYP);
     resolveAs(tree.expression(), JavaSymbol.VAR);
-    registerType(tree, getType(tree.type()));
+    JavaType castType = getType(tree.type());
+    Type expressionType = tree.expression().symbolType();
+    if(expressionType instanceof DeferredType) {
+      setInferedType(castType, (DeferredType) expressionType);
+    }
+    registerType(tree, castType);
   }
 
   @Override
