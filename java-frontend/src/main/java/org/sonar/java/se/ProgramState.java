@@ -22,8 +22,10 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.collections.PStack;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -35,12 +37,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,7 +73,7 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     PCollections.emptyMap(),
-    Lists.<SymbolicValue>newLinkedList(),
+    PCollections.emptyStack(),
     null);
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
@@ -80,7 +81,7 @@ public class ProgramState {
   @Nullable
   Symbol lastEvaluated;
 
-  private final Deque<SymbolicValue> stack;
+  private final PStack<SymbolicValue> stack;
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
@@ -88,7 +89,7 @@ public class ProgramState {
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
     PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
+    PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
@@ -99,12 +100,12 @@ public class ProgramState {
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-                       Deque<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
+                       PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this(values, references, constraints, visitedPoints, stack, exitSymbolicValue);
     lastEvaluated = symbol;
   }
 
-  private ProgramState(ProgramState ps, Deque<SymbolicValue> newStack) {
+  private ProgramState(ProgramState ps, PStack<SymbolicValue> newStack) {
     values = ps.values;
     references = ps.references;
     constraints = ps.constraints;
@@ -125,37 +126,41 @@ public class ProgramState {
   }
 
   ProgramState stackValue(SymbolicValue sv) {
-    Deque<SymbolicValue> newStack = new LinkedList<>(stack);
-    newStack.push(sv);
-    return new ProgramState(this, newStack);
+    return new ProgramState(this, stack.push(sv));
   }
 
   ProgramState clearStack() {
-    return unstackValue(stack.size()).state;
+    return unstackValue(Integer.MAX_VALUE).state;
   }
 
   public Pop unstackValue(int nbElements) {
-    if (nbElements == 0) {
-      return new Pop(this, Collections.<SymbolicValue>emptyList());
+    if (nbElements == 0 || stack.isEmpty()) {
+      return new Pop(this, Collections.emptyList());
     }
-    Preconditions.checkArgument(stack.size() >= nbElements, nbElements);
-    Deque<SymbolicValue> newStack = new LinkedList<>(stack);
+
+    // this can perhaps be made more efficient by returning sub collection of PStack instead of copying to the list, but it's not a problem now
+    PStack<SymbolicValue> newStack = stack;
     List<SymbolicValue> result = Lists.newArrayList();
-    for (int i = 0; i < nbElements; i++) {
-      result.add(newStack.pop());
+    for (int i = 0; i < nbElements && !newStack.isEmpty(); i++) {
+      result.add(newStack.peek());
+      newStack = newStack.pop();
     }
     return new Pop(new ProgramState(this, newStack), result);
   }
 
+  @CheckForNull
   public SymbolicValue peekValue() {
-    return stack.peek();
+    return stack.isEmpty() ? null : stack.peek();
   }
 
   public List<SymbolicValue> peekValues(int n) {
-    if (n > stack.size()) {
-      throw new IllegalStateException("At least " + n + " values were expected on the stack!");
+    ImmutableList.Builder<SymbolicValue> result = ImmutableList.builder();
+    PStack<SymbolicValue> tmpStack = this.stack;
+    for (int i = 0; i < n; i++) {
+      result.add(tmpStack.peek());
+      tmpStack = tmpStack.pop();
     }
-    return ImmutableList.copyOf(stack).subList(0, n);
+    return result.build();
   }
 
   int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
@@ -247,13 +252,8 @@ public class ProgramState {
     return SymbolicValue.isDisposable(symbolicValue) && (constraint == null || !(constraint instanceof ObjectConstraint) || ((ObjectConstraint) constraint).isDisposable());
   }
 
-  private static boolean inStack(Deque<SymbolicValue> stack, SymbolicValue symbolicValue) {
-    for (SymbolicValue value : stack) {
-      if (value.equals(symbolicValue) || value.references(symbolicValue)) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean inStack(PStack<SymbolicValue> stack, SymbolicValue symbolicValue) {
+    return stack.anyMatch(sv -> sv.equals(symbolicValue) || sv.references(symbolicValue));
   }
 
   private static boolean isLocalVariable(Symbol symbol) {
