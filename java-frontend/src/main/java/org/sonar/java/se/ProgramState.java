@@ -130,7 +130,7 @@ public class ProgramState {
   }
 
   ProgramState clearStack() {
-    return unstackValue(Integer.MAX_VALUE).state;
+    return stack.isEmpty() ? this : new ProgramState(this, PCollections.emptyStack());
   }
 
   public Pop unstackValue(int nbElements) {
@@ -138,7 +138,7 @@ public class ProgramState {
       return new Pop(this, Collections.emptyList());
     }
 
-    // this can perhaps be made more efficient by returning sub collection of PStack instead of copying to the list, but it's not a problem now
+    // FIXME can be made more efficient by reusing sub collection of PStack instead of copying to the new list
     PStack<SymbolicValue> newStack = stack;
     List<SymbolicValue> result = Lists.newArrayList();
     for (int i = 0; i < nbElements && !newStack.isEmpty(); i++) {
