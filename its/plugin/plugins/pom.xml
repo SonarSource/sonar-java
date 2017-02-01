@@ -9,8 +9,9 @@
   </parent>
 
   <artifactId>it-java-plugin-plugins</artifactId>
-  <name>SonarQube Java :: ITs :: Plugin :: Plugins</name>
   <packaging>pom</packaging>
+
+  <name>SonarQube Java :: ITs :: Plugin :: Plugins</name>
 
   <modules>
     <module>java-extension-plugin</module>
