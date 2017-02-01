@@ -80,6 +80,33 @@ public class MethodYieldTest {
   }
 
   @Test
+  public void test_creation_of_flows() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
+    List<MethodYield> yields = entry.getValue().yields();
+
+    MethodYield methodYield = yields.stream().filter(y -> y.resultConstraint != null && !y.resultConstraint.isNull()).findFirst().get();
+
+    List<JavaFileScannerContext.Location> flowReturnValue = methodYield.flow(-1);
+    assertThat(flowReturnValue).isNotEmpty();
+
+    List<JavaFileScannerContext.Location> flowFirstParam = methodYield.flow(0);
+    assertThat(flowFirstParam).isNotEmpty();
+  }
+
+  @Test
+  public void flow_is_empty_when_yield_has_no_node() {
+    MethodYield methodYield = new MethodYield(1, false, null, mock(MethodBehavior.class));
+    assertThat(methodYield.flow(0)).isEmpty();
+  }
+
+  @Test
+  public void flow_is_empty_when_yield_has_no_behavior() {
+    MethodYield methodYield = new MethodYield(1, false, mock(ExplodedGraph.Node.class), null);
+    assertThat(methodYield.flow(0)).isEmpty();
+  }
+
+  @Test
   public void test_toString() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").getValue().yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
@@ -187,6 +214,7 @@ public class MethodYieldTest {
 
     exceptionalYield.exceptionType = exceptionType;
     assertThat(exceptionalYield).isEqualTo(otherYield);
+    assertThat(exceptionalYield.exceptionType()).isEqualTo(otherYield.exceptionType());
   }
 
   @Test

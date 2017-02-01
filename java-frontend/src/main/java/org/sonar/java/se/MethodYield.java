@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -166,7 +168,6 @@ public class MethodYield {
     return new HashCodeBuilder(7, 1291)
       .append(parametersConstraints)
       .append(varArgs)
-      .append(resultIndex)
       .append(resultIndex)
       .append(resultConstraint)
       .append(exception)
