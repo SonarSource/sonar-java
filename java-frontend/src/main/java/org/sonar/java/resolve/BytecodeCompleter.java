@@ -79,7 +79,6 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   @Override
   public void complete(JavaSymbol symbol) {
-    LOG.debug("Completing symbol : " + symbol.name);
     String bytecodeName = formFullName(symbol);
     if(symbol.isPackageSymbol()) {
       bytecodeName = bytecodeName + ".package-info";
