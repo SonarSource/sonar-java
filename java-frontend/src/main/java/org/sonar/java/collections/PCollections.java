@@ -32,4 +32,7 @@ public final class PCollections {
     return AVLTree.create();
   }
 
+  public static <E> PStack<E> emptyStack() {
+    return SinglyLinkedList.EMPTY;
+  }
 }
