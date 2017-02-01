@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -937,35 +938,37 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
     if (methodRefTree.isTypeSet() && methodReferenceTree.typeArguments() == null) {
-      JavaType methodRefType = (JavaType) methodRefTree.symbolType();
-      resolve.getSamMethod(methodRefType).ifPresent(samMethod -> {
-        JavaType samReturnType = (JavaType) samMethod.returnType().type();
-        List<JavaType> samMethodArgs = resolve.findSamMethodArgs(methodRefType);
-        Resolution resolution = resolve.findMethodReference(semanticModel.getEnv(methodReferenceTree), samMethodArgs, methodRefTree);
-        JavaSymbol methodSymbol = resolution.symbol();
-        if (methodSymbol.isMethodSymbol()) {
-          IdentifierTree methodIdentifier = methodRefTree.method();
-          addMethodRefReference(methodIdentifier, methodSymbol);
-          setMethodRefType(methodRefTree, methodRefType, resolution.type());
-
-          JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
-          JavaType refinedReturnType = ((MethodJavaType) methodIdentifier.symbolType()).resultType();
-          if ("<init>".equals(methodSymbol.name)) {
-            refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
-          }
-          if(refinedReturnType instanceof DeferredType) {
-            ((DeferredType) refinedReturnType).setTree((AbstractTypedTree) methodRefTree.method());
-          }
-          refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
-        } else {
-          handleNewArray(methodRefTree, methodRefType, samReturnType);
-        }
-      });
+      resolve.getSamMethod((JavaType) methodRefTree.symbolType()).ifPresent(samMethod -> resolveMethodReference(samMethod, methodRefTree));
     } else {
       // TODO : SONARJAVA-1663 : consider type arguments for method resolution and substitution
       scan(methodReferenceTree.typeArguments());
       resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
       registerType(methodRefTree, symbols.deferedType(methodRefTree));
+    }
+  }
+
+  private void resolveMethodReference(JavaSymbol.MethodJavaSymbol samMethod, MethodReferenceTreeImpl methodRefTree) {
+    JavaType methodRefType = (JavaType) methodRefTree.symbolType();
+    JavaType samReturnType = (JavaType) samMethod.returnType().type();
+    List<JavaType> samMethodArgs = resolve.findSamMethodArgs(methodRefType);
+    Resolution resolution = resolve.findMethodReference(semanticModel.getEnv(methodRefTree), samMethodArgs, methodRefTree);
+    JavaSymbol methodSymbol = resolution.symbol();
+    if (methodSymbol.isMethodSymbol()) {
+      IdentifierTree methodIdentifier = methodRefTree.method();
+      addMethodRefReference(methodIdentifier, methodSymbol);
+      setMethodRefType(methodRefTree, methodRefType, resolution.type());
+
+      JavaType capturedReturnType = resolve.resolveTypeSubstitution(samReturnType, methodRefType);
+      JavaType refinedReturnType = ((MethodJavaType) methodIdentifier.symbolType()).resultType();
+      if ("<init>".equals(methodSymbol.name)) {
+        refinedReturnType = refinedTypeForConstructor(capturedReturnType, refinedReturnType);
+      }
+      if (refinedReturnType instanceof DeferredType) {
+        ((DeferredType) refinedReturnType).setTree((AbstractTypedTree) methodRefTree.method());
+      }
+      refineType(methodRefTree, methodRefType, capturedReturnType, refinedReturnType);
+    } else {
+      handleNewArray(methodRefTree, methodRefType, samReturnType);
     }
   }
 
