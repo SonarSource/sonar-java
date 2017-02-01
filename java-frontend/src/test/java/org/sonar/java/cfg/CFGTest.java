@@ -1247,7 +1247,27 @@ public class CFGTest {
         ).successors(0).exceptions(0)
       );
     cfgChecker.check(cfg);
+  }
 
+  @Test
+  public void catch_error() throws Exception {
+    CFG cfg = buildCFG(" public void foo() {\n" +
+      "        try {\n" +
+      "          doSomething();\n" +
+      "        } catch (Error e) {\n" +
+      "          throw e;\n" +
+      "        }\n" +
+      "      }");
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Kind.TRY_STATEMENT)).successors(2),
+      block(
+        element(Kind.IDENTIFIER, "doSomething"),
+        element(Kind.METHOD_INVOCATION)).successors(0).exceptions(0, 1),
+      block(
+        element(Kind.VARIABLE, "e"),
+        element(Kind.IDENTIFIER, "e")).successors(0));
+    cfgChecker.check(cfg);
   }
 
   @Test
