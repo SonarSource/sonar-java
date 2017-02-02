@@ -87,6 +87,17 @@ final class SinglyLinkedList<E> implements PStack<E> {
   }
 
   @Override
+  public int size() {
+    SinglyLinkedList<E> c = this;
+    int size = 0;
+    while (c != null) {
+      size++;
+      c = c.next;
+    }
+    return size;
+  }
+
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       hashCode = next == null ? 0 : next.hashCode();
@@ -147,6 +158,11 @@ final class SinglyLinkedList<E> implements PStack<E> {
     @Override
     public boolean anyMatch(Predicate predicate) {
       return false;
+    }
+
+    @Override
+    public int size() {
+      return 0;
     }
 
     @Override
