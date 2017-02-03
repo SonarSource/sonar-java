@@ -189,7 +189,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     private SymbolicValue getTargetSV(MethodInvocationTree mit) {
-      List<SymbolicValue> values = programState.peekValues(mit.arguments().size() + 1);
+      List<SymbolicValue> values = programState.peekValues(mit.arguments().size());
       return values.get(values.size() -1);
     }
 

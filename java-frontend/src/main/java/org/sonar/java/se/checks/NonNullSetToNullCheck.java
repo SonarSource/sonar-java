@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
@@ -184,10 +186,9 @@ public class NonNullSetToNullCheck extends SECheck {
       Symbol symbol = syntaxTree.symbol();
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
-        int peekSize = arguments.size() + 1;
+        int peekSize = arguments.size();
         List<SymbolicValue> argumentValues = programState.peekValues(peekSize);
-        argumentValues.remove(arguments.size());
-        Collections.reverse(argumentValues);
+        argumentValues = Lists.reverse(argumentValues);
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
         checkNullArguments(syntaxTree, methodSymbol.getParameters(),
           argumentValues, "Parameter {0} to this call is marked \"{1}\" but null is passed.");

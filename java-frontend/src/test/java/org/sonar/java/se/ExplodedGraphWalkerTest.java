@@ -23,6 +23,7 @@ import com.google.common.reflect.ClassPath;
 import org.junit.Test;
 
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.PStack;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -290,7 +291,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test_method_invocation_stack() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MethodInvocationStack.java", new SECheck() {
+    SECheck check = new SECheck() {
       private String methodName;
       Deque<Integer> expectedStackDepth;
 
@@ -325,9 +326,31 @@ public class ExplodedGraphWalkerTest {
           assertThat(context.getState().stackDepth()).as(methodName).isEqualTo(1); // should be zero instead?
         }
       }
-    });
+    };
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MethodInvocationStack.java", new SymbolicExecutionVisitor(Collections.singletonList(check)));
   }
 
+  @Test
+  public void test_execute_identifier() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExecuteIdentifier.java", new SECheck() {
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ExplodedGraph.Node node = context.getNode();
+        PStack<SymbolicValue> stack = node.programState.stack();
+        stack.forEach(sv -> System.out.println(sv));
+        return context.getState();
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ExplodedGraph.Node node = context.getNode();
+        PStack<SymbolicValue> stack = node.programState.stack();
+        stack.forEach(sv -> System.out.println(sv));
+        return context.getState();
+      }
+    });
+  }
 
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;

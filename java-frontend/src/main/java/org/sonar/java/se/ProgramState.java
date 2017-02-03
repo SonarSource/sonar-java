@@ -423,4 +423,9 @@ public class ProgramState {
   int stackDepth() {
     return stack.size();
   }
+
+  @VisibleForTesting
+  PStack<SymbolicValue> stack() {
+    return stack;
+  }
 }
