@@ -185,7 +185,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
         int peekSize = arguments.size() + 1;
-        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(peekSize));
+        List<SymbolicValue> argumentValues = programState.peekValues(peekSize);
         argumentValues.remove(arguments.size());
         Collections.reverse(argumentValues);
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
