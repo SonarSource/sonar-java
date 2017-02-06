@@ -19,8 +19,7 @@
  */
 package org.sonar.java.collections;
 
-import com.google.common.base.Preconditions;
-
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Objects;
@@ -46,13 +45,25 @@ final class SinglyLinkedList<E> implements PStack<E> {
 
   @Override
   public PStack<E> push(E e) {
-    Preconditions.checkNotNull(e);
+    Objects.requireNonNull(e);
     return new SinglyLinkedList<>(e, this);
   }
 
   @Override
   public E peek() {
     return element;
+  }
+
+  @Override
+  @CheckForNull
+  public E peek(int i) {
+    int j = i;
+    SinglyLinkedList<E> c = this;
+    while (j > 0 && c != null) {
+      j--;
+      c = c.next;
+    }
+    return c != null ? c.element : null;
   }
 
   @Override
@@ -84,6 +95,11 @@ final class SinglyLinkedList<E> implements PStack<E> {
       c = c.next;
     }
     return false;
+  }
+
+  @Override
+  public int size() {
+    return 1 + (next == null ? 0 : next.size());
   }
 
   @Override
@@ -130,6 +146,11 @@ final class SinglyLinkedList<E> implements PStack<E> {
     }
 
     @Override
+    public Object peek(int i) {
+      return null;
+    }
+
+    @Override
     public PStack pop() {
       throw new IllegalStateException();
     }
@@ -147,6 +168,11 @@ final class SinglyLinkedList<E> implements PStack<E> {
     @Override
     public boolean anyMatch(Predicate predicate) {
       return false;
+    }
+
+    @Override
+    public int size() {
+      return 0;
     }
 
     @Override

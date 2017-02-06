@@ -19,6 +19,8 @@
  */
 package org.sonar.java.collections;
 
+import javax.annotation.CheckForNull;
+
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -41,6 +43,14 @@ public interface PStack<E> {
   E peek();
 
   /**
+   *
+   * @param i - index of element to be returned, 0 means top of the stack
+   * @return i-th element from top of the stack or null, if stack doesn't have so many elements
+   */
+  @CheckForNull
+  E peek(int i);
+
+  /**
    * @return new stack with removed element
    * @throws IllegalStateException if this stack is empty.
    */
@@ -56,7 +66,18 @@ public interface PStack<E> {
    */
   void forEach(Consumer<E> action);
 
+  /**
+   * Test given predicate on elements and return true if any of elements matches the predicate
+   * @param predicate predicate to be tested
+   * @return true if any of the stack elements satisfies the predicate
+   */
   boolean anyMatch(Predicate<E> predicate);
+
+  /**
+   * Naive implementation has O(n) time complexity, where n is number of elements. More clever implementation could take advantage of PStack's immutability
+   * @return number of elements in the stack
+   */
+  int size();
 
   /**
    * @return a string representation of this stack
