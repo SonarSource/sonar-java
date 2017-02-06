@@ -153,6 +153,11 @@ public class ProgramState {
     return stack.isEmpty() ? null : stack.peek();
   }
 
+  @CheckForNull
+  public SymbolicValue peekValue(int i) {
+    return stack.peek(i);
+  }
+
   public List<SymbolicValue> peekValues(int n) {
     ImmutableList.Builder<SymbolicValue> result = ImmutableList.builder();
     PStack<SymbolicValue> tmpStack = this.stack;
@@ -417,4 +422,9 @@ public class ProgramState {
   public boolean exitingOnRuntimeException() {
     return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
   }
+
+  public boolean stackIsEmpty() {
+    return stack.isEmpty();
+  }
+
 }

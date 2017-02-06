@@ -43,26 +43,25 @@ public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    SymbolicValue currentVal = context.getState().peekValue();
-    if (currentVal == null) {
+    if (context.getState().stackIsEmpty()) {
       // stack is empty, nothing to do.
       return context.getState();
     }
-    Tree toCheck = syntaxNode;
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
-      toCheck = methodInvocation.methodSelect();
-      int numberArguments = methodInvocation.arguments().size();
-      List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
-      currentVal = values.get(numberArguments);
+      Tree methodSelect = methodInvocation.methodSelect();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        SymbolicValue dereferencedSV = context.getState().peekValue(methodInvocation.arguments().size());
+        return checkConstraint(context, methodSelect, dereferencedSV);
+      }
     }
-    if(toCheck.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-      toCheck = ((ArrayAccessExpressionTree) toCheck).expression();
-      currentVal = context.getState().peekValues(2).get(1);
+    if(syntaxNode.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      Tree toCheck = ((ArrayAccessExpressionTree) syntaxNode).expression();
+      SymbolicValue currentVal = context.getState().peekValue(1);
       return checkConstraint(context, toCheck, currentVal);
     }
-    if (toCheck.is(Tree.Kind.MEMBER_SELECT)) {
-      return checkMemberSelect(context, (MemberSelectExpressionTree) toCheck, currentVal);
+    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
+      return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, context.getState().peekValue());
     }
     return context.getState();
   }

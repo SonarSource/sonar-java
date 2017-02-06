@@ -90,4 +90,26 @@ public class ProgramStateTest {
     ProgramState next = state.addConstraint(sv3, ObjectConstraint.notNull());
     assertThat(next).isSameAs(state);
   }
+
+  @Test
+  public void test_stack_is_empty() {
+    ProgramState state = ProgramState.EMPTY_STATE;
+    assertThat(state.stackIsEmpty()).isTrue();
+    SymbolicValue sv1 = new SymbolicValue(1);
+    state = state.stackValue(sv1);
+    assertThat(state.stackIsEmpty()).isFalse();
+    assertThat(state.clearStack().stackIsEmpty()).isTrue();
+  }
+
+  @Test
+  public void test_peek_nth_value() {
+    ProgramState state = ProgramState.EMPTY_STATE;
+    assertThat(state.peekValue(0)).isNull();
+    SymbolicValue sv1 = new SymbolicValue(1);
+    state = state.stackValue(sv1);
+    assertThat(state.peekValue(0)).isEqualTo(sv1);
+    SymbolicValue sv2 = new SymbolicValue(2);
+    state = state.stackValue(sv2);
+    assertThat(state.peekValue(1)).isEqualTo(sv1);
+  }
 }

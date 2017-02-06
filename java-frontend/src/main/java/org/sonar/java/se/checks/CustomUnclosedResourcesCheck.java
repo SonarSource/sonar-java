@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 @Rule(key = "S3546")
 @RuleTemplate
@@ -189,8 +188,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     private SymbolicValue getTargetSV(MethodInvocationTree mit) {
-      List<SymbolicValue> values = programState.peekValues(mit.arguments().size() + 1);
-      return values.get(values.size() -1);
+      return programState.peekValue(mit.arguments().size());
     }
 
     private boolean isOpeningResource(MethodInvocationTree syntaxNode) {

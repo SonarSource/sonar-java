@@ -164,7 +164,7 @@ public class FlowComputation {
     if (currentNode.programState.peekValue() == symbolicValue) {
       flowBuilder.add(location(parent, String.format("'%s()' returns %s.", mit.symbol().name(), learnedConstraint.valueAsString())));
     }
-    SymbolicValue methodIdentifier = parent.programState.peekValues(mit.arguments().size() + 1).get(mit.arguments().size());
+    SymbolicValue methodIdentifier = parent.programState.peekValue(mit.arguments().size());
     if (methodIdentifier == symbolicValue) {
       flowBuilder.add(location(parent, "..."));
     }
