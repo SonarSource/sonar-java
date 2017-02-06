@@ -460,7 +460,7 @@ public class Resolve {
   private Resolution findMethodByStrictThenLooseInvocation(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
     // JLS8 - §5.3 searching by strict invocation, then loose invocation
     Resolution bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, false);
-    if (bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS) {
+    if (bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !argTypes.isEmpty()) {
       // retry with loose invocation
       bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
     }
