@@ -24,6 +24,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
+import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -37,8 +38,8 @@ public class SECheckTest {
   @Test(timeout = 3000)
   public void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
     CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
-    ExplodedGraph.Node node = new ExplodedGraph.Node(new ExplodedGraph.ProgramPoint(cfg.blocks().get(3), 0), mock(ProgramState.class));
-    node.addParent(new ExplodedGraph.Node(new ExplodedGraph.ProgramPoint(cfg.blocks().get(2), 2), mock(ProgramState.class)), null);
+    ExplodedGraph.Node node = new ExplodedGraph.Node(new ProgramPoint(cfg.blocks().get(3), 0), mock(ProgramState.class));
+    node.addParent(new ExplodedGraph.Node(new ProgramPoint(cfg.blocks().get(2), 2), mock(ProgramState.class)), null);
     List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, new SymbolicValue(12));
     assertThat(flow).isEmpty();
   }

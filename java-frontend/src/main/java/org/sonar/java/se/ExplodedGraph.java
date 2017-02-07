@@ -21,12 +21,10 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
 
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -59,51 +57,6 @@ public class ExplodedGraph {
 
   public Map<Node, Node> getNodes() {
     return nodes;
-  }
-
-  public static class ProgramPoint {
-    private int hashcode;
-    final CFG.Block block;
-    final int i;
-
-    public ProgramPoint(CFG.Block block, int i) {
-      this.block = block;
-      this.i = i;
-    }
-
-    @Override
-    public int hashCode() {
-      if (hashcode == 0) {
-        hashcode = block.id() * 31 + i;
-      }
-      return hashcode;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof ProgramPoint) {
-        ProgramPoint other = (ProgramPoint) obj;
-        return this.block.id() == other.block.id()
-          && this.i == other.i;
-      }
-      return false;
-    }
-
-    @Override
-    public String toString() {
-      String tree = "";
-      if (i < block.elements().size()) {
-        tree = "" + block.elements().get(i).kind() + block.elements().get(i).firstToken().line();
-      }
-      return "B" + block.id() + "." + i + "  " + tree;
-    }
-
-    public Tree syntaxTree() {
-      if (block.elements().isEmpty()) {
-        return block.terminator();
-      }
-      return block.elements().get(Math.min(i, block.elements().size() - 1));
-    }
   }
 
   public static class Node {

@@ -76,7 +76,7 @@ public class ProgramState {
     PCollections.emptyStack(),
     null);
 
-  private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
+  private final PMap<ProgramPoint, Integer> visitedPoints;
 
   @Nullable
   Symbol lastEvaluated;
@@ -88,7 +88,7 @@ public class ProgramState {
   final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-    PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+    PMap<SymbolicValue, Constraint> constraints, PMap<ProgramPoint, Integer> visitedPoints,
     PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
@@ -99,7 +99,7 @@ public class ProgramState {
     constraintSize = 3;
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+                       PMap<SymbolicValue, Constraint> constraints, PMap<ProgramPoint, Integer> visitedPoints,
                        PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this(values, references, constraints, visitedPoints, stack, exitSymbolicValue);
     lastEvaluated = symbol;
@@ -163,7 +163,7 @@ public class ProgramState {
     return result.build();
   }
 
-  int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
+  int numberOfTimeVisited(ProgramPoint programPoint) {
     Integer count = visitedPoints.get(programPoint);
     return count == null ? 0 : count;
   }
@@ -347,7 +347,7 @@ public class ProgramState {
     return isReachable(symbolicValue, references);
   }
 
-  public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
+  public ProgramState visitedPoint(ProgramPoint programPoint, int nbOfVisit) {
     return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 

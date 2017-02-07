@@ -105,7 +105,7 @@ public class CheckerDispatcher implements CheckerContext {
         explodedGraphWalker.clearStack(explodedGraphWalker.programPosition.block.elements().get(explodedGraphWalker.programPosition.i));
       }
       explodedGraphWalker.enqueue(
-        new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
+        new ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
         explodedGraphWalker.programState, explodedGraphWalker.node.exitPath, methodYield);
       return;
     }

@@ -183,7 +183,7 @@ public class FlowComputation {
 
   private static boolean isMethodInvocationNode(ExplodedGraph.Node node) {
     // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
-    ExplodedGraph.ProgramPoint pp = node.programPoint;
+    ProgramPoint pp = node.programPoint;
     if (pp.i < pp.block.elements().size()) {
       Tree tree = pp.block.elements().get(pp.i);
       return tree.is(Tree.Kind.METHOD_INVOCATION);
