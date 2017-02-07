@@ -424,60 +424,72 @@ public class Resolve {
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes) {
-    return findMethod(env, site, site, name, argTypes, ImmutableList.<JavaType>of(), false);
+    return findMethod(env, site, site, name, argTypes, ImmutableList.<JavaType>of());
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
-    return findMethod(env, site, site, name, argTypes, typeParams, false);
+    return findMethod(env, site, site, name, argTypes, typeParams);
   }
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
-    return findMethod(env, callSite, site, name, argTypes, typeParams, false);
+    JavaType superclass = site.getSymbol().getSuperclass();
+
+    // handle constructors
+    if ("this".equals(name)) {
+      return findConstructor(env, site, argTypes, typeParams);
+    } else if ("super".equals(name)) {
+      if (superclass == null) {
+        return unresolved();
+      }
+      return findConstructor(env, superclass, argTypes, typeParams);
+    }
+
+    return findMethodByStrictThenLooseInvocation(env, callSite, site, name, argTypes, typeParams);
   }
 
-  private Resolution findConstructor(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
+  private Resolution findConstructor(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams) {
     List<JavaType> newArgTypes = argTypes;
     JavaSymbol owner = site.symbol.owner();
     if (!owner.isPackageSymbol() && !site.symbol.isStatic()) {
       // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
       newArgTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(argTypes).build();
     }
-    return findMethod(env, site, site, CONSTRUCTOR_NAME, newArgTypes, typeParams, autoboxing);
+    return findMethodByStrictThenLooseInvocation(env, site, site, CONSTRUCTOR_NAME, newArgTypes, typeParams);
   }
 
-  private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
+  private Resolution findMethodByStrictThenLooseInvocation(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
+    // JLS8 - §5.3 searching by strict invocation, then loose invocation
+    Resolution bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, false);
+    if (bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !argTypes.isEmpty()) {
+      // retry with loose invocation
+      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
+    }
+    return bestSoFar;
+  }
+
+  private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean looseInvocation) {
     JavaType superclass = site.getSymbol().getSuperclass();
     Resolution bestSoFar = unresolved();
-    // handle constructors
-    if ("this".equals(name)) {
-      return findConstructor(env, site, argTypes, typeParams, autoboxing);
-    } else if ("super".equals(name)) {
-      if (superclass == null) {
-        return bestSoFar;
-      }
-      return findConstructor(env, superclass, argTypes, typeParams, autoboxing);
-    }
-    bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, autoboxing, site.getSymbol().members(), bestSoFar);
+
+    bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);
+    // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
 
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
-      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
+      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
-      Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
-      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
+      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams, looseInvocation);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
-      Resolution best = selectBest(env, interfaceType, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      Resolution best = selectBest(env, interfaceType, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
-    }
-    if(bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !autoboxing) {
-      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
     }
     return bestSoFar;
   }
@@ -502,7 +514,7 @@ public class Resolve {
    * @param bestSoFar previously found best match
    */
   private Resolution selectBest(Env env, JavaType defSite, JavaType callSite, List<JavaType> argTypes, List<JavaType> typeParams,
-                                JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
+                                JavaSymbol candidate, Resolution bestSoFar, boolean looseInvocation) {
     JavaSymbol.TypeJavaSymbol siteSymbol = callSite.symbol;
     // TODO get rid of null check
     if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, siteSymbol) || candidate.type == null) {
@@ -522,7 +534,7 @@ public class Resolve {
       formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, defSite);
     }
     formals = typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
-    if (!isArgumentsAcceptable(env, argTypes, formals, methodJavaSymbol.isVarArgs(), autoboxing)) {
+    if (!isArgumentsAcceptable(env, argTypes, formals, methodJavaSymbol.isVarArgs(), looseInvocation)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
