@@ -137,8 +137,8 @@ public class FlowComputation {
       return Stream.empty();
     }
     return currentNode.getLearnedConstraints().stream()
-      .filter(lc -> lc.getSv().equals(symbolicValue))
-      .map(ExplodedGraph.Node.LearnedConstraint::getConstraint)
+      .filter(lc -> lc.symbolicValue().equals(symbolicValue))
+      .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
   }
 
@@ -183,7 +183,7 @@ public class FlowComputation {
 
   private static boolean isMethodInvocationNode(ExplodedGraph.Node node) {
     // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
-    ExplodedGraph.ProgramPoint pp = node.programPoint;
+    ProgramPoint pp = node.programPoint;
     if (pp.i < pp.block.elements().size()) {
       Tree tree = pp.block.elements().get(pp.i);
       return tree.is(Tree.Kind.METHOD_INVOCATION);
@@ -207,13 +207,13 @@ public class FlowComputation {
     if (trackSymbol == null || parent == null) {
       return null;
     }
-    Optional<ExplodedGraph.Node.LearnedValue> learnedValue = currentNode.getLearnedSymbols().stream()
-      .filter(lv -> lv.getSymbol().equals(trackSymbol))
+    Optional<LearnedAssociation> learnedAssociation = currentNode.getLearnedSymbols().stream()
+      .filter(lv -> lv.symbol().equals(trackSymbol))
       .findFirst();
-    if (learnedValue.isPresent()) {
-      ExplodedGraph.Node.LearnedValue lv = learnedValue.get();
-      Constraint constraint = parent.programState.getConstraint(lv.getSv());
-      String message = constraint == null ? "..." : String.format("'%s' is assigned %s.", lv.getSymbol().name(), constraint.valueAsString());
+    if (learnedAssociation.isPresent()) {
+      LearnedAssociation la = learnedAssociation.get();
+      Constraint constraint = parent.programState.getConstraint(la.symbolicValue());
+      String message = constraint == null ? "..." : String.format("'%s' is assigned %s.", la.symbol().name(), constraint.valueAsString());
       flow.add(location(parent, message));
       return parent.programState.getLastEvaluated();
     }

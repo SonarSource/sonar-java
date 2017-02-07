@@ -19,21 +19,28 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTest;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class LearnedAssociation {
+  final SymbolicValue sv;
+  final Symbol symbol;
 
-public class ProgramPointTest {
-  @Test
-  public void test_to_string_method() throws Exception {
-    // ToString method of program point is used by viewer.
-    CFG cfg = CFGTest.buildCFG("void foo() {foo();}");
-    ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));
-    assertThat(pp.toString()).isEqualTo("B1.0  IDENTIFIER1");
-    pp = pp.next().next();
-    assertThat(pp.toString()).isEqualTo("B1.2  ");
+  public LearnedAssociation(SymbolicValue sv, Symbol symbol) {
+    this.sv = sv;
+    this.symbol = symbol;
   }
 
+  public Symbol symbol() {
+    return symbol;
+  }
+
+  public SymbolicValue symbolicValue() {
+    return sv;
+  }
+
+  @Override
+  public String toString() {
+    return sv + " - " + symbol.name();
+  }
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.viewer;
 
 import com.google.common.collect.Lists;
+
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
@@ -27,6 +28,8 @@ import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
+import org.sonar.java.se.LearnedAssociation;
+import org.sonar.java.se.LearnedConstraint;
 import org.sonar.java.se.MethodBehavior;
 import org.sonar.java.se.MethodYield;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -113,9 +116,9 @@ public class EGViewer {
   private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node firstParent) {
     return from + "->" + to
       + "[label=\""
-      + node.getLearnedSymbols().stream().map(ExplodedGraph.Node.LearnedValue::toString).collect(Collectors.joining(","))
+      + node.getLearnedSymbols().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","))
       + "\\n"
-      + node.getLearnedConstraints().stream().map(ExplodedGraph.Node.LearnedConstraint::toString).collect(Collectors.joining(","))
+      + node.getLearnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","))
       + "\""
       + yield(node, firstParent)
       + "] ";

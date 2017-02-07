@@ -19,21 +19,34 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTest;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
-public class ProgramPointTest {
-  @Test
-  public void test_to_string_method() throws Exception {
-    // ToString method of program point is used by viewer.
-    CFG cfg = CFGTest.buildCFG("void foo() {foo();}");
-    ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));
-    assertThat(pp.toString()).isEqualTo("B1.0  IDENTIFIER1");
-    pp = pp.next().next();
-    assertThat(pp.toString()).isEqualTo("B1.2  ");
+public class LearnedConstraint {
+  final SymbolicValue sv;
+
+  @Nullable
+  final Constraint constraint;
+
+  public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
+    this.sv = sv;
+    this.constraint = constraint;
   }
 
+  public SymbolicValue symbolicValue() {
+    return sv;
+  }
+
+  @CheckForNull
+  public Constraint constraint() {
+    return constraint;
+  }
+
+  @Override
+  public String toString() {
+    return sv + " - " + constraint;
+  }
 }

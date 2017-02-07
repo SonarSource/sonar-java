@@ -21,12 +21,9 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
 
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -61,51 +58,6 @@ public class ExplodedGraph {
     return nodes;
   }
 
-  public static class ProgramPoint {
-    private int hashcode;
-    final CFG.Block block;
-    final int i;
-
-    public ProgramPoint(CFG.Block block, int i) {
-      this.block = block;
-      this.i = i;
-    }
-
-    @Override
-    public int hashCode() {
-      if (hashcode == 0) {
-        hashcode = block.id() * 31 + i;
-      }
-      return hashcode;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof ProgramPoint) {
-        ProgramPoint other = (ProgramPoint) obj;
-        return this.block.id() == other.block.id()
-          && this.i == other.i;
-      }
-      return false;
-    }
-
-    @Override
-    public String toString() {
-      String tree = "";
-      if (i < block.elements().size()) {
-        tree = "" + block.elements().get(i).kind() + block.elements().get(i).firstToken().line();
-      }
-      return "B" + block.id() + "." + i + "  " + tree;
-    }
-
-    public Tree syntaxTree() {
-      if (block.elements().isEmpty()) {
-        return block.terminator();
-      }
-      return block.elements().get(Math.min(i, block.elements().size() - 1));
-    }
-  }
-
   public static class Node {
     boolean isNew;
     boolean exitPath = false;
@@ -120,7 +72,7 @@ public class ExplodedGraph {
     private final Map<Node, MethodYield> parents;
     private final List<LearnedConstraint> learnedConstraints;
 
-    private final List<LearnedValue> learnedSymbols;
+    private final List<LearnedAssociation> learnedSymbols;
 
     public Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
@@ -140,7 +92,7 @@ public class ExplodedGraph {
           });
           programState.values.forEach((s, sv) -> {
             if (parent.programState.getValue(s) != sv) {
-              learnedSymbols.add(new LearnedValue(sv, s));
+              learnedSymbols.add(new LearnedAssociation(sv, s));
             }
           });
         }
@@ -178,57 +130,8 @@ public class ExplodedGraph {
       return learnedConstraints;
     }
 
-    public List<LearnedValue> getLearnedSymbols() {
+    public List<LearnedAssociation> getLearnedSymbols() {
       return learnedSymbols;
-    }
-
-    public static class LearnedConstraint {
-      final SymbolicValue sv;
-
-      @Nullable
-      final Constraint constraint;
-
-      public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
-        this.sv = sv;
-        this.constraint = constraint;
-      }
-
-      public SymbolicValue getSv() {
-        return sv;
-      }
-
-      @CheckForNull
-      public Constraint getConstraint() {
-        return constraint;
-      }
-
-      @Override
-      public String toString() {
-        return sv + " - " + constraint;
-      }
-    }
-
-    public static class LearnedValue {
-      final SymbolicValue sv;
-      final Symbol symbol;
-
-      public LearnedValue(SymbolicValue sv, Symbol symbol) {
-        this.sv = sv;
-        this.symbol = symbol;
-      }
-
-      public Symbol getSymbol() {
-        return symbol;
-      }
-
-      public SymbolicValue getSv() {
-        return sv;
-      }
-
-      @Override
-      public String toString() {
-        return sv + " - " + symbol.name();
-      }
     }
 
     @Override

@@ -97,7 +97,7 @@ public class ExplodedGraphWalkerTest {
       private ExplodedGraph.Node firstExceptionalNode = null;
 
       @Override
-      public void enqueue(org.sonar.java.se.ExplodedGraph.ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath, MethodYield methodYield) {
+      public void enqueue(ProgramPoint newProgramPoint, ProgramState programState, boolean exitPath, MethodYield methodYield) {
         SymbolicValue.ExceptionalSymbolicValue exceptionSV = null;
         SymbolicValue peekValue = programState.peekValue();
         boolean getNode = false;
@@ -141,13 +141,13 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
-    ExplodedGraph.ProgramPoint[] programPoints = new ExplodedGraph.ProgramPoint[2];
+    ProgramPoint[] programPoints = new ProgramPoint[2];
     ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker() {
 
       boolean shouldEnqueueFalseBranch = false;
 
       @Override
-      public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
+      public void enqueue(ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
         int nbOfExecution = programState.numberOfTimeVisited(programPoint);
         if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
           shouldEnqueueFalseBranch = true;
