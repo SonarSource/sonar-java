@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -73,7 +72,7 @@ public class ExplodedGraph {
     private final Map<Node, MethodYield> parents;
     private final List<LearnedConstraint> learnedConstraints;
 
-    private final List<LearnedValue> learnedSymbols;
+    private final List<LearnedAssociation> learnedSymbols;
 
     public Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
@@ -93,7 +92,7 @@ public class ExplodedGraph {
           });
           programState.values.forEach((s, sv) -> {
             if (parent.programState.getValue(s) != sv) {
-              learnedSymbols.add(new LearnedValue(sv, s));
+              learnedSymbols.add(new LearnedAssociation(sv, s));
             }
           });
         }
@@ -131,57 +130,8 @@ public class ExplodedGraph {
       return learnedConstraints;
     }
 
-    public List<LearnedValue> getLearnedSymbols() {
+    public List<LearnedAssociation> getLearnedSymbols() {
       return learnedSymbols;
-    }
-
-    public static class LearnedConstraint {
-      final SymbolicValue sv;
-
-      @Nullable
-      final Constraint constraint;
-
-      public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
-        this.sv = sv;
-        this.constraint = constraint;
-      }
-
-      public SymbolicValue getSv() {
-        return sv;
-      }
-
-      @CheckForNull
-      public Constraint getConstraint() {
-        return constraint;
-      }
-
-      @Override
-      public String toString() {
-        return sv + " - " + constraint;
-      }
-    }
-
-    public static class LearnedValue {
-      final SymbolicValue sv;
-      final Symbol symbol;
-
-      public LearnedValue(SymbolicValue sv, Symbol symbol) {
-        this.sv = sv;
-        this.symbol = symbol;
-      }
-
-      public Symbol getSymbol() {
-        return symbol;
-      }
-
-      public SymbolicValue getSv() {
-        return sv;
-      }
-
-      @Override
-      public String toString() {
-        return sv + " - " + symbol.name();
-      }
     }
 
     @Override
