@@ -40,10 +40,13 @@ public class ProgramPoint {
   }
 
   ProgramPoint next() {
-    // pointing one element behind is allowed, it represents terminator of the CFG block
-    Preconditions.checkState(i + 1 <= block.elements().size() + 1,
-      "CFG Block has %s elements but PP at %s was requested", block.elements().size(), i + 1);
-    return new ProgramPoint(block, i + 1);
+    int blockSize = block.elements().size();
+    int nextPP = this.i + 1;
+    // pointing one element above block size is allowed, it represents terminator of the CFG block
+    // FIXME when RelationalSV is involved, we can point up to two elements behind, which is fishy
+    Preconditions.checkState(nextPP < blockSize + 2,
+      "CFG Block has %s elements but PP at %s was requested", blockSize, nextPP);
+    return new ProgramPoint(block, nextPP);
   }
 
   @Override
