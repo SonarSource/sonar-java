@@ -1026,7 +1026,7 @@ public class ExplodedGraphWalker {
     checkExplodedGraphTooBig(programState);
     ProgramState ps = programState.visitedPoint(programPoint, nbOfExecution + 1);
     ps.lastEvaluated = programState.getLastEvaluated();
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, ps);
+    ExplodedGraph.Node cachedNode = explodedGraph.node(programPoint, ps);
     if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
       cachedNode.addParent(node, methodYield);
