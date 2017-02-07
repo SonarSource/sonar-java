@@ -472,6 +472,7 @@ public class Resolve {
     Resolution bestSoFar = unresolved();
 
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);
+    // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
 
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
