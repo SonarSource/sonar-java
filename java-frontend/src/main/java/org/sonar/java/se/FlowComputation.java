@@ -125,7 +125,7 @@ public class FlowComputation {
           continue;
         }
       }
-      for (ExplodedGraph.Node parent : currentNode.getParents()) {
+      for (ExplodedGraph.Node parent : currentNode.parents()) {
         workList.push(new NodeSymbol(parent, newTrackSymbol));
       }
     }
@@ -136,7 +136,7 @@ public class FlowComputation {
     if (parent == null) {
       return Stream.empty();
     }
-    return currentNode.getLearnedConstraints().stream()
+    return currentNode.learnedConstraints().stream()
       .filter(lc -> lc.symbolicValue().equals(symbolicValue))
       .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
@@ -207,7 +207,7 @@ public class FlowComputation {
     if (trackSymbol == null || parent == null) {
       return null;
     }
-    Optional<LearnedAssociation> learnedAssociation = currentNode.getLearnedSymbols().stream()
+    Optional<LearnedAssociation> learnedAssociation = currentNode.learnedAssociations().stream()
       .filter(lv -> lv.symbol().equals(trackSymbol))
       .findFirst();
     if (learnedAssociation.isPresent()) {

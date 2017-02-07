@@ -77,10 +77,10 @@ public class EGViewer {
 
   private static String egToDot(ExplodedGraph eg) {
     String result = "graph ExplodedGraph { ";
-    List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.getNodes().keySet());
+    List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.nodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
-      List<ExplodedGraph.Node> parents = Lists.newArrayList(node.getParents());
+      List<ExplodedGraph.Node> parents = Lists.newArrayList(node.parents());
       result += graphNode(index, node, parents);
       if (!parents.isEmpty()) {
         ExplodedGraph.Node firstParent = node.parent();
@@ -116,9 +116,9 @@ public class EGViewer {
   private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node firstParent) {
     return from + "->" + to
       + "[label=\""
-      + node.getLearnedSymbols().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","))
+      + node.learnedAssociations().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","))
       + "\\n"
-      + node.getLearnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","))
+      + node.learnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","))
       + "\""
       + yield(node, firstParent)
       + "] ";

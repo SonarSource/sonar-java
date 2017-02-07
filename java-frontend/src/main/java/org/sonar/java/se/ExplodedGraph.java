@@ -42,7 +42,7 @@ public class ExplodedGraph {
   /**
    * Returns node associated with given (programPoint,programState) pair. If no node for this pair exists, it is created.
    */
-  Node getNode(ProgramPoint programPoint, @Nullable ProgramState programState) {
+  Node node(ProgramPoint programPoint, @Nullable ProgramState programState) {
     Node result = new Node(programPoint, programState);
     Node cached = nodes.get(result);
     if (cached != null) {
@@ -54,7 +54,7 @@ public class ExplodedGraph {
     return result;
   }
 
-  public Map<Node, Node> getNodes() {
+  public Map<Node, Node> nodes() {
     return nodes;
   }
 
@@ -74,7 +74,7 @@ public class ExplodedGraph {
 
     private final List<LearnedAssociation> learnedSymbols;
 
-    public Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
+    private Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
       this.programState = programState;
       learnedConstraints = new ArrayList<>();
@@ -122,15 +122,15 @@ public class ExplodedGraph {
     /**
      * @return the ordered (by insertion) sets of parents
      */
-    public Set<Node> getParents() {
+    public Set<Node> parents() {
       return parents.keySet();
     }
 
-    public List<LearnedConstraint> getLearnedConstraints() {
+    public List<LearnedConstraint> learnedConstraints() {
       return learnedConstraints;
     }
 
-    public List<LearnedAssociation> getLearnedSymbols() {
+    public List<LearnedAssociation> learnedAssociations() {
       return learnedSymbols;
     }
 

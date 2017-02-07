@@ -49,7 +49,7 @@ public class CheckerDispatcherTest {
     ExplodedGraphWalker explodedGraphWalker = mock(ExplodedGraphWalker.class);
     explodedGraphWalker.programPosition = new ProgramPoint(new CFG.Block(1));
     explodedGraphWalker.programState = mock(ProgramState.class);
-    explodedGraphWalker.node = new ExplodedGraph.Node(explodedGraphWalker.programPosition, explodedGraphWalker.programState);
+    explodedGraphWalker.node = new ExplodedGraph().node(explodedGraphWalker.programPosition, explodedGraphWalker.programState);
     return explodedGraphWalker;
   }
 

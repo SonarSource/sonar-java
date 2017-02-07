@@ -21,10 +21,11 @@ package org.sonar.java.se;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
-
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.sonar.sslr.api.typed.ActionParser;
+
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -102,8 +103,12 @@ public class MethodYieldTest {
 
   @Test
   public void flow_is_empty_when_yield_has_no_behavior() {
-    MethodYield methodYield = new MethodYield(1, false, mock(ExplodedGraph.Node.class), null);
+    MethodYield methodYield = new MethodYield(1, false, mockNode(), null);
     assertThat(methodYield.flow(0)).isEmpty();
+  }
+
+  private static ExplodedGraph.Node mockNode() {
+    return new ExplodedGraph().node(mock(ProgramPoint.class), null);
   }
 
   @Test
@@ -173,7 +178,7 @@ public class MethodYieldTest {
     assertThat(yield).isNotEqualTo(new MethodYield(1, true));
 
     // node and behavior are not taken into account
-    otherYield = new MethodYield(1, false, new ExplodedGraph.Node(null, null), new MethodBehavior(null));
+    otherYield = new MethodYield(1, false, mockNode(), new MethodBehavior(null));
     assertThat(yield).isEqualTo(otherYield);
 
     // same arity and constraints but exceptional path
