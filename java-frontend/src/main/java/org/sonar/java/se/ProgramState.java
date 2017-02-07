@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import org.sonar.java.collections.PCollections;
@@ -31,6 +32,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
+import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -421,4 +423,36 @@ public class ProgramState {
   public boolean exitingOnRuntimeException() {
     return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
   }
+
+  Set<LearnedConstraint> learnedConstraints(ProgramState parent) {
+    ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
+    constraints.forEach((sv, childConstraint) -> {
+      Constraint parentConstraint = parent.getConstraint(sv);
+      if (parentConstraint == null || !parentConstraint.equals(childConstraint)) {
+        addLearnedConstraint(result, sv, childConstraint);
+      }
+    });
+    return result.build();
+  }
+
+  private static void addLearnedConstraint(ImmutableSet.Builder<LearnedConstraint> result, SymbolicValue sv, Constraint c) {
+    result.add(new LearnedConstraint(sv, c));
+    // FIXME this might end up adding twice the same SV in learned constraints. Safe because null constraints are filtered anyway
+    if (sv instanceof BinarySymbolicValue) {
+      BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
+      addLearnedConstraint(result, binarySymbolicValue.getLeftOp(), null);
+      addLearnedConstraint(result, binarySymbolicValue.getRightOp(), null);
+    }
+  }
+
+  Set<LearnedAssociation> learnedAssociations(ProgramState parent) {
+    ImmutableSet.Builder<LearnedAssociation> result = ImmutableSet.builder();
+    values.forEach((s, sv) -> {
+      if (parent.getValue(s) != sv) {
+        result.add(new LearnedAssociation(sv, s));
+      }
+    });
+    return result.build();
+  }
+
 }

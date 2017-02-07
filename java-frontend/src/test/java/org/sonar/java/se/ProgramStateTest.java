@@ -19,19 +19,26 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.ImmutableList;
 import junit.framework.Assert;
 import org.junit.Test;
+
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ProgramState.Pop;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 public class ProgramStateTest {
 
@@ -90,6 +97,71 @@ public class ProgramStateTest {
     assertThat(state.getConstraint(sv3)).isEqualTo(ObjectConstraint.notNull());
     ProgramState next = state.addConstraint(sv3, ObjectConstraint.notNull());
     assertThat(next).isSameAs(state);
+  }
+
+  @Test
+  public void test_learned_constraint() {
+    ProgramState parent = ProgramState.EMPTY_STATE;
+    ProgramState child = ProgramState.EMPTY_STATE;
+    assertThat(child.learnedConstraints(parent)).isEmpty();
+    SymbolicValue sv = new SymbolicValue(1);
+    child = child.addConstraint(sv, ObjectConstraint.nullConstraint());
+    Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
+    assertThat(learnedConstraints).hasSize(1);
+    LearnedConstraint lc = learnedConstraints.iterator().next();
+    assertThat(lc.symbolicValue()).isEqualTo(sv);
+    assertThat(lc.constraint()).isEqualTo(ObjectConstraint.nullConstraint());
+  }
+
+  @Test
+  public void test_learned_constraint_change() throws Exception {
+    class MyStatus implements ObjectConstraint.Status {}
+
+    SymbolicValue sv = new SymbolicValue(1);
+    ProgramState parent = ProgramState.EMPTY_STATE.addConstraint(sv, new ObjectConstraint<>(false, true, new MyStatus()));
+    ObjectConstraint<MyStatus> childConstraint = new ObjectConstraint<>(false, true, new MyStatus());
+    ProgramState child = ProgramState.EMPTY_STATE.addConstraint(sv, childConstraint);
+    Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
+    assertThat(learnedConstraints).hasSize(1);
+    LearnedConstraint learnedConstraint = learnedConstraints.iterator().next();
+    assertThat(learnedConstraint.symbolicValue()).isEqualTo(sv);
+    assertThat(learnedConstraint.constraint()).isEqualTo(childConstraint);
+  }
+
+  @Test
+  public void test_learned_constraint_binary_SV() {
+    SymbolicValue sv1 = new SymbolicValue(1);
+    SymbolicValue sv2 = new SymbolicValue(2);
+    RelationalSymbolicValue relation = new RelationalSymbolicValue(3, RelationalSymbolicValue.Kind.EQUAL);
+    relation.computedFrom(ImmutableList.of(sv1, sv2));
+    ProgramState parent = ProgramState.EMPTY_STATE;
+    ProgramState child = ProgramState.EMPTY_STATE.addConstraint(relation, BooleanConstraint.TRUE);
+    Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
+    assertThat(learnedConstraints).hasSize(3);
+    Constraint relationConstraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == relation).findFirst().get().constraint();
+    assertThat(relationConstraint).isEqualTo(BooleanConstraint.TRUE);
+    Constraint sv1Constraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == sv1).findFirst().get().constraint();
+    assertThat(sv1Constraint).isNull();
+    Constraint sv2Constraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == sv2).findFirst().get().constraint();
+    assertThat(sv2Constraint).isNull();
+  }
+
+  @Test
+  public void test_learned_associations() throws Exception {
+    ProgramState parent = ProgramState.EMPTY_STATE;
+    ProgramState child = ProgramState.EMPTY_STATE;
+    assertThat(child.learnedAssociations(parent)).isEmpty();
+
+    Symbol symbol = new JavaSymbol.VariableJavaSymbol(0, "symbol", mock(JavaSymbol.MethodJavaSymbol.class));
+    SymbolicValue sv1 = new SymbolicValue(1);
+    child = child.put(symbol, sv1);
+    Set<LearnedAssociation> learnedAssociations = child.learnedAssociations(parent);
+    assertThat(learnedAssociations).hasSize(1);
+    LearnedAssociation learnedAssociation = learnedAssociations.iterator().next();
+    assertThat(learnedAssociation.symbolicValue()).isEqualTo(sv1);
+    assertThat(learnedAssociation.symbol()).isEqualTo(symbol);
+
+    assertThat(child.learnedAssociations(child)).isEmpty();
   }
 
 

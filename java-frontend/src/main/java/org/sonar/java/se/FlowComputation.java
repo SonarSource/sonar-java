@@ -136,7 +136,7 @@ public class FlowComputation {
     if (parent == null) {
       return Stream.empty();
     }
-    return currentNode.learnedConstraints().stream()
+    return currentNode.learnedConstraints()
       .filter(lc -> lc.symbolicValue().equals(symbolicValue))
       .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
@@ -207,7 +207,7 @@ public class FlowComputation {
     if (trackSymbol == null || parent == null) {
       return null;
     }
-    Optional<LearnedAssociation> learnedAssociation = currentNode.learnedAssociations().stream()
+    Optional<LearnedAssociation> learnedAssociation = currentNode.learnedAssociations()
       .filter(lv -> lv.symbol().equals(trackSymbol))
       .findFirst();
     if (learnedAssociation.isPresent()) {

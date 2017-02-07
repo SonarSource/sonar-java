@@ -19,21 +19,18 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-
-import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class ExplodedGraph {
 
@@ -58,80 +55,52 @@ public class ExplodedGraph {
     return nodes;
   }
 
-  public static class Node {
+  public static final class Node {
+
+    public final ProgramPoint programPoint;
+    @Nullable
+    public final ProgramState programState;
+
+    private final Map<Node, Edge> edges = new HashMap<>();
+
     boolean isNew;
     boolean exitPath = false;
     boolean happyPath = true;
 
-    /**
-     * Execution location. Currently only pre-statement, but tomorrow we might add post-statement.
-     */
-    public final ProgramPoint programPoint;
-    @Nullable
-    public final ProgramState programState;
-    private final Map<Node, MethodYield> parents;
-    private final List<LearnedConstraint> learnedConstraints;
-
-    private final List<LearnedAssociation> learnedSymbols;
-
     private Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
+      Objects.requireNonNull(programPoint);
       this.programPoint = programPoint;
       this.programState = programState;
-      learnedConstraints = new ArrayList<>();
-      learnedSymbols = new ArrayList<>();
-      parents = new LinkedHashMap<>();
     }
 
-    public void setParent(@Nullable Node parent, @Nullable MethodYield methodYield) {
-      if (parent != null) {
-        if (parents.isEmpty()) {
-          programState.constraints.forEach((sv, c) -> {
-            if (parent.programState.getConstraint(sv) != c) {
-              addConstraint(sv, c);
-            }
-          });
-          programState.values.forEach((s, sv) -> {
-            if (parent.programState.getValue(s) != sv) {
-              learnedSymbols.add(new LearnedAssociation(sv, s));
-            }
-          });
-        }
-        addParent(parent, methodYield);
+    public void addParent(@Nullable Node parent, @Nullable MethodYield methodYield) {
+      if (parent == null) {
+        return;
       }
-    }
-
-    private void addConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
-      // FIXME : this might end up adding twice the same SV in learned constraints. Safe because of find first in SECheck.flows
-      if (sv instanceof BinarySymbolicValue) {
-        BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
-        addConstraint(binarySymbolicValue.getLeftOp(), null);
-        addConstraint(binarySymbolicValue.getRightOp(), null);
+      Edge edge = edges.computeIfAbsent(parent, p -> new Edge(this, p));
+      if (methodYield != null) {
+        edge.yields.add(methodYield);
       }
-      learnedConstraints.add(new LearnedConstraint(sv, constraint));
-    }
-
-    public void addParent(Node node, @Nullable MethodYield methodYield) {
-      parents.putIfAbsent(node, methodYield);
     }
 
     @Nullable
     public Node parent() {
-      return parents.isEmpty() ? null : parents.keySet().iterator().next();
+      return parents().stream().findFirst().orElse(null);
     }
 
     /**
      * @return the ordered (by insertion) sets of parents
      */
     public Set<Node> parents() {
-      return parents.keySet();
+      return edges.keySet();
     }
 
-    public List<LearnedConstraint> learnedConstraints() {
-      return learnedConstraints;
+    public Stream<LearnedConstraint> learnedConstraints() {
+      return edges.values().stream().flatMap(e -> e.learnedConstraints().stream());
     }
 
-    public List<LearnedAssociation> learnedAssociations() {
-      return learnedSymbols;
+    public Stream<LearnedAssociation> learnedAssociations() {
+      return edges.values().stream().flatMap(e -> e.learnedAssociations().stream());
     }
 
     @Override
@@ -156,7 +125,37 @@ public class ExplodedGraph {
 
     @CheckForNull
     public MethodYield selectedMethodYield(Node from) {
-      return parents.get(from);
+      return edges.containsKey(from) ? edges.get(from).yields.stream().findFirst().orElse(null) : null;
     }
+  }
+
+  static final class Edge {
+    final Node child;
+    final Node parent;
+
+    private Set<LearnedConstraint> lc;
+    private Set<LearnedAssociation> la;
+    private final Set<MethodYield> yields = new LinkedHashSet<>();
+
+    private Edge(Node child, Node parent) {
+      Preconditions.checkState(!Objects.equals(child, parent));
+      this.child = child;
+      this.parent = parent;
+    }
+
+    Set<LearnedConstraint> learnedConstraints() {
+      if (lc == null) {
+        lc = child.programState.learnedConstraints(parent.programState);
+      }
+      return lc;
+    }
+
+    Set<LearnedAssociation> learnedAssociations() {
+      if (la == null) {
+        la = child.programState.learnedAssociations(parent.programState);
+      }
+      return la;
+    }
+
   }
 }

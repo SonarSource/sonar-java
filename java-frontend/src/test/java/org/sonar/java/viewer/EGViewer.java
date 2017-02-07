@@ -116,9 +116,9 @@ public class EGViewer {
   private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node firstParent) {
     return from + "->" + to
       + "[label=\""
-      + node.learnedAssociations().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","))
+      + node.learnedAssociations().map(LearnedAssociation::toString).collect(Collectors.joining(","))
       + "\\n"
-      + node.learnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","))
+      + node.learnedConstraints().map(LearnedConstraint::toString).collect(Collectors.joining(","))
       + "\""
       + yield(node, firstParent)
       + "] ";
