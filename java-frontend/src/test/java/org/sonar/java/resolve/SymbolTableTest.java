@@ -529,6 +529,17 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void StrictThenLooseInvocationContext() {
+    Result result = Result.createFor("StrictThenLooseInvocationContext");
+    JavaSymbol fooA = result.symbol("foo", 2);
+    JavaSymbol fooC = result.symbol("foo", 12);
+
+    assertThat(fooA).isSameAs(result.reference(9, 5));
+    assertThat(fooA.usages()).hasSize(1);
+    assertThat(fooC.usages()).hasSize(0);
+  }
+
+  @Test
   public void ConstructorWithEnclosingClass() {
     Result result = Result.createFor("ConstructorWithEnclosingClass");
 
