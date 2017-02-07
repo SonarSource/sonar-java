@@ -1495,4 +1495,10 @@ public class SymbolTableTest {
     Result result = Result.createFor("FunctionTypesComputation");
     assertThat(result.symbol("method").usages()).hasSize(1);
   }
+
+  @Test
+  public void type_inference_should_be_triggered_on_cast_expression() throws Exception {
+    Result result = Result.createFor("CastTargetType");
+    assertThat(result.symbol("s").usages()).hasSize(1);
+  }
 }
