@@ -1036,7 +1036,7 @@ public class ExplodedGraphWalker {
     if(node != null) {
       cachedNode.happyPath = node.happyPath;
     }
-    cachedNode.setParent(node, methodYield);
+    cachedNode.addParent(node, methodYield);
     workList.addFirst(cachedNode);
   }
 
