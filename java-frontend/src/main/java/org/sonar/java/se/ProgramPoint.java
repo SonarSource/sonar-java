@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -27,9 +29,21 @@ public class ProgramPoint {
   final CFG.Block block;
   final int i;
 
-  public ProgramPoint(CFG.Block block, int i) {
+  ProgramPoint(CFG.Block block) {
+    this.block = block;
+    this.i = 0;
+  }
+
+  private ProgramPoint(CFG.Block block, int i) {
     this.block = block;
     this.i = i;
+  }
+
+  ProgramPoint next() {
+    // pointing one element behind is allowed, it represents terminator of the CFG block
+    Preconditions.checkState(i + 1 <= block.elements().size() + 1,
+      "CFG Block has %s elements but PP at %s was requested", block.elements().size(), i + 1);
+    return new ProgramPoint(block, i + 1);
   }
 
   @Override

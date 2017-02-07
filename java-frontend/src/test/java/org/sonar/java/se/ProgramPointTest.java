@@ -30,9 +30,9 @@ public class ProgramPointTest {
   public void test_to_string_method() throws Exception {
     // ToString method of program point is used by viewer.
     CFG cfg = CFGTest.buildCFG("void foo() {foo();}");
-    ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0), 0);
+    ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));
     assertThat(pp.toString()).isEqualTo("B1.0  IDENTIFIER1");
-    pp = new ProgramPoint(cfg.blocks().get(0), 2);
+    pp = pp.next().next();
     assertThat(pp.toString()).isEqualTo("B1.2  ");
   }
 

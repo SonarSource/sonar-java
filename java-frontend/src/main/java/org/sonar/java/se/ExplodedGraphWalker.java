@@ -211,7 +211,7 @@ public class ExplodedGraphWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     for (ProgramState startingState : startingStates(tree, programState)) {
-      enqueue(new ProgramPoint(cfg.entry(), 0), startingState);
+      enqueue(new ProgramPoint(cfg.entry()), startingState);
     }
     while (!workList.isEmpty()) {
       steps++;
@@ -390,10 +390,10 @@ public class ExplodedGraphWalker {
     // unconditional jumps, for-statement, switch-statement, synchronized:
     if (exitPath) {
       if (block.exitBlock() != null) {
-        enqueue(new ProgramPoint(block.exitBlock(), 0), programState, true);
+        enqueue(new ProgramPoint(block.exitBlock()), programState, true);
       } else {
         for (CFG.Block successor : block.successors()) {
-          enqueue(new ProgramPoint(successor, 0), programState, true);
+          enqueue(new ProgramPoint(successor), programState, true);
         }
       }
 
@@ -401,7 +401,7 @@ public class ExplodedGraphWalker {
       for (CFG.Block successor : block.successors()) {
         if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
           node.happyPath = terminator == null || !terminator.is(Tree.Kind.THROW_STATEMENT);
-          enqueue(new ProgramPoint(successor, 0), programState, successor == block.exitBlock());
+          enqueue(new ProgramPoint(successor), programState, successor == block.exitBlock());
         }
       }
     }
@@ -429,7 +429,7 @@ public class ExplodedGraphWalker {
 
   private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
-    ProgramPoint falseBlockProgramPoint = new ProgramPoint(programPosition.falseBlock(), 0);
+    ProgramPoint falseBlockProgramPoint = new ProgramPoint(programPosition.falseBlock());
     for (ProgramState state : pair.a) {
       ProgramState ps = state;
       if (condition.parent().is(Tree.Kind.CONDITIONAL_AND) && !isPartOfConditionalExpressionCondition(condition)) {
@@ -443,7 +443,7 @@ public class ExplodedGraphWalker {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition, node);
       }
     }
-    ProgramPoint trueBlockProgramPoint = new ProgramPoint(programPosition.trueBlock(), 0);
+    ProgramPoint trueBlockProgramPoint = new ProgramPoint(programPosition.trueBlock());
     for (ProgramState state : pair.b) {
       ProgramState ps = state;
       if (condition.parent().is(Tree.Kind.CONDITIONAL_OR) && !isPartOfConditionalExpressionCondition(condition)) {
@@ -699,14 +699,14 @@ public class ExplodedGraphWalker {
       .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
       .findFirst();
     if (firstMatchingCatchBlock.isPresent()) {
-      enqueue(new ProgramPoint(firstMatchingCatchBlock.get(), 0), ps, methodYield);
+      enqueue(new ProgramPoint(firstMatchingCatchBlock.get()), ps, methodYield);
       return;
     }
 
     // branch to any unchecked exception catch
     catchBlocks.stream()
       .filter(ExplodedGraphWalker::isCatchingUncheckedException)
-      .forEach(b -> enqueue(new ProgramPoint(b, 0), ps, methodYield));
+      .forEach(b -> enqueue(new ProgramPoint(b), ps, methodYield));
 
     // store the exception as exit value in case of method exit in next block
     ps.storeExitValue();
@@ -714,12 +714,12 @@ public class ExplodedGraphWalker {
     // use other exceptional blocks, i.e. finally block and exit blocks
     exceptionBlocks.stream()
       .filter(CFG.Block.IS_CATCH_BLOCK.negate())
-      .forEach(b -> enqueue(new ProgramPoint(b, 0), ps, true, methodYield));
+      .forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
 
     // explicitly add the exception if next block is method exit
     node.programPoint.block.successors().stream()
       .filter(CFG.Block::isMethodExitBlock)
-      .forEach(b -> enqueue(new ProgramPoint(b, 0), ps, true, methodYield));
+      .forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
   }
 
   private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
@@ -860,7 +860,7 @@ public class ExplodedGraphWalker {
     NewClassTree newClassTree = tree;
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ProgramPoint(b, 0), programState, !b.isCatchBlock()));
+    node.programPoint.block.exceptions().forEach(b -> enqueue(new ProgramPoint(b), programState, !b.isCatchBlock()));
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
     programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.notNull());
@@ -1020,7 +1020,7 @@ public class ExplodedGraphWalker {
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       if (isRestartingForEachLoop(programPoint)) {
         // reached the max number of visit by program point, so take the false branch with current program state
-        programPoint = new ProgramPoint(programPoint.block.falseBlock(), 0);
+        programPoint = new ProgramPoint(programPoint.block.falseBlock());
       } else {
         debugPrint(programPoint);
         return;
