@@ -600,7 +600,7 @@ public class ExplodedGraphWalker {
   private void executeMethodInvocation(MethodInvocationTree mit) {
     setSymbolicValueOnFields(mit);
     // unstack arguments and method identifier
-    ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
+    ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size());
     logState(mit);
 
     programState = unstack.state;
@@ -739,10 +739,7 @@ public class ExplodedGraphWalker {
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
-    List<SymbolicValue> parameterValues = new ArrayList<>(values);
-    parameterValues.remove(values.size() - 1);
-    Collections.reverse(parameterValues);
-    return parameterValues;
+    return Lists.reverse(values);
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {

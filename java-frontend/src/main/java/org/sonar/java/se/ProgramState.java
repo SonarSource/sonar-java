@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -416,5 +417,15 @@ public class ProgramState {
 
   public boolean exitingOnRuntimeException() {
     return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
+  }
+
+  @VisibleForTesting
+  int stackDepth() {
+    return stack.size();
+  }
+
+  @VisibleForTesting
+  PStack<SymbolicValue> stack() {
+    return stack;
   }
 }

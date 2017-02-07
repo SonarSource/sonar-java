@@ -19,10 +19,6 @@
  */
 package org.sonar.java.collections;
 
-import com.google.common.base.Preconditions;
-
-import javax.annotation.Nullable;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -30,23 +26,17 @@ import java.util.function.Predicate;
 final class SinglyLinkedList<E> implements PStack<E> {
 
   private final E element;
-  @Nullable
-  private final SinglyLinkedList<E> next;
+  private final PStack<E> next;
   private int hashCode;
 
-  private SinglyLinkedList(E element) {
-    this.element = element;
-    this.next = null;
-  }
-
-  private SinglyLinkedList(E element, SinglyLinkedList<E> next) {
+  private SinglyLinkedList(E element, PStack<E> next) {
     this.element = element;
     this.next = next;
   }
 
   @Override
   public PStack<E> push(E e) {
-    Preconditions.checkNotNull(e);
+    Objects.requireNonNull(e);
     return new SinglyLinkedList<>(e, this);
   }
 
@@ -57,7 +47,7 @@ final class SinglyLinkedList<E> implements PStack<E> {
 
   @Override
   public PStack<E> pop() {
-    return next == null ? EMPTY : next;
+    return next;
   }
 
   @Override
@@ -67,23 +57,18 @@ final class SinglyLinkedList<E> implements PStack<E> {
 
   @Override
   public void forEach(Consumer<E> action) {
-    SinglyLinkedList<E> c = this;
-    while (c != null) {
-      action.accept(c.element);
-      c = c.next;
-    }
+    action.accept(element);
+    next.forEach(action);
   }
 
   @Override
   public boolean anyMatch(Predicate<E> predicate) {
-    SinglyLinkedList<E> c = this;
-    while (c != null) {
-      if (predicate.test(c.element)) {
-        return true;
-      }
-      c = c.next;
-    }
-    return false;
+    return predicate.test(element) || next.anyMatch(predicate);
+  }
+
+  @Override
+  public int size() {
+    return next.size() + 1;
   }
 
   @Override
@@ -121,7 +106,7 @@ final class SinglyLinkedList<E> implements PStack<E> {
     @SuppressWarnings("unchecked")
     @Override
     public PStack push(Object o) {
-      return new SinglyLinkedList<>(o);
+      return new SinglyLinkedList(o, this);
     }
 
     @Override
@@ -147,6 +132,11 @@ final class SinglyLinkedList<E> implements PStack<E> {
     @Override
     public boolean anyMatch(Predicate predicate) {
       return false;
+    }
+
+    @Override
+    public int size() {
+      return 0;
     }
 
     @Override
