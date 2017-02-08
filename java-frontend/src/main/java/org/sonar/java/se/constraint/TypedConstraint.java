@@ -21,10 +21,4 @@ package org.sonar.java.se.constraint;
 
 public class TypedConstraint implements Constraint {
   // Empty class for now, but should store the resolved type for instanceof operator.
-
-  @Override
-  public boolean isNull() {
-    // This constraint is only used when we already know that a SV is not null.
-    return false;
-  }
 }

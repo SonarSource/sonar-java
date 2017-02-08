@@ -20,14 +20,11 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,10 +129,13 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private List<ProgramState> addNullConstraintsForBooleanWrapper(BooleanConstraint booleanConstraint, ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
-    Constraint leftConstraint = initialProgramState.getConstraint(leftOp);
-    Constraint rightConstraint = initialProgramState.getConstraint(rightOp);
-    if (leftConstraint instanceof BooleanConstraint && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
-      List<ProgramState> nullConstraints = copiedConstraints.stream().map(ps -> ps.addConstraint(rightOp, ObjectConstraint.nullConstraint())).collect(Collectors.toList());
+    BooleanConstraint leftConstraint = initialProgramState.getConstraint(leftOp, BooleanConstraint.class);
+    BooleanConstraint rightConstraint = initialProgramState.getConstraint(rightOp, BooleanConstraint.class);
+    if (leftConstraint != null && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
+      List<ProgramState> nullConstraints = copiedConstraints.stream()
+        .flatMap(ps -> rightOp.setConstraint(ps, ObjectConstraint.NULL).stream())
+        .map(ps -> ps.addConstraints(rightOp, ps.getConstraints(rightOp).remove(BooleanConstraint.class))
+      ).collect(Collectors.toList());
       return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
     }
     return copiedConstraints;

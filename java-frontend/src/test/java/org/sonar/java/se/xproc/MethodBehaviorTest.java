@@ -22,6 +22,7 @@ package org.sonar.java.se.xproc;
 import org.junit.Test;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,26 +41,27 @@ public class MethodBehaviorTest {
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(3);
 
-    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint())).collect(Collectors.toList());
+    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint().get(BooleanConstraint.class))).collect(Collectors.toList());
     assertThat(trueResults).hasSize(1);
     HappyPathYield trueResult = trueResults.get(0);
 
     // 'a' has constraint "null"
-    assertThat(trueResult.parametersConstraints()[0].isNull()).isTrue();
+    assertThat(((ObjectConstraint) trueResult.parametersConstraints.get(0).get(ObjectConstraint.class)).isNull()).isTrue();
     // no constraint on 'b'
-    assertThat(trueResult.parametersConstraints()[1]).isNull();
+    assertThat(((ObjectConstraint) trueResult.parametersConstraints.get(0).get(ObjectConstraint.class)).isNull()).isTrue();
     // result SV is a different SV than 'a' and 'b'
     assertThat(trueResult.resultIndex()).isEqualTo(-1);
 
     List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint())).collect(Collectors.toList());
     assertThat(falseResults).hasSize(2);
     // for both "False" results, 'a' has the constraint "not null"
-    assertThat(falseResults.stream().filter(my -> !my.parametersConstraints()[0].isNull()).count()).isEqualTo(2);
+    assertThat(falseResults.stream().filter(my -> !((ObjectConstraint) my.parametersConstraints.get(0).get(ObjectConstraint.class)).isNull()).count()).isEqualTo(2);
     // 1) 'b' has constraint "false", result is 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints()[1]) && my.resultIndex() == 1).count()).isEqualTo(1);
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints.get(1).get(BooleanConstraint.class)) && my.resultIndex() == 1).count()).isEqualTo(1);
 
     // 2) 'b' is "true", result is a different SV than 'a' and 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints()[1]) && my.resultIndex() == -1).count()).isEqualTo(1);
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints.get(1).get(BooleanConstraint.class)) && my.resultIndex() == -1).count()).isEqualTo(1);
+
   }
 
   @Test
@@ -75,16 +77,16 @@ public class MethodBehaviorTest {
     MethodBehavior qix = getMethodBehavior(sev, "qix");
     List<MethodYield> qixYield = qix.yields();
     assertThat(qixYield.stream()
-      .filter(y -> !y.parametersConstraints()[0].isNull())
+      .filter(y ->  y.parametersConstraints.get(0).get(ObjectConstraint.class) != ObjectConstraint.NULL)
       .allMatch(y -> y instanceof ExceptionalYield)).isTrue();
 
     assertThat(qixYield.stream()
-      .filter(y -> y.parametersConstraints()[0].isNull() && y instanceof ExceptionalYield)
+      .filter(y -> y.parametersConstraints.get(0).get(ObjectConstraint.class) == ObjectConstraint.NULL && y instanceof ExceptionalYield)
       .count()).isEqualTo(2);
 
     assertThat(qixYield.stream()
       .filter(y -> y instanceof HappyPathYield)
-      .allMatch(y -> y.parametersConstraints()[0].isNull())).isTrue();
+      .allMatch(y -> y.parametersConstraints.get(0).get(ObjectConstraint.class) == ObjectConstraint.NULL)).isTrue();
   }
 
 }

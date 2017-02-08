@@ -28,7 +28,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -61,14 +61,14 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(mb.yields()).hasSize(5);
 
     assertThat(mb.happyPathYields()).hasSize(3);
-    assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == null)).hasSize(1);
-    assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.TRUE)).hasSize(1);
-    assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.FALSE)).hasSize(1);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == null)).hasSize(1);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(1);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
     assertThat(mb.exceptionalPathYields()).hasSize(2);
     assertThat(mb.exceptionalPathYields()).as("All the exceptional yields are runtime exceptions").allMatch(y -> y.exceptionType() == null);
-    assertThat(mb.exceptionalPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.TRUE)).hasSize(1);
-    assertThat(mb.exceptionalPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.FALSE)).hasSize(1);
+    assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(1);
+    assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
     // new rule discard any call to plantFlowers(true) by creating a new yield
     sev = createSymbolicExecutionVisitor(FILENAME, new TestSECheck());
@@ -76,8 +76,8 @@ public class ExceptionalCheckBasedYieldTest {
 
     assertThat(mb.yields()).hasSize(4);
     // 2nd param can never be null
-    assertThat(mb.yields().stream().filter(y -> y.parameterConstraint(0) == null && y.parameterConstraint(1).isNull())).hasSize(1);
-    assertThat(mb.yields().stream().filter(y -> !y.parameterConstraint(1).isNull())).hasSize(3);
+    assertThat(mb.yields().stream().filter(y -> y.parametersConstraints.get(0) == null && y.parametersConstraints.get(1).get(ObjectConstraint.class)== ObjectConstraint.NULL)).hasSize(1);
+    assertThat(mb.yields().stream().filter(y -> y.parametersConstraints.get(1).get(ObjectConstraint.class) != ObjectConstraint.NULL)).hasSize(3);
 
     // happyPath with first parameter being true is discarded
     assertThat(mb.happyPathYields()).hasSize(2);
@@ -86,9 +86,9 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(mb.exceptionalPathYields()).hasSize(2);
     assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType() == null)).hasSize(1);
     assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType() != null)).hasSize(1);
-    assertThat(mb.exceptionalPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.FALSE)).hasSize(1);
+    assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
-    ExceptionalYield exceptionalYield = mb.exceptionalPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.TRUE).findFirst().get();
+    ExceptionalYield exceptionalYield = mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE).findFirst().get();
     assertThat(exceptionalYield).isInstanceOf(ExceptionalCheckBasedYield.class);
 
     ExceptionalCheckBasedYield seCheckExceptionalYield = (ExceptionalCheckBasedYield) exceptionalYield;
@@ -107,8 +107,8 @@ public class ExceptionalCheckBasedYieldTest {
       ProgramState state = context.getState();
       if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && MATCHER.matches((MethodInvocationTree) syntaxNode)) {
         SymbolicValue param = state.peekValue();
-        Constraint paramConstraint = state.getConstraint(param);
-        if (paramConstraint instanceof BooleanConstraint && ((BooleanConstraint) paramConstraint) == BooleanConstraint.TRUE) {
+        BooleanConstraint paramConstraint = state.getConstraint(param, BooleanConstraint.class);
+        if (paramConstraint == BooleanConstraint.TRUE) {
           // create new yield with the exception
           context.addExceptionalYield(param, state, "java.lang.UnsupportedOperationException", this);
           // interrupt exploration (theoretical runtime exception)

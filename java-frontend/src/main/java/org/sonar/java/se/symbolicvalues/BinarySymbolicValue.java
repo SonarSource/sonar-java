@@ -20,12 +20,13 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.sonar.java.collections.PMap;
+import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.ProgramState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
@@ -52,21 +53,33 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   }
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-    Constraint constraintLeft = programState.getConstraint(from);
-    if (constraintLeft instanceof BooleanConstraint) {
-      BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-      return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
-    } else if (constraintLeft instanceof ObjectConstraint) {
-      ObjectConstraint objectConstraint = (ObjectConstraint) constraintLeft;
-      if (objectConstraint.isNull()) {
-        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse());
-      } else if (shouldNotInverse().equals(booleanConstraint)) {
-        return to.setConstraint(programState, objectConstraint);
-      } else if (objectConstraint.isInvalidWith(programState.getConstraint(to))) {
-        return ImmutableList.of();
-      }
+    List<ProgramState> states = new ArrayList<>();
+    states.add(programState);
+    PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
+    if (leftConstraints != null) {
+      leftConstraints.forEach((d, c) -> {
+        List<ProgramState> newStates = new ArrayList<>();
+        for (ProgramState state : states) {
+          if(ObjectConstraint.class.equals(d)) {
+            if(((ObjectConstraint) c).isNull()) {
+              newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
+            } else if(shouldNotInverse().equals(booleanConstraint)) {
+              newStates.addAll(to.setConstraint(state, c));
+            } else {
+              newStates.add(state);
+            }
+            continue;
+          } else if(BooleanConstraint.class.equals(d)) {
+            newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
+            continue;
+          }
+          newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
+        }
+        states.clear();
+        states.addAll(newStates);
+      });
     }
-    return ImmutableList.of(programState);
+    return states;
   }
 
   public SymbolicValue getLeftOp() {

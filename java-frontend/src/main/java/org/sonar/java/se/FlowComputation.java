@@ -54,24 +54,28 @@ public class FlowComputation {
   private final List<JavaFileScannerContext.Location> flow = new ArrayList<>();
   private final SymbolicValue symbolicValue;
   private final Set<ExplodedGraph.Node> visited = new HashSet<>();
+  private final List<Class<? extends Constraint>> domains;
 
-  private FlowComputation(@Nullable SymbolicValue symbolicValue, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal) {
+  private FlowComputation(@Nullable SymbolicValue symbolicValue, Predicate<Constraint> addToFlow,
+                          Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
     this.addToFlow = addToFlow;
     this.terminateTraversal = terminateTraversal;
     this.symbolicValue = symbolicValue;
+    this.domains = domains;
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal) {
-    return flow(currentNode, currentVal, constraint -> true);
-  }
-
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow) {
-    return flow(currentNode, currentVal, addToFlow, c -> false);
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, currentVal, constraint -> true, domains);
   }
 
   public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-    Predicate<Constraint> terminateTraversal) {
-    FlowComputation flowComputation = new FlowComputation(currentVal, addToFlow, terminateTraversal);
+                                                           List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, currentVal, addToFlow, c -> false, domains);
+  }
+
+  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+                                                           Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
+    FlowComputation flowComputation = new FlowComputation(currentVal, addToFlow, terminateTraversal, domains);
 
     Symbol trackSymbol = currentNode.programState.getLastEvaluated();
     if (currentVal instanceof BinarySymbolicValue) {
@@ -94,7 +98,7 @@ public class FlowComputation {
   }
 
   private FlowComputation fork(SymbolicValue symbolicValue) {
-    return new FlowComputation(symbolicValue, addToFlow, terminateTraversal);
+    return new FlowComputation(symbolicValue, addToFlow, terminateTraversal, domains);
   }
 
   private static class NodeSymbol {
@@ -138,7 +142,7 @@ public class FlowComputation {
       return Stream.empty();
     }
     return currentNode.learnedConstraints()
-      .filter(lc -> lc.symbolicValue().equals(symbolicValue))
+      .filter(lc -> lc.symbolicValue().equals(symbolicValue) && (lc.constraint == null || domains.stream().anyMatch(d -> d.isAssignableFrom(lc.constraint.getClass()))))
       .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
   }
@@ -177,7 +181,7 @@ public class FlowComputation {
     }
     MethodYield selectedMethodYield = currentNode.selectedMethodYield(parent);
     if (selectedMethodYield != null) {
-      selectedMethodYield.flow(argIdx).forEach(flowBuilder::add);
+      selectedMethodYield.flow(argIdx, domains).forEach(flowBuilder::add);
     }
     return flowBuilder.build();
   }
@@ -213,9 +217,12 @@ public class FlowComputation {
       .findFirst();
     if (learnedAssociation.isPresent()) {
       LearnedAssociation la = learnedAssociation.get();
-      Constraint constraint = parent.programState.getConstraint(la.symbolicValue());
-      String message = constraint == null ? "..." : String.format("'%s' is assigned %s.", la.symbol().name(), constraint.valueAsString());
-      flow.add(location(parent, message));
+      for (Class<? extends Constraint> domain : domains) {
+        Constraint constraint = parent.programState.getConstraint(la.symbolicValue(), domain);
+        if(constraint != null) {
+          flow.add(location(parent, String.format("'%s' is assigned %s.", la.symbol().name(), constraint.valueAsString())));
+        }
+      }
       return parent.programState.getLastEvaluated();
     }
     return trackSymbol;

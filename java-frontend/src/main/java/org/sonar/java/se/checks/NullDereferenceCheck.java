@@ -22,13 +22,11 @@ package org.sonar.java.se.checks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -83,7 +81,7 @@ public class NullDereferenceCheck extends SECheck {
 
   private ProgramState checkConstraint(CheckerContext context, Tree syntaxNode, SymbolicValue currentVal) {
     ProgramState programState = context.getState();
-    Constraint constraint = programState.getConstraint(currentVal);
+    ObjectConstraint constraint = programState.getConstraint(currentVal, ObjectConstraint.class);
     if (constraint != null && constraint.isNull()) {
       reportIssue(currentVal, syntaxNode, context.getNode());
 
@@ -91,13 +89,13 @@ public class NullDereferenceCheck extends SECheck {
       context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
       return null;
     }
-    constraint = programState.getConstraint(currentVal);
+    constraint = programState.getConstraint(currentVal, ObjectConstraint.class);
     if (constraint == null) {
       // a NPE will be triggered if the current value would have been null
-      context.addExceptionalYield(currentVal, programState.addConstraint(currentVal, ObjectConstraint.nullConstraint()), JAVA_LANG_NPE, this);
+      context.addExceptionalYield(currentVal, programState.addConstraint(currentVal, ObjectConstraint.NULL), JAVA_LANG_NPE, this);
 
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
-      return programState.addConstraint(currentVal, ObjectConstraint.notNull());
+      return programState.addConstraint(currentVal, ObjectConstraint.NOT_NULL);
     }
     return programState;
   }
@@ -108,7 +106,7 @@ public class NullDereferenceCheck extends SECheck {
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;
     }
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, val);
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class));
     addDereferenceMessage(flow, syntaxNode);
     reportIssue(syntaxNode, message, ImmutableSet.of(flow));
   }
@@ -164,8 +162,8 @@ public class NullDereferenceCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       Preconditions.checkNotNull(val);
       List<ProgramState> states = new ArrayList<>();
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint()));
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.notNull()));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }
     return Lists.newArrayList(context.getState());

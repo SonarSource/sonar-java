@@ -28,6 +28,9 @@ import com.google.common.collect.Lists;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
+import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
+import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -44,9 +47,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -71,10 +72,14 @@ public class ProgramState {
   public static final ProgramState EMPTY_STATE = new ProgramState(
     PCollections.emptyMap(),
     PCollections.emptyMap(),
-    PCollections.<SymbolicValue, Constraint>emptyMap()
-      .put(SymbolicValue.NULL_LITERAL, ObjectConstraint.nullConstraint())
-      .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
-      .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
+    PCollections.<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>>emptyMap()
+      .put(SymbolicValue.NULL_LITERAL, PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL))
+      .put(SymbolicValue.TRUE_LITERAL,
+        PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
+          .put(BooleanConstraint.class, BooleanConstraint.TRUE).put(ObjectConstraint.class, ObjectConstraint.NOT_NULL))
+      .put(SymbolicValue.FALSE_LITERAL,
+        PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
+          .put(BooleanConstraint.class, BooleanConstraint.FALSE).put(ObjectConstraint.class, ObjectConstraint.NOT_NULL)),
     PCollections.emptyMap(),
     PCollections.emptyStack(),
     null);
@@ -88,10 +93,10 @@ public class ProgramState {
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
-  final PMap<SymbolicValue, Constraint> constraints;
+  final PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-    PMap<SymbolicValue, Constraint> constraints, PMap<ProgramPoint, Integer> visitedPoints,
+    PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
     PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
@@ -102,7 +107,7 @@ public class ProgramState {
     constraintSize = 3;
   }
   private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, Constraint> constraints, PMap<ProgramPoint, Integer> visitedPoints,
+                       PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
                        PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue) {
     this(values, references, constraints, visitedPoints, stack, exitSymbolicValue);
     lastEvaluated = symbol;
@@ -118,7 +123,7 @@ public class ProgramState {
     stack = newStack;
   }
 
-  private ProgramState(ProgramState ps, PMap<SymbolicValue, Constraint> newConstraints) {
+  private ProgramState(ProgramState ps, PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints) {
     values = ps.values;
     references = ps.references;
     constraints = newConstraints;
@@ -209,7 +214,17 @@ public class ProgramState {
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
-    PMap<SymbolicValue, Constraint> newConstraints = constraints.put(symbolicValue, constraint);
+    PMap<Class<? extends Constraint>, Constraint> constraintsForSV = constraints.get(symbolicValue);
+    if(constraintsForSV == null) {
+      constraintsForSV = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(constraint.getClass(), constraint);
+    } else {
+      constraintsForSV = constraintsForSV.put(constraint.getClass(), constraint);
+    }
+    return addConstraints(symbolicValue, constraintsForSV);
+  }
+
+  public ProgramState addConstraints(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintsForSV) {
+    PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints.put(symbolicValue, constraintsForSV);
     if (newConstraints != constraints) {
       return new ProgramState(this, newConstraints);
     }
@@ -256,8 +271,21 @@ public class ProgramState {
     }
   }
 
-  private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable Object constraint) {
-    return SymbolicValue.isDisposable(symbolicValue) && (constraint == null || !(constraint instanceof ObjectConstraint) || ((ObjectConstraint) constraint).isDisposable());
+  private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable Constraint constraint) {
+    //FIXME this should be handle with callbacks rather than keeping those value in programstate
+    return SymbolicValue.isDisposable(symbolicValue) &&
+      (constraint == null ||
+        !(constraint instanceof UnclosedResourcesCheck.ResourceConstraint
+          || constraint instanceof CustomUnclosedResourcesCheck.CustomResourceConstraint
+          || constraint instanceof LocksNotUnlockedCheck.LockConstraint));
+  }
+
+  private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable PMap<Class<? extends Constraint>, Constraint> constraints) {
+    //FIXME this should be handle with callbacks rather than keeping those value in programstate
+    return SymbolicValue.isDisposable(symbolicValue) &&
+      (constraints == null || (constraints.get(UnclosedResourcesCheck.ResourceConstraint.class) == null
+        && constraints.get(CustomUnclosedResourcesCheck.CustomResourceConstraint.class) == null
+        && constraints.get(LocksNotUnlockedCheck.LockConstraint.class) == null));
   }
 
   private static boolean inStack(PStack<SymbolicValue> stack, SymbolicValue symbolicValue) {
@@ -273,7 +301,7 @@ public class ProgramState {
       boolean newProgramState = false;
       PMap<Symbol, SymbolicValue> newValues = values;
       PMap<SymbolicValue, Integer> newReferences = references;
-      PMap<SymbolicValue, Constraint> newConstraints = constraints;
+      PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints;
 
       @Override
       public void accept(Symbol symbol, SymbolicValue symbolicValue) {
@@ -295,21 +323,23 @@ public class ProgramState {
   }
 
   public ProgramState cleanupConstraints(Collection<SymbolicValue> protectedSymbolicValues) {
-    class CleanAction implements BiConsumer<SymbolicValue, Constraint> {
+    class CleanAction implements BiConsumer<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> {
       boolean newProgramState = false;
-      PMap<SymbolicValue, Constraint> newConstraints = constraints;
+      PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints;
       PMap<SymbolicValue, Integer> newReferences = references;
 
       @Override
-      public void accept(SymbolicValue symbolicValue, Constraint constraint) {
+      public void accept(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintPMap) {
+          constraintPMap.forEach((domain, constraint) -> {
         if (!protectedSymbolicValues.contains(symbolicValue)
           && !isReachable(symbolicValue, newReferences)
           && isDisposable(symbolicValue, constraint)
           && !inStack(stack, symbolicValue)) {
           newProgramState = true;
-          newConstraints = newConstraints.remove(symbolicValue);
+          newConstraints = newConstraints.put(symbolicValue, newConstraints.get(symbolicValue).remove(domain));
           newReferences = newReferences.remove(symbolicValue);
         }
+       });
       }
     }
     CleanAction cleanAction = new CleanAction();
@@ -362,9 +392,17 @@ public class ProgramState {
     return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 
-  @CheckForNull
-  public Constraint getConstraint(SymbolicValue sv) {
+  public PMap<Class<? extends Constraint>, Constraint> getConstraints(SymbolicValue sv) {
     return constraints.get(sv);
+  }
+
+  @CheckForNull
+  public <T extends Constraint> T getConstraint(SymbolicValue sv, Class<T> domain) {
+    PMap<Class<? extends Constraint>, Constraint> classConstraintPMap = constraints.get(sv);
+    if(classConstraintPMap == null) {
+      return null;
+    }
+    return (T) classConstraintPMap.get(domain);
   }
 
   public int constraintsSize() {
@@ -376,14 +414,12 @@ public class ProgramState {
     return values.get(symbol);
   }
 
-  public Map<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> getValuesWithConstraints(final Object state) {
-    final Map<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> result = new HashMap<>();
-    constraints.forEach((symbolicValue, valueConstraint) -> {
-      if (valueConstraint instanceof ObjectConstraint) {
-        ObjectConstraint<ObjectConstraint.Status> constraint = (ObjectConstraint<ObjectConstraint.Status>) valueConstraint;
-        if (constraint.hasStatus(state)) {
-          result.put(symbolicValue, constraint);
-        }
+  public List<SymbolicValue> getValuesWithConstraints(final Constraint constraint) {
+    final List<SymbolicValue> result = new ArrayList<>();
+    constraints.forEach((symbolicValue, constraintByDomain) -> {
+      Constraint find = constraintByDomain.get(constraint.getClass());
+      if(find == constraint) {
+        result.add(symbolicValue);
       }
     });
     return result;
@@ -391,29 +427,17 @@ public class ProgramState {
 
   public List<BinaryRelation> getKnownRelations() {
     final List<BinaryRelation> knownRelations = new ArrayList<>();
-    constraints.forEach((symbolicValue, constraint) -> {
+    constraints.forEach((symbolicValue, pMap) -> {
       BinaryRelation relation = symbolicValue.binaryRelation();
       if (relation != null) {
-        if (BooleanConstraint.TRUE.equals(constraint)) {
+        if (BooleanConstraint.TRUE.equals(pMap.get(BooleanConstraint.class))) {
           knownRelations.add(relation);
-        } else if (BooleanConstraint.FALSE.equals(constraint)) {
+        } else if (BooleanConstraint.FALSE.equals(pMap.get(BooleanConstraint.class))) {
           knownRelations.add(relation.inverse());
         }
       }
     });
     return knownRelations;
-  }
-
-  @CheckForNull
-  public <S extends ObjectConstraint.Status> ObjectConstraint<S> getConstraintWithStatus(SymbolicValue value, S aState) {
-    final Object constraint = getConstraint(value.wrappedValue());
-    if (constraint instanceof ObjectConstraint) {
-      ObjectConstraint oConstraint = (ObjectConstraint) constraint;
-      if (oConstraint.hasStatus(aState)) {
-        return oConstraint;
-      }
-    }
-    return null;
   }
 
   public void storeExitValue() {
@@ -431,11 +455,12 @@ public class ProgramState {
 
   Set<LearnedConstraint> learnedConstraints(ProgramState parent) {
     ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
-    constraints.forEach((sv, childConstraint) -> {
-      Constraint parentConstraint = parent.getConstraint(sv);
-      if (parentConstraint == null || !parentConstraint.equals(childConstraint)) {
-        addLearnedConstraint(result, sv, childConstraint);
-      }
+    constraints.forEach((sv, pmap) -> {
+      pmap.forEach((domain, c) -> {
+        if (parent.getConstraint(sv, domain) != c) {
+          addLearnedConstraint(result, sv, c);
+        }
+      });
     });
     return result.build();
   }

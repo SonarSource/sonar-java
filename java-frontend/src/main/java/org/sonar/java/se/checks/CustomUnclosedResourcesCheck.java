@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -27,8 +28,8 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,13 +45,22 @@ import javax.annotation.Nullable;
 @RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
 
-  static class ResourceStatus implements ObjectConstraint.Status {
+  public class CustomResourceConstraint implements Constraint {
+    private final String valueAsString;
 
+    CustomResourceConstraint(String valueAsString) {
+      this.valueAsString = valueAsString;
+    }
+
+    @Override
+    public String valueAsString() {
+      return valueAsString;
+    }
   }
 
   //see SONARJAVA-1624 fields cannot be static, different instances are needed for every instance of this template rule
-  private final ResourceStatus OPENED = new ResourceStatus();
-  private final ResourceStatus CLOSED = new ResourceStatus();
+  private final CustomResourceConstraint OPENED = new CustomResourceConstraint("open");
+  private final CustomResourceConstraint CLOSED = new CustomResourceConstraint("close");
 
   @RuleProperty(
     key = "constructor",
@@ -100,12 +110,11 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(OPENED).keySet()
-      .forEach(sv -> processUnclosedSymbolicValue(node, sv));
+    context.getState().getValuesWithConstraints(OPENED).forEach(sv -> processUnclosedSymbolicValue(node, sv));
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(OPENED)).stream()
+    FlowComputation.flow(node, sv, c -> c == OPENED, Lists.newArrayList(CustomResourceConstraint.class)).stream()
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }
@@ -143,15 +152,15 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     protected void closeResource(@Nullable SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint<ResourceStatus> oConstraint = programState.getConstraintWithStatus(target, OPENED);
+        CustomResourceConstraint oConstraint = programState.getConstraint(target, CustomResourceConstraint.class);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(CLOSED));
+          programState = programState.addConstraint(target.wrappedValue(), CLOSED);
         }
       }
     }
 
     protected void openResource(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, new ObjectConstraint<>(false, false, OPENED));
+      programState = programState.addConstraint(sv, OPENED);
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {

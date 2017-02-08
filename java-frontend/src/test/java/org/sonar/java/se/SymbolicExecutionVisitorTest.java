@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import org.junit.Test;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
+
 
 public class SymbolicExecutionVisitorTest {
 
@@ -88,7 +90,7 @@ public class SymbolicExecutionVisitorTest {
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
     assertThat(behavior.yields()).hasSize(5);
 
-    behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
+    behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(pMap -> assertThat(pMap.get(ObjectConstraint.class) == ObjectConstraint.NULL).isFalse());
     assertThat(behavior.happyPathYields().count()).isEqualTo(2);
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());

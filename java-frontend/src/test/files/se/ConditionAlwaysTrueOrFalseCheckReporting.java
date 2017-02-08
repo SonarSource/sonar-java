@@ -13,7 +13,7 @@ public class Class {
   }
 
   void relationship(int a, int b) {
-    if(a < b) { // flow@rel {{Implies 'b' is "maybe-zero".}}  - contributed by DivByZeroCheck, see SONARJAVA-2045
+    if(a < b) {
       if(b > a) { // Noncompliant [[flows=rel]] flow@rel {{Condition is always true.}}
       }
     }

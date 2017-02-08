@@ -40,6 +40,20 @@ import java.util.Objects;
 public class SymbolicValue {
 
   public static final SymbolicValue NULL_LITERAL = new SymbolicValue(0) {
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      return ImmutableList.of();
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
+      if(constraint instanceof ObjectConstraint) {
+        return super.setConstraint(programState, ((ObjectConstraint) constraint));
+      }
+      return ImmutableList.of(programState);
+    }
+
     @Override
     public String toString() {
       return super.toString() + "_NULL";
@@ -115,49 +129,36 @@ public class SymbolicValue {
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
-    Object data = programState.getConstraint(this);
-    if (data instanceof ObjectConstraint) {
-      ObjectConstraint nc = (ObjectConstraint) data;
-      if (nc.isNull() ^ nullConstraint.isNull()) {
-        // setting null where value is known to be non null or the contrary
-        return ImmutableList.of();
-      } else if (hasAnyStatus(nc) && hasNoStatus(nullConstraint)) {
-        return ImmutableList.of(programState);
-      }
-    }
-    if (data instanceof BooleanConstraint) {
-      return nullConstraint.isNull() ? ImmutableList.of() : ImmutableList.of(programState);
-    }
-    if (data == null || !data.equals(nullConstraint)) {
+    Constraint cstraint = programState.getConstraint(this, nullConstraint.getClass());
+    if (cstraint == null) {
       return ImmutableList.of(programState.addConstraint(this, nullConstraint));
+    } else if (cstraint != nullConstraint) {
+      return ImmutableList.of();
     }
     return ImmutableList.of(programState);
-  }
-
-  private static boolean hasAnyStatus(ObjectConstraint constraint) {
-    return !hasNoStatus(constraint);
-  }
-
-  private static boolean hasNoStatus(ObjectConstraint constraint) {
-    return constraint.hasStatus(null);
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-    Object data = programState.getConstraint(this);
-    // update program state only for a different constraint
-    if (data instanceof BooleanConstraint && !data.equals(booleanConstraint)) {
-      // setting null where value is known to be non null or the contrary
-      return ImmutableList.of();
-    }
-    if ((data == null || isNonNullConstraint(data)) && programState.canReach(this)) {
-      // store constraint only if symbolic value can be reached by a symbol.
+    Constraint cstraint = programState.getConstraint(this, booleanConstraint.getClass());
+    if (cstraint == null) {
       return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
+    } else if (cstraint != booleanConstraint) {
+      return ImmutableList.of();
     }
     return ImmutableList.of(programState);
   }
 
-  private static boolean isNonNullConstraint(Object data) {
-    return data instanceof ObjectConstraint && !((ObjectConstraint) data).isNull();
+  public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
+    if(constraint instanceof BooleanConstraint) {
+      return setConstraint(programState, (BooleanConstraint) constraint);
+    } else if(constraint instanceof ObjectConstraint) {
+      return setConstraint(programState, (ObjectConstraint) constraint);
+    }
+    Constraint cstraint = programState.getConstraint(this, constraint.getClass());
+    if (cstraint == null || cstraint != constraint) {
+      return ImmutableList.of(programState.addConstraint(this, constraint));
+    }
+    return ImmutableList.of(programState);
   }
 
   public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
@@ -249,13 +250,13 @@ public class SymbolicValue {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (booleanConstraint.isTrue()) {
-        Constraint constraint = programState.getConstraint(operand);
+        ObjectConstraint constraint = programState.getConstraint(operand, ObjectConstraint.class);
         if (constraint !=null && constraint.isNull()) {
           // irrealizable constraint : instance of true if operand is null
           return ImmutableList.of();
         }
         // if instanceof is true then we know for sure that expression is not null.
-        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.notNull());
+        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.NOT_NULL);
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.

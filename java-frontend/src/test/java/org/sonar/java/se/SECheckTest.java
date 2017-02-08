@@ -19,10 +19,12 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -38,7 +40,7 @@ public class SECheckTest {
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), mock(ProgramState.class));
     node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), mock(ProgramState.class)), null);
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, new SymbolicValue(12));
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, new SymbolicValue(12), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flow).isEmpty();
   }
 

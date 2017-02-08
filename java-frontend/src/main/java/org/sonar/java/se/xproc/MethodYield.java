@@ -21,16 +21,14 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -38,26 +36,28 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class MethodYield {
   private final ExplodedGraph.Node node;
   private final MethodBehavior behavior;
-  private Constraint[] parametersConstraints;
+  List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 
   public MethodYield(MethodBehavior behavior) {
-    this.parametersConstraints = new Constraint[behavior.methodArity()];
+    this.parametersConstraints = new ArrayList<>();
     this.node = null;
     this.behavior = behavior;
   }
 
   public MethodYield(ExplodedGraph.Node node, MethodBehavior behavior) {
-    this.parametersConstraints = new Constraint[behavior.methodArity()];
+    this.parametersConstraints = new ArrayList<>();
     this.node = node;
     this.behavior = behavior;
   }
@@ -68,16 +68,16 @@ public abstract class MethodYield {
   public Stream<ProgramState> parametersAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
-      Constraint constraint = getConstraint(index, invocationTypes);
-      if (constraint == null) {
-        // no constraint on this parameter, let's try next one.
+      PMap<Class<? extends Constraint>, Constraint> constraints = getConstraint(index, invocationTypes);
+      if (constraints == null) {
+        // no constraints on this parameter, let's try next one.
         continue;
       }
 
       SymbolicValue invokedArg = invocationArguments.get(index);
-      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraint);
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraints);
       if (programStates.isEmpty()) {
-        // constraint can't be satisfied, no need to process things further, this yield is not applicable.
+        // constraints can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
         return Stream.empty();
       }
@@ -93,23 +93,11 @@ public abstract class MethodYield {
   }
 
   @CheckForNull
-  private Constraint getConstraint(int index, List<Type> invocationTypes) {
+  private PMap<Class<? extends Constraint>, Constraint> getConstraint(int index, List<Type> invocationTypes) {
     if (!behavior.isMethodVarArgs() || applicableOnVarArgs(index, invocationTypes)) {
-      return parametersConstraints[index];
+      return parametersConstraints.get(index);
     }
     return null;
-  }
-
-  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {
-    Set<ProgramState> programStates = new LinkedHashSet<>();
-    if (constraint instanceof ObjectConstraint) {
-      ObjectConstraint objectConstraint = (ObjectConstraint) constraint;
-      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, objectConstraint)));
-    } else if (constraint instanceof BooleanConstraint) {
-      BooleanConstraint booleanConstraint = (BooleanConstraint) constraint;
-      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, booleanConstraint)));
-    }
-    return programStates;
   }
 
   /**
@@ -117,11 +105,11 @@ public abstract class MethodYield {
    * wrongly apply it on all the elements of the array.
    */
   private boolean applicableOnVarArgs(int index, List<Type> types) {
-    if (index < parametersConstraints.length - 1) {
+    if (index < parametersConstraints.size() - 1) {
       // not the varArg argument
       return true;
     }
-    if (parametersConstraints.length != types.size()) {
+    if (parametersConstraints.size() != types.size()) {
       // more than one element in the variadic part
       return false;
     }
@@ -129,18 +117,25 @@ public abstract class MethodYield {
     return argumentType.isArray() || argumentType.is("<nulltype>");
   }
 
-  public Constraint[] parametersConstraints() {
-    return parametersConstraints;
-  }
+  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg,
+                                                              PMap<Class<? extends Constraint>, Constraint> constraints) {
+    Set<ProgramState> programStates = new LinkedHashSet<>(states);
 
-  @CheckForNull
-  public Constraint parameterConstraint(int parameterIndex) {
-    return parametersConstraints[parameterIndex];
+    constraints.forEach((d, c) ->  {
+      Set<ProgramState> newPs = new LinkedHashSet<>();
+      for (ProgramState programState : programStates) {
+        newPs.addAll(invokedArg.setConstraint(programState, c));
+      }
+      programStates.clear();
+      programStates.addAll(newPs);
+    });
+    return programStates;
   }
 
   public void setParameterConstraint(int index, @Nullable Constraint constraint) {
-    Preconditions.checkArgument(index < parametersConstraints.length);
-    parametersConstraints[index] = constraint;
+    Preconditions.checkArgument(index < parametersConstraints.size());
+    PMap<Class<? extends Constraint>, Constraint> constraintsForParam = parametersConstraints.get(index);
+    parametersConstraints.add(index, constraintsForParam.put(constraint.getClass(), constraint));
   }
 
   public boolean generatedByCheck(SECheck check) {
@@ -167,17 +162,27 @@ public abstract class MethodYield {
     }
     MethodYield other = (MethodYield) obj;
     return new EqualsBuilder()
-      .append(parametersConstraints, other.parametersConstraints)
+      .append(parametersConstraints.stream().flatMap(MethodYield::pmapToStream).collect(Collectors.toList()),
+        other.parametersConstraints.stream().flatMap(MethodYield::pmapToStream).collect(Collectors.toList()))
       .isEquals();
   }
 
-  public List<JavaFileScannerContext.Location> flow(int parameterIndex) {
-    if (node == null) {
+  static Stream<Constraint> pmapToStream(@Nullable  PMap<Class<? extends Constraint>, Constraint> pmap) {
+    if(pmap == null) {
+      return Stream.empty();
+    }
+    Stream.Builder<Constraint> result = Stream.builder();
+    pmap.forEach((d, c) -> result.add(c));
+    return result.build();
+  }
+
+  public List<JavaFileScannerContext.Location> flow(int parameterIndex, List<Class<? extends Constraint>> domains) {
+    if(node == null || behavior == null) {
       return Lists.newArrayList();
     }
     if(parameterIndex < 0) {
-      return FlowComputation.flow(node, node.programState.exitValue());
+      return FlowComputation.flow(node, node.programState.exitValue(), domains);
     }
-    return FlowComputation.flow(node, behavior.parameters().get(parameterIndex));
+    return FlowComputation.flow(node, behavior.parameters().get(parameterIndex), domains);
   }
 }

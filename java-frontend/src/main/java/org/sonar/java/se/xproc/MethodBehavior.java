@@ -20,10 +20,12 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
-
+import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -65,27 +67,28 @@ public class MethodBehavior {
     } else {
       HappyPathYield happyPathYield = new HappyPathYield(node, this);
       if (expectReturnValue) {
-        happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraint(resultSV));
+        happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraints(resultSV));
       }
       yield = happyPathYield;
     }
+    addParameterConstraints(node, yield);
+    yields.add(yield);
+  }
 
+  private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
     // add the constraints on all the parameters
     for (int i = 0; i < parameters.size(); i++) {
-      yield.setParameterConstraint(i, node.programState.getConstraint(parameters.get(i)));
+      PMap<Class<? extends Constraint>, Constraint> constraints = node.programState.getConstraints(parameters.get(i));
+      if (constraints == null) {
+        constraints = PCollections.emptyMap();
+      }
+      yield.parametersConstraints.add(constraints);
     }
-
-    yields.add(yield);
   }
 
   public void createExceptionalCheckBasedYield(ExplodedGraph.Node node, Type exceptionType, SECheck check) {
     ExceptionalYield yield = new ExceptionalCheckBasedYield(exceptionType, check.getClass(), node, this);
-
-    // add the constraints on all the parameters
-    for (int i = 0; i < parameters.size(); i++) {
-      yield.setParameterConstraint(i, node.programState.getConstraint(parameters.get(i)));
-    }
-
+    addParameterConstraints(node, yield);
     yields.add(yield);
   }
 

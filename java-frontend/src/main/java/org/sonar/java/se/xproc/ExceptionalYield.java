@@ -23,15 +23,15 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ExceptionalYield extends MethodYield {
@@ -68,7 +68,9 @@ public class ExceptionalYield extends MethodYield {
 
   @Override
   public String toString() {
-    return String.format("{params: %s, exceptional%s}", Arrays.toString(parametersConstraints()), exceptionType == null ? "" : (" (" + exceptionType.fullyQualifiedName() + ")"));
+    return String.format("{params: %s, exceptional%s}",
+      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      exceptionType == null ? "" : (" (" + exceptionType.fullyQualifiedName() + ")"));
   }
 
   @Override

@@ -20,9 +20,9 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -31,16 +31,16 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HappyPathYield extends MethodYield {
 
   private int resultIndex;
   @Nullable
-  private Constraint resultConstraint;
+  private PMap<Class<? extends Constraint>, Constraint> resultConstraint;
 
   public HappyPathYield(MethodBehavior behavior) {
     super(behavior);
@@ -69,18 +69,18 @@ public class HappyPathYield extends MethodYield {
     }
     results = results.map(s -> s.stackValue(sv));
     if (resultConstraint != null) {
-      results = results.map(s -> s.addConstraint(sv, resultConstraint));
+      results = results.map(s -> s.addConstraints(sv, resultConstraint));
     }
     return results.distinct();
   }
 
-  public void setResult(int resultIndex, @Nullable Constraint resultConstraint) {
+  public void setResult(int resultIndex, @Nullable PMap<Class<? extends Constraint>, Constraint> resultConstraint) {
     this.resultIndex = resultIndex;
     this.resultConstraint = resultConstraint;
   }
 
   @VisibleForTesting
-  public Constraint resultConstraint() {
+  public PMap<Class<? extends Constraint>, Constraint> resultConstraint() {
     return resultConstraint;
   }
 
@@ -91,7 +91,9 @@ public class HappyPathYield extends MethodYield {
 
   @Override
   public String toString() {
-    return String.format("{params: %s, result: %s (%d)}", Arrays.toString(parametersConstraints()), resultConstraint, resultIndex);
+    return String.format("{params: %s, result: %s (%d)}",
+      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      resultConstraint, resultIndex);
   }
 
   @Override
