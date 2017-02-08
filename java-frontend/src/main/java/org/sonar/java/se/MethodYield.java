@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -33,7 +34,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,27 +41,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class MethodYield {
+public abstract class MethodYield {
   private final boolean varArgs;
   private final ExplodedGraph.Node node;
   private final MethodBehavior behavior;
-  Constraint[] parametersConstraints;
-  int resultIndex;
-  @Nullable
-  Constraint resultConstraint;
-  @Nullable
-  Type exceptionType;
-  boolean exception;
+  private Constraint[] parametersConstraints;
 
   public MethodYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
     this.parametersConstraints = new Constraint[arity];
     this.varArgs = varArgs;
     this.node = node;
     this.behavior = behavior;
-    this.resultIndex = -1;
-    this.resultConstraint = null;
-    this.exception = false;
-    this.exceptionType = null;
   }
 
   public MethodYield(int arity, boolean varArgs) {
@@ -69,24 +59,12 @@ public class MethodYield {
     this.varArgs = varArgs;
     this.node = null;
     this.behavior = null;
-    this.resultIndex = -1;
-    this.resultConstraint = null;
-    this.exception = false;
-    this.exceptionType = null;
   }
 
-  @Override
-  public String toString() {
-    return String.format("{params: %s, result: %s (%d), exceptional: %b%s}",
-      Arrays.toString(parametersConstraints),
-      resultConstraint,
-      resultIndex,
-      exception,
-      exceptionType == null ? "" : (" (" + exceptionType + ")"));
-  }
+  public abstract Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
+    Supplier<SymbolicValue> svSupplier);
 
-  public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
-    Supplier<SymbolicValue> svSupplier) {
+  public Stream<ProgramState> parametersAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
       Constraint constraint = getConstraint(index, invocationTypes);
@@ -110,20 +88,7 @@ public class MethodYield {
     if(results.isEmpty()) {
       results.add(programState);
     }
-
-    // applied all constraints from parameters, stack return value
-    SymbolicValue sv;
-    if (resultIndex < 0) {
-      sv = svSupplier.get();
-    } else {
-      // returned SV is the same as one of the arguments.
-      sv = invocationArguments.get(resultIndex);
-    }
-    Stream<ProgramState> stateStream = results.stream().map(s -> s.stackValue(sv));
-    if (resultConstraint != null) {
-      stateStream = stateStream.map(s -> s.addConstraint(sv, resultConstraint));
-    }
-    return stateStream.distinct();
+    return results.stream();
   }
 
   @CheckForNull
@@ -132,6 +97,18 @@ public class MethodYield {
       return parametersConstraints[index];
     }
     return null;
+  }
+
+  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {
+    Set<ProgramState> programStates = new LinkedHashSet<>();
+    if (constraint instanceof ObjectConstraint) {
+      ObjectConstraint objectConstraint = (ObjectConstraint) constraint;
+      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, objectConstraint)));
+    } else if (constraint instanceof BooleanConstraint) {
+      BooleanConstraint booleanConstraint = (BooleanConstraint) constraint;
+      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, booleanConstraint)));
+    }
+    return programStates;
   }
 
   /**
@@ -151,27 +128,28 @@ public class MethodYield {
     return argumentType.isArray() || argumentType.is("<nulltype>");
   }
 
-  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, Constraint constraint) {
-    Set<ProgramState> programStates = new LinkedHashSet<>();
-    if (constraint instanceof ObjectConstraint) {
-      ObjectConstraint objectConstraint = (ObjectConstraint) constraint;
-      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, objectConstraint)));
-    } else if (constraint instanceof BooleanConstraint) {
-      BooleanConstraint booleanConstraint = (BooleanConstraint) constraint;
-      states.forEach(state -> programStates.addAll(invokedArg.setConstraint(state, booleanConstraint)));
-    }
-    return programStates;
+  public Constraint[] parametersConstraints() {
+    return parametersConstraints;
   }
+
+  @CheckForNull
+  public Constraint parameterConstraint(int parameterIndex) {
+    return parametersConstraints[parameterIndex];
+  }
+
+  public void setParameterConstraint(int index, @Nullable Constraint constraint) {
+    Preconditions.checkArgument(index < parametersConstraints.length);
+    parametersConstraints[index] = constraint;
+  }
+
+  @Override
+  public abstract String toString();
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder(7, 1291)
       .append(parametersConstraints)
       .append(varArgs)
-      .append(resultIndex)
-      .append(resultConstraint)
-      .append(exception)
-      .append(exceptionType)
       .hashCode();
   }
 
@@ -187,10 +165,6 @@ public class MethodYield {
     return new EqualsBuilder()
       .append(parametersConstraints, other.parametersConstraints)
       .append(varArgs, other.varArgs)
-      .append(resultIndex, other.resultIndex)
-      .append(resultConstraint, other.resultConstraint)
-      .append(exception, other.exception)
-      .append(exceptionType, other.exceptionType)
       .isEquals();
   }
 
@@ -202,10 +176,5 @@ public class MethodYield {
       return FlowComputation.flow(node, node.programState.exitValue());
     }
     return FlowComputation.flow(node, behavior.parameters().get(parameterIndex));
-  }
-
-  @CheckForNull
-  public Type exceptionType() {
-    return exceptionType;
   }
 }
