@@ -30,22 +30,22 @@ public class ProgramPoint {
   final int i;
 
   ProgramPoint(CFG.Block block) {
-    this.block = block;
-    this.i = 0;
+    this(block, 0);
   }
 
+  /**
+   * {@code i == blockSize} means we are pointing to terminator block, {@code i == blockSize + 1} is valid if terminator block is branching
+   * @see ExplodedGraphWalker#execute
+   */
   private ProgramPoint(CFG.Block block, int i) {
+    int blockSize = block.elements().size();
+    Preconditions.checkState(i < blockSize + 2, "CFG Block has %s elements but PP at %s was requested", blockSize, i);
     this.block = block;
     this.i = i;
   }
 
   ProgramPoint next() {
-    int blockSize = block.elements().size();
     int nextPP = this.i + 1;
-    // pointing one element above block size is allowed, it represents terminator of the CFG block
-    // FIXME when RelationalSV is involved, we can point up to two elements behind, which is fishy
-    Preconditions.checkState(nextPP < blockSize + 2,
-      "CFG Block has %s elements but PP at %s was requested", blockSize, nextPP);
     return new ProgramPoint(block, nextPP);
   }
 
