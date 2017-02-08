@@ -22,6 +22,8 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
+import org.sonar.java.se.xproc.MethodYield;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
@@ -39,7 +41,7 @@ public class ExplodedGraph {
   /**
    * Returns node associated with given (programPoint,programState) pair. If no node for this pair exists, it is created.
    */
-  Node node(ProgramPoint programPoint, @Nullable ProgramState programState) {
+  public Node node(ProgramPoint programPoint, @Nullable ProgramState programState) {
     Node result = new Node(programPoint, programState);
     Node cached = nodes.get(result);
     if (cached != null) {
@@ -81,6 +83,10 @@ public class ExplodedGraph {
       if (methodYield != null) {
         edge.yields.add(methodYield);
       }
+    }
+
+    public boolean onHappyPath() {
+      return happyPath;
     }
 
     @Nullable

@@ -17,14 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.xproc;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
@@ -32,48 +36,70 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class ExceptionalYield extends MethodYield {
+public class HappyPathYield extends MethodYield {
 
+  private int resultIndex;
   @Nullable
-  private Type exceptionType;
+  private Constraint resultConstraint;
 
-  public ExceptionalYield(int arity, boolean varArgs) {
+  public HappyPathYield(int arity, boolean varArgs) {
     super(arity, varArgs);
-    this.exceptionType = null;
+    this.resultIndex = -1;
+    this.resultConstraint = null;
   }
 
-  public ExceptionalYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
+  public HappyPathYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
     super(arity, varArgs, node, behavior);
-    this.exceptionType = null;
+    this.resultIndex = -1;
+    this.resultConstraint = null;
   }
 
   @Override
   public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
     Supplier<SymbolicValue> svSupplier) {
-    return parametersAfterInvocation(invocationArguments, invocationTypes, programState)
-      .map(s -> s.stackValue(svSupplier.get()))
-      .distinct();
+    Stream<ProgramState> results = parametersAfterInvocation(invocationArguments, invocationTypes, programState);
+
+    // applied all constraints from parameters, stack return value
+    SymbolicValue sv;
+    if (resultIndex < 0) {
+      sv = svSupplier.get();
+    } else {
+      // returned SV is the same as one of the arguments.
+      sv = invocationArguments.get(resultIndex);
+    }
+    results = results.map(s -> s.stackValue(sv));
+    if (resultConstraint != null) {
+      results = results.map(s -> s.addConstraint(sv, resultConstraint));
+    }
+    return results.distinct();
   }
 
-  public void setExceptionType(Type exceptionType) {
-    this.exceptionType = exceptionType;
+  public void setResult(int resultIndex, @Nullable Constraint resultConstraint) {
+    this.resultIndex = resultIndex;
+    this.resultConstraint = resultConstraint;
   }
 
-  @CheckForNull
-  public Type exceptionType() {
-    return exceptionType;
+  @VisibleForTesting
+  public Constraint resultConstraint() {
+    return resultConstraint;
+  }
+
+  @VisibleForTesting
+  public int resultIndex() {
+    return resultIndex;
   }
 
   @Override
   public String toString() {
-    return String.format("{params: %s, exceptional%s}", Arrays.toString(parametersConstraints()), exceptionType == null ? "" : (" (" + exceptionType.fullyQualifiedName() + ")"));
+    return String.format("{params: %s, result: %s (%d)}", Arrays.toString(parametersConstraints()), resultConstraint, resultIndex);
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(3, 1295)
+    return new HashCodeBuilder(5, 1293)
       .appendSuper(super.hashCode())
-      .append(exceptionType)
+      .append(resultIndex)
+      .append(resultConstraint)
       .hashCode();
   }
 
@@ -85,10 +111,11 @@ public class ExceptionalYield extends MethodYield {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    ExceptionalYield other = (ExceptionalYield) obj;
+    HappyPathYield other = (HappyPathYield) obj;
     return new EqualsBuilder()
       .appendSuper(super.equals(obj))
-      .append(exceptionType, other.exceptionType)
+      .append(resultIndex, other.resultIndex)
+      .append(resultConstraint, other.resultConstraint)
       .isEquals();
   }
 
