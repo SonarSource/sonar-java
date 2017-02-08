@@ -43,25 +43,29 @@ public class MethodBehavior {
   }
 
   public void createYield(ExplodedGraph.Node node) {
-    MethodYield yield = new MethodYield(parameters.size(), ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs(), node, this);
-    yield.exception = !node.happyPath;
+    MethodYield yield;
+    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
+    int arity = parameters.size();
+    boolean expectReturnValue = !(isConstructor() || isVoidMethod());
+    SymbolicValue resultSV = node.programState.exitValue();
 
-    for (int i = 0; i < yield.parametersConstraints.length; i++) {
-      yield.parametersConstraints[i] = node.programState.getConstraint(parameters.get(i));
+    if (!node.happyPath || (resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      ExceptionalYield exceptionalYield = new ExceptionalYield(arity, isVarArgs, node, this);
+      if (resultSV != null) {
+        exceptionalYield.setExceptionType(((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType());
+      }
+      yield = exceptionalYield;
+    } else {
+      HappyPathYield happyPathYield = new HappyPathYield(arity, isVarArgs, node, this);
+      if (expectReturnValue) {
+        happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraint(resultSV));
+      }
+      yield = happyPathYield;
     }
 
-    SymbolicValue resultSV = node.programState.exitValue();
-    if (resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      yield.exception = true;
-      yield.exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
-    } else if (!isConstructor() && !isVoidMethod()) {
-      if (resultSV == null) {
-        // if there is no return value but we are not in a void method or constructor, we are not in a happy path
-        yield.exception = true;
-      } else {
-        yield.resultIndex = parameters.indexOf(resultSV);
-        yield.resultConstraint = node.programState.getConstraint(resultSV);
-      }
+    // add the constraints on all the parameters
+    for (int i = 0; i < arity; i++) {
+      yield.setParameterConstraint(i, node.programState.getConstraint(parameters.get(i)));
     }
 
     yields.add(yield);
@@ -79,12 +83,16 @@ public class MethodBehavior {
     return ImmutableList.<MethodYield>builder().addAll(yields).build();
   }
 
-  Stream<MethodYield> exceptionalPathYields() {
-    return yields.stream().filter(y -> y.exception);
+  Stream<ExceptionalYield> exceptionalPathYields() {
+    return yields.stream()
+      .filter(y -> y instanceof ExceptionalYield)
+      .map(ExceptionalYield.class::cast);
   }
 
-  Stream<MethodYield> happyPathYields() {
-    return yields.stream().filter(y -> !y.exception);
+  Stream<HappyPathYield> happyPathYields() {
+    return yields.stream()
+      .filter(y -> y instanceof HappyPathYield)
+      .map(HappyPathYield.class::cast);
   }
 
   public void addParameter(SymbolicValue sv) {

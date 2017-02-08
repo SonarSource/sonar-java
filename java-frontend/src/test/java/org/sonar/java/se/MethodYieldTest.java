@@ -21,17 +21,14 @@ package org.sonar.java.se;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.sonar.sslr.api.typed.ActionParser;
 
+import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -52,7 +49,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,10 +79,9 @@ public class MethodYieldTest {
   @Test
   public void test_creation_of_flows() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
-    List<MethodYield> yields = entry.getValue().yields();
+    MethodBehavior mb = getMethodBehavior(sev, "foo").getValue();
 
-    MethodYield methodYield = yields.stream().filter(y -> y.resultConstraint != null && !y.resultConstraint.isNull()).findFirst().get();
+    MethodYield methodYield = mb.happyPathYields().filter(y -> y.resultConstraint() != null && !y.resultConstraint().isNull()).findFirst().get();
 
     List<JavaFileScannerContext.Location> flowReturnValue = methodYield.flow(-1);
     assertThat(flowReturnValue).isNotEmpty();
@@ -101,32 +96,23 @@ public class MethodYieldTest {
     Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
     MethodBehavior mb = entry.getValue();
 
-    assertThat(mb.happyPathYields()).allMatch(y -> y.parametersConstraints[0] != null && !y.parametersConstraints[0].isNull());
+    assertThat(mb.happyPathYields()).allMatch(y -> y.parametersConstraints()[0] != null && !y.parametersConstraints()[0].isNull());
   }
 
   @Test
   public void flow_is_empty_when_yield_has_no_node() {
-    MethodYield methodYield = new MethodYield(1, false, null, mock(MethodBehavior.class));
+    MethodYield methodYield = new HappyPathYield(1, false, null, mock(MethodBehavior.class));
     assertThat(methodYield.flow(0)).isEmpty();
   }
 
   @Test
   public void flow_is_empty_when_yield_has_no_behavior() {
-    MethodYield methodYield = new MethodYield(1, false, mockNode(), null);
+    MethodYield methodYield = new HappyPathYield(1, false, mockNode(), null);
     assertThat(methodYield.flow(0)).isEmpty();
   }
 
   private static ExplodedGraph.Node mockNode() {
     return new ExplodedGraph().node(mock(ProgramPoint.class), null);
-  }
-
-  @Test
-  public void test_toString() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    Set<String> yieldsToString = getMethodBehavior(sev, "bar").getValue().yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
-    assertThat(yieldsToString).contains(
-      "{params: [TRUE, NOT_NULL], result: null (-1), exceptional: false}",
-      "{params: [FALSE, null], result: null (-1), exceptional: false}");
   }
 
   private enum YieldStatus implements ObjectConstraint.Status {
@@ -141,10 +127,10 @@ public class MethodYieldTest {
     List<MethodYield> yields = entry.getValue().yields();
 
     MethodYield trueYield = yields.stream()
-      .filter(y -> y.parametersConstraints[0] instanceof BooleanConstraint && ((BooleanConstraint) y.parametersConstraints[0]).isTrue())
+      .filter(y -> y.parameterConstraint(0) instanceof BooleanConstraint && ((BooleanConstraint) y.parameterConstraint(0)).isTrue())
       .findFirst().get();
     // force status of the arg1 to be B
-    trueYield.parametersConstraints[1] = ((ObjectConstraint<YieldStatus>) trueYield.parametersConstraints[1]).withStatus(YieldStatus.B);
+    trueYield.setParameterConstraint(1, ((ObjectConstraint<YieldStatus>) trueYield.parameterConstraint(1)).withStatus(YieldStatus.B));
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue(41);
@@ -168,7 +154,7 @@ public class MethodYieldTest {
 
   @Test
   public void test_yield_equality() {
-    MethodYield yield = new MethodYield(1, false);
+    MethodYield yield = new HappyPathYield(1, false);
     MethodYield otherYield;
 
     assertThat(yield).isNotEqualTo(null);
@@ -178,126 +164,21 @@ public class MethodYieldTest {
     assertThat(yield).isEqualTo(yield);
 
     // same constraints, same nb of parameters, same exceptional aspect
-    assertThat(yield).isEqualTo(new MethodYield(1, false));
+    assertThat(yield).isEqualTo(new HappyPathYield(1, false));
 
     // arity is taken into account
-    assertThat(yield).isNotEqualTo(new MethodYield(0, false));
+    assertThat(yield).isNotEqualTo(new HappyPathYield(0, false));
 
     // varargs is taken into account
-    assertThat(yield).isNotEqualTo(new MethodYield(1, true));
+    assertThat(yield).isNotEqualTo(new HappyPathYield(1, true));
 
     // node and behavior are not taken into account
-    otherYield = new MethodYield(1, false, mockNode(), new MethodBehavior(null));
+    otherYield = new HappyPathYield(1, false, mockNode(), new MethodBehavior(null));
     assertThat(yield).isEqualTo(otherYield);
 
-    // same arity and constraints but exceptional path
-    otherYield = new MethodYield(1, false);
-    otherYield.exception = true;
+    // same arity and constraints on parameters but exceptional path
+    otherYield = new ExceptionalYield(1, false);
     assertThat(yield).isNotEqualTo(otherYield);
-
-    // same arity and constraints but different return value
-    otherYield = new MethodYield(1, false);
-    otherYield.resultIndex = 0;
-    assertThat(yield).isNotEqualTo(otherYield);
-
-    // same arity but different return constraint
-    otherYield = new MethodYield(1, false);
-    otherYield.resultConstraint = ObjectConstraint.notNull();
-    assertThat(yield).isNotEqualTo(otherYield);
-
-    // same return constraint
-    yield.resultConstraint = ObjectConstraint.notNull();
-    otherYield = new MethodYield(1, false);
-    otherYield.resultConstraint = ObjectConstraint.notNull();
-    assertThat(yield).isEqualTo(otherYield);
-
-    // exceptional yields
-    MethodYield exceptionalYield = new MethodYield(0, false);
-    exceptionalYield.exception = true;
-    otherYield = new MethodYield(0, false);
-
-    otherYield.exception = false;
-    assertThat(exceptionalYield).isNotEqualTo(otherYield);
-
-    otherYield.exception = true;
-    assertThat(exceptionalYield).isEqualTo(otherYield);
-
-    Type exceptionType = Mockito.mock(Type.class);
-    otherYield.exceptionType = exceptionType;
-    assertThat(exceptionalYield).isNotEqualTo(otherYield);
-
-    exceptionalYield.exceptionType = exceptionType;
-    assertThat(exceptionalYield).isEqualTo(otherYield);
-    assertThat(exceptionalYield.exceptionType()).isEqualTo(otherYield.exceptionType());
-  }
-
-  @Test
-  public void test_hashCode() {
-    MethodYield methodYield = new MethodYield(0, true);
-    MethodYield other = new MethodYield(0, true);
-
-    // same values for same yields
-    assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
-
-    // different values for different yields
-    other.exception = true;
-    assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
-  }
-
-  @Test
-  public void exceptional_yields() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
-
-    List<MethodYield> yields = getMethodBehavior(sev, "myMethod").getValue().yields();
-    assertThat(yields).hasSize(4);
-
-    List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(3);
-
-    // runtime exception
-    Optional<MethodYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType == null).findFirst();
-    assertThat(runtimeException.isPresent()).isTrue();
-    MethodYield runtimeExceptionYield = runtimeException.get();
-    assertThat(runtimeExceptionYield.resultIndex).isEqualTo(-1);
-    assertThat(runtimeExceptionYield.resultConstraint).isNull();
-    assertThat(runtimeExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.FALSE);
-
-    // exception from other method call
-    Optional<MethodYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException2")).findFirst();
-    assertThat(implicitException.isPresent()).isTrue();
-    MethodYield implicitExceptionYield = implicitException.get();
-    assertThat(implicitExceptionYield.resultIndex).isEqualTo(-1);
-    assertThat(implicitExceptionYield.resultConstraint).isNull();
-    assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.FALSE);
-
-    // explicitly thrown exception
-    Optional<MethodYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException1")).findFirst();
-    assertThat(explicitException.isPresent()).isTrue();
-    MethodYield explicitExceptionYield = explicitException.get();
-    assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
-    assertThat(explicitExceptionYield.resultConstraint).isNull();
-    assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(BooleanConstraint.TRUE);
-  }
-
-  @Test
-  public void exceptional_yields_void_method() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYieldsVoidMethod.java");
-    List<MethodYield> yields = getMethodBehavior(sev, "myVoidMethod").getValue().yields();
-    assertThat(yields).hasSize(4);
-
-    List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(3);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType == null).count()).isEqualTo(1);
-
-    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException1")).findAny().get();
-    assertThat(explicitExceptionYield.resultIndex).isEqualTo(-1);
-    assertThat(explicitExceptionYield.resultConstraint).isNull();
-    assertThat(explicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.nullConstraint());
-
-    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType != null && y.exceptionType.is("org.foo.MyException2")).findAny().get();
-    assertThat(implicitExceptionYield.resultIndex).isEqualTo(-1);
-    assertThat(implicitExceptionYield.resultConstraint).isNull();
-    assertThat(implicitExceptionYield.parametersConstraints[0]).isEqualTo(ObjectConstraint.notNull());
   }
 
   @Test
@@ -308,14 +189,14 @@ public class MethodYieldTest {
     Symbol.MethodSymbol methodSymbol = entry.getKey();
     List<MethodYield> yields = entry.getValue().yields();
     assertThat(yields).hasSize(3);
-    assertThat(yields.stream().filter(y -> y.exception).count()).isEqualTo(2);
+    assertThat(yields.stream().filter(y -> y instanceof ExceptionalYield).count()).isEqualTo(2);
 
-    MethodYield yield = yields.stream().filter(y -> !y.exception).findFirst().get();
+    MethodYield yield = yields.stream().filter(y -> y instanceof HappyPathYield).findFirst().get();
 
     // check that we have NOT_NULL constraint on the first argument
-    assertThat(yield.parametersConstraints[0].isNull()).isFalse();
+    assertThat(yield.parameterConstraint(0).isNull()).isFalse();
     // check that we have NOT_NULL constraint on the variadic argument
-    assertThat(yield.parametersConstraints[1].isNull()).isFalse();
+    assertThat(yield.parameterConstraint(1).isNull()).isFalse();
 
     List<IdentifierTree> usages = methodSymbol.usages();
     assertThat(usages).hasSize(6);
@@ -399,11 +280,8 @@ public class MethodYieldTest {
   }
 
   private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
-    MethodYield methodYield = new MethodYield(1, false);
-    methodYield.resultIndex = resultIndex;
-    methodYield.parametersConstraints = new Constraint[] {null};
-    methodYield.exception = false;
-    methodYield.resultConstraint = resultConstraint;
+    HappyPathYield methodYield = new HappyPathYield(1, false);
+    methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }
 

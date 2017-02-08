@@ -90,26 +90,26 @@ public class SymbolicExecutionVisitorTest {
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(3);
 
-    List<MethodYield> trueResults = yields.stream().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint)).collect(Collectors.toList());
+    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint())).collect(Collectors.toList());
     assertThat(trueResults).hasSize(1);
-    MethodYield trueResult = trueResults.get(0);
+    HappyPathYield trueResult = trueResults.get(0);
 
     // 'a' has constraint "null"
-    assertThat(trueResult.parametersConstraints[0].isNull()).isTrue();
+    assertThat(trueResult.parametersConstraints()[0].isNull()).isTrue();
     // no constraint on 'b'
-    assertThat(trueResult.parametersConstraints[1]).isNull();
+    assertThat(trueResult.parametersConstraints()[1]).isNull();
     // result SV is a different SV than 'a' and 'b'
-    assertThat(trueResult.resultIndex).isEqualTo(-1);
+    assertThat(trueResult.resultIndex()).isEqualTo(-1);
 
-    List<MethodYield> falseResults = yields.stream().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint)).collect(Collectors.toList());
+    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint())).collect(Collectors.toList());
     assertThat(falseResults).hasSize(2);
     // for both "False" results, 'a' has the constraint "not null"
-    assertThat(falseResults.stream().filter(my -> !my.parametersConstraints[0].isNull()).count()).isEqualTo(2);
+    assertThat(falseResults.stream().filter(my -> !my.parametersConstraints()[0].isNull()).count()).isEqualTo(2);
     // 1) 'b' has constraint "false", result is 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints[1]) && my.resultIndex == 1).count()).isEqualTo(1);
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints()[1]) && my.resultIndex() == 1).count()).isEqualTo(1);
 
     // 2) 'b' is "true", result is a different SV than 'a' and 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints[1]) && my.resultIndex == -1).count()).isEqualTo(1);
+    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints()[1]) && my.resultIndex() == -1).count()).isEqualTo(1);
   }
 
   @Test
@@ -119,22 +119,22 @@ public class SymbolicExecutionVisitorTest {
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);
-    assertThat(foo.yields().stream().filter(y -> !y.exception).count()).isEqualTo(2);
-    assertThat(foo.yields().stream().filter(y -> y.exception).count()).isEqualTo(2);
+    assertThat(foo.happyPathYields().count()).isEqualTo(2);
+    assertThat(foo.exceptionalPathYields().count()).isEqualTo(2);
 
     MethodBehavior qix = getMethodBehavior(sev, "qix");
     List<MethodYield> qixYield = qix.yields();
     assertThat(qixYield.stream()
-      .filter(y -> !y.parametersConstraints[0].isNull())
-      .allMatch(y -> y.exception)).isTrue();
+      .filter(y -> !y.parametersConstraints()[0].isNull())
+      .allMatch(y -> y instanceof ExceptionalYield)).isTrue();
 
     assertThat(qixYield.stream()
-      .filter(y -> y.parametersConstraints[0].isNull() && y.exception)
+      .filter(y -> y.parametersConstraints()[0].isNull() && y instanceof ExceptionalYield)
       .count()).isEqualTo(2);
 
     assertThat(qixYield.stream()
-      .filter(y -> !y.exception)
-      .allMatch(y -> y.parametersConstraints[0].isNull())).isTrue();
+      .filter(y -> y instanceof HappyPathYield)
+      .allMatch(y -> y.parametersConstraints()[0].isNull())).isTrue();
   }
 
   @Test
@@ -161,17 +161,19 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
-    List<MethodYield> yields = sev.behaviorCache.behaviors.values().iterator().next().yields();
-    assertThat(yields).hasSize(5);
-    yields.stream().map(y -> y.resultConstraint).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
-    assertThat(yields.stream().filter(y -> !y.exception).count()).isEqualTo(2);
-    List<MethodYield> exceptionalYields = yields.stream().filter(y -> y.exception).collect(Collectors.toList());
+    MethodBehavior behavior = sev.behaviorCache.behaviors.values().iterator().next();
+    assertThat(behavior.yields()).hasSize(5);
+
+    behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
+    assertThat(behavior.happyPathYields().count()).isEqualTo(2);
+
+    List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType == null)).hasSize(1);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null)).hasSize(1);
     // exception thrown by System.getProperty()
     assertThat(exceptionalYields.stream()
-      .filter(y -> y.exceptionType != null)
-      .map(y -> y.exceptionType.fullyQualifiedName()))
+      .filter(y -> y.exceptionType() != null)
+      .map(y -> y.exceptionType().fullyQualifiedName()))
         .containsOnly("java.lang.SecurityException", "java.lang.IllegalArgumentException");
   }
 

@@ -161,17 +161,18 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
     }
 
     private MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
-      MethodBehavior behavior;
-      behavior = new MethodBehavior(symbol);
-      MethodYield nullYield = new MethodYield(symbol.parameterTypes().size(), false);
-      nullYield.exception = false;
-      nullYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
-      nullYield.resultConstraint = constraint;
+      MethodBehavior behavior = new MethodBehavior(symbol);
+      int arity = symbol.parameterTypes().size();
+
+      HappyPathYield nullYield = new HappyPathYield(arity, false);
+      nullYield.setParameterConstraint(0, ObjectConstraint.nullConstraint());
+      nullYield.setResult(-1, constraint);
       behavior.addYield(nullYield);
-      MethodYield notNullYield = new MethodYield(symbol.parameterTypes().size(), false);
-      notNullYield.exception = false;
-      notNullYield.parametersConstraints[0] = ObjectConstraint.notNull();
+
+      HappyPathYield notNullYield = new HappyPathYield(arity, false);
+      notNullYield.setParameterConstraint(0, ObjectConstraint.notNull());
       behavior.addYield(notNullYield);
+
       behavior.completed();
       return behavior;
     }
@@ -183,16 +184,15 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
      */
     private MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
       MethodBehavior behavior = new MethodBehavior(symbol);
-      MethodYield happyYield = new MethodYield(symbol.parameterTypes().size(), false);
-      happyYield.exception = false;
-      happyYield.parametersConstraints[0] = ObjectConstraint.notNull();
-      happyYield.resultIndex = 0;
-      happyYield.resultConstraint = happyYield.parametersConstraints[0];
+      int arity = symbol.parameterTypes().size();
+
+      HappyPathYield happyYield = new HappyPathYield(arity, false);
+      happyYield.setParameterConstraint(0, ObjectConstraint.notNull());
+      happyYield.setResult(0, happyYield.parameterConstraint(0));
       behavior.addYield(happyYield);
 
-      MethodYield exceptionalYield = new MethodYield(symbol.parameterTypes().size(), false);
-      exceptionalYield.exception = true;
-      exceptionalYield.parametersConstraints[0] = ObjectConstraint.nullConstraint();
+      ExceptionalYield exceptionalYield = new ExceptionalYield(arity, false);
+      exceptionalYield.setParameterConstraint(0, ObjectConstraint.nullConstraint());
       behavior.addYield(exceptionalYield);
 
       behavior.completed();
@@ -210,17 +210,16 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       ObjectConstraint<ObjectConstraint.Status> falseConstraint = isNull ? ObjectConstraint.notNull() : ObjectConstraint.nullConstraint();
 
       MethodBehavior behavior = new MethodBehavior(symbol);
+      int arity = symbol.parameterTypes().size();
 
-      MethodYield trueYield = new MethodYield(symbol.parameterTypes().size(), false);
-      trueYield.exception = false;
-      trueYield.parametersConstraints[0] = trueConstraint;
-      trueYield.resultConstraint = BooleanConstraint.TRUE;
+      HappyPathYield trueYield = new HappyPathYield(arity, false);
+      trueYield.setParameterConstraint(0, trueConstraint);
+      trueYield.setResult(-1, BooleanConstraint.TRUE);
       behavior.addYield(trueYield);
 
-      MethodYield falseYield = new MethodYield(symbol.parameterTypes().size(), false);
-      falseYield.exception = false;
-      falseYield.parametersConstraints[0] = falseConstraint;
-      falseYield.resultConstraint = BooleanConstraint.FALSE;
+      HappyPathYield falseYield = new HappyPathYield(arity, false);
+      falseYield.setParameterConstraint(0, falseConstraint);
+      falseYield.setResult(-1, BooleanConstraint.FALSE);
       behavior.addYield(falseYield);
 
       behavior.completed();
@@ -229,17 +228,15 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
     private MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
       MethodBehavior behavior = new MethodBehavior(symbol);
-      MethodYield happyPathYield = new MethodYield(symbol.parameterTypes().size(), ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs());
-      happyPathYield.exception = false;
-      happyPathYield.parametersConstraints[0] = isCheckNotNull ? ObjectConstraint.notNull() : BooleanConstraint.TRUE;
-      happyPathYield.resultConstraint = isCheckNotNull ? happyPathYield.parametersConstraints[0] : null;
-      happyPathYield.resultIndex = isCheckNotNull ? 0 : -1;
+
+      HappyPathYield happyPathYield = new HappyPathYield(symbol.parameterTypes().size(), ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs());
+      happyPathYield.setParameterConstraint(0, isCheckNotNull ? ObjectConstraint.notNull() : BooleanConstraint.TRUE);
+      happyPathYield.setResult(isCheckNotNull ? 0 : -1, isCheckNotNull ? happyPathYield.parameterConstraint(0) : null);
       behavior.addYield(happyPathYield);
 
       behavior.completed();
       return behavior;
     }
   }
-
 
 }

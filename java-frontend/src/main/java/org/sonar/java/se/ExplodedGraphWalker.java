@@ -628,7 +628,7 @@ public class ExplodedGraphWalker {
           invocationArguments,
           invocationTypes,
           programState,
-          () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType, constraintManager::createExceptionalSymbolicValue))
+          () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType(), constraintManager::createExceptionalSymbolicValue))
           .forEach(psYield -> enqueueExceptionalPaths(psYield, yield)));
 
       // Enqueue happy paths
