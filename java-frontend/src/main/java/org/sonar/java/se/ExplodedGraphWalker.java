@@ -50,6 +50,8 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;

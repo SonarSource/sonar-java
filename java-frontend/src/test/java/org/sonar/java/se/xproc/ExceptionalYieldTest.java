@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.xproc;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;

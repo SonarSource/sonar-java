@@ -31,6 +31,8 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;

@@ -17,10 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -49,7 +51,7 @@ public class MethodBehavior {
     boolean expectReturnValue = !(isConstructor() || isVoidMethod());
     SymbolicValue resultSV = node.programState.exitValue();
 
-    if (!node.happyPath || (resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
+    if (!node.onHappyPath() || (resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
       ExceptionalYield exceptionalYield = new ExceptionalYield(arity, isVarArgs, node, this);
       if (resultSV != null) {
         exceptionalYield.setExceptionType(((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType());
@@ -79,17 +81,17 @@ public class MethodBehavior {
     return ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
   }
 
-  List<MethodYield> yields() {
+  public List<MethodYield> yields() {
     return ImmutableList.<MethodYield>builder().addAll(yields).build();
   }
 
-  Stream<ExceptionalYield> exceptionalPathYields() {
+  public Stream<ExceptionalYield> exceptionalPathYields() {
     return yields.stream()
       .filter(y -> y instanceof ExceptionalYield)
       .map(ExceptionalYield.class::cast);
   }
 
-  Stream<HappyPathYield> happyPathYields() {
+  public Stream<HappyPathYield> happyPathYields() {
     return yields.stream()
       .filter(y -> y instanceof HappyPathYield)
       .map(HappyPathYield.class::cast);
@@ -107,11 +109,11 @@ public class MethodBehavior {
     return complete;
   }
 
-  void completed() {
+  public void completed() {
     this.complete = true;
   }
 
-  void addYield(MethodYield yield) {
+  public void addYield(MethodYield yield) {
     yields.add(yield);
   }
 }

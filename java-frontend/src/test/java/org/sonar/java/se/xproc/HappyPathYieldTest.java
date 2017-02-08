@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.xproc;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -26,8 +26,12 @@ import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.xproc.ExceptionalYield;
+import org.sonar.java.se.xproc.HappyPathYield;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -127,7 +128,7 @@ public class ProgramState {
     this.stack = ps.stack;
   }
 
-  ProgramState stackValue(SymbolicValue sv) {
+  public ProgramState stackValue(SymbolicValue sv) {
     return new ProgramState(this, stack.push(sv));
   }
 
@@ -215,7 +216,8 @@ public class ProgramState {
     return this;
   }
 
-  ProgramState put(Symbol symbol, SymbolicValue value) {
+  @VisibleForTesting
+  public ProgramState put(Symbol symbol, SymbolicValue value) {
     if (symbol.isUnknown() || isVolatileField(symbol)) {
       return this;
     }

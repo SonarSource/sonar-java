@@ -27,6 +27,7 @@ import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

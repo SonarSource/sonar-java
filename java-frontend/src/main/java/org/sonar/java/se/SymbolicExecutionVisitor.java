@@ -31,6 +31,9 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
+import org.sonar.java.se.xproc.ExceptionalYield;
+import org.sonar.java.se.xproc.HappyPathYield;
+import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -47,7 +50,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
-  final BehaviorCache behaviorCache = new BehaviorCache();
+  public final BehaviorCache behaviorCache = new BehaviorCache();
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
@@ -92,8 +95,10 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
 
-  class BehaviorCache {
-    final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
+  @VisibleForTesting
+  public class BehaviorCache {
+    @VisibleForTesting
+    public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
 
     void add(Symbol.MethodSymbol symbol, MethodBehavior behavior) {
       behaviors.put(symbol, behavior);
@@ -238,5 +243,6 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       return behavior;
     }
   }
+
 
 }
