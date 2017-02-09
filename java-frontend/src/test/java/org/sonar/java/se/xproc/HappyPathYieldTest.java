@@ -24,14 +24,12 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.xproc.ExceptionalYield;
-import org.sonar.java.se.xproc.HappyPathYield;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -52,8 +50,10 @@ public class HappyPathYieldTest {
 
   @Test
   public void test_equals() {
-    HappyPathYield yield = new HappyPathYield(1, false);
-    HappyPathYield otherYield = new HappyPathYield(1, false);
+    MethodBehavior mb = mockMethodBehavior(1, false);
+
+    HappyPathYield yield = new HappyPathYield(mb);
+    HappyPathYield otherYield = new HappyPathYield(mb);
 
     assertThat(yield).isNotEqualTo(null);
     assertThat(yield).isEqualTo(yield);
@@ -64,24 +64,26 @@ public class HappyPathYieldTest {
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same arity but different return constraint
-    otherYield = new HappyPathYield(1, false);
+    otherYield = new HappyPathYield(mb);
     otherYield.setResult(yield.resultIndex(), ObjectConstraint.notNull());
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same return constraint
     yield.setResult(-1, ObjectConstraint.notNull());
-    otherYield = new HappyPathYield(1, false);
+    otherYield = new HappyPathYield(mb);
     otherYield.setResult(-1, ObjectConstraint.notNull());
     assertThat(yield).isEqualTo(otherYield);
 
     // same arity and parameters but exceptional yield
-    assertThat(yield).isNotEqualTo(new ExceptionalYield(1, false));
+    assertThat(yield).isNotEqualTo(new ExceptionalYield(mb));
   }
 
   @Test
   public void test_hashCode() {
-    HappyPathYield methodYield = new HappyPathYield(0, true);
-    HappyPathYield other = new HappyPathYield(0, true);
+    MethodBehavior mb = mockMethodBehavior(0, false);
+
+    HappyPathYield methodYield = new HappyPathYield(mb);
+    HappyPathYield other = new HappyPathYield(mb);
 
     // same values for same yields
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
@@ -91,7 +93,7 @@ public class HappyPathYieldTest {
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // exceptional method yield
-    assertThat(methodYield.hashCode()).isNotEqualTo(new ExceptionalYield(0, true));
+    assertThat(methodYield.hashCode()).isNotEqualTo(new ExceptionalYield(mb));
   }
 
   @Test
@@ -101,6 +103,13 @@ public class HappyPathYieldTest {
     assertThat(yieldsToString).contains(
       "{params: [TRUE, NOT_NULL], result: null (-1)}",
       "{params: [FALSE, null], result: null (-1)}");
+  }
+
+  private static MethodBehavior mockMethodBehavior(int arity, boolean varArgs) {
+    MethodBehavior mockMethodBehavior = Mockito.mock(MethodBehavior.class);
+    Mockito.when(mockMethodBehavior.isMethodVarArgs()).thenReturn(varArgs);
+    Mockito.when(mockMethodBehavior.methodArity()).thenReturn(arity);
+    return mockMethodBehavior;
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {

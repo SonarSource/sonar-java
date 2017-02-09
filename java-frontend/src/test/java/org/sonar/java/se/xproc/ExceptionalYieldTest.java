@@ -53,8 +53,10 @@ public class ExceptionalYieldTest {
 
   @Test
   public void test_equals() {
-    ExceptionalYield yield = new ExceptionalYield(1, false);
-    ExceptionalYield otherYield = new ExceptionalYield(1, false);
+    MethodBehavior methodBehavior = mockMethodBehavior();
+
+    ExceptionalYield yield = new ExceptionalYield(methodBehavior);
+    ExceptionalYield otherYield = new ExceptionalYield(methodBehavior);
 
     assertThat(yield).isNotEqualTo(null);
     assertThat(yield).isEqualTo(yield);
@@ -69,13 +71,15 @@ public class ExceptionalYieldTest {
     assertThat(yield.exceptionType()).isEqualTo(otherYield.exceptionType());
 
     // same arity and parameters but happy yield
-    assertThat(yield).isNotEqualTo(new HappyPathYield(1, false));
+    assertThat(yield).isNotEqualTo(new HappyPathYield(methodBehavior));
   }
 
   @Test
   public void test_hashCode() {
-    ExceptionalYield methodYield = new ExceptionalYield(0, true);
-    ExceptionalYield other = new ExceptionalYield(0, true);
+    MethodBehavior methodBehavior = mockMethodBehavior();
+
+    ExceptionalYield methodYield = new ExceptionalYield(methodBehavior);
+    ExceptionalYield other = new ExceptionalYield(methodBehavior);
 
     // same values for same yields
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
@@ -85,7 +89,7 @@ public class ExceptionalYieldTest {
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // happy Path Yield method yield
-    assertThat(methodYield.hashCode()).isNotEqualTo(new HappyPathYield(0, true));
+    assertThat(methodYield.hashCode()).isNotEqualTo(new HappyPathYield(methodBehavior));
   }
 
   @Test
@@ -142,6 +146,13 @@ public class ExceptionalYieldTest {
 
     MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException2")).findAny().get();
     assertThat(implicitExceptionYield.parameterConstraint(0)).isEqualTo(ObjectConstraint.notNull());
+  }
+
+  private static MethodBehavior mockMethodBehavior() {
+    MethodBehavior mockMethodBehavior = Mockito.mock(MethodBehavior.class);
+    Mockito.when(mockMethodBehavior.isMethodVarArgs()).thenReturn(false);
+    Mockito.when(mockMethodBehavior.methodArity()).thenReturn(1);
+    return mockMethodBehavior;
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {

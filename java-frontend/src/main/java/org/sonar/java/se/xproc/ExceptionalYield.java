@@ -23,7 +23,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -40,13 +39,13 @@ public class ExceptionalYield extends MethodYield {
   @Nullable
   private Type exceptionType;
 
-  public ExceptionalYield(int arity, boolean varArgs) {
-    super(arity, varArgs);
+  public ExceptionalYield(MethodBehavior behavior) {
+    super(behavior);
     this.exceptionType = null;
   }
 
-  public ExceptionalYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
-    super(arity, varArgs, node, behavior);
+  public ExceptionalYield(ExplodedGraph.Node node, MethodBehavior behavior) {
+    super(node, behavior);
     this.exceptionType = null;
   }
 

@@ -27,7 +27,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -46,23 +45,20 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public abstract class MethodYield {
-  private final boolean varArgs;
   private final ExplodedGraph.Node node;
   private final MethodBehavior behavior;
   private Constraint[] parametersConstraints;
 
-  public MethodYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
-    this.parametersConstraints = new Constraint[arity];
-    this.varArgs = varArgs;
-    this.node = node;
+  public MethodYield(MethodBehavior behavior) {
+    this.parametersConstraints = new Constraint[behavior.methodArity()];
+    this.node = null;
     this.behavior = behavior;
   }
 
-  public MethodYield(int arity, boolean varArgs) {
-    this.parametersConstraints = new Constraint[arity];
-    this.varArgs = varArgs;
-    this.node = null;
-    this.behavior = null;
+  public MethodYield(ExplodedGraph.Node node, MethodBehavior behavior) {
+    this.parametersConstraints = new Constraint[behavior.methodArity()];
+    this.node = node;
+    this.behavior = behavior;
   }
 
   public abstract Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
@@ -97,7 +93,7 @@ public abstract class MethodYield {
 
   @CheckForNull
   private Constraint getConstraint(int index, List<Type> invocationTypes) {
-    if (!varArgs || applicableOnVarArgs(index, invocationTypes)) {
+    if (!behavior.isMethodVarArgs() || applicableOnVarArgs(index, invocationTypes)) {
       return parametersConstraints[index];
     }
     return null;
@@ -153,7 +149,6 @@ public abstract class MethodYield {
   public int hashCode() {
     return new HashCodeBuilder(7, 1291)
       .append(parametersConstraints)
-      .append(varArgs)
       .hashCode();
   }
 
@@ -168,12 +163,11 @@ public abstract class MethodYield {
     MethodYield other = (MethodYield) obj;
     return new EqualsBuilder()
       .append(parametersConstraints, other.parametersConstraints)
-      .append(varArgs, other.varArgs)
       .isEquals();
   }
 
   public List<JavaFileScannerContext.Location> flow(int parameterIndex) {
-    if(node == null || behavior == null) {
+    if (node == null) {
       return Lists.newArrayList();
     }
     if(parameterIndex < 0) {
