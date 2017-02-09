@@ -30,20 +30,23 @@ public class ProgramPoint {
   final int i;
 
   ProgramPoint(CFG.Block block) {
-    this.block = block;
-    this.i = 0;
+    this(block, 0);
   }
 
+  /**
+   * {@code i == blockSize} means we are pointing to terminator block, {@code i == blockSize + 1} is valid if terminator block is branching
+   * @see ExplodedGraphWalker#execute
+   */
   private ProgramPoint(CFG.Block block, int i) {
+    int blockSize = block.elements().size();
+    Preconditions.checkState(i < blockSize + 2, "CFG Block has %s elements but PP at %s was requested", blockSize, i);
     this.block = block;
     this.i = i;
   }
 
   ProgramPoint next() {
-    // pointing one element behind is allowed, it represents terminator of the CFG block
-    Preconditions.checkState(i + 1 <= block.elements().size() + 1,
-      "CFG Block has %s elements but PP at %s was requested", block.elements().size(), i + 1);
-    return new ProgramPoint(block, i + 1);
+    int nextPP = this.i + 1;
+    return new ProgramPoint(block, nextPP);
   }
 
   @Override
