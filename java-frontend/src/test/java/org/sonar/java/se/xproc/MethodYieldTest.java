@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -105,13 +106,7 @@ public class MethodYieldTest {
 
   @Test
   public void flow_is_empty_when_yield_has_no_node() {
-    MethodYield methodYield = new HappyPathYield(1, false, null, mock(MethodBehavior.class));
-    assertThat(methodYield.flow(0)).isEmpty();
-  }
-
-  @Test
-  public void flow_is_empty_when_yield_has_no_behavior() {
-    MethodYield methodYield = new HappyPathYield(1, false, mockNode(), null);
+    MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
     assertThat(methodYield.flow(0)).isEmpty();
   }
 
@@ -158,7 +153,8 @@ public class MethodYieldTest {
 
   @Test
   public void test_yield_equality() {
-    MethodYield yield = new HappyPathYield(1, false);
+    MethodBehavior methodBehavior = mockMethodBehavior(1, false);
+    MethodYield yield = new HappyPathYield(methodBehavior);
     MethodYield otherYield;
 
     assertThat(yield).isNotEqualTo(null);
@@ -167,21 +163,15 @@ public class MethodYieldTest {
     // same instance
     assertThat(yield).isEqualTo(yield);
 
-    // same constraints, same nb of parameters, same exceptional aspect
-    assertThat(yield).isEqualTo(new HappyPathYield(1, false));
-
-    // arity is taken into account
-    assertThat(yield).isNotEqualTo(new HappyPathYield(0, false));
-
-    // varargs is taken into account
-    assertThat(yield).isNotEqualTo(new HappyPathYield(1, true));
+    // same constraints, same number of parameters, same exceptional aspect
+    assertThat(yield).isEqualTo(new HappyPathYield(methodBehavior));
 
     // node and behavior are not taken into account
-    otherYield = new HappyPathYield(1, false, mockNode(), new MethodBehavior(null));
+    otherYield = new HappyPathYield(mockNode(), methodBehavior);
     assertThat(yield).isEqualTo(otherYield);
 
     // same arity and constraints on parameters but exceptional path
-    otherYield = new ExceptionalYield(1, false);
+    otherYield = new ExceptionalYield(methodBehavior);
     assertThat(yield).isNotEqualTo(otherYield);
   }
 
@@ -284,9 +274,16 @@ public class MethodYieldTest {
   }
 
   private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
-    HappyPathYield methodYield = new HappyPathYield(1, false);
+    HappyPathYield methodYield = new HappyPathYield(mockMethodBehavior(1, false));
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
+  }
+
+  private static MethodBehavior mockMethodBehavior(int arity, boolean varArgs) {
+    MethodBehavior mockMethodBehavior = Mockito.mock(MethodBehavior.class);
+    Mockito.when(mockMethodBehavior.isMethodVarArgs()).thenReturn(varArgs);
+    Mockito.when(mockMethodBehavior.methodArity()).thenReturn(arity);
+    return mockMethodBehavior;
   }
 
   private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {

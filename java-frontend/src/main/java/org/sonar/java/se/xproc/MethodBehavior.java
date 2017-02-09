@@ -34,6 +34,9 @@ import java.util.stream.Stream;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
+  private final boolean varArgs;
+  private final int arity;
+
   private final Set<MethodYield> yields;
   private final List<SymbolicValue> parameters;
   private boolean complete = false;
@@ -42,23 +45,23 @@ public class MethodBehavior {
     this.methodSymbol = methodSymbol;
     this.yields = new LinkedHashSet<>();
     this.parameters = new ArrayList<>();
+    this.varArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
+    this.arity = methodSymbol.parameterTypes().size();
   }
 
   public void createYield(ExplodedGraph.Node node) {
     MethodYield yield;
-    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
-    int arity = parameters.size();
     boolean expectReturnValue = !(isConstructor() || isVoidMethod());
     SymbolicValue resultSV = node.programState.exitValue();
 
     if (!node.onHappyPath() || (resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      ExceptionalYield exceptionalYield = new ExceptionalYield(arity, isVarArgs, node, this);
+      ExceptionalYield exceptionalYield = new ExceptionalYield(node, this);
       if (resultSV != null) {
         exceptionalYield.setExceptionType(((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType());
       }
       yield = exceptionalYield;
     } else {
-      HappyPathYield happyPathYield = new HappyPathYield(arity, isVarArgs, node, this);
+      HappyPathYield happyPathYield = new HappyPathYield(node, this);
       if (expectReturnValue) {
         happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraint(resultSV));
       }
@@ -66,11 +69,19 @@ public class MethodBehavior {
     }
 
     // add the constraints on all the parameters
-    for (int i = 0; i < arity; i++) {
+    for (int i = 0; i < parameters.size(); i++) {
       yield.setParameterConstraint(i, node.programState.getConstraint(parameters.get(i)));
     }
 
     yields.add(yield);
+  }
+
+  public boolean isMethodVarArgs() {
+    return varArgs;
+  }
+
+  public int methodArity() {
+    return arity;
   }
 
   private boolean isVoidMethod() {

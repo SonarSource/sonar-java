@@ -42,14 +42,14 @@ public class HappyPathYield extends MethodYield {
   @Nullable
   private Constraint resultConstraint;
 
-  public HappyPathYield(int arity, boolean varArgs) {
-    super(arity, varArgs);
+  public HappyPathYield(MethodBehavior behavior) {
+    super(behavior);
     this.resultIndex = -1;
     this.resultConstraint = null;
   }
 
-  public HappyPathYield(int arity, boolean varArgs, ExplodedGraph.Node node, MethodBehavior behavior) {
-    super(arity, varArgs, node, behavior);
+  public HappyPathYield(ExplodedGraph.Node node, MethodBehavior behavior) {
+    super(node, behavior);
     this.resultIndex = -1;
     this.resultConstraint = null;
   }
