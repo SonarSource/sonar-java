@@ -22,6 +22,8 @@ package org.sonar.java.se;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import java.util.Objects;
+
 public class LearnedAssociation {
   final SymbolicValue sv;
   final Symbol symbol;
@@ -37,6 +39,24 @@ public class LearnedAssociation {
 
   public SymbolicValue symbolicValue() {
     return sv;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LearnedAssociation that = (LearnedAssociation) o;
+    return Objects.equals(sv, that.sv) &&
+      Objects.equals(symbol, that.symbol);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(sv, symbol);
   }
 
   @Override
