@@ -21,11 +21,8 @@ package org.sonar.java.se;
 
 import org.junit.Test;
 import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
-import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,61 +59,6 @@ public class SymbolicExecutionVisitorTest {
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
       .filter(s -> "nativeMethod".equals(s.name()) || "abstractMethod".equals(s.name()) || "publicMethod".equals(s.name()))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
-  }
-
-  @Test
-  public void method_behavior_yields() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
-
-    MethodBehavior mb = getMethodBehavior(sev, "method");
-    List<MethodYield> yields = mb.yields();
-    assertThat(yields).hasSize(3);
-
-    List<HappyPathYield> trueResults = mb.happyPathYields().filter(my -> BooleanConstraint.TRUE.equals(my.resultConstraint())).collect(Collectors.toList());
-    assertThat(trueResults).hasSize(1);
-    HappyPathYield trueResult = trueResults.get(0);
-
-    // 'a' has constraint "null"
-    assertThat(trueResult.parametersConstraints()[0].isNull()).isTrue();
-    // no constraint on 'b'
-    assertThat(trueResult.parametersConstraints()[1]).isNull();
-    // result SV is a different SV than 'a' and 'b'
-    assertThat(trueResult.resultIndex()).isEqualTo(-1);
-
-    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint())).collect(Collectors.toList());
-    assertThat(falseResults).hasSize(2);
-    // for both "False" results, 'a' has the constraint "not null"
-    assertThat(falseResults.stream().filter(my -> !my.parametersConstraints()[0].isNull()).count()).isEqualTo(2);
-    // 1) 'b' has constraint "false", result is 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.FALSE.equals(my.parametersConstraints()[1]) && my.resultIndex() == 1).count()).isEqualTo(1);
-
-    // 2) 'b' is "true", result is a different SV than 'a' and 'b'
-    assertThat(falseResults.stream().filter(my -> BooleanConstraint.TRUE.equals(my.parametersConstraints()[1]) && my.resultIndex() == -1).count()).isEqualTo(1);
-  }
-
-  @Test
-  public void method_behavior_handling_finally() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
-
-    MethodBehavior foo = getMethodBehavior(sev, "foo");
-    assertThat(foo.yields()).hasSize(4);
-    assertThat(foo.happyPathYields().count()).isEqualTo(2);
-    assertThat(foo.exceptionalPathYields().count()).isEqualTo(2);
-
-    MethodBehavior qix = getMethodBehavior(sev, "qix");
-    List<MethodYield> qixYield = qix.yields();
-    assertThat(qixYield.stream()
-      .filter(y -> !y.parametersConstraints()[0].isNull())
-      .allMatch(y -> y instanceof ExceptionalYield)).isTrue();
-
-    assertThat(qixYield.stream()
-      .filter(y -> y.parametersConstraints()[0].isNull() && y instanceof ExceptionalYield)
-      .count()).isEqualTo(2);
-
-    assertThat(qixYield.stream()
-      .filter(y -> y instanceof HappyPathYield)
-      .allMatch(y -> y.parametersConstraints()[0].isNull())).isTrue();
   }
 
   @Test
