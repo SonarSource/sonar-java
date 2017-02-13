@@ -58,11 +58,10 @@ public class ExceptionalCheckBasedYieldTest {
     mb = getMethodBehavior(sev, methodName);
 
     // no creation of custom yields, 4 method yields
-    assertThat(mb.yields()).hasSize(4);
-    // 2nd param can never be null
-    assertThat(mb.yields().stream()).allMatch(y -> !y.parameterConstraint(1).isNull());
+    assertThat(mb.yields()).hasSize(5);
 
-    assertThat(mb.happyPathYields()).hasSize(2);
+    assertThat(mb.happyPathYields()).hasSize(3);
+    assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == null)).hasSize(1);
     assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.TRUE)).hasSize(1);
     assertThat(mb.happyPathYields().filter(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.FALSE)).hasSize(1);
 
@@ -75,13 +74,13 @@ public class ExceptionalCheckBasedYieldTest {
     sev = createSymbolicExecutionVisitor(FILENAME, new TestSECheck());
     mb = getMethodBehavior(sev, methodName);
 
-    assertThat(mb.yields()).hasSize(3);
+    assertThat(mb.yields()).hasSize(4);
     // 2nd param can never be null
-    assertThat(mb.yields().stream()).allMatch(y -> !y.parameterConstraint(1).isNull());
+    assertThat(mb.yields().stream().filter(y -> y.parameterConstraint(0) == null && y.parameterConstraint(1).isNull())).hasSize(1);
+    assertThat(mb.yields().stream().filter(y -> !y.parameterConstraint(1).isNull())).hasSize(3);
 
     // happyPath with first parameter being true is discarded
-    assertThat(mb.happyPathYields()).hasSize(1);
-    assertThat(mb.happyPathYields()).allMatch(y -> ((BooleanConstraint) y.parameterConstraint(0)) == BooleanConstraint.FALSE);
+    assertThat(mb.happyPathYields()).hasSize(2);
 
     // still 2 exceptional path
     assertThat(mb.exceptionalPathYields()).hasSize(2);

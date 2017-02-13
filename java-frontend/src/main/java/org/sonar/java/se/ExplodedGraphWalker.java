@@ -303,20 +303,12 @@ public class ExplodedGraphWalker {
   }
 
   public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
-    if (isPartOfMethodParameters(target)) {
+    if (methodBehavior != null && methodBehavior.parameters().contains(target)) {
       Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
       ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
-      enqueueExceptionalPaths(newExceptionalState);
-      ExplodedGraph.Node workListFirstNode = workList.peekFirst();
-      if (workListFirstNode.programState.equals(newExceptionalState) && workListFirstNode.programPoint.block.isMethodExitBlock()) {
-        workList.pop();
-        methodBehavior.createExceptionalCheckBasedYield(workListFirstNode, exceptionType, check);
-      }
+      ExplodedGraph.Node exitNode = explodedGraph.node(node.programPoint, newExceptionalState);
+      methodBehavior.createExceptionalCheckBasedYield(exitNode, exceptionType, check);
     }
-  }
-
-  private boolean isPartOfMethodParameters(SymbolicValue target) {
-    return methodBehavior.parameters().contains(target);
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
@@ -718,7 +710,6 @@ public class ExplodedGraphWalker {
 
     Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
     SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
-
     // only consider the first match, as order of catch block is important
     Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
       .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
