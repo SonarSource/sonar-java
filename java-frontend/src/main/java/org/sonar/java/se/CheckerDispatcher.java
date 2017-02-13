@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -113,6 +114,11 @@ public class CheckerDispatcher implements CheckerContext {
     if (!transition) {
       addTransition(explodedGraphWalker.programState);
     }
+  }
+
+  @Override
+  public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
+    explodedGraphWalker.addExceptionalYield(target, exceptionalState, exceptionFullyQualifiedName, check);
   }
 
   @Override

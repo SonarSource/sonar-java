@@ -26,6 +26,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -44,17 +45,17 @@ public class SemanticModel {
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
-  private BytecodeCompleter bytecodeCompleter;
+  private final BytecodeCompleter bytecodeCompleter;
 
-  private SemanticModel() {
+  private SemanticModel(BytecodeCompleter bytecodeCompleter) {
+    this.bytecodeCompleter = bytecodeCompleter;
   }
 
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath, parametrizedTypeCache);
     Symbols symbols = new Symbols(bytecodeCompleter);
-    SemanticModel semanticModel = new SemanticModel();
-    semanticModel.bytecodeCompleter = bytecodeCompleter;
+    SemanticModel semanticModel = new SemanticModel(bytecodeCompleter);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
       TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
@@ -127,6 +128,10 @@ public class SemanticModel {
 
   public Symbol getEnclosingClass(Tree tree) {
     return getEnv(tree).enclosingClass;
+  }
+
+  public Type getClassType(String fullyQualifiedName) {
+    return bytecodeCompleter.loadClass(fullyQualifiedName).type();
   }
 
   public void associateSymbol(Tree tree, Symbol symbol) {
