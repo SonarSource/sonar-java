@@ -101,7 +101,7 @@ public class MethodYieldTest {
     Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
     MethodBehavior mb = entry.getValue();
 
-    assertThat(mb.happyPathYields()).allMatch(y -> y.parametersConstraints()[0] != null && !y.parametersConstraints()[0].isNull());
+    assertThat(mb.happyPathYields()).allMatch(y -> y.parameterConstraint(0) != null && !y.parameterConstraint(0).isNull());
   }
 
   @Test

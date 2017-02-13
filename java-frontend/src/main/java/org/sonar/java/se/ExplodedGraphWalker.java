@@ -50,6 +50,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -130,7 +131,7 @@ public class ExplodedGraphWalker {
   @VisibleForTesting
   CheckerDispatcher checkerDispatcher;
 
-  private final SymbolicExecutionVisitor.BehaviorCache behaviorCache;
+  private final BehaviorCache behaviorCache;
   @VisibleForTesting
   int steps;
 
@@ -174,7 +175,7 @@ public class ExplodedGraphWalker {
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, SymbolicExecutionVisitor.BehaviorCache behaviorCache) {
+  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, BehaviorCache behaviorCache) {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.behaviorCache = behaviorCache;
@@ -1086,7 +1087,7 @@ public class ExplodedGraphWalker {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker(SymbolicExecutionVisitor.BehaviorCache behaviorCache) {
+    public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache) {
       return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks, behaviorCache);
     }
 
