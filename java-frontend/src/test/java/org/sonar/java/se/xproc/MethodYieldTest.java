@@ -19,20 +19,14 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -40,7 +34,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -48,24 +41,23 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.getSymbolWithMethodBehavior;
+import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class MethodYieldTest {
   @Test
   public void test_creation_of_states() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
     List<MethodYield> yields = entry.getValue().yields();
 
@@ -84,7 +76,7 @@ public class MethodYieldTest {
   @Test
   public void test_creation_of_flows() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
-    MethodBehavior mb = getMethodBehavior(sev, "foo").getValue();
+    MethodBehavior mb = getSymbolWithMethodBehavior(sev, "foo").getValue();
 
     MethodYield methodYield = mb.happyPathYields().filter(y -> y.resultConstraint() != null && !y.resultConstraint().isNull()).findFirst().get();
 
@@ -98,7 +90,7 @@ public class MethodYieldTest {
   @Test
   public void test_yield_on_reassignments() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
     MethodBehavior mb = entry.getValue();
 
     assertThat(mb.happyPathYields()).allMatch(y -> y.parameterConstraint(0) != null && !y.parameterConstraint(0).isNull());
@@ -121,7 +113,7 @@ public class MethodYieldTest {
   @Test
   public void all_constraints_should_be_valid_to_generate_a_new_state() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "bar");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "bar");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
     List<MethodYield> yields = entry.getValue().yields();
 
@@ -179,7 +171,7 @@ public class MethodYieldTest {
   public void constraints_on_varargs() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsYields.java");
 
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "varArgMethod");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "varArgMethod");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
     List<MethodYield> yields = entry.getValue().yields();
     assertThat(yields).hasSize(3);
@@ -273,36 +265,11 @@ public class MethodYieldTest {
     assertThat(methodBehavior.yields()).contains(expected);
   }
 
-  private MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
+  private static MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
     HappyPathYield methodYield = new HappyPathYield(mockMethodBehavior(1, false));
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }
 
-  private static MethodBehavior mockMethodBehavior(int arity, boolean varArgs) {
-    MethodBehavior mockMethodBehavior = Mockito.mock(MethodBehavior.class);
-    Mockito.when(mockMethodBehavior.isMethodVarArgs()).thenReturn(varArgs);
-    Mockito.when(mockMethodBehavior.methodArity()).thenReturn(arity);
-    return mockMethodBehavior;
-  }
 
-  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
-    ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new ArrayList<>());
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new NullDereferenceCheck()));
-    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    when(context.getTree()).thenReturn(cut);
-    when(context.getSemanticModel()).thenReturn(semanticModel);
-    sev.scanFile(context);
-    return sev;
-  }
-
-  private static Map.Entry<Symbol.MethodSymbol, MethodBehavior> getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<Map.Entry<MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.behaviors.entrySet().stream()
-      .filter(e -> methodName.equals(e.getKey().name()))
-      .findFirst();
-    assertThat(mb.isPresent()).isTrue();
-    return mb.get();
-  }
 }

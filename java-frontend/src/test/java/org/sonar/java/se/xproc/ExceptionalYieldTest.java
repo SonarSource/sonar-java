@@ -19,35 +19,23 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
-
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class ExceptionalYieldTest {
 
@@ -148,30 +136,4 @@ public class ExceptionalYieldTest {
     assertThat(implicitExceptionYield.parameterConstraint(0)).isEqualTo(ObjectConstraint.notNull());
   }
 
-  private static MethodBehavior mockMethodBehavior() {
-    MethodBehavior mockMethodBehavior = Mockito.mock(MethodBehavior.class);
-    Mockito.when(mockMethodBehavior.isMethodVarArgs()).thenReturn(false);
-    Mockito.when(mockMethodBehavior.methodArity()).thenReturn(1);
-    return mockMethodBehavior;
-  }
-
-  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
-    ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new ArrayList<>());
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new NullDereferenceCheck()));
-    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    when(context.getTree()).thenReturn(cut);
-    when(context.getSemanticModel()).thenReturn(semanticModel);
-    sev.scanFile(context);
-    return sev;
-  }
-
-  private static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<Map.Entry<MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.behaviors.entrySet().stream()
-      .filter(e -> methodName.equals(e.getKey().name()))
-      .findFirst();
-    assertThat(mb.isPresent()).isTrue();
-    return mb.get().getValue();
-  }
 }
