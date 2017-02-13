@@ -739,10 +739,7 @@ public class ExplodedGraphWalker {
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
-    List<SymbolicValue> parameterValues = new ArrayList<>(values);
-    parameterValues.remove(values.size() - 1);
-    Collections.reverse(parameterValues);
-    return parameterValues;
+    return Lists.reverse(values.subList(0, values.size() - 1));
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {

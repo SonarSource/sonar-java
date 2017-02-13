@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
@@ -45,9 +47,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -171,9 +172,8 @@ public class NonNullSetToNullCheck extends SECheck {
       Symbol symbol = syntaxTree.constructorSymbol();
       if (symbol.isMethodSymbol()) {
         int peekSize = syntaxTree.arguments().size();
-        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(peekSize));
+        List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize));
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
-        Collections.reverse(argumentValues);
         checkNullArguments(syntaxTree, methodSymbol.getParameters(),
           argumentValues, "Parameter {0} to this constructor is marked \"{1}\" but null is passed.");
       }
@@ -185,9 +185,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
         int peekSize = arguments.size() + 1;
-        List<SymbolicValue> argumentValues = new ArrayList<>(programState.peekValues(peekSize));
-        argumentValues.remove(arguments.size());
-        Collections.reverse(argumentValues);
+        List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize).subList(0, peekSize - 1));
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
         checkNullArguments(syntaxTree, methodSymbol.getParameters(),
           argumentValues, "Parameter {0} to this call is marked \"{1}\" but null is passed.");

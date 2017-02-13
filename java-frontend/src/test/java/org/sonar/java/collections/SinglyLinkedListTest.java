@@ -25,7 +25,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SinglyLinkedListTest {
 
@@ -115,6 +116,32 @@ public class SinglyLinkedListTest {
     assertThat(s.push(a).push(b).anyMatch(e -> e == a)).isTrue();
     Object c = new Object();
     assertThat(s.push(a).push(b).anyMatch(e -> e == c)).isFalse();
+  }
+
+  @Test
+  public void size() {
+    PStack<Object> s = PCollections.emptyStack();
+    assertThat(s.size()).isEqualTo(0);
+    s = s.push(new Object());
+    assertThat(s.size()).isEqualTo(1);
+    s = s.push(new Object());
+    assertThat(s.size()).isEqualTo(2);
+    s = s.pop().pop();
+    assertThat(s.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void peek() {
+    assertThatThrownBy(() -> PCollections.emptyStack().peek(0)).isInstanceOf(IllegalStateException.class);
+
+    Object a = new Object();
+    PStack<Object> s = PCollections.emptyStack().push(a);
+    assertThat(s.peek(0)).isEqualTo(s.peek());
+    Object b = new Object();
+    s = s.push(b);
+    assertThat(s.peek(1)).isEqualTo(a);
+    PStack<Object> finalS = s;
+    assertThatThrownBy(() -> finalS.peek(2)).isInstanceOf(IllegalStateException.class);
   }
 
 }

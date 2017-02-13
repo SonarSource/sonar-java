@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProgramStateTest {
 
@@ -89,5 +90,19 @@ public class ProgramStateTest {
     assertThat(state.getConstraint(sv3)).isEqualTo(ObjectConstraint.notNull());
     ProgramState next = state.addConstraint(sv3, ObjectConstraint.notNull());
     assertThat(next).isSameAs(state);
+  }
+
+
+  @Test
+  public void test_peek_nth_value() {
+    ProgramState state = ProgramState.EMPTY_STATE;
+    ProgramState finalState = state;
+    assertThatThrownBy(() -> finalState.peekValue(0)).isInstanceOf(IllegalStateException.class);
+    SymbolicValue sv1 = new SymbolicValue(1);
+    state = state.stackValue(sv1);
+    assertThat(state.peekValue(0)).isEqualTo(sv1);
+    SymbolicValue sv2 = new SymbolicValue(2);
+    state = state.stackValue(sv2);
+    assertThat(state.peekValue(1)).isEqualTo(sv1);
   }
 }
