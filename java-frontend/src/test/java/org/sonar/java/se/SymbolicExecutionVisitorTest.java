@@ -19,17 +19,8 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
@@ -37,15 +28,10 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,18 +43,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
 public class SymbolicExecutionVisitorTest {
-
-  private static List<File> classPath;
-
-  @BeforeClass
-  public static void setUp() throws Exception {
-    File testJars = new File("target/test-jars");
-    classPath = new ArrayList<>(FileUtils.listFiles(testJars, new String[]{"jar", "zip"}, true));
-    classPath.add(new File("target/test-classes"));
-  }
 
   @Test
   public void method_behavior_cache_should_be_filled() {
@@ -165,7 +143,7 @@ public class SymbolicExecutionVisitorTest {
   @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
-    MethodBehavior behavior = sev.behaviorCache.behaviors.values().iterator().next();
+    MethodBehavior behavior = getMethodBehavior(sev, "foo");
     assertThat(behavior.yields()).hasSize(5);
 
     behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(c -> assertThat(c.isNull()).isFalse());
@@ -211,28 +189,4 @@ public class SymbolicExecutionVisitorTest {
     verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
   }
 
-  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName) {
-    return createSymbolicExecutionVisitor(fileName, new NullDereferenceCheck());
-  }
-
-  private static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck seCheck) {
-    ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, classPath);
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(seCheck));
-    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    when(context.getTree()).thenReturn(cut);
-    when(context.getSemanticModel()).thenReturn(semanticModel);
-    sev.scanFile(context);
-    return sev;
-  }
-
-  private static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<MethodBehavior> mb = sev.behaviorCache.behaviors.entrySet().stream()
-      .filter(e -> methodName.equals(e.getKey().name()))
-      .map(Map.Entry::getValue)
-      .findFirst();
-    assertThat(mb.isPresent()).isTrue();
-    return mb.get();
-  }
 }
