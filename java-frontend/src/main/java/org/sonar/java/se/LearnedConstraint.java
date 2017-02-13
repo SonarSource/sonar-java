@@ -25,6 +25,8 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.Objects;
+
 public class LearnedConstraint {
   final SymbolicValue sv;
 
@@ -43,6 +45,24 @@ public class LearnedConstraint {
   @CheckForNull
   public Constraint constraint() {
     return constraint;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LearnedConstraint that = (LearnedConstraint) o;
+    return Objects.equals(sv, that.sv) &&
+      Objects.equals(constraint, that.constraint);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(sv, constraint);
   }
 
   @Override
