@@ -37,13 +37,12 @@ import java.util.Map;
 public class BehaviorCache {
 
   private final SymbolicExecutionVisitor sev;
+  @VisibleForTesting
+  public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
 
   public BehaviorCache(SymbolicExecutionVisitor sev) {
     this.sev = sev;
   }
-
-  @VisibleForTesting
-  public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
 
   public void add(Symbol.MethodSymbol symbol, MethodBehavior behavior) {
     behaviors.put(symbol, behavior);

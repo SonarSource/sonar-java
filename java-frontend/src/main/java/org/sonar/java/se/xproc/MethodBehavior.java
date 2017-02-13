@@ -23,8 +23,10 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -67,6 +69,17 @@ public class MethodBehavior {
       }
       yield = happyPathYield;
     }
+
+    // add the constraints on all the parameters
+    for (int i = 0; i < parameters.size(); i++) {
+      yield.setParameterConstraint(i, node.programState.getConstraint(parameters.get(i)));
+    }
+
+    yields.add(yield);
+  }
+
+  public void createExceptionalCheckBasedYield(ExplodedGraph.Node node, Type exceptionType, SECheck check) {
+    ExceptionalYield yield = new ExceptionalCheckBasedYield(exceptionType, check.getClass(), node, this);
 
     // add the constraints on all the parameters
     for (int i = 0; i < parameters.size(); i++) {

@@ -20,7 +20,6 @@
 package org.sonar.java.viewer;
 
 import com.google.common.collect.Lists;
-
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
@@ -30,8 +29,10 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.LearnedAssociation;
 import org.sonar.java.se.LearnedConstraint;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -41,6 +42,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javafx.scene.web.WebEngine;
 
@@ -64,13 +68,17 @@ public class EGViewer {
 
   private static ExplodedGraph buildEG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
-    SemanticModel.createFor(cut, Lists.newArrayList());
+    SemanticModel semanticModel = SemanticModel.createFor(cut, Lists.newArrayList());
     MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return getEg(firstMethod);
+    return getEg(cut, semanticModel, firstMethod);
   }
 
-  private static ExplodedGraph getEg(MethodTree methodTree) {
-    ExplodedGraphWalker walker = new ExplodedGraphWalker();
+  private static ExplodedGraph getEg(CompilationUnitTree cut, SemanticModel semanticModel, MethodTree methodTree) {
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    when(context.getTree()).thenReturn(cut);
+    when(context.getSemanticModel()).thenReturn(semanticModel);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList());
+    ExplodedGraphWalker walker = new ExplodedGraphWalker(sev.behaviorCache, semanticModel);
     walker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
     return walker.getExplodedGraph();
   }

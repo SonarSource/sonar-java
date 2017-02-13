@@ -480,6 +480,26 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void loadClass_with_edge_cases_do_not_fail() {
+    JavaSymbol symbolEmptyString = bytecodeCompleter.loadClass("");
+    assertThat(symbolEmptyString).isNotNull();
+    assertThat(symbolEmptyString.isUnknown()).isTrue();
+
+    JavaSymbol symbolRandom = bytecodeCompleter.loadClass("^/^/v/v/</>/</>/B/A");
+    assertThat(symbolRandom).isNotNull();
+    assertThat(symbolRandom.isUnknown()).isTrue();
+
+    JavaSymbol symbolUnknownClass = bytecodeCompleter.loadClass("org.sonar.java.resolve.targets.UnknownClass");
+    assertThat(symbolUnknownClass).isNotNull();
+    assertThat(symbolUnknownClass.isUnknown()).isTrue();
+
+    JavaSymbol symbolNPE = bytecodeCompleter.loadClass("java.lang.NullPointerException");
+    assertThat(symbolNPE).isNotNull();
+    assertThat(symbolNPE.isUnknown()).isFalse();
+    assertThat(symbolNPE.type().isSubtypeOf("java.lang.Exception")).isTrue();
+  }
+
+  @Test
   public void forward_type_parameter_in_methods() throws Exception {
     Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ForwardParameterInMethod");
     assertThat(clazz.type()).isNotNull();

@@ -27,6 +27,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -65,7 +66,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public MethodBehavior execute(MethodTree methodTree) {
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-      ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache);
+      ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
       if (methodCanNotBeOverriden(methodSymbol)) {
         MethodBehavior methodBehavior = new MethodBehavior(methodSymbol);
         behaviorCache.add(methodSymbol, methodBehavior);
