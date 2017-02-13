@@ -43,7 +43,7 @@ public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    if (context.getState().stackIsEmpty()) {
+    if (context.getState().peekValue() == null) {
       // stack is empty, nothing to do.
       return context.getState();
     }

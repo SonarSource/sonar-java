@@ -19,8 +19,6 @@
  */
 package org.sonar.java.collections;
 
-import javax.annotation.CheckForNull;
-
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -45,9 +43,9 @@ public interface PStack<E> {
   /**
    *
    * @param i - index of element to be returned, 0 means top of the stack
-   * @return i-th element from top of the stack or null, if stack doesn't have so many elements
+   * @return i-th element from top of the stack
+   * @throws IllegalStateException if stack has less than i elements
    */
-  @CheckForNull
   E peek(int i);
 
   /**

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.collections;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Objects;
@@ -55,7 +54,6 @@ final class SinglyLinkedList<E> implements PStack<E> {
   }
 
   @Override
-  @CheckForNull
   public E peek(int i) {
     int j = i;
     SinglyLinkedList<E> c = this;
@@ -63,7 +61,10 @@ final class SinglyLinkedList<E> implements PStack<E> {
       j--;
       c = c.next;
     }
-    return c != null ? c.element : null;
+    if (c == null) {
+      throw new IllegalStateException();
+    }
+    return c.element;
   }
 
   @Override
@@ -147,7 +148,7 @@ final class SinglyLinkedList<E> implements PStack<E> {
 
     @Override
     public Object peek(int i) {
-      return null;
+      throw new IllegalStateException();
     }
 
     @Override

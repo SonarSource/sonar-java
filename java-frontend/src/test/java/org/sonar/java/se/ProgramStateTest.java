@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProgramStateTest {
 
@@ -91,20 +92,12 @@ public class ProgramStateTest {
     assertThat(next).isSameAs(state);
   }
 
-  @Test
-  public void test_stack_is_empty() {
-    ProgramState state = ProgramState.EMPTY_STATE;
-    assertThat(state.stackIsEmpty()).isTrue();
-    SymbolicValue sv1 = new SymbolicValue(1);
-    state = state.stackValue(sv1);
-    assertThat(state.stackIsEmpty()).isFalse();
-    assertThat(state.clearStack().stackIsEmpty()).isTrue();
-  }
 
   @Test
   public void test_peek_nth_value() {
     ProgramState state = ProgramState.EMPTY_STATE;
-    assertThat(state.peekValue(0)).isNull();
+    ProgramState finalState = state;
+    assertThatThrownBy(() -> finalState.peekValue(0)).isInstanceOf(IllegalStateException.class);
     SymbolicValue sv1 = new SymbolicValue(1);
     state = state.stackValue(sv1);
     assertThat(state.peekValue(0)).isEqualTo(sv1);

@@ -153,7 +153,6 @@ public class ProgramState {
     return stack.isEmpty() ? null : stack.peek();
   }
 
-  @CheckForNull
   public SymbolicValue peekValue(int i) {
     return stack.peek(i);
   }
@@ -422,9 +421,4 @@ public class ProgramState {
   public boolean exitingOnRuntimeException() {
     return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
   }
-
-  public boolean stackIsEmpty() {
-    return stack.isEmpty();
-  }
-
 }

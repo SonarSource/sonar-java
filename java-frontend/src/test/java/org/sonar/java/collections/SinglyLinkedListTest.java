@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SinglyLinkedListTest {
 
@@ -131,15 +132,16 @@ public class SinglyLinkedListTest {
 
   @Test
   public void peek() {
-    PStack<Object> s = PCollections.emptyStack();
-    assertThat(s.peek(0)).isNull();
+    assertThatThrownBy(() -> PCollections.emptyStack().peek(0)).isInstanceOf(IllegalStateException.class);
+
     Object a = new Object();
-    s = s.push(a);
+    PStack<Object> s = PCollections.emptyStack().push(a);
     assertThat(s.peek(0)).isEqualTo(s.peek());
     Object b = new Object();
     s = s.push(b);
     assertThat(s.peek(1)).isEqualTo(a);
-    assertThat(s.peek(2)).isNull();
+    PStack<Object> finalS = s;
+    assertThatThrownBy(() -> finalS.peek(2)).isInstanceOf(IllegalStateException.class);
   }
 
 }
