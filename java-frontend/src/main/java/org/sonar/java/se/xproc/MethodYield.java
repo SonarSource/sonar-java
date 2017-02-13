@@ -27,6 +27,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -140,6 +141,10 @@ public abstract class MethodYield {
   public void setParameterConstraint(int index, @Nullable Constraint constraint) {
     Preconditions.checkArgument(index < parametersConstraints.length);
     parametersConstraints[index] = constraint;
+  }
+
+  public boolean generatedByCheck(SECheck check) {
+    return false;
   }
 
   @Override

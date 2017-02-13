@@ -59,7 +59,6 @@ public class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
     Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
-    List<MethodYield> yields = entry.getValue().yields();
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue(41);
@@ -68,7 +67,7 @@ public class MethodYieldTest {
     Symbol sym = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
     ps = ps.put(sym, sv1);
 
-    MethodYield methodYield = yields.get(0);
+    MethodYield methodYield = entry.getValue().happyPathYields().findFirst().get();
     Stream<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
@@ -115,9 +114,9 @@ public class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
     Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "bar");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
-    List<MethodYield> yields = entry.getValue().yields();
+    MethodBehavior mb = entry.getValue();
 
-    MethodYield trueYield = yields.stream()
+    MethodYield trueYield = mb.happyPathYields()
       .filter(y -> y.parameterConstraint(0) instanceof BooleanConstraint && ((BooleanConstraint) y.parameterConstraint(0)).isTrue())
       .findFirst().get();
     // force status of the arg1 to be B
@@ -173,11 +172,12 @@ public class MethodYieldTest {
 
     Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "varArgMethod");
     Symbol.MethodSymbol methodSymbol = entry.getKey();
-    List<MethodYield> yields = entry.getValue().yields();
-    assertThat(yields).hasSize(3);
-    assertThat(yields.stream().filter(y -> y instanceof ExceptionalYield).count()).isEqualTo(2);
+    MethodBehavior mb = entry.getValue();
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(5);
+    assertThat(mb.exceptionalPathYields()).hasSize(4);
 
-    MethodYield yield = yields.stream().filter(y -> y instanceof HappyPathYield).findFirst().get();
+    MethodYield yield = mb.happyPathYields().findFirst().get();
 
     // check that we have NOT_NULL constraint on the first argument
     assertThat(yield.parameterConstraint(0).isNull()).isFalse();

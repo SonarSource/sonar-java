@@ -90,5 +90,4 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       (methodSymbol.isPrivate() || methodSymbol.isFinal() || methodSymbol.isStatic() || methodSymbol.owner().isFinal());
   }
 
-
 }

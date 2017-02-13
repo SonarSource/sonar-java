@@ -1,9 +1,10 @@
 package foo.bar;
 
-import javax.annotation.Nonnull;
-
 abstract class A {
-  static void method(boolean b, @Nonnull A param) {
+  static void method(boolean b, A param) {
+    if (param == null) {
+      return;
+    }
     if (b) {
       // do something
     }

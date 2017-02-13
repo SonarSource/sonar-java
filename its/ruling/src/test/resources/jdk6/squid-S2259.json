@@ -7,6 +7,7 @@
 3753,
 ],
 'jdk6:java/awt/DefaultKeyboardFocusManager.java':[
+286,
 338,
 345,
 ],
@@ -23,6 +24,10 @@
 'jdk6:java/awt/ModalEventFilter.java':[
 85,
 92,
+],
+'jdk6:java/awt/color/ICC_Profile.java':[
+1222,
+1252,
 ],
 'jdk6:java/awt/datatransfer/MimeType.java':[
 332,
@@ -103,6 +108,9 @@
 ],
 'jdk6:java/text/RBTableBuilder.java':[
 428,
+],
+'jdk6:java/util/Calendar.java':[
+1866,
 ],
 'jdk6:java/util/Formatter.java':[
 3190,

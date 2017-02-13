@@ -22,15 +22,20 @@ package org.sonar.java.se.checks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,6 +45,8 @@ import java.util.List;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
+
+  private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -78,23 +85,32 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     Constraint constraint = programState.getConstraint(currentVal);
     if (constraint != null && constraint.isNull()) {
-      String symbolName = SyntaxTreeNameFinder.getName(syntaxNode);
-      String message = "NullPointerException might be thrown as '" + symbolName + "' is nullable here";
-      SymbolicValue val = null;
-      if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
-        val = currentVal;
-      }
-      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), val);
-      addDereferenceMessage(flow, syntaxNode);
-      reportIssue(syntaxNode, message, ImmutableSet.of(flow));
+      reportIssue(currentVal, syntaxNode, context.getNode());
+
+      // we reported the issue and stopped the exploration, but we still need to create a yield for x-procedural calls
+      context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
       return null;
     }
     constraint = programState.getConstraint(currentVal);
     if (constraint == null) {
+      // a NPE will be triggered if the current value would have been null
+      context.addExceptionalYield(currentVal, programState.addConstraint(currentVal, ObjectConstraint.nullConstraint()), JAVA_LANG_NPE, this);
+
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
       return programState.addConstraint(currentVal, ObjectConstraint.notNull());
     }
     return programState;
+  }
+
+  private void reportIssue(SymbolicValue currentVal, Tree syntaxNode, ExplodedGraph.Node node) {
+    String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
+    SymbolicValue val = null;
+    if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
+      val = currentVal;
+    }
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, val);
+    addDereferenceMessage(flow, syntaxNode);
+    reportIssue(syntaxNode, message, ImmutableSet.of(flow));
   }
 
   private static void addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {
@@ -106,6 +122,27 @@ public class NullDereferenceCheck extends SECheck {
       msg = String.format("'%s' is dereferenced.", symbolName);
     }
     flow.add(0, new JavaFileScannerContext.Location(msg, syntaxNode));
+  }
+
+  @Override
+  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    ExplodedGraph.Node exitNode = context.getNode();
+    exitNode.parents().stream().forEach(node -> {
+      MethodYield yield = exitNode.selectedMethodYield(node);
+      if (yield != null && yield.generatedByCheck(this)) {
+        reportIssueOnMethodInvocation(node);
+      }
+    });
+  }
+
+  private void reportIssueOnMethodInvocation(ExplodedGraph.Node node) {
+    MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
+    ExpressionTree methodSelect = mit.methodSelect();
+    Tree reportTree = methodSelect;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
+    }
+    reportIssue(reportTree, String.format("NullPointerException will be thrown when invoking method %s()", mit.symbol().name()), ImmutableSet.of());
   }
 
   @Override
