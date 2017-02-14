@@ -64,8 +64,12 @@ public class FlowComputation {
     this.domains = domains;
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
+  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
     return flow(currentNode, currentVal, constraint -> true, domains);
+  }
+
+  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow, List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, currentVal, addToFlow, c -> false, domains);
   }
 
   public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
@@ -73,7 +77,7 @@ public class FlowComputation {
     return flow(currentNode, currentVal, addToFlow, c -> false, domains);
   }
 
-  public static List<JavaFileScannerContext.Location> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                            Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
     FlowComputation flowComputation = new FlowComputation(currentVal, addToFlow, terminateTraversal, domains);
 
@@ -82,8 +86,7 @@ public class FlowComputation {
       Set<JavaFileScannerContext.Location> binSVFlow = flowComputation.flowFromBinarySV(currentNode, (BinarySymbolicValue) currentVal, trackSymbol);
       flowComputation.flow.addAll(binSVFlow);
     }
-    flowComputation.run(currentNode, trackSymbol);
-    return flowComputation.flow;
+    return flowComputation.run(currentNode, trackSymbol);
   }
 
   private Set<JavaFileScannerContext.Location> flowFromBinarySV(ExplodedGraph.Node currentNode, BinarySymbolicValue binarySV, Symbol trackSymbol) {
@@ -111,7 +114,7 @@ public class FlowComputation {
     }
   }
 
-  private void run(@Nullable final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
+  private Set<List<JavaFileScannerContext.Location>> run(@Nullable final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
     Deque<NodeSymbol> workList = new ArrayDeque<>();
     workList.add(new NodeSymbol(node, trackSymbol));
     while (!workList.isEmpty()) {
@@ -134,6 +137,7 @@ public class FlowComputation {
         workList.push(new NodeSymbol(parent, newTrackSymbol));
       }
     }
+    return ImmutableSet.of(flow);
   }
 
   private Stream<Constraint> addFlowFromLearnedConstraints(ExplodedGraph.Node currentNode) {
@@ -187,7 +191,9 @@ public class FlowComputation {
     }
     MethodYield selectedMethodYield = currentNode.selectedMethodYield(parent);
     if (selectedMethodYield != null) {
-      selectedMethodYield.flow(argIdx, domains).forEach(flowBuilder::add);
+      Set<List<JavaFileScannerContext.Location>> xProcFlows = selectedMethodYield.flow(argIdx, domains);
+      // FIXME SONARJAVA-2076 consider all flows from yields
+      xProcFlows.stream().findFirst().ifPresent(f -> f.forEach(flowBuilder::add));
     }
     return flowBuilder.build();
   }

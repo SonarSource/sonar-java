@@ -23,6 +23,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
@@ -37,10 +38,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S2583")
 public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
@@ -66,14 +67,19 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes, boolean conditionIsAlwaysTrue) {
-    return nodes.stream().map(node -> flowFromNode(node, conditionIsAlwaysTrue)).collect(Collectors.toSet());
+    return nodes.stream()
+      .map(node -> flowFromNode(node, conditionIsAlwaysTrue))
+      .reduce(new HashSet<>(), (left, right) -> {
+        left.addAll(right);
+        return left;
+      });
   }
 
-  private static List<JavaFileScannerContext.Location> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
+  private static Set<List<JavaFileScannerContext.Location>> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
     List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
-    flow.add(0, new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree()));
-    return flow;
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
+    flows.forEach(f -> f.add(0, new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree())));
+    return flows;
   }
 
   public void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {

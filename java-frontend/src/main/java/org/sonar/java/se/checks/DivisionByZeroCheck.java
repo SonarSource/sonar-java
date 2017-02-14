@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
@@ -257,10 +258,10 @@ public class DivisionByZeroCheck extends SECheck {
         flowMessage = "this expression contains division by zero";
       }
       List<Class<? extends Constraint>> domains = Lists.newArrayList(ZeroConstraint.class);
-      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), denominator, domains);
-      flow.add(0, new JavaFileScannerContext.Location(flowMessage, tree));
+      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains);
+      flows.forEach(f -> f.add(0, new JavaFileScannerContext.Location(flowMessage, tree)));
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
-        ImmutableSet.of(flow));
+        flows);
     }
 
     private ExpressionTree getDenominator(Tree tree) {

@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collection;
 import java.util.List;
 
 @Rule(key = "S2222")
@@ -182,9 +183,9 @@ public class LocksNotUnlockedCheck extends SECheck {
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(LockConstraint.LOCKED).stream()
-      .flatMap(sv -> {
+      .flatMap(sv ->{
         List<Class<? extends Constraint>> domains = Lists.newArrayList(LockConstraint.class);
-        return FlowComputation.flow(node, sv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, domains).stream();
+        return FlowComputation.flow(node, sv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, domains).stream().flatMap(Collection::stream);
       })
       .forEach(this::reportIssue);
   }

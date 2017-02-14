@@ -20,10 +20,10 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Test;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
+
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,11 +86,11 @@ public class MethodYieldTest {
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    List<JavaFileScannerContext.Location> flowReturnValue = methodYield.flow(-1, Lists.newArrayList(ObjectConstraint.class));
-    assertThat(flowReturnValue).isNotEmpty();
+    Set<List<JavaFileScannerContext.Location>> flowReturnValue = methodYield.flow(-1, Lists.newArrayList(ObjectConstraint.class));
+    assertThat(flowReturnValue.iterator().next()).isNotEmpty();
 
-    List<JavaFileScannerContext.Location> flowFirstParam = methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
-    assertThat(flowFirstParam).isNotEmpty();
+    Set<List<JavaFileScannerContext.Location>> flowFirstParam = methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    assertThat(flowFirstParam.iterator().next()).isNotEmpty();
   }
 
   @Test
