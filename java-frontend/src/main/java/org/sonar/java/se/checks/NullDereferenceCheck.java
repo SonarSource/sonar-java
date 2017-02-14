@@ -20,9 +20,10 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
@@ -34,17 +35,42 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "NullPointerException will be thrown when invoking method %s().");
+
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
+
+  private static class NullDereferenceIssue {
+    final ExplodedGraph.Node node;
+    final SymbolicValue symbolicValue;
+    final Tree tree;
+
+    private NullDereferenceIssue(ExplodedGraph.Node node, SymbolicValue symbolicValue, Tree tree) {
+      this.node = node;
+      this.symbolicValue = symbolicValue;
+      this.tree = tree;
+    }
+  }
+
+  private Deque<Set<NullDereferenceIssue>> detectedIssues = new ArrayDeque<>();
+
+  @Override
+  public void init(MethodTree methodTree, CFG cfg) {
+    detectedIssues.push(new HashSet<>());
+  }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -83,7 +109,8 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     ObjectConstraint constraint = programState.getConstraint(currentVal, ObjectConstraint.class);
     if (constraint != null && constraint.isNull()) {
-      reportIssue(currentVal, syntaxNode, context.getNode());
+      NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), currentVal, syntaxNode);
+      detectedIssues.peek().add(issue);
 
       // we reported the issue and stopped the exploration, but we still need to create a yield for x-procedural calls
       context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
@@ -125,7 +152,8 @@ public class NullDereferenceCheck extends SECheck {
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
-      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
+      NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), context.getState().peekValue(), syntaxNode);
+      detectedIssues.peek().add(issue);
       context.createSink();
       return context.getState();
     }
@@ -157,4 +185,18 @@ public class NullDereferenceCheck extends SECheck {
     EXCEPTIONAL_YIELD_CHECKER.reportOnExceptionalYield(context.getNode(), this);
   }
 
+  @Override
+  public void checkEndOfExecution(CheckerContext context) {
+    reportIssues();
+  }
+
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    reportIssues();
+  }
+
+  private void reportIssues() {
+    Set<NullDereferenceIssue> issues = detectedIssues.pop();
+    issues.forEach(issue -> reportIssue(issue.symbolicValue, issue.tree, issue.node));
+  }
 }

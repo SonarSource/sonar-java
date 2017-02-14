@@ -58,4 +58,9 @@ public class NullDereferenceCheckTest {
   public void ruling() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/NPEwithZeroTests.java", new NullDereferenceCheck());
   }
+
+  @Test
+  public void test_deferred_reporting() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/NPE_deferred.java", new NullDereferenceCheck());
+  }
 }
