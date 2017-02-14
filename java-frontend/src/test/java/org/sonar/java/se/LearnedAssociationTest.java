@@ -19,34 +19,21 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.se.constraint.Constraint;
+import org.junit.Test;
+
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class LearnedConstraint {
-  final SymbolicValue sv;
+public class LearnedAssociationTest {
 
-  @Nullable
-  final Constraint constraint;
 
-  public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
-    this.sv = sv;
-    this.constraint = constraint;
+  @Test
+  public void test_toString() throws Exception {
+    LearnedAssociation la = new LearnedAssociation(new SymbolicValue(1), new JavaSymbol.VariableJavaSymbol(JavaSymbol.VAR, "a", mock(JavaSymbol.MethodJavaSymbol.class)));
+    assertThat(la.toString()).isEqualTo("SV_1 - a");
   }
 
-  public SymbolicValue symbolicValue() {
-    return sv;
-  }
-
-  @CheckForNull
-  public Constraint constraint() {
-    return constraint;
-  }
-
-  @Override
-  public String toString() {
-    return sv + " - " + constraint;
-  }
 }
