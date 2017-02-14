@@ -36,6 +36,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -167,9 +168,9 @@ public abstract class MethodYield {
     return result.build();
   }
 
-  public List<JavaFileScannerContext.Location> flow(int parameterIndex, List<Class<? extends Constraint>> domains) {
+  public Set<List<JavaFileScannerContext.Location>> flow(int parameterIndex, List<Class<? extends Constraint>> domains) {
     if(node == null || behavior == null) {
-      return Lists.newArrayList();
+      return Collections.emptySet();
     }
     if(parameterIndex < 0) {
       return FlowComputation.flow(node, node.programState.exitValue(), domains);

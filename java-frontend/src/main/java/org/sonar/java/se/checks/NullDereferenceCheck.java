@@ -133,9 +133,9 @@ public class NullDereferenceCheck extends SECheck {
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;
     }
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class));
-    addDereferenceMessage(flow, syntaxNode);
-    reportIssue(syntaxNode, message, ImmutableSet.of(flow));
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class));
+    flows.forEach(f -> addDereferenceMessage(f, syntaxNode));
+    reportIssue(syntaxNode, message, flows);
   }
 
   private static void addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {

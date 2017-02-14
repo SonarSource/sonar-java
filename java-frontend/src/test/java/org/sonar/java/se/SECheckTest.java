@@ -29,6 +29,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -40,8 +41,8 @@ public class SECheckTest {
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), mock(ProgramState.class));
     node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), mock(ProgramState.class)), null);
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node, new SymbolicValue(12), Lists.newArrayList(ObjectConstraint.class));
-    assertThat(flow).isEmpty();
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, new SymbolicValue(12), Lists.newArrayList(ObjectConstraint.class));
+    assertThat(flows.iterator().next()).isEmpty();
   }
 
 }
