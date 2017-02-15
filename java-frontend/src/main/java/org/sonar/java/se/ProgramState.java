@@ -336,7 +336,12 @@ public class ProgramState {
           && isDisposable(symbolicValue, constraint)
           && !inStack(stack, symbolicValue)) {
           newProgramState = true;
-          newConstraints = newConstraints.put(symbolicValue, newConstraints.get(symbolicValue).remove(domain));
+          PMap<Class<? extends Constraint>, Constraint> removed = newConstraints.get(symbolicValue).remove(domain);
+          if(removed.isEmpty()) {
+            newConstraints = newConstraints.remove(symbolicValue);
+          } else {
+            newConstraints = newConstraints.put(symbolicValue, removed);
+          }
           newReferences = newReferences.remove(symbolicValue);
         }
        });
