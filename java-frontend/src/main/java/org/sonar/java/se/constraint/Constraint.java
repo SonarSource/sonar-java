@@ -29,8 +29,9 @@ public interface Constraint {
     return "";
   }
 
+  @Nullable
   default Constraint inverse() {
-    return this;
+    return null;
   }
 
   default boolean isValidWith(@Nullable Constraint constraint) {
