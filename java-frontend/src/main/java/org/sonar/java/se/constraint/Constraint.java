@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.constraint;
 
+import javax.annotation.Nullable;
+
 public interface Constraint {
   /**
    * @return String representation of value encoded by constraint for purpose of flow message
@@ -29,5 +31,9 @@ public interface Constraint {
 
   default Constraint inverse() {
     return this;
+  }
+
+  default boolean isValidWith(@Nullable Constraint constraint) {
+    return true;
   }
 }

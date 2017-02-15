@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(key = "S3518")
@@ -47,28 +49,27 @@ public class DivisionByZeroCheck extends SECheck {
 
   private enum ZeroConstraint implements Constraint {
     ZERO,
-    NON_ZERO,
-    UNDETERMINED;
+    NON_ZERO;
 
     @Override
     public String valueAsString() {
-      switch (this) {
-        case ZERO:
-          return "zero";
-        case NON_ZERO:
-          return "non-zero";
-        case UNDETERMINED:
-          return  "\"maybe-zero\"";
+      if (this == ZeroConstraint.ZERO) {
+        return "zero";
       }
-      throw new IllegalStateException("missing case for zero constraint enum");
+      return "non-zero";
+    }
+
+    @Override
+    public boolean isValidWith(@Nullable Constraint constraint) {
+      return constraint == null || this == constraint;
     }
 
     @Override
     public Constraint inverse() {
-      if(this == ZERO) {
+      if (this == ZERO) {
         return NON_ZERO;
       }
-     return this;
+      return null;
     }
   }
 
@@ -77,9 +78,10 @@ public class DivisionByZeroCheck extends SECheck {
    */
   private static class DeferredConstraintHolderSV extends SymbolicValue {
 
+    @Nullable
     private final ZeroConstraint deferredConstraint;
 
-    DeferredConstraintHolderSV(int id, ZeroConstraint deferredConstraint) {
+    DeferredConstraintHolderSV(int id, @Nullable ZeroConstraint deferredConstraint) {
       super(id);
       this.deferredConstraint = deferredConstraint;
     }
@@ -145,7 +147,10 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void setAsUndetermined(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, ZeroConstraint.UNDETERMINED);
+      PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
+      if(constraints != null) {
+        programState = programState.addConstraints(sv, constraints.remove(ZeroConstraint.class));
+      }
     }
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -205,29 +210,21 @@ public class DivisionByZeroCheck extends SECheck {
       } else if (isZero(leftOp)) {
         reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
-        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? ZeroConstraint.NON_ZERO : ZeroConstraint.UNDETERMINED);
+        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? ZeroConstraint.NON_ZERO : null);
       }
     }
 
-    private void deferConstraint(ZeroConstraint constraint) {
+    private void deferConstraint(@Nullable ZeroConstraint constraint) {
       constraintManager.setValueFactory(id -> new DeferredConstraintHolderSV(id, constraint));
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory(id -> new DeferredConstraintHolderSV(id, constraintOf(sv)) {
+      constraintManager.setValueFactory(id -> new DeferredConstraintHolderSV(id, programState.getConstraint(sv, ZeroConstraint.class)) {
         @Override
         public SymbolicValue wrappedValue() {
           return sv.wrappedValue();
         }
       });
-    }
-
-    private ZeroConstraint constraintOf(SymbolicValue sv) {
-      ZeroConstraint constraint = programState.getConstraint(sv, ZeroConstraint.class);
-      if(constraint == null) {
-        return ZeroConstraint.UNDETERMINED;
-      }
-      return constraint;
     }
 
     private void reportIssue(Tree tree, SymbolicValue denominator) {
@@ -280,7 +277,7 @@ public class DivisionByZeroCheck extends SECheck {
             deferConstraint(ZeroConstraint.NON_ZERO);
           }
         } else {
-          deferConstraint(ZeroConstraint.UNDETERMINED);
+          deferConstraint(null);
         }
       }
     }
@@ -346,7 +343,14 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void addZeroConstraint(SymbolicValue sv, ZeroConstraint zeroConstraint) {
-      programState = programState.addConstraint(sv, zeroConstraint);
+      if(zeroConstraint == null) {
+        PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
+        if(constraints != null) {
+          programState = programState.addConstraints(sv, constraints.remove(ZeroConstraint.class));
+        }
+      } else {
+        programState = programState.addConstraint(sv, zeroConstraint);
+      }
     }
   }
 }

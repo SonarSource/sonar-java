@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.constraint;
 
+import javax.annotation.Nullable;
+
 public enum BooleanConstraint implements Constraint {
   TRUE,
   FALSE;
@@ -38,6 +40,12 @@ public enum BooleanConstraint implements Constraint {
     }
     return "false";
   }
+
+  @Override
+  public boolean isValidWith(@Nullable Constraint constraint) {
+    return constraint == null || this == constraint;
+  }
+
 
   public BooleanConstraint inverse() {
     if (TRUE == this) {

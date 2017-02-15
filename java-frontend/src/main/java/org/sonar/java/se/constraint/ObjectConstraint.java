@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.constraint;
 
+import javax.annotation.Nullable;
+
 public enum ObjectConstraint implements Constraint {
   NULL,
   NOT_NULL;
@@ -33,6 +35,11 @@ public enum ObjectConstraint implements Constraint {
       return "null";
     }
     return "non-null";
+  }
+
+  @Override
+  public boolean isValidWith(@Nullable Constraint constraint) {
+    return constraint == null || this == constraint;
   }
 
   @Override

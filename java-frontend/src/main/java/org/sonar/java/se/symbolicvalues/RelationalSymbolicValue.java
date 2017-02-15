@@ -20,11 +20,14 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -141,13 +144,52 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return copiedConstraints;
   }
 
-  @Override
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     ProgramState newState = programState;
     if (programState.canReach(from) || programState.canReach(to)) {
       newState = programState.addConstraint(this, booleanConstraint);
     }
-    return super.copyConstraint(from, to, newState, booleanConstraint);
+    return copyConstraintFromTo(from, to, newState, booleanConstraint);
+  }
+
+  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+    List<ProgramState> states = new ArrayList<>();
+    states.add(programState);
+    PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
+    if (leftConstraints != null) {
+      leftConstraints.forEach((d, c) -> {
+        List<ProgramState> newStates = new ArrayList<>();
+        for (ProgramState state : states) {
+          if(ObjectConstraint.class.equals(d)) {
+            if(((ObjectConstraint) c).isNull()) {
+              newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
+            } else if(shouldNotInverse().equals(booleanConstraint)) {
+              newStates.addAll(to.setConstraint(state, c));
+            } else {
+              newStates.add(state);
+            }
+            continue;
+          } else if(BooleanConstraint.class.equals(d)) {
+            newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
+            continue;
+          }
+          Constraint constraint = shouldNotInverse().equals(booleanConstraint) ? c : c.inverse();
+          if (constraint == null) {
+            PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
+            if (constraints != null) {
+              newStates.add(state.addConstraints(to, constraints.remove(c.getClass())));
+            } else {
+              newStates.add(state);
+            }
+          } else {
+            newStates.addAll(to.setConstraint(state, constraint));
+          }
+        }
+        states.clear();
+        states.addAll(newStates);
+      });
+    }
+    return states;
   }
 
   @CheckForNull

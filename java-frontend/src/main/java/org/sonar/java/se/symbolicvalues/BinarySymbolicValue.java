@@ -20,13 +20,8 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
-import org.sonar.java.collections.PMap;
-import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.constraint.ObjectConstraint;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
@@ -50,36 +45,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     Preconditions.checkArgument(symbolicValues.size() == 2);
     rightOp = symbolicValues.get(0);
     leftOp = symbolicValues.get(1);
-  }
-
-  protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-    List<ProgramState> states = new ArrayList<>();
-    states.add(programState);
-    PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
-    if (leftConstraints != null) {
-      leftConstraints.forEach((d, c) -> {
-        List<ProgramState> newStates = new ArrayList<>();
-        for (ProgramState state : states) {
-          if(ObjectConstraint.class.equals(d)) {
-            if(((ObjectConstraint) c).isNull()) {
-              newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
-            } else if(shouldNotInverse().equals(booleanConstraint)) {
-              newStates.addAll(to.setConstraint(state, c));
-            } else {
-              newStates.add(state);
-            }
-            continue;
-          } else if(BooleanConstraint.class.equals(d)) {
-            newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
-            continue;
-          }
-          newStates.addAll(to.setConstraint(state, shouldNotInverse().equals(booleanConstraint) ? c : c.inverse()));
-        }
-        states.clear();
-        states.addAll(newStates);
-      });
-    }
-    return states;
   }
 
   public SymbolicValue getLeftOp() {

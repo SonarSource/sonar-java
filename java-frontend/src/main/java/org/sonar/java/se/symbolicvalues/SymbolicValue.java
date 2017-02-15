@@ -154,11 +154,15 @@ public class SymbolicValue {
     } else if(constraint instanceof ObjectConstraint) {
       return setConstraint(programState, (ObjectConstraint) constraint);
     }
-    Constraint cstraint = programState.getConstraint(this, constraint.getClass());
-    if (cstraint == null || cstraint != constraint) {
+    Constraint csrtaint = programState.getConstraint(this, constraint.getClass());
+    if (constraint.isValidWith(csrtaint)) {
+      if(constraint == csrtaint) {
+        return ImmutableList.of(programState);
+      }
       return ImmutableList.of(programState.addConstraint(this, constraint));
+    } else {
+      return ImmutableList.of();
     }
-    return ImmutableList.of(programState);
   }
 
   public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
