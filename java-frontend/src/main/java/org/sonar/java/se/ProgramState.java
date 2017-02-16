@@ -292,7 +292,7 @@ public class ProgramState {
       : this;
   }
 
-  public ProgramState cleanupConstraints() {
+  public ProgramState cleanupConstraints(Collection<SymbolicValue> protectedSymbolicValues) {
     class CleanAction implements BiConsumer<SymbolicValue, Constraint> {
       boolean newProgramState = false;
       PMap<SymbolicValue, Constraint> newConstraints = constraints;
@@ -300,7 +300,10 @@ public class ProgramState {
 
       @Override
       public void accept(SymbolicValue symbolicValue, Constraint constraint) {
-        if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, constraint) && !inStack(stack, symbolicValue)) {
+        if (!protectedSymbolicValues.contains(symbolicValue)
+          && !isReachable(symbolicValue, newReferences)
+          && isDisposable(symbolicValue, constraint)
+          && !inStack(stack, symbolicValue)) {
           newProgramState = true;
           newConstraints = newConstraints.remove(symbolicValue);
           newReferences = newReferences.remove(symbolicValue);
