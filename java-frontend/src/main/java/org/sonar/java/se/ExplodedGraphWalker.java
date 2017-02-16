@@ -130,6 +130,7 @@ public class ExplodedGraphWalker {
   private LiveVariables liveVariables;
   @VisibleForTesting
   CheckerDispatcher checkerDispatcher;
+  private CFG.Block exitBlock;
 
   private final BehaviorCache behaviorCache;
   @VisibleForTesting
@@ -200,6 +201,7 @@ public class ExplodedGraphWalker {
 
   private void execute(MethodTree tree) {
     CFG cfg = CFG.build(tree);
+    exitBlock = cfg.exitBlock();
     checkerDispatcher.init(tree, cfg);
     liveVariables = LiveVariables.analyze(cfg);
     explodedGraph = new ExplodedGraph();
@@ -715,14 +717,20 @@ public class ExplodedGraphWalker {
     ps.storeExitValue();
 
     // use other exceptional blocks, i.e. finally block and exit blocks
-    exceptionBlocks.stream()
+    List<CFG.Block> otherBlocks = exceptionBlocks.stream()
       .filter(CFG.Block.IS_CATCH_BLOCK.negate())
-      .forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
-
-    // explicitly add the exception if next block is method exit
-    node.programPoint.block.successors().stream()
-      .filter(CFG.Block::isMethodExitBlock)
-      .forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
+      .collect(Collectors.toList());
+    if (otherBlocks.isEmpty()) {
+      // explicitly add the exception branching to method exit
+      CFG.Block methodExit = node.programPoint.block.successors()
+        .stream()
+        .filter(CFG.Block::isMethodExitBlock)
+        .findFirst()
+        .orElse(exitBlock);
+      enqueue(new ProgramPoint(methodExit), ps, true, methodYield);
+    } else {
+      otherBlocks.forEach(b -> enqueue(new ProgramPoint(b), ps, true, methodYield));
+    }
   }
 
   private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
