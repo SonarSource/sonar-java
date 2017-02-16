@@ -33,6 +33,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -129,7 +130,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
     }
 
     private boolean isStringUtilsMethod(Symbol.MethodSymbol symbol) {
-      return symbol.owner().type().is("org.apache.commons.lang3.StringUtils");
+      Type ownerType = symbol.owner().type();
+      return ownerType.is("org.apache.commons.lang3.StringUtils") || ownerType.is("org.apache.commons.lang.StringUtils");
     }
 
     private boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {

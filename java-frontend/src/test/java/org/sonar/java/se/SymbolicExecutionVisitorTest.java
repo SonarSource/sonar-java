@@ -176,9 +176,19 @@ public class SymbolicExecutionVisitorTest {
   }
 
   @Test
-  public void string_utils_method_should_be_handled() throws Exception {
+  public void commons_lang3_string_utils_method_should_be_handled() throws Exception {
     NullDereferenceCheck seCheck = new NullDereferenceCheck();
-    createSymbolicExecutionVisitor("src/test/files/se/StringUtilsMethods.java", seCheck);
+    createSymbolicExecutionVisitor("src/test/files/se/CommonsLang3StringUtilsMethods.java", seCheck);
+    // verify we did not raise any issue, if we did, the context will get them reported.
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    seCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+  }
+
+  @Test
+  public void commons_lang2_string_utils_method_should_be_handled() throws Exception {
+    NullDereferenceCheck seCheck = new NullDereferenceCheck();
+    createSymbolicExecutionVisitor("src/test/files/se/CommonsLang2StringUtilsMethods.java", seCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     seCheck.scanFile(context);
