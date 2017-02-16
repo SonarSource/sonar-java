@@ -132,7 +132,7 @@ public class CFG {
     computePredecessors(blocks);
   }
 
-  private Block exitBlock() {
+  public Block exitBlock() {
     return exitBlocks.peek();
   }
 

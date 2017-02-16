@@ -56,8 +56,8 @@ public class A {
   public void whileLoopHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=while]] {{Close this "FileInputStream".}} flow@while {{FileInputStream is never closed.}}
     while(needsMore()) {
-      stream = new FileInputStream("myFile");
-      stream.read();
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
+      stream.read(); // can fail
       stream.close();
     }
    return;
@@ -179,7 +179,7 @@ public class A {
   public void forLoopHandling(int maxLoop) {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=for]] {{Close this "FileInputStream".}} flow@for {{FileInputStream is never closed.}}
     for(int i = 0; i < maxLoop; i++) {
-      stream = new FileInputStream("myFile");
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read();  // can fail
       stream.close();
     }
@@ -189,8 +189,8 @@ public class A {
   public void forEachLoopHandling(List<Object> objects) {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=for2]] {{Close this "FileInputStream".}} flow@for2 {{FileInputStream is never closed.}}
     for(Object object : objects) {
-      stream = new FileInputStream("myFile");
-      stream.read();
+      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
+      stream.read(); // can fail
       stream.close();
     }
    return;
