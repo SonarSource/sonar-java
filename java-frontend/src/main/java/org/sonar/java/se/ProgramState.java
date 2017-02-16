@@ -216,11 +216,9 @@ public class ProgramState {
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
     PMap<Class<? extends Constraint>, Constraint> constraintsForSV = constraints.get(symbolicValue);
     if(constraintsForSV == null) {
-      constraintsForSV = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(constraint.getClass(), constraint);
-    } else {
-      constraintsForSV = constraintsForSV.put(constraint.getClass(), constraint);
+      constraintsForSV = PCollections.emptyMap();
     }
-    return addConstraints(symbolicValue, constraintsForSV);
+    return addConstraints(symbolicValue, constraintsForSV.put(constraint.getClass(), constraint));
   }
 
   public ProgramState addConstraints(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintsForSV) {
