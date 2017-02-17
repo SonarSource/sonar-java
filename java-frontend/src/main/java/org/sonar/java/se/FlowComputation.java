@@ -142,9 +142,15 @@ public class FlowComputation {
       return Stream.empty();
     }
     return currentNode.learnedConstraints()
-      .filter(lc -> lc.symbolicValue().equals(symbolicValue) && (lc.constraint == null || domains.stream().anyMatch(d -> d.isAssignableFrom(lc.constraint.getClass()))))
+      .filter(lc -> lc.symbolicValue().equals(symbolicValue))
+      .filter(this::learnedConstraintForDomains)
       .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
+  }
+
+  private boolean learnedConstraintForDomains(LearnedConstraint lc) {
+    Constraint constraint = lc.constraint;
+    return constraint == null || domains.stream().anyMatch(d -> d.isAssignableFrom(constraint.getClass()));
   }
 
   private Stream<JavaFileScannerContext.Location> learnedConstraintFlow(@Nullable Constraint learnedConstraint, ExplodedGraph.Node currentNode, ExplodedGraph.Node parent) {
