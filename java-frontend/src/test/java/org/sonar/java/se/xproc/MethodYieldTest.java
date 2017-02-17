@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.collections.PCollections;
@@ -86,10 +87,10 @@ public class MethodYieldTest {
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    Set<List<JavaFileScannerContext.Location>> flowReturnValue = methodYield.flow(-1, Lists.newArrayList(ObjectConstraint.class));
+    Set<List<JavaFileScannerContext.Location>> flowReturnValue = methodYield.flow(ImmutableList.of(-1), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flowReturnValue.iterator().next()).isNotEmpty();
 
-    Set<List<JavaFileScannerContext.Location>> flowFirstParam = methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    Set<List<JavaFileScannerContext.Location>> flowFirstParam = methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
     assertThat(flowFirstParam.iterator().next()).isNotEmpty();
   }
 
@@ -105,7 +106,7 @@ public class MethodYieldTest {
   @Test
   public void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
-    assertThat(methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
+    assertThat(methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
   }
 
   private static ExplodedGraph.Node mockNode() {

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
@@ -258,8 +259,12 @@ public class DivisionByZeroCheck extends SECheck {
         flowMessage = "this expression contains division by zero";
       }
       List<Class<? extends Constraint>> domains = Lists.newArrayList(ZeroConstraint.class);
-      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains);
-      flows.forEach(f -> f.add(0, new JavaFileScannerContext.Location(flowMessage, tree)));
+      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains).stream()
+        .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
+          .add(new JavaFileScannerContext.Location(flowMessage, tree))
+          .addAll(f)
+          .build())
+        .collect(Collectors.toSet());
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
         flows);
     }
