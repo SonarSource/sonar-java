@@ -96,6 +96,15 @@ public class MethodYieldTest {
   }
 
   @Test
+  public void test_yield_on_reassignments() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getMethodBehavior(sev, "foo");
+    MethodBehavior mb = entry.getValue();
+
+    assertThat(mb.happyPathYields()).allMatch(y -> y.parametersConstraints[0] != null && !y.parametersConstraints[0].isNull());
+  }
+
+  @Test
   public void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new MethodYield(1, false, null, mock(MethodBehavior.class));
     assertThat(methodYield.flow(0)).isEmpty();

@@ -330,9 +330,9 @@ public class ExplodedGraphWalker {
 
   private void cleanUpProgramState(CFG.Block block) {
     if (cleanup) {
-      Collection<SymbolicValue> protectedSymbols = methodBehavior == null ? Collections.emptyList() : methodBehavior.parameters();
-      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), protectedSymbols);
-      programState = programState.cleanupConstraints();
+      Collection<SymbolicValue> protectedSVs = methodBehavior == null ? Collections.emptyList() : methodBehavior.parameters();
+      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), protectedSVs);
+      programState = programState.cleanupConstraints(protectedSVs);
     }
   }
 
