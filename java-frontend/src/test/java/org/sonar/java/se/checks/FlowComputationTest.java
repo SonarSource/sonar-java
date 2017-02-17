@@ -63,4 +63,9 @@ public class FlowComputationTest {
   public void test_relational_sv_operands() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationRelSV.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
+
+  @Test
+  public void test_multiple_paths() {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePath.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+  }
 }

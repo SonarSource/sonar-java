@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -168,13 +169,18 @@ public abstract class MethodYield {
     return result.build();
   }
 
-  public Set<List<JavaFileScannerContext.Location>> flow(int parameterIndex, List<Class<? extends Constraint>> domains) {
+  public Set<List<JavaFileScannerContext.Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
     if(node == null || behavior == null) {
       return Collections.emptySet();
     }
-    if(parameterIndex < 0) {
-      return FlowComputation.flow(node, node.programState.exitValue(), domains);
+    ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
+    for (Integer parameterIndex : parameterIndices) {
+      if (parameterIndex == -1) {
+        parameterSVs.add(node.programState.exitValue());
+      } else {
+        parameterSVs.add(behavior.parameters().get(parameterIndex));
+      }
     }
-    return FlowComputation.flow(node, behavior.parameters().get(parameterIndex), domains);
+    return FlowComputation.flow(node, parameterSVs.build(), c -> true, c -> false, domains);
   }
 }

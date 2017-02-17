@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
@@ -44,6 +45,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
@@ -133,12 +135,13 @@ public class NullDereferenceCheck extends SECheck {
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;
     }
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class));
-    flows.forEach(f -> addDereferenceMessage(f, syntaxNode));
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class)).stream()
+      .map(f -> addDereferenceMessage(f, syntaxNode))
+      .collect(Collectors.toSet());
     reportIssue(syntaxNode, message, flows);
   }
 
-  private static void addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {
+  private static List<JavaFileScannerContext.Location> addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {
     String symbolName = SyntaxTreeNameFinder.getName(syntaxNode);
     String msg;
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) syntaxNode).expression().is(Tree.Kind.METHOD_INVOCATION)) {
@@ -146,7 +149,10 @@ public class NullDereferenceCheck extends SECheck {
     } else {
       msg = String.format("'%s' is dereferenced.", symbolName);
     }
-    flow.add(0, new JavaFileScannerContext.Location(msg, syntaxNode));
+    return ImmutableList.<JavaFileScannerContext.Location>builder()
+      .add(new JavaFileScannerContext.Location(msg, syntaxNode))
+      .addAll(flow)
+      .build();
   }
 
   @Override

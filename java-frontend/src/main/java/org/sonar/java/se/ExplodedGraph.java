@@ -27,6 +27,7 @@ import org.sonar.java.se.xproc.MethodYield;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -133,6 +134,10 @@ public class ExplodedGraph {
     public MethodYield selectedMethodYield(Node from) {
       return edges.containsKey(from) ? edges.get(from).yields.stream().findFirst().orElse(null) : null;
     }
+
+    Collection<Edge> edges() {
+      return edges.values();
+    }
   }
 
   static final class Edge {
@@ -163,5 +168,22 @@ public class ExplodedGraph {
       return la;
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Edge edge = (Edge) o;
+      return Objects.equals(child, edge.child) &&
+        Objects.equals(parent, edge.parent);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(child, parent);
+    }
   }
 }
