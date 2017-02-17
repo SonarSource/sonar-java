@@ -46,10 +46,7 @@ public enum BooleanConstraint implements Constraint {
     return constraint == null || this == constraint;
   }
 
-  public static boolean isBooleanConstraint(Constraint constraint) {
-    return constraint == TRUE || constraint == FALSE;
-  }
-
+  @Override
   public BooleanConstraint inverse() {
     if (TRUE == this) {
       return FALSE;

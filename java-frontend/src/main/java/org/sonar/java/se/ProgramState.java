@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
@@ -328,21 +327,21 @@ public class ProgramState {
 
       @Override
       public void accept(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintPMap) {
-          constraintPMap.forEach((domain, constraint) -> {
-        if (!protectedSymbolicValues.contains(symbolicValue)
-          && !isReachable(symbolicValue, newReferences)
-          && isDisposable(symbolicValue, constraint)
-          && !inStack(stack, symbolicValue)) {
-          newProgramState = true;
-          PMap<Class<? extends Constraint>, Constraint> removed = newConstraints.get(symbolicValue).remove(domain);
-          if(removed.isEmpty()) {
-            newConstraints = newConstraints.remove(symbolicValue);
-          } else {
-            newConstraints = newConstraints.put(symbolicValue, removed);
+        constraintPMap.forEach((domain, constraint) -> {
+          if (!protectedSymbolicValues.contains(symbolicValue)
+            && !isReachable(symbolicValue, newReferences)
+            && isDisposable(symbolicValue, constraint)
+            && !inStack(stack, symbolicValue)) {
+            newProgramState = true;
+            PMap<Class<? extends Constraint>, Constraint> removed = newConstraints.get(symbolicValue).remove(domain);
+            if (removed.isEmpty()) {
+              newConstraints = newConstraints.remove(symbolicValue);
+            } else {
+              newConstraints = newConstraints.put(symbolicValue, removed);
+            }
+            newReferences = newReferences.remove(symbolicValue);
           }
-          newReferences = newReferences.remove(symbolicValue);
-        }
-       });
+        });
       }
     }
     CleanAction cleanAction = new CleanAction();
@@ -421,7 +420,7 @@ public class ProgramState {
     final List<SymbolicValue> result = new ArrayList<>();
     constraints.forEach((symbolicValue, constraintByDomain) -> {
       Constraint find = constraintByDomain.get(constraint.getClass());
-      if(find == constraint) {
+      if(constraint.equals(find)) {
         result.add(symbolicValue);
       }
     });
