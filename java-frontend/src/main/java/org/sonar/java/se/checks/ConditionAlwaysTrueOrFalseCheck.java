@@ -29,6 +29,7 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -69,7 +70,8 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static List<JavaFileScannerContext.Location> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue(), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
     flow.add(0, new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree()));
     return flow;
   }

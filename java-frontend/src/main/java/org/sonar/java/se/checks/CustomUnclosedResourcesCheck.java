@@ -41,6 +41,8 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
 
+import java.util.List;
+
 @Rule(key = "S3546")
 @RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
@@ -114,7 +116,8 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    FlowComputation.flow(node, sv, c -> c == OPENED, Lists.newArrayList(CustomResourceConstraint.class)).stream()
+    List<Class<? extends Constraint>> domains = Lists.newArrayList(CustomResourceConstraint.class);
+    FlowComputation.flow(node, sv, OPENED::equals, domains).stream()
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }

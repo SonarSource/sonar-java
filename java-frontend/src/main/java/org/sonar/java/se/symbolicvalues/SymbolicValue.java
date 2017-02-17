@@ -147,12 +147,10 @@ public class SymbolicValue {
 
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
     Constraint cstraint = programState.getConstraint(this, booleanConstraint.getClass());
-    if (cstraint == null) {
-      return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
-    } else if (cstraint != booleanConstraint) {
+    if (!booleanConstraint.isValidWith(cstraint)) {
       return ImmutableList.of();
     }
-    return ImmutableList.of(programState);
+    return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
@@ -163,13 +161,9 @@ public class SymbolicValue {
     }
     Constraint csrtaint = programState.getConstraint(this, constraint.getClass());
     if (constraint.isValidWith(csrtaint)) {
-      if(constraint == csrtaint) {
-        return ImmutableList.of(programState);
-      }
       return ImmutableList.of(programState.addConstraint(this, constraint));
-    } else {
-      return ImmutableList.of();
     }
+    return ImmutableList.of();
   }
 
   public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
