@@ -240,7 +240,8 @@ public class DivisionByZeroCheck extends SECheck {
         expressionName = "this expression";
         flowMessage = "this expression contains division by zero";
       }
-      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), denominator, Lists.newArrayList(ZeroConstraint.class));
+      List<Class<? extends Constraint>> domains = Lists.newArrayList(ZeroConstraint.class);
+      List<JavaFileScannerContext.Location> flow = FlowComputation.flow(context.getNode(), denominator, domains);
       flow.add(0, new JavaFileScannerContext.Location(flowMessage, tree));
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
         ImmutableSet.of(flow));
