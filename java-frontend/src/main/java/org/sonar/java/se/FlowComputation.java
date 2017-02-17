@@ -124,7 +124,7 @@ public class FlowComputation {
 
       Symbol newTrackSymbol = nodeSymbol.trackSymbol;
       if (currentNode.programPoint.syntaxTree() != null) {
-        newTrackSymbol = addFlowFromLearnedSymbols(currentNode, newTrackSymbol);
+        newTrackSymbol = addFlowFromLearnedAssociations(currentNode, newTrackSymbol);
         Stream<Constraint> learnedConstraints = addFlowFromLearnedConstraints(currentNode);
         if (learnedConstraints.anyMatch(terminateTraversal)) {
           continue;
@@ -213,13 +213,13 @@ public class FlowComputation {
     return Lists.reverse(values);
   }
   @Nullable
-  private Symbol addFlowFromLearnedSymbols(ExplodedGraph.Node currentNode, @Nullable Symbol trackSymbol) {
+  private Symbol addFlowFromLearnedAssociations(ExplodedGraph.Node currentNode, @Nullable Symbol trackSymbol) {
     ExplodedGraph.Node parent = currentNode.parent();
     if (trackSymbol == null || parent == null) {
       return null;
     }
     Optional<LearnedAssociation> learnedAssociation = currentNode.learnedAssociations()
-      .filter(lv -> lv.symbol().equals(trackSymbol))
+      .filter(la -> la.symbol().equals(trackSymbol))
       .findFirst();
     if (learnedAssociation.isPresent()) {
       LearnedAssociation la = learnedAssociation.get();
