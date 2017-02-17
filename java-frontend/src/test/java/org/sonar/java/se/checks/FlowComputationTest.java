@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
+
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -56,5 +57,10 @@ public class FlowComputationTest {
     List<JavaFileScannerContext.Location> flow = singleton.iterator().next();
     assertThat(flow).hasSize(1);
     assertThat(flow.get(0).msg).isEqualTo("singleton msg");
+  }
+
+  @Test
+  public void test_relational_sv_operands() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationRelSV.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 }

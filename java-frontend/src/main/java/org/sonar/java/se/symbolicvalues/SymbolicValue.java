@@ -35,6 +35,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -129,6 +130,10 @@ public class SymbolicValue {
     // no op in general case
   }
 
+  public List<SymbolicValue> computedFrom() {
+    return Collections.emptyList();
+  }
+
   public List<ProgramState> setConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
     Constraint constraint = programState.getConstraint(this, nullConstraint.getClass());
     if (constraint == null) {
@@ -197,6 +202,10 @@ public class SymbolicValue {
       this.operand = symbolicValues.get(0);
     }
 
+    @Override
+    public List<SymbolicValue> computedFrom() {
+      return ImmutableList.of(operand);
+    }
   }
 
   public static class ExceptionalSymbolicValue extends SymbolicValue {

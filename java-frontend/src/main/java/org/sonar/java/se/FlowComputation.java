@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -38,9 +37,9 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,7 +51,7 @@ public class FlowComputation {
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
   private final List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-  private final SymbolicValue symbolicValue;
+  private final Set<SymbolicValue> symbolicValues;
   private final Set<ExplodedGraph.Node> visited = new HashSet<>();
   private final List<Class<? extends Constraint>> domains;
 
@@ -60,8 +59,18 @@ public class FlowComputation {
                           Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
     this.addToFlow = addToFlow;
     this.terminateTraversal = terminateTraversal;
-    this.symbolicValue = symbolicValue;
+    this.symbolicValues = computedFrom(symbolicValue);
     this.domains = domains;
+  }
+
+  private static Set<SymbolicValue> computedFrom(@Nullable SymbolicValue symbolicValue) {
+    if (symbolicValue == null) {
+      return Collections.emptySet();
+    }
+    HashSet<SymbolicValue> result = new HashSet<>();
+    result.add(symbolicValue);
+    symbolicValue.computedFrom().forEach(sv -> result.addAll(computedFrom(sv)));
+    return result;
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
@@ -80,28 +89,9 @@ public class FlowComputation {
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                            Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
     FlowComputation flowComputation = new FlowComputation(currentVal, addToFlow, terminateTraversal, domains);
-
+    // FIXME SONARJAVA-2049 getLastEvaluated doesn't work with relational SV
     Symbol trackSymbol = currentNode.programState.getLastEvaluated();
-    if (currentVal instanceof BinarySymbolicValue) {
-      Set<JavaFileScannerContext.Location> binSVFlow = flowComputation.flowFromBinarySV(currentNode, (BinarySymbolicValue) currentVal, trackSymbol);
-      flowComputation.flow.addAll(binSVFlow);
-    }
     return flowComputation.run(currentNode, trackSymbol);
-  }
-
-  private Set<JavaFileScannerContext.Location> flowFromBinarySV(ExplodedGraph.Node currentNode, BinarySymbolicValue binarySV, Symbol trackSymbol) {
-    Set<JavaFileScannerContext.Location> binSVFlow = new LinkedHashSet<>();
-    FlowComputation left = fork(binarySV.getLeftOp());
-    left.run(currentNode.parent(), trackSymbol);
-    binSVFlow.addAll(left.flow);
-    FlowComputation right = fork(binarySV.getRightOp());
-    right.run(currentNode.parent(), trackSymbol);
-    binSVFlow.addAll(right.flow);
-    return binSVFlow;
-  }
-
-  private FlowComputation fork(SymbolicValue symbolicValue) {
-    return new FlowComputation(symbolicValue, addToFlow, terminateTraversal, domains);
   }
 
   private static class NodeSymbol {
@@ -146,7 +136,7 @@ public class FlowComputation {
       return Stream.empty();
     }
     return currentNode.learnedConstraints()
-      .filter(lc -> lc.symbolicValue().equals(symbolicValue))
+      .filter(lc -> symbolicValues.contains(lc.symbolicValue()))
       .filter(this::learnedConstraintForDomains)
       .map(LearnedConstraint::constraint)
       .peek(lc -> learnedConstraintFlow(lc, currentNode, parent).forEach(flow::add));
@@ -176,14 +166,15 @@ public class FlowComputation {
   private Stream<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Node currentNode, ExplodedGraph.Node parent) {
     MethodInvocationTree mit = (MethodInvocationTree) parent.programPoint.syntaxTree();
     Stream.Builder<JavaFileScannerContext.Location> flowBuilder = Stream.builder();
-    if (currentNode.programState.peekValue() == symbolicValue) {
+    SymbolicValue returnSV = currentNode.programState.peekValue();
+    if (symbolicValues.contains(returnSV)) {
       flowBuilder.add(location(parent, String.format("'%s()' returns %s.", mit.symbol().name(), learnedConstraint.valueAsString())));
     }
-    SymbolicValue methodIdentifier = parent.programState.peekValue(mit.arguments().size());
-    if (methodIdentifier == symbolicValue) {
+    SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
+    if (symbolicValues.contains(invocationTarget)) {
       flowBuilder.add(location(parent, "..."));
     }
-    int argIdx = correspondingArgumentIndex(symbolicValue, parent);
+    int argIdx = correspondingArgumentIndex(symbolicValues, parent);
     if (argIdx != -1) {
       ExpressionTree argTree = mit.arguments().get(argIdx);
       String message = String.format("Implies '%s' is %s.", SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
@@ -208,10 +199,17 @@ public class FlowComputation {
     return false;
   }
 
-  private static int correspondingArgumentIndex(SymbolicValue candidate, ExplodedGraph.Node invocationNode) {
+  private static int correspondingArgumentIndex(Set<SymbolicValue> candidates, ExplodedGraph.Node invocationNode) {
     MethodInvocationTree mit = (MethodInvocationTree) invocationNode.programPoint.syntaxTree();
     List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
-    return arguments.indexOf(candidate);
+    // FIXME SONARJAVA-2076 whatif multiple candidates match some of the arguments?
+    for (SymbolicValue candidate : candidates) {
+      int idx = arguments.indexOf(candidate);
+      if (idx != -1) {
+        return idx;
+      }
+    }
+    return -1;
   }
 
   private static List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {
