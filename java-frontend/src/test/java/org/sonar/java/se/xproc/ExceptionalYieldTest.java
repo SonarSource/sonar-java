@@ -114,9 +114,9 @@ public class ExceptionalYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "myMethod").exceptionalPathYields().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
-      "{params: [FALSE], exceptional}",
-      "{params: [TRUE], exceptional (org.foo.MyException1)}",
-      "{params: [FALSE], exceptional (org.foo.MyException2)}");
+      "{params: [[FALSE]], exceptional}",
+      "{params: [[TRUE]], exceptional (org.foo.MyException1)}",
+      "{params: [[FALSE]], exceptional (org.foo.MyException2)}");
   }
 
   @Test

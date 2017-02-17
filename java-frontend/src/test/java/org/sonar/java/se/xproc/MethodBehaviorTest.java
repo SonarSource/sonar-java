@@ -52,7 +52,7 @@ public class MethodBehaviorTest {
     // result SV is a different SV than 'a' and 'b'
     assertThat(trueResult.resultIndex()).isEqualTo(-1);
 
-    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint())).collect(Collectors.toList());
+    List<HappyPathYield> falseResults = mb.happyPathYields().filter(my -> BooleanConstraint.FALSE.equals(my.resultConstraint().get(BooleanConstraint.class))).collect(Collectors.toList());
     assertThat(falseResults).hasSize(2);
     // for both "False" results, 'a' has the constraint "not null"
     assertThat(falseResults.stream().filter(my -> !((ObjectConstraint) my.parametersConstraints.get(0).get(ObjectConstraint.class)).isNull()).count()).isEqualTo(2);

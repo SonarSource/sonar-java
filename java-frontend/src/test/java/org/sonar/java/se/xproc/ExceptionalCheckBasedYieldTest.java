@@ -76,7 +76,7 @@ public class ExceptionalCheckBasedYieldTest {
 
     assertThat(mb.yields()).hasSize(4);
     // 2nd param can never be null
-    assertThat(mb.yields().stream().filter(y -> y.parametersConstraints.get(0) == null && y.parametersConstraints.get(1).get(ObjectConstraint.class)== ObjectConstraint.NULL)).hasSize(1);
+    assertThat(mb.yields().stream().filter(y -> y.parametersConstraints.get(0).isEmpty() && y.parametersConstraints.get(1).get(ObjectConstraint.class)== ObjectConstraint.NULL)).hasSize(1);
     assertThat(mb.yields().stream().filter(y -> y.parametersConstraints.get(1).get(ObjectConstraint.class) != ObjectConstraint.NULL)).hasSize(3);
 
     // happyPath with first parameter being true is discarded
@@ -176,6 +176,7 @@ public class ExceptionalCheckBasedYieldTest {
 
     // different exception, same check
     otherYield = new ExceptionalCheckBasedYield(mock(Type.class), seCheckClass1, null, mb);
+    assertThat(yield).isNotEqualTo(otherYield);
   }
 
 }

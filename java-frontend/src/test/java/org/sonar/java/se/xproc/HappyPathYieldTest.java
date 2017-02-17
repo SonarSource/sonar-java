@@ -92,8 +92,8 @@ public class HappyPathYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
-      "{params: [TRUE, NOT_NULL], result: null (-1)}",
-      "{params: [FALSE, null], result: null (-1)}");
+      "{params: [[TRUE], [NOT_NULL]], result: null (-1)}",
+      "{params: [[FALSE], []], result: null (-1)}");
   }
 
 }
