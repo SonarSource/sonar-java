@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.Flags;
@@ -66,4 +67,17 @@ public class SymbolicValueTest {
     assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id(), null));
   }
 
+  @Test
+  public void test_computed_from() throws Exception {
+    SymbolicValue symbolicValue = new SymbolicValue(3);
+    assertThat(symbolicValue.computedFrom()).isEmpty();
+
+    SymbolicValue.NotSymbolicValue notSymbolicValue = new SymbolicValue.NotSymbolicValue(4);
+    notSymbolicValue.computedFrom(ImmutableList.of(symbolicValue));
+    assertThat(notSymbolicValue.computedFrom()).contains(symbolicValue);
+
+    RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(5, RelationalSymbolicValue.Kind.METHOD_EQUALS);
+    relationalSymbolicValue.computedFrom(ImmutableList.of(symbolicValue, notSymbolicValue));
+    assertThat(relationalSymbolicValue.computedFrom()).contains(symbolicValue, notSymbolicValue);
+  }
 }
