@@ -485,7 +485,7 @@ public class BytecodeCompleterTest {
     assertThat(symbolEmptyString).isNotNull();
     assertThat(symbolEmptyString.isUnknown()).isTrue();
 
-    JavaSymbol symbolRandom = bytecodeCompleter.loadClass("^/^/v/v/</>/</>/B/A");
+    JavaSymbol symbolRandom = bytecodeCompleter.loadClass("^/^/v/v/$/$/$/$/B/A");
     assertThat(symbolRandom).isNotNull();
     assertThat(symbolRandom.isUnknown()).isTrue();
 
