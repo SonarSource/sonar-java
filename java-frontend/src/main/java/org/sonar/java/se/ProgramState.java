@@ -458,13 +458,11 @@ public class ProgramState {
 
   Set<LearnedConstraint> learnedConstraints(ProgramState parent) {
     ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
-    constraints.forEach((sv, pmap) -> {
-      pmap.forEach((domain, c) -> {
-        if (parent.getConstraint(sv, domain) != c) {
-          addLearnedConstraint(result, sv, c);
-        }
-      });
-    });
+    constraints.forEach((sv, pmap) -> pmap.forEach((domain, c) -> {
+      if (!c.equals(parent.getConstraint(sv, domain))) {
+        addLearnedConstraint(result, sv, c);
+      }
+    }));
     return result.build();
   }
 

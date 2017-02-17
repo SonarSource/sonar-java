@@ -160,21 +160,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       leftConstraints.forEach((d, c) -> {
         List<ProgramState> newStates = new ArrayList<>();
         Constraint constraint = shouldNotInverse().equals(booleanConstraint) ? c : c.inverse();
-        for (ProgramState state : states) {
-          if(ObjectConstraint.class.equals(d)) {
-            if(((ObjectConstraint) c).isNull()) {
-              newStates.addAll(to.setConstraint(state, constraint));
-            } else if(shouldNotInverse().equals(booleanConstraint)) {
-              newStates.addAll(to.setConstraint(state, c));
-            } else {
-              newStates.add(state);
-            }
-            continue;
-          } else if(BooleanConstraint.class.equals(d)) {
-            newStates.addAll(to.setConstraint(state, constraint));
-            continue;
-          }
-
+        states.forEach(state -> {
           if (constraint == null) {
             PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
             if (constraints != null) {
@@ -183,9 +169,14 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
               newStates.add(state);
             }
           } else {
-            newStates.addAll(to.setConstraint(state, constraint));
+            // special handling of copying inversed non-null constraint
+            if (ObjectConstraint.NULL == constraint && c != constraint) {
+              newStates.add(state);
+            } else {
+              newStates.addAll(to.setConstraint(state, constraint));
+            }
           }
-        }
+        });
         states.clear();
         states.addAll(newStates);
       });

@@ -138,15 +138,15 @@ public class DivisionByZeroCheck extends SECheck {
         case LESS_THAN:
         case LESS_THAN_OR_EQUAL_TO:
           symbolicValues = programState.peekValues(2);
-          setAsUndetermined(symbolicValues.get(1));
-          setAsUndetermined(symbolicValues.get(0));
+          removeZeroConstraint(symbolicValues.get(1));
+          removeZeroConstraint(symbolicValues.get(0));
           break;
         default:
           // do nothing
       }
     }
 
-    private void setAsUndetermined(SymbolicValue sv) {
+    private void removeZeroConstraint(SymbolicValue sv) {
       PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
       if(constraints != null) {
         programState = programState.addConstraints(sv, constraints.remove(ZeroConstraint.class));
@@ -342,7 +342,7 @@ public class DivisionByZeroCheck extends SECheck {
       }
     }
 
-    private void addZeroConstraint(SymbolicValue sv, ZeroConstraint zeroConstraint) {
+    private void addZeroConstraint(SymbolicValue sv, @Nullable ZeroConstraint zeroConstraint) {
       if(zeroConstraint == null) {
         PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
         if(constraints != null) {
