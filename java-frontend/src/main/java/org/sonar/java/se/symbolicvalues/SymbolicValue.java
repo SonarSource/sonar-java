@@ -50,7 +50,7 @@ public class SymbolicValue {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
       if(constraint instanceof ObjectConstraint) {
-        return super.setConstraint(programState, ((ObjectConstraint) constraint));
+        return super.setConstraint(programState, (ObjectConstraint) constraint);
       }
       return ImmutableList.of(programState);
     }
