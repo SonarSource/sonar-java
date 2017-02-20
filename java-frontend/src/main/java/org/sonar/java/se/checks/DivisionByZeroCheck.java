@@ -21,14 +21,18 @@ package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -36,11 +40,14 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S3518")
@@ -181,8 +188,12 @@ public class DivisionByZeroCheck extends SECheck {
       return hasConstraint(symbolicValue, ZeroConstraint.NON_ZERO);
     }
 
+    private boolean hasNoConstraint(SymbolicValue symbolicValue) {
+      return hasConstraint(symbolicValue, null);
+    }
+
     private boolean hasConstraint(SymbolicValue symbolicValue, ZeroConstraint constraint) {
-      return programState.getConstraint(symbolicValue, constraint.getClass()) == constraint;
+      return programState.getConstraint(symbolicValue, ZeroConstraint.class) == constraint;
     }
 
     private void handleMultiply(SymbolicValue left, SymbolicValue right) {
@@ -203,11 +214,20 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void handleDivide(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
       if (isZero(rightOp)) {
+        context.addExceptionalYield(rightOp, programState, "java.lang.ArithmeticException", DivisionByZeroCheck.this);
         reportIssue(tree, rightOp);
+        // interrupt exploration
+        programState = null;
       } else if (isZero(leftOp)) {
         reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
         deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? ZeroConstraint.NON_ZERO : null);
+      } else if (hasNoConstraint(rightOp)) {
+        ProgramState exceptionalState = programState
+          .addConstraint(rightOp, ZeroConstraint.ZERO)
+          // FIXME SONARJAVA-2125 - we should not have to add the NOT_NULL constraint for primitive types
+          .addConstraint(rightOp, ObjectConstraint.NOT_NULL);
+        context.addExceptionalYield(rightOp, exceptionalState, "java.lang.ArithmeticException", DivisionByZeroCheck.this);
       }
     }
 
@@ -242,9 +262,6 @@ public class DivisionByZeroCheck extends SECheck {
       flow.add(0, new JavaFileScannerContext.Location(flowMessage, tree));
       context.reportIssue(expression, DivisionByZeroCheck.this, "Make sure " + expressionName + " can't be zero before doing this " + operation + ".",
         ImmutableSet.of(flow));
-
-      // interrupt exploration
-      programState = null;
     }
 
     private ExpressionTree getDenominator(Tree tree) {
@@ -347,5 +364,26 @@ public class DivisionByZeroCheck extends SECheck {
         programState = programState.addConstraint(sv, zeroConstraint);
       }
     }
+  }
+
+  @Override
+  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    ExplodedGraph.Node exitNode = context.getNode();
+    exitNode.parents().stream().forEach(node -> {
+      MethodYield yield = exitNode.selectedMethodYield(node);
+      if (yield != null && yield.generatedByCheck(this)) {
+        reportIssueOnMethodInvocation(node);
+      }
+    });
+  }
+
+  private void reportIssueOnMethodInvocation(ExplodedGraph.Node node) {
+    MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
+    ExpressionTree methodSelect = mit.methodSelect();
+    Tree reportTree = methodSelect;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
+    }
+    reportIssue(reportTree, String.format("A division by zero will occur when invoking method %s().", mit.symbol().name()), ImmutableSet.of());
   }
 }
