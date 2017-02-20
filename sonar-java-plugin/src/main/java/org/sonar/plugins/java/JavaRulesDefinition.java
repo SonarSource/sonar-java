@@ -36,10 +36,12 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 import org.sonar.squidbridge.rules.ExternalDescriptionLoader;
 
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Definition of rules.
@@ -99,11 +101,11 @@ public class JavaRulesDefinition implements RulesDefinition {
     URL resource = ExternalDescriptionLoader.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
     if (resource != null) {
       RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
-      rule.setSeverity(metatada.defaultSeverity.toUpperCase());
+      rule.setSeverity(metatada.defaultSeverity.toUpperCase(Locale.US));
       rule.setName(metatada.title);
       rule.addTags(metatada.tags);
       rule.setType(RuleType.valueOf(metatada.type));
-      rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase()));
+      rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase(Locale.US)));
       if(metatada.remediation != null) {
         rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
         rule.setGapDescription(metatada.remediation.linearDesc);
