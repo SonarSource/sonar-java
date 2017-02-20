@@ -1,6 +1,6 @@
 class A {
   void fp(int param) {
-    if(xproc(param) > param) { // Noncompliant False positive
+    if(xproc(param) > param) { // compliant
       System.out.println("");
     }
     System.out.println("");

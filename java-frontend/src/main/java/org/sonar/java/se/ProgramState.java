@@ -196,7 +196,7 @@ public class ProgramState {
     return Objects.equals(values, that.values) &&
       Objects.equals(constraints, that.constraints) &&
       Objects.equals(exitSymbolicValue, that.exitSymbolicValue) &&
-      Objects.equals(peekValue(), that.peekValue());
+      Objects.equals(stack, that.stack);
   }
 
   @Override
