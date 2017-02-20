@@ -29,6 +29,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -54,8 +55,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
- * This test is setting up {@link DefaultJavaFileScannerContext}, which is used to report issues by checks, with {@link SensorContextTester}, which is
- * used to report issues to the platform, to verify that {@link SonarComponents} in the middle don't break stuff.
+ * Test {@link DefaultJavaFileScannerContext} with {@link SensorContextTester} in {@link SonarComponents#setSensorContext(SensorContext)}
+ *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultJavaFileScannerContextTestWithRealSonarComponents {
@@ -67,11 +68,8 @@ public class DefaultJavaFileScannerContextTestWithRealSonarComponents {
   @Mock private JavaTestClasspath javaTestClasspath;
   @Mock private CheckFactory checkFactory;
 
-
   private SonarComponents sonarComponents;
-
   private SensorContextTester sensorContext;
-
   private DefaultJavaFileScannerContext scannerContext;
   private CompilationUnitTree cut;
   private JavaCheck check = new JavaCheck() {
@@ -88,7 +86,7 @@ public class DefaultJavaFileScannerContextTestWithRealSonarComponents {
     sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);
 
-    // we will spy getRuleKey call, to avoid mocking CheckFactory and Checks
+    // spy getRuleKey call, to avoid mocking CheckFactory and Checks
     sonarComponents = spy(sonarComponents);
     when(sonarComponents.getRuleKey(any())).thenReturn(RuleKey.of("repository", "rule"));
 
