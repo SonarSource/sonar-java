@@ -20,7 +20,7 @@ class A {
     int totalGSSEdges = 0;
     int maxPopped = 0;
     List<String> strings = Collections.emptyList();
-    for (String gss : strings) { // flow@loop {{...}}
+    for (String gss : strings) {
       String edge = gss; // missing flow message - see SONARJAVA-2049
       while (edge != null) { // flow@loop {{Implies 'edge' is null.}}
         totalGSSEdges++;

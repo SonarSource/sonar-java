@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -29,8 +30,8 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -52,14 +53,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.CLOSED;
+import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.OPEN;
+
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
 
-  private enum Status implements ObjectConstraint.Status {
-    OPENED, CLOSED
+  public enum ResourceConstraint implements Constraint {
+    OPEN, CLOSED;
+
+    @Override
+    public String valueAsString() {
+      if (this == OPEN) {
+        return "open";
+      }
+      return "closed";
+    }
   }
 
   @RuleProperty(
@@ -105,12 +117,12 @@ public class UnclosedResourcesCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(Status.OPENED)
-      .forEach((sv, c) -> processUnclosedSymbolicValue(node, sv));
+    context.getState().getValuesWithConstraints(OPEN).forEach(sv -> processUnclosedSymbolicValue(node, sv));
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    FlowComputation.flow(node, sv, ObjectConstraint.statusPredicate(Status.OPENED)).stream()
+    ArrayList<Class<? extends Constraint>> domains = Lists.newArrayList(ResourceConstraint.class);
+    FlowComputation.flow(node, sv, OPEN::equals, domains).stream()
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }
@@ -331,11 +343,11 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private void closeResultSetsRelatedTo(SymbolicValue value) {
-      for (Map.Entry<SymbolicValue, ObjectConstraint<ObjectConstraint.Status>> constrainedValue : programState.getValuesWithConstraints(Status.OPENED).entrySet()) {
-        if (constrainedValue.getKey() instanceof ResourceWrapperSymbolicValue) {
-          ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue.getKey();
+      for (SymbolicValue constrainedValue : programState.getValuesWithConstraints(OPEN)) {
+        if (constrainedValue instanceof ResourceWrapperSymbolicValue) {
+          ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue;
           if (value.equals(rValue.dependent)) {
-            programState = programState.addConstraint(rValue, constrainedValue.getValue().withStatus(Status.CLOSED));
+            programState = programState.addConstraint(rValue, CLOSED);
           }
         }
       }
@@ -346,10 +358,14 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private void closeResource(@Nullable final SymbolicValue target) {
-      if (target != null) {
-        ObjectConstraint<ObjectConstraint.Status> oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
+      SymbolicValue toClose = target;
+      if(toClose instanceof ResourceWrapperSymbolicValue) {
+        toClose = target.wrappedValue();
+      }
+      if (toClose != null) {
+        ResourceConstraint oConstraint = programState.getConstraint(toClose, ResourceConstraint.class);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
+          programState = programState.addConstraint(toClose, CLOSED);
         }
       }
     }
@@ -366,7 +382,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
         if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraint(instanceValue, new ObjectConstraint<>(false, false, Status.OPENED));
+          programState = programState.addConstraint(instanceValue, OPEN);
         }
       }
     }
@@ -382,7 +398,7 @@ public class UnclosedResourcesCheck extends SECheck {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
-          programState = programState.addConstraint(programState.peekValue(), new ObjectConstraint<>(false, false, Status.OPENED));
+          programState = programState.addConstraint(programState.peekValue(), OPEN);
         }
       }
     }

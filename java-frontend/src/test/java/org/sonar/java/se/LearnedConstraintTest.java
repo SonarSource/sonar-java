@@ -31,7 +31,7 @@ public class LearnedConstraintTest {
 
   @Test
   public void test_toString() throws Exception {
-    LearnedConstraint lc = new LearnedConstraint(new SymbolicValue(1), ObjectConstraint.notNull());
+    LearnedConstraint lc = new LearnedConstraint(new SymbolicValue(1), ObjectConstraint.NOT_NULL);
     assertThat(lc.toString()).isEqualTo("SV_1 - NOT_NULL");
   }
 

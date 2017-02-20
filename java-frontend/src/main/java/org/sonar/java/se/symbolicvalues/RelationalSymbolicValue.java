@@ -20,7 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
-
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -132,22 +132,56 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private List<ProgramState> addNullConstraintsForBooleanWrapper(BooleanConstraint booleanConstraint, ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
-    Constraint leftConstraint = initialProgramState.getConstraint(leftOp);
-    Constraint rightConstraint = initialProgramState.getConstraint(rightOp);
-    if (leftConstraint instanceof BooleanConstraint && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
-      List<ProgramState> nullConstraints = copiedConstraints.stream().map(ps -> ps.addConstraint(rightOp, ObjectConstraint.nullConstraint())).collect(Collectors.toList());
+    BooleanConstraint leftConstraint = initialProgramState.getConstraint(leftOp, BooleanConstraint.class);
+    BooleanConstraint rightConstraint = initialProgramState.getConstraint(rightOp, BooleanConstraint.class);
+    if (leftConstraint != null && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
+      List<ProgramState> nullConstraints = copiedConstraints.stream()
+        .flatMap(ps -> rightOp.setConstraint(ps, ObjectConstraint.NULL).stream())
+        .map(ps -> ps.removeConstraintsOnDomain(rightOp, BooleanConstraint.class)
+      ).collect(Collectors.toList());
       return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
     }
     return copiedConstraints;
   }
 
-  @Override
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     ProgramState newState = programState;
     if (programState.canReach(from) || programState.canReach(to)) {
       newState = programState.addConstraint(this, booleanConstraint);
     }
-    return super.copyConstraint(from, to, newState, booleanConstraint);
+    return copyConstraintFromTo(from, to, newState, booleanConstraint);
+  }
+
+  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+    List<ProgramState> states = new ArrayList<>();
+    states.add(programState);
+    PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
+    if (leftConstraints != null) {
+      leftConstraints.forEach((d, c) -> {
+        List<ProgramState> newStates = new ArrayList<>();
+        Constraint constraint = shouldNotInverse().equals(booleanConstraint) ? c : c.inverse();
+        states.forEach(state -> {
+          if (constraint == null) {
+            PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
+            if (constraints != null) {
+              newStates.add(state.removeConstraintsOnDomain(to, c.getClass()));
+            } else {
+              newStates.add(state);
+            }
+          } else {
+            // special handling of copying inversed non-null constraint
+            if (ObjectConstraint.NULL == constraint && c != constraint) {
+              newStates.add(state);
+            } else {
+              newStates.addAll(to.setConstraint(state, constraint));
+            }
+          }
+        });
+        states.clear();
+        states.addAll(newStates);
+      });
+    }
+    return states;
   }
 
   @CheckForNull

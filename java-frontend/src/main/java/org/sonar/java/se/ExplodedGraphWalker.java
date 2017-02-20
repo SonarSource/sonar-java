@@ -47,7 +47,6 @@ import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -329,11 +328,11 @@ public class ExplodedGraphWalker {
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
-            sv.setConstraint(ps, ObjectConstraint.nullConstraint()).stream(),
-            sv.setConstraint(ps, ObjectConstraint.notNull()).stream()
+            sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
+            sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
       } else if(nonNullParams) {
-        stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.notNull()).stream());
+        stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
     return stateStream.collect(Collectors.toList());
@@ -581,7 +580,7 @@ public class ExplodedGraphWalker {
       case STRING_LITERAL:
         SymbolicValue val = constraintManager.createSymbolicValue(tree);
         programState = programState.stackValue(val);
-        programState = programState.addConstraint(val, ObjectConstraint.notNull());
+        programState = programState.addConstraint(val, ObjectConstraint.NOT_NULL);
         break;
       case BOOLEAN_LITERAL:
         boolean value = Boolean.parseBoolean(((LiteralTree) tree).value());
@@ -676,7 +675,7 @@ public class ExplodedGraphWalker {
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
     if (isNonNullMethod(mit.symbol())) {
-      return ps.addConstraint(ps.peekValue(), ObjectConstraint.notNull());
+      return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager);
     }
@@ -779,7 +778,7 @@ public class ExplodedGraphWalker {
         sv = constraintManager.createSymbolicValue(variableTree);
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
         sv = getCaughtException(variableTree.symbol().type());
-        programState = programState.addConstraint(sv, ObjectConstraint.notNull());
+        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
       }
       if (sv != null) {
         programState = programState.put(variableTree.symbol(), sv);
@@ -873,7 +872,7 @@ public class ExplodedGraphWalker {
     programState = programState.unstackValue(newArrayTree.initializers().size()).state;
     SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
     programState = programState.stackValue(svNewArray);
-    programState = svNewArray.setSingleConstraint(programState, ObjectConstraint.notNull());
+    programState = svNewArray.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
   }
 
   private void executeNewClass(NewClassTree tree) {
@@ -883,7 +882,7 @@ public class ExplodedGraphWalker {
     node.programPoint.block.exceptions().forEach(b -> enqueue(new ProgramPoint(b), programState, !b.isCatchBlock()));
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
-    programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.notNull());
+    programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
   }
 
   private void executeBinaryExpression(Tree tree) {
@@ -895,17 +894,17 @@ public class ExplodedGraphWalker {
     if(tree.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree bt = (BinaryExpressionTree) tree;
       if (bt.leftOperand().symbolType().is("java.lang.String")) {
-        Constraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1));
+        ObjectConstraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1), ObjectConstraint.class);
         if (leftConstraint != null && !leftConstraint.isNull()) {
-          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.notNull());
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
           Preconditions.checkState(programStates.size() == 1);
           programState = programStates.get(0);
         }
 
       } else if(bt.rightOperand().symbolType().is("java.lang.String")) {
-        Constraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0));
+        ObjectConstraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0), ObjectConstraint.class);
         if (rightConstraint != null && !rightConstraint.isNull()) {
-          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.notNull());
+          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
           Preconditions.checkState(programStates.size() == 1);
           programState = programStates.get(0);
         }
@@ -956,9 +955,9 @@ public class ExplodedGraphWalker {
     }
     // only check final field with an initializer
     if (initializer.is(Tree.Kind.NULL_LITERAL)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.nullConstraint());
+      programState = programState.addConstraint(sv, ObjectConstraint.NULL);
     } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.notNull());
+      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
     }
   }
 

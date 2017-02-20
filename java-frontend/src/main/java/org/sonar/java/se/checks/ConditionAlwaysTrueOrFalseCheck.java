@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
@@ -27,6 +28,9 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -66,7 +70,8 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static List<JavaFileScannerContext.Location> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
-    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue());
+    List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
+    List<JavaFileScannerContext.Location> flow = FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
     flow.add(0, new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree()));
     return flow;
   }

@@ -73,7 +73,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   /**
-   * {@link CustomUnclosedResourcesCheck.ResourceStatus} class needs to be different, otherwise issued will be duplicated. See SONARJAVA-1624
+   * {@link CustomUnclosedResourcesCheck.CustomResourceConstraint} class needs to be different, otherwise issued will be duplicated. See SONARJAVA-1624
    */
   @Test
   public void check_status_is_different_instance() {

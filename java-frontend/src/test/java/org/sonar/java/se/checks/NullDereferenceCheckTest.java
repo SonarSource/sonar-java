@@ -45,12 +45,17 @@ public class NullDereferenceCheckTest {
   }
 
   @Test
-  public void invokation_leading_to_NPE() {
+  public void invocation_leading_to_NPE() {
     JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToNPE.java", new NullDereferenceCheck());
   }
 
   @Test
   public void reporting_test() {
     JavaCheckVerifier.verify("src/test/files/se/NPE_reporting.java", new NullDereferenceCheck());
+  }
+
+  @Test
+  public void ruling() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/NPEwithZeroTests.java", new NullDereferenceCheck());
   }
 }

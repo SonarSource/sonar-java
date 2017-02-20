@@ -20,7 +20,10 @@
 package org.sonar.java.se.xproc;
 
 import org.junit.Test;
+import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import java.util.Set;
@@ -32,6 +35,9 @@ import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class HappyPathYieldTest {
+
+  PMap<Class<? extends Constraint>, Constraint> NOT_NULL_CONSTRAINT = PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
+    .put(ObjectConstraint.class, ObjectConstraint.NOT_NULL);
 
   @Test
   public void test_equals() {
@@ -50,13 +56,13 @@ public class HappyPathYieldTest {
 
     // same arity but different return constraint
     otherYield = new HappyPathYield(mb);
-    otherYield.setResult(yield.resultIndex(), ObjectConstraint.notNull());
+    otherYield.setResult(yield.resultIndex(), NOT_NULL_CONSTRAINT);
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same return constraint
-    yield.setResult(-1, ObjectConstraint.notNull());
+    yield.setResult(-1, NOT_NULL_CONSTRAINT);
     otherYield = new HappyPathYield(mb);
-    otherYield.setResult(-1, ObjectConstraint.notNull());
+    otherYield.setResult(-1, NOT_NULL_CONSTRAINT);
     assertThat(yield).isEqualTo(otherYield);
 
     // same arity and parameters but exceptional yield
@@ -74,7 +80,7 @@ public class HappyPathYieldTest {
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
 
     // different values for different yields
-    other.setResult(-1, ObjectConstraint.notNull());
+    other.setResult(-1, NOT_NULL_CONSTRAINT);
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // exceptional method yield
@@ -86,8 +92,8 @@ public class HappyPathYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
-      "{params: [TRUE, NOT_NULL], result: null (-1)}",
-      "{params: [FALSE, null], result: null (-1)}");
+      "{params: [[TRUE], [NOT_NULL]], result: null (-1)}",
+      "{params: [[FALSE], []], result: null (-1)}");
   }
 
 }

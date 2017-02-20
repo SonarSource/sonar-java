@@ -157,8 +157,8 @@ public class ConstraintManager {
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
-    Object constraint = ps.getConstraint(val);
-    return constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).isNull();
+    ObjectConstraint constraint = ps.getConstraint(val, ObjectConstraint.class);
+    return constraint!= null && constraint.isNull();
   }
 
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {

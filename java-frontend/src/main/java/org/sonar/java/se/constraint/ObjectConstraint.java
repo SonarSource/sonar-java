@@ -20,109 +20,33 @@
 package org.sonar.java.se.constraint;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.function.Predicate;
 
-public class ObjectConstraint<S extends ObjectConstraint.Status> implements Constraint {
+public enum ObjectConstraint implements Constraint {
+  NULL,
+  NOT_NULL;
 
-  public interface Status {
-    default String valueAsString() {
-      return null;
-    }
-  }
-
-  private static final ObjectConstraint<Status> NOT_NULL = new ObjectConstraint<>(false, true, null);
-
-  private final boolean isNull;
-  private final boolean disposable;
-  @Nullable
-  private final S status;
-
-  public ObjectConstraint(S status) {
-    this(false, true, status);
-  }
-
-  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable S status) {
-    this.isNull = isNull;
-    this.disposable = disposable;
-    this.status = status;
-  }
-
-  public static <S extends Status> ObjectConstraint<S> notNull() {
-    return (ObjectConstraint<S>) NOT_NULL;
-  }
-
-  public static <S extends Status> ObjectConstraint<S> nullConstraint() {
-    return new ObjectConstraint<>(true, false, null);
-  }
-
-  public ObjectConstraint<S> inverse() {
-    return new ObjectConstraint<>(!isNull, disposable, status);
-  }
-
-  public ObjectConstraint<S> withStatus(S newStatus) {
-    return new ObjectConstraint<>(isNull, disposable, newStatus);
-  }
-
-  @Override
   public boolean isNull() {
-    return isNull;
+    return this == NULL;
   }
 
   @Override
   public String valueAsString() {
-    if (isNull) {
+    if (isNull()) {
       return "null";
     }
-    return (status == null || status.valueAsString() == null)  ? "non-null" : status.valueAsString();
-  }
-
-  public boolean isInvalidWith(@Nullable Constraint target) {
-    return false;
-  }
-
-  public boolean isDisposable() {
-    return disposable;
-  }
-
-  public boolean hasStatus(@Nullable Object aState) {
-    if (aState == null) {
-      return status == null;
-    }
-    return aState.equals(status);
+    return "non-null";
   }
 
   @Override
-  public String toString() {
-    final StringBuilder buffer = new StringBuilder();
-    buffer.append(isNull ? "NULL" : "NOT_NULL");
-    if (status != null) {
-      buffer.append('(');
-      buffer.append(status);
-      buffer.append(')');
-    }
-    return buffer.toString();
+  public boolean isValidWith(@Nullable Constraint constraint) {
+    return constraint == null || this == constraint;
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+  public Constraint inverse() {
+    if(this == NULL) {
+      return NOT_NULL;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ObjectConstraint that = (ObjectConstraint) o;
-    return isNull == that.isNull && Objects.equals(status, that.status);
+    return NULL;
   }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(isNull, status);
-  }
-
-  public static Predicate<Constraint> statusPredicate(Object status) {
-    return c -> c instanceof ObjectConstraint && ((ObjectConstraint) c).hasStatus(status);
-  }
-
 }

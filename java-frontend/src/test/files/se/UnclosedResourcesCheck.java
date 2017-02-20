@@ -414,10 +414,10 @@ public class A {
     // supposedly close the input stream
   }
 
-  void activateDeferredProfile(File file) throws Exception {
+  void activateDeferredProfile(File file, B b) throws Exception {
     FileInputStream fis1, fis2;
 
-    if ((fis1 = new FileInputStream(file)) == null) { // Compliant - fis is closed...
+    if ((fis1 = B.getNullableResource(fis1)) == null) { // Compliant - fis is closed...
       throw new Exception();
     }
     fis1.close(); // close the file
@@ -431,5 +431,12 @@ public class A {
       // fis2 is not closed
       throw new Exception();
     }
+  }
+
+}
+
+class B {
+  static <T> T getNullableResource(T param){
+    return unknownMethod();
   }
 }

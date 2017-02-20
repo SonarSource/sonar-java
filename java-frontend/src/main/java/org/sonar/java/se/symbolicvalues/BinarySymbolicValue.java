@@ -20,11 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.ProgramState;
 
 import java.util.List;
 
@@ -49,24 +45,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     Preconditions.checkArgument(symbolicValues.size() == 2);
     rightOp = symbolicValues.get(0);
     leftOp = symbolicValues.get(1);
-  }
-
-  protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-    Constraint constraintLeft = programState.getConstraint(from);
-    if (constraintLeft instanceof BooleanConstraint) {
-      BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-      return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
-    } else if (constraintLeft instanceof ObjectConstraint) {
-      ObjectConstraint objectConstraint = (ObjectConstraint) constraintLeft;
-      if (objectConstraint.isNull()) {
-        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? objectConstraint : objectConstraint.inverse());
-      } else if (shouldNotInverse().equals(booleanConstraint)) {
-        return to.setConstraint(programState, objectConstraint);
-      } else if (objectConstraint.isInvalidWith(programState.getConstraint(to))) {
-        return ImmutableList.of();
-      }
-    }
-    return ImmutableList.of(programState);
   }
 
   public SymbolicValue getLeftOp() {

@@ -22,12 +22,15 @@ package org.sonar.java.se.xproc;
 import com.google.common.collect.Lists;
 
 import org.junit.Test;
+import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -41,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -77,12 +81,13 @@ public class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
     MethodBehavior mb = getSymbolWithMethodBehavior(sev, "foo").getValue();
 
-    MethodYield methodYield = mb.happyPathYields().filter(y -> y.resultConstraint() != null && !y.resultConstraint().isNull()).findFirst().get();
+    MethodYield methodYield = mb.happyPathYields()
+      .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    List<JavaFileScannerContext.Location> flowReturnValue = methodYield.flow(-1);
+    List<JavaFileScannerContext.Location> flowReturnValue = methodYield.flow(-1, Lists.newArrayList(ObjectConstraint.class));
     assertThat(flowReturnValue).isNotEmpty();
 
-    List<JavaFileScannerContext.Location> flowFirstParam = methodYield.flow(0);
+    List<JavaFileScannerContext.Location> flowFirstParam = methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
     assertThat(flowFirstParam).isNotEmpty();
   }
 
@@ -91,56 +96,20 @@ public class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
     Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
     MethodBehavior mb = entry.getValue();
-
-    assertThat(mb.happyPathYields()).allMatch(y -> y.parameterConstraint(0) != null && !y.parameterConstraint(0).isNull());
+    assertThat(mb.happyPathYields())
+      .allMatch(y -> y.parametersConstraints.get(0) != null && !ObjectConstraint.NULL.equals(y.parametersConstraints.get(0).get(ObjectConstraint.class)));
   }
 
   @Test
   public void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
-    assertThat(methodYield.flow(0)).isEmpty();
+    assertThat(methodYield.flow(0, Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
   }
 
   private static ExplodedGraph.Node mockNode() {
     return new ExplodedGraph().node(mock(ProgramPoint.class), null);
   }
 
-  private enum YieldStatus implements ObjectConstraint.Status {
-    A, B
-  }
-
-  @Test
-  public void all_constraints_should_be_valid_to_generate_a_new_state() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "bar");
-    Symbol.MethodSymbol methodSymbol = entry.getKey();
-    MethodBehavior mb = entry.getValue();
-
-    MethodYield trueYield = mb.happyPathYields()
-      .filter(y -> y.parameterConstraint(0) instanceof BooleanConstraint && ((BooleanConstraint) y.parameterConstraint(0)).isTrue())
-      .findFirst().get();
-    // force status of the arg1 to be B
-    trueYield.setParameterConstraint(1, ((ObjectConstraint<YieldStatus>) trueYield.parameterConstraint(1)).withStatus(YieldStatus.B));
-
-    ProgramState ps = ProgramState.EMPTY_STATE;
-    SymbolicValue sv1 = new SymbolicValue(41);
-    SymbolicValue sv2 = new SymbolicValue(42);
-    SymbolicValue sv3 = new SymbolicValue(43);
-
-    Symbol myBoolean = new JavaSymbol.VariableJavaSymbol(0, "myBoolean", (JavaSymbol) methodSymbol);
-    ps = ps.put(myBoolean, sv1);
-    ps = ps.addConstraint(sv1, BooleanConstraint.TRUE);
-
-    Symbol myVar = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
-    ps = ps.put(myVar, sv2);
-    ps = ps.addConstraint(sv2, new ObjectConstraint(false, false, YieldStatus.A));
-
-    // status of sv2 should be changed from A to B
-    Collection<ProgramState> generatedStatesFromFirstYield = trueYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3)
-      .collect(Collectors.toList());
-    assertThat(generatedStatesFromFirstYield).hasSize(1);
-    assertThat(generatedStatesFromFirstYield.iterator().next().getConstraintWithStatus(sv2, YieldStatus.B)).isNotNull();
-  }
 
   @Test
   public void test_yield_equality() {
@@ -164,6 +133,20 @@ public class MethodYieldTest {
     // same arity and constraints on parameters but exceptional path
     otherYield = new ExceptionalYield(methodBehavior);
     assertThat(yield).isNotEqualTo(otherYield);
+
+    PMap<Class<? extends Constraint>, Constraint> nullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL);
+    HappyPathYield yield1 = new HappyPathYield(methodBehavior);
+    yield1.parametersConstraints.add(nullConstraint);
+    yield1.parametersConstraints.add(PCollections.emptyMap());
+    yield1.parametersConstraints.add(nullConstraint);
+    HappyPathYield yield2 = new HappyPathYield(methodBehavior);
+    yield2.parametersConstraints.add(nullConstraint);
+    yield2.parametersConstraints.add(nullConstraint);
+    yield2.parametersConstraints.add(PCollections.emptyMap());
+
+    assertThat(yield1).isNotEqualTo(yield2);
+
+
   }
 
   @Test
@@ -180,9 +163,9 @@ public class MethodYieldTest {
     MethodYield yield = mb.happyPathYields().findFirst().get();
 
     // check that we have NOT_NULL constraint on the first argument
-    assertThat(yield.parameterConstraint(0).isNull()).isFalse();
+    assertThat(yield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // check that we have NOT_NULL constraint on the variadic argument
-    assertThat(yield.parameterConstraint(1).isNull()).isFalse();
+    assertThat(yield.parametersConstraints.get(1).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
     List<IdentifierTree> usages = methodSymbol.usages();
     assertThat(usages).hasSize(6);
@@ -202,39 +185,37 @@ public class MethodYieldTest {
     Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult).collect(Collectors.toList());
     assertThat(arrayOfA).hasSize(1);
     psResult = arrayOfA.iterator().next();
-    assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
-    assertThat(psResult.getConstraint(svVarArg1).isNull()).isFalse();
+    assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
     // apply constraint NotNull to parameter (B[] is a subtype of A[])
     Collection<ProgramState> arrayOfB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(1), ps, () -> svResult).collect(Collectors.toList());
     assertThat(arrayOfB).hasSize(1);
     psResult = arrayOfB.iterator().next();
-    assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
-    assertThat(psResult.getConstraint(svVarArg1).isNull()).isFalse();
-
+    assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // no constraint, as 'a' is not an array
     Collection<ProgramState> objectA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(2), ps, () -> svResult).collect(Collectors.toList());
     assertThat(objectA).hasSize(1);
     psResult = objectA.iterator().next();
-    assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
-    assertThat(psResult.getConstraint(svVarArg1)).isNull();
+    assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isNull();
 
     // no constraint, as 'a' and 'b' can not receive the constraint of the array
     Collection<ProgramState> objectsAandB = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1, svVarArg2), arguments.get(3), ps, () -> svResult).collect(Collectors.toList());
     assertThat(objectsAandB).hasSize(1);
     psResult = objectsAandB.iterator().next();
-    assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
-    assertThat(psResult.getConstraint(svVarArg1)).isNull();
-    assertThat(psResult.getConstraint(svVarArg2)).isNull();
+    assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertThat(psResult.getConstraint(svVarArg1, ObjectConstraint.class)).isNull();
+    assertThat(psResult.getConstraint(svVarArg2, ObjectConstraint.class)).isNull();
 
     // no param, we only learn something about the argument which is not variadic
     Collection<ProgramState> noParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg), arguments.get(4), ps, () -> svResult).collect(Collectors.toList());
     assertThat(noParam).hasSize(1);
     psResult = noParam.iterator().next();
-    assertThat(psResult.getConstraint(svFirstArg).isNull()).isFalse();
-
+    assertThat(psResult.getConstraint(svFirstArg, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     // null param, contradiction, no resulting program state
-    ps = ProgramState.EMPTY_STATE.addConstraint(svFirstArg, ObjectConstraint.nullConstraint());
+    ps = ProgramState.EMPTY_STATE.addConstraint(svFirstArg, ObjectConstraint.NULL);
     Collection<ProgramState> nullParam = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(5), ps, () -> svResult).collect(Collectors.toList());
     assertThat(nullParam).isEmpty();
   }
@@ -261,12 +242,14 @@ public class MethodYieldTest {
     assertThat(methodBehavior.yields()).hasSize(2);
     MethodYield[] expected = new MethodYield[] {
       buildMethodYield(0, null),
-      buildMethodYield(-1, ObjectConstraint.nullConstraint())};
+      buildMethodYield(-1, PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL))};
     assertThat(methodBehavior.yields()).contains(expected);
   }
 
-  private static MethodYield buildMethodYield(int resultIndex, @Nullable ObjectConstraint resultConstraint) {
+  private static MethodYield buildMethodYield(int resultIndex, @Nullable PMap<Class<? extends Constraint>, Constraint> resultConstraint) {
     HappyPathYield methodYield = new HappyPathYield(mockMethodBehavior(1, false));
+    methodYield.parametersConstraints = new ArrayList<>();
+    methodYield.parametersConstraints.add(PCollections.emptyMap());
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }

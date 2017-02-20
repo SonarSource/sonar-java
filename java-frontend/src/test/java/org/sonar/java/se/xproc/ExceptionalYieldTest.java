@@ -94,19 +94,19 @@ public class ExceptionalYieldTest {
     Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType() == null).findFirst();
     assertThat(runtimeException.isPresent()).isTrue();
     MethodYield runtimeExceptionYield = runtimeException.get();
-    assertThat(runtimeExceptionYield.parameterConstraint(0)).isEqualTo(BooleanConstraint.FALSE);
+    assertThat(runtimeExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // exception from other method call
     Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException2")).findFirst();
     assertThat(implicitException.isPresent()).isTrue();
     MethodYield implicitExceptionYield = implicitException.get();
-    assertThat(implicitExceptionYield.parameterConstraint(0)).isEqualTo(BooleanConstraint.FALSE);
+    assertThat(implicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // explicitly thrown exception
     Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException1")).findFirst();
     assertThat(explicitException.isPresent()).isTrue();
     MethodYield explicitExceptionYield = explicitException.get();
-    assertThat(explicitExceptionYield.parameterConstraint(0)).isEqualTo(BooleanConstraint.TRUE);
+    assertThat(explicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
   }
 
   @Test
@@ -114,9 +114,9 @@ public class ExceptionalYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "myMethod").exceptionalPathYields().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
-      "{params: [FALSE], exceptional}",
-      "{params: [TRUE], exceptional (org.foo.MyException1)}",
-      "{params: [FALSE], exceptional (org.foo.MyException2)}");
+      "{params: [[FALSE]], exceptional}",
+      "{params: [[TRUE]], exceptional (org.foo.MyException1)}",
+      "{params: [[FALSE]], exceptional (org.foo.MyException2)}");
   }
 
   @Test
@@ -130,10 +130,10 @@ public class ExceptionalYieldTest {
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null).count()).isEqualTo(1);
 
     MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException1")).findAny().get();
-    assertThat(explicitExceptionYield.parameterConstraint(0)).isEqualTo(ObjectConstraint.nullConstraint());
+    assertThat(explicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
 
     MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException2")).findAny().get();
-    assertThat(implicitExceptionYield.parameterConstraint(0)).isEqualTo(ObjectConstraint.notNull());
+    assertThat(implicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
   }
 
 }

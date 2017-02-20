@@ -113,7 +113,7 @@ class DefaultValues {
     manyStatementsLater();
     inTheGalaxyFarFarAway();
     variablesAreInitialized();
-    a = true; // flow@vars
+    a = true; // flow@vars {{'a' is assigned true.}} flow@vars {{'a' is assigned non-null.}}
     if (a) {  // Noncompliant [[flows=vars]] flow@vars
 
     }

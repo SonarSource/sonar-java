@@ -20,9 +20,9 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.base.Preconditions;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
@@ -32,9 +32,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ExceptionalCheckBasedYield extends ExceptionalYield {
@@ -70,10 +70,10 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
       return false;
     }
 
-    for (int index = 0; index < parametersConstraints().length; index++) {
-      Constraint yieldConstraint = parameterConstraint(index);
-      Constraint stateConstraint = argumentConstraint(invocationArguments, programState, index);
-      if (yieldConstraint != null && !yieldConstraint.equals(stateConstraint)) {
+    for (int index = 0; index < parametersConstraints.size(); index++) {
+      PMap<Class<? extends Constraint>, Constraint> yieldConstraint = parametersConstraints.get(index);
+      PMap<Class<? extends Constraint>, Constraint> stateConstraint = argumentConstraint(invocationArguments, programState, index);
+      if (!yieldConstraint.isEmpty() && !yieldConstraint.equals(stateConstraint)) {
         // If there is a constraint on a parameter, we need to have the same constraint in the current program state,
         // in order to avoid wrongly learning from this yield and thus raising FPs.
         return false;
@@ -84,14 +84,14 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   private boolean applicableOnVarArgs(List<Type> invocationTypes) {
-    int numberParametersYield = parametersConstraints().length;
+    int numberParametersYield = parametersConstraints.size();
     int numberArgumentsInCall = invocationTypes.size();
 
     if (numberParametersYield > numberArgumentsInCall) {
       // VarArgs method called without variadic parameter
       return true;
     }
-    if (parameterConstraint(numberParametersYield - 1) == null) {
+    if (parametersConstraints.get(numberParametersYield - 1) == null) {
       // no constraint on the last parameter on yield side
       return true;
     }
@@ -105,9 +105,9 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @CheckForNull
-  private static Constraint argumentConstraint(List<SymbolicValue> invocationArguments, ProgramState programState, int index) {
+  private static PMap<Class<? extends Constraint>, Constraint> argumentConstraint(List<SymbolicValue> invocationArguments, ProgramState programState, int index) {
     if (index < invocationArguments.size()) {
-      return programState.getConstraint(invocationArguments.get(index));
+      return programState.getConstraints(invocationArguments.get(index));
     }
     return null;
   }
@@ -125,7 +125,9 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   public String toString() {
     Type exceptionType = exceptionType();
     Preconditions.checkState(exceptionType != null);
-    return String.format("{params: %s, exceptional (%s), check: %s}", Arrays.toString(parametersConstraints()), exceptionType.fullyQualifiedName(), check.getSimpleName());
+    return String.format("{params: %s, exceptional (%s), check: %s}",
+      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      exceptionType.fullyQualifiedName(), check.getSimpleName());
   }
 
   @Override

@@ -19,14 +19,22 @@
  */
 package org.sonar.java.se.constraint;
 
+import javax.annotation.Nullable;
+
 public interface Constraint {
-
-  boolean isNull();
-
   /**
    * @return String representation of value encoded by constraint for purpose of flow message
    */
   default String valueAsString() {
     return "";
+  }
+
+  @Nullable
+  default Constraint inverse() {
+    return null;
+  }
+
+  default boolean isValidWith(@Nullable Constraint constraint) {
+    return true;
   }
 }

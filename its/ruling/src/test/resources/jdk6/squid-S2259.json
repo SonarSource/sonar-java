@@ -73,9 +73,6 @@
 'jdk6:java/io/ObjectOutputStream.java':[
 1293,
 ],
-'jdk6:java/io/ObjectStreamClass.java':[
-2205,
-],
 'jdk6:java/io/UnixFileSystem.java':[
 175,
 ],
