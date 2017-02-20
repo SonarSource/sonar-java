@@ -31,8 +31,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void whole_stack_required_for_ps_equality() throws Exception {
-    // issue raised is a false positive : SONARJAVA-2116
-    JavaCheckVerifier.verify("src/test/files/se/PsEqualityRequiresFullStack.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new ConditionAlwaysTrueOrFalseCheck());
   }
 
   @Test
