@@ -228,6 +228,18 @@ public class ProgramState {
     return this;
   }
 
+  public ProgramState removeConstraintsOnDomain(SymbolicValue sv, Class<? extends Constraint> domain) {
+    PMap<Class<? extends Constraint>, Constraint> svConstraint = constraints.get(sv);
+    if(svConstraint == null) {
+      return this;
+    }
+    PMap<Class<? extends Constraint>, Constraint> newConstraintForSv = svConstraint.remove(domain);
+    if(newConstraintForSv.isEmpty()) {
+      return new ProgramState(this, constraints.remove(sv));
+    }
+    return addConstraints(sv, newConstraintForSv);
+  }
+
   @VisibleForTesting
   public ProgramState put(Symbol symbol, SymbolicValue value) {
     if (symbol.isUnknown() || isVolatileField(symbol)) {

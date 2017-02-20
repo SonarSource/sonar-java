@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +133,20 @@ public class MethodYieldTest {
     // same arity and constraints on parameters but exceptional path
     otherYield = new ExceptionalYield(methodBehavior);
     assertThat(yield).isNotEqualTo(otherYield);
+
+    PMap<Class<? extends Constraint>, Constraint> nullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL);
+    HappyPathYield yield1 = new HappyPathYield(methodBehavior);
+    yield1.parametersConstraints.add(nullConstraint);
+    yield1.parametersConstraints.add(PCollections.emptyMap());
+    yield1.parametersConstraints.add(nullConstraint);
+    HappyPathYield yield2 = new HappyPathYield(methodBehavior);
+    yield2.parametersConstraints.add(nullConstraint);
+    yield2.parametersConstraints.add(nullConstraint);
+    yield2.parametersConstraints.add(PCollections.emptyMap());
+
+    assertThat(yield1).isNotEqualTo(yield2);
+
+
   }
 
   @Test
@@ -233,6 +248,8 @@ public class MethodYieldTest {
 
   private static MethodYield buildMethodYield(int resultIndex, @Nullable PMap<Class<? extends Constraint>, Constraint> resultConstraint) {
     HappyPathYield methodYield = new HappyPathYield(mockMethodBehavior(1, false));
+    methodYield.parametersConstraints = new ArrayList<>();
+    methodYield.parametersConstraints.add(PCollections.emptyMap());
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }

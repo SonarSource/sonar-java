@@ -12,6 +12,4 @@ class A {
     }
     return param;
   }
-
-
 }

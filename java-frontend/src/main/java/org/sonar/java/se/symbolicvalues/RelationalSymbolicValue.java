@@ -137,7 +137,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (leftConstraint != null && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
       List<ProgramState> nullConstraints = copiedConstraints.stream()
         .flatMap(ps -> rightOp.setConstraint(ps, ObjectConstraint.NULL).stream())
-        .map(ps -> ps.addConstraints(rightOp, ps.getConstraints(rightOp).remove(BooleanConstraint.class))
+        .map(ps -> ps.removeConstraintsOnDomain(rightOp, BooleanConstraint.class)
       ).collect(Collectors.toList());
       return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
     }
@@ -164,7 +164,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
           if (constraint == null) {
             PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
             if (constraints != null) {
-              newStates.add(state.addConstraints(to, constraints.remove(c.getClass())));
+              newStates.add(state.removeConstraintsOnDomain(to, c.getClass()));
             } else {
               newStates.add(state);
             }

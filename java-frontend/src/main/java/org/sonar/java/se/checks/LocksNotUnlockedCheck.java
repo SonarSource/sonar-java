@@ -51,7 +51,7 @@ public class LocksNotUnlockedCheck extends SECheck {
       if(this == LOCKED) {
         return "locked";
       }
-      return "Unlocked";
+      return "unlocked";
     }
   }
 

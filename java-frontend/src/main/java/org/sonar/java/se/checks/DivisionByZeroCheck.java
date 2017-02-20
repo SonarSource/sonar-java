@@ -22,7 +22,6 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.PMap;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
@@ -69,6 +68,7 @@ public class DivisionByZeroCheck extends SECheck {
       if (this == ZERO) {
         return NON_ZERO;
       }
+      // inverse of NON_ZERO is unset : for a != b if a is nonzero then nothing is known for b (can be either zero or non-zero)
       return null;
     }
   }
@@ -147,10 +147,7 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void removeZeroConstraint(SymbolicValue sv) {
-      PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
-      if(constraints != null) {
-        programState = programState.addConstraints(sv, constraints.remove(ZeroConstraint.class));
-      }
+      programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
     }
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -345,10 +342,7 @@ public class DivisionByZeroCheck extends SECheck {
 
     private void addZeroConstraint(SymbolicValue sv, @Nullable ZeroConstraint zeroConstraint) {
       if(zeroConstraint == null) {
-        PMap<Class<? extends Constraint>, Constraint> constraints = programState.getConstraints(sv);
-        if(constraints != null) {
-          programState = programState.addConstraints(sv, constraints.remove(ZeroConstraint.class));
-        }
+        programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
       } else {
         programState = programState.addConstraint(sv, zeroConstraint);
       }

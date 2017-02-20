@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -35,14 +34,12 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class MethodYield {
@@ -132,12 +129,6 @@ public abstract class MethodYield {
     return programStates;
   }
 
-  public void setParameterConstraint(int index, @Nullable Constraint constraint) {
-    Preconditions.checkArgument(index < parametersConstraints.size());
-    PMap<Class<? extends Constraint>, Constraint> constraintsForParam = parametersConstraints.get(index);
-    parametersConstraints.add(index, constraintsForParam.put(constraint.getClass(), constraint));
-  }
-
   public boolean generatedByCheck(SECheck check) {
     return false;
   }
@@ -162,8 +153,8 @@ public abstract class MethodYield {
     }
     MethodYield other = (MethodYield) obj;
     return new EqualsBuilder()
-      .append(parametersConstraints.stream().flatMap(MethodYield::pmapToStream).collect(Collectors.toList()),
-        other.parametersConstraints.stream().flatMap(MethodYield::pmapToStream).collect(Collectors.toList()))
+      .append(parametersConstraints,
+        other.parametersConstraints)
       .isEquals();
   }
 

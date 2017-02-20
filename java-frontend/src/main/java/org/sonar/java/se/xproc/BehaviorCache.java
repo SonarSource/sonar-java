@@ -92,7 +92,7 @@ public class BehaviorCache {
   }
 
   @CheckForNull
-  private MethodBehavior createStringUtilMethodBehavior(Symbol.MethodSymbol symbol) {
+  private static MethodBehavior createStringUtilMethodBehavior(Symbol.MethodSymbol symbol) {
     MethodBehavior behavior;
     switch (symbol.name()) {
       case "isNotEmpty" :
@@ -109,9 +109,8 @@ public class BehaviorCache {
     return behavior;
   }
 
-  private MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
-    MethodBehavior behavior;
-    behavior = new MethodBehavior(symbol);
+  private static MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
+    MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield nullYield = new HappyPathYield(behavior);
     nullYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
     nullYield.setResult(-1, pmapForConstraint(constraint));
@@ -123,7 +122,7 @@ public class BehaviorCache {
     return behavior;
   }
 
-  private PMap<Class<? extends Constraint>, Constraint> pmapForConstraint(Constraint constraint) {
+  private static PMap<Class<? extends Constraint>, Constraint> pmapForConstraint(Constraint constraint) {
     return PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(constraint.getClass(), constraint);
   }
 
@@ -132,7 +131,7 @@ public class BehaviorCache {
    * @param symbol the proper method symbol.
    * @return the behavior corresponding to that symbol.
    */
-  private MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
+  private static MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield happyYield = new HappyPathYield(behavior);
     happyYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
@@ -158,7 +157,7 @@ public class BehaviorCache {
    * @param symbol the symbol of the associated method.
    * @return the behavior corresponding to the symbol passed as parameter.
    */
-  private MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
+  private static MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
     boolean isNull = "isNull".equals(symbol.name());
 
     ObjectConstraint trueConstraint = isNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL;
@@ -180,7 +179,7 @@ public class BehaviorCache {
     return behavior;
   }
 
-  private MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
+  private static MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield happyPathYield = new HappyPathYield(behavior);
     happyPathYield.parametersConstraints.add(pmapForConstraint(isCheckNotNull ? ObjectConstraint.NOT_NULL : BooleanConstraint.TRUE));

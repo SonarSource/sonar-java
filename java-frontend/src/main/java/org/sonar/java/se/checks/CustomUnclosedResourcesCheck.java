@@ -47,6 +47,7 @@ import java.util.List;
 @RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
 
+  //see SONARJAVA-1624 class cannot be static, different classes are needed for every instance of this template rule
   public class CustomResourceConstraint implements Constraint {
     private final String valueAsString;
 
