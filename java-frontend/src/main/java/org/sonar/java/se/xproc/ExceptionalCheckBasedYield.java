@@ -73,7 +73,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     for (int index = 0; index < parametersConstraints.size(); index++) {
       PMap<Class<? extends Constraint>, Constraint> yieldConstraint = parametersConstraints.get(index);
       PMap<Class<? extends Constraint>, Constraint> stateConstraint = argumentConstraint(invocationArguments, programState, index);
-      if (yieldConstraint != null && !yieldConstraint.equals(stateConstraint)) {
+      if (!yieldConstraint.isEmpty() && !yieldConstraint.equals(stateConstraint)) {
         // If there is a constraint on a parameter, we need to have the same constraint in the current program state,
         // in order to avoid wrongly learning from this yield and thus raising FPs.
         return false;

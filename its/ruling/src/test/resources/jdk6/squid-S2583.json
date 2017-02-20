@@ -44,9 +44,6 @@
 'jdk6:java/awt/image/Raster.java':[
 368,
 ],
-'jdk6:java/beans/beancontext/BeanContextServicesSupport.java':[
-446,
-],
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
 ],
@@ -61,7 +58,6 @@
 ],
 'jdk6:java/net/URI.java':[
 3098,
-3333,
 ],
 'jdk6:java/net/URL.java':[
 366,

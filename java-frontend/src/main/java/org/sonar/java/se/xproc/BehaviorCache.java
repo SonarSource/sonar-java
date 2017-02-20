@@ -142,7 +142,7 @@ public class BehaviorCache {
     happyYield.setResult(0, happyYield.parametersConstraints.get(0));
     behavior.addYield(happyYield);
 
-    MethodYield exceptionalYield = new HappyPathYield(behavior);
+    ExceptionalYield exceptionalYield = new ExceptionalYield(behavior);
     exceptionalYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
       exceptionalYield.parametersConstraints.add(PCollections.emptyMap());
@@ -171,9 +171,9 @@ public class BehaviorCache {
     trueYield.setResult(-1, pmapForConstraint(BooleanConstraint.TRUE));
     behavior.addYield(trueYield);
 
-    MethodYield falseYield = new HappyPathYield(behavior);
+    HappyPathYield falseYield = new HappyPathYield(behavior);
     falseYield.parametersConstraints.add(pmapForConstraint(falseConstraint));
-    trueYield.setResult(-1, pmapForConstraint(BooleanConstraint.FALSE));
+    falseYield.setResult(-1, pmapForConstraint(BooleanConstraint.FALSE));
     behavior.addYield(falseYield);
 
     behavior.completed();
