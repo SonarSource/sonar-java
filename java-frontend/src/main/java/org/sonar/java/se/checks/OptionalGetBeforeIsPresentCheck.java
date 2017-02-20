@@ -20,15 +20,19 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -59,6 +63,28 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     PreStatementVisitor visitor = new PreStatementVisitor(this, context);
     syntaxNode.accept(visitor);
     return visitor.programState;
+  }
+
+  @Override
+  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    ExplodedGraph.Node exitNode = context.getNode();
+    exitNode.parents().stream().forEach(node -> {
+      MethodYield yield = exitNode.selectedMethodYield(node);
+      if (yield != null && yield.generatedByCheck(this)) {
+        reportIssueOnMethodInvocation(node);
+      }
+    });
+  }
+
+  private void reportIssueOnMethodInvocation(ExplodedGraph.Node node) {
+    MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
+    ExpressionTree methodSelect = mit.methodSelect();
+    Tree reportTree = methodSelect;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
+    }
+    reportIssue(reportTree, String.format("NoSuchElementException will be thrown when invoking method %s() without verifying Optional parameter.", mit.symbol().name()),
+      ImmutableSet.of());
   }
 
   private static class OptionalSymbolicValue extends SymbolicValue {
@@ -111,23 +137,29 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
+      SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
-        constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, programState.peekValue()));
-      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValue())) {
-        String identifier = getIdentifierPart(tree.methodSelect());
-        String issueMsg;
-        String flowMsg;
-        if (identifier.isEmpty()) {
-          issueMsg = "Optional#";
-          flowMsg = "";
-        } else {
-          issueMsg = identifier + ".";
-          flowMsg = identifier + " ";
-        }
-        Set<List<JavaFileScannerContext.Location>> flow = FlowComputation.singleton("Optional " + flowMsg + "is accessed", tree.methodSelect());
-        context.reportIssue(tree, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.", flow);
+        constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, peek));
+      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
+        context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
+        reportIssue(tree);
         programState = null;
       }
+    }
+
+    private void reportIssue(MethodInvocationTree mit) {
+      String identifier = getIdentifierPart(mit.methodSelect());
+      String issueMsg;
+      String flowMsg;
+      if (identifier.isEmpty()) {
+        issueMsg = "Optional#";
+        flowMsg = "";
+      } else {
+        issueMsg = identifier + ".";
+        flowMsg = identifier + " ";
+      }
+      Set<List<JavaFileScannerContext.Location>> flow = FlowComputation.singleton("Optional " + flowMsg + "is accessed", mit.methodSelect());
+      context.reportIssue(mit, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.", flow);
     }
 
     private boolean presenceHasNotBeenChecked(SymbolicValue sv) {

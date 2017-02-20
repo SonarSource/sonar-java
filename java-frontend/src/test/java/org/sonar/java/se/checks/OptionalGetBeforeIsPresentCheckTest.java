@@ -29,4 +29,9 @@ public class OptionalGetBeforeIsPresentCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/OptionalGetBeforeIsPresentCheck.java", new OptionalGetBeforeIsPresentCheck());
   }
 
+  @Test
+  public void invocation_leading_to_NoSuchElementException() {
+    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToNSEE.java", new OptionalGetBeforeIsPresentCheck());
+  }
+
 }
