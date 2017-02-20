@@ -130,16 +130,17 @@ public class SymbolicValue {
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
-    Constraint cstraint = programState.getConstraint(this, nullConstraint.getClass());
-    if (cstraint == null) {
+    Constraint constraint = programState.getConstraint(this, nullConstraint.getClass());
+    if (constraint == null) {
       if(nullConstraint.isNull()) {
+        // null constraints get rid of all other constraints
         PMap<Class<? extends Constraint>, Constraint> onlyNullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
           .put(ObjectConstraint.class, ObjectConstraint.NULL);
         return ImmutableList.of(programState.addConstraints(this, onlyNullConstraint));
       } else {
         return ImmutableList.of(programState.addConstraint(this, nullConstraint));
       }
-    } else if (cstraint != nullConstraint) {
+    } else if (constraint != nullConstraint) {
       return ImmutableList.of();
     }
     return ImmutableList.of(programState);
