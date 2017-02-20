@@ -27,6 +27,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.JavaCheck;
 
+import java.util.Locale;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaRulesDefinitionTest {
@@ -54,6 +56,22 @@ public class JavaRulesDefinitionTest {
     definition.define(new RulesDefinition.Context());
   }
 
+  @Test
+  public void rules_definition_should_be_locale_independent() {
+    Locale defaultLocale = Locale.getDefault();
+    Locale trlocale= Locale.forLanguageTag("tr-TR");
+    Locale.setDefault(trlocale);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    assertThat(repository.name()).isEqualTo("SonarAnalyzer");
+    assertThat(repository.language()).isEqualTo("java");
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    Locale.setDefault(defaultLocale);
+  }
+  
   @Test
   public void test_invalid_checks() throws Exception {
     RulesDefinition.Context context = new RulesDefinition.Context();
