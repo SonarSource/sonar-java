@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Iterables;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -59,7 +61,9 @@ public abstract class SECheck implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     for (SEIssue seIssue : issues) {
-      context.reportIssueWithFlow(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getFlows(), null);
+      // FIXME SONARJAVA-2111 report all flows
+      Iterable<List<JavaFileScannerContext.Location>> flows = Iterables.limit(seIssue.getFlows(), 1);
+      context.reportIssueWithFlow(this, seIssue.getTree(), seIssue.getMessage(), flows, null);
     }
     issues.clear();
   }

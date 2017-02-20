@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -84,7 +83,7 @@ public class DefaultJavaFileScannerContextTestWithRealSonarComponents {
     sensorContext.fileSystem().add(
       new DefaultInputFile("myProjectKey", JAVA_FILE.getPath())
         .setLanguage("java")
-        .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath())))
+        .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath()), StandardCharsets.UTF_8))
     );
     sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);
@@ -97,7 +96,6 @@ public class DefaultJavaFileScannerContextTestWithRealSonarComponents {
     scannerContext = new DefaultJavaFileScannerContext(cut, JAVA_FILE, null, sonarComponents, null, true);
   }
 
-  @Ignore
   @Test
   public void test_report_issue_with_secondary_locations() throws Exception {
     Tree tree = cut.types().get(0);
