@@ -125,7 +125,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
-    // FIXME SONARJAVA-2111 report all flows for SE checks
+    // FIXME SONARJAVA-2111 all flows should be reported for SE checks
     Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? Iterables.limit(flows, 1) : flows;
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, reportedFlows, cost));
   }
