@@ -76,7 +76,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor implements Char
     if (isRegularExpression) {
       if (searchPattern == null) {
         try {
-          searchPattern = Pattern.compile(headerFormat, Pattern.DOTALL);
+          searchPattern = Pattern.compile(getHeaderFormat(), Pattern.DOTALL);
         } catch (IllegalArgumentException e) {
           throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
         }
@@ -85,6 +85,14 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor implements Char
       expectedLines = headerFormat.split("(?:\r)?\n|\r");
     }
     visitFile(context.getFile());
+  }
+
+  private String getHeaderFormat() {
+    String format = headerFormat;
+    if(format.charAt(0) != '^') {
+      format = "^" + format;
+    }
+    return format;
   }
 
   public void visitFile(File file) {

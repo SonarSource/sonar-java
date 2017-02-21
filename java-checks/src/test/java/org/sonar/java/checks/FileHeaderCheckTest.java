@@ -107,7 +107,7 @@ public class FileHeaderCheckTest {
     thrown.expectMessage("[" + FileHeaderCheck.class.getSimpleName() + "] Unable to compile the regular expression: *");
 
     FileHeaderCheck check = new FileHeaderCheck();
-    check.headerFormat = "*";
+    check.headerFormat = "**";
     check.isRegularExpression = true;
     check.scanFile(mock(JavaFileScannerContext.class));
   }
