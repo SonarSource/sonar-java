@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -50,8 +51,24 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
       Symbol field = getField(sst.expression());
       if (field != null) {
         sst.block().accept(new AssignmentVisitor(field, sst.expression()));
+      } else {
+        Symbol parameter = getParam(sst.expression());
+        if(parameter != null) {
+          reportIssue(tree, String.format("\"%s\" is a method parameter, and should not be used for synchronization.", parameter.name()));
+        }
       }
     }
+  }
+
+  @CheckForNull
+  private static Symbol getParam(ExpressionTree tree) {
+    if (tree.is(Kind.IDENTIFIER)) {
+      Symbol reference = ((IdentifierTree) tree).symbol();
+      if (reference.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) reference.owner()).getParameters().scopeSymbols().contains(reference)) {
+        return reference;
+      }
+    }
+    return null;
   }
 
   @CheckForNull
@@ -110,7 +127,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
         if (field.equals(((IdentifierTree) variable).symbol())) {
           reportIssue(
             synchronizedStatement,
-            String.format("Don't synchronize on \"%s\" or remove its reassignment on line %d.", field.name(), variable.firstToken().line()));
+            String.format("\"%s\" is not \"private final\", and should not be used for synchronization. ", field.name()));
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         checkSymbolAssignment(((MemberSelectExpressionTree) variable).identifier());

@@ -6,7 +6,7 @@ class A {
 
 
   private void doSomething() {
-    synchronized (color) { // Noncompliant [[sc=19;ec=24]] {{Don't synchronize on "color" or remove its reassignment on line 10.}}
+    synchronized (color) { // Noncompliant [[sc=19;ec=24]] {{"color" is not "private final", and should not be used for synchronization. }}
       color = "green";
     }
 
@@ -19,31 +19,31 @@ class A {
       array[0] = color;
     }
 
-    synchronized (b) { // Noncompliant {{Don't synchronize on "b" or remove its reassignment on line 23.}}
+    synchronized (b) { // Noncompliant {{"b" is not "private final", and should not be used for synchronization. }}
       b = new B();
     }
 
-    synchronized (this.color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 27.}}
+    synchronized (this.color) { // Noncompliant {{"color" is not "private final", and should not be used for synchronization. }}
       color = "green";
     }
 
-    synchronized (color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 31.}}
+    synchronized (color) { // Noncompliant {{"color" is not "private final", and should not be used for synchronization. }}
       this.color = "green";
     }
 
-    synchronized (this.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 35.}}
+    synchronized (this.b.val) { // Noncompliant {{"val" is not "private final", and should not be used for synchronization. }}
       b.val = foo();
     }
 
-    synchronized (b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 39.}}
+    synchronized (b.val) { // Noncompliant {{"val" is not "private final", and should not be used for synchronization. }}
       this.b.val = foo();
     }
 
-    synchronized (a.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 43.}}
+    synchronized (a.b.val) { // Noncompliant {{"val" is not "private final", and should not be used for synchronization. }}
       this.a.b.val = foo();
     }
 
-    synchronized (this.a.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 47.}}
+    synchronized (this.a.b.val) { // Noncompliant {{"val" is not "private final", and should not be used for synchronization. }}
       a.b.val = foo();
     }
 
@@ -92,5 +92,21 @@ class B {
 
   public Integer foo() {
     return Integer.valueOf(0);
+  }
+}
+class SyncOnParam {
+  void fun(Object param) {
+    synchronized (param) { // Noncompliant {{"param" is a method parameter, and should not be used for synchronization.}}
+      param = 12;
+    }
+  }
+  void fun1(Object param) {
+    Object localVar = null;
+    synchronized (localVar) { // compliant local var
+
+    }
+    synchronized (unknown) { // compliant : unknown
+
+    }
   }
 }
