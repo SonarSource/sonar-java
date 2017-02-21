@@ -1,14 +1,7 @@
 {
-'com.google.guava:guava:src/com/google/common/base/CharMatcher.java':[
-934,
-],
-'com.google.guava:guava:src/com/google/common/base/Converter.java':[
-382,
-],
 'com.google.guava:guava:src/com/google/common/collect/AbstractListMultimap.java':[
 103,
 114,
-126,
 ],
 'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
 1195,
@@ -20,7 +13,6 @@
 'com.google.guava:guava:src/com/google/common/collect/AbstractSetMultimap.java':[
 114,
 127,
-139,
 ],
 'com.google.guava:guava:src/com/google/common/collect/AbstractSortedSetMultimap.java':[
 125,
@@ -41,7 +33,6 @@
 127,
 132,
 137,
-142,
 147,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
@@ -59,10 +50,5 @@
 'com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java':[
 303,
 307,
-],
-'com.google.guava:guava:src/com/google/common/reflect/AbstractInvocationHandler.java':[
-109,
-117,
-126,
 ],
 }

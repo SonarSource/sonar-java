@@ -101,17 +101,17 @@ class A {
 
 
   @Override
-  public boolean equals(Object obj) { // Noncompliant
+  public boolean equals(Object obj) { // Compliant
     return super.equals(obj);
   }
 
   @Override
-  public int hashCode() { // Noncompliant
+  public int hashCode() { // Compliant
     return super.hashCode();
   }
 
   @Override
-  public String toString() { // Noncompliant
+  public String toString() { // Compliant
     return super.toString();
   }
 

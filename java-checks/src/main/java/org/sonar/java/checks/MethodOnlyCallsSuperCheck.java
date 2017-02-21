@@ -21,6 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -44,6 +47,12 @@ import java.util.List;
 @Rule(key = "S1185")
 public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
 
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final MethodMatcherCollection ALLOWED_METHODS = MethodMatcherCollection.create(
+    MethodMatcher.create().name("toString").typeDefinition(TypeCriteria.anyType()).withoutParameter(),
+    MethodMatcher.create().name("hashCode").typeDefinition(TypeCriteria.anyType()).withoutParameter(),
+    MethodMatcher.create().name("equals").typeDefinition(TypeCriteria.anyType()).parameters(JAVA_LANG_OBJECT));
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD);
@@ -55,6 +64,9 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
+    if (ALLOWED_METHODS.anyMatch(methodTree)) {
+      return;
+    }
     if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
       && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinal(methodTree)) {
       reportIssue(methodTree.simpleName(), "Remove this method to simply inherit it.");
