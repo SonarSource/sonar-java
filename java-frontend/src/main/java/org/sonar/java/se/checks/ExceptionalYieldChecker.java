@@ -28,11 +28,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class ExceptionaYieldChecker {
+public class ExceptionalYieldChecker {
 
   private final String message;
 
-  ExceptionaYieldChecker(String message) {
+  ExceptionalYieldChecker(String message) {
     this.message = message;
   }
 

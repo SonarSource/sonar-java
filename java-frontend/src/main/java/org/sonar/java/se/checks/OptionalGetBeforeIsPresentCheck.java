@@ -43,7 +43,7 @@ import java.util.Set;
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
-  private static final ExceptionaYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionaYieldChecker(
+  private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "NoSuchElementException will be thrown when invoking method %s() without verifying Optional parameter.");
 
   private enum OptionalConstraint implements Constraint {

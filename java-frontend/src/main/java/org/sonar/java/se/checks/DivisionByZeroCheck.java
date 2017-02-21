@@ -49,7 +49,7 @@ import java.util.List;
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
-  private static final ExceptionaYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionaYieldChecker(
+  private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method %s().");
 
   private enum ZeroConstraint implements Constraint {
