@@ -12,9 +12,9 @@
   <artifactId>java</artifactId>
   <version>4.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>SonarQube Java</name>
+  <name>SonarJava</name>
   <inceptionYear>2012</inceptionYear>
-  <description>SonarQube Java Analyzer</description>
+  <description>Code Analyzer for Java</description>
   <url>http://redirect.sonarsource.com/plugins/java.html</url>
   <organization>
     <name>SonarSource</name>
