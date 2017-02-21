@@ -81,15 +81,14 @@ public final class JavaIssue {
   }
 
   public JavaIssue addFlow(InputFile file, List<List<AnalyzerMessage>> flows) {
-    // FIXME SONARJAVA-2111 all flows should be reported
-    flows.stream().findFirst().ifPresent(flow ->
+    for (List<AnalyzerMessage> flow : flows) {
       newIssue.addFlow(flow.stream()
         .map(am -> newIssue.newLocation()
           .on(file)
           .at(range(file, am.primaryLocation()))
           .message(am.getMessage()))
-        .collect(Collectors.toList()))
-    );
+        .collect(Collectors.toList()));
+    }
     return this;
   }
 

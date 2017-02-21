@@ -124,7 +124,7 @@ public class JavaIssueTest {
     javaIssue.addFlow(file, flows);
     javaIssue.save();
     Mockito.verify(storage, Mockito.times(1)).store(newIssueWithFlow);
-    assertThat(newIssueWithFlow.flows()).hasSize(1);
+    assertThat(newIssueWithFlow.flows()).hasSize(2);
   }
 
   private static void assertLocation(IssueLocation location, InputFile file, String message, int startLine, int startOffset, int endLine, int endOffset) {
