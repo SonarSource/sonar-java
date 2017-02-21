@@ -12,6 +12,7 @@ class A {
     if(b instanceof Object) {} // Noncompliant
     if(arrayB instanceof B[]){} // Noncompliant
     if(arrayB instanceof I[]){} // Noncompliant
+    if(null instanceof I[]){} // compliant (covered by S2583 : condition always true or false, always false in this case)
 
   }
 }

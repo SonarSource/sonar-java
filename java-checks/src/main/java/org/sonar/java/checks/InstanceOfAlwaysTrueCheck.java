@@ -40,7 +40,7 @@ public class InstanceOfAlwaysTrueCheck extends IssuableSubscriptionVisitor {
     InstanceOfTree instanceOfTree = (InstanceOfTree) tree;
     Type expressionType = instanceOfTree.expression().symbolType();
     Type instanceOf = instanceOfTree.type().symbolType();
-    if (expressionType.isSubtypeOf(instanceOf)) {
+    if (expressionType.isSubtypeOf(instanceOf) && !instanceOfTree.expression().is(Tree.Kind.NULL_LITERAL)) {
       reportIssue(instanceOfTree.instanceofKeyword(), "Remove this useless \"instanceof\" operator; it will always return \"true\". ");
     }
   }
