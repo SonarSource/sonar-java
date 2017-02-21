@@ -101,17 +101,17 @@ class A {
 
 
   @Override
-  public boolean equals(Object obj) { // Noncompliant
+  public boolean equals(Object obj) { // Compliant
     return super.equals(obj);
   }
 
   @Override
-  public int hashCode() { // Noncompliant
+  public int hashCode() { // Compliant
     return super.hashCode();
   }
 
   @Override
-  public String toString() { // Noncompliant
+  public String toString() { // Compliant
     return super.toString();
   }
 
@@ -191,5 +191,47 @@ public class finalMethodsExclusion {
     public void methodB() { // Noncompliant
       super.methodB();
     }
+  }
+}
+
+class D {
+  D(Object o) {}
+
+  int foo1() { return 0; }
+  int foo2() { return 0; }
+  int foo3() { return 0; }
+  int foo4() { return 0; }
+  int foo5(Object o) { return 0; }
+  static int staticMethod() { return 0; }
+}
+
+class E extends D {
+  E(Object o) {
+    super(o);
+  }
+
+  @Override
+  int foo1() { // Compliant - throws an exception
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  int foo2() { // Compliant - do not call same method
+    return super.foo();
+  }
+
+  @Override
+  int foo3() { // Compliant
+    return new D().foo3();
+  }
+
+  @Override
+  int foo4() { // Compliant
+    return D.staticMethod();
+  }
+
+  @Override
+  int foo5(Object o) { // Compliant
+    return super.foo5(new Object());
   }
 }
