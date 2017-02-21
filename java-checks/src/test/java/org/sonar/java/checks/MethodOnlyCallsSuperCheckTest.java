@@ -24,9 +24,16 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MethodOnlyCallsSuperCheckTest {
 
+  private static final String FILE = "src/test/files/checks/MethodOnlyCallsSuperCheck.java";
+
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MethodOnlyCallsSuperCheck.java", new MethodOnlyCallsSuperCheck());
+    JavaCheckVerifier.verify(FILE, new MethodOnlyCallsSuperCheck());
+  }
+
+  @Test
+  public void no_issue_without_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILE, new MethodOnlyCallsSuperCheck());
   }
 
 }
