@@ -30,10 +30,8 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -44,6 +42,8 @@ import java.util.List;
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
+  private static final ExceptionaYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionaYieldChecker(
+    "NullPointerException will be thrown when invoking method %s().");
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
 
   @Override
@@ -123,27 +123,6 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   @Override
-  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    ExplodedGraph.Node exitNode = context.getNode();
-    exitNode.parents().stream().forEach(node -> {
-      MethodYield yield = exitNode.selectedMethodYield(node);
-      if (yield != null && yield.generatedByCheck(this)) {
-        reportIssueOnMethodInvocation(node);
-      }
-    });
-  }
-
-  private void reportIssueOnMethodInvocation(ExplodedGraph.Node node) {
-    MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
-    ExpressionTree methodSelect = mit.methodSelect();
-    Tree reportTree = methodSelect;
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
-    }
-    reportIssue(reportTree, String.format("NullPointerException will be thrown when invoking method %s()", mit.symbol().name()), ImmutableSet.of());
-  }
-
-  @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
@@ -171,6 +150,11 @@ public class NullDereferenceCheck extends SECheck {
 
   private static boolean isAnnotatedCheckForNull(MethodInvocationTree syntaxNode) {
     return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull");
+  }
+
+  @Override
+  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    EXCEPTIONAL_YIELD_CHECKER.reportOnExceptionalYield(context.getNode(), this);
   }
 
 }

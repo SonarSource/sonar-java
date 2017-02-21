@@ -4,7 +4,7 @@ class A {
 
   void foo1(Object o) {
     if (o == null) {
-      npeIfNull(o); // Noncompliant [[sc=7;ec=16]] {{NullPointerException will be thrown when invoking method npeIfNull()}}
+      npeIfNull(o); // Noncompliant [[sc=7;ec=16]] {{NullPointerException will be thrown when invoking method npeIfNull().}}
     }
 
     o.toString(); // Compliant - can not be reached with 'o' being NULL, as the NPE is triggered insde bar()
@@ -12,7 +12,7 @@ class A {
 
   void foo2(Object o) {
     if (o == null) {
-      A.npeIfNull(o); // Noncompliant [[sc=9;ec=18]] {{NullPointerException will be thrown when invoking method npeIfNull()}}
+      A.npeIfNull(o); // Noncompliant [[sc=9;ec=18]] {{NullPointerException will be thrown when invoking method npeIfNull().}}
     }
 
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
@@ -35,7 +35,7 @@ class A {
 
   void foo5(Object o) {
     if (o == null) {
-      nullable(o); // Noncompliant [[sc=7;ec=15]] {{NullPointerException will be thrown when invoking method nullable()}}
+      nullable(o); // Noncompliant [[sc=7;ec=15]] {{NullPointerException will be thrown when invoking method nullable().}}
     }
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
   }
@@ -45,7 +45,7 @@ class A {
       npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Compliant
     }
     if (o == null && b1) {
-      npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Noncompliant [[sc=7;ec=35]] {{NullPointerException will be thrown when invoking method npeIfArg0IsTrueAndArg1IsNull()}}
+      npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Noncompliant [[sc=7;ec=35]] {{NullPointerException will be thrown when invoking method npeIfArg0IsTrueAndArg1IsNull().}}
     }
   }
 
@@ -66,7 +66,7 @@ class A {
 
 class B {
   void bar1(@Nullable Object o) {
-    npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull()}}
+    npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull().}}
   }
 
   static void npeIfNull(Object o) {
@@ -88,7 +88,7 @@ class C_varArgs {
 
   void coa2() {
     Object[] args = null;
-    format("helloworld", args); // Noncompliant {{NullPointerException will be thrown when invoking method format()}}
+    format("helloworld", args); // Noncompliant {{NullPointerException will be thrown when invoking method format().}}
   }
 
   void coa3() {
@@ -104,7 +104,7 @@ class C_varArgs {
   }
 
   void coa6(Object o) {
-    format("helloworld", null); // Noncompliant {{NullPointerException will be thrown when invoking method format()}}
+    format("helloworld", null); // Noncompliant {{NullPointerException will be thrown when invoking method format().}}
   }
 
   static int format(String template, @Nullable Object ... args) {
@@ -146,7 +146,7 @@ class D {
   void catch_not_related(@Nullable Object o) {
     Object o2 = new Object();
     try {
-      npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull()}}
+      npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull().}}
     } catch (MyCheckedException e) {
       o2 = o;
     }
