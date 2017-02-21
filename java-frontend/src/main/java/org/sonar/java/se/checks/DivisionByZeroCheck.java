@@ -25,14 +25,12 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,8 +38,6 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -52,6 +48,9 @@ import java.util.List;
 
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
+
+  private static final ExceptionaYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionaYieldChecker(
+    "A division by zero will occur when invoking method %s().");
 
   private enum ZeroConstraint implements Constraint {
     ZERO,
@@ -368,22 +367,6 @@ public class DivisionByZeroCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    ExplodedGraph.Node exitNode = context.getNode();
-    exitNode.parents().stream().forEach(node -> {
-      MethodYield yield = exitNode.selectedMethodYield(node);
-      if (yield != null && yield.generatedByCheck(this)) {
-        reportIssueOnMethodInvocation(node);
-      }
-    });
-  }
-
-  private void reportIssueOnMethodInvocation(ExplodedGraph.Node node) {
-    MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
-    ExpressionTree methodSelect = mit.methodSelect();
-    Tree reportTree = methodSelect;
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
-    }
-    reportIssue(reportTree, String.format("A division by zero will occur when invoking method %s().", mit.symbol().name()), ImmutableSet.of());
+    EXCEPTIONAL_YIELD_CHECKER.reportOnExceptionalYield(context.getNode(), this);
   }
 }
