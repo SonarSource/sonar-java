@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 @Rule(key = "S2068")
 public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("(password|passwd|pwd)=..", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("(password|passwd|pwd)=\\S.", Pattern.CASE_INSENSITIVE);
   private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("(password|passwd|pwd)", Pattern.CASE_INSENSITIVE);
 
   private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
