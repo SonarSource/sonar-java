@@ -10,6 +10,7 @@ class A {
     String variable3 = "login=a&passwd=xxx"; // Noncompliant
     String variable4 = "login=a&pwd=xxx"; // Noncompliant
     String variable5 = "login=a&password=";
+    String variable6 = "login=a&password= ";
 
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswdInIt = "xxx"; // Noncompliant [[sc=12;ec=38]]
