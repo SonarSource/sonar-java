@@ -78,25 +78,24 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
     }
 
     function getProgramState(nodeId) {
-      var programStateAsString;
+      var stackAsString, constraintsAsString, valuesAsString, lastEvaluatedSymbolAsString;
       data.nodes.forEach(function(node) {
         if (nodeId == node.id) {
-          programStateAsString = node.programState;
+          valuesAsString = node.psValues;
+          constraintsAsString = node.psConstraints;
+          stackAsString = node.psStack;
+          lastEvaluatedSymbolAsString = node.psLastEvaluatedSymbol;
         }
       });
 
-      // ugly hack to get differents parts of the program state based on its toString() method. 
-      // Should be refactored in order to get correctly each object
-      var groups = programStateAsString.split('{');
-      if (groups.length == 5) {
-        result = '<h3>Program State:</h3>';
-        result += '<table>';
-        result += tableLine('values',groups[1]);
-        result += tableLine('constraints', groups[2]);
-        result += tableLine('stack', groups[3]);
-        result += tableLine('lastEvaluatedSymbol', groups[4]);
-        result += '</table>';
-      }
+      result = '<h3>Program State:</h3>';
+      result += '<table>';
+      result += tableLine('values', valuesAsString);
+      result += tableLine('constraints', constraintsAsString);
+      result += tableLine('stack', stackAsString);
+      result += tableLine('lastEvaluatedSymbol', lastEvaluatedSymbolAsString);
+      result += '</table>';
+
       return result;
     }
 
@@ -116,11 +115,10 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
     }
 
     function tableLine(label, value) {
-      return '<tr><td>' + label + '</td><td>' + clean(value) + '</td></tr>';
-    }
-
-    function clean(value) {
-      return value.substring(0, value.indexOf('}'));
+      if (value) {
+        return '<tr><td>' + label + '</td><td>' + value + '</td></tr>';
+      }
+      return "";
     }
   }
 };

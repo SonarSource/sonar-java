@@ -23,13 +23,16 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.LearnedAssociation;
 import org.sonar.java.se.LearnedConstraint;
+import org.sonar.java.se.ProgramStateDataProvider;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -52,7 +55,7 @@ public class EGViewer {
 
   private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
   private final Viewer viewer;
-  private static final boolean SHOW_CACHE = true;
+  private static final boolean SHOW_MULTIPLE_PARENTS = true;
 
   EGViewer(Viewer viewer) {
     this.viewer = viewer;
@@ -60,10 +63,12 @@ public class EGViewer {
 
   public void analyse(String source){
     ExplodedGraph eg = buildEG(source);
-    viewer.textArea.setText(CFGDebug.toString(CFGViewer.buildCFG(source)));
-    String dot = egToDot(eg);
+    CFG cfg = CFGViewer.buildCFG(source);
+    viewer.textArea.setText(CFGDebug.toString(cfg));
+    int firstBlockId = cfg.blocks().get(0).id();
+    String dot = egToDot(eg, firstBlockId);
     WebEngine webEngine = viewer.webView.getEngine();
-    webEngine.executeScript("loadEG('" + dot + "', " + (!SHOW_CACHE) + ")");
+    webEngine.executeScript("loadEG('" + dot + "', " + (!SHOW_MULTIPLE_PARENTS) + ")");
   }
 
   private static ExplodedGraph buildEG(String source) {
@@ -74,31 +79,37 @@ public class EGViewer {
   }
 
   private static ExplodedGraph getEg(CompilationUnitTree cut, SemanticModel semanticModel, MethodTree methodTree) {
-    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    when(context.getTree()).thenReturn(cut);
-    when(context.getSemanticModel()).thenReturn(semanticModel);
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList());
+    JavaFileScannerContext mockContext = mock(JavaFileScannerContext.class);
+    when(mockContext.getTree()).thenReturn(cut);
+    when(mockContext.getSemanticModel()).thenReturn(semanticModel);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList()) {
+      @Override
+      public MethodBehavior execute(MethodTree methodTree) {
+        this.context = mockContext;
+        return super.execute(methodTree);
+      }
+    };
     ExplodedGraphWalker walker = new ExplodedGraphWalker(sev.behaviorCache, semanticModel);
     walker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
     return walker.getExplodedGraph();
   }
 
-  private static String egToDot(ExplodedGraph eg) {
+  private static String egToDot(ExplodedGraph eg, int firstBlockId) {
     String result = "graph ExplodedGraph { ";
     List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.nodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
       List<ExplodedGraph.Node> parents = Lists.newArrayList(node.parents());
-      result += graphNode(index, node, parents);
+      result += graphNode(index, node, parents, firstBlockId);
       if (!parents.isEmpty()) {
         ExplodedGraph.Node firstParent = node.parent();
         result += parentEdge(nodes.indexOf(firstParent), index, node, firstParent);
 
         int nbParents = parents.size();
-        if (SHOW_CACHE && nbParents > 1) {
-          List<ExplodedGraph.Node> cacheHits = parents.subList(1, nbParents);
-          for (ExplodedGraph.Node cacheHit : cacheHits) {
-            result += cacheEdge(nodes.indexOf(cacheHit), index, node, cacheHit);
+        if (SHOW_MULTIPLE_PARENTS && nbParents > 1) {
+          List<ExplodedGraph.Node> others = parents.subList(1, nbParents);
+          for (ExplodedGraph.Node other : others) {
+            result += parentEdge(nodes.indexOf(other), index, node, other);
           }
         }
       }
@@ -108,33 +119,55 @@ public class EGViewer {
 
   }
 
-  private static String graphNode(int index, ExplodedGraph.Node node, List<ExplodedGraph.Node> parents) {
-    return index + "[label=\"" + node.programPoint + "\",programState=\"" + node.programState + "\"" + specialHighlight(node, parents) + "] ";
+  private static String graphNode(int index, ExplodedGraph.Node node, List<ExplodedGraph.Node> parents, int firstBlockId) {
+    ProgramStateDataProvider psProvider = new ProgramStateDataProvider(node.programState);
+    return new StringBuilder()
+      .append(index)
+      .append("[")
+      .append("label=\"" + node.programPoint + "\"")
+      .append(",psStack=\"" + psProvider.stack() + "\"")
+      .append(",psConstraints=\"" + psProvider.constraints() + "\"")
+      .append(",psValues=\"" + psProvider.values() + "\"")
+      .append(",psLastEvaluatedSymbol=\"" + psProvider.lastEvaluatedSymbol() + "\"")
+      .append(specialHighlight(node, parents, firstBlockId))
+      .append("]")
+      .toString();
   }
 
-  private static String specialHighlight(ExplodedGraph.Node node, List<ExplodedGraph.Node> parents) {
+  private static String specialHighlight(ExplodedGraph.Node node, List<ExplodedGraph.Node> parents, int firstBlockId) {
     if (parents.isEmpty()) {
-      return ",color=\"green\",fontcolor=\"white\"";
+      if (isFirstBlock(node, firstBlockId)) {
+        return ",color=\"green\",fontcolor=\"white\"";
+      }
+      // lost nodes - should never happen - worth investigation if appears in viewer
+      return ",color=\"red\",fontcolor=\"white\"";
     } else if (node.programPoint.toString().startsWith("B0.0")) {
       return ",color=\"black\",fontcolor=\"white\"";
     }
     return "";
   }
 
-  private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node firstParent) {
+  private static boolean isFirstBlock(ExplodedGraph.Node node, int firstBlockId) {
+    return node.programPoint.toString().startsWith("B" + firstBlockId + "." + "0");
+  }
+
+  private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node parent) {
+    String yield = yield(node, parent);
     return from + "->" + to
       + "[label=\""
       + node.learnedAssociations().map(LearnedAssociation::toString).collect(Collectors.joining(","))
       + "\\n"
       + node.learnedConstraints().map(LearnedConstraint::toString).collect(Collectors.joining(","))
       + "\""
-      + yield(node, firstParent)
+      + (yield.isEmpty() ? handleException(node) : yield)
       + "] ";
   }
 
-  private static String cacheEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node cacheHit) {
-    String yield = yield(node, cacheHit);
-    return from + "->" + to + "[label=\"CACHE\"" + (yield.isEmpty() ? ",color=\"red\",fontcolor=\"red\"" : yield) + "] ";
+  private static String handleException(ExplodedGraph.Node node) {
+    if (node.programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      return ",color=\"red\",fontcolor=\"red\"";
+    }
+    return "";
   }
 
   private static String yield(ExplodedGraph.Node node, ExplodedGraph.Node parent) {
