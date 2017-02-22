@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public abstract class MethodYield {
-  private final ExplodedGraph.Node node;
+  final ExplodedGraph.Node node;
   private final MethodBehavior behavior;
   List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 

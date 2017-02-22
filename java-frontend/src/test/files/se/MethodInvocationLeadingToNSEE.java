@@ -37,15 +37,15 @@ class A {
   }
 
   void foo6(boolean b) {
-    Optional<String> o = getOptional();
-    if (b) {
-      A.nseeIfCalledAndTrue(b, o); // Noncompliant {{NoSuchElementException will be thrown when invoking method nseeIfCalledAndTrue() without verifying Optional parameter.}}
+    Optional<String> o = getOptional(); // flow@foo6 [[order=2]] {{'o' is assigned non-null.}} flow@foo6 [[order=3]] {{'getOptional()' returns non-null.}}
+    if (b) { // flow@foo6 [[order=1]] {{Implies 'b' is true.}}
+      A.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{NoSuchElementException will be thrown when invoking method nseeIfCalledAndTrue() without verifying Optional parameter.}}
     } else {
       nseeIfCalledAndTrue(b, o); // Compliant
     }
   }
 
-  void foo6() {
+  void foo7() {
     Optional<String> o = getOptional();
     Optional<String> o2 = o;
     try {
@@ -62,7 +62,7 @@ class A {
 
   static void nseeIfCalledAndTrue(boolean b, Optional<String> o) {
     if (b) {
-      o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}}
+      o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}} flow@foo6 [[order=4]] {{NoSuchElementException is thrown.}}
     } else if (o.isPresent()) {
       o.get();
     }

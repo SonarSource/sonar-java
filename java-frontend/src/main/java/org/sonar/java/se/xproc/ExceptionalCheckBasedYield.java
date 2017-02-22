@@ -20,19 +20,28 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph.Node;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,11 +49,13 @@ import java.util.stream.Stream;
 public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   private final Class<? extends SECheck> check;
+  private final SymbolicValue svCausingException;
   private final boolean isMethodVarargs;
 
-  public ExceptionalCheckBasedYield(Type exceptionType, Class<? extends SECheck> check, Node node, MethodBehavior behavior) {
+  public ExceptionalCheckBasedYield(SymbolicValue svCausingException, Type exceptionType, Class<? extends SECheck> check, Node node, MethodBehavior behavior) {
     super(node, behavior);
     this.check = check;
+    this.svCausingException = svCausingException;
     this.isMethodVarargs = behavior.isMethodVarArgs();
     Preconditions.checkArgument(exceptionType != null, "exceptionType is required");
     super.setExceptionType(exceptionType);
@@ -139,6 +150,33 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
+  public Set<List<Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+    return ImmutableSet.of();
+  }
+
+  public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node.parent(), svCausingException, domains(node.programState.getConstraints(svCausingException)));
+    Tree syntaxTree = node.programPoint.syntaxTree();
+    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flowBuilder = ImmutableSet.builder();
+
+    for (List<JavaFileScannerContext.Location> flow : flows) {
+      List<JavaFileScannerContext.Location> newFlow = ImmutableList.<JavaFileScannerContext.Location>builder()
+        .add(new JavaFileScannerContext.Location(exceptionType().name() + " is thrown.", syntaxTree))
+        .addAll(flow)
+        .build();
+      flowBuilder.add(newFlow);
+    }
+
+    return flowBuilder.build();
+  }
+
+  private static List<Class<? extends Constraint>> domains(PMap<Class<? extends Constraint>, Constraint> constraints) {
+    List<Class<? extends Constraint>> domains = new ArrayList<>();
+    constraints.forEach((d, c) -> domains.add(d));
+    return domains;
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -149,6 +187,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     ExceptionalCheckBasedYield other = (ExceptionalCheckBasedYield) obj;
     return new EqualsBuilder()
       .appendSuper(super.equals(obj))
+      .append(svCausingException, other.svCausingException)
       .append(check, other.check)
       .isEquals();
   }

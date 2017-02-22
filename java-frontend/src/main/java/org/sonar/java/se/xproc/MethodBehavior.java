@@ -87,8 +87,8 @@ public class MethodBehavior {
     }
   }
 
-  public ExceptionalYield createExceptionalCheckBasedYield(ExplodedGraph.Node node, Type exceptionType, SECheck check) {
-    ExceptionalYield yield = new ExceptionalCheckBasedYield(exceptionType, check.getClass(), node, this);
+  public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, Type exceptionType, SECheck check) {
+    ExceptionalYield yield = new ExceptionalCheckBasedYield(target, exceptionType, check.getClass(), node, this);
     addParameterConstraints(node, yield);
     yields.add(yield);
     return yield;
