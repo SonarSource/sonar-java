@@ -20,6 +20,7 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
@@ -86,10 +87,11 @@ public class MethodBehavior {
     }
   }
 
-  public void createExceptionalCheckBasedYield(ExplodedGraph.Node node, Type exceptionType, SECheck check) {
+  public ExceptionalYield createExceptionalCheckBasedYield(ExplodedGraph.Node node, Type exceptionType, SECheck check) {
     ExceptionalYield yield = new ExceptionalCheckBasedYield(exceptionType, check.getClass(), node, this);
     addParameterConstraints(node, yield);
     yields.add(yield);
+    return yield;
   }
 
   public boolean isMethodVarArgs() {
