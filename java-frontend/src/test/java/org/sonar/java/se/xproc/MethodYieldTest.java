@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -122,6 +123,18 @@ public class MethodYieldTest {
 
     // same instance
     assertThat(yield).isEqualTo(yield);
+    MethodYield myYield = new MethodYield(null) {
+      @Override
+      public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
+        return null;
+      }
+
+      @Override
+      public String toString() {
+        return null;
+      }
+    };
+    assertThat(myYield).isEqualTo(myYield);
 
     // same constraints, same number of parameters, same exceptional aspect
     assertThat(yield).isEqualTo(new HappyPathYield(methodBehavior));
