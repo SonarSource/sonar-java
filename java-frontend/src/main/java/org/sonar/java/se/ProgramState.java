@@ -406,6 +406,7 @@ public class ProgramState {
     return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 
+  @Nullable
   public PMap<Class<? extends Constraint>, Constraint> getConstraints(SymbolicValue sv) {
     return constraints.get(sv);
   }
