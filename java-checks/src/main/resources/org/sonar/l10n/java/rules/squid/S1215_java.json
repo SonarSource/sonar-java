@@ -1,6 +1,6 @@
 {
   "title": "Execution of the Garbage Collector should be triggered only by the JVM",
-  "type": "CODE_SMELL",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,5 +10,5 @@
     "unpredictable",
     "bad-practice"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }
