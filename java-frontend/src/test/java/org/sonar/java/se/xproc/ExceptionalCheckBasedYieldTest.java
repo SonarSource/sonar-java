@@ -47,6 +47,7 @@ public class ExceptionalCheckBasedYieldTest {
   public ExpectedException thrown = ExpectedException.none();
 
   private static final String FILENAME = "src/test/files/se/ExceptionalCheckBasedYields.java";
+  private static final SymbolicValue SV_CAUSING_EXCEPTION = new SymbolicValue(42);
 
   @Test
   public void creation_of_new_yield() {
@@ -125,7 +126,7 @@ public class ExceptionalCheckBasedYieldTest {
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     Type exceptionType = null;
-    new ExceptionalCheckBasedYield(exceptionType, seCheckClass, null, mockMethodBehavior());
+    new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, mockMethodBehavior());
   }
 
   @Test
@@ -134,7 +135,7 @@ public class ExceptionalCheckBasedYieldTest {
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     Type exceptionType = mock(Type.class);
-    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(exceptionType, seCheckClass, null, mockMethodBehavior());
+    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, mockMethodBehavior());
     yield.setExceptionType(mock(Type.class));
   }
 
@@ -142,7 +143,7 @@ public class ExceptionalCheckBasedYieldTest {
   public void test_toString() {
     Type exceptionType = mock(Type.class);
     when(exceptionType.fullyQualifiedName()).thenReturn("org.foo.MyException");
-    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(exceptionType, SECheck.class, null, mockMethodBehavior());
+    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, SECheck.class, null, mockMethodBehavior());
 
     assertThat(yield.toString()).isEqualTo("{params: [], exceptional (org.foo.MyException), check: SECheck}");
   }
@@ -158,8 +159,8 @@ public class ExceptionalCheckBasedYieldTest {
 
     Type mockedExceptionType1 = mock(Type.class);
 
-    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(mockedExceptionType1, seCheckClass1, null, mb);
-    ExceptionalYield otherYield = new ExceptionalCheckBasedYield(mockedExceptionType1, seCheckClass1, null, mb);
+    ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mockedExceptionType1, seCheckClass1, null, mb);
+    ExceptionalYield otherYield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mockedExceptionType1, seCheckClass1, null, mb);
 
     assertThat(yield).isNotEqualTo(null);
     assertThat(yield).isEqualTo(yield);
@@ -170,12 +171,16 @@ public class ExceptionalCheckBasedYieldTest {
     otherYield.setExceptionType(mockedExceptionType1);
     assertThat(yield).isNotEqualTo(otherYield);
 
+    // same exception, different SV
+    otherYield = new ExceptionalCheckBasedYield(new SymbolicValue(7), mockedExceptionType1, seCheckClass2, null, mb);
+    assertThat(yield).isNotEqualTo(otherYield);
+
     // same exception, different check
-    otherYield = new ExceptionalCheckBasedYield(mockedExceptionType1, seCheckClass2, null, mb);
+    otherYield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mockedExceptionType1, seCheckClass2, null, mb);
     assertThat(yield).isNotEqualTo(otherYield);
 
     // different exception, same check
-    otherYield = new ExceptionalCheckBasedYield(mock(Type.class), seCheckClass1, null, mb);
+    otherYield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mock(Type.class), seCheckClass1, null, mb);
     assertThat(yield).isNotEqualTo(otherYield);
   }
 

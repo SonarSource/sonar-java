@@ -30,7 +30,7 @@ public class DivisionByZeroCheckTest {
   }
 
   @Test
-  public void invocation_leading_to_NPE() {
+  public void invocation_leading_to_ArithmeticException() {
     JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToArithmeticException.java", new DivisionByZeroCheck());
   }
 }

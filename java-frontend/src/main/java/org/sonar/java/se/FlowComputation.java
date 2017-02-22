@@ -40,7 +40,6 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -217,14 +216,21 @@ public class FlowComputation {
     }
 
     Set<LearnedConstraint> learnedConstraints(ExplodedGraph.Edge edge) {
-      return edge.learnedConstraints().stream()
-        .filter(lc -> symbolicValues.contains(lc.symbolicValue()) && learnedConstraintForDomains(lc))
-        .collect(Collectors.toCollection(LinkedHashSet::new));
+      Set<LearnedConstraint> learnedConstraints = edge.learnedConstraints();
+      ImmutableSet.Builder<LearnedConstraint> lcByDomainBuilder = ImmutableSet.builder();
+      // guarantee that we will keep the same domain order when reporting
+      for (Class<? extends Constraint> domain : domains) {
+        learnedConstraints.stream()
+          .filter(lc -> symbolicValues.contains(lc.symbolicValue()) && hasConstraintForDomain(lc, domain))
+          .forEach(lcByDomainBuilder::add);
+      }
+
+      return lcByDomainBuilder.build();
     }
 
-    private boolean learnedConstraintForDomains(LearnedConstraint lc) {
+    private boolean hasConstraintForDomain(LearnedConstraint lc, Class<? extends Constraint> domain) {
       Constraint constraint = lc.constraint;
-      return constraint == null || domains.stream().anyMatch(d -> d.isAssignableFrom(constraint.getClass()));
+      return constraint == null || domain.isAssignableFrom(constraint.getClass());
     }
 
     private List<JavaFileScannerContext.Location> learnedConstraintFlow(LearnedConstraint learnedConstraint, ExplodedGraph.Edge edge) {

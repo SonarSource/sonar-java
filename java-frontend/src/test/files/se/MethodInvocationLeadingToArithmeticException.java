@@ -9,14 +9,16 @@ class A {
   }
 
   void foo2() {
-    A.divByZeroIfArg1Zero(42, 0); // Noncompliant {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}}
+    A.divByZeroIfArg1Zero( // Noncompliant [[flows=foo2]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}}
+       42, // flow@foo2 [[order=3]] {{non-zero}} flow@foo2 [[order=4]] {{non-null}}
+       0); // flow@foo2 [[order=1]] {{zero}} flow@foo2 [[order=2]] {{non-null}}
   }
 
   void foo3(int j) {
-    int i = 42;
+    int i = 42; // flow@foo3 [[order=3]] {{non-zero}} flow@foo3 [[order=4]] {{non-null}}
     divByZeroIfArg1Zero(i, j); // Compliant
-    if (j == 0) {
-      divByZeroIfArg1Zero(i, j); // Noncompliant {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}}
+    if (j == 0) { // flow@foo3 [[order=1]] {{Implies 'j' is zero.}} // flow@foo3 [[order=2]] {{Implies 'j' is non-null.}}
+      divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}}
     }
   }
 
@@ -66,7 +68,7 @@ class A {
   }
 
   static int divByZeroIfArg1Zero(int i, int j) {
-    return i / j;
+    return i / j; // flow@foo2 [[order=5]] {{ArithmeticException is thrown.}} flow@foo3 [[order=5]] {{ArithmeticException is thrown.}}
   }
 
   static int throwsExceptionIfArg1Zero(int i, int j) {
