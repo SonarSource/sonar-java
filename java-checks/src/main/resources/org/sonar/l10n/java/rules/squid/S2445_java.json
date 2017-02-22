@@ -1,5 +1,5 @@
 {
-  "title": "Blocks should be synchronized on \"private final\" fields",
+  "title": "Blocks should be synchronized on \"private final\" fields or parameters",
   "type": "BUG",
   "status": "ready",
   "remediation": {
