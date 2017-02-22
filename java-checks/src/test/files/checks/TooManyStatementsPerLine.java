@@ -180,4 +180,11 @@ class A extends TooManyStatementsPerLine {
   }
 
 }
+  class Test {
+    {
+    int x = 0; int y = 0; // Noncompliant
+    if (x == y) System.out.println(""); // Noncompliant
+    }
+    }
+
 

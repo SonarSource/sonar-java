@@ -58,13 +58,13 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER);
   }
 
   @Override
   public void visitNode(Tree tree) {
     BlockTree block;
-    if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
+    if (tree.is(Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER)) {
       block = (BlockTree) tree;
     } else {
       block = ((MethodTree) tree).block();
