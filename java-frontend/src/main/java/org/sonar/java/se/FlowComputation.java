@@ -152,12 +152,22 @@ public class FlowComputation {
       Symbol newTrackSymbol = newTrackedSymbol(edge);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
-      List<JavaFileScannerContext.Location> lcFlow = learnedConstraints.stream()
+      List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, learnedConstraints);
+      flowBuilder.addAll(lcFlow);
+
+      if (isMethodInvocationNode(edge.parent)) {
+        List<JavaFileScannerContext.Location> yieldsFlow = flowFromYields(edge);
+        flowBuilder.addAll(yieldsFlow);
+      }
+
+      return new ExecutionPath(edge, visited.add(edge), newTrackSymbol, flowBuilder.build(), visitedAllParents(edge) || shouldTerminate(learnedConstraints));
+    }
+
+    private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
+      return learnedConstraints.stream()
         .map(lc -> learnedConstraintFlow(lc, edge))
         .flatMap(List::stream)
         .collect(Collectors.toList());
-      flowBuilder.addAll(lcFlow);
-      return new ExecutionPath(edge, visited.add(edge), newTrackSymbol, flowBuilder.build(), visitedAllParents(edge) || shouldTerminate(learnedConstraints));
     }
 
     private boolean shouldTerminate(Set<LearnedConstraint> learnedConstraints) {
@@ -233,7 +243,7 @@ public class FlowComputation {
       return ImmutableList.of(location(parent, message));
     }
 
-    private ImmutableList<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
+    private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
       ExplodedGraph.Node parent = edge.parent;
       MethodInvocationTree mit = (MethodInvocationTree) parent.programPoint.syntaxTree();
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
@@ -255,6 +265,14 @@ public class FlowComputation {
         })
         .forEach(flowBuilder::add);
 
+      return flowBuilder.build();
+    }
+
+    private List<JavaFileScannerContext.Location> flowFromYields(ExplodedGraph.Edge edge) {
+      ExplodedGraph.Node parent = edge.parent;
+      List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, parent);
+      SymbolicValue returnSV = edge.child.programState.peekValue();
+      ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       MethodYield selectedMethodYield = edge.child.selectedMethodYield(parent);
       if (selectedMethodYield != null) {
         if (symbolicValues.contains(returnSV)) {
