@@ -22,6 +22,8 @@ package org.sonar.java.se.checks;
 import org.junit.Test;
 import org.sonar.java.se.JavaCheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class UnclosedResourcesCheckTest {
 
   @Test
@@ -54,6 +56,12 @@ public class UnclosedResourcesCheckTest {
   @Test
   public void try_with_resources() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/UnclosedResourcesCheckARM.java", new UnclosedResourcesCheck());
+  }
+
+  @Test
+  public void test_value_as_string_for_open_resource_constraints() throws Exception {
+    assertThat(UnclosedResourcesCheck.ResourceConstraint.OPEN.valueAsString()).isSameAs("open");
+    assertThat(UnclosedResourcesCheck.ResourceConstraint.CLOSED.valueAsString()).isSameAs("closed");
   }
 
 }

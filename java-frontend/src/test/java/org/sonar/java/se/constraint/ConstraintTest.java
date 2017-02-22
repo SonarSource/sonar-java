@@ -17,28 +17,22 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se.constraint;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocksNotUnlockedCheckTest {
+public class ConstraintTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheck.java", new LocksNotUnlockedCheck());
-  }
-
-  @Test
-  public void object_constraint_cache_issues() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheckCache.java", new LocksNotUnlockedCheck());
-  }
-
-  @Test
-  public void test_value_as_string_for_locked_constraints() throws Exception {
-    assertThat(LocksNotUnlockedCheck.LockConstraint.LOCKED.valueAsString()).isSameAs("locked");
-    assertThat(LocksNotUnlockedCheck.LockConstraint.UNLOCKED.valueAsString()).isSameAs("unlocked");
+  public void ObjectConstraint_should_be_valid_with_correct_constraints() throws Exception {
+    assertThat(ObjectConstraint.NULL.isValidWith(null)).isTrue();
+    assertThat(ObjectConstraint.NOT_NULL.isValidWith(null)).isTrue();
+    assertThat(ObjectConstraint.NULL.isValidWith(ObjectConstraint.NULL)).isTrue();
+    assertThat(ObjectConstraint.NOT_NULL.isValidWith(ObjectConstraint.NOT_NULL)).isTrue();
+    assertThat(ObjectConstraint.NOT_NULL.isValidWith(ObjectConstraint.NULL)).isFalse();
+    assertThat(ObjectConstraint.NULL.isValidWith(ObjectConstraint.NOT_NULL)).isFalse();
+    assertThat(ObjectConstraint.NULL.isValidWith(BooleanConstraint.TRUE)).isFalse();
   }
 }
