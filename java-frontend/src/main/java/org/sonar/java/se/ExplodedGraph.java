@@ -168,6 +168,10 @@ public class ExplodedGraph {
       return la;
     }
 
+    Set<MethodYield> yields() {
+      return yields;
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) {
