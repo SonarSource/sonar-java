@@ -1,4 +1,8 @@
 public class MyClass {
+  MyClass() {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  }
   public void methodInvocationSynchronizedExpr() {
     synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
     }
@@ -12,6 +16,11 @@ public class MyClass {
 
 
 public final class FinalClassIsCompliant {
+
+  FinalClassIsCompliant() {
+    synchronized (getClass()) { // Compliant
+    }
+  }
 
   public void doSomethingSynchronized() {
     synchronized (this.getClass()) { // Compliant

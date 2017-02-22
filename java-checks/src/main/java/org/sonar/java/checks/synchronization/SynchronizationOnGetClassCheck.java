@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
@@ -64,7 +65,7 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
   private static boolean isEnclosingClassFinal(ExpressionTree expressionTree) {
     if (expressionTree.is(IDENTIFIER)) {
       Tree parent = expressionTree.parent();
-      while (!parent.is(METHOD)) {
+      while (!parent.is(METHOD, CONSTRUCTOR)) {
         parent = parent.parent();
       }
       return ((MethodTree) parent).symbol().owner().isFinal();
