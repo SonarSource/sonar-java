@@ -75,7 +75,7 @@ public class FlowComputation {
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
+                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
       .flatMap(Set::stream)
@@ -83,12 +83,16 @@ public class FlowComputation {
 
     FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains);
     // FIXME SONARJAVA-2049 getLastEvaluated doesn't work with relational SV
-    Symbol trackSymbol = currentNode.programState.getLastEvaluated();
-    return flowComputation.run(currentNode, trackSymbol);
+    return flowComputation.run(currentNode, trackSymbol == null ? currentNode.programState.getLastEvaluated() : trackSymbol);
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
     return flow(currentNode, currentVal, constraint -> true, domains);
+  }
+
+  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains,
+                                                                @Nullable Symbol trackSymbol) {
+    return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), c -> true, c -> false, domains, trackSymbol);
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
@@ -98,7 +102,7 @@ public class FlowComputation {
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                                 Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), addToFlow, terminateTraversal, domains);
+    return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), addToFlow, terminateTraversal, domains, null);
   }
 
   private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {

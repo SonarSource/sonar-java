@@ -99,3 +99,17 @@ class A {
     }
   }
 }
+
+class SONARJAVA_2047 {
+  void f() {
+    String s = null; // flow@2047 {{'s' is assigned null.}}
+    s.charAt(0); // Noncompliant [[flows=2047]] flow@2047 {{'s' is dereferenced.}}
+  }
+
+
+  void g() {
+    Object arg = "";
+    Object nullable = null; // flow@2047g {{'nullable' is assigned null.}}
+    nullable.equals(arg); // Noncompliant [[flows=2047g]] flow@2047g {{'nullable' is dereferenced.}}
+  }
+}
