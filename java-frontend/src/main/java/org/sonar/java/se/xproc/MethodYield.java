@@ -181,6 +181,6 @@ public abstract class MethodYield {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
     }
-    return FlowComputation.flow(node, parameterSVs.build(), c -> true, c -> false, domains);
+    return FlowComputation.flow(node, parameterSVs.build(), c -> true, c -> false, domains, node.programState.getLastEvaluated());
   }
 }

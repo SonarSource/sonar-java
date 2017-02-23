@@ -33,11 +33,16 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -135,10 +140,22 @@ public class NullDereferenceCheck extends SECheck {
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;
     }
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class)).stream()
+    Symbol dereferencedSymbol = dereferencedSymbol(syntaxNode);
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol).stream()
       .map(f -> addDereferenceMessage(f, syntaxNode))
       .collect(Collectors.toSet());
     reportIssue(syntaxNode, message, flows);
+  }
+
+  @Nullable
+  private static Symbol dereferencedSymbol(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree memberSelectExpr = ((MemberSelectExpressionTree) syntaxNode).expression();
+      if (memberSelectExpr.is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) memberSelectExpr).symbol();
+      }
+    }
+    return null;
   }
 
   private static List<JavaFileScannerContext.Location> addDereferenceMessage(List<JavaFileScannerContext.Location> flow, Tree syntaxNode) {
