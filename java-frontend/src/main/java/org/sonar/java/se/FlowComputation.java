@@ -273,6 +273,8 @@ public class FlowComputation {
     private Set<List<JavaFileScannerContext.Location>> flowFromYields(ExplodedGraph.Edge edge) {
       Set<MethodYield> methodYields = edge.yields();
       if (methodYields.isEmpty()) {
+        // return one flow with no elements, nothing will be added to the flow of the current path
+        // but this is necessary so path is returned in #addEdge and stays in the worklist in #run
         return ImmutableSet.of(ImmutableList.of());
       }
 
