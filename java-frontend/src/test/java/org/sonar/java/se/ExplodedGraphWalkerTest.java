@@ -303,6 +303,10 @@ public class ExplodedGraphWalkerTest {
     });
   }
 
+  @Test
+  public void test_this_super_not_null() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/ThisSuperNotNull.java", seChecks());
+  }
 
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
