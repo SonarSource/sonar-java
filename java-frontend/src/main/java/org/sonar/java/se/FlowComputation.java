@@ -40,6 +40,7 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -104,7 +105,7 @@ public class FlowComputation {
     Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
 
-    node.edges().forEach(e -> workList.push(startPath(e, trackSymbol)));
+    node.edges().stream().flatMap(e -> startPath(e, trackSymbol)).forEach(workList::push);
     while (!workList.isEmpty()) {
       ExecutionPath path = workList.pop();
       if (path.finished) {
@@ -112,14 +113,14 @@ public class FlowComputation {
       } else {
         path.lastEdge.parent.edges().stream()
           .filter(path::notVisited)
-          .map(path::addEdge)
+          .flatMap(path::addEdge)
           .forEach(workList::push);
       }
     }
     return flows;
   }
 
-  ExecutionPath startPath(ExplodedGraph.Edge edge, @Nullable Symbol trackSymbol) {
+  Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, @Nullable Symbol trackSymbol) {
     return new ExecutionPath(null, PCollections.emptySet(), trackSymbol, ImmutableList.of(), false).addEdge(edge);
   }
 
@@ -140,12 +141,71 @@ public class FlowComputation {
       this.finished = finished;
     }
 
-    ExecutionPath addEdge(ExplodedGraph.Edge edge) {
+    Stream<ExecutionPath> addEdge(ExplodedGraph.Edge edge) {
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       flowBuilder.addAll(flow);
-      Symbol newTrackSymbol = addFlowFromLearnedAssociations(edge, flowBuilder);
-      Stream<Constraint> constraintStream = addFlowFromLearnedConstraints(edge, flowBuilder);
-      return new ExecutionPath(edge, visited.add(edge), newTrackSymbol, flowBuilder.build(), visitedAllParents(edge) || constraintStream.anyMatch(terminateTraversal));
+
+      List<JavaFileScannerContext.Location> laFlow = learnedAssociation(edge)
+        .map(la -> flowFromLearnedAssociation(la, edge.parent))
+        .orElse(ImmutableList.of());
+      flowBuilder.addAll(laFlow);
+
+      Symbol newTrackSymbol = newTrackedSymbol(edge);
+
+      Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
+      List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, learnedConstraints);
+      flowBuilder.addAll(lcFlow);
+
+      boolean endOfPath = visitedAllParents(edge) || shouldTerminate(learnedConstraints);
+
+      List<JavaFileScannerContext.Location> currentFlow = flowBuilder.build();
+      Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
+      return yieldsFlows.stream()
+        .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
+        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbol, f, endOfPath));
+    }
+
+    private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
+      return learnedConstraints.stream()
+        .map(lc -> learnedConstraintFlow(lc, edge))
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+    }
+
+    private boolean shouldTerminate(Set<LearnedConstraint> learnedConstraints) {
+      return learnedConstraints.stream().map(LearnedConstraint::constraint).anyMatch(terminateTraversal);
+    }
+
+    Optional<LearnedAssociation> learnedAssociation(ExplodedGraph.Edge edge) {
+      return edge.learnedAssociations().stream()
+        .filter(la -> la.symbol().equals(trackSymbol))
+        .findAny();
+    }
+
+    List<JavaFileScannerContext.Location> flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
+      if (trackSymbol == null) {
+        return ImmutableList.of();
+      }
+      ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
+      for (Class<? extends Constraint> domain : domains) {
+        Constraint constraint = node.programState.getConstraint(learnedAssociation.symbolicValue(), domain);
+        if (constraint != null) {
+          String message = String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString());
+          flowBuilder.add(new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree()));
+        }
+      }
+      return flowBuilder.build();
+    }
+
+    @Nullable
+    private Symbol newTrackedSymbol(ExplodedGraph.Edge edge) {
+      if (trackSymbol == null) {
+        return null;
+      }
+      if (learnedAssociation(edge).isPresent()) {
+        return edge.parent.programState.getLastEvaluated();
+      }
+      return trackSymbol;
     }
 
     private boolean visitedAllParents(ExplodedGraph.Edge edge) {
@@ -156,39 +216,10 @@ public class FlowComputation {
       return !visited.contains(e);
     }
 
-    @Nullable
-    private Symbol addFlowFromLearnedAssociations(ExplodedGraph.Edge edge, ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder) {
-      if (trackSymbol == null) {
-        return null;
-      }
-      ExplodedGraph.Node parent = edge.parent;
-      Optional<LearnedAssociation> learnedAssociation = edge.learnedAssociations().stream()
-        .filter(la -> la.symbol().equals(trackSymbol))
-        .findFirst();
-      if (learnedAssociation.isPresent()) {
-        LearnedAssociation la = learnedAssociation.get();
-        for (Class<? extends Constraint> domain : domains) {
-          Constraint constraint = parent.programState.getConstraint(la.symbolicValue(), domain);
-          if (constraint != null) {
-            flowBuilder.add(location(parent, String.format("'%s' is assigned %s.", la.symbol().name(), constraint.valueAsString())));
-          }
-        }
-        return parent.programState.getLastEvaluated();
-      }
-      return trackSymbol;
-    }
-
-    private Stream<Constraint> addFlowFromLearnedConstraints(ExplodedGraph.Edge edge, ImmutableList.Builder<JavaFileScannerContext.Location> flow) {
-      Set<LearnedConstraint> learnedConstraints = edge.learnedConstraints();
-      Stream.Builder<Constraint> builder = Stream.builder();
-      for (LearnedConstraint learnedConstraint : learnedConstraints) {
-        if (symbolicValues.contains(learnedConstraint.symbolicValue()) && learnedConstraintForDomains(learnedConstraint)) {
-          Stream<JavaFileScannerContext.Location> locationStream = learnedConstraintFlow(learnedConstraint, edge);
-          locationStream.forEach(flow::add);
-          builder.add(learnedConstraint.constraint);
-        }
-      }
-      return builder.build();
+    Set<LearnedConstraint> learnedConstraints(ExplodedGraph.Edge edge) {
+      return edge.learnedConstraints().stream()
+        .filter(lc -> symbolicValues.contains(lc.symbolicValue()) && learnedConstraintForDomains(lc))
+        .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private boolean learnedConstraintForDomains(LearnedConstraint lc) {
@@ -196,10 +227,10 @@ public class FlowComputation {
       return constraint == null || domains.stream().anyMatch(d -> d.isAssignableFrom(constraint.getClass()));
     }
 
-    private Stream<JavaFileScannerContext.Location> learnedConstraintFlow(LearnedConstraint learnedConstraint, ExplodedGraph.Edge edge) {
+    private List<JavaFileScannerContext.Location> learnedConstraintFlow(LearnedConstraint learnedConstraint, ExplodedGraph.Edge edge) {
       Constraint constraint = learnedConstraint.constraint();
       if (constraint == null || !addToFlow.test(constraint)) {
-        return Stream.empty();
+        return ImmutableList.of();
       }
       ExplodedGraph.Node parent = edge.parent;
       Tree nodeTree = parent.programPoint.syntaxTree();
@@ -207,17 +238,17 @@ public class FlowComputation {
         return methodInvocationFlow(constraint, edge);
       }
       if (nodeTree.is(Tree.Kind.NEW_CLASS)) {
-        return Stream.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
+        return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
       String name = SyntaxTreeNameFinder.getName(nodeTree);
       String message = name == null ? constraint.valueAsString() : String.format("Implies '%s' is %s.", name, constraint.valueAsString());
-      return Stream.of(location(parent, message));
+      return ImmutableList.of(location(parent, message));
     }
 
-    private Stream<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
+    private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
       ExplodedGraph.Node parent = edge.parent;
       MethodInvocationTree mit = (MethodInvocationTree) parent.programPoint.syntaxTree();
-      Stream.Builder<JavaFileScannerContext.Location> flowBuilder = Stream.builder();
+      ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       SymbolicValue returnSV = edge.child.programState.peekValue();
       if (symbolicValues.contains(returnSV)) {
         flowBuilder.add(location(parent, String.format("'%s()' returns %s.", mit.symbol().name(), learnedConstraint.valueAsString())));
@@ -236,19 +267,27 @@ public class FlowComputation {
         })
         .forEach(flowBuilder::add);
 
-      MethodYield selectedMethodYield = edge.child.selectedMethodYield(parent);
-      if (selectedMethodYield != null) {
-        if (symbolicValues.contains(returnSV)) {
-          // to retrieve flow for return value
-          argumentIndices.add(-1);
-        }
-        // FIXME SONARJAVA-2076 consider all flows from yields
-        selectedMethodYield.flow(argumentIndices, domains).stream()
-          .limit(1)
-          .flatMap(List::stream)
-          .forEach(flowBuilder::add);
-      }
       return flowBuilder.build();
+    }
+
+    private Set<List<JavaFileScannerContext.Location>> flowFromYields(ExplodedGraph.Edge edge) {
+      Set<MethodYield> methodYields = edge.yields();
+      if (methodYields.isEmpty()) {
+        // return one flow with no elements, nothing will be added to the flow of the current path
+        // but this is necessary so path is returned in #addEdge and stays in the worklist in #run
+        return ImmutableSet.of(ImmutableList.of());
+      }
+
+      List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, edge.parent);
+      SymbolicValue returnSV = edge.child.programState.peekValue();
+      if (symbolicValues.contains(returnSV)) {
+        // to retrieve flow for return value
+        argumentIndices.add(-1);
+      }
+      return methodYields.stream()
+        .map(y -> y.flow(argumentIndices, domains))
+        .flatMap(Set::stream)
+        .collect(Collectors.toSet());
     }
 
     private boolean isMethodInvocationNode(ExplodedGraph.Node node) {

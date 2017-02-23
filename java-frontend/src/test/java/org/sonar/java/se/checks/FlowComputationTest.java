@@ -68,4 +68,10 @@ public class FlowComputationTest {
   public void test_multiple_paths() {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePath.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
+
+  @Test
+  public void test_multiple_paths_xproc() {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePathXProc.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+
+  }
 }
