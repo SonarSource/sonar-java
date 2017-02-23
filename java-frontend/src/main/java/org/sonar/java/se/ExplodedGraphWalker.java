@@ -945,6 +945,10 @@ public class ExplodedGraphWalker {
   }
 
   private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {
+    if (THIS_SUPER.contains(tree.name())) {
+      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+      return;
+    }
     Tree declaration = tree.symbol().declaration();
     if (!isFinalField(tree.symbol()) || declaration == null) {
       return;
