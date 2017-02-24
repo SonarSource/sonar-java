@@ -19,8 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
@@ -29,7 +30,6 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.ExceptionalCheckBasedYield;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -52,30 +52,38 @@ public class ExceptionalYieldChecker {
   }
 
   void reportOnExceptionalYield(ExplodedGraph.Node node, SECheck check) {
-    node.parents().stream().forEach(parent -> {
-      MethodYield yield = node.selectedMethodYield(parent);
-      if (yield != null && yield.generatedByCheck(check)) {
-        reportIssue(parent, (ExceptionalCheckBasedYield) yield, check);
-      }
-    });
+    node.edges().stream().forEach(edge -> edge.yields().stream()
+      .filter(yield -> yield.generatedByCheck(check))
+      .forEach(yield -> reportIssue(edge.parent(), (ExceptionalCheckBasedYield) yield, check))
+    );
   }
 
   private void reportIssue(ExplodedGraph.Node node, ExceptionalCheckBasedYield yield, SECheck check) {
     MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
     ExpressionTree methodSelect = mit.methodSelect();
-
-    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit);
-    Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
-
-    Set<List<JavaFileScannerContext.Location>> flows = Sets.cartesianProduct(argumentsFlows, exceptionFlows).stream()
-      .map(ExceptionalYieldChecker::concatLists)
-      .collect(Collectors.toCollection(LinkedHashSet::new));
+    String methodName = mit.symbol().name();
 
     Tree reportTree = methodSelect;
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
     }
-    check.reportIssue(reportTree, String.format(message, mit.symbol().name()), flows);
+    JavaFileScannerContext.Location methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
+
+    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit);
+    Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
+
+    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
+    for (List<JavaFileScannerContext.Location> argumentFlow : argumentsFlows) {
+      for (List<JavaFileScannerContext.Location> exceptionFlow : exceptionFlows) {
+        flows.add(ImmutableList.<JavaFileScannerContext.Location>builder()
+          .addAll(Lists.reverse(argumentFlow))
+          .add(methodInvocationMessage)
+          .addAll(Lists.reverse(exceptionFlow))
+          .build());
+      }
+    }
+
+    check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
   private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit) {
@@ -99,9 +107,5 @@ public class ExceptionalYieldChecker {
     List<Class<? extends Constraint>> domains = new ArrayList<>();
     constraints.forEach((d, c) -> domains.add(d));
     return domains;
-  }
-
-  private static List<JavaFileScannerContext.Location> concatLists(List<List<JavaFileScannerContext.Location>> lists) {
-    return lists.stream().flatMap(List::stream).collect(Collectors.toList());
   }
 }
