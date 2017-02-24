@@ -82,7 +82,7 @@ public class ExceptionalYieldChecker {
     ProgramState programState = node.programState;
     List<SymbolicValue> arguments = Lists.reverse(programState.peekValues(mit.arguments().size()));
     List<Class<? extends Constraint>> domains = domainsFromArguments(programState, arguments);
-    return FlowComputation.flow(node, new LinkedHashSet<>(arguments), c -> true, c -> false, domains);
+    return FlowComputation.flow(node, new LinkedHashSet<>(arguments), c -> true, c -> false, domains, programState.getLastEvaluated());
   }
 
   private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, List<SymbolicValue> arguments) {
