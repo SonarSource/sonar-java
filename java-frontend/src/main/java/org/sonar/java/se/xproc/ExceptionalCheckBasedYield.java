@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     this.check = check;
     this.svCausingException = svCausingException;
     this.isMethodVarargs = behavior.isMethodVarArgs();
-    Preconditions.checkArgument(exceptionType != null, "exceptionType is required");
+    Preconditions.checkArgument(exceptionType != null, "Exception type is required");
     super.setExceptionType(exceptionType);
   }
 
@@ -128,6 +129,14 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     throw new UnsupportedOperationException("Exception type can not be changed");
   }
 
+  @Nonnull
+  @Override
+  public Type exceptionType() {
+    Type exceptionType = super.exceptionType();
+    Preconditions.checkArgument(exceptionType != null, "Exception type is required");
+    return exceptionType;
+  }
+
   public Class<? extends SECheck> check() {
     return check;
   }
@@ -155,13 +164,13 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node.parent(), svCausingException, domains(node.programState.getConstraints(svCausingException)));
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, svCausingException, domains(node.programState.getConstraints(svCausingException)));
     Tree syntaxTree = node.programPoint.syntaxTree();
     ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flowBuilder = ImmutableSet.builder();
 
     for (List<JavaFileScannerContext.Location> flow : flows) {
       List<JavaFileScannerContext.Location> newFlow = ImmutableList.<JavaFileScannerContext.Location>builder()
-        .add(new JavaFileScannerContext.Location(exceptionType().name() + " is thrown.", syntaxTree))
+        .add(new JavaFileScannerContext.Location("'" + exceptionType().name() + "' is thrown here.", syntaxTree))
         .addAll(flow)
         .build();
       flowBuilder.add(newFlow);

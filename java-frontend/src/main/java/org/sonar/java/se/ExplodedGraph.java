@@ -135,12 +135,12 @@ public class ExplodedGraph {
       return edges.containsKey(from) ? edges.get(from).yields.stream().findFirst().orElse(null) : null;
     }
 
-    Collection<Edge> edges() {
+    public Collection<Edge> edges() {
       return edges.values();
     }
   }
 
-  static final class Edge {
+  public static final class Edge {
     final Node child;
     final Node parent;
 
@@ -152,6 +152,10 @@ public class ExplodedGraph {
       Preconditions.checkState(!Objects.equals(child, parent));
       this.child = child;
       this.parent = parent;
+    }
+
+    public Node parent() {
+      return parent;
     }
 
     Set<LearnedConstraint> learnedConstraints() {
@@ -168,7 +172,7 @@ public class ExplodedGraph {
       return la;
     }
 
-    Set<MethodYield> yields() {
+    public Set<MethodYield> yields() {
       return yields;
     }
 

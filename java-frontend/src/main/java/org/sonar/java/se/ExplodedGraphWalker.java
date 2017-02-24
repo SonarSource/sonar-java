@@ -306,8 +306,8 @@ public class ExplodedGraphWalker {
       Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
       ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
       ExplodedGraph.Node exitNode = explodedGraph.node(node.programPoint, newExceptionalState);
-      MethodYield yield = methodBehavior.createExceptionalCheckBasedYield(target, exitNode, exceptionType, check);
-      exitNode.addParent(node, yield);
+      methodBehavior.createExceptionalCheckBasedYield(target, exitNode, exceptionType, check);
+      exitNode.addParent(node, null);
     }
   }
 
