@@ -9,14 +9,10 @@
   </parent>
 
   <artifactId>it-java-plugin</artifactId>
+  <packaging>pom</packaging>
 
   <name>SonarQube Java :: ITs :: Plugin</name>
   <inceptionYear>2013</inceptionYear>
-  <packaging>pom</packaging>
-
-  <properties>
-    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
-  </properties>
 
   <organization>
     <name>SonarSource</name>
@@ -27,6 +23,10 @@
     <module>plugins</module>
     <module>tests</module>
   </modules>
+
+  <properties>
+    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+  </properties>
 
   <profiles>
     <profile>
