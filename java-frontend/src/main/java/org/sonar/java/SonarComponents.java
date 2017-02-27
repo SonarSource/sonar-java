@@ -226,12 +226,16 @@ public class SonarComponents {
         .onFile(inputFromIOFile(file))
         .message(re.getMessage())
         .save();
-      return context.runtime().getProduct() == SonarProduct.SONARLINT;
+      return isSonarLintContext();
     }
     return false;
   }
 
   public boolean isSQGreaterThan62() {
     return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2);
+  }
+
+  public boolean isSonarLintContext() {
+    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.runtime().getProduct() == SonarProduct.SONARLINT;
   }
 }

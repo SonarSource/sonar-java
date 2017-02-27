@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -27,6 +28,7 @@ import org.sonar.api.ce.measure.RangeDistributionBuilder;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
+import org.sonar.api.utils.Version;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.StatementVisitor;
@@ -84,12 +86,16 @@ public class Measurer extends SubscriptionVisitor {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     sonarFile = fs.inputFile(fs.predicates().is(context.getFile()));
+    CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
+    if(isSonarLintContext()) {
+      // No need to compute metrics on SonarLint side, but the no sonar filter is still required
+      return;
+    }
     classTrees.clear();
     methods = 0;
     complexityInMethods = 0;
     classes = 0;
     methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
-    CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
     super.scanFile(context);
     //leave file.
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();
@@ -105,6 +111,10 @@ public class Measurer extends SubscriptionVisitor {
 
     RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
     saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
+  }
+
+  private boolean isSonarLintContext() {
+    return sensorContext.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(6, 0)) && sensorContext.runtime().getProduct() == SonarProduct.SONARLINT;
   }
 
   private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {
