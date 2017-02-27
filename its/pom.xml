@@ -9,8 +9,9 @@
   </parent>
 
   <artifactId>java-its</artifactId>
-  <name>SonarQube Java :: ITs</name>
   <packaging>pom</packaging>
+
+  <name>SonarQube Java :: ITs</name>
 
   <modules>
     <module>performancing</module>
