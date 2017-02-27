@@ -20,6 +20,7 @@
 package org.sonar.java.viewer;
 
 import com.google.common.collect.Lists;
+
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
@@ -34,7 +35,6 @@ import org.sonar.java.se.ProgramStateDataProvider;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -43,13 +43,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.stream.Stream;
 
 import javafx.scene.web.WebEngine;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class EGViewer {
 
@@ -95,31 +96,25 @@ public class EGViewer {
   }
 
   private static String egToDot(ExplodedGraph eg, int firstBlockId) {
-    String result = "graph ExplodedGraph { ";
+    StringBuilder result = new StringBuilder("graph ExplodedGraph { ");
     List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.nodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
-      List<ExplodedGraph.Node> parents = Lists.newArrayList(node.parents());
-      result += graphNode(index, node, parents, firstBlockId);
-      if (!parents.isEmpty()) {
-        ExplodedGraph.Node firstParent = node.parent();
-        result += parentEdge(nodes.indexOf(firstParent), index, node, firstParent);
-
-        int nbParents = parents.size();
-        if (SHOW_MULTIPLE_PARENTS && nbParents > 1) {
-          List<ExplodedGraph.Node> others = parents.subList(1, nbParents);
-          for (ExplodedGraph.Node other : others) {
-            result += parentEdge(nodes.indexOf(other), index, node, other);
-          }
-        }
+      Collection<ExplodedGraph.Edge> edges = node.edges();
+      result.append(graphNode(index, node, edges.isEmpty(), firstBlockId));
+      Stream<ExplodedGraph.Edge> edgeStream = edges.stream();
+      if (!SHOW_MULTIPLE_PARENTS) {
+        edgeStream = edgeStream.limit(1);
       }
+      int finalIndex = index;
+      edgeStream.map(e -> parentEdge(nodes.indexOf(e.parent()), finalIndex, e)).forEach(result::append);
       index++;
     }
-    return result + "}";
+    return result.append("}").toString();
 
   }
 
-  private static String graphNode(int index, ExplodedGraph.Node node, List<ExplodedGraph.Node> parents, int firstBlockId) {
+  private static String graphNode(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId) {
     ProgramStateDataProvider psProvider = new ProgramStateDataProvider(node.programState);
     return new StringBuilder()
       .append(index)
@@ -129,13 +124,13 @@ public class EGViewer {
       .append(",psConstraints=\"" + psProvider.constraints() + "\"")
       .append(",psValues=\"" + psProvider.values() + "\"")
       .append(",psLastEvaluatedSymbol=\"" + psProvider.lastEvaluatedSymbol() + "\"")
-      .append(specialHighlight(node, parents, firstBlockId))
+      .append(specialHighlight(node, hasParents, firstBlockId))
       .append("]")
       .toString();
   }
 
-  private static String specialHighlight(ExplodedGraph.Node node, List<ExplodedGraph.Node> parents, int firstBlockId) {
-    if (parents.isEmpty()) {
+  private static String specialHighlight(ExplodedGraph.Node node, boolean hasParents, int firstBlockId) {
+    if (hasParents) {
       if (isFirstBlock(node, firstBlockId)) {
         return ",color=\"green\",fontcolor=\"white\"";
       }
@@ -151,15 +146,15 @@ public class EGViewer {
     return node.programPoint.toString().startsWith("B" + firstBlockId + "." + "0");
   }
 
-  private static String parentEdge(int from, int to, ExplodedGraph.Node node, ExplodedGraph.Node parent) {
-    String yield = yield(node, parent);
+  private static String parentEdge(int from, int to, ExplodedGraph.Edge edge) {
+    String yield = yield(edge);
     return from + "->" + to
       + "[label=\""
-      + node.learnedAssociations().map(LearnedAssociation::toString).collect(Collectors.joining(","))
+      + edge.learnedAssociations().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","))
       + "\\n"
-      + node.learnedConstraints().map(LearnedConstraint::toString).collect(Collectors.joining(","))
+      + edge.learnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","))
       + "\""
-      + (yield.isEmpty() ? handleException(node) : yield)
+      + (yield.isEmpty() ? handleException(edge.child()) : yield)
       + "] ";
   }
 
@@ -170,11 +165,9 @@ public class EGViewer {
     return "";
   }
 
-  private static String yield(ExplodedGraph.Node node, ExplodedGraph.Node parent) {
-    MethodYield selectedMethodYield = node.selectedMethodYield(parent);
-    if (selectedMethodYield != null) {
-      return String.format(",color=\"purple\",fontcolor=\"purple\",selectedMethodYield=\"%s\"", selectedMethodYield);
-    }
-    return "";
+  private static String yield(ExplodedGraph.Edge edge) {
+    return edge.yields().stream()
+      .map(y -> String.format(",color=\"purple\",fontcolor=\"purple\",selectedMethodYield=\"%s\"", y))
+      .collect(Collectors.joining());
   }
 }
