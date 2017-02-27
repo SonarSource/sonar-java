@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
@@ -80,6 +81,7 @@ public class ExplodedGraph {
       }
       Edge edge = edges.computeIfAbsent(parent, p -> new Edge(this, p));
       if (methodYield != null) {
+        Preconditions.checkState(parent.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION), "Yield on edge where parent is not MIT");
         edge.yields.add(methodYield);
       }
     }
