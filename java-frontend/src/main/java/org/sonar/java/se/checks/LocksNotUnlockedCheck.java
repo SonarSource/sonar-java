@@ -191,10 +191,12 @@ public class LocksNotUnlockedCheck extends SECheck {
   }
 
   private void reportIssue(JavaFileScannerContext.Location location) {
-    MethodInvocationTree syntaxNode = (MethodInvocationTree) location.syntaxNode;
-    String flowMsg = "Lock '" + SyntaxTreeNameFinder.getName(syntaxNode.methodSelect()) + "' is never unlocked.";
-    Tree tree = issueTree(syntaxNode);
-    reportIssue(tree, "Unlock this lock along all executions paths of this method.", FlowComputation.singleton(flowMsg, tree));
+    if (location.syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree syntaxNode = (MethodInvocationTree) location.syntaxNode;
+      String flowMsg = "Lock '" + SyntaxTreeNameFinder.getName(syntaxNode.methodSelect()) + "' is never unlocked.";
+      Tree tree = issueTree(syntaxNode);
+      reportIssue(tree, "Unlock this lock along all executions paths of this method.", FlowComputation.singleton(flowMsg, tree));
+    }
   }
 
   private static Tree issueTree(MethodInvocationTree syntaxNode) {

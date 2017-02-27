@@ -1,6 +1,5 @@
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 public class MyClass {
 
   Lock l1 = new ReentrantLock();
@@ -260,7 +259,7 @@ public class MyClass {
       }
     }
   }
-  
+
   private volatile ScheduledExecutorService executorService;
   private final Runnable task = new Task();
 
@@ -289,7 +288,7 @@ public class MyClass {
       }
     });
   }
-  
+
   private final AbstractService delegate = new AbstractService() {
     private volatile Future<?> runningTask;
     private volatile ScheduledExecutorService executorService;
@@ -321,6 +320,21 @@ public class MyClass {
         super.lock();
       } finally {
         logLocked();
+      }
+    }
+  }
+
+  public class SonarFail {
+    java.util.List<Lock> list;
+    Object test(Lock local) {
+      Lock l1 = list.get(0);
+      local.lock();
+      try {
+        if (l1 == local) {
+          return null;
+        }
+      } finally {
+        local.unlock();
       }
     }
   }
