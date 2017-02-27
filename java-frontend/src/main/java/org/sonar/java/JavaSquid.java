@@ -66,7 +66,7 @@ public class JavaSquid {
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
-    if (sonarComponents != null) {
+    if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
       codeVisitors = Iterables.concat(
           codeVisitors,
           Arrays.asList(
