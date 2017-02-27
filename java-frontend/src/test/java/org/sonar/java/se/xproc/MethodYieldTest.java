@@ -30,6 +30,7 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -113,11 +114,19 @@ public class MethodYieldTest {
     return new ExplodedGraph().node(mock(ProgramPoint.class), null);
   }
 
+  @Test
+  public void yields_are_not_generated_by_check() {
+    MethodYield yield = newMethodYield(mockMethodBehavior(1, false));
+
+    assertThat(yield.generatedByCheck(null)).isFalse();
+    assertThat(yield.generatedByCheck(new SECheck() {
+    })).isFalse();
+  }
 
   @Test
   public void test_yield_equality() {
     MethodBehavior methodBehavior = mockMethodBehavior(1, false);
-    MethodYield yield = new HappyPathYield(methodBehavior);
+    MethodYield yield = newMethodYield(methodBehavior);
     MethodYield otherYield;
 
     assertThat(yield).isNotEqualTo(null);
@@ -125,43 +134,65 @@ public class MethodYieldTest {
 
     // same instance
     assertThat(yield).isEqualTo(yield);
-    MethodYield myYield = new MethodYield(null) {
-      @Override
-      public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState, Supplier<SymbolicValue> svSupplier) {
-        return null;
-      }
 
-      @Override
-      public String toString() {
-        return null;
-      }
-    };
-    assertThat(myYield).isEqualTo(myYield);
+    // method behavior not taken into account
+    MethodYield myYield = newMethodYield(null);
+    assertThat(yield).isEqualTo(myYield);
 
-    // same constraints, same number of parameters, same exceptional aspect
-    assertThat(yield).isEqualTo(new HappyPathYield(methodBehavior));
-
-    // node and behavior are not taken into account
-    otherYield = new HappyPathYield(mockNode(), methodBehavior);
+    // node not taken into account
+    otherYield = newMethodYield(mockNode(), methodBehavior);
     assertThat(yield).isEqualTo(otherYield);
 
     // same arity and constraints on parameters but exceptional path
     otherYield = new ExceptionalYield(methodBehavior);
     assertThat(yield).isNotEqualTo(otherYield);
 
+    // same arity and constraints on parameters but happy path path
+    otherYield = new HappyPathYield(methodBehavior);
+    assertThat(yield).isNotEqualTo(otherYield);
+
     PMap<Class<? extends Constraint>, Constraint> nullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL);
-    HappyPathYield yield1 = new HappyPathYield(methodBehavior);
+    MethodYield yield1 = newMethodYield(methodBehavior);
     yield1.parametersConstraints.add(nullConstraint);
     yield1.parametersConstraints.add(PCollections.emptyMap());
     yield1.parametersConstraints.add(nullConstraint);
-    HappyPathYield yield2 = new HappyPathYield(methodBehavior);
+    MethodYield yield2 = newMethodYield(methodBehavior);
     yield2.parametersConstraints.add(nullConstraint);
     yield2.parametersConstraints.add(nullConstraint);
     yield2.parametersConstraints.add(PCollections.emptyMap());
 
     assertThat(yield1).isNotEqualTo(yield2);
+  }
 
+  private static MethodYield newMethodYield(MethodBehavior methodBehavior) {
+    return newMethodYield(null, methodBehavior);
+  }
 
+  private static MethodYield newMethodYield(ExplodedGraph.Node node, MethodBehavior methodBehavior) {
+    return new MethodYield(node, methodBehavior) {
+
+      @Override
+      public String toString() {
+        return null;
+      }
+
+      @Override
+      public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
+        Supplier<SymbolicValue> svSupplier) {
+        return null;
+      }
+    };
+  }
+
+  @Test
+  public void test_pmapToStream() {
+    assertThat(MethodYield.pmapToStream(null)).isEmpty();
+
+    PMap<Class<? extends Constraint>, Constraint> pmap = PCollections.emptyMap();
+    assertThat(MethodYield.pmapToStream(pmap)).isEmpty();
+
+    pmap = pmap.put(ObjectConstraint.class, ObjectConstraint.NOT_NULL);
+    assertThat(MethodYield.pmapToStream(pmap)).containsOnly(ObjectConstraint.NOT_NULL);
   }
 
   @Test
