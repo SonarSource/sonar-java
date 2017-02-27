@@ -103,7 +103,8 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
       // VarArgs method called without variadic parameter
       return true;
     }
-    if (parametersConstraints.get(numberParametersYield - 1) == null) {
+    PMap<Class<? extends Constraint>, Constraint> lastParamConstraint = parametersConstraints.get(numberParametersYield - 1);
+    if (lastParamConstraint.isEmpty()) {
       // no constraint on the last parameter on yield side
       return true;
     }

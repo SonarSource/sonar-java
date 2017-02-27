@@ -110,8 +110,16 @@ class C_varArgs {
     format("helloworld", null); // Noncompliant {{NullPointerException will be thrown when invoking method format().}}
   }
 
+  void coa7(Object o) {
+    format2(null, null); // Noncompliant {{NullPointerException will be thrown when invoking method format2().}}
+  }
+
   static int format(String template, @Nullable Object ... args) {
     return args.length; // Noncompliant {{NullPointerException might be thrown as 'args' is nullable here}}
+  }
+
+  static int format2(@Nullable String template, Object ... args) {
+    return template.length(); // Noncompliant {{NullPointerException might be thrown as 'template' is nullable here}}
   }
 }
 
