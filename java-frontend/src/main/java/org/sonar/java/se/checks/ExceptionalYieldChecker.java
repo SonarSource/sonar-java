@@ -76,9 +76,9 @@ public class ExceptionalYieldChecker {
     for (List<JavaFileScannerContext.Location> argumentFlow : argumentsFlows) {
       for (List<JavaFileScannerContext.Location> exceptionFlow : exceptionFlows) {
         flows.add(ImmutableList.<JavaFileScannerContext.Location>builder()
-          .addAll(Lists.reverse(argumentFlow))
+          .addAll(exceptionFlow)
           .add(methodInvocationMessage)
-          .addAll(Lists.reverse(exceptionFlow))
+          .addAll(argumentFlow)
           .build());
       }
     }

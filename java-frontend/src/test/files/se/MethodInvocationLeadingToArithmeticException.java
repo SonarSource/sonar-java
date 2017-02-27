@@ -9,16 +9,16 @@ class A {
   }
 
   void foo2() {
-    A.divByZeroIfArg1Zero( // Noncompliant [[flows=foo2]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}} flow@foo2 [[order=5]] {{'divByZeroIfArg1Zero()' is invoked.}}
-       42, // flow@foo2 [[order=1]] {{non-null}} flow@foo2 [[order=2]] {{non-zero}}
-       0); // flow@foo2 [[order=3]] {{non-null}} flow@foo2 [[order=4]] {{zero}}
+    A.divByZeroIfArg1Zero( // Noncompliant [[flows=foo2]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}} flow@foo2 [[order=4]] {{'divByZeroIfArg1Zero()' is invoked.}}
+       42, // flow@foo2 [[order=8]] {{non-null}} flow@foo2 [[order=7]] {{non-zero}}
+       0); // flow@foo2 [[order=6]] {{non-null}} flow@foo2 [[order=5]] {{zero}}
   }
 
   void foo3(int j) {
-    int i = 42; // flow@foo3 [[order=1]] {{non-null}} flow@foo3 [[order=2]] {{non-zero}}
+    int i = 42; // flow@foo3 [[order=8]] {{non-null}} flow@foo3 [[order=7]] {{non-zero}}
     divByZeroIfArg1Zero(i, j); // Compliant
-    if (j == 0) { // flow@foo3 [[order=3]] {{Implies 'j' is non-null.}} flow@foo3 [[order=4]] {{Implies 'j' is zero.}}
-      divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}} flow@foo3 [[order=5]] {{'divByZeroIfArg1Zero()' is invoked.}}
+    if (j == 0) { // flow@foo3 [[order=6]] {{Implies 'j' is non-null.}} flow@foo3 [[order=5]] {{Implies 'j' is zero.}}
+      divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method divByZeroIfArg1Zero().}} flow@foo3 [[order=4]] {{'divByZeroIfArg1Zero()' is invoked.}}
     }
   }
 
@@ -68,7 +68,7 @@ class A {
   }
 
   static int divByZeroIfArg1Zero(int x, int y) {
-    return x / y; // flow@foo2 [[order=6]] {{Implies 'y' is zero.}} flow@foo2 [[order=7]] {{Implies 'y' is non-null.}} flow@foo2 [[order=8]] {{'ArithmeticException' is thrown here.}} flow@foo3 [[order=6]] {{Implies 'y' is zero.}} flow@foo3 [[order=7]] {{Implies 'y' is non-null.}} flow@foo3 [[order=8]] {{'ArithmeticException' is thrown here.}}
+    return x / y; // flow@foo2 [[order=3]] {{Implies 'y' is zero.}} flow@foo2 [[order=2]] {{Implies 'y' is non-null.}} flow@foo2 [[order=1]] {{'ArithmeticException' is thrown here.}} flow@foo3 [[order=3]] {{Implies 'y' is zero.}} flow@foo3 [[order=2]] {{Implies 'y' is non-null.}} flow@foo3 [[order=1]] {{'ArithmeticException' is thrown here.}}
   }
 
   static int throwsExceptionIfArg1Zero(int i, int j) {
