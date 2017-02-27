@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 
 import org.sonar.java.se.xproc.MethodYield;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Collection;
@@ -33,7 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public class ExplodedGraph {
 
@@ -102,14 +100,6 @@ public class ExplodedGraph {
       return edges.keySet();
     }
 
-    public Stream<LearnedConstraint> learnedConstraints() {
-      return edges.values().stream().flatMap(e -> e.learnedConstraints().stream());
-    }
-
-    public Stream<LearnedAssociation> learnedAssociations() {
-      return edges.values().stream().flatMap(e -> e.learnedAssociations().stream());
-    }
-
     @Override
     public int hashCode() {
       return programPoint.hashCode() * 31 + (programState == null ? 0 : programState.hashCode());
@@ -128,11 +118,6 @@ public class ExplodedGraph {
     @Override
     public String toString() {
       return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
-    }
-
-    @CheckForNull
-    public MethodYield selectedMethodYield(Node from) {
-      return edges.containsKey(from) ? edges.get(from).yields.stream().findFirst().orElse(null) : null;
     }
 
     public Collection<Edge> edges() {
@@ -154,18 +139,22 @@ public class ExplodedGraph {
       this.parent = parent;
     }
 
+    public Node child() {
+      return child;
+    }
+
     public Node parent() {
       return parent;
     }
 
-    Set<LearnedConstraint> learnedConstraints() {
+    public Set<LearnedConstraint> learnedConstraints() {
       if (lc == null) {
         lc = child.programState.learnedConstraints(parent.programState);
       }
       return lc;
     }
 
-    Set<LearnedAssociation> learnedAssociations() {
+    public Set<LearnedAssociation> learnedAssociations() {
       if (la == null) {
         la = child.programState.learnedAssociations(parent.programState);
       }
