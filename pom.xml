@@ -97,28 +97,6 @@
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
   </properties>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-          <configuration>
-            <includes>
-              <include>org.sonar.*</include>
-            </includes>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration />
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -245,5 +223,27 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <configuration>
+            <includes>
+              <include>org.sonar.*</include>
+            </includes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration />
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>
