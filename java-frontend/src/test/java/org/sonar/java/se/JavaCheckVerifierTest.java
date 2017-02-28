@@ -26,6 +26,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
@@ -35,6 +36,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -256,12 +258,7 @@ public class JavaCheckVerifierTest {
         .flow(41, "When", 42, "Given")
       .add()
     ;
-    reverseFlows(fakeVisitor);
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
-  }
-
-  private void reverseFlows(FakeVisitor fakeVisitor) {
-    fakeVisitor.preciseIssues.values().forEach(issue -> issue.flows.forEach(Collections::reverse));
   }
 
   @Test
@@ -278,7 +275,6 @@ public class JavaCheckVerifierTest {
         .flow(17, "msg", 19, null)
         .add()
       ;
-    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
@@ -296,7 +292,6 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor);
     } catch (AssertionError e) {
@@ -317,7 +312,6 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-    reverseFlows(fakeVisitor);
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
@@ -337,7 +331,6 @@ public class JavaCheckVerifierTest {
       .issueWithFlow(20)
         .flow(17, "msg", 19, null)
         .add();
-    reverseFlows(fakeVisitor);
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlows.java", fakeVisitor));
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
@@ -353,13 +346,58 @@ public class JavaCheckVerifierTest {
           .flowItem(9, "a is assigned to b here", 7, 12)
         .add()
     ;
-    reverseFlows(fakeVisitor);
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsSuperfluous.java", fakeVisitor);
       Fail.fail("");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
     }
+  }
+
+  @Test
+  public void verify_flow_messages_explicit_order() {
+    FakeVisitor fakeVisitor = new FakeVisitor()
+      .issueWithFlow(4, "error", 5, 11, 15)
+      .flow()
+        .flowItem(5, "msg1")
+        .flowItem(6, "msg2")
+        .flowItem(4, "msg3")
+      .add();
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsExplicitOrder.java", fakeVisitor);
+  }
+
+  @Test
+  public void verify_flow_messages_implicit_order() {
+    FakeVisitor fakeVisitor = new FakeVisitor()
+      .issueWithFlow(4, "error", 5, 11, 15)
+      .flow()
+      .flowItem(4, "msg1")
+      .flowItem(5, "msg2")
+      .flowItem(5, "msg3")
+      .flowItem(6, "msg4")
+      .flowItem(6, "msg5")
+      .add();
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsImplicitOrder.java", fakeVisitor);
+  }
+
+  @Test
+  public void verify_fail_when_same_explicit_order_is_provided() {
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsDuplicateExplicitOrder.java", new FakeVisitor()));
+    assertThat(throwable.getCause())
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Same explicit ORDER=1 provided for two comments.\n"
+        + "6: flow@f {ORDER=1, MESSAGE=msg1}\n"
+        + "7: flow@f {ORDER=1, MESSAGE=msg2}");
+  }
+
+  @Test
+  public void verify_fail_when_mixing_explicit_and_implicit_order() {
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsMixedExplicitOrder.java", new FakeVisitor()));
+    assertThat(throwable.getCause())
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Mixed explicit and implicit order in same flow.\n"
+        + "5: flow@f {ORDER=3, MESSAGE=msg3}\n"
+        + "7: flow@f {MESSAGE=msg2}");
   }
 
   private static class FakeVisitor extends IssuableSubscriptionVisitor implements IssueWithFlowBuilder {
@@ -449,6 +487,8 @@ public class JavaCheckVerifierTest {
     }
 
     private FakeVisitor add() {
+      // flows are in reverse order the same way as real checks report in reverse order
+      issueWithFlow.flows.forEach(Collections::reverse);
       withPreciseIssue(issueWithFlow);
       issueWithFlow = null;
       return this;
