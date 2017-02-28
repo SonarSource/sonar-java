@@ -50,6 +50,7 @@ import java.util.stream.Stream;
 
 public class FlowComputation {
 
+  public static final String IMPLIES_MSG = "Implies '%s' is %s.";
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
   private final Set<SymbolicValue> symbolicValues;
@@ -251,7 +252,7 @@ public class FlowComputation {
         return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
       String name = SyntaxTreeNameFinder.getName(nodeTree);
-      String message = name == null ? constraint.valueAsString() : String.format("Implies '%s' is %s.", name, constraint.valueAsString());
+      String message = name == null ? constraint.valueAsString() : String.format(IMPLIES_MSG, name, constraint.valueAsString());
       return ImmutableList.of(location(parent, message));
     }
 
@@ -265,14 +266,15 @@ public class FlowComputation {
       }
       SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
       if (symbolicValues.contains(invocationTarget)) {
-        flowBuilder.add(location(parent, "..."));
+        String invocationTargetName = SyntaxTreeNameFinder.getName(mit.methodSelect());
+        flowBuilder.add(location(parent, String.format(IMPLIES_MSG, invocationTargetName, learnedConstraint.valueAsString())));
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, parent);
       argumentIndices.stream()
         .map(mit.arguments()::get)
         .map(argTree -> {
-          String message = String.format("Implies '%s' is %s.", SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
+          String message = String.format(IMPLIES_MSG, SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
           return new JavaFileScannerContext.Location(message, argTree);
         })
         .forEach(flowBuilder::add);

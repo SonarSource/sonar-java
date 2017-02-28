@@ -50,7 +50,7 @@ class A {
   }
 
   static void npeIfNull(Object o) {
-    o.toString(); // flow@foo2 [[order=3]] {{...}} flow@foo2 [[order=4]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // flow@foo2 [[order=3]] {{Implies 'o' is null.}} flow@foo2 [[order=4]] {{'NullPointerException' is thrown here.}}
   }
 
   static void npeIfArg0IsTrueAndArg1IsNull(boolean arg0, Object arg1, boolean arg2) {

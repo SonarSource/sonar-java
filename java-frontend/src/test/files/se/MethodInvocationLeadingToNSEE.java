@@ -62,7 +62,7 @@ class A {
 
   static void nseeIfCalledAndTrue(boolean b, Optional<String> o) {
     if (b) {
-      o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}} flow@foo6 [[order=5]] {{...}} flow@foo6 [[order=6]] {{'NoSuchElementException' is thrown here.}}
+      o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}} flow@foo6 [[order=5]] {{Implies 'o' is non-null.}} flow@foo6 [[order=6]] {{'NoSuchElementException' is thrown here.}}
     } else if (o.isPresent()) {
       o.get();
     }
