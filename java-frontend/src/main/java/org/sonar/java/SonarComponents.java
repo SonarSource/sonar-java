@@ -21,7 +21,9 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.BatchSide;
@@ -39,11 +41,13 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -237,5 +241,14 @@ public class SonarComponents {
 
   public boolean isSonarLintContext() {
     return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.runtime().getProduct() == SonarProduct.SONARLINT;
+  }
+
+  public String fileContent(File file) {
+    try {
+      return Files.toString(file, fs.encoding());
+    } catch (IOException e) {
+      Throwables.propagate(e);
+    }
+    throw new AnalysisException("could not read file : "+file.getName());
   }
 }

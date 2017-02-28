@@ -183,7 +183,7 @@ public class JavaAstScannerTest {
   }
 
   private static JavaAstScanner defaultJavaAstScanner() {
-    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
+    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT), null);
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {
