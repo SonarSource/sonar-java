@@ -29,6 +29,7 @@ import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -205,7 +206,7 @@ public class JavaCheckVerifier {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
     Multimap<Integer, Expectations.Issue> expected = expectations.issues;
-    expectations.reverseFlows(); // platform expects the flows in reversed order compared to the order they appear in the file
+
     for (AnalyzerMessage issue : issues) {
       validateIssue(expected, unexpectedLines, issue);
     }
@@ -291,8 +292,8 @@ public class JavaCheckVerifier {
   }
 
   private void assertSoleFlowDiscrepancy(String expectedId, List<AnalyzerMessage> actualFlow) {
-    Collection<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
-    List<Integer> expectedLines = expected.stream().sorted(Comparator.comparingInt(Expectations.FlowComment::order)).map(f -> f.line).collect(Collectors.toList());
+    SortedSet<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
+    List<Integer> expectedLines = expected.stream().map(f -> f.line).collect(Collectors.toList());
     List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
     assertThat(actualLines).as("Flow " + expectedId + " has line differences").isEqualTo(expectedLines);
   }
@@ -311,7 +312,7 @@ public class JavaCheckVerifier {
   }
 
   private void validateFlowAttributes(List<AnalyzerMessage> actual, String flowId) {
-    List<Expectations.FlowComment> expected = expectations.flows.get(flowId);
+    SortedSet<Expectations.FlowComment> expected = expectations.flows.get(flowId);
 
     validateFlowMessages(actual, flowId, expected);
 
@@ -325,7 +326,7 @@ public class JavaCheckVerifier {
     }
   }
 
-  private void validateFlowMessages(List<AnalyzerMessage> actual, String flowId, List<Expectations.FlowComment> expected) {
+  private void validateFlowMessages(List<AnalyzerMessage> actual, String flowId, SortedSet<Expectations.FlowComment> expected) {
     List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).collect(Collectors.toList());
     List<String> expectedMessages = expected.stream().map(Expectations.FlowComment::message).collect(Collectors.toList());
 
@@ -345,7 +346,7 @@ public class JavaCheckVerifier {
   }
 
   private static String flowToString(List<AnalyzerMessage> flow) {
-    return flow.stream().map(m -> String.valueOf(m.getLine())).sorted().collect(joining(",","[","]"));
+    return flow.stream().map(m -> String.valueOf(m.getLine())).collect(joining(",","[","]"));
   }
 
   private static void validateSecondaryLocations(List<AnalyzerMessage> actual, List<Integer> expected) {

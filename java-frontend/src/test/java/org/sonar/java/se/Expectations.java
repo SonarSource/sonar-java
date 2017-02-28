@@ -20,18 +20,19 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.collect.TreeMultimap;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -39,12 +40,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
@@ -75,8 +77,6 @@ import static org.sonar.java.se.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
 import static org.sonar.java.se.Expectations.IssueAttribute.START_COLUMN;
 
 class Expectations {
-
-  private static final Logger LOG = Loggers.get(Expectations.class);
 
   private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
     .put("message", MESSAGE)
@@ -140,21 +140,30 @@ class Expectations {
     final String id;
     final int line;
     final Map<IssueAttribute, Object> attributes;
+    final int startColumn;
 
-    public FlowComment(String id, int line, Map<IssueAttribute, Object> attributes) {
+    public FlowComment(String id, int line, int startColumn, Map<IssueAttribute, Object> attributes) {
       this.id = id;
       this.line = line;
+      this.startColumn = startColumn;
       this.attributes = Collections.unmodifiableMap(attributes);
     }
 
-    <T> T get(IssueAttribute attribute) {
-      return (T) attribute.get(attributes);
-    }
-
-
-    int order() {
-      Integer order = ORDER.get(attributes);
-      return order == null ? 0 : order;
+    int compareTo(FlowComment other) {
+      if (this == other) {
+        return 0;
+      }
+      Integer thisOrder = ORDER.get(attributes);
+      Integer otherOrder = ORDER.get(other.attributes);
+      if (thisOrder != null && otherOrder != null) {
+        Preconditions.checkState(!thisOrder.equals(otherOrder), "Same explicit ORDER=%s provided for two comments.\n%s\n%s", thisOrder, this, other);
+        return thisOrder.compareTo(otherOrder);
+      }
+      if (thisOrder == null && otherOrder == null) {
+        int compareLines = Integer.compare(line, other.line);
+        return compareLines != 0 ? compareLines : Integer.compare(startColumn, other.startColumn);
+      }
+      throw new IllegalStateException("Mixed explicit and implicit order in same flow.\n" + this + "\n" + other);
     }
 
     @CheckForNull
@@ -169,7 +178,7 @@ class Expectations {
   }
 
   final Multimap<Integer, Issue> issues = ArrayListMultimap.create();
-  final ListMultimap<String, FlowComment> flows = ArrayListMultimap.create();
+  final SortedSetMultimap<String, FlowComment> flows = TreeMultimap.create(String::compareTo, Collections.reverseOrder(FlowComment::compareTo));
   final boolean expectNoIssues;
   final String expectFileIssue;
   final Integer expectFileIssueOnLine;
@@ -188,9 +197,6 @@ class Expectations {
     this.expectFileIssueOnLine = expectFileIssueOnLine;
   }
 
-  void reverseFlows() {
-    Multimaps.asMap(flows).forEach((id, flow) -> Collections.reverse(flow));
-  }
 
   Optional<String> containFlow(List<AnalyzerMessage> flow) {
     if (flowLines == null) {
@@ -207,8 +213,7 @@ class Expectations {
   }
 
   private Map<ImmutableList<Integer>, String> computeFlowLines() {
-    Map<String, List<FlowComment>> flows = Multimaps.asMap(this.flows);
-    flows.forEach((id, flow) -> flow.sort(Comparator.comparingInt(FlowComment::order)));
+    Map<String, SortedSet<FlowComment>> flows = Multimaps.asMap(this.flows);
     return flows.entrySet().stream()
       .collect(Collectors.toMap(e -> flowToLines(e.getValue(), flowComment -> flowComment.line), Map.Entry::getKey));
   }
@@ -285,17 +290,17 @@ class Expectations {
       flowStarts.add(comment.length());
 
       return IntStream.range(0, flowIds.size())
-        .mapToObj(i -> createFlows(flowIds.get(i), line, comment.substring(flowStarts.get(i), flowStarts.get(i + 1))))
+        .mapToObj(i -> createFlows(flowIds.get(i), line, flowStarts.get(i), comment.substring(flowStarts.get(i), flowStarts.get(i + 1))))
         .flatMap(Function.identity())
         .collect(Collectors.toList());
     }
 
-    private static Stream<FlowComment> createFlows(List<String> ids, int line, String flow) {
+    private static Stream<FlowComment> createFlows(List<String> ids, int line, int startColumn, String flow) {
       Map<IssueAttribute, Object> attributes = new EnumMap<>(IssueAttribute.class);
       attributes.putAll(parseAttributes(flow));
       String message = parseMessage(flow, flow.length());
       attributes.put(MESSAGE, message);
-      return ids.stream().map(id -> new FlowComment(id, line, attributes));
+      return ids.stream().map(id -> new FlowComment(id, line, startColumn, attributes));
     }
 
 

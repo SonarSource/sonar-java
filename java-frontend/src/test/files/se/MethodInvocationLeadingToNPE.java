@@ -11,8 +11,8 @@ class A {
   }
 
   void foo2(Object o) {
-    if (o == null) { // flow@foo2 [[order=4]] {{Implies 'o' is null.}}
-      A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{NullPointerException will be thrown when invoking method npeIfNull().}}  flow@foo2 [[order=3]] {{'npeIfNull()' is invoked.}}
+    if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' is null.}}
+      A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{NullPointerException will be thrown when invoking method npeIfNull().}}  flow@foo2 [[order=2]] {{'npeIfNull()' is invoked.}}
     }
 
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
@@ -34,36 +34,36 @@ class A {
   }
 
   void foo5(Object o) {
-    if (o == null) { // flow@foo5 [[order=3]] {{Implies 'o' is null.}}
+    if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' is null.}}
       nullable(o); // Noncompliant [[flows=foo5]] [[sc=7;ec=15]] {{NullPointerException will be thrown when invoking method nullable().}} flow@foo5 [[order=2]] {{'nullable()' is invoked.}}
     }
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
   }
 
   void foo6(Object o, boolean b1, boolean b2) {
-    if (!b1 && b2) { // flow@foo6 [[order=5]] {{Implies 'b1' is true.}}
+    if (!b1 && b2) { // flow@foo6 [[order=1]] {{Implies 'b1' is true.}}
       npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Compliant
     }
-    if (o == null && b1) { // flow@foo6 [[order=4]] {{Implies 'o' is null.}}
+    if (o == null && b1) { // flow@foo6 [[order=2]] {{Implies 'o' is null.}}
       npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Noncompliant [[flows=foo6]] [[sc=7;ec=35]] {{NullPointerException will be thrown when invoking method npeIfArg0IsTrueAndArg1IsNull().}}  flow@foo6 [[order=3]] {{'npeIfArg0IsTrueAndArg1IsNull()' is invoked.}}
     }
   }
 
   static void npeIfNull(Object o) {
-    o.toString(); // flow@foo2 [[order=2]] {{...}} flow@foo2 [[order=1]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // flow@foo2 [[order=3]] {{...}} flow@foo2 [[order=4]] {{'NullPointerException' is thrown here.}}
   }
 
   static void npeIfArg0IsTrueAndArg1IsNull(boolean arg0, Object arg1, boolean arg2) {
-    if (arg1 != null) { // flow@foo6  [[order=2]] {{Implies 'arg1' is null.}}
+    if (arg1 != null) { // flow@foo6  [[order=4]] {{Implies 'arg1' is null.}}
       return;
     }
     if (arg0) { // only b2 has consequences on NPE
-      arg1.toString(); // Noncompliant {{NullPointerException might be thrown as 'arg1' is nullable here}} flow@foo6  [[order=1]] {{'NullPointerException' is thrown here.}}
+      arg1.toString(); // Noncompliant {{NullPointerException might be thrown as 'arg1' is nullable here}} flow@foo6  [[order=5]] {{'NullPointerException' is thrown here.}}
     }
   }
 
   static void nullable(@Nullable Object o) {
-    o.toString(); // Noncompliant {{NullPointerException might be thrown as 'o' is nullable here}} flow@foo5 [[order=1]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // Noncompliant {{NullPointerException might be thrown as 'o' is nullable here}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown here.}}
   }
 }
 

@@ -90,12 +90,12 @@ class A {
   }
 
   public void order() {
-    String foo = getFoo();  // flow@ord [[order=4]] {{'foo' is assigned null.}} flow@ord [[order=5]] {{'getFoo()' returns null.}}
+    String foo = getFoo();  // flow@ord [[order=2]] {{'foo' is assigned null.}} flow@ord [[order=1]] {{'getFoo()' returns null.}}
     String bar = foo; // flow@ord [[order=3]] {{'bar' is assigned null.}}
     boolean cond = (bar == null);
 
     if (cond) {
-      bar.toCharArray();            // Noncompliant [[flows=ord]] flow@ord [[order=1]]
+      bar.toCharArray();            // Noncompliant [[flows=ord]] flow@ord [[order=4]] {{'bar' is dereferenced.}}
     }
   }
 }
