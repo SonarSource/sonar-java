@@ -24,7 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
@@ -82,7 +82,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_file_with_parsing_issue() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(PARSE_ISSUE_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -96,7 +96,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_invalid_pom_file() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(INVALID_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
@@ -110,7 +110,7 @@ public class XmlAnalyzerTest {
   public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File pomFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", pomFile.getAbsolutePath()));
+    fs.add(new TestInputFileBuilder("", pomFile.getAbsolutePath()).build());
     XmlCheckThrowingException check = new XmlCheckThrowingException(new RuntimeException("Analysis cancelled"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, check);
 
@@ -125,7 +125,7 @@ public class XmlAnalyzerTest {
   public void should_scan_xml_file_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -139,7 +139,7 @@ public class XmlAnalyzerTest {
   public void should_scan_pom_file_with_xml_check() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
@@ -153,7 +153,7 @@ public class XmlAnalyzerTest {
   public void should_scan_pom_file_with_pom_check() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
@@ -167,7 +167,7 @@ public class XmlAnalyzerTest {
   public void should_scan_xml_file__when_no_check_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
@@ -181,7 +181,7 @@ public class XmlAnalyzerTest {
   public void should_not_run_pom_check_when_no_pom_file_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File("src/test/files/xml/parsing.xml");
-    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
+    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -211,7 +211,7 @@ public class XmlAnalyzerTest {
     SonarComponents sonarComponents = createSonarComponentsMock(fs, JAVA_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
-    analyzer.scan(Lists.<File>newArrayList());
+    analyzer.scan(Lists.newArrayList());
 
     verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
     verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull(Integer.class));
@@ -222,7 +222,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_when_no_xml_check_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File pomFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile("", pomFile.getAbsolutePath()).setLanguage("xml"));
+    fs.add(new TestInputFileBuilder("", pomFile.getAbsolutePath()).setLanguage("xml").build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs, JAVA_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, JAVA_CHECK);
@@ -240,7 +240,7 @@ public class XmlAnalyzerTest {
 
     Checks<JavaCheck> checks = mock(Checks.class);
     when(checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
-    when(sonarComponents.checks()).thenReturn(Lists.<Checks<JavaCheck>>newArrayList(checks));
+    when(sonarComponents.checks()).thenReturn(Lists.newArrayList(checks));
 
     return sonarComponents;
   }

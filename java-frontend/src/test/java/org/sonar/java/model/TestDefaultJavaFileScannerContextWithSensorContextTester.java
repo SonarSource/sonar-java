@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -83,9 +82,10 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   public void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
     sensorContext.fileSystem().add(
-      new DefaultInputFile("myProjectKey", JAVA_FILE.getPath())
+      new TestInputFileBuilder("myProjectKey", JAVA_FILE.getPath())
         .setLanguage("java")
         .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath()), StandardCharsets.UTF_8))
+        .build()
     );
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);

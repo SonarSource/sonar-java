@@ -29,8 +29,8 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -74,7 +74,7 @@ public class SonarSymbolTableVisitorTest {
     Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(EOL).join(lines);
-    fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
+    fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
     String componentKey = ":" + file.getName();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));

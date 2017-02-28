@@ -32,6 +32,7 @@ import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -105,7 +106,7 @@ public class SonarComponentsTest {
     ImmutableList<File> javaTestClasspathList = ImmutableList.of();
     when(javaTestClasspath.getElements()).thenReturn(javaTestClasspathList);
     File file = new File("foo.java");
-    fs.add(new DefaultInputFile("", "foo.java"));
+    fs.add(new TestInputFileBuilder("", "foo.java").build());
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
@@ -244,14 +245,14 @@ public class SonarComponentsTest {
 
     DefaultFileSystem fileSystem = context.fileSystem();
     File file = new File("file.java");
-    DefaultInputFile inputFile = new DefaultInputFile("", "file.java");
+    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "file.java");
     inputFile.setLines(45);
     int[] linesOffset = new int[45];
     linesOffset[35] = 12;
     linesOffset[42] = 1;
     inputFile.setOriginalLineOffsets(linesOffset);
     inputFile.setLastValidOffset(420);
-    fileSystem.add(inputFile);
+    fileSystem.add(inputFile.build());
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
@@ -293,12 +294,12 @@ public class SonarComponentsTest {
     RuleKey ruleKey = RuleKey.of("MyRepo", "CustomCheck");
 
     File file = new File("file.java");
-    DefaultInputFile inputFile = new DefaultInputFile("", file.getPath());
-    inputFile.initMetadata("class A {\n"
+    DefaultInputFile inputFile = new TestInputFileBuilder("", file.getPath())
+    .initMetadata("class A {\n"
       + "  void foo() {\n"
       + "    System.out.println();\n"
       + "  }\n"
-      + "}\n");
+      + "}\n").build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();

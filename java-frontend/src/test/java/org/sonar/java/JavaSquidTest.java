@@ -27,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -69,10 +70,10 @@ public class JavaSquidTest {
 
     // set up a file to analyze
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/java/org/sonar/java/JavaSquidTest.java"), StandardCharsets.UTF_8), file, StandardCharsets.UTF_8);
-    DefaultInputFile defaultFile = new DefaultInputFile("myProjectKey", file.getName())
+    Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n}", file, StandardCharsets.UTF_8);
+    DefaultInputFile defaultFile = new TestInputFileBuilder("myProjectKey", file.getName())
       .setLanguage("java")
-      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8)).build();
     context.fileSystem().add(defaultFile);
 
     // Set sonarLint runtime
@@ -91,8 +92,8 @@ public class JavaSquidTest {
     javaSquid.scan(Lists.newArrayList(file), Lists.newArrayList());
 
     if(version.isGreaterThanOrEqual(Version.create(6, 0))) {
-      // No symbol table : check reference to file is empty.
-      assertThat(context.referencesForSymbolAt(defaultFile.key(), 71, 9)).isNull();
+      // No symbol table : check reference to foo is empty.
+      assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
       // No metrics on lines
       verify(fileLinesContext, never()).save();
       // No highlighting
@@ -100,7 +101,7 @@ public class JavaSquidTest {
       // No measures
       assertThat(context.measures(defaultFile.key())).isEmpty();
     } else {
-      assertThat(context.referencesForSymbolAt(defaultFile.key(), 71, 9)).hasSize(4);
+      assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).hasSize(1);
       verify(fileLinesContext, times(1)).save();
       assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).hasSize(1).contains(TypeOfText.COMMENT);
       // No measures

@@ -24,7 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -55,7 +55,7 @@ public class CommonsCollectionsTest {
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
-      fs.add(new DefaultInputFile("", file.getPath()));
+      fs.add(new TestInputFileBuilder("", file.getPath()).build());
     }
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {

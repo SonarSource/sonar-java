@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -53,8 +54,7 @@ public class SurefireSensorTest {
   @Before
   public void before() {
     fs = new DefaultFileSystem(new File("src/test/resources"));
-    DefaultInputFile javaFile = new DefaultInputFile("", "src/org/foo/java");
-    javaFile.setLanguage("java");
+    DefaultInputFile javaFile = new TestInputFileBuilder("", "src/org/foo/java").setLanguage("java").build();
     fs.add(javaFile);
     perspectives = mock(ResourcePerspectives.class);
 
@@ -65,7 +65,7 @@ public class SurefireSensorTest {
   }
 
   private DefaultInputFile resource(String key) {
-    return new DefaultInputFile("", key).setType(InputFile.Type.TEST);
+    return new TestInputFileBuilder("", key).setType(InputFile.Type.TEST).build();
   }
 
   @Test
