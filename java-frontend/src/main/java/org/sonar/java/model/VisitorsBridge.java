@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -40,7 +39,6 @@ import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,14 +77,6 @@ public class VisitorsBridge {
     this.sonarComponents = sonarComponents;
     this.projectClasspath = projectClasspath;
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
-  }
-
-  public void setCharset(Charset charset) {
-    for (JavaFileScanner scanner : scanners) {
-      if (scanner instanceof CharsetAwareVisitor) {
-        ((CharsetAwareVisitor) scanner).setCharset(charset);
-      }
-    }
   }
 
   public void setJavaVersion(JavaVersion javaVersion) {

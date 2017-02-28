@@ -251,4 +251,12 @@ public class SonarComponents {
     }
     throw new AnalysisException("could not read file : "+file.getName());
   }
+
+  public List<String> fileLines(File file) {
+    try {
+      return Files.readLines(file, fs.encoding());
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+  }
 }

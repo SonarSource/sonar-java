@@ -177,6 +177,10 @@ public interface JavaFileScannerContext {
    */
   void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+  List<String> getFileLines();
+
+  String getFileContent();
+
   /**
    * Message and syntaxNode for a secondary location.
    */

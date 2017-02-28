@@ -140,19 +140,13 @@ public class JavaAstScanner {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    JavaAstScanner scanner = create(conf, visitorsBridge);
-
-    scanner.scan(Collections.singleton(file));
-  }
-
-  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()), null);
     if (visitorsBridge != null) {
-      visitorsBridge.setCharset(conf.getCharset());
       visitorsBridge.setJavaVersion(conf.javaVersion());
       astScanner.setVisitorBridge(visitorsBridge);
     }
-    return astScanner;
+    JavaAstScanner scanner = astScanner;
+    scanner.scan(Collections.singleton(file));
   }
 
 }
