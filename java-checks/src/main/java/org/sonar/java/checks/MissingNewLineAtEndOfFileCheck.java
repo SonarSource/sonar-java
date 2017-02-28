@@ -20,24 +20,17 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S00113")
 @RspecKey("S113")
-public class MissingNewLineAtEndOfFileCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
-
-  private Charset charset;
+public class MissingNewLineAtEndOfFileCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,34 +40,14 @@ public class MissingNewLineAtEndOfFileCheck extends IssuableSubscriptionVisitor 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.context = context;
-    visitFile(context.getFile());
-  }
-
-  public void visitFile(File file) {
-    try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
-      if (!endsWithNewline(randomAccessFile)) {
-        addIssueOnFile("Add a new line at the end of this file.");
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
+    String content = context.getFileContent();
+    if(content.isEmpty()) {
+      return;
     }
-  }
 
-  private boolean endsWithNewline(RandomAccessFile randomAccessFile) throws IOException {
-    if (randomAccessFile.length() < 1) {
-      return false;
+    char lastChar = content.charAt(content.length() - 1);
+    if( lastChar != '\n' && lastChar != '\r') {
+      addIssueOnFile("Add a new line at the end of this file.");
     }
-    randomAccessFile.seek(randomAccessFile.length() - 1);
-    byte[] chars = new byte[1];
-    if (randomAccessFile.read(chars) < 1) {
-      return false;
-    }
-    String ch = new String(chars, charset);
-    return "\n".equals(ch) || "\r".equals(ch);
-  }
-
-  @Override
-  public void setCharset(Charset charset) {
-    this.charset = charset;
   }
 }
