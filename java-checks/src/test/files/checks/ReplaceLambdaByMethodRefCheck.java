@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.stream.Collectors;
+
 class A {
   void fun() {
     IntStream.range(1, 5)
@@ -113,5 +114,36 @@ class A {
     list.forEach(item -> sb.append("\n").append(item));
     list.forEach(item -> sb.append("\n").foo.append(item));
     list.forEach(item -> this.append(item)); // Noncompliant
+  }
+}
+
+class B {
+  String str;
+  String toUpperCase() { return str.toUpperCase(); }
+}
+
+class C extends B {
+  B b1;
+  static B b2;
+  final B b3 = new B();
+
+  public void foo() {
+    java.util.function.Supplier<String> s0 = () -> b1.toUpperCase(); // Compliant
+    java.util.function.Supplier<String> s1 = () -> b2.toUpperCase(); // Compliant
+    java.util.function.Supplier<String> s2 = () -> b3.toUpperCase(); // Noncompliant
+    java.util.function.Supplier<String> s3 = () -> this.toUpperCase(); // Noncompliant
+    java.util.function.Supplier<String> s4 = () -> super.toUpperCase(); // Noncompliant
+  }
+
+  void bar() {
+    b1 = new C();
+    b1.str = "hello";
+
+    java.util.function.Supplier<String> s = () -> (this.b1).toUpperCase(); // Compliant
+
+    System.out.println(s.get()); // HELLO
+    b1 = new C();
+    b1.str = "world";
+    System.out.println(s.get()); // WORLD
   }
 }
