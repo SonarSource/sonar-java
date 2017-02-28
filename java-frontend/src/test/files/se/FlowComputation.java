@@ -41,5 +41,12 @@ class A {
     }
   }
 
+  void invocation_target(Object a) {
+    a.toString(); // flow@target {{Implies 'a' is non-null.}}
+    if (a == null) { // Noncompliant [[flows=target]] flow@target {{Condition is always false.}}
+
+    }
+  }
+
 }
 
