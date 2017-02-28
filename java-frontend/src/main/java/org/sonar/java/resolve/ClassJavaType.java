@@ -69,7 +69,7 @@ public class ClassJavaType extends JavaType {
   }
 
   private boolean superTypeIsSubTypeOf(ClassJavaType superClassType) {
-    for (ClassJavaType classType : symbol.superTypes()) {
+    for (ClassJavaType classType : symbol.directSuperTypes()) {
       if (classType.isSubtypeOf(superClassType)) {
         return true;
       }
