@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -312,6 +311,8 @@ public class JavaSymbol implements Symbol {
     ClassTree declaration;
     private final String internalName;
     private final Multiset<String> internalNames = HashMultiset.create();
+    private Set<ClassJavaType> superTypes;
+    private Set<ClassJavaType> interfaces;
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
@@ -389,31 +390,50 @@ public class JavaSymbol implements Symbol {
       return fullyQualifiedName;
     }
 
+    public Set<ClassJavaType> directSuperTypes() {
+      ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+      ClassJavaType superClassType = (ClassJavaType) this.superClass();
+      if(superClassType != null) {
+        types.add(superClassType);
+      }
+      for (JavaType interfaceType : getInterfaces()) {
+        ClassJavaType classType = (ClassJavaType) interfaceType;
+        types.add(classType);
+      }
+      return types.build();
+    }
+
     /**
      * Includes superclass and super interface hierarchy.
      * @return list of classTypes.
      */
     public Set<ClassJavaType> superTypes() {
-      ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
-      ClassJavaType superClassType = (ClassJavaType) this.superClass();
-      types.addAll(this.interfacesOfType());
-      while (superClassType != null) {
-        types.add(superClassType);
-        TypeJavaSymbol superClassSymbol = superClassType.getSymbol();
-        types.addAll(superClassSymbol.interfacesOfType());
-        superClassType = (ClassJavaType) superClassSymbol.superClass();
+      if (superTypes == null) {
+        ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+        ClassJavaType superClassType = (ClassJavaType) this.superClass();
+        types.addAll(this.interfacesOfType());
+        while (superClassType != null) {
+          types.add(superClassType);
+          TypeJavaSymbol superClassSymbol = superClassType.getSymbol();
+          types.addAll(superClassSymbol.interfacesOfType());
+          superClassType = (ClassJavaType) superClassSymbol.superClass();
+        }
+        superTypes = types.build();
       }
-      return types.build();
+      return superTypes;
     }
 
     private Set<ClassJavaType> interfacesOfType() {
-      ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
-      for (JavaType interfaceType : getInterfaces()) {
-        ClassJavaType classType = (ClassJavaType) interfaceType;
-        builder.add(classType);
-        builder.addAll(classType.getSymbol().interfacesOfType());
+      if (interfaces == null) {
+        ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
+        for (JavaType interfaceType : getInterfaces()) {
+          ClassJavaType classType = (ClassJavaType) interfaceType;
+          builder.add(classType);
+          builder.addAll(classType.getSymbol().interfacesOfType());
+        }
+        interfaces = builder.build();
       }
-      return builder.build();
+      return interfaces;
     }
 
     @Override
