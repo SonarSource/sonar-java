@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -55,9 +56,9 @@ public class PostAnalysisIssueFilterTest {
   @Before
   public void setUp() {
     DefaultFileSystem fileSystem = new DefaultFileSystem(new File("src/test/files/filters"));
-    DefaultInputFile inputFile = new DefaultInputFile("", FILE_KEY);
-    inputFile.setLanguage("java");
-    inputFile.setType(InputFile.Type.MAIN);
+    DefaultInputFile inputFile = new TestInputFileBuilder("", FILE_KEY)
+    .setLanguage("java")
+    .setType(InputFile.Type.MAIN).build();
     fileSystem.add(inputFile);
     postAnalysisIssueFilter = new PostAnalysisIssueFilter(fileSystem);
 
@@ -80,7 +81,7 @@ public class PostAnalysisIssueFilterTest {
 
   @Test
   public void issue_filter_should_depends_on_chain_if_filters_accetps() {
-    postAnalysisIssueFilter.setIssueFilters(new ArrayList<JavaIssueFilter>());
+    postAnalysisIssueFilter.setIssueFilters(new ArrayList<>());
 
     FilterableIssue issue = mock(FilterableIssue.class);
     IssueFilterChain chain = mock(IssueFilterChain.class);

@@ -20,13 +20,12 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -75,7 +74,7 @@ public class XmlFileSensorTest {
     SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/"));
     DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new DefaultInputFile("", "pom.xml"));
+    fs.add(new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 

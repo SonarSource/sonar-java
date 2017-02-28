@@ -27,6 +27,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorStorage;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
@@ -42,10 +43,11 @@ public class JavaIssueTest {
 
   @Test
   public void testIssueCreation() {
-    DefaultInputFile file = new DefaultInputFile("module", "relPath");
-    file.setLines(3);
-    file.setOriginalLineOffsets(new int[]{0, 10, 15});
-    file.setLastValidOffset(25);
+    TestInputFileBuilder tifb = new TestInputFileBuilder("module", "relPath");
+    tifb.setLines(3);
+    tifb.setOriginalLineOffsets(new int[]{0, 10, 15});
+    tifb.setLastValidOffset(25);
+    DefaultInputFile file = tifb.build();
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);
@@ -92,11 +94,12 @@ public class JavaIssueTest {
 
   @Test
   public void test_addFlow() throws Exception {
-    DefaultInputFile file = new DefaultInputFile("module", "relPath");
-    file.setModuleBaseDir(new java.io.File("").toPath());
-    file.setLines(3);
-    file.setOriginalLineOffsets(new int[]{0, 10, 15});
-    file.setLastValidOffset(25);
+    TestInputFileBuilder tifb = new TestInputFileBuilder("module", "relPath");
+    tifb.setModuleBaseDir(new java.io.File("").toPath());
+    tifb.setLines(3);
+    tifb.setOriginalLineOffsets(new int[]{0, 10, 15});
+    tifb.setLastValidOffset(25);
+    DefaultInputFile file = tifb.build();
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);

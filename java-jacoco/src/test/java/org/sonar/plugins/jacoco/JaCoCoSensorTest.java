@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.MapSettings;
@@ -187,8 +188,7 @@ public class JaCoCoSensorTest {
   }
 
   private void runAnalysis() throws IOException {
-    DefaultInputFile resource = new DefaultInputFile("", "org/sonar/plugins/jacoco/tests/Hello");
-    resource.setLines(19);
+    DefaultInputFile resource = new TestInputFileBuilder("", "org/sonar/plugins/jacoco/tests/Hello").setLines(19).build();
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
 
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
@@ -213,8 +213,7 @@ public class JaCoCoSensorTest {
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
     Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/org/example/App.class.toCopy"),
         new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
-    DefaultInputFile resource = new DefaultInputFile("", "");
-    resource.setLines(10);
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
@@ -259,8 +258,7 @@ public class JaCoCoSensorTest {
     outputDir = TestUtils.getResource(path);
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
 
-    DefaultInputFile resource = new DefaultInputFile("", "");
-    resource.setLines(25);
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
@@ -285,12 +283,11 @@ public class JaCoCoSensorTest {
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
     Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", REPORT_PATH_PROPERTY, "foo");
     DefaultFileSystem fileSystem = new DefaultFileSystem((File)null);
-    fileSystem.add(new DefaultInputFile("","foo").setLanguage("java"));
+    fileSystem.add(new TestInputFileBuilder("","foo").setLanguage("java").build());
     JacocoConfiguration configuration = new JacocoConfiguration(new MapSettings().addProperties(props));
     JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
-    DefaultInputFile resource = new DefaultInputFile("", "");
-    resource.setLines(25);
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(new File("foo"));
@@ -306,13 +303,12 @@ public class JaCoCoSensorTest {
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", REPORT_PATHS_PROPERTY, "foo");
     DefaultFileSystem fileSystem = new DefaultFileSystem((File)null);
-    fileSystem.add(new DefaultInputFile("","foo").setLanguage("java"));
+    fileSystem.add(new TestInputFileBuilder("","foo").setLanguage("java").build());
     JacocoConfiguration configuration = new JacocoConfiguration(new MapSettings().addProperties(props));
     JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     context.settings().addProperties(props);
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
-    DefaultInputFile resource = new DefaultInputFile("", "");
-    resource.setLines(25);
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(new File("foo"));

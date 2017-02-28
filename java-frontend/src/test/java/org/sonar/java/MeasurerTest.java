@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
@@ -98,9 +98,9 @@ public class MeasurerTest {
    */
   private void checkMetric(String filename, String metric, Number expectedValue) {
     String relativePath = PathUtils.sanitize(new File(baseDir, filename).getPath());
-    DefaultInputFile inputFile = new DefaultInputFile(context.module().key(), relativePath);
+    TestInputFileBuilder inputFile = new TestInputFileBuilder(context.module().key(), relativePath);
     inputFile.setModuleBaseDir(fs.baseDirPath());
-    fs.add(inputFile);
+    fs.add(inputFile.build());
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);

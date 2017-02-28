@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
@@ -58,7 +58,7 @@ public class SurefireJavaParserTest {
     perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new DefaultInputFile("", (String) invocation.getArguments()[0]));
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new TestInputFileBuilder("", (String) invocation.getArguments()[0]).build());
 
     parser = new SurefireJavaParser(perspectives, javaResourceLocator);
   }
