@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public final class ExpressionUtils {
@@ -83,8 +82,8 @@ public final class ExpressionUtils {
       return false;
     }
 
-    SyntaxToken variableToken = tree.firstToken();
-    return variableToken != null && ("this".equalsIgnoreCase(variableToken.text()) || "super".equalsIgnoreCase(variableToken.text()));
+    String selectSourceName = ((IdentifierTree) tree.expression()).symbol().name();
+    return "this".equalsIgnoreCase(selectSourceName) || "super".equalsIgnoreCase(selectSourceName);
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
