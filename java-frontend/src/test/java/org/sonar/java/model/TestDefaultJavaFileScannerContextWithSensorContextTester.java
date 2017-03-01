@@ -94,7 +94,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
     sonarComponents = spy(sonarComponents);
     when(sonarComponents.getRuleKey(any())).thenReturn(RuleKey.of("repository", "rule"));
 
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(JAVA_FILE);
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(JAVA_FILE);
     tree = cut.types().get(0);
     scannerContext = new DefaultJavaFileScannerContext(cut, JAVA_FILE, null, sonarComponents, null, true);
   }

@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +39,7 @@ public class ValueBasedUtilsTest {
   @Test
   public void testIsValueBased() throws Exception {
     File file = new File("src/test/files/checks/helpers/ValueBasedUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(file);
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(tree, ImmutableList.<File>of());
 
     List<Tree> members = ((ClassTree) tree.types().get(0)).members();

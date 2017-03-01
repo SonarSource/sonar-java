@@ -32,7 +32,6 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -42,7 +41,6 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -81,9 +79,8 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
-    JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
   }
 
@@ -99,17 +96,10 @@ public class JavaSquidSensor implements Sensor {
     return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 
-  private JavaConfiguration createConfiguration() {
-    Charset charset = fs.encoding();
-    JavaConfiguration conf = new JavaConfiguration(charset);
-    JavaVersion javaVersion = getJavaVersion();
-    LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
-    conf.setJavaVersion(javaVersion);
-    return conf;
-  }
-
   private JavaVersion getJavaVersion() {
-    return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
+    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
+    LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
+    return javaVersion;
   }
 
   @Override

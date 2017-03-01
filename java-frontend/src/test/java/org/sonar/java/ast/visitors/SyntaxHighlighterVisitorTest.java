@@ -33,10 +33,10 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaClasspath;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -110,7 +110,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(File file) {
-    JavaSquid squid = new JavaSquid(new JavaConfiguration(StandardCharsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 

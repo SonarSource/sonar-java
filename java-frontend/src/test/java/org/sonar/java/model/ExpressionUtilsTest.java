@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,7 @@ public class ExpressionUtilsTest {
   @Test
   public void test_skip_parenthesis() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(file);
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
     ExpressionTree parenthesis = ((ReturnStatementTree) methodTree.block().body().get(0)).expression();
 
@@ -73,7 +72,7 @@ public class ExpressionUtilsTest {
   @Test
   public void test_simple_assignments() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(file);
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = methodTree.block().body().stream()
       .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))

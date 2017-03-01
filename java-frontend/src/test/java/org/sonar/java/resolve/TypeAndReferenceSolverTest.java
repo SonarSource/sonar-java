@@ -40,7 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -561,7 +560,7 @@ public class TypeAndReferenceSolverTest {
   }
 
   private static CompilationUnitTree parse(String input) {
-    return (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(input);
+    return (CompilationUnitTree) JavaParser.createParser().parse(input);
   }
 
   private JavaType typeOf(String input) {

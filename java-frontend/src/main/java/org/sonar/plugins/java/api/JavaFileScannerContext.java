@@ -177,8 +177,16 @@ public interface JavaFileScannerContext {
    */
   void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+  /**
+   * Lines of the currently analyzed file.
+   * @return list of file lines.
+   */
   List<String> getFileLines();
 
+  /**
+   * Content of the currently analyzed file.
+   * @return the file content as a String.
+   */
   String getFileContent();
 
   /**

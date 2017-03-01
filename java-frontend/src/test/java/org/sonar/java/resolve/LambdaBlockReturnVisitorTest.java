@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LambdaBlockReturnVisitorTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser();
 
   @Test
   public void test() throws Exception {

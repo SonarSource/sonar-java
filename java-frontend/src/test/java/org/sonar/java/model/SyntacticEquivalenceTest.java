@@ -30,14 +30,13 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SyntacticEquivalenceTest {
 
-  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void null_equivalence() throws Exception {

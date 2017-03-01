@@ -32,14 +32,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
 class Result {
 
-  private static final ActionParser parser = JavaParser.createParser(StandardCharsets.UTF_8);
+  private static final ActionParser parser = JavaParser.createParser();
   private final SemanticModel semanticModel;
   private final Collection<Symbol> symbolsUsed;
 

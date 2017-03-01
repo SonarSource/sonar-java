@@ -99,7 +99,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTreeModelTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser();
 
   @Test
   public void line_of_tree() throws Exception {

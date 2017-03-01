@@ -23,7 +23,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.rule.RuleKey;
@@ -31,7 +30,6 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -41,7 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,7 +69,7 @@ public class FilterVerifier {
 
     Collection<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(codeVisitors, Lists.newArrayList(classpath), null);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, new JavaConfiguration(Charset.forName("UTF-8")));
+    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
     Multimap<Integer, String> issuesByLines = HashMultimap.create();

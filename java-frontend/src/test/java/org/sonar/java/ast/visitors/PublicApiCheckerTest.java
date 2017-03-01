@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
@@ -46,7 +45,7 @@ public class PublicApiCheckerTest {
 
   @Before
   public void setUp() {
-    ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+    ActionParser p = JavaParser.createParser();
     publicApiChecker = new PublicApiChecker();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
