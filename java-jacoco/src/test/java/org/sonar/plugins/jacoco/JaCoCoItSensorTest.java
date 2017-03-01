@@ -40,8 +40,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -100,7 +100,7 @@ public class JaCoCoItSensorTest {
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
     SensorContextTester context = SensorContextTester.create(new File(""));
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
+    when(pathResolver.relativeFile(any(File.class), isNull())).thenReturn(jacocoExecutionData);
 
     sensor.execute(context);
 
@@ -119,7 +119,7 @@ public class JaCoCoItSensorTest {
   @Test
   public void doNotSaveMeasureOnResourceWhichDoesntExistInTheContext() {
     SensorContext context = mock(SensorContext.class);
-    when(pathResolver.relativeFile(any(File.class), anyString())).thenReturn(jacocoExecutionData);
+    when(pathResolver.relativeFile(any(File.class), isNull())).thenReturn(jacocoExecutionData);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.execute(context);

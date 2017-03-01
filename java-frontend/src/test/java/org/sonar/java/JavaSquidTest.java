@@ -73,7 +73,9 @@ public class JavaSquidTest {
     Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n}", file, StandardCharsets.UTF_8);
     DefaultInputFile defaultFile = new TestInputFileBuilder("myProjectKey", file.getName())
       .setLanguage("java")
-      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8)).build();
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
     context.fileSystem().add(defaultFile);
 
     // Set sonarLint runtime

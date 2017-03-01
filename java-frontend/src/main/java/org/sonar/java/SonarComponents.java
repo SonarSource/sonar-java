@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.sonar.sslr.api.RecognitionException;
@@ -47,10 +46,14 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
 
 @BatchSide
 @SonarLintSide
@@ -245,21 +248,38 @@ public class SonarComponents {
 
   public String fileContent(File file) {
     try {
-      if(context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2)) {
+      if(isSQGreaterThan62()) {
         return inputFromIOFile(file).contents();
       }
-      return Files.toString(file, fs.encoding());
+      return Files.toString(file, getCharset(file));
     } catch (IOException e) {
-      Throwables.propagate(e);
+      throw new AnalysisException("Unable to read file "+file, e);
     }
-    throw new AnalysisException("could not read file : "+file.getName());
   }
 
   public List<String> fileLines(File file) {
-    try {
-      return Files.readLines(file, fs.encoding());
+    List<String> lines = new ArrayList<>();
+    try(Scanner scanner = new Scanner(getInputStream(file), getCharset(file).name())) {
+      while (scanner.hasNextLine()) {
+        lines.add(scanner.nextLine());
+      }
     } catch (IOException e) {
-      throw new IllegalStateException(e);
+      throw new AnalysisException("Unable to read file "+file, e);
     }
+    return lines;
+  }
+
+  private InputStream getInputStream(File file) throws IOException {
+    if(isSQGreaterThan62()) {
+      return inputFromIOFile(file).inputStream();
+    }
+    return new FileInputStream(file);
+  }
+
+  private Charset getCharset(File file) {
+    if(context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0)) {
+      return inputFromIOFile(file).charset();
+    }
+    return fs.encoding();
   }
 }

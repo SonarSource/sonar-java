@@ -54,6 +54,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -328,7 +329,7 @@ public class JaCoCoSensorTest {
   @Test
   public void should_do_nothing_if_output_dir_does_not_exists() {
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
-    when(pathResolver.relativeFile(any(File.class), anyString())).thenReturn(jacocoExecutionData);
+    when(pathResolver.relativeFile(any(File.class), isNull())).thenReturn(jacocoExecutionData);
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
     sensor.execute(context);
