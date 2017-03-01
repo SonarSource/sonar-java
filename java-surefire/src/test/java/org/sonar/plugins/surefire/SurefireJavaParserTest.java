@@ -37,6 +37,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -70,20 +71,13 @@ public class SurefireJavaParserTest {
     MutableTestCase testCase = mock(MutableTestCase.class);
     when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
     when(testCase.setStatus(any(TestCase.Status.class))).thenReturn(testCase);
-    when(testCase.setMessage(anyString())).thenReturn(testCase);
+    when(testCase.setMessage(isNull())).thenReturn(testCase);
     when(testCase.setStackTrace(anyString())).thenReturn(testCase);
     when(testCase.setType(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
-    when(perspectives.as(eq(MutableTestPlan.class), argThat(new ArgumentMatcher<InputFile>() {
-      @Override
-      public boolean matches(Object o) {
-        if(o instanceof InputFile) {
-          return ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(((InputFile) o).key());
-        }
-        return false;
-      }
-    }))).thenReturn(testPlan);
+    when(perspectives.as(eq(MutableTestPlan.class),
+      argThat((ArgumentMatcher<InputFile>) o -> ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(o.key())))).thenReturn(testPlan);
 
     parser.collect(context, getDir("multipleReports"), true);
 
