@@ -392,7 +392,7 @@ class Assignment {
   int myField;
 
   public int calculate(int i) {
-    this.myField *= 0; // This is not a simple assignment and thus won't be correctly evaluated in member select.
+    this.myField *= 0;
     return i / myField; // Noncompliant
   }
 
