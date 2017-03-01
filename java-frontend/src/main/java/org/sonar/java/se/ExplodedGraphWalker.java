@@ -828,8 +828,8 @@ public class ExplodedGraphWalker {
     ProgramState.Pop unstack;
     SymbolicValue value;
 
-    boolean isSimpleAssignment = ExpressionUtils.isSimpleAssignment(tree);
-    if (isSimpleAssignment || ExpressionUtils.isThisOrSuperSelect(tree)) {
+    boolean isSimpleAssignment = ExpressionUtils.isSimpleAssignment(tree) || ExpressionUtils.isSelectOnThisOrSuper(tree);
+    if (isSimpleAssignment) {
       unstack = programState.unstackValue(1);
       value = unstack.values.get(0);
     } else {
@@ -839,7 +839,7 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     programState = programState.stackValue(value);
-    if (isSimpleAssignment || ExpressionUtils.isThisOrSuperSelect(tree) || tree.variable().is(Tree.Kind.IDENTIFIER)) {
+    if (isSimpleAssignment || tree.variable().is(Tree.Kind.IDENTIFIER)) {
       programState = programState.put(ExpressionUtils.extractIdentifier(tree).symbol(), value);
     }
   }
@@ -977,8 +977,7 @@ public class ExplodedGraphWalker {
       programState = unstackMSE.state;
     }
 
-    if (ExpressionUtils.isSimpleAssignment(mse)) {
-      // This is just a glorified identifier statement. Handle it as such.
+    if (ExpressionUtils.isSelectOnThisOrSuper(mse)) {
       executeIdentifier(mse.identifier());
     } else {
       SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
