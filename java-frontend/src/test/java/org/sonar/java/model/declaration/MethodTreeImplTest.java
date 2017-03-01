@@ -30,13 +30,12 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 
-  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void override_without_annotation_should_be_detected() {

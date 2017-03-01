@@ -46,7 +46,7 @@ public class CFGTestLoader {
         printer.println(line);
       }
       printer.flush();
-      ActionParser<Tree> parser = JavaParser.createParser(StandardCharsets.UTF_8);
+      ActionParser<Tree> parser = JavaParser.createParser();
       compiledTest = (CompilationUnitTree) parser.parse(buffer.toString());
     } catch (Exception e) {
       Assert.fail("Unable to compile file " + file.getAbsolutePath());

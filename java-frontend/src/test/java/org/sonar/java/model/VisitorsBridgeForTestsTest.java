@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +34,13 @@ public class VisitorsBridgeForTestsTest {
 
   @Test
   public void test_semantic_disabled() {
-    Tree parse = JavaParser.createParser(Charset.defaultCharset()).parse("class A{}");
+    Tree parse = JavaParser.createParser().parse("class A{}");
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()));
     visitorsBridgeForTests.setCurrentFile(new File("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
 
-    parse = JavaParser.createParser(Charset.defaultCharset()).parse("class A{}");
+    parse = JavaParser.createParser().parse("class A{}");
     visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor());
     visitorsBridgeForTests.setCurrentFile(new File("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);

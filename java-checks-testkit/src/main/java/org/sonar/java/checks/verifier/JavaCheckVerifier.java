@@ -23,7 +23,6 @@ import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.assertj.core.api.Fail;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaVersionImpl;
@@ -35,7 +34,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -264,9 +262,7 @@ public class JavaCheckVerifier extends CheckVerifier {
     } else {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector));
     }
-    JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    conf.setJavaVersion(javaCheckVerifier.javaVersion);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, conf);
+    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, javaCheckVerifier.javaVersion);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     if (testJavaFileScannerContext == null) {
       Fail.fail("Semantic was required but it was not possible to create it. Please checks the logs to find out the reason.");

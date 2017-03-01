@@ -26,10 +26,11 @@ import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -37,7 +38,6 @@ import org.sonar.squidbridge.api.AnalysisException;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InterruptedIOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -132,17 +132,17 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
-    scanSingleFileForTests(file, visitorsBridge, new JavaConfiguration(Charset.forName("UTF-8")));
+    scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl());
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaConfiguration conf) {
+  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()), null);
+    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
     if (visitorsBridge != null) {
-      visitorsBridge.setJavaVersion(conf.javaVersion());
+      visitorsBridge.setJavaVersion(javaVersion);
       astScanner.setVisitorBridge(visitorsBridge);
     }
     JavaAstScanner scanner = astScanner;

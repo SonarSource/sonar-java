@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static java.lang.reflect.Modifier.isFinal;
@@ -51,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReassignmentFinderTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser();
 
   @Test
   public void private_constructor() throws Exception {

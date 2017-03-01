@@ -33,6 +33,7 @@ import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -50,7 +51,7 @@ public class JavaSquid {
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
 
-  public JavaSquid(JavaConfiguration conf,
+  public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
 
@@ -83,14 +84,14 @@ public class JavaSquid {
     }
 
     //AstScanner for main files
-    ActionParser<Tree> parser = JavaParser.createParser(conf.getCharset());
+    ActionParser<Tree> parser = JavaParser.createParser();
     astScanner = new JavaAstScanner(parser, sonarComponents);
     boolean enableSymbolicExecution = hasASymbolicExecutionCheck(visitors);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents, enableSymbolicExecution));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, enableSymbolicExecution));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(parser, sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents, false));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, false));
 
   }
 
@@ -99,9 +100,9 @@ public class JavaSquid {
   }
 
   private static VisitorsBridge createVisitorBridge(
-      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
+    Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
-    visitorsBridge.setJavaVersion(conf.javaVersion());
+    visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;
   }
 

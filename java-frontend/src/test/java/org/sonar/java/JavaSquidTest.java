@@ -36,11 +36,11 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.utils.Version;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,8 +87,7 @@ public class JavaSquidTest {
     FileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    JavaSquid javaSquid = new JavaSquid(conf, sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Lists.newArrayList(file), Lists.newArrayList());
 
     if(version.isGreaterThanOrEqual(Version.create(6, 0))) {

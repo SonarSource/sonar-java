@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1049,7 +1048,7 @@ public class GenericsTest {
     for (String line : lines) {
       builder.append(line).append(System.lineSeparator());
     }
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(builder.toString());
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(builder.toString());
     SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     return cut;
   }
@@ -1065,7 +1064,7 @@ public class GenericsTest {
   }
 
   private static CompilationUnitTree treeOf(File file) {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(file);
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     return cut;
   }

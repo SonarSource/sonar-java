@@ -35,13 +35,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaPropertiesHelperTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser();
 
   @Test
   public void private_constructor() throws Exception {

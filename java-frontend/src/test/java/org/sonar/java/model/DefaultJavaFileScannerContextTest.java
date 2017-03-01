@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class DefaultJavaFileScannerContextTest {
   @Before
   public void setup() {
     sonarComponents = createSonarComponentsMock();
-    compilationUnitTree = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(JAVA_FILE);
+    compilationUnitTree = (CompilationUnitTree) JavaParser.createParser().parse(JAVA_FILE);
     context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, sonarComponents, null, true);
   }
 

@@ -31,11 +31,9 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.nio.charset.StandardCharsets;
-
 public class CFGViewer {
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
+  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
   private final Viewer viewer;
 
   CFGViewer(Viewer viewer) {

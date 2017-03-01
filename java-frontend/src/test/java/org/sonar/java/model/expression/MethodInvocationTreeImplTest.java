@@ -34,13 +34,12 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodInvocationTreeImplTest {
 
-  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void symbol_should_be_set() {
