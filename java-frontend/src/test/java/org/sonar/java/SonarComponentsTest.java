@@ -51,6 +51,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -140,7 +141,7 @@ public class SonarComponentsTest {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
-    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null, null, this.checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
@@ -160,7 +161,7 @@ public class SonarComponentsTest {
     JavaCheck expectedCheck = new CustomTestCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
-    when(checks.all()).thenReturn(new ArrayList<JavaCheck>()).thenReturn(Lists.newArrayList(expectedCheck));
+    when(checks.all()).thenReturn(new ArrayList<>()).thenReturn(Lists.newArrayList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
@@ -328,6 +329,32 @@ public class SonarComponentsTest {
     assertThat(sonarComponents.isSQGreaterThan62()).isFalse();
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
     assertThat(sonarComponents.isSQGreaterThan62()).isTrue();
+  }
+
+  @Test
+  public void readFileContentFromInputFile() throws Exception {
+    // read a file containing kanji set with correct encoding and expecting proper length of read input.
+    File file = new File("src/test/files/Kanji.java");
+    DefaultInputFile inputFile = new TestInputFileBuilder("", file.getPath())
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8)).setCharset(StandardCharsets.UTF_8).build();
+
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    DefaultFileSystem fileSystem = context.fileSystem();
+    fileSystem.add(inputFile);
+    fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
+    sonarComponents.setSensorContext(context);
+
+    String fileContent = sonarComponents.fileContent(file);
+    assertThat(fileContent).hasSize(59);
+
+    // rely on default filesystem charset for version prior to 6.2
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.fileContent(file)).hasSize(63);
   }
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {

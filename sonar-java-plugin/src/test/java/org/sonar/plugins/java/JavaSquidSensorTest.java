@@ -49,6 +49,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +94,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(80));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(81));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     context = createContext(onType);
@@ -125,7 +126,8 @@ public class JavaSquidSensorTest {
     File file = new File(fs.baseDir(), effectiveKey);
     DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
       .setType(onType)
-      .initMetadata(new String(Files.readAllBytes(file.toPath()), "UTF-8"))
+      .initMetadata(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
       .build();
     fs.add(inputFile);
     return context;
