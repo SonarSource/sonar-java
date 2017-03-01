@@ -47,16 +47,34 @@ public final class ExpressionUtils {
     }
 
     ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
-    return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isOwningInstanceAssignment((MemberSelectExpressionTree) variable));
+    return variable.is(Tree.Kind.IDENTIFIER) || isSelectOnThisOrSuper(tree);
   }
 
-  public static boolean isThisOrSuperSelect(AssignmentExpressionTree tree) {
+  /**
+   * Checks of is the given tree is a {@link MemberSelectExpressionTree} which is selecting with <code>this</code> or <code>super</code>
+   * @param tree The tree to check.
+   * @return true when the tree is a select on <code>this</code> or <code>super</code>
+   * @see #isSelectOnThisOrSuper(MemberSelectExpressionTree)
+   */
+  public static boolean isSelectOnThisOrSuper(AssignmentExpressionTree tree) {
     ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
-    return variable.is(Tree.Kind.MEMBER_SELECT) && isOwningInstanceAssignment((MemberSelectExpressionTree) variable);
+    return variable.is(Tree.Kind.MEMBER_SELECT) && isSelectOnThisOrSuper((MemberSelectExpressionTree) variable);
   }
 
-  public static boolean isSimpleAssignment(MemberSelectExpressionTree memberSelectExpressionTree) {
-    return isOwningInstanceAssignment(memberSelectExpressionTree);
+  /**
+   * Checks of is the given tree is selecting with <code>this</code> or <code>super</code>
+   * @param tree The tree to check.
+   * @return true when the tree is a select on <code>this</code> or <code>super</code>
+   * @see #isSelectOnThisOrSuper(AssignmentExpressionTree)
+   */
+  public static boolean isSelectOnThisOrSuper(MemberSelectExpressionTree tree) {
+    if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      // This is no longer simple.
+      return false;
+    }
+
+    String selectSourceName = ((IdentifierTree) tree.expression()).name();
+    return "this".equalsIgnoreCase(selectSourceName) || "super".equalsIgnoreCase(selectSourceName);
   }
 
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
@@ -67,23 +85,13 @@ public final class ExpressionUtils {
 
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
-      if (isOwningInstanceAssignment(selectTree)) {
+      if (isSelectOnThisOrSuper(selectTree)) {
         return selectTree.identifier();
       }
     }
 
     // This should not be possible.
     throw new IllegalArgumentException("Can not extract identifier.");
-  }
-
-  private static boolean isOwningInstanceAssignment(MemberSelectExpressionTree tree) {
-    if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
-      // This is no longer simple.
-      return false;
-    }
-
-    String selectSourceName = ((IdentifierTree) tree.expression()).symbol().name();
-    return "this".equalsIgnoreCase(selectSourceName) || "super".equalsIgnoreCase(selectSourceName);
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
