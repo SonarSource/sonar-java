@@ -245,6 +245,9 @@ public class SonarComponents {
 
   public String fileContent(File file) {
     try {
+      if(context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2)) {
+        return inputFromIOFile(file).contents();
+      }
       return Files.toString(file, fs.encoding());
     } catch (IOException e) {
       Throwables.propagate(e);
