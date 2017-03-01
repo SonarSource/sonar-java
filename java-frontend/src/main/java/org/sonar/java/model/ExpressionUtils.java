@@ -51,6 +51,11 @@ public final class ExpressionUtils {
     return variable.is(Tree.Kind.IDENTIFIER) || (variable.is(Tree.Kind.MEMBER_SELECT) && isOwningInstanceAssignment((MemberSelectExpressionTree) variable));
   }
 
+  public static boolean isThisOrSuperSelect(AssignmentExpressionTree tree) {
+    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    return variable.is(Tree.Kind.MEMBER_SELECT) && isOwningInstanceAssignment((MemberSelectExpressionTree) variable);
+  }
+
   public static boolean isSimpleAssignment(MemberSelectExpressionTree memberSelectExpressionTree) {
     return isOwningInstanceAssignment(memberSelectExpressionTree);
   }

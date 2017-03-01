@@ -829,7 +829,7 @@ public class ExplodedGraphWalker {
     SymbolicValue value;
 
     boolean isSimpleAssignment = ExpressionUtils.isSimpleAssignment(tree);
-    if (isSimpleAssignment) {
+    if (isSimpleAssignment || ExpressionUtils.isThisOrSuperSelect(tree)) {
       unstack = programState.unstackValue(1);
       value = unstack.values.get(0);
     } else {
@@ -839,7 +839,7 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     programState = programState.stackValue(value);
-    if (isSimpleAssignment || tree.variable().is(Tree.Kind.IDENTIFIER)) {
+    if (isSimpleAssignment || ExpressionUtils.isThisOrSuperSelect(tree) || tree.variable().is(Tree.Kind.IDENTIFIER)) {
       programState = programState.put(ExpressionUtils.extractIdentifier(tree).symbol(), value);
     }
   }
