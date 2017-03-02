@@ -30,13 +30,12 @@ import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.check.Cardinality;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squidbridge.annotations.RuleTemplate;
-import org.sonar.squidbridge.rules.ExternalDescriptionLoader;
 
 import javax.annotation.Nullable;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -50,6 +49,13 @@ public class JavaRulesDefinition implements RulesDefinition {
 
   private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
   private final Gson gson = new Gson();
+  private final boolean versionIsGreaterThan60;
+
+  public JavaRulesDefinition(Version version) {
+    versionIsGreaterThan60 = version.isGreaterThanOrEqual(Version.create(6, 0));
+  }
+
+
   @Override
   public void define(Context context) {
     NewRepository repository = context
@@ -57,14 +63,15 @@ public class JavaRulesDefinition implements RulesDefinition {
       .setName("SonarAnalyzer");
     List<Class> checks = CheckList.getChecks();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
+    JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
-      newRule(ruleClass, repository);
+      newRule(ruleClass, repository, profile);
     }
     repository.done();
   }
 
   @VisibleForTesting
-  protected void newRule(Class<?> ruleClass, NewRepository repository) {
+  protected void newRule(Class<?> ruleClass, NewRepository repository, JavaSonarWayProfile.Profile profile) {
 
     org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
     if (ruleAnnotation == null) {
@@ -77,6 +84,9 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRule rule = repository.rule(ruleKey);
     if (rule == null) {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
+    }
+    if (versionIsGreaterThan60) {
+      rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey));
     }
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
@@ -98,7 +108,7 @@ public class JavaRulesDefinition implements RulesDefinition {
   }
 
   private void addMetadata(NewRule rule, String metadataKey) {
-    URL resource = ExternalDescriptionLoader.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
+    URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
     if (resource != null) {
       RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
       rule.setSeverity(metatada.defaultSeverity.toUpperCase(Locale.US));
