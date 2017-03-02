@@ -3,8 +3,9 @@
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
-    "func": "Constant\/Issue",
-    "constantCost": "1h"
+    "func": "Linear",
+    "linearDesc": "per \"sun\" import",
+    "linearFactor": "20min"
   },
   "tags": [
     "lock-in",

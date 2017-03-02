@@ -63,7 +63,8 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
       .map(tree -> new JavaFileScannerContext.Location("", tree))
       .collect(Collectors.toList());
 
-    context.reportIssue(this, reportedTrees.get(0), "Use classes from the Java API instead of Sun classes.", secondaries, null);
+    int effortToFix = reportedTrees.size();
+    context.reportIssue(this, reportedTrees.get(0), "Use classes from the Java API instead of Sun classes.", secondaries, effortToFix);
   }
 
   @Override
