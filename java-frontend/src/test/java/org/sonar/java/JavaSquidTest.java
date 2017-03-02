@@ -87,7 +87,9 @@ public class JavaSquidTest {
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
     FileSystem fs = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Lists.newArrayList(file), Lists.newArrayList());
@@ -108,6 +110,9 @@ public class JavaSquidTest {
       // No measures
       assertThat(context.measures(defaultFile.key())).isNotEmpty();
     }
+
+    verify(javaClasspath, times(1)).getElements();
+    verify(javaTestClasspath, times(1)).getElements();
 
   }
 }
