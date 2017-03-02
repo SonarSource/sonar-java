@@ -69,18 +69,20 @@ public class JavaSquid {
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
-    if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
-      codeVisitors = Iterables.concat(
+    if (sonarComponents != null) {
+      if(!sonarComponents.isSonarLintContext()) {
+        codeVisitors = Iterables.concat(
           codeVisitors,
           Arrays.asList(
-              new FileLinesVisitor(sonarComponents),
-              new SyntaxHighlighterVisitor(sonarComponents)
+            new FileLinesVisitor(sonarComponents),
+            new SyntaxHighlighterVisitor(sonarComponents)
           )
-      );
-      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        );
+        testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        testCodeVisitors.addAll(sonarComponents.testCheckClasses());
+      }
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
-      testCodeVisitors.addAll(sonarComponents.testCheckClasses());
     }
 
     //AstScanner for main files
