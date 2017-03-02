@@ -22,7 +22,13 @@ package org.sonar.java.checks.verifier;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.RecognitionException;
 import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaVersionImpl;
@@ -34,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -257,12 +264,22 @@ public class JavaCheckVerifier extends CheckVerifier {
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath, boolean withSemantic) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
     VisitorsBridgeForTests visitorsBridge;
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+      @Override
+      public boolean reportAnalysisError(RecognitionException re, File file) {
+        return false;
+      }
+    };
+    sonarComponents.setSensorContext(context);
     if (withSemantic) {
-      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
+      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), sonarComponents);
     } else {
-      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector));
+      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), sonarComponents);
     }
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, javaCheckVerifier.javaVersion);
+    File file = new File(filename);
+    context.fileSystem().add(new TestInputFileBuilder("", file.getPath()).setCharset(StandardCharsets.UTF_8).build());
+    JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, javaCheckVerifier.javaVersion);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     if (testJavaFileScannerContext == null) {
       Fail.fail("Semantic was required but it was not possible to create it. Please checks the logs to find out the reason.");
