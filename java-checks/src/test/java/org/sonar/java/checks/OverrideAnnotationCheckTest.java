@@ -45,4 +45,9 @@ public class OverrideAnnotationCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/OverrideAnnotationCheck_java4.java", new OverrideAnnotationCheck(), 4);
   }
 
+  @Test
+  public void test_no_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck());
+  }
+
 }
