@@ -1,0 +1,12 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
+587,
+614,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ResultSetIterator.java':[
+324,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/WeakFastHashMap.java':[
+689,
+],
+}
