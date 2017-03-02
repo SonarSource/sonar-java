@@ -21,33 +21,20 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S00113")
 @RspecKey("S113")
-public class MissingNewLineAtEndOfFileCheck extends IssuableSubscriptionVisitor {
+public class MissingNewLineAtEndOfFileCheck implements JavaFileScanner {
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
-  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    super.context = context;
     String content = context.getFileContent();
-    if(content.isEmpty()) {
-      return;
-    }
-
     char lastChar = content.charAt(content.length() - 1);
     if( lastChar != '\n' && lastChar != '\r') {
-      addIssueOnFile("Add a new line at the end of this file.");
+      context.addIssueOnFile(this, "Add a new line at the end of this file.");
     }
   }
 }
