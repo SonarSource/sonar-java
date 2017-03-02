@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -32,9 +33,10 @@ import org.sonar.java.checks.naming.BadPackageNameCheck;
 import org.sonar.java.checks.naming.BadTestClassNameCheck;
 import org.sonar.java.checks.naming.BadTestMethodNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
+import org.sonar.java.checks.naming.BooleanMethodNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
-import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
+import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
@@ -47,9 +49,9 @@ import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassC
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
-import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
-import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
+import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
+import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -461,6 +463,7 @@ public final class CheckList {
       .add(SynchronizationOnGetClassCheck.class)
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
+      .add(BooleanMethodNameCheck.class)
       .build();
   }
 
