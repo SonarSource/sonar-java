@@ -1,1 +1,2 @@
 java-frontend/src/test/files/highlighter/SonarSymTable.java eol=lf
+java-checks/src/test/files/checks/NonEmptyFile.java eol=cr
