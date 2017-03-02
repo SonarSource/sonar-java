@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.io.Files;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -37,10 +36,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -145,25 +141,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public List<String> getFileLines() {
-    if(sonarComponents == null) {
-      try {
-        return Files.readLines(file, StandardCharsets.UTF_8);
-      } catch (IOException e) {
-        throw new IllegalStateException(e);
-      }
-    }
     return sonarComponents.fileLines(file);
   }
 
   @Override
   public String getFileContent() {
-    if(sonarComponents == null) {
-      try {
-        return Files.toString(file, StandardCharsets.UTF_8);
-      } catch (IOException e) {
-        throw new IllegalStateException(e);
-      }
-    }
     return sonarComponents.fileContent(file);
   }
 

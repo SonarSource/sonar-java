@@ -141,12 +141,9 @@ public class JavaAstScanner {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
-    if (visitorsBridge != null) {
-      visitorsBridge.setJavaVersion(javaVersion);
-      astScanner.setVisitorBridge(visitorsBridge);
-    }
-    JavaAstScanner scanner = astScanner;
-    scanner.scan(Collections.singleton(file));
+    visitorsBridge.setJavaVersion(javaVersion);
+    astScanner.setVisitorBridge(visitorsBridge);
+    astScanner.scan(Collections.singleton(file));
   }
 
 }
