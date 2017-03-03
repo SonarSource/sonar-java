@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Postfix or unary expression.
  *
@@ -39,7 +37,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.3
  */
-@Beta
 public interface UnaryExpressionTree extends ExpressionTree {
 
   SyntaxToken operatorToken();

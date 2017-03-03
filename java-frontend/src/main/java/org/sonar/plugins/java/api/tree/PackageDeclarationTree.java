@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import java.util.List;
 
 /**
@@ -32,7 +30,6 @@ import java.util.List;
  *   {@link #annotations()} package {@link #packageName()} ;
  * </pre>
  */
-@Beta
 public interface PackageDeclarationTree extends Tree {
 
   /**

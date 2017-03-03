@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Common interface for all import clauses.
  *
@@ -28,6 +26,5 @@ import com.google.common.annotations.Beta;
  * 
  * @since Java 3.3
  */
-@Beta
 public interface ImportClauseTree extends Tree {
 }

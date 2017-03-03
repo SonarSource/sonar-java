@@ -35,7 +35,6 @@ import java.util.Objects;
 /**
  * Context injected in check classes and used to report issues.
  */
-@Beta
 public interface JavaFileScannerContext {
 
   /**

@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
-@Beta
 public enum Modifier {
 
   PUBLIC,

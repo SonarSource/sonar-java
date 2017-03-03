@@ -19,14 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Represents a Trivia in the SyntaxTree.
  *
  * @since plugin 2.5
  */
-@Beta
 public interface SyntaxTrivia extends Tree {
 
   String comment();

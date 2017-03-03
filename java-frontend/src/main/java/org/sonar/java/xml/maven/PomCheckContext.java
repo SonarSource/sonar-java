@@ -26,7 +26,6 @@ import org.sonar.maven.model.maven2.MavenProject;
 
 import java.util.List;
 
-@Beta
 public interface PomCheckContext extends XmlCheckContext {
 
   MavenProject getMavenProject();

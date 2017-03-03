@@ -37,7 +37,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  *   }
  * </pre>
  */
-@Beta
 @SonarLintSide
 @BatchSide
 public interface CheckRegistrar {

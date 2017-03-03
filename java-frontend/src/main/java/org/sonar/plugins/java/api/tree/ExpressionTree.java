@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Type;
 
 /**
@@ -27,7 +26,6 @@ import org.sonar.plugins.java.api.semantic.Type;
  *
  * JLS 15
  */
-@Beta
 public interface ExpressionTree extends Tree {
   Type symbolType();
 }

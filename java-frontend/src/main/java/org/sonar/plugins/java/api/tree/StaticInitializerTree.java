@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Static Initializer. 
  * 
@@ -32,7 +30,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 3.4
  */
-@Beta
 public interface StaticInitializerTree extends BlockTree {
 
   SyntaxToken staticKeyword();

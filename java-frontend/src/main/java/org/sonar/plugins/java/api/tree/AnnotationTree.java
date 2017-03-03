@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Annotation.
  *
@@ -33,7 +31,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.5
  */
-@Beta
 public interface AnnotationTree extends ExpressionTree, ModifierTree {
 
   SyntaxToken atToken();

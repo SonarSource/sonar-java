@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
@@ -29,7 +28,6 @@ import javax.annotation.Nullable;
  *
  * <p><b>WARNING:</b> This interface and its sub-interfaces are subject to change as the Java&trade; language evolves.</p>
  */
-@Beta
 public interface Tree {
 
   boolean is(Kind... kinds);

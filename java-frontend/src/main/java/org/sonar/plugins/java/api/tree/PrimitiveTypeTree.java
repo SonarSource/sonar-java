@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Primitive type.
  *
@@ -28,7 +26,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.3
  */
-@Beta
 public interface PrimitiveTypeTree extends TypeTree, ExpressionTree {
 
   SyntaxToken keyword();

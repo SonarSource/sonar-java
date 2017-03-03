@@ -19,14 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Union type expression in a multi-catch.
  *
  * @since Java 1.7
  */
-@Beta
 public interface UnionTypeTree extends TypeTree {
 
   ListTree<TypeTree> typeAlternatives();

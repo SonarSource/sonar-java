@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Parameterized type.
  *
@@ -32,7 +30,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.5
  */
-@Beta
 public interface ParameterizedTypeTree extends TypeTree {
 
   TypeTree type();

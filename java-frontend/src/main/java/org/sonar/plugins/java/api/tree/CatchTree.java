@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * 'catch' in a 'try' statement.
  *
@@ -32,7 +30,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.3
  */
-@Beta
 public interface CatchTree extends Tree {
 
   SyntaxToken catchKeyword();

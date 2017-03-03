@@ -33,7 +33,6 @@ import java.util.Collection;
 /**
  * Interface to get the mapping between java classes and files (as multiple classes can be declared in one file).
  */
-@Beta
 @BatchSide
 @SonarLintSide
 public interface JavaResourceLocator extends JavaFileScanner {

@@ -28,7 +28,6 @@ import javax.xml.xpath.XPathExpression;
 
 import java.io.File;
 
-@Beta
 public interface XmlCheckContext {
 
   File getFile();

@@ -22,7 +22,6 @@ package org.sonar.java.xml.maven;
 import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 
-@Beta
 public interface PomCheck extends JavaCheck {
 
   void scanFile(PomCheckContext context);
