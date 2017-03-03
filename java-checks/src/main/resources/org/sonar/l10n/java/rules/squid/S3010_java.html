@@ -1,0 +1,27 @@
+<p>Assigning a value to a <code>static</code> field in a constructor could cause unreliable behavior at runtime since it will change the value for all
+instances of the class.</p>
+<p>Instead remove the field's <code>static</code> modifier, or initialize it statically.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Person {
+  static Date dateOfBirth;
+  static int expectedFingers;
+
+  public Person(date birthday) {
+    dateOfBirth = birthday;  // Noncompliant; now everyone has this birthday
+    expectedFingers = 10;  // Noncompliant
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class Person {
+  Date dateOfBirth;
+  static int expectedFingers = 10;
+
+  public Person(date birthday) {
+    dateOfBirth = birthday;
+  }
+}
+</pre>
+
