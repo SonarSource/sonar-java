@@ -210,6 +210,7 @@ public final class CheckList {
       .add(NoCheckstyleTagPresenceCheck.class)
       .add(ParameterReassignedToCheck.class)
       .add(HardcodedIpCheck.class)
+      .add(HardcodedURICheck.class)
       .add(LoggersDeclarationCheck.class)
       .add(MethodNameSameAsClassCheck.class)
       .add(CollectionImplementationReferencedCheck.class)

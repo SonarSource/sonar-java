@@ -1,0 +1,39 @@
+<p>Hard coding a URI makes it difficult to test a program: path literals are not always portable across operating systems, a given absolute path may
+not exist on a specific test environment, a specified Internet URL may not be available when executing the tests, production environment filesystems
+usually differ from the development environment, ...etc. For all those reasons, a URI should never be hard coded. Instead, it should be replaced by
+customizable parameter.</p>
+<p>Further even if the elements of a URI are obtained dynamically, portability can still be limited if the path-delimiters are hard-coded.</p>
+<p>This rule raises an issue when URI's or path delimiters are hard coded.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo {
+  public Collection&lt;User&gt; listUsers() {
+    File userList = new File("/home/mylogin/Dev/users.txt"); // Non-Compliant
+    Collection&lt;User&gt; users = parse(userList);
+    return users;
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo {
+  // Configuration is a class that returns customizable properties: it can be mocked to be injected during tests.
+  private Configuration config;
+  public Foo(Configuration myConfig) {
+    this.config = myConfig;
+  }
+  public Collection&lt;User&gt; listUsers() {
+    // Find here the way to get the correct folder, in this case using the Configuration object
+    String listingFolder = config.getProperty("myApplication.listingFolder");
+    // and use this parameter instead of the hard coded path
+    File userList = new File(listingFolder, "users.txt"); // Compliant
+    Collection&lt;User&gt; users = parse(userList);
+    return users;
+  }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/qQCHAQ">CERT, MSC03-J.</a> - Never hard code sensitive information </li>
+</ul>
+
