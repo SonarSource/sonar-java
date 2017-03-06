@@ -714,3 +714,27 @@ class FooBar {
     FooBar.bar(null, new byte[10]); // Compliant
   }
 }
+
+class SimpleAssignments {
+  Object myField;
+
+  void foo() {
+    this.myField = null;
+    myField.toString(); // Noncompliant
+  }
+
+  void bar() {
+    myField = null;
+    this.myField.toString(); // Noncompliant
+  }
+
+  void gul() {
+    this.myField = null;
+    this.myField.toString(); // Noncompliant
+  }
+
+  void qix() {
+    myField = null;
+    myField.toString(); // Noncompliant
+  }
+}
