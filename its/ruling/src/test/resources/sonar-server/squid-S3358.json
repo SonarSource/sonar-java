@@ -1,0 +1,8 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/debt/DebtModelOperations.java':[
+174,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/IssueShowAction.java':[
+177,
+],
+}
