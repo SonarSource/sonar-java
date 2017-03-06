@@ -464,6 +464,7 @@ public final class CheckList {
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
       .add(BooleanMethodNameCheck.class)
+      .add(StaticFieldUpdateInConstructorCheck.class)
       .build();
   }
 
