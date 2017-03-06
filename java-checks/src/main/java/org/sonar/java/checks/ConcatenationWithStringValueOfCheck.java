@@ -52,7 +52,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       return;
     }
 
-    Set<ExpressionTree> valueOfTrees = Sets.newHashSet();
+    Set<ExpressionTree> valueOfTrees = new HashSet<>();
     boolean flagIssue = false;
     ExpressionTree current = tree;
     while (current.is(Kind.PLUS)) {

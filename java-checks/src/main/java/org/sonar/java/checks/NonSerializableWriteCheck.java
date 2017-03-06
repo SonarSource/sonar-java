@@ -43,7 +43,7 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
     .name("writeObject")
     .addParameter("java.lang.Object");
 
-  private final List<Symbol> testedSymbols = Lists.newArrayList();
+  private final List<Symbol> testedSymbols = new ArrayList<>();
 
   @Override
   public List<Kind> nodesToVisit() {

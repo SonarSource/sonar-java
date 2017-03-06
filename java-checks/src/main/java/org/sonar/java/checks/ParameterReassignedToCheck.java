@@ -40,7 +40,7 @@ import java.util.Set;
 @Rule(key = "S1226")
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Set<Symbol> variables = Sets.newHashSet();
+  private final Set<Symbol> variables = new HashSet<>();
 
   private JavaFileScannerContext context;
   private SemanticModel semanticModel;

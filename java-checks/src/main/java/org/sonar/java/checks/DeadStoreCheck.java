@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
@@ -47,6 +44,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +54,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
@@ -86,7 +84,9 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private void checkElements(CFG.Block block, Set<Symbol> blockOut, Symbol.MethodSymbol methodSymbol) {
     Set<Symbol> out = new HashSet<>(blockOut);
     Set<Tree> assignmentLHS = new HashSet<>();
-    Lists.reverse(block.elements()).forEach(element -> checkElement(methodSymbol, out, assignmentLHS, element));
+    List<Tree> elements = block.elements();
+    Collections.reverse(elements);
+    elements.forEach(element -> checkElement(methodSymbol, out, assignmentLHS, element));
   }
 
   private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> outVar, Set<Tree> assignmentLHS, Tree element) {

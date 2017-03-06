@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
@@ -82,7 +83,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.get(issue.ruleKey().rule()).contains(issue.line()));
   }
 
-  public Multimap<String, Integer> excludedLinesByRule() {
+  public MultiValuedMap<String, Integer> excludedLinesByRule() {
     return excludedLinesByRule;
   }
 

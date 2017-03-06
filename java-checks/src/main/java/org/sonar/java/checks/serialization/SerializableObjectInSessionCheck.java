@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2441")
@@ -37,7 +37,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession")
+    return Collections.singletonList(MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession")
       .name("setAttribute").addParameter("java.lang.String").addParameter(TypeCriteria.anyType()));
   }
 

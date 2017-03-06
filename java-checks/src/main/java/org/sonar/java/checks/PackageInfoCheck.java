@@ -30,7 +30,7 @@ import java.util.Set;
 @Rule(key = "S1228")
 public class PackageInfoCheck implements JavaFileScanner {
 
-  Set<File> directoriesWithoutPackageFile = Sets.newHashSet();
+  Set<File> directoriesWithoutPackageFile = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

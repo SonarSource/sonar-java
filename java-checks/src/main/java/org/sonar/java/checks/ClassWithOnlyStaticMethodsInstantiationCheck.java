@@ -102,7 +102,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   }
 
   private static Collection<Symbol> filterMethodsAndFields(Collection<Symbol> symbols) {
-    List<Symbol> filtered = Lists.newArrayList();
+    List<Symbol> filtered = new ArrayList<>();
     for (Symbol symbol : symbols) {
       if ((symbol.isVariableSymbol() && symbol.declaration() != null) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
         filtered.add(symbol);

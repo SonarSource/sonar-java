@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.xml.XPathXmlCheck;
@@ -53,8 +53,8 @@ public class ActionNumberCheck extends XPathXmlCheck {
   @Override
   public void scanFileWithXPathExpressions(XmlCheckContext context) {
     for (Node action : context.evaluateOnDocument(actionsExpression)) {
-      Iterable<Node> extraForwards = Iterables.skip(context.evaluate(forwardsFromActionExpression, action), maximumForwards);
-      if (!Iterables.isEmpty(extraForwards)) {
+      Iterable<Node> extraForwards = IterableUtils.skippingIterable(context.evaluate(forwardsFromActionExpression, action), maximumForwards);
+      if (!IterableUtils.isEmpty(extraForwards)) {
         List<XmlCheckContext.XmlDocumentLocation> secondaries = new LinkedList<>();
         for (Node forward : extraForwards) {
           secondaries.add(new XmlCheckContext.XmlDocumentLocation("Move this forward to another action.", forward));

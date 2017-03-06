@@ -79,7 +79,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
-    List<Symbol> booleanParameters = Lists.newLinkedList();
+    List<Symbol> booleanParameters = new LinkedList<>();
     for (VariableTree variableTree : parameters) {
       if (isBooleanVariable(variableTree)) {
         booleanParameters.add(variableTree.symbol());

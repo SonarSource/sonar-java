@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.MapUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,13 +30,14 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 @Rule(key = "S1940")
 public class BooleanInversionCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> OPERATORS = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> OPERATORS = MapUtils.ImmutableMap.<String, String>builder()
     .put("==", "!=")
     .put("!=", "==")
     .put("<", ">=")
@@ -46,7 +48,7 @@ public class BooleanInversionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.LOGICAL_COMPLEMENT);
+    return Arrays.asList(Tree.Kind.LOGICAL_COMPLEMENT);
   }
 
   @Override

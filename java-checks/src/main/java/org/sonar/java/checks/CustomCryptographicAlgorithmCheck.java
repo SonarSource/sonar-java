@@ -37,7 +37,7 @@ public class CustomCryptographicAlgorithmCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

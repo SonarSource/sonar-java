@@ -40,7 +40,7 @@ import java.util.Set;
 public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
 
 
-  private Set<Tree> alreadyReported = Sets.newHashSet();
+  private Set<Tree> alreadyReported = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

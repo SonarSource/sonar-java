@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.collect.ImmutableSet;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -28,18 +27,20 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public final class SerializableContract {
 
-  public static final Set<String> SERIALIZABLE_CONTRACT_METHODS = ImmutableSet.of(
+  public static final Set<String> SERIALIZABLE_CONTRACT_METHODS = new HashSet<>(Arrays.asList(
     "writeObject",
     "readObject",
     "writeReplace",
     "readResolve",
     "readObjectNoData"
-  );
+  ));
 
   public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
 

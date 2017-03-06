@@ -19,10 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import java.util.Collection;
-import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -45,30 +41,33 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
   private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
-  private static final Collection<String> EXCLUDED_WARNINGS_SUPPRESSIONS = ImmutableList.of("\"rawtypes\"", "\"unchecked\"");
+  private static final Collection<String> EXCLUDED_WARNINGS_SUPPRESSIONS = Arrays.asList("\"rawtypes\"", "\"unchecked\"");
   private static final MethodMatcherCollection SERIALIZABLE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
     MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
-  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping", 
+  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = Arrays.asList("org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
   
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
-      List<IdentifierTree> unused = Lists.newArrayList();
+      List<IdentifierTree> unused = new ArrayList<>();
       for (VariableTree var : methodTree.parameters()) {
         Symbol symbol = var.symbol();
         if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION) && !isStrutsActionParameter(var)) {

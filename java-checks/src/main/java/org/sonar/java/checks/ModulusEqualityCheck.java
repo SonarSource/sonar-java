@@ -42,7 +42,7 @@ import java.util.List;
 @Rule(key = "S2197")
 public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
 
-  private List<Symbol> methodParams = Lists.newArrayList();
+  private List<Symbol> methodParams = new ArrayList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

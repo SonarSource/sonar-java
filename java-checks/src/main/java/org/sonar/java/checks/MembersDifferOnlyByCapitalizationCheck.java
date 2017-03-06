@@ -171,7 +171,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   }
 
   private static List<Symbol> retrieveMembers(Symbol.TypeSymbol classSymbol) {
-    List<Symbol> results = Lists.newLinkedList();
+    List<Symbol> results = new LinkedList<>();
     results.addAll(extractMembers(classSymbol, false));
 
     for (Type parentInterface : classSymbol.interfaces()) {
@@ -186,7 +186,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   }
 
   private static List<Symbol> extractMembers(Symbol.TypeSymbol classSymbol, boolean ignorePrivate) {
-    List<Symbol> results = Lists.newLinkedList();
+    List<Symbol> results = new LinkedList<>();
     for (Symbol symbol : classSymbol.memberSymbols()) {
       if ((isVariableToExtract(symbol) || isMethodToExtract(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
         results.add(symbol);

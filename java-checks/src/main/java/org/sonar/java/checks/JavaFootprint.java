@@ -31,7 +31,7 @@ import java.util.Set;
 
 public final class JavaFootprint implements LanguageFootprint {
 
-  private final Set<Detector> detectors = Sets.newHashSet();
+  private final Set<Detector> detectors = new HashSet<>();
 
   public JavaFootprint() {
     detectors.add(new EndWithDetector(0.95, '}', ';', '{'));

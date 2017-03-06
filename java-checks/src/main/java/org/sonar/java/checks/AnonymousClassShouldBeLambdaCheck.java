@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.resolve.JavaSymbol;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S1604")
@@ -52,7 +52,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    enumConstants = Lists.newArrayList();
+    enumConstants = new ArrayList<>();
     scan(context.getTree());
   }
 

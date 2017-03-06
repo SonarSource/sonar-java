@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.web;
 
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.XmlCheckContext;
 
@@ -43,6 +43,6 @@ public class SecurityConstraintsInWebXmlCheck extends WebXmlCheckTemplate {
   }
 
   private boolean hasNoSecurityConstraint(XmlCheckContext context) {
-    return Iterables.isEmpty(context.evaluateOnDocument(securityConstraintExpression));
+    return IterableUtils.isEmpty(context.evaluateOnDocument(securityConstraintExpression));
   }
 }

@@ -42,7 +42,7 @@ import java.util.Set;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private Set<Tree> excluded = Sets.newHashSet();
+  private Set<Tree> excluded = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

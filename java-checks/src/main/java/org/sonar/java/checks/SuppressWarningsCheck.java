@@ -85,7 +85,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
       return allowedWarnings;
     }
 
-    allowedWarnings = Lists.newArrayList();
+    allowedWarnings = new ArrayList<>();
     Iterable<String> listOfWarnings = Splitter.on(",").trimResults().split(warningsCommaSeparated);
     for (String warning : listOfWarnings) {
       if (StringUtils.isNotBlank(warning)) {
@@ -97,7 +97,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<String> getSuppressedWarnings(ExpressionTree argument) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       result.add(LiteralUtils.trimQuotes(((LiteralTree) argument).value()));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {

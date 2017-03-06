@@ -26,12 +26,13 @@ import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S3346")
 public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<Kind> SIDE_EFFECT_KIND = ImmutableList.of(
+  private static final List<Kind> SIDE_EFFECT_KIND = Arrays.asList(
     Kind.METHOD_INVOCATION,
 
     Kind.ASSIGNMENT,

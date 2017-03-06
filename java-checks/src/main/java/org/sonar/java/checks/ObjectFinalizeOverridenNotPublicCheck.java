@@ -35,7 +35,7 @@ public class ObjectFinalizeOverridenNotPublicCheck extends IssuableSubscriptionV
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override

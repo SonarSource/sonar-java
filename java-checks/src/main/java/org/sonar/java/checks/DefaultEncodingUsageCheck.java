@@ -60,7 +60,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   private static final String[] FORBIDDEN_TYPES = {JAVA_IO_FILEREADER, JAVA_IO_FILEWRITER};
 
-  private Set<Tree> excluded = Sets.newHashSet();
+  private Set<Tree> excluded = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

@@ -69,7 +69,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   }
 
   private static String getSymbols(Collection<Symbol> updateSymbols) {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
     for (Symbol updateSymbol : updateSymbols) {
       names.add(updateSymbol.name());
     }
@@ -77,7 +77,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   }
 
   private static class UpdateVisitor extends BaseTreeVisitor {
-    Collection<Symbol> symbols = Lists.newArrayList();
+    Collection<Symbol> symbols = new ArrayList<>();
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
@@ -120,7 +120,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
     ConditionVisitor(Collection<Symbol> updateSymbols) {
       this.updateSymbols = updateSymbols;
-      conditionNames = Lists.newArrayList();
+      conditionNames = new ArrayList<>();
       shouldRaiseIssue = !updateSymbols.isEmpty();
     }
 

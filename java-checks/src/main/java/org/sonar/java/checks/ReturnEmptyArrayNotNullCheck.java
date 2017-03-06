@@ -87,7 +87,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     "TreeSet",
     "Vector");
 
-  private final Deque<Returns> returnType = Lists.newLinkedList();
+  private final Deque<Returns> returnType = new LinkedList<>();
 
   private enum Returns {
     ARRAY, COLLECTION, OTHERS;

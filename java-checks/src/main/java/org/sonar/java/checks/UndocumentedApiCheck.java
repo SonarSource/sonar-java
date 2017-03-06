@@ -76,8 +76,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private WildcardPattern[] inclusionPatterns;
   private WildcardPattern[] exclusionPatterns;
 
-  private final Deque<ClassTree> classTrees = Lists.newLinkedList();
-  private final Deque<Tree> currentParents = Lists.newLinkedList();
+  private final Deque<ClassTree> classTrees = new LinkedList<>();
+  private final Deque<Tree> currentParents = new LinkedList<>();
 
   private PublicApiChecker publicApiChecker;
   private String packageName;

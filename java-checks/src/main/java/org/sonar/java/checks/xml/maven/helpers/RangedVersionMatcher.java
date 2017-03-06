@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 import org.sonar.maven.model.LocatedAttribute;
 
 import javax.annotation.CheckForNull;
@@ -35,7 +35,7 @@ public class RangedVersionMatcher implements LocatedAttributeMatcher {
     this.lowerBound = isWildCard(lowerBound) ? null : getVersion(lowerBound);
     this.upperBound = isWildCard(upperBound) ? null : getVersion(upperBound);
     // check that we are not bypassing both bounds
-    Preconditions.checkArgument(!(this.lowerBound == null && this.upperBound == null));
+    Validate.isTrue(!(this.lowerBound == null && this.upperBound == null));
   }
 
   private static boolean isWildCard(String pattern) {
@@ -45,7 +45,6 @@ public class RangedVersionMatcher implements LocatedAttributeMatcher {
   /**
    * Build a {@link ArtifactVersion} from a String, throwing an {@link IllegalArgumentException} if failed to parse value.
    * @param version the raw version as string
-   * @param callingCheckKey the check requiring the matcher
    * @return the {@link ArtifactVersion} corresponding to the provided version as string
    */
   private static ArtifactVersion getVersion(String version) {

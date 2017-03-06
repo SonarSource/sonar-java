@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.web;
 
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.XmlCheckContext;
 import org.w3c.dom.Node;
@@ -43,7 +43,7 @@ public class ValidationFiltersCheck extends WebXmlCheckTemplate {
   public void scanWebXml(XmlCheckContext context) {
     Iterable<Node> filtersDefinedInFilters = context.evaluateOnDocument(filterNamesFromFilterExpression);
     Iterable<Node> filtersUsedInMapping = context.evaluateOnDocument(filterNamesFromFilterMappingExpression);
-    if (Iterables.isEmpty(filtersDefinedInFilters) || Iterables.isEmpty(filtersUsedInMapping)) {
+    if (IterableUtils.isEmpty(filtersDefinedInFilters) || IterableUtils.isEmpty(filtersUsedInMapping)) {
       reportIssueOnFile("Add a validation filter to this \"web.xml\".");
     } else {
       Set<String> filterNamesFromFilters = getFilterNames(filtersDefinedInFilters);

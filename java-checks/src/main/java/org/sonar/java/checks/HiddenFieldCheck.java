@@ -44,9 +44,9 @@ import java.util.List;
 @RspecKey("S1117")
 public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
-  private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();
-  private final Deque<List<VariableTree>> excludedVariables = Lists.newLinkedList();
-  private final List<VariableTree> flattenExcludedVariables = Lists.newArrayList();
+  private final Deque<ImmutableMap<String, VariableTree>> fields = new LinkedList<>();
+  private final Deque<List<VariableTree>> excludedVariables = new LinkedList<>();
+  private final List<VariableTree> flattenExcludedVariables = new ArrayList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -156,7 +156,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
     List<VariableTree> scan(Tree tree) {
       visitNodes = nodesToVisit();
       excludedNodes = excludedNodes();
-      variables = Lists.newArrayList();
+      variables = new ArrayList<>();
       visit(tree);
       return variables;
     }

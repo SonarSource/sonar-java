@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -36,6 +34,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,7 +54,7 @@ public class DataStoredInSessionCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession").name("setAttribute").addParameter(TypeCriteria.anyType()).addParameter(TypeCriteria.anyType()),
       MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession").name("putValue").addParameter(TypeCriteria.anyType()).addParameter(TypeCriteria.anyType()));
   }
@@ -119,7 +119,7 @@ public class DataStoredInSessionCheck extends AbstractMethodDetection {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    identifiersUsedToSetAttribute = Sets.newHashSet();
+    identifiersUsedToSetAttribute = new HashSet<>();
     super.scanFile(context);
     identifiersUsedToSetAttribute.clear();
   }

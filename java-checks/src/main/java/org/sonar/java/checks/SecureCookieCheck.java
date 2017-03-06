@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(key = "S2092")
 public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
-  private List<Symbol.VariableSymbol> unsecuredCookies = Lists.newArrayList();
+  private List<Symbol.VariableSymbol> unsecuredCookies = new ArrayList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

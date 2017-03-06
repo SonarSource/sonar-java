@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.spring;
 
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
@@ -55,7 +55,7 @@ public class SingleConnectionFactoryCheck extends XPathXmlCheck {
   }
 
   private boolean hasPropertyAsChild(Node bean, XmlCheckContext context) {
-    return !Iterables.isEmpty(context.evaluate(reconnectOnExceptionPropertyValueExpression, bean));
+    return !IterableUtils.isEmpty(context.evaluate(reconnectOnExceptionPropertyValueExpression, bean));
   }
 
 }

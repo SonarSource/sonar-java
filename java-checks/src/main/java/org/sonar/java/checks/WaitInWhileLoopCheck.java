@@ -38,7 +38,7 @@ import java.util.List;
 @Rule(key = "S2274")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
-  private Deque<Boolean> inWhileLoop = Lists.newLinkedList();
+  private Deque<Boolean> inWhileLoop = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

@@ -58,7 +58,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    comments = Lists.newArrayList();
+    comments = new ArrayList<>();
     super.scanFile(context);
     leaveFile();
   }
@@ -83,7 +83,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    * Detects commented-out code in remaining candidates.
    */
   private void leaveFile() {
-    List<Integer> commentedOutCodeLines = Lists.newArrayList();
+    List<Integer> commentedOutCodeLines = new ArrayList<>();
     for (SyntaxTrivia syntaxTrivia : comments) {
       commentedOutCodeLines.addAll(handleCommentsForTrivia(syntaxTrivia));
     }

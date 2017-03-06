@@ -39,7 +39,7 @@ import java.util.Set;
 @RspecKey("S127")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Set<String> loopCounters = Sets.newHashSet();
+  private final Set<String> loopCounters = new HashSet<>();
   private JavaFileScannerContext context;
 
   @Override
@@ -51,7 +51,7 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    Set<String> pendingLoopCounters = Sets.newHashSet();
+    Set<String> pendingLoopCounters = new HashSet<>();
     for (StatementTree statementTree : tree.initializer()) {
       if (statementTree.is(Tree.Kind.VARIABLE)) {
         pendingLoopCounters.add(((VariableTree) statementTree).simpleName().name());

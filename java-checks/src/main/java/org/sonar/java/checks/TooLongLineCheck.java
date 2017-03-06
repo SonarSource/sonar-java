@@ -48,7 +48,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
       defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENGTH)
   int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
 
-  private Set<Integer> ignoredLines = Sets.newHashSet();
+  private Set<Integer> ignoredLines = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

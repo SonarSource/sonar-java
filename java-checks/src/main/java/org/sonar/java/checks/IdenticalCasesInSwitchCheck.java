@@ -60,7 +60,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   public void checkSwitchStatement(SwitchStatementTree node) {
     int index = 0;
     List<CaseGroupTree> cases = node.cases();
-    Set<CaseLabelTree> reportedLabels = Sets.newHashSet();
+    Set<CaseLabelTree> reportedLabels = new HashSet<>();
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
       for (int i = index; i < cases.size(); i++) {

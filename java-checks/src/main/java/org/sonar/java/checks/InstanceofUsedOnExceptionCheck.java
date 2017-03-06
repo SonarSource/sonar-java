@@ -35,7 +35,7 @@ import java.util.Set;
 @Rule(key = "S1193")
 public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor {
 
-  private final Set<String> caughtVariables = Sets.newHashSet();
+  private final Set<String> caughtVariables = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -48,8 +48,8 @@ import java.util.Set;
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
-  private final Set<String> pendingImports = Sets.newHashSet();
-  private final Set<String> pendingReferences = Sets.newHashSet();
+  private final Set<String> pendingImports = new HashSet<>();
+  private final Set<String> pendingReferences = new HashSet<>();
 
   private String currentPackage;
   private JavaFileScannerContext context;
