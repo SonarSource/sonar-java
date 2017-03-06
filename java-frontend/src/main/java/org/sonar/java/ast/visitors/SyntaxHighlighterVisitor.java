@@ -19,10 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
@@ -34,9 +30,14 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
@@ -49,11 +50,9 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   public SyntaxHighlighterVisitor(SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
 
-    ImmutableSet.Builder<String> keywordsBuilder = ImmutableSet.builder();
-    keywordsBuilder.add(JavaKeyword.keywordValues());
-    keywords = keywordsBuilder.build();
+    keywords = Arrays.stream(JavaKeyword.keywordValues()).collect(Collectors.toSet());
 
-    ImmutableMap.Builder<Tree.Kind, TypeOfText> typesByKindBuilder = ImmutableMap.builder();
+    Map<Tree.Kind, TypeOfText> typesByKindBuilder = new HashMap<>();
     typesByKindBuilder.put(Tree.Kind.STRING_LITERAL, TypeOfText.STRING);
     typesByKindBuilder.put(Tree.Kind.CHAR_LITERAL, TypeOfText.STRING);
     typesByKindBuilder.put(Tree.Kind.FLOAT_LITERAL, TypeOfText.CONSTANT);
@@ -61,16 +60,15 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
     typesByKindBuilder.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
     typesByKindBuilder.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
-    typesByKind = typesByKindBuilder.build();
+    typesByKind = Collections.unmodifiableMap(typesByKindBuilder);
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-      .addAll(typesByKind.keySet().iterator())
-      .add(Tree.Kind.TOKEN)
-      .add(Tree.Kind.TRIVIA)
-      .build();
+    List<Tree.Kind> kinds = new ArrayList<>(typesByKind.keySet());
+    kinds.add(Tree.Kind.TOKEN);
+    kinds.add(Tree.Kind.TRIVIA);
+    return Collections.unmodifiableList(kinds);
   }
 
   @Override

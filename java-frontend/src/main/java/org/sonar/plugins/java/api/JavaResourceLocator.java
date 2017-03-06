@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
 
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.InputFile;

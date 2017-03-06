@@ -19,12 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
@@ -37,12 +34,14 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "S2583")
 public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
@@ -57,11 +56,11 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     EvaluatedConditions ec = evaluatedConditions.pop();
-    for (Tree condition : Sets.difference(ec.evaluatedToFalse.keySet(), ec.evaluatedToTrue.keySet())) {
+    for (Tree condition : SetUtils.difference(ec.evaluatedToFalse.keySet(), ec.evaluatedToTrue.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"",
         collectFlow(ec.evaluatedToFalse.get(condition), false));
     }
-    for (Tree condition : Sets.difference(ec.evaluatedToTrue.keySet(), ec.evaluatedToFalse.keySet())) {
+    for (Tree condition : SetUtils.difference(ec.evaluatedToTrue.keySet(), ec.evaluatedToFalse.keySet())) {
       context.reportIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"",
         collectFlow(ec.evaluatedToTrue.get(condition), true));
     }
@@ -75,7 +74,7 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static Set<List<JavaFileScannerContext.Location>> flowFromNode(ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
-    List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
+    List<Class<? extends Constraint>> domains = Stream.of(ObjectConstraint.class, BooleanConstraint.class).collect(Collectors.toList());
     Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
     return flows.stream()
       .map(f -> addIssueLocation(f, node, conditionIsAlwaysTrue))
@@ -83,10 +82,10 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, ExplodedGraph.Node node, boolean conditionIsAlwaysTrue) {
-    return ImmutableList.<JavaFileScannerContext.Location>builder()
-      .add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree()))
-      .addAll(flow)
-      .build();
+    List<JavaFileScannerContext.Location> res = new ArrayList<>();
+    res.add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", node.programPoint.syntaxTree()));
+      res.addAll(flow);
+    return res;
   }
 
   public void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
@@ -103,8 +102,8 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   }
 
   private static class EvaluatedConditions {
-    private final Multimap<Tree, ExplodedGraph.Node> evaluatedToFalse = HashMultimap.create();
-    private final Multimap<Tree, ExplodedGraph.Node> evaluatedToTrue = HashMultimap.create();
+    private final MultiValuedMap<Tree, ExplodedGraph.Node> evaluatedToFalse = new HashSetValuedHashMap<>();
+    private final MultiValuedMap<Tree, ExplodedGraph.Node> evaluatedToTrue = new HashSetValuedHashMap<>();
 
     void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
       evaluatedToFalse.put(condition, node);

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -27,8 +26,8 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,7 +112,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
     ProgramState programState = checkRelation(booleanConstraint, initialProgramState);
     if (programState == null) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     List<ProgramState> results = new ArrayList<>();
     List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
@@ -139,7 +138,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
         .flatMap(ps -> rightOp.setConstraint(ps, ObjectConstraint.NULL).stream())
         .map(ps -> ps.removeConstraintsOnDomain(rightOp, BooleanConstraint.class)
       ).collect(Collectors.toList());
-      return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
+      List<ProgramState> res = new ArrayList<>(copiedConstraints);
+      res.addAll(nullConstraints);
+      return Collections.unmodifiableList(res);
     }
     return copiedConstraints;
   }

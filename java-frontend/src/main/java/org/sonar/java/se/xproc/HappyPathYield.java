@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
@@ -30,7 +29,6 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -79,12 +77,12 @@ public class HappyPathYield extends MethodYield {
     this.resultConstraint = resultConstraint;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public PMap<Class<? extends Constraint>, Constraint> resultConstraint() {
     return resultConstraint;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public int resultIndex() {
     return resultIndex;
   }

@@ -19,11 +19,8 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -38,13 +35,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SemanticModel {
 
   private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
 
-  private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
-  private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
+  private final Map<Symbol, Resolve.Env> symbolEnvs = new HashMap<>();
+  private final BidiMap<Tree, Resolve.Env> envs = new DualHashBidiMap<>();
   private final BytecodeCompleter bytecodeCompleter;
 
   private SemanticModel(BytecodeCompleter bytecodeCompleter) {
@@ -113,7 +111,7 @@ public class SemanticModel {
   }
 
   public Tree getTree(Resolve.Env env) {
-    return envs.inverse().get(env);
+    return envs.inverseBidiMap().get(env);
   }
 
   public Resolve.Env getEnv(Tree tree) {
@@ -135,7 +133,7 @@ public class SemanticModel {
   }
 
   public void associateSymbol(Tree tree, Symbol symbol) {
-    Preconditions.checkNotNull(symbol);
+    Objects.requireNonNull(symbol);
     symbolsTree.put(tree, symbol);
   }
 
@@ -144,7 +142,7 @@ public class SemanticModel {
     return symbolsTree.get(tree);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   Map<Tree, Symbol> getSymbolsTree() {
     return Collections.unmodifiableMap(symbolsTree);
   }

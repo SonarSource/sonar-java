@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -29,6 +28,9 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
 
@@ -65,7 +67,11 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(atToken, annotationType, arguments);
+    List<Tree> res = new ArrayList<>();
+    res.add(atToken);
+    res.add(annotationType);
+    res.add(arguments);
+    return res;
   }
 
   @Override

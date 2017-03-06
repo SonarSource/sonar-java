@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -29,6 +27,7 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,7 +47,7 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   }
 
   public TypeParameterListTreeImpl() {
-    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<SyntaxToken>of());
+    super(JavaLexer.TYPE_PARAMETERS, Collections.emptyList(), Collections.emptyList());
     this.openBracketToken = null;
     this.closeBracketToken = null;
   }
@@ -72,10 +71,11 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Collections.singletonList(openBracketToken),
-      super.children(),
-      Collections.singletonList(closeBracketToken));
+    List<Tree> res = new ArrayList<>();
+    res.add(openBracketToken);
+    super.children().forEach(res::add);
+    res.add(closeBracketToken);
+    return res;
   }
 
   @Override

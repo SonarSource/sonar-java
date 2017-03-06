@@ -19,10 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
@@ -37,7 +34,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -221,8 +221,8 @@ public class Resolve {
     if (c.getInterfaces() == null) {
       // Invariant to check that interfaces are not set only when we are looking into the symbol we are currently completing.
       // required for generics
-      Preconditions.checkState(c.completing, "interfaces of a symbol not currently completing are not set.");
-      Preconditions.checkState(c == site);
+      Validate.isTrue(c.completing, "interfaces of a symbol not currently completing are not set.");
+      Validate.isTrue(c == site);
     } else {
       for (JavaType interfaceType : c.getInterfaces()) {
         JavaSymbol symbol = findMemberType(env, site, name, interfaceType.symbol);
@@ -424,7 +424,7 @@ public class Resolve {
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes) {
-    return findMethod(env, site, site, name, argTypes, ImmutableList.<JavaType>of());
+    return findMethod(env, site, site, name, argTypes, Collections.emptyList());
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
@@ -452,7 +452,10 @@ public class Resolve {
     JavaSymbol owner = site.symbol.owner();
     if (!owner.isPackageSymbol() && !site.symbol.isStatic()) {
       // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
-      newArgTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(argTypes).build();
+      List<JavaType> builder = new ArrayList<>();
+      builder.add(owner.enclosingClass().type);
+      builder.addAll(argTypes);
+      newArgTypes = Collections.unmodifiableList(builder);
     }
     return findMethodByStrictThenLooseInvocation(env, site, site, CONSTRUCTOR_NAME, newArgTypes, typeParams);
   }
@@ -711,7 +714,7 @@ public class Resolve {
     if (expressionType.isPrimitive()) {
       return types.isSubtype(symbols.boxedTypes.get(expressionType), formalType);
     } else {
-      JavaType unboxedType = symbols.boxedTypes.inverse().get(expressionType);
+      JavaType unboxedType = symbols.boxedTypes.inverseBidiMap().get(expressionType);
       if (unboxedType != null) {
         return types.isSubtype(unboxedType, formalType);
       }
@@ -729,7 +732,7 @@ public class Resolve {
     }
     TypeSubstitution m2Substitution = null;
     if (((JavaSymbol.MethodJavaSymbol) m2).isParametrized()) {
-      m2Substitution = typeSubstitutionSolver.getTypeSubstitution((JavaSymbol.MethodJavaSymbol) m2, callSite, ImmutableList.of(), argTypes);
+      m2Substitution = typeSubstitutionSolver.getTypeSubstitution((JavaSymbol.MethodJavaSymbol) m2, callSite, Collections.emptyList(), argTypes);
     }
     if (m2Substitution == null) {
       m2Substitution = new TypeSubstitution();
@@ -793,7 +796,7 @@ public class Resolve {
   /**
    * Is class accessible in given environment?
    */
-  @VisibleForTesting
+//  @VisibleForTesting
   static boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol c) {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
@@ -829,7 +832,7 @@ public class Resolve {
   /**
    * Is given class a subclass of given base class?
    */
-  @VisibleForTesting
+//  @VisibleForTesting
   static boolean isSubClass(@Nullable JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     // TODO get rid of null check
     if (c == null) {
@@ -895,7 +898,7 @@ public class Resolve {
   /**
    * Is symbol inherited in given class?
    */
-  @VisibleForTesting
+//  @VisibleForTesting
   static boolean isInheritedIn(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol clazz) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PUBLIC:
@@ -961,7 +964,10 @@ public class Resolve {
         return secondOperand;
       }
     }
-    return (JavaType) leastUpperBound(Sets.<Type>newHashSet(trueType, falseType));
+    Set<Type> lubTypes = new HashSet<>();
+    lubTypes.add(trueType);
+    lubTypes.add(falseType);
+    return (JavaType) leastUpperBound(lubTypes);
   }
 
   private static boolean isNumericalConditionalExpression(JavaType secondOperand, JavaType thirdOperand) {

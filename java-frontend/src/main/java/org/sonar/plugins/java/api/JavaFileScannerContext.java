@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
 
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;

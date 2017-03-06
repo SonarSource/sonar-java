@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,6 +26,9 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class ParenthesizedTreeImpl extends AbstractTypedTree implements ParenthesizedTree {
   private final InternalSyntaxToken openParenToken;
@@ -37,7 +38,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
   public ParenthesizedTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
     super(Kind.PARENTHESIZED_EXPRESSION);
     this.openParenToken = openParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
   }
 
@@ -68,7 +69,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       openParenToken,
       expression,
       closeParenToken);

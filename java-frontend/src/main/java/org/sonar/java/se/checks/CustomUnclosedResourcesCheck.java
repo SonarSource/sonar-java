@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -40,10 +39,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
-
-import java.util.List;
-
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Rule(key = "S3546")
 @RuleTemplate
@@ -119,7 +117,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<Class<? extends Constraint>> domains = Lists.newArrayList(CustomResourceConstraint.class);
+    List<Class<? extends Constraint>> domains = Collections.singletonList(CustomResourceConstraint.class);
     FlowComputation.flow(node, sv, OPENED::equals, domains).stream().flatMap(Collection::stream)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);

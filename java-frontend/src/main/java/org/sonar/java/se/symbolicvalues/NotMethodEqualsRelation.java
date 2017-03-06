@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 
 import javax.annotation.CheckForNull;
 
@@ -139,7 +139,7 @@ public class NotMethodEqualsRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation conjunction(BinaryRelation relation) {
-    Preconditions.checkArgument(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
+    Validate.isTrue(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
     switch (relation.kind) {
       case LESS_THAN_OR_EQUAL:
         return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, leftOp, rightOp);

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Collections;
+import java.util.Objects;
 
 public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
 
@@ -36,7 +36,7 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
 
   public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
     super(kind);
-    this.kind = Preconditions.checkNotNull(kind);
+    this.kind = Objects.requireNonNull(kind);
     this.token = token;
   }
 
@@ -62,7 +62,7 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Collections.<Tree>singletonList(token);
+    return Collections.singletonList(token);
   }
 
 }

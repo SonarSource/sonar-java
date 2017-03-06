@@ -19,11 +19,9 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.sonar.sslr.api.RecognitionException;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang.Validate;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -50,9 +48,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 @BatchSide
@@ -94,8 +94,8 @@ public class SonarComponents {
         checkClassesRegister.register(registrarContext);
         Iterable<Class<? extends JavaCheck>> checkClasses = registrarContext.checkClasses();
         Iterable<Class<? extends JavaCheck>> testCheckClasses = registrarContext.testCheckClasses();
-        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<>()));
-        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
+        registerCheckClasses(registrarContext.repositoryKey(), IterableUtils.toList(checkClasses != null ? checkClasses : new ArrayList<>()));
+        registerTestCheckClasses(registrarContext.repositoryKey(), IterableUtils.toList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
       }
     }
   }
@@ -129,13 +129,13 @@ public class SonarComponents {
   }
 
   public NewHighlighting highlightableFor(File file) {
-    Preconditions.checkNotNull(context);
+    Objects.requireNonNull(context);
     return context.newHighlighting().onFile(inputFromIOFile(file));
   }
 
   public List<File> getJavaClasspath() {
     if (javaClasspath == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
     return javaClasspath.getElements();
   }
@@ -165,7 +165,7 @@ public class SonarComponents {
   }
 
   public Collection<JavaCheck> testCheckClasses() {
-    List<JavaCheck> visitors = Lists.newArrayList();
+    List<JavaCheck> visitors = new ArrayList<>();
     for (Checks<JavaCheck> checksElement : testChecks) {
       Collection<JavaCheck> checksCollection = checksElement.all();
       if (!checksCollection.isEmpty()) {
@@ -195,8 +195,8 @@ public class SonarComponents {
 
   public void reportIssue(AnalyzerMessage analyzerMessage) {
     JavaCheck check = analyzerMessage.getCheck();
-    Preconditions.checkNotNull(check);
-    Preconditions.checkNotNull(analyzerMessage.getMessage());
+    Objects.requireNonNull(check);
+    Objects.requireNonNull(analyzerMessage.getMessage());
     RuleKey key = getRuleKey(check);
     if (key == null) {
       return;
@@ -210,9 +210,9 @@ public class SonarComponents {
     reportIssue(analyzerMessage, key, inputPath, cost);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
-    Preconditions.checkNotNull(context);
+    Objects.requireNonNull(context);
     JavaIssue issue = JavaIssue.create(context, key, cost);
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {
@@ -220,7 +220,7 @@ public class SonarComponents {
       issue.setPrimaryLocationOnFile(inputPath, analyzerMessage.getMessage());
     } else {
       if (!textSpan.onLine()) {
-        Preconditions.checkState(!textSpan.isEmpty(), "Issue location should not be empty");
+        Validate.isTrue(!textSpan.isEmpty(), "Issue location should not be empty");
       }
       issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
     }
@@ -251,7 +251,7 @@ public class SonarComponents {
       if(isSQGreaterThan62()) {
         return inputFromIOFile(file).contents();
       }
-      return Files.toString(file, getCharset(file));
+      return new String(Files.readAllBytes(file.toPath()), getCharset(file));
     } catch (IOException e) {
       throw new AnalysisException("Unable to read file "+file, e);
     }

@@ -19,10 +19,11 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 import javax.annotation.CheckForNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SymbolMetadataResolve implements SymbolMetadata {
@@ -30,7 +31,7 @@ public class SymbolMetadataResolve implements SymbolMetadata {
   private List<AnnotationInstance> annotations;
 
   SymbolMetadataResolve() {
-    annotations = Lists.newArrayList();
+    annotations = new ArrayList<>();
   }
 
   @Override

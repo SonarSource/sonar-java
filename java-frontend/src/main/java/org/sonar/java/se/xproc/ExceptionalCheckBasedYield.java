@@ -19,10 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
@@ -39,8 +36,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -58,7 +56,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     this.check = check;
     this.svCausingException = svCausingException;
     this.isMethodVarargs = behavior.isMethodVarArgs();
-    Preconditions.checkArgument(exceptionType != null, "Exception type is required");
+    Validate.isTrue(exceptionType != null, "Exception type is required");
     super.setExceptionType(exceptionType);
   }
 
@@ -134,7 +132,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   @Override
   public Type exceptionType() {
     Type exceptionType = super.exceptionType();
-    Preconditions.checkArgument(exceptionType != null, "Exception type is required");
+    Validate.isTrue(exceptionType != null, "Exception type is required");
     return exceptionType;
   }
 
@@ -145,7 +143,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   @Override
   public String toString() {
     Type exceptionType = exceptionType();
-    Preconditions.checkState(exceptionType != null);
+    Validate.isTrue(exceptionType != null);
     return String.format("{params: %s, exceptional (%s), check: %s}",
       parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
       exceptionType.fullyQualifiedName(), check.getSimpleName());
@@ -161,23 +159,22 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   @Override
   public Set<List<Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
-    return ImmutableSet.of();
+    return Collections.emptySet();
   }
 
   public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
     Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, svCausingException, domains(node.programState.getConstraints(svCausingException)));
     Tree syntaxTree = node.programPoint.syntaxTree();
-    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flowBuilder = ImmutableSet.builder();
+    Set<List<JavaFileScannerContext.Location>> flowBuilder = new HashSet<>();
 
     for (List<JavaFileScannerContext.Location> flow : flows) {
-      List<JavaFileScannerContext.Location> newFlow = ImmutableList.<JavaFileScannerContext.Location>builder()
-        .add(new JavaFileScannerContext.Location("'" + exceptionType().name() + "' is thrown here.", syntaxTree))
-        .addAll(flow)
-        .build();
-      flowBuilder.add(newFlow);
+      List<JavaFileScannerContext.Location> newFlow = new ArrayList<>();
+        newFlow.add(new JavaFileScannerContext.Location("'" + exceptionType().name() + "' is thrown here.", syntaxTree));
+        newFlow.addAll(flow);
+      flowBuilder.add(Collections.unmodifiableList(newFlow));
     }
 
-    return flowBuilder.build();
+    return Collections.unmodifiableSet(flowBuilder);
   }
 
   private static List<Class<? extends Constraint>> domains(PMap<Class<? extends Constraint>, Constraint> constraints) {

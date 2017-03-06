@@ -19,9 +19,6 @@
  */
 package org.sonar.java.xml;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
@@ -36,8 +33,9 @@ import org.w3c.dom.Document;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,8 +48,8 @@ public class XmlAnalyzer {
   private final XPath xPath;
 
   public XmlAnalyzer(SonarComponents sonarComponents, CodeVisitor... visitors) {
-    ImmutableList.Builder<XmlCheck> xmlChecksBuilder = ImmutableList.builder();
-    ImmutableList.Builder<PomCheck> pomChecksBuilder = ImmutableList.builder();
+    List<XmlCheck> xmlChecksBuilder = new ArrayList<>();
+    List<PomCheck> pomChecksBuilder = new ArrayList<>();
     for (CodeVisitor visitor : visitors) {
       if (visitor instanceof XmlCheck) {
         xmlChecksBuilder.add((XmlCheck) visitor);
@@ -59,21 +57,23 @@ public class XmlAnalyzer {
         pomChecksBuilder.add((PomCheck) visitor);
       }
     }
-    this.xmlChecks = xmlChecksBuilder.build();
-    this.pomChecks = pomChecksBuilder.build();
+    this.xmlChecks = Collections.unmodifiableList(xmlChecksBuilder);
+    this.pomChecks = Collections.unmodifiableList(pomChecksBuilder);
     this.sonarComponents = sonarComponents;
     this.xPath = XPathFactory.newInstance().newXPath();
   }
 
   public void scan(Iterable<File> files) {
     boolean hasChecks = !xmlChecks.isEmpty() || !pomChecks.isEmpty();
-    if (hasChecks && Iterables.isEmpty(files)) {
+    List<File> fileForProgressReport = new ArrayList<>();
+    files.forEach(fileForProgressReport::add);
+    if (hasChecks && fileForProgressReport.isEmpty()) {
       LOG.warn("No 'xml' file have been indexed.");
       return;
     }
 
     ProgressReport progressReport = new ProgressReport("Report about progress of Xml analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Lists.newArrayList(files));
+    progressReport.start(fileForProgressReport);
 
     boolean successfulyCompleted = false;
     try {

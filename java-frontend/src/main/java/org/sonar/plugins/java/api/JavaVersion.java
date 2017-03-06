@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
 
 /**
  * Represents the java version used by the project under analysis.

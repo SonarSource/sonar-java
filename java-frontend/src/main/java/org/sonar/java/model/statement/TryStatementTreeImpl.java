@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   public TryStatementTreeImpl(InternalSyntaxToken finallyKeyword, BlockTreeImpl finallyBlock) {
-    this(ImmutableList.<CatchTreeImpl>of(), finallyKeyword, finallyBlock);
+    this(Collections.emptyList(), finallyKeyword, finallyBlock);
   }
 
   public TryStatementTreeImpl(
@@ -190,10 +190,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   private static List<CatchTree> getCatches(List<CatchTreeImpl> catches) {
-    return TryStatementTreeImpl.<CatchTree>getList(catches);
+    return Collections.unmodifiableList(catches);
   }
 
-  private static <T> List<T> getList(List<? extends T> list) {
-    return ImmutableList.<T>builder().addAll(list).build();
-  }
 }

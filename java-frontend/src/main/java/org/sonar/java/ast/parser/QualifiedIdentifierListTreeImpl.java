@@ -19,10 +19,10 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
@@ -32,7 +32,7 @@ public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
   }
 
   public static QualifiedIdentifierListTreeImpl emptyList() {
-    return new QualifiedIdentifierListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+    return new QualifiedIdentifierListTreeImpl(new ArrayList<>(), new ArrayList<>());
   }
 
 }

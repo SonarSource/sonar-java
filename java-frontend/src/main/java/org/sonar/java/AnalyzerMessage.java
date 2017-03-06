@@ -19,8 +19,7 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Preconditions;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -138,9 +137,9 @@ public class AnalyzerMessage {
       lastSyntaxToken.line(),
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
-    Preconditions.checkState(!location.isEmpty(),
-      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
-      firstSyntaxToken.line(), firstSyntaxToken.column());
+    Validate.isTrue(!location.isEmpty(),
+      String.format("Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
+      firstSyntaxToken.line(), firstSyntaxToken.column()));
     return location;
   }
 

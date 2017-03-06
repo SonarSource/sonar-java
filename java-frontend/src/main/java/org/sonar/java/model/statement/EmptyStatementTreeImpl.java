@@ -53,7 +53,7 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
 
   @Override
   public Iterable<Tree> children() {
-    return Collections.<Tree>singletonList(semicolonToken);
+    return Collections.singletonList(semicolonToken);
   }
 
 }

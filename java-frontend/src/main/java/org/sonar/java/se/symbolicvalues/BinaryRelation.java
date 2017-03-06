@@ -19,12 +19,10 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -219,7 +217,7 @@ public abstract class BinaryRelation {
    * @param relation another SymbolicValueRelation
    * @return a SymbolicValueRelation or null if the receiver and the supplied relation cannot be combined
    */
-  @VisibleForTesting
+//  @VisibleForTesting
   @CheckForNull
   BinaryRelation combineUnordered(BinaryRelation relation) {
     BinaryRelation combined = null;
@@ -241,7 +239,7 @@ public abstract class BinaryRelation {
    */
   @CheckForNull
   private BinaryRelation combineOrdered(BinaryRelation relation) {
-    Preconditions.checkArgument(leftOp.equals(relation.rightOp), "Transitive condition not matched!");
+    Validate.isTrue(leftOp.equals(relation.rightOp), "Transitive condition not matched!");
     if (rightOp.equals(relation.leftOp)) {
       return conjunction(relation.symmetric());
     }
@@ -259,7 +257,7 @@ public abstract class BinaryRelation {
 
   @CheckForNull
   protected BinaryRelation conjunction(BinaryRelation relation) {
-    Preconditions.checkArgument(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
+    Validate.isTrue(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
     return null;
   }
 

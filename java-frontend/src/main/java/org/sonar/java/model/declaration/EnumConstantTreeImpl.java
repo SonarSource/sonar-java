@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -33,12 +31,16 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
   public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer,
     @Nullable InternalSyntaxToken separatorToken) {
-    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Preconditions.checkNotNull(initializer));
+    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Objects.requireNonNull(initializer));
     if (separatorToken != null) {
       this.setEndToken(separatorToken);
     }
@@ -62,14 +64,15 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    List<Tree> iteratorBuilder = new ArrayList<>();
     // the identifierTree simpleName is also present in initializer
-    iteratorBuilder.add(modifiers(), initializer());
+    iteratorBuilder.add(modifiers());
+    iteratorBuilder.add(initializer());
     SyntaxToken endToken = endToken();
     if (endToken != null) {
       iteratorBuilder.add(endToken);
     }
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(iteratorBuilder);
   }
 
   @Nullable

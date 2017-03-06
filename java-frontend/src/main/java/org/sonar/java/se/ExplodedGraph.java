@@ -19,14 +19,11 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -36,7 +33,7 @@ import java.util.Set;
 
 public class ExplodedGraph {
 
-  private Map<Node, Node> nodes = Maps.newHashMap();
+  private Map<Node, Node> nodes = new HashMap<>();
 
   /**
    * Returns node associated with given (programPoint,programState) pair. If no node for this pair exists, it is created.
@@ -81,7 +78,7 @@ public class ExplodedGraph {
       }
       Edge edge = edges.computeIfAbsent(parent, p -> new Edge(this, p));
       if (methodYield != null) {
-        Preconditions.checkState(parent.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION), "Yield on edge where parent is not MIT");
+        Validate.isTrue(parent.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION), "Yield on edge where parent is not MIT");
         edge.yields.add(methodYield);
       }
     }
@@ -136,7 +133,7 @@ public class ExplodedGraph {
     private final Set<MethodYield> yields = new LinkedHashSet<>();
 
     private Edge(Node child, Node parent) {
-      Preconditions.checkState(!Objects.equals(child, parent));
+      Validate.isTrue(!Objects.equals(child, parent));
       this.child = child;
       this.parent = parent;
     }

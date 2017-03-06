@@ -19,27 +19,27 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.CommentAnalyser;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class CommentLinesVisitor extends SubscriptionVisitor {
 
-  private Set<Integer> comments = Sets.newHashSet();
-  private Set<Integer> noSonarLines = Sets.newHashSet();
+  private Set<Integer> comments = new HashSet<>();
+  private Set<Integer> noSonarLines = new HashSet<>();
   private boolean seenFirstToken;
   private JavaCommentAnalyser commentAnalyser = new JavaCommentAnalyser();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TOKEN);
+    return Collections.singletonList(Tree.Kind.TOKEN);
   }
 
   public void analyzeCommentLines(CompilationUnitTree tree) {

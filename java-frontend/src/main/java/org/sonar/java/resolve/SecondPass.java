@@ -19,10 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -33,6 +30,9 @@ import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -81,7 +81,7 @@ public class SecondPass implements JavaSymbol.Completer {
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
       // FIXME(Godin): This case avoids NPE which occurs because semanticModel has no associations for anonymous classes.
-      type.interfaces = ImmutableList.of();
+      type.interfaces = Collections.emptyList();
       return;
     }
 
@@ -89,7 +89,7 @@ public class SecondPass implements JavaSymbol.Completer {
     completeTypeParameters(tree.typeParameters(), env);
 
     //Interfaces
-    ImmutableList.Builder<JavaType> interfaces = ImmutableList.builder();
+    List<JavaType> interfaces = new ArrayList<>();
     tree.superInterfaces().stream().map(interfaceTree -> resolveType(env, interfaceTree)).filter(Objects::nonNull).forEach(interfaces::add);
 
     if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
@@ -104,7 +104,7 @@ public class SecondPass implements JavaSymbol.Completer {
       symbol.flags |= Flags.STATIC;
     }
 
-    type.interfaces = interfaces.build();
+    type.interfaces = Collections.unmodifiableList(interfaces);
 
     populateSuperclass(symbol, env, type);
 
@@ -114,16 +114,16 @@ public class SecondPass implements JavaSymbol.Completer {
 
     // Register default constructor
     if (tree.is(Tree.Kind.CLASS) && symbol.lookupSymbols(CONSTRUCTOR_NAME).isEmpty()) {
-      List<JavaType> argTypes = ImmutableList.of();
+      List<JavaType> argTypes = Collections.emptyList();
       if (!symbol.isStatic()) {
         // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
         JavaSymbol owner = symbol.owner();
         if (!owner.isPackageSymbol()) {
-          argTypes = ImmutableList.of(owner.enclosingClass().type);
+          argTypes = Collections.singletonList(owner.enclosingClass().type);
         }
       }
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
-      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.of(), symbol);
+      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, Collections.emptyList(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       symbol.members.enter(defaultConstructor);
     }
@@ -153,7 +153,7 @@ public class SecondPass implements JavaSymbol.Completer {
 
   private void completeTypeParameters(TypeParameters typeParameters, Resolve.Env env) {
     for (TypeParameterTree typeParameterTree : typeParameters) {
-      List<JavaType> bounds = Lists.newArrayList();
+      List<JavaType> bounds = new ArrayList<>();
       if(typeParameterTree.bounds().isEmpty()) {
         bounds.add(symbols.objectType);
       } else {
@@ -166,7 +166,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private static void checkHierarchyCycles(JavaType baseType) {
-    Set<ClassJavaType> types = Sets.newHashSet();
+    Set<ClassJavaType> types = new HashSet<>();
     ClassJavaType type = (ClassJavaType) baseType;
     while (type != null) {
       if (!types.add(type)) {
@@ -180,7 +180,7 @@ public class SecondPass implements JavaSymbol.Completer {
     MethodTree methodTree = symbol.declaration;
     Resolve.Env env = semanticModel.getEnv(symbol);
     completeTypeParameters(methodTree.typeParameters(), env);
-    ImmutableList.Builder<JavaType> thrownTypes = ImmutableList.builder();
+    List<JavaType> thrownTypes = new ArrayList<>();
     for (TypeTree throwClause : methodTree.throwsClauses()) {
       JavaType thrownType = resolveType(env, throwClause);
       if (thrownType != null) {
@@ -189,7 +189,7 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     JavaType returnType = null;
-    List<JavaType> argTypes = Lists.newArrayList();
+    List<JavaType> argTypes = new ArrayList<>();
     // no return type for constructor
     if (!CONSTRUCTOR_NAME.equals(symbol.name)) {
       returnType = resolveType(env, methodTree.returnType());
@@ -216,7 +216,7 @@ public class SecondPass implements JavaSymbol.Completer {
         symbol.flags |= Flags.VARARGS;
       }
     }
-    MethodJavaType methodType = new MethodJavaType(argTypes, returnType, thrownTypes.build(), (JavaSymbol.TypeJavaSymbol) symbol.owner);
+    MethodJavaType methodType = new MethodJavaType(argTypes, returnType, Collections.unmodifiableList(thrownTypes), (JavaSymbol.TypeJavaSymbol) symbol.owner);
     symbol.setMethodType(methodType);
   }
 
@@ -231,7 +231,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private JavaType resolveType(Resolve.Env env, Tree tree) {
-    Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + tree.kind());
+    Validate.isTrue(checkTypeOfTree(tree), "Kind of tree unexpected " + tree.kind());
     //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
     if (((AbstractTypedTree) tree).isTypeSet()) {
       return (JavaType) ((AbstractTypedTree) tree).symbolType();

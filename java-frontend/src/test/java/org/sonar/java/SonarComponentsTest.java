@@ -54,6 +54,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -311,7 +312,7 @@ public class SonarComponentsTest {
     AnalyzerMessage analyzerMessageEmptyLocation = new AnalyzerMessage(expectedCheck, file, emptyTextSpan, "message", 0);
 
     assertThatThrownBy(() -> sonarComponents.reportIssue(analyzerMessageEmptyLocation, ruleKey, inputFile, 0.0))
-      .isInstanceOf(IllegalStateException.class).hasMessageContaining("Issue location should not be empty");
+      .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Issue location should not be empty");
     assertThat(context.allIssues()).isEmpty();
 
     AnalyzerMessage.TextSpan nonEmptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 15);
@@ -391,7 +392,7 @@ public class SonarComponentsTest {
       sonarComponents.fileContent(unknownFile);
       fail("reading file content should have failed");
     } catch (AnalysisException e) {
-      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(FileNotFoundException.class);
+      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(NoSuchFileException.class);
     } catch (Exception e) {
       fail("reading file content should have failed", e);
     }

@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -31,7 +29,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
@@ -94,12 +92,17 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   @Override
   public Iterable<Tree> children() {
     boolean hasParentheses = openParenToken != null;
-    return Iterables.concat(
-      hasParentheses ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
-      parameters,
-      hasParentheses ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList(),
-      Lists.newArrayList(arrowToken, body)
-    );
+    List<Tree> res = new ArrayList<>();
+    if(hasParentheses) {
+      res.add(openParenToken);
+    }
+    res.addAll(parameters);
+    if(hasParentheses) {
+      res.add(closeParenToken);
+    }
+    res.add(arrowToken);
+    res.add(body);
+    return res;
   }
 
 }

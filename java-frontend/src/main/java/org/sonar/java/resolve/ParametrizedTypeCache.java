@@ -19,25 +19,24 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Maps;
-
 import org.sonar.java.resolve.WildCardType.BoundType;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ParametrizedTypeCache {
 
-  private Map<JavaSymbol, Map<TypeSubstitution, ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
-  private Map<JavaType, Map<WildCardType.BoundType, WildCardType>> wildcardCache = Maps.newHashMap();
+  private Map<JavaSymbol, Map<TypeSubstitution, ParametrizedTypeJavaType>> typeCache = new HashMap<>();
+  private Map<JavaType, Map<WildCardType.BoundType, WildCardType>> wildcardCache = new HashMap<>();
 
   public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
     if (symbol.getType().isUnknown()) {
       return symbol.getType();
     }
     if (typeCache.get(symbol) == null) {
-      Map<TypeSubstitution, ParametrizedTypeJavaType> map = Maps.newHashMap();
+      Map<TypeSubstitution, ParametrizedTypeJavaType> map = new HashMap<>();
       typeCache.put(symbol, map);
     }
     TypeSubstitution newSubstitution = typeSubstitution;

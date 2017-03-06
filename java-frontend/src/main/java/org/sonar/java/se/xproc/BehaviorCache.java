@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -37,7 +36,7 @@ import java.util.Map;
 public class BehaviorCache {
 
   private final SymbolicExecutionVisitor sev;
-  @VisibleForTesting
+//  @VisibleForTesting
   public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
 
   public BehaviorCache(SymbolicExecutionVisitor sev) {

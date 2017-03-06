@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,6 +26,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,14 +36,14 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   private InternalSyntaxToken closeParenToken;
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<SyntaxToken>of());
+    super(JavaLexer.ARGUMENTS, Collections.emptyList(), Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<SyntaxToken>of());
+    super(JavaLexer.ARGUMENTS, Collections.singletonList(expression), Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
@@ -80,9 +79,16 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      openParenToken != null ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
-      super.children(),
-      closeParenToken != null ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList());
+    List<Tree> result = new ArrayList<>();
+    if(openParenToken != null) {
+      result.add(openParenToken);
+    }
+    for (Tree tree : super.children()) {
+      result.add(tree);
+    }
+    if(closeParenToken != null) {
+        result.add(closeParenToken);
+    }
+    return result;
   }
 }

@@ -19,9 +19,7 @@
  */
 package org.sonar.java.matcher;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import java.util.List;
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -34,6 +32,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MethodMatcher {
 
@@ -49,25 +49,25 @@ public class MethodMatcher {
   }
 
   public MethodMatcher name(String methodName) {
-    Preconditions.checkState(this.methodName == null);
+    Validate.isTrue(this.methodName == null);
     this.methodName = NameCriteria.is(methodName);
     return this;
   }
 
   public MethodMatcher name(NameCriteria methodName) {
-    Preconditions.checkState(this.methodName == null);
+    Validate.isTrue(this.methodName == null);
     this.methodName = methodName;
     return this;
   }
 
   public MethodMatcher typeDefinition(TypeCriteria typeDefinition) {
-    Preconditions.checkState(this.typeDefinition == null);
+    Validate.isTrue(this.typeDefinition == null);
     this.typeDefinition = typeDefinition;
     return this;
   }
 
   public MethodMatcher typeDefinition(String fullyQualifiedTypeName) {
-    Preconditions.checkState(typeDefinition == null);
+    Validate.isTrue(typeDefinition == null);
     this.typeDefinition = TypeCriteria.is(fullyQualifiedTypeName);
     return this;
   }
@@ -83,10 +83,10 @@ public class MethodMatcher {
 
   public MethodMatcher addParameter(TypeCriteria parameterTypeCriteria) {
     if (parameters == null) {
-      parameterTypes = Lists.newArrayList();
+      parameterTypes = new ArrayList<>();
       parameters = ParametersCriteria.of(parameterTypes);
     } else {
-      Preconditions.checkState(parameterTypes != null, "parameters is already initialized and doesn't support addParameter.");
+      Validate.isTrue(parameterTypes != null, "parameters is already initialized and doesn't support addParameter.");
     }
     parameterTypes.add(parameterTypeCriteria);
     return this;
@@ -113,13 +113,13 @@ public class MethodMatcher {
   }
 
   public MethodMatcher withAnyParameters() {
-    Preconditions.checkState(parameters == null);
+    Validate.isTrue(parameters == null);
     parameters = ParametersCriteria.any();
     return this;
   }
 
   public MethodMatcher withoutParameter() {
-    Preconditions.checkState(parameters == null);
+    Validate.isTrue(parameters == null);
     parameters = ParametersCriteria.none();
     return this;
   }
@@ -166,12 +166,12 @@ public class MethodMatcher {
   }
 
   private boolean nameAcceptable(MethodSymbol symbol) {
-    Preconditions.checkState(methodName != null);
+    Validate.isTrue(methodName != null);
     return methodName.test(symbol.name());
   }
 
   private boolean parametersAcceptable(MethodSymbol methodSymbol) {
-    Preconditions.checkState(parameters != null);
+    Validate.isTrue(parameters != null);
     return parameters.test(methodSymbol.parameterTypes());
   }
 

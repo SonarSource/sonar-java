@@ -19,12 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -39,7 +34,11 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,7 +67,7 @@ public class JavaSymbol implements Symbol {
   JavaType type;
 
   boolean completing = false;
-  private ImmutableList.Builder<IdentifierTree> usagesBuilder;
+  private List<IdentifierTree> usagesBuilder;
   private List<IdentifierTree> usages;
 
   public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
@@ -77,7 +76,7 @@ public class JavaSymbol implements Symbol {
     this.name = name;
     this.owner = owner;
     this.symbolMetadata = new SymbolMetadataResolve();
-    this.usagesBuilder = ImmutableList.builder();
+    this.usagesBuilder = new ArrayList<>();
   }
 
   /**
@@ -259,7 +258,7 @@ public class JavaSymbol implements Symbol {
   @Override
   public List<IdentifierTree> usages() {
     if (usages == null) {
-      usages = ImmutableList.<IdentifierTree>builder().addAll(usagesBuilder.build().stream().distinct().collect(Collectors.toList())).build();
+      usages = Collections.unmodifiableList(usagesBuilder.stream().distinct().collect(Collectors.toList()));
     }
     return usages;
   }
@@ -310,14 +309,14 @@ public class JavaSymbol implements Symbol {
     List<TypeVariableJavaType> typeVariableTypes;
     ClassTree declaration;
     private final String internalName;
-    private final Multiset<String> internalNames = HashMultiset.create();
+    private final Map<String, Integer> internalNames = new HashMap<>();
     private Set<ClassJavaType> superTypes;
     private Set<ClassJavaType> interfaces;
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
       this.type = new ClassJavaType(this);
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
       if (owner.isMethodSymbol()) {
         // declaration of a class or an anonymous class in a method
         internalName = ((TypeJavaSymbol) owner.owner).registerClassInternalName(name);
@@ -335,8 +334,12 @@ public class JavaSymbol implements Symbol {
     }
 
     private String registerClassInternalName(String name) {
-      internalNames.add(name);
-      return internalNames.count(name) + name;
+      int count = 1;
+      if(internalNames.containsKey(name)) {
+        count = internalNames.get(name) + 1;
+      }
+      internalNames.put(name, count);
+      return count + name;
     }
 
     String getInternalName() {
@@ -391,7 +394,7 @@ public class JavaSymbol implements Symbol {
     }
 
     public Set<ClassJavaType> directSuperTypes() {
-      ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+      Set<ClassJavaType> types = new HashSet<>();
       ClassJavaType superClassType = (ClassJavaType) this.superClass();
       if(superClassType != null) {
         types.add(superClassType);
@@ -400,7 +403,7 @@ public class JavaSymbol implements Symbol {
         ClassJavaType classType = (ClassJavaType) interfaceType;
         types.add(classType);
       }
-      return types.build();
+      return Collections.unmodifiableSet(types);
     }
 
     /**
@@ -409,7 +412,7 @@ public class JavaSymbol implements Symbol {
      */
     public Set<ClassJavaType> superTypes() {
       if (superTypes == null) {
-        ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+        Set<ClassJavaType> types = new HashSet<>();
         ClassJavaType superClassType = (ClassJavaType) this.superClass();
         types.addAll(this.interfacesOfType());
         while (superClassType != null) {
@@ -418,20 +421,20 @@ public class JavaSymbol implements Symbol {
           types.addAll(superClassSymbol.interfacesOfType());
           superClassType = (ClassJavaType) superClassSymbol.superClass();
         }
-        superTypes = types.build();
+        superTypes = Collections.unmodifiableSet(types);
       }
       return superTypes;
     }
 
     private Set<ClassJavaType> interfacesOfType() {
       if (interfaces == null) {
-        ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
+        Set<ClassJavaType> builder = new HashSet<>();
         for (JavaType interfaceType : getInterfaces()) {
           ClassJavaType classType = (ClassJavaType) interfaceType;
           builder.add(classType);
           builder.addAll(classType.getSymbol().interfacesOfType());
         }
-        interfaces = builder.build();
+        interfaces = Collections.unmodifiableSet(builder);
       }
       return interfaces;
     }
@@ -448,17 +451,17 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<Type> interfaces() {
-      return Lists.<Type>newArrayList(getInterfaces());
+      return Collections.unmodifiableList(getInterfaces());
     }
 
     @Override
     public Collection<Symbol> memberSymbols() {
-      return Lists.<Symbol>newArrayList(members().scopeSymbols());
+      return Collections.unmodifiableCollection(members().scopeSymbols());
     }
 
     @Override
     public Collection<Symbol> lookupSymbols(String name) {
-      return Lists.<Symbol>newArrayList(members().lookup(name));
+      return Collections.unmodifiableCollection(members().lookup(name));
     }
 
     @Override
@@ -509,12 +512,12 @@ public class JavaSymbol implements Symbol {
       super(MTH, flags, name, owner);
       super.type = type;
       this.returnType = ((MethodJavaType) type).resultType.symbol;
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
     }
 
     public MethodJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(MTH, flags, name, owner);
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
     }
 
     public TypeJavaSymbol getReturnType() {
@@ -526,7 +529,7 @@ public class JavaSymbol implements Symbol {
     }
 
     private List<JavaType> getParametersTypes() {
-      Preconditions.checkState(super.type != null);
+      Validate.isTrue(super.type != null);
       return ((MethodJavaType) super.type).argTypes;
     }
 
@@ -645,7 +648,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<Type> parameterTypes() {
-      return Lists.<Type>newArrayList(getParametersTypes());
+      return Collections.unmodifiableList(getParametersTypes());
     }
 
     @Override
@@ -655,7 +658,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<Type> thrownTypes() {
-      return Lists.<Type>newArrayList(((MethodJavaType) super.type).thrown);
+      return Collections.unmodifiableList(((MethodJavaType) super.type).thrown);
     }
 
     @Override
@@ -774,7 +777,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<JavaType> getInterfaces() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
 
     @Override

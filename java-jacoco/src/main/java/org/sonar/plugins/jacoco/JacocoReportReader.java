@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.data.ExecutionDataReader;
@@ -86,8 +86,8 @@ public class JacocoReportReader {
     }
     try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
       byte firstByte = dis.readByte();
-      Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
-      Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
+      Validate.isTrue(firstByte == ExecutionDataWriter.BLOCK_HEADER);
+      Validate.isTrue(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
       char version = dis.readChar();
       boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
       if (!isCurrentFormat) {

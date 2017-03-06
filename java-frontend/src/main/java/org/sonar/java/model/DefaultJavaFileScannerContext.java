@@ -19,9 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -43,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
-  @VisibleForTesting
+//  @VisibleForTesting
   private final SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
@@ -112,7 +109,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
-    reportIssue(javaCheck, tree, message, ImmutableList.of(), null);
+    reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
   @Override
@@ -124,13 +121,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
     // FIXME SONARJAVA-2111 all flows should be reported for SE checks
-    Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? Iterables.limit(flows, 1) : flows;
+    Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? Collections.singletonList(flows.iterator().next()) : flows;
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, reportedFlows, cost));
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-    reportIssue(javaCheck, startTree, endTree, message, ImmutableList.of(), null);
+    reportIssue(javaCheck, startTree, endTree, message, Collections.emptyList(), null);
   }
 
   @Override

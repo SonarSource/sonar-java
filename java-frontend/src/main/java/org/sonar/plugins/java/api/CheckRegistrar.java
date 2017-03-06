@@ -19,9 +19,8 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.sonar.api.batch.BatchSide;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -62,7 +61,7 @@ public interface CheckRegistrar {
      * @param testCheckClasses classes of checks for test sources
      */
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
-      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
+      Validate.isTrue(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.checkClasses = checkClasses;
       this.testCheckClasses = testCheckClasses;

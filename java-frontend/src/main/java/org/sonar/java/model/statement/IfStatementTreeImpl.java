@@ -19,9 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,7 +30,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
@@ -49,7 +51,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement) {
     super(Kind.IF_STATEMENT);
     this.elseKeyword = elseKeyword;
-    this.elseStatement = Preconditions.checkNotNull(elseStatement);
+    this.elseStatement = Objects.requireNonNull(elseStatement);
   }
 
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
@@ -58,21 +60,21 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     super(Kind.IF_STATEMENT);
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.closeParenToken = closeParenToken;
-    this.thenStatement = Preconditions.checkNotNull(thenStatement);
+    this.thenStatement = Objects.requireNonNull(thenStatement);
     this.elseStatement = null;
     this.elseKeyword = null;
   }
 
   public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
     StatementTree thenStatement) {
-    Preconditions.checkState(this.condition == null, "Already completed");
+    Validate.isTrue(this.condition == null, "Already completed");
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.closeParenToken = closeParenToken;
-    this.thenStatement = Preconditions.checkNotNull(thenStatement);
+    this.thenStatement = Objects.requireNonNull(thenStatement);
 
     return this;
   }
@@ -126,8 +128,12 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Lists.newArrayList(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
-      elseKeyword != null ? Lists.newArrayList(elseKeyword, elseStatement) : Collections.<Tree>emptyList());
+    List<Tree> res = new ArrayList<>();
+    res.addAll(Arrays.asList(ifKeyword, openParenToken, condition, closeParenToken, thenStatement));
+    if (elseKeyword != null) {
+      res.add(elseKeyword);
+      res.add(elseStatement);
+    }
+    return res;
   }
 }

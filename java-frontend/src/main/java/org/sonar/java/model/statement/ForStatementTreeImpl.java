@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,6 +30,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   private final InternalSyntaxToken forKeyword;
@@ -51,13 +52,13 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
     super(Kind.FOR_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
-    this.initializer = Preconditions.checkNotNull(initializer);
+    this.initializer = Objects.requireNonNull(initializer);
     this.firstSemicolonToken = firstSemicolonToken;
     this.condition = condition;
     this.secondSemicolonToken = secondSemicolonToken;
-    this.update = Preconditions.checkNotNull(update);
+    this.update = Objects.requireNonNull(update);
     this.closeParenToken = closeParenToken;
-    this.statement = Preconditions.checkNotNull(statement);
+    this.statement = Objects.requireNonNull(statement);
   }
 
   @Override
@@ -118,8 +119,9 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(forKeyword, openParenToken);
+    List<Tree> iteratorBuilder = new ArrayList<>();
+    iteratorBuilder.add(forKeyword);
+    iteratorBuilder.add(openParenToken);
     iteratorBuilder.add(initializer);
     iteratorBuilder.add(firstSemicolonToken);
     if (condition != null) {
@@ -127,9 +129,10 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
     }
     iteratorBuilder.add(secondSemicolonToken);
     iteratorBuilder.add(update);
-    iteratorBuilder.add(closeParenToken, statement);
+    iteratorBuilder.add(closeParenToken);
+    iteratorBuilder.add(statement);
 
-    return iteratorBuilder.build();
+    return iteratorBuilder;
   }
 
 }

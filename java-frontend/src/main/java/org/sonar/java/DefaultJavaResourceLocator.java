@@ -19,12 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
-
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -34,8 +28,14 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeSet;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
@@ -43,7 +43,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
-  @VisibleForTesting
+//  @VisibleForTesting
   Map<String, InputFile> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
   private SensorContext sensorContext;
@@ -51,8 +51,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath) {
     this.fs = fs;
     this.javaClasspath = javaClasspath;
-    resourcesByClass = Maps.newHashMap();
-    sourceFileByClass = Maps.newHashMap();
+    resourcesByClass = new HashMap<>();
+    sourceFileByClass = new HashMap<>();
   }
 
   public void setSensorContext(SensorContext sensorContext) {
@@ -76,12 +76,12 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   private Collection<String> classKeys() {
-    return ImmutableSortedSet.<String>naturalOrder().addAll(resourcesByClass.keySet()).build();
+    return Collections.unmodifiableSortedSet(new TreeSet<>(resourcesByClass.keySet()));
   }
 
   @Override
   public Collection<File> classFilesToAnalyze() {
-    ImmutableList.Builder<File> result = ImmutableList.builder();
+    List<File> result = new ArrayList<>();
     for (String key : classKeys()) {
       String filePath = key + ".class";
       for (File binaryDir : javaClasspath.getBinaryDirs()) {
@@ -92,7 +92,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
         }
       }
     }
-    return result.build();
+    return Collections.unmodifiableList(result);
   }
 
   @Override
@@ -102,7 +102,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    Preconditions.checkNotNull(sensorContext);
+    Objects.requireNonNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
     InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));

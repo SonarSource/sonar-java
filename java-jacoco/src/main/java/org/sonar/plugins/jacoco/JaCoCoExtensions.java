@@ -19,11 +19,12 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -36,21 +37,19 @@ public class JaCoCoExtensions {
   }
 
   public static List getExtensions(Version sonarQubeVersion) {
-    ImmutableList.Builder<Object> extensions = ImmutableList.builder();
+    List<Object> extensions = new ArrayList<>();
 
     extensions.addAll(JacocoConfiguration.getPropertyDefinitions(sonarQubeVersion));
-    extensions.add(
-      JacocoConfiguration.class,
-      // Unit tests
-      JaCoCoSensor.class);
+    extensions.add(JacocoConfiguration.class);
+    // Unit tests
+    extensions.add(JaCoCoSensor.class);
     if (!sonarQubeVersion.isGreaterThanOrEqual(JacocoConfiguration.SQ_6_2)) {
-      extensions.add(
-        // Integration tests
-        JaCoCoItSensor.class,
-        JaCoCoOverallSensor.class);
+      // Integration tests
+      extensions.add(JaCoCoItSensor.class);
+      extensions.add(JaCoCoOverallSensor.class);
     }
 
-    return extensions.build();
+    return Collections.unmodifiableList(extensions);
   }
 
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -43,10 +42,12 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @BatchSide
 @SonarLintSide
@@ -79,7 +80,7 @@ public abstract class AbstractJavaClasspath {
     Set<File> result = new LinkedHashSet<>();
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
-      Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
+      Iterable<String> fileNames = Arrays.stream(StringUtils.split(fileList, SEPARATOR)).filter(StringUtils::isNotBlank).collect(Collectors.toList());
       File baseDir = fs.baseDir();
       boolean hasJavaSources = hasJavaSources();
       boolean validateLibs = validateLibraries;

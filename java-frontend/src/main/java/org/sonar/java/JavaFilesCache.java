@@ -19,8 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
@@ -34,13 +32,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
-  @VisibleForTesting
-  Map<String, File> resourcesCache = Maps.newHashMap();
+//  @VisibleForTesting
+  Map<String, File> resourcesCache = new HashMap<>();
 
   private File currentFile;
   private Deque<String> currentClassKey = new LinkedList<>();

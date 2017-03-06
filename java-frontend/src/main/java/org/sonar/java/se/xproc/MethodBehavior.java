@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
@@ -111,7 +109,7 @@ public class MethodBehavior {
   }
 
   public List<MethodYield> yields() {
-    return ImmutableList.<MethodYield>builder().addAll(yields).build();
+    return new ArrayList<>(yields);
   }
 
   public Stream<ExceptionalYield> exceptionalPathYields() {

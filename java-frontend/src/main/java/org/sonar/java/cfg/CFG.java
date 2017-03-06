@@ -19,10 +19,7 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -71,7 +68,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -116,8 +115,8 @@ public class CFG {
 
   private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
-  private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
-  private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
+  private Map<String, Block> labelsBreakTarget = new HashMap<>();
+  private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
   private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
@@ -145,7 +144,7 @@ public class CFG {
   }
 
   public List<Block> blocks() {
-    return Lists.reverse(blocks);
+    return reverse(blocks);
   }
 
   public List<Block> reversedBlocks() {
@@ -177,7 +176,7 @@ public class CFG {
     }
 
     public List<Tree> elements() {
-      return Lists.reverse(elements);
+      return reverse(elements);
     }
 
     public Block trueBlock() {
@@ -344,7 +343,7 @@ public class CFG {
   }
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
-    Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
+    Validate.isTrue(block != null, "Cannot build CFG for method with no body.");
     return new CFG(block.body(), tree.symbol());
   }
 
@@ -352,7 +351,7 @@ public class CFG {
     build((List<? extends Tree>) trees);
   }
   private void build(List<? extends Tree> trees) {
-    Lists.reverse(trees).forEach(this::build);
+    reverse(trees).forEach(this::build);
   }
 
   private void build(Tree tree) {
@@ -653,7 +652,7 @@ public class CFG {
     boolean hasDefaultCase = false;
     if (!switchStatementTree.cases().isEmpty()) {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
-      for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
+      for (CaseGroupTree caseGroupTree : reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
         caseGroupTree.labels().forEach(l -> {
           if (l.expression() != null) {
@@ -823,7 +822,7 @@ public class CFG {
     tryStatement.successorBlock = finallyOrEndBlock;
     enclosingTry.push(tryStatement);
     enclosedByCatch.push(false);
-    for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
+    for (CatchTree catchTree : reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
       if (!catchTree.block().body().isEmpty()) {
         enclosedByCatch.push(true);
@@ -999,6 +998,12 @@ public class CFG {
     result.addFalseSuccessor(falseBranch);
     result.addTrueSuccessor(trueBranch);
     return result;
+  }
+
+  private static <T> List<T> reverse(List<T> list) {
+    List<T> res = new ArrayList<T>(list);
+    Collections.reverse(res);
+    return res;
   }
 
 }

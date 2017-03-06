@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -55,24 +53,24 @@ public class VisitorsBridge {
   protected File currentFile;
   protected JavaVersion javaVersion;
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
     this(Collections.singletonList(visitor), new ArrayList<>(), null);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this(visitors, projectClasspath, sonarComponents, true);
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
-    ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
+    List<JavaFileScanner> scannersBuilder = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
         scannersBuilder.add((JavaFileScanner) visitor);
       }
     }
-    this.scanners = scannersBuilder.build();
+    this.scanners = Collections.unmodifiableList(scannersBuilder);
     this.executableScanners = scanners;
     this.sonarComponents = sonarComponents;
     this.projectClasspath = projectClasspath;
@@ -117,13 +115,13 @@ public class VisitorsBridge {
   }
 
   private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
-    ImmutableList.Builder<JavaFileScanner> results = ImmutableList.builder();
+    List<JavaFileScanner> results = new ArrayList<>();
     for (JavaFileScanner scanner : scanners) {
       if (!(scanner instanceof JavaVersionAwareVisitor) || ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion)) {
         results.add(scanner);
       }
     }
-    return results.build();
+    return Collections.unmodifiableList(results);
   }
 
   protected JavaFileScannerContext createScannerContext(

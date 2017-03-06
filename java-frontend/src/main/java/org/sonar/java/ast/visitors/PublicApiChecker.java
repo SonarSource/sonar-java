@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Preconditions;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -40,8 +39,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class PublicApiChecker extends BaseTreeVisitor {
 
@@ -165,7 +166,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   private static boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
-    Preconditions.checkNotNull(classTree);
+    Objects.requireNonNull(classTree);
     if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
     } else if (isEmptyDefaultConstructor(methodTree)

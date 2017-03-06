@@ -19,10 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -51,6 +48,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,7 +60,7 @@ public class FirstPass extends BaseTreeVisitor {
   private static final String CONSTRUCTOR_NAME = "<init>";
   private final SemanticModel semanticModel;
 
-  private final List<JavaSymbol> uncompleted = Lists.newArrayList();
+  private final List<JavaSymbol> uncompleted = new ArrayList<>();
   private final SecondPass completer;
   private final Symbols symbols;
   private Resolve resolve;
@@ -83,7 +81,7 @@ public class FirstPass extends BaseTreeVisitor {
   private void restoreEnvironment(Tree tree) {
     if (env.next == null) {
       // Invariant: env.next == null for CompilationUnit
-      Preconditions.checkState(tree.is(Tree.Kind.COMPILATION_UNIT));
+      Validate.isTrue(tree.is(Tree.Kind.COMPILATION_UNIT));
     } else {
       env = env.next;
     }
@@ -262,13 +260,13 @@ public class FirstPass extends BaseTreeVisitor {
       // add 'public static E[] values()'
       JavaSymbol.MethodJavaSymbol valuesMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "values", symbol);
       ArrayJavaType enumArrayType = new ArrayJavaType(symbol.type, symbols.arrayClass);
-      MethodJavaType valuesMethodType = new MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType valuesMethodType = new MethodJavaType(Collections.emptyList(), enumArrayType, Collections.emptyList(), symbol);
       valuesMethod.setMethodType(valuesMethodType);
       classEnv.scope.enter(valuesMethod);
 
       // add 'public static E valueOf(String name)'
       JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
-      MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType valueOfMethodType = new MethodJavaType(Collections.singletonList(symbols.stringType), symbol.type, Collections.emptyList(), symbol);
       valueOfMethod.setMethodType(valueOfMethodType);
       classEnv.scope.enter(valueOfMethod);
     }

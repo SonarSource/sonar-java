@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -29,6 +28,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTree {
@@ -41,7 +42,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   public ArrayDimensionTreeImpl(SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {
     super(Tree.Kind.ARRAY_DIMENSION);
-    this.annotations = ImmutableList.of();
+    this.annotations = Collections.emptyList();
     this.openBracketToken = openBracketToken;
     this.expression = expression;
     this.closeBracketToken = closeBracketToken;
@@ -49,11 +50,11 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   public ArrayDimensionTreeImpl(List<AnnotationTreeImpl> annotations, SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {
     this(openBracketToken, expression, closeBracketToken);
-    this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
+    this.annotations = Collections.unmodifiableList(annotations);
   }
 
   public ArrayDimensionTreeImpl completeAnnotations(List<AnnotationTreeImpl> annotations) {
-    this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
+    this.annotations = Collections.unmodifiableList(annotations);
     return this;
   }
 
@@ -90,13 +91,13 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    List<Tree> iteratorBuilder = new ArrayList<>();
     iteratorBuilder.addAll(annotations);
     iteratorBuilder.add(openBracketToken);
     if (expression != null) {
       iteratorBuilder.add(expression);
     }
     iteratorBuilder.add(closeBracketToken);
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(iteratorBuilder);
   }
 }

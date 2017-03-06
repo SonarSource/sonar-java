@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ICounter;
@@ -44,6 +42,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +88,7 @@ public abstract class AbstractAnalyzer {
   }
 
   public final void analyse(SensorContext context) {
-    classFilesCache = Maps.newHashMap();
+    classFilesCache = new HashMap<>();
     for (File classesDir : javaClasspath.getBinaryDirs()) {
       populateClassFilesCache(classesDir, "");
     }
@@ -190,7 +189,7 @@ public abstract class AbstractAnalyzer {
   }
 
   private Collection<File> classFilesOfStore(ExecutionDataStore executionDataStore) {
-    Collection<File> result = Lists.newArrayList();
+    Collection<File> result = new ArrayList<>();
     for (ExecutionData data : executionDataStore.getContents()) {
       String vmClassName = data.getName();
       File classFile = classFilesCache.get(vmClassName);

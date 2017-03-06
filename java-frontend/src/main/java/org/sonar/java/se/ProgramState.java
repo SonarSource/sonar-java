@@ -19,11 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
@@ -42,10 +37,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -147,7 +142,7 @@ public class ProgramState {
 
     // FIXME can be made more efficient by reusing sub collection of PStack instead of copying to the new list
     PStack<SymbolicValue> newStack = stack;
-    List<SymbolicValue> result = Lists.newArrayList();
+    List<SymbolicValue> result = new ArrayList<>();
     for (int i = 0; i < nbElements && !newStack.isEmpty(); i++) {
       result.add(newStack.peek());
       newStack = newStack.pop();
@@ -165,13 +160,13 @@ public class ProgramState {
   }
 
   public List<SymbolicValue> peekValues(int n) {
-    ImmutableList.Builder<SymbolicValue> result = ImmutableList.builder();
+    List<SymbolicValue> result = new ArrayList<>();
     PStack<SymbolicValue> tmpStack = this.stack;
     for (int i = 0; i < n; i++) {
       result.add(tmpStack.peek());
       tmpStack = tmpStack.pop();
     }
-    return result.build();
+    return Collections.unmodifiableList(result);
   }
 
   int numberOfTimeVisited(ProgramPoint programPoint) {
@@ -240,7 +235,7 @@ public class ProgramState {
     return addConstraints(sv, newConstraintForSv);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public ProgramState put(Symbol symbol, SymbolicValue value) {
     if (symbol.isUnknown() || isVolatileField(symbol)) {
       return this;
@@ -267,7 +262,7 @@ public class ProgramState {
 
   private static PMap<SymbolicValue, Integer> decreaseReference(PMap<SymbolicValue, Integer> givenReferences, SymbolicValue sv) {
     Integer value = givenReferences.get(sv);
-    Preconditions.checkNotNull(value);
+    Objects.requireNonNull(value);
     return givenReferences.put(sv, value - 1);
   }
 
@@ -469,16 +464,16 @@ public class ProgramState {
   }
 
   Set<LearnedConstraint> learnedConstraints(ProgramState parent) {
-    ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
+    Set<LearnedConstraint> result = new HashSet<>();
     constraints.forEach((sv, pmap) -> pmap.forEach((domain, c) -> {
       if (!c.equals(parent.getConstraint(sv, domain))) {
         addLearnedConstraint(result, sv, c);
       }
     }));
-    return result.build();
+    return Collections.unmodifiableSet(result);
   }
 
-  private static void addLearnedConstraint(ImmutableSet.Builder<LearnedConstraint> result, SymbolicValue sv, Constraint c) {
+  private static void addLearnedConstraint(Set<LearnedConstraint> result, SymbolicValue sv, Constraint c) {
     result.add(new LearnedConstraint(sv, c));
     // FIXME this might end up adding twice the same SV in learned constraints. Safe because null constraints are filtered anyway
     if (sv instanceof BinarySymbolicValue) {
@@ -489,13 +484,13 @@ public class ProgramState {
   }
 
   Set<LearnedAssociation> learnedAssociations(ProgramState parent) {
-    ImmutableSet.Builder<LearnedAssociation> result = ImmutableSet.builder();
+    Set<LearnedAssociation> result = new HashSet<>();
     values.forEach((s, sv) -> {
       if (parent.getValue(s) != sv) {
         result.add(new LearnedAssociation(sv, s));
       }
     });
-    return result.build();
+    return Collections.unmodifiableSet(result);
   }
 
 }

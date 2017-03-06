@@ -19,20 +19,16 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
-
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -71,7 +67,7 @@ public class LeastUpperBound {
   }
 
   private Type cachedLeastUpperBound(Set<Type> types) {
-    Preconditions.checkArgument(!types.isEmpty());
+    Validate.isTrue(!types.isEmpty());
 
     Iterator<Type> iterator = types.iterator();
     Type first = iterator.next();
@@ -90,11 +86,11 @@ public class LeastUpperBound {
       return Symbols.unknownType;
     }
 
-    Multimap<Type, Type> relevantParameterizations = relevantParameterizations(minimalErasedCandidates, supertypes);
+    MultiValuedMap<Type, Type> relevantParameterizations = relevantParameterizations(minimalErasedCandidates, supertypes);
 
     Type erasedBest = best(minimalErasedCandidates);
 
-    Collection<Type> erasedTypeParameterizations = relevantParameterizations.get(erasedBest);
+    Collection<Type> erasedTypeParameterizations = new LinkedHashSet<>(relevantParameterizations.get(erasedBest));
     if (erasedTypeParameterizations != null && !erasedTypeParameterizations.contains(erasedBest)) {
       Set<Type> searchedTypes = new HashSet<>(types);
       // if we already encountered these types in LUB calculation,
@@ -120,7 +116,7 @@ public class LeastUpperBound {
       .collect(Collectors.toList());
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   Set<Type> supertypes(JavaType type) {
     List<Type> result = new ArrayList<>();
     result.add(type);
@@ -164,11 +160,14 @@ public class LeastUpperBound {
   }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
-    return new ArrayList<>(supertypes.stream().reduce(union(supertypes), Sets::intersection));
-  }
-
-  private static Set<Type> union(List<Set<Type>> supertypes) {
-    return supertypes.stream().flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+    if(supertypes.isEmpty()) {
+      return new ArrayList<>();
+    }
+    Collection<Type> result = supertypes.get(0);
+    for (Set<Type> supertype : supertypes) {
+      result = CollectionUtils.intersection(supertype, result);
+    }
+    return new ArrayList<>(result);
   }
 
   /**
@@ -195,8 +194,9 @@ public class LeastUpperBound {
    * @param supertypes
    * @return the set of known parameterizations for each generic type G of MEC 
    */
-  private static Multimap<Type, Type> relevantParameterizations(List<Type> minimalErasedCandidates, List<Set<Type>> supertypes) {
-    Multimap<Type, Type> result = Multimaps.newSetMultimap(new HashMap<>(), LinkedHashSet::new);
+  private static MultiValuedMap<Type, Type> relevantParameterizations(List<Type> minimalErasedCandidates, List<Set<Type>> supertypes) {
+    MultiValuedMap<Type, Type> result = new ArrayListValuedHashMap<>();
+//      Multimaps.newSetMultimap(new HashMap<>(), LinkedHashSet::new);
     for (Set<Type> supertypesSet : supertypes) {
       for (Type supertype : supertypesSet) {
         Type erasedSupertype = supertype.erasure();
@@ -208,7 +208,7 @@ public class LeastUpperBound {
     return result;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   static Type best(List<Type> minimalCandidates) {
     Collections.sort(minimalCandidates, (t1, t2) -> {
       // Sort minimal candidates by name with classes before interfaces, to guarantee always the same type is returned when approximated.
@@ -241,14 +241,15 @@ public class LeastUpperBound {
     JavaType type2 = (JavaType) types.get(1);
     Type reduction = leastContainingTypeArgument(type1, type2);
 
-    List<Type> reducedList = Lists.newArrayList(reduction);
+    List<Type> reducedList = new ArrayList<>();
+    reducedList.add(reduction);
     reducedList.addAll(types.subList(2, types.size()));
 
     return leastContainingParameterization(reducedList);
   }
 
   private Type leastContainingTypeArgument(JavaType type1, JavaType type2) {
-    Preconditions.checkArgument(type1.isTagged(JavaType.PARAMETERIZED) && type2.isTagged(JavaType.PARAMETERIZED));
+    Validate.isTrue(type1.isTagged(JavaType.PARAMETERIZED) && type2.isTagged(JavaType.PARAMETERIZED));
 
     TypeSubstitution typeSubstitution1 = ((ParametrizedTypeJavaType) type1).typeSubstitution;
     TypeSubstitution typeSubstitution2 = ((ParametrizedTypeJavaType) type2).typeSubstitution;
@@ -286,20 +287,20 @@ public class LeastUpperBound {
 
   private JavaType lctaOneWildcard(JavaType rawType, WildCardType wildcardType) {
     if (wildcardType.boundType == WildCardType.BoundType.SUPER) {
-      JavaType glb = (JavaType) greatestLowerBound(Lists.newArrayList(rawType, wildcardType.bound));
+      JavaType glb = (JavaType) greatestLowerBound(newList(rawType, wildcardType.bound));
       return parametrizedTypeCache.getWildcardType(glb, WildCardType.BoundType.SUPER);
     }
-    JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(rawType, wildcardType.bound));
+    JavaType lub = (JavaType) cachedLeastUpperBound(newSet(rawType, wildcardType.bound));
     return parametrizedTypeCache.getWildcardType(lub, WildCardType.BoundType.EXTENDS);
   }
 
   private JavaType lctaBothWildcards(WildCardType type1, WildCardType type2) {
     if (type1.boundType == WildCardType.BoundType.SUPER && type2.boundType == WildCardType.BoundType.SUPER) {
-      JavaType glb = (JavaType) greatestLowerBound(Lists.newArrayList(type1.bound, type2.bound));
+      JavaType glb = (JavaType) greatestLowerBound(newList(type1.bound, type2.bound));
       return parametrizedTypeCache.getWildcardType(glb, WildCardType.BoundType.SUPER);
     }
     if (type1.boundType == WildCardType.BoundType.EXTENDS && type2.boundType == WildCardType.BoundType.EXTENDS) {
-      JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(type1.bound, type2.bound));
+      JavaType lub = (JavaType) cachedLeastUpperBound(newSet(type1.bound, type2.bound));
       return parametrizedTypeCache.getWildcardType(lub, WildCardType.BoundType.EXTENDS);
     }
     if (type1.bound.equals(type2.bound)) {
@@ -309,8 +310,22 @@ public class LeastUpperBound {
   }
 
   private JavaType lctaNoWildcard(JavaType type1, JavaType type2) {
-    JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(type1, type2));
+    JavaType lub = (JavaType) cachedLeastUpperBound(newSet(type1, type2));
     return parametrizedTypeCache.getWildcardType(lub, WildCardType.BoundType.EXTENDS);
+  }
+
+  private static List<Type> newList(Type t1, Type t2) {
+    List<Type> res = new ArrayList<>();
+    res.add(t1);
+    res.add(t2);
+    return res;
+  }
+
+  private static Set<Type> newSet(Type t1, Type t2) {
+    Set<Type> res = new HashSet<>();
+    res.add(t1);
+    res.add(t2);
+    return res;
   }
 
   /**

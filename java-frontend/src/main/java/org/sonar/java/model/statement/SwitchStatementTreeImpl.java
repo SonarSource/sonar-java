@@ -19,10 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -32,8 +28,11 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
 
@@ -50,10 +49,10 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
     super(Kind.SWITCH_STATEMENT);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
+    this.cases = Collections.unmodifiableList(Objects.requireNonNull(groups));
     this.closeBraceToken = closeBraceToken;
   }
 
@@ -104,10 +103,11 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Lists.newArrayList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
-      cases,
-      Collections.singletonList(closeBraceToken));
+    List<Tree> res = new ArrayList<>();
+    res.addAll(Arrays.asList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken));
+    res.addAll(cases);
+    res.add(closeBraceToken);
+    return res;
   }
 
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.xml.maven;
 
-import com.google.common.annotations.Beta;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.maven2.MavenProject;

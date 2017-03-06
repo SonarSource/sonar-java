@@ -19,7 +19,6 @@
  */
 package org.sonar.java.xml;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 
 public interface XmlCheck extends JavaCheck {

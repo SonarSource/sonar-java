@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
@@ -38,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +73,7 @@ public abstract class MethodYield {
       }
 
       SymbolicValue invokedArg = invocationArguments.get(index);
-      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraints);
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Collections.singletonList(programState) : results, invokedArg, constraints);
       if (programStates.isEmpty()) {
         // constraints can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.
@@ -173,7 +172,7 @@ public abstract class MethodYield {
     if(node == null || behavior == null) {
       return Collections.emptySet();
     }
-    ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
+    Set<SymbolicValue> parameterSVs = new HashSet<>();
     for (Integer parameterIndex : parameterIndices) {
       if (parameterIndex == -1) {
         parameterSVs.add(node.programState.exitValue());
@@ -181,6 +180,6 @@ public abstract class MethodYield {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
     }
-    return FlowComputation.flow(node, parameterSVs.build(), c -> true, c -> false, domains, node.programState.getLastEvaluated());
+    return FlowComputation.flow(node, Collections.unmodifiableSet(parameterSVs), c -> true, c -> false, domains, node.programState.getLastEvaluated());
   }
 }

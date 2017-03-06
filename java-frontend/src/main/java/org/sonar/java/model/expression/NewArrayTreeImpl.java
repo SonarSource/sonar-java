@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.ArrayDimensionTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -34,7 +33,10 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
@@ -54,12 +56,12 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
     // TODO maybe type should not be null?
     this.type = null;
-    this.dimensions = Preconditions.checkNotNull(dimensions);
-    this.initializers = Preconditions.checkNotNull(initializers);
+    this.dimensions = Objects.requireNonNull(dimensions);
+    this.initializers = Objects.requireNonNull(initializers);
   }
 
   public NewArrayTreeImpl complete(TypeTree type) {
-    Preconditions.checkState(this.type == null);
+    Validate.isTrue(this.type == null);
     this.type = type;
 
     return this;
@@ -77,7 +79,9 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
-    this.dimensions = ImmutableList.<ArrayDimensionTree>builder().addAll(arrayDimensions).addAll(dimensions).build();
+    List<ArrayDimensionTree> dims = new ArrayList<>(arrayDimensions);
+    dims.addAll(dimensions);
+    this.dimensions = Collections.unmodifiableList(dims);
     return this;
   }
 
@@ -125,14 +129,14 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    List<Tree> iteratorBuilder = new ArrayList<>();
     addIfNotNull(iteratorBuilder, newKeyword);
     addIfNotNull(iteratorBuilder, type);
     iteratorBuilder.addAll(dimensions);
     addIfNotNull(iteratorBuilder, openCurlyBraceToken);
     iteratorBuilder.add(initializers);
     addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(iteratorBuilder);
   }
 
   @Override
@@ -140,7 +144,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return newKeyword;
   }
 
-  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, @Nullable Tree tree) {
+  private static List<Tree> addIfNotNull(List<Tree> builder, @Nullable Tree tree) {
     if (tree != null) {
       builder.add(tree);
     }

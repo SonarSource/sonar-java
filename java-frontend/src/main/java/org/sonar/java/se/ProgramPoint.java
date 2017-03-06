@@ -19,8 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Preconditions;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -39,7 +38,7 @@ public class ProgramPoint {
    */
   private ProgramPoint(CFG.Block block, int i) {
     int blockSize = block.elements().size();
-    Preconditions.checkState(i < blockSize + 2, "CFG Block has %s elements but PP at %s was requested", blockSize, i);
+    Validate.isTrue(i < blockSize + 2, String.format("CFG Block has %s elements but PP at %s was requested", blockSize, i));
     this.block = block;
     this.i = i;
   }

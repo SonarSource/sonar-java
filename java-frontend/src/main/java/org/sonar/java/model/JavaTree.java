@@ -19,10 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -53,6 +50,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class JavaTree implements Tree {
 
@@ -186,14 +184,14 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      Iterable<Tree> packageIterator = packageDeclaration == null ?
-        Collections.<Tree>emptyList() :
-        Collections.<Tree>singletonList(packageDeclaration);
-      return Iterables.concat(
-        packageIterator,
-        imports,
-        types,
-        Collections.<Tree>singletonList(eofToken));
+      List<Tree> child = new ArrayList<>();
+      if(packageDeclaration != null) {
+        child.add(packageDeclaration);
+      }
+      child.addAll(imports);
+      child.addAll(types);
+      child.add(eofToken);
+      return child;
     }
 
     @Nullable
@@ -219,7 +217,7 @@ public abstract class JavaTree implements Tree {
     public PackageDeclarationTreeImpl(List<AnnotationTree> annotations, SyntaxToken packageKeyword, ExpressionTree packageName, SyntaxToken semicolonToken) {
       super(Tree.Kind.PACKAGE);
 
-      this.annotations = Preconditions.checkNotNull(annotations);
+      this.annotations = Objects.requireNonNull(annotations);
       this.packageKeyword = packageKeyword;
       this.packageName = packageName;
       this.semicolonToken = semicolonToken;
@@ -257,10 +255,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return Iterables.concat(
-        annotations,
-        Lists.newArrayList(packageKeyword, packageName, semicolonToken)
-        );
+      List childs = new ArrayList();
+      childs.addAll(annotations);
+      childs.add(packageKeyword);
+      childs.add(packageName);
+      childs.add(semicolonToken);
+      return childs;
     }
 
     public static String packageNameAsString(@Nullable PackageDeclarationTree tree) {
@@ -343,11 +343,14 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-
-      return Iterables.concat(
-        Collections.singletonList(importToken),
-        isStatic ? Collections.singletonList(staticToken) : Collections.<Tree>emptyList(),
-        Lists.newArrayList(qualifiedIdentifier, semicolonToken));
+      List<Tree> child = new ArrayList<>();
+      child.add(importToken);
+      if(isStatic) {
+        child.add(staticToken);
+      }
+      child.add(qualifiedIdentifier);
+      child.add(semicolonToken);
+      return child;
     }
   }
 
@@ -372,7 +375,7 @@ public abstract class JavaTree implements Tree {
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, TypeTree bound) {
       super(kind);
-      Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+      Validate.isTrue(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
       this.kind = kind;
       this.annotations = Collections.emptyList();
       this.extendsOrSuperToken = extendsOrSuperToken;
@@ -380,7 +383,7 @@ public abstract class JavaTree implements Tree {
     }
 
     public WildcardTreeImpl complete(InternalSyntaxToken queryToken) {
-      Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+      Validate.isTrue(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
       this.queryToken = queryToken;
       return this;
     }
@@ -424,14 +427,14 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+      List<Tree> builder = new ArrayList<>();
       builder.addAll(annotations);
       builder.add(queryToken);
       if (bound != null) {
         builder.add(extendsOrSuperToken);
         builder.add(bound);
       }
-      return builder.build();
+      return Collections.unmodifiableCollection(builder);
     }
   }
 
@@ -440,7 +443,7 @@ public abstract class JavaTree implements Tree {
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
       super(Kind.UNION_TYPE);
-      this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
+      this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
     }
 
     @Override
@@ -460,12 +463,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return ImmutableList.<Tree>builder().add(typeAlternatives).build();
+      return Collections.singletonList(typeAlternatives);
     }
 
     @Override
     public List<AnnotationTree> annotations() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
   }
 
@@ -504,7 +507,7 @@ public abstract class JavaTree implements Tree {
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
       super(Kind.PRIMITIVE_TYPE);
       this.token = token;
-      this.annotations = ImmutableList.of();
+      this.annotations = Collections.emptyList();
     }
 
     public PrimitiveTypeTreeImpl complete(List<AnnotationTree> annotations) {
@@ -529,7 +532,9 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return Iterables.concat(annotations, Collections.singletonList(token));
+      List<Tree> trees = new ArrayList<>(annotations);
+      trees.add(token);
+      return trees;
     }
 
     @Override
@@ -546,9 +551,9 @@ public abstract class JavaTree implements Tree {
 
     public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
-      this.type = Preconditions.checkNotNull(type);
-      this.typeArguments = Preconditions.checkNotNull(typeArguments);
-      this.annotations = ImmutableList.<AnnotationTree>of();
+      this.type = Objects.requireNonNull(type);
+      this.typeArguments = Objects.requireNonNull(typeArguments);
+      this.annotations = Collections.emptyList();
     }
 
     public ParameterizedTypeTreeImpl complete(List<AnnotationTree> annotations) {
@@ -583,7 +588,10 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return Iterables.concat(annotations, Lists.newArrayList(type, typeArguments));
+      List<Tree> trees = new ArrayList<>(annotations);
+      trees.add(type);
+      trees.add(typeArguments);
+      return trees;
     }
   }
 
@@ -641,11 +649,17 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
+      List<Tree> trees = new ArrayList<>();
+      trees.add(type);
+      trees.addAll(annotations);
       boolean hasBrackets = ellipsisToken == null;
-      return Iterables.concat(
-        Collections.singletonList(type),
-        annotations,
-        hasBrackets ? Lists.newArrayList(openBracketToken, closeBracketToken) : Collections.singletonList(ellipsisToken));
+      if(hasBrackets) {
+        trees.add(openBracketToken);
+        trees.add(closeBracketToken);
+      } else {
+        trees.add(ellipsisToken);
+      }
+      return trees;
     }
 
     @Override
@@ -668,12 +682,12 @@ public abstract class JavaTree implements Tree {
       return ellipsisToken;
     }
 
-    private static ImmutableList<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
-      ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
+    private static List<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
+      List<AnnotationTree> annotationBuilder = new ArrayList<>();
       for (AnnotationTreeImpl annotation : annotations) {
         annotationBuilder.add(annotation);
       }
-      return annotationBuilder.build();
+      return Collections.unmodifiableList(annotationBuilder);
     }
 
     public void complete(List<AnnotationTree> typeAnnotations) {

@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
@@ -46,13 +44,13 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   private boolean enableSemantic = true;
 
 
-  @VisibleForTesting
-  public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
+//  @VisibleForTesting
+  public VisitorsBridgeForTests(JavaFileScanner visitor) {
+    this(Collections.singletonList(visitor), new ArrayList<File>(), null);
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, SonarComponents sonarComponents) {
-    this(visitors, new ArrayList<>(), sonarComponents, false);
+  public VisitorsBridgeForTests(Iterable visitors) {
+    this(visitors, new ArrayList<>(), null, false);
     enableSemantic = false;
   }
 
@@ -102,7 +100,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, ImmutableList.of(), null));
+      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, Collections.emptyList(), null));
     }
 
     @Override

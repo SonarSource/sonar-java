@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Maps;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.resolve.JavaSymbol.JavaLabelSymbol;
@@ -30,6 +29,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
 import javax.annotation.Nullable;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class LabelsVisitor extends BaseTreeVisitor {
@@ -42,7 +43,7 @@ public class LabelsVisitor extends BaseTreeVisitor {
 
   public LabelsVisitor(SemanticModel semanticModel) {
     this.semanticModel = semanticModel;
-    this.labelTrees = Maps.newHashMap();
+    this.labelTrees = new HashMap<>();
   }
 
   @Override

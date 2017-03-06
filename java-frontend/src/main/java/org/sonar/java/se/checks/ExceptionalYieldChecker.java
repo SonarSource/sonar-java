@@ -19,10 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
@@ -37,6 +33,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -72,23 +70,23 @@ public class ExceptionalYieldChecker {
     Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit);
     Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
 
-    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
+    Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
     for (List<JavaFileScannerContext.Location> argumentFlow : argumentsFlows) {
       for (List<JavaFileScannerContext.Location> exceptionFlow : exceptionFlows) {
-        flows.add(ImmutableList.<JavaFileScannerContext.Location>builder()
-          .addAll(exceptionFlow)
-          .add(methodInvocationMessage)
-          .addAll(argumentFlow)
-          .build());
+        List<JavaFileScannerContext.Location> build = new ArrayList<>(exceptionFlow);
+        build.add(methodInvocationMessage);
+        build.addAll(argumentFlow);
+        flows.add(Collections.unmodifiableList(build));
       }
     }
 
-    check.reportIssue(reportTree, String.format(message, methodName), flows.build());
+    check.reportIssue(reportTree, String.format(message, methodName), Collections.unmodifiableSet(flows));
   }
 
   private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit) {
     ProgramState programState = node.programState;
-    List<SymbolicValue> arguments = Lists.reverse(programState.peekValues(mit.arguments().size()));
+    List<SymbolicValue> arguments = new ArrayList<>(programState.peekValues(mit.arguments().size()));
+    Collections.reverse(arguments);
     List<Class<? extends Constraint>> domains = domainsFromArguments(programState, arguments);
     return FlowComputation.flow(node, new LinkedHashSet<>(arguments), c -> true, c -> false, domains, programState.getLastEvaluated());
   }

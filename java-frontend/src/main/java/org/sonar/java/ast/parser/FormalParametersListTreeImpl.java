@@ -19,13 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
@@ -33,18 +34,18 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   private InternalSyntaxToken closeParenToken;
 
   public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of());
+    super(JavaLexer.FORMAL_PARAMETERS, Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
   public FormalParametersListTreeImpl(VariableTreeImpl variable) {
-    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable));
+    super(JavaLexer.FORMAL_PARAMETERS, Stream.of(variable).collect(Collectors.toList()));
   }
 
   public FormalParametersListTreeImpl(List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
-    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable));
+    super(JavaLexer.FORMAL_PARAMETERS, Stream.of(variable).collect(Collectors.toList()));
   }
 
   public FormalParametersListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {

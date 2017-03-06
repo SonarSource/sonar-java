@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.SonarComponents;
@@ -40,6 +38,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -86,14 +85,14 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     if(sonarComponents.isSQGreaterThan62()) {
-      return ImmutableList.of(TOKEN,
+      return Arrays.asList(TOKEN,
         METHOD, CONSTRUCTOR,
         INITIALIZER, STATIC_INITIALIZER,
         VARIABLE,
         FOR_EACH_STATEMENT, FOR_STATEMENT, WHILE_STATEMENT, DO_STATEMENT,
         LAMBDA_EXPRESSION);
     }
-    return ImmutableList.of(TOKEN);
+    return Collections.singletonList(TOKEN);
   }
 
   @Override
@@ -149,7 +148,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   private List<? extends Tree> visitVariable(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     if(initializer != null && !isConstant(variableTree)) {
-      return Lists.newArrayList(initializer);
+      return Collections.singletonList(initializer);
     }
     if(variableTree.parent().is(CATCH)) {
       // catch variable are counted as executable lines
@@ -163,7 +162,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
     if(body.is(BLOCK)) {
       return ((BlockTree) body).body();
     }
-    return Lists.newArrayList(body);
+    return Collections.singletonList(body);
   }
 
   private List<? extends Tree> visitMethod(MethodTree tree) {
@@ -231,7 +230,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(TOKEN);
+      return Collections.singletonList(TOKEN);
     }
 
     @Override

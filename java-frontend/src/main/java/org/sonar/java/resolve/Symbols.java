@@ -19,14 +19,16 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Predefined symbols.
@@ -65,7 +67,7 @@ public class Symbols {
   final JavaType nullType;
   final JavaType voidType;
 
-  final BiMap<JavaType, JavaType> boxedTypes;
+  final BidiMap<JavaType, JavaType> boxedTypes;
 
   // predefined types
 
@@ -146,7 +148,7 @@ public class Symbols {
 
     predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
     predefClass.members = new Scope(predefClass);
-    ((ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) predefClass.type).interfaces = Collections.emptyList();
 
     // TODO should have type "noType":
     noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);
@@ -184,7 +186,7 @@ public class Symbols {
     unboundedWildcard = new WildCardType(objectType, WildCardType.BoundType.UNBOUNDED);
 
     // Associate boxed types
-    boxedTypes = HashBiMap.create();
+    boxedTypes = new DualHashBidiMap<>();
     boxedTypes.put(byteType, bytecodeCompleter.loadClass("java.lang.Byte").type);
     boxedTypes.put(charType, bytecodeCompleter.loadClass("java.lang.Character").type);
     boxedTypes.put(shortType, bytecodeCompleter.loadClass("java.lang.Short").type);
@@ -203,7 +205,7 @@ public class Symbols {
     arrayClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Array", noSymbol);
     ClassJavaType arrayClassType = (ClassJavaType) arrayClass.type;
     arrayClassType.supertype = objectType;
-    arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
+    arrayClassType.interfaces = Stream.of(cloneableType, serializableType).collect(Collectors.toList());
     arrayClass.members = new Scope(arrayClass);
     arrayClass.members().enter(new JavaSymbol.VariableJavaSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
     // TODO arrayClass implements clone() method
@@ -223,7 +225,7 @@ public class Symbols {
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, name, rootPackage);
     symbol.members = new Scope(symbol);
     predefClass.members.enter(symbol);
-    ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) symbol.type).interfaces = Collections.emptyList();
     symbol.type.tag = tag;
     return symbol.type;
   }
@@ -270,7 +272,7 @@ public class Symbols {
   }
 
   private void enterBinop(String name, JavaType left, JavaType right, JavaType result) {
-    JavaType type = new MethodJavaType(ImmutableList.of(left, right), result, ImmutableList.<JavaType>of(), methodClass);
+    JavaType type = new MethodJavaType(Stream.of(left, right).collect(Collectors.toList()), result, Collections.emptyList(), methodClass);
     JavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
     predefClass.members.enter(symbol);
   }

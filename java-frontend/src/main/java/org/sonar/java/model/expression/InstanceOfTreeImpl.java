@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,6 +27,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
+
+import java.util.Arrays;
 
 public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfTree {
 
@@ -73,7 +74,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       expression,
       instanceofToken,
       type
