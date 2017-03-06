@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,8 +31,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +46,7 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CONSTRUCTOR);
+    return Collections.singletonList(Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
@@ -91,11 +89,8 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
     }
 
     @Override
-    public void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.PREFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT)) {
-        checkExpression(tree.expression());
-      }
-      super.visitUnaryExpression(tree);
+    public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
+      // skip synchronized blocks
     }
 
     @Override

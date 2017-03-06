@@ -15,7 +15,7 @@ class A {
     String var = "boom";
     field = staticField = var = "why so mean, java"; // Noncompliant [[sc=13;ec=24;secondary=3]] {{Remove this assignment of "staticField".}}
 
-    value++; // Noncompliant [[sc=5;ec=10;secondary=5]] {{Remove this assignment of "value".}}
+    value++; // Compliant - postfix/prefix increment/decrement not taken into account
 
     getA().field = "beer"; // Compliant
     getA().staticField = "garden"; // Noncompliant
@@ -23,7 +23,9 @@ class A {
     (A.staticField) = "hello"; // Noncompliant
     (words)[1] = "polo"; // Noncompliant
 
-    boolean b = !true;
+    synchronized (new Object()) {
+      field = "reworld"; // Compliant - synchronized block
+    }
   }
 
   static A getA() {
