@@ -12,7 +12,7 @@
   <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Java :: Plugin</name>
-  <description>Enables scanning of Java source files</description>
+  <description>Code Analyzer for Java</description>
   <url>http://redirect.sonarsource.com/plugins/java.html</url>
   <scm>
     <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
@@ -88,7 +88,7 @@
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <version>1.17</version>
         <configuration>
-          <pluginName>Java</pluginName>
+          <pluginName>SonarJava</pluginName>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
           <sonarQubeMinVersion>5.6</sonarQubeMinVersion> <!-- allow to depend on API 6.1 but run on LTS -->
