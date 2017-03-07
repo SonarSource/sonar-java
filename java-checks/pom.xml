@@ -108,14 +108,20 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.springframework</groupId>
+                  <artifactId>spring-webmvc</artifactId>
+                  <version>4.3.3.RELEASE</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.springframework</groupId>
                   <artifactId>spring-context</artifactId>
-                  <version>4.1.6.RELEASE</version>
+                  <version>4.3.3.RELEASE</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-web</artifactId>
-                  <version>4.2.4.RELEASE</version>
+                  <version>4.3.3.RELEASE</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>

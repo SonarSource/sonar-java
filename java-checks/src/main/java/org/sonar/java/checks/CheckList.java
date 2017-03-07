@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
+
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -33,8 +34,8 @@ import org.sonar.java.checks.naming.BadTestClassNameCheck;
 import org.sonar.java.checks.naming.BadTestMethodNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
-import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
+import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
@@ -46,10 +47,11 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.S3749Check;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
-import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
-import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
+import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
+import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -82,7 +84,7 @@ import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 public final class CheckList {
 
@@ -461,6 +463,7 @@ public final class CheckList {
       .add(SynchronizationOnGetClassCheck.class)
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
+      .add(S3749Check.class)
       .build();
   }
 

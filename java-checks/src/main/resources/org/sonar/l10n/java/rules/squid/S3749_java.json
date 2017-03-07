@@ -1,0 +1,13 @@
+{
+  "title": "Members of Spring components should be '@Autowired'",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Critical"
+}
