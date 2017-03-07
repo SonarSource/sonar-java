@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
@@ -31,11 +30,12 @@ import org.sonar.java.checks.CheckList;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Replacement for org.sonar.plugins.squid.SonarWayProfile
@@ -80,15 +80,12 @@ public class JavaSonarWayProfile extends ProfileDefinition {
   }
 
   static Profile readProfile() {
-    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
-    return new Gson().fromJson(readResource(resource), Profile.class);
-  }
-
-  private static String readResource(URL resource) {
-    try {
-      return Resources.toString(resource, StandardCharsets.UTF_8);
+    String resourceName = "/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json";
+    try (InputStream resource = JavaSonarWayProfile.class.getResourceAsStream(resourceName)) {
+      String result = new Scanner(resource, StandardCharsets.UTF_8.name()).useDelimiter("\\A").next();
+      return new Gson().fromJson(result, Profile.class);
     } catch (IOException e) {
-      throw new IllegalStateException("Failed to read: " + resource, e);
+      throw new IllegalStateException("Failed to read: " + resourceName, e);
     }
   }
 

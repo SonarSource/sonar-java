@@ -79,6 +79,11 @@
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -107,8 +112,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>6100000</maxsize>
-                  <minsize>5000000</minsize>
+                  <maxsize>5000000</maxsize>
+                  <minsize>4500000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

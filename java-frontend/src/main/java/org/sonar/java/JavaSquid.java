@@ -55,7 +55,8 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
 
-    List<CodeVisitor> commonVisitors = Collections.singletonList(javaResourceLocator);
+    List<CodeVisitor> commonVisitors = new ArrayList<>();
+    commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
