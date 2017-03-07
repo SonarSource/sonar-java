@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -121,7 +122,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
     // FIXME SONARJAVA-2111 all flows should be reported for SE checks
-    Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? Collections.singletonList(flows.iterator().next()) : flows;
+    Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? IterableUtils.boundedIterable(flows, 1) : flows;
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, reportedFlows, cost));
   }
 
