@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -56,12 +56,12 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
+    return Collections.singletonList(Tree.Kind.TRIVIA);
   }
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    if (pattern == null && !Strings.isNullOrEmpty(regularExpression)) {
+    if (pattern == null && StringUtils.isNotBlank(regularExpression)) {
       try {
         pattern = Pattern.compile(regularExpression, Pattern.DOTALL);
       } catch (RuntimeException e) {

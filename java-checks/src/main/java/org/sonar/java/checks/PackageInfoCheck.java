@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "S1228")

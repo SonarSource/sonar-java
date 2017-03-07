@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2129")
@@ -35,7 +35,7 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(STRING).name(INIT).withoutParameter(),
       MethodMatcher.create().typeDefinition(STRING).name(INIT).addParameter(STRING),
       MethodMatcher.create().typeDefinition("java.lang.Byte").name(INIT).addParameter("byte"),

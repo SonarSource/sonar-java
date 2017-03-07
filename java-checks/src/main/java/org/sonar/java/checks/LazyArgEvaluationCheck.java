@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
@@ -87,7 +87,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       }
 
       private static List<MethodMatcher> slf4jVariants(Supplier<MethodMatcher> prototype) {
-        return ImmutableList.of(
+        return Arrays.asList(
           prototype.get().parameters(STRING),
           prototype.get().parameters(STRING, anyType()),
           prototype.get().parameters(STRING, anyType(), anyType()),
@@ -122,7 +122,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
           .typeDefinition(JUL_LOGGER)
           .name(toString().toLowerCase(Locale.ROOT))
           .addParameter(STRING);
-        return ImmutableList.of(matcher);
+        return Collections.singletonList(matcher);
       }
 
       @Override

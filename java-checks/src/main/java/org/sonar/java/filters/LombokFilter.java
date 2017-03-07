@@ -19,9 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
@@ -30,36 +27,35 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = new HashSet<>(Arrays.asList(
     UnusedPrivateFieldCheck.class,
     EqualsNotOverriddenInSubclassCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
-    UtilityClassWithPublicConstructorCheck.class);
+    UtilityClassWithPublicConstructorCheck.class));
 
-  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
-    .add("lombok.Getter")
-    .add("lombok.Setter")
-    .add("lombok.Builder")
-    .add("lombok.ToString")
-    .add("lombok.AllArgsConstructor")
-    .add("lombok.NoArgsConstructor")
-    .add("lombok.RequiredArgsConstructor")
-    .build();
+  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = Arrays.asList(
+    "lombok.Getter",
+    "lombok.Setter",
+    "lombok.Builder",
+    "lombok.ToString",
+    "lombok.AllArgsConstructor",
+    "lombok.NoArgsConstructor",
+    "lombok.RequiredArgsConstructor");
 
-  private static final List<String> GENERATE_EQUALS = ImmutableList.<String>builder()
-    .add("lombok.EqualsAndHashCode")
-    .add("lombok.Data")
-    .add("lombok.Value")
-    .build();
+  private static final List<String> GENERATE_EQUALS = Arrays.asList(
+    "lombok.EqualsAndHashCode",
+    "lombok.Data",
+    "lombok.Value");
 
-  private static final List<String> GENERATE_PRIVATE_CONSTRUCTOR = ImmutableList.<String>builder()
-    .add("lombok.experimental.UtilityClass")
-    .build();
+  private static final List<String> GENERATE_PRIVATE_CONSTRUCTOR = Collections.singletonList("lombok.experimental.UtilityClass");
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,6 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.CheckForNull;
+
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2445")
@@ -41,7 +42,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.SYNCHRONIZED_STATEMENT);
+    return Collections.singletonList(Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override

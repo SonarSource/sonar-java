@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ListMultimap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1068")
@@ -60,12 +60,12 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.OR_ASSIGNMENT};
 
   private List<ClassTree> classes = new ArrayList<>();
-  private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
+  private MultiValuedMap<Symbol, IdentifierTree> assignments = new ArrayListValuedHashMap<>();
   private boolean hasNativeMethod = false;
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD, Tree.Kind.EXPRESSION_STATEMENT);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD, Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   @Override

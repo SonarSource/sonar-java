@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -34,6 +32,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -70,7 +70,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE);
   }
 
   @Override
@@ -102,7 +102,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       method(JAVA_LANG_STRING, "getBytes").withoutParameter(),
       method(JAVA_LANG_STRING, "getBytes").parameters(INT, INT, BYTE_ARRAY, INT),
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY),
@@ -146,7 +146,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     Symbol symbol = newClassTree.constructorSymbol();
     if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
-      String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";
+      String signature = constructor.owner().name() + "(" + StringUtils.join(constructor.parameterTypes(), ',') + ")";
       reportIssue(newClassTree.identifier(), "Remove this use of constructor \"" + signature + "\"");
     }
   }

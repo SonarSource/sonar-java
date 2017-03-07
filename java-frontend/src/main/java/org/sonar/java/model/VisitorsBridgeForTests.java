@@ -44,13 +44,14 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   private boolean enableSemantic = true;
 
 
+
 //  @VisibleForTesting
-  public VisitorsBridgeForTests(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), new ArrayList<File>(), null);
+  public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
+    this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
   }
 
-  public VisitorsBridgeForTests(Iterable visitors) {
-    this(visitors, new ArrayList<>(), null, false);
+  public VisitorsBridgeForTests(Iterable visitors, SonarComponents sonarComponents) {
+    this(visitors, new ArrayList<>(), sonarComponents, false);
     enableSemantic = false;
   }
 

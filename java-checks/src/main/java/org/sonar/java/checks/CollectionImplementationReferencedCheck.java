@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Rule(key = "S1319")
@@ -49,41 +49,42 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   private static final String SORTED_MAP = "SortedMap";
   private static final String SORTED_SET = "SortedSet";
 
-  private static final Map<String, String> MAPPING = ImmutableMap.<String, String> builder()
-    .put("ArrayDeque", DEQUE)
-    .put("ConcurrentLinkedDeque", DEQUE)
+  private static final Map<String, String> MAPPING = new HashMap<>();
+  static {
+    MAPPING.put("ArrayDeque", DEQUE);
+    MAPPING.put("ConcurrentLinkedDeque", DEQUE);
 
-    .put("AbstractList", LIST)
-    .put("AbstractSequentialList", LIST)
-    .put("ArrayList", LIST)
-    .put("CopyOnWriteArrayList", LIST)
-    .put("LinkedList", LIST)
+    MAPPING.put("AbstractList", LIST);
+    MAPPING.put("AbstractSequentialList", LIST);
+    MAPPING.put("ArrayList", LIST);
+    MAPPING.put("CopyOnWriteArrayList", LIST);
+    MAPPING.put("LinkedList", LIST);
 
-    .put("AbstractMap", MAP)
-    .put("EnumMap", MAP)
-    .put("HashMap", MAP)
-    .put("Hashtable", MAP)
-    .put("IdentityHashMap", MAP)
-    .put("LinkedHashMap", MAP)
-    .put("WeakHashMap", MAP)
+    MAPPING.put("AbstractMap", MAP);
+    MAPPING.put("EnumMap", MAP);
+    MAPPING.put("HashMap", MAP);
+    MAPPING.put("Hashtable", MAP);
+    MAPPING.put("IdentityHashMap", MAP);
+    MAPPING.put("LinkedHashMap", MAP);
+    MAPPING.put("WeakHashMap", MAP);
 
-    .put("ConcurrentHashMap", CONCURRENT_MAP)
-    .put("ConcurrentSkipListMap", CONCURRENT_MAP)
+    MAPPING.put("ConcurrentHashMap", CONCURRENT_MAP);
+    MAPPING.put("ConcurrentSkipListMap", CONCURRENT_MAP);
 
-    .put("AbstractQueue", QUEUE)
-    .put("ConcurrentLinkedQueue", QUEUE)
-    .put("SynchronousQueue", QUEUE)
+    MAPPING.put("AbstractQueue", QUEUE);
+    MAPPING.put("ConcurrentLinkedQueue", QUEUE);
+    MAPPING.put("SynchronousQueue", QUEUE);
 
-    .put("AbstractSet", SET)
-    .put("CopyOnWriteArraySet", SET)
-    .put("EnumSet", SET)
-    .put("HashSet", SET)
-    .put("LinkedHashSet", SET)
+    MAPPING.put("AbstractSet", SET);
+    MAPPING.put("CopyOnWriteArraySet", SET);
+    MAPPING.put("EnumSet", SET);
+    MAPPING.put("HashSet", SET);
+    MAPPING.put("LinkedHashSet", SET);
 
-    .put("TreeMap", SORTED_MAP)
+    MAPPING.put("TreeMap", SORTED_MAP);
 
-    .put("TreeSet", SORTED_SET)
-    .build();
+    MAPPING.put("TreeSet", SORTED_SET);
+  }
 
   private JavaFileScannerContext context;
 

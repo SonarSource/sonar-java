@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -83,7 +81,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
     return parent.is(Tree.Kind.NEW_CLASS) && parent.parent().is(Tree.Kind.ENUM_CONSTANT);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   void setMax(int max) {
     this.max = max;
   }

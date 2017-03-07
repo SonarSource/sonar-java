@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S00104")
@@ -45,7 +45,7 @@ public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
+    return Collections.singletonList(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override

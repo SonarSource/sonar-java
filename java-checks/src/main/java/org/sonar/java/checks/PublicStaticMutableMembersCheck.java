@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -47,8 +44,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,16 +53,17 @@ import java.util.Set;
 @Rule(key = "S2386")
 public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> ALWAYS_MUTABLE_TYPES = ImmutableSet.of(
+  private static final Set<String> ALWAYS_MUTABLE_TYPES = new HashSet<>(Arrays.asList(
     "java.awt.Point",
     "java.util.Date"
-  );
+  ));
 
-  private static final Set<String> MUTABLE_TYPES = ImmutableSet.<String>builder()
-    .addAll(ALWAYS_MUTABLE_TYPES)
-    .add("java.util.Collection")
-    .add("java.util.Map")
-    .build();
+  private static final Set<String> MUTABLE_TYPES = new HashSet<>();
+  static {
+    MUTABLE_TYPES.addAll(ALWAYS_MUTABLE_TYPES);
+    MUTABLE_TYPES.add("java.util.Collection");
+    MUTABLE_TYPES.add("java.util.Map");
+  }
 
   private static final String DECORATE = "decorate";
   // java.util and apache commons
@@ -82,21 +80,21 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   private static final MethodMatcher ARRAYS_AS_LIST = MethodMatcher.create()
     .typeDefinition("java.util.Arrays").name("asList").withAnyParameters();
 
-  private static final Set<String> ACCEPTED_TYPES = ImmutableSet.of(
+  private static final Set<String> ACCEPTED_TYPES = new HashSet<>(Arrays.asList(
     "com.google.common.collect.ImmutableMap",
     "com.google.common.collect.ImmutableCollection"
-  );
+  ));
 
-  private static final Set<String> ACCEPTED_NEW_TYPES = ImmutableSet.of(
+  private static final Set<String> ACCEPTED_NEW_TYPES = new HashSet<>(Arrays.asList(
     "org.apache.commons.collections4.list.UnmodifiableList"
-  );
+  ));
 
   private static final Set<Symbol> IMMUTABLE_CANDIDATES = new HashSet<>();
-  private static final Multimap<Tree, Symbol> CLASS_IMMUTABLE_CANDIDATES = ArrayListMultimap.create();
+  private static final MultiValuedMap<Tree, Symbol> CLASS_IMMUTABLE_CANDIDATES = new ArrayListValuedHashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
+    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
   }
 
   @Override

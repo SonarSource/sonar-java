@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,7 +43,7 @@ import java.util.Set;
 @RspecKey("S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException");
+  private static final Set<String> RAW_EXCEPTIONS = new HashSet<>(Arrays.asList("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException"));
 
   private JavaFileScannerContext context;
   private Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();

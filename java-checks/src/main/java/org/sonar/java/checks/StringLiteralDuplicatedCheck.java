@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
@@ -50,7 +49,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
 
-  private final Multimap<String, LiteralTree> occurrences = ArrayListMultimap.create();
+  private final MultiValuedMap<String, LiteralTree> occurrences = new ArrayListValuedHashMap<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -66,7 +65,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
         }
         context.reportIssue(
           this,
-          Iterables.getFirst(literalTrees, null),
+          literalTrees.stream().findFirst().orElse(null),
           "Define a constant instead of duplicating this literal " + entry + " " + literalOccurence + " times.",
           flow,
           literalOccurence);

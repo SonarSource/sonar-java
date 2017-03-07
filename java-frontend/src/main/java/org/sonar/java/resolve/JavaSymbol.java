@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -412,7 +413,7 @@ public class JavaSymbol implements Symbol {
      */
     public Set<ClassJavaType> superTypes() {
       if (superTypes == null) {
-        Set<ClassJavaType> types = new HashSet<>();
+        Set<ClassJavaType> types = new LinkedHashSet<>();
         ClassJavaType superClassType = (ClassJavaType) this.superClass();
         types.addAll(this.interfacesOfType());
         while (superClassType != null) {
@@ -428,7 +429,7 @@ public class JavaSymbol implements Symbol {
 
     private Set<ClassJavaType> interfacesOfType() {
       if (interfaces == null) {
-        Set<ClassJavaType> builder = new HashSet<>();
+        Set<ClassJavaType> builder = new LinkedHashSet<>();
         for (JavaType interfaceType : getInterfaces()) {
           ClassJavaType classType = (ClassJavaType) interfaceType;
           builder.add(classType);

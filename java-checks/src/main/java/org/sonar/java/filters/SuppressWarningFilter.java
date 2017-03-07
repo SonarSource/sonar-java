@@ -19,15 +19,7 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
@@ -54,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
@@ -142,9 +136,9 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = tree.lastToken().line();
-      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
+      Set<Integer> filteredLines = IntStream.range(startLine, endLine + 1).boxed().collect(Collectors.toSet());
       for (String rule : rules) {
-        excludeLines(filteredlines, rule);
+        excludeLines(filteredLines, rule);
       }
     }
   }

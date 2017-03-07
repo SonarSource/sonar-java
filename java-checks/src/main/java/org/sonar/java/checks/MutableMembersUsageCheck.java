@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
@@ -41,8 +40,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,11 +49,11 @@ import java.util.List;
 @Rule(key = "S2384")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final List<String> MUTABLE_TYPES = ImmutableList.of(
+  private static final List<String> MUTABLE_TYPES = Arrays.asList(
     "java.util.Collection",
     "java.util.Date",
     "java.util.Hashtable");
-  private static final List<String> IMMUTABLE_TYPES = ImmutableList.of(
+  private static final List<String> IMMUTABLE_TYPES = Arrays.asList(
     "java.util.Collections.UnmodifiableCollection",
     "java.util.Collections.UnmodifiableMap",
     "com.google.common.collect.ImmutableCollection");

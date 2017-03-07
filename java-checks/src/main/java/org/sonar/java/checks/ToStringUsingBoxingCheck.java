@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -31,13 +29,16 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Rule(key = "S1158")
 public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> PRIMITIVE_WRAPPERS = ImmutableSet.of(
+  private static final Set<String> PRIMITIVE_WRAPPERS = new HashSet<>(Arrays.asList(
     "Byte",
     "Short",
     "Integer",
@@ -45,11 +46,11 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
     "Float",
     "Double",
     "Character",
-    "Boolean");
+    "Boolean"));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

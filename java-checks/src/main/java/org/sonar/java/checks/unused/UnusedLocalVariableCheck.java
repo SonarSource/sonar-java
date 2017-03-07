@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ListMultimap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -68,7 +67,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   };
 
   private List<VariableTree> variables = new ArrayList<>();
-  private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
+  private MultiValuedMap<Symbol, IdentifierTree> assignments = new ArrayListValuedHashMap<>();
 
   @Override
   public List<Kind> nodesToVisit() {

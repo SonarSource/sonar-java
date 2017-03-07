@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -36,6 +33,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +43,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
   }
 
   @Override
@@ -54,7 +53,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     }
     ClassTree classTree = (ClassTree) tree;
     List<Symbol> allMembers = retrieveMembers(classTree.symbol());
-    Multimap<String, Symbol> membersByName = sortByName(allMembers);
+    MultiValuedMap<String, Symbol> membersByName = sortByName(allMembers);
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
@@ -66,7 +65,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     }
   }
 
-  private void checkForIssue(Symbol symbol, IdentifierTree reportTree, Multimap<String, Symbol> membersByName) {
+  private void checkForIssue(Symbol symbol, IdentifierTree reportTree, MultiValuedMap<String, Symbol> membersByName) {
     String name = symbol.name();
     for (String knownMemberName : membersByName.keySet()) {
       if (name.equalsIgnoreCase(knownMemberName)) {
@@ -162,8 +161,8 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     return symbol.isMethodSymbol() ? "method" : "field";
   }
 
-  private static Multimap<String, Symbol> sortByName(List<Symbol> members) {
-    Multimap<String, Symbol> membersByName = LinkedListMultimap.create();
+  private static MultiValuedMap<String, Symbol> sortByName(List<Symbol> members) {
+    MultiValuedMap<String, Symbol> membersByName = new ArrayListValuedHashMap<>();
     for (Symbol member : members) {
       membersByName.put(member.name(), member);
     }

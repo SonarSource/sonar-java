@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -38,6 +36,8 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.CheckForNull;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,26 +52,27 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   private static final String[] DATE_GET_METHODS = {"getDate", "getMonth", "getHours", "getMinutes", "getSeconds"};
   private static final String[] DATE_SET_METHODS = {"setDate", "setMonth", "setHours", "setMinutes", "setSeconds"};
 
-  private static final List<MethodMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodMatcher>builder()
-    .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
-    .addAll(dateGetMatchers())
-    .build();
+  private static final List<MethodMatcher> DATE_METHODS_COMPARISON = new ArrayList<>();
+  static {
+    DATE_METHODS_COMPARISON.addAll(dateGetMatchers());
+    DATE_METHODS_COMPARISON.add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"));
+  }
 
   private static List<MethodMatcher> dateGetMatchers() {
-    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
+    List<MethodMatcher> builder = new ArrayList<>();
     for (String dateGetMethod : DATE_GET_METHODS) {
       builder.add(dateMethodInvocationMatcherGetter(JAVA_UTIL_DATE, dateGetMethod));
       builder.add(dateMethodInvocationMatcherGetter(JAVA_SQL_DATE, dateGetMethod));
     }
-    return builder.build();
+    return builder;
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder().addAll(super.nodesToVisit())
-      .add(Tree.Kind.EQUAL_TO)
-      .add(Tree.Kind.NOT_EQUAL_TO)
-      .build();
+    List<Tree.Kind> kinds = new ArrayList<>(super.nodesToVisit());
+    kinds.add(Tree.Kind.EQUAL_TO);
+    kinds.add(Tree.Kind.NOT_EQUAL_TO);
+    return kinds;
   }
 
   @Override
@@ -135,15 +136,14 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
+    List<MethodMatcher> builder = new ArrayList<>();
     for (String dateSetMethod : DATE_SET_METHODS) {
       builder.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
       builder.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
     }
-    return builder
-      .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
-      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withAnyParameters())
-      .build();
+    builder.add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"));
+    builder.add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withAnyParameters());
+    return builder;
   }
 
   private static MethodMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
@@ -222,7 +222,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     MINUTE(60, "setMinutes", "getMinutes", "MINUTE", "minute"),
     SECOND(61, "setSeconds", "getSeconds", "SECOND", "second");
 
-    private static Map<String, Integer> thresholdByName = Maps.newHashMap();
+    private static Map<String, Integer> thresholdByName = new HashMap<>();
 
     static {
       for (Threshold value : Threshold.values()) {

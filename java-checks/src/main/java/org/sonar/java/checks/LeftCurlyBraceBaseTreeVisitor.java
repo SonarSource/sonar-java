@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
-
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -50,7 +48,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor implements JavaFileScanner {
@@ -82,7 +79,7 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
   private static SyntaxToken getLastTokenFromSignature(ClassTree classTree) {
     List<TypeTree> superInterfaces = classTree.superInterfaces();
     if (!superInterfaces.isEmpty()) {
-      return getIdentifierToken(Iterables.getLast(superInterfaces));
+      return superInterfaces.get(superInterfaces.size() - 1).lastToken();
     }
     TypeTree superClass = classTree.superClass();
     if (superClass != null) {
@@ -204,7 +201,7 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
     if (methodTree.throwsClauses().isEmpty()) {
       return methodTree.closeParenToken();
     } else {
-      return getIdentifierToken(Iterables.getLast(methodTree.throwsClauses()));
+      return methodTree.throwsClauses().lastToken();
     }
   }
 

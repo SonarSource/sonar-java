@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multiset;
+import org.apache.commons.collections4.MultiSet;
+import org.apache.commons.collections4.multiset.HashMultiSet;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -61,7 +60,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
     private final Symbol.TypeSymbol classSymbol;
-    private final Multiset<Symbol> usages = HashMultiset.create();
+    private final MultiSet<Symbol> usages = new HashMultiSet<>();
 
     public MethodInvocationVisitor(Symbol.TypeSymbol classSymbol) {
       this.classSymbol = classSymbol;
@@ -81,8 +80,8 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     public void checkUsages() {
-      for (Symbol methodUsed : usages.elementSet()) {
-        if (methodUsed.usages().size() == usages.count(methodUsed)) {
+      for (Symbol methodUsed : usages.uniqueSet()) {
+        if (methodUsed.usages().size() == usages.getCount(methodUsed)) {
           reportIssueOnMethod((MethodTree) methodUsed.declaration());
         }
       }

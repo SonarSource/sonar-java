@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2232")
@@ -33,7 +33,7 @@ public class ResultSetIsLastCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast").withoutParameter());
+    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast").withoutParameter());
   }
 
   @Override

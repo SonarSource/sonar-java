@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -31,8 +29,11 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "S2698")
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
@@ -40,12 +41,12 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
   private static final MethodMatcher FEST_AS_METHOD = MethodMatcher.create()
     .typeDefinition(GENERIC_ASSERT).name("as").addParameter("java.lang.String");
-  private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = ImmutableSet.of("assertNull", "assertNotNull");
-  private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = ImmutableSet.of("assertEquals", "assertSame", "assertNotSame", "assertThat");
+  private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = Stream.of("assertNull", "assertNotNull").collect(Collectors.toSet());
+  private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = Stream.of("assertEquals", "assertSame", "assertNotSame", "assertThat").collect(Collectors.toSet());
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withAnyParameters(),
       MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withAnyParameters(),
       MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withAnyParameters(),

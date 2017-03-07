@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.CheckForNull;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2864")
@@ -53,7 +53,7 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.FOR_EACH_STATEMENT);
+    return Collections.singletonList(Tree.Kind.FOR_EACH_STATEMENT);
   }
 
   @Override
@@ -118,7 +118,7 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MAP_GET_METHOD.matches(tree)) {
-        Tree firstArgument = Iterables.getOnlyElement(tree.arguments());
+        Tree firstArgument = IterableUtils.get(tree.arguments(), 0);
         if (mapSymbol.equals(getOwnerSymbol(tree)) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
           result = true;
           return;

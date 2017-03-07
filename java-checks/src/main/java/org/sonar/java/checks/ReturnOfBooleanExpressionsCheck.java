@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1126")
@@ -38,7 +38,7 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.IF_STATEMENT);
+    return Collections.singletonList(Kind.IF_STATEMENT);
   }
 
   @Override

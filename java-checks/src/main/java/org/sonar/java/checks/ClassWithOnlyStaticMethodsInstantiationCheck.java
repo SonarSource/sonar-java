@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -38,7 +36,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2440")
@@ -53,7 +53,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.NEW_CLASS);
+    return Collections.singletonList(Kind.NEW_CLASS);
   }
 
   @Override

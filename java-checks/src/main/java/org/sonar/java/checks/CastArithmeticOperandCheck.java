@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.MapUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -37,18 +37,19 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 @Rule(key = "S2184")
 public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
-    .put(Tree.Kind.PLUS, "addition")
-    .put(Tree.Kind.MINUS, "substraction")
-    .put(Tree.Kind.MULTIPLY, "multiplication")
-    .put(Tree.Kind.DIVIDE, "division")
-    .build();
+  private static final Map<Tree.Kind, String> OPERATION_BY_KIND = MapUtils.putAll(new EnumMap<>(Tree.Kind.class), new Object[][] {
+    {Tree.Kind.PLUS, "addition"},
+    {Tree.Kind.MINUS, "substraction"},
+    {Tree.Kind.MULTIPLY, "multiplication"},
+    {Tree.Kind.DIVIDE, "division"}
+  });
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

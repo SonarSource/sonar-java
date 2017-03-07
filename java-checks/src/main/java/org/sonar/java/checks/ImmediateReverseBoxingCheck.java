@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.MapUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -38,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,23 +46,23 @@ import java.util.Map.Entry;
 @Rule(key = "S2153")
 public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> PRIMITIVE_TYPES_BY_WRAPPER = ImmutableMap.<String, String>builder()
-    .put("java.lang.Boolean", "boolean")
-    .put("java.lang.Byte", "byte")
-    .put("java.lang.Double", "double")
-    .put("java.lang.Float", "float")
-    .put("java.lang.Integer", "int")
-    .put("java.lang.Long", "long")
-    .put("java.lang.Short", "short")
-    .put("java.lang.Character", "char")
-    .build();
+  private static final Map<String, String> PRIMITIVE_TYPES_BY_WRAPPER = MapUtils.putAll(new HashMap<>(), new String[]{
+    "java.lang.Boolean", "boolean",
+    "java.lang.Byte", "byte",
+    "java.lang.Double", "double",
+    "java.lang.Float", "float",
+    "java.lang.Integer", "int",
+    "java.lang.Long", "long",
+    "java.lang.Short", "short",
+    "java.lang.Character", "char",
+    });
 
   private static final MethodMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
   private static final MethodMatcherCollection valueOfInvocationMatchers = valueOfInvocationMatchers();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS);
   }
 
   @Override

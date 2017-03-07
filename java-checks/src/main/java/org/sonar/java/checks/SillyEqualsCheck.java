@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -33,6 +31,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2159")
@@ -44,14 +43,14 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create()
+    return Collections.singletonList(MethodMatcher.create()
       .name("equals")
       .addParameter(JAVA_LANG_OBJECT));
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    ExpressionTree firstArgument = Iterables.getOnlyElement(tree.arguments());
+    ExpressionTree firstArgument = tree.arguments().get(0);
     Type argumentType = firstArgument.symbolType().erasure();
     if (argumentType.isPrimitive()) {
       argumentType = ((JavaType) argumentType).primitiveWrapperType();

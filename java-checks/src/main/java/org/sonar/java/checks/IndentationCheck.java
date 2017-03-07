@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -147,7 +147,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     int bodySize = body.size();
     if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
       expectedLevel -= indentationLevel;
-      checkIndentation(body.get(0), Iterables.getLast(labels).colonToken().column() + 2);
+      checkIndentation(body.get(0), IterableUtils.get(labels, IterableUtils.size(labels) - 1).colonToken().column() + 2);
       newBody = body.subList(1, bodySize);
     }
     checkIndentation(newBody);

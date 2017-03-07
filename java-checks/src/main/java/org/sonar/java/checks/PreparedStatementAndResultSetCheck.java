@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2695")
@@ -54,7 +54,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name(NameCriteria.startsWith("set")).addParameter(INT).addParameter(TypeCriteria.anyType()),
       MethodMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT),
       MethodMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT).addParameter(TypeCriteria.anyType()));
