@@ -27,13 +27,11 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessorsUtilsTest {
 
-  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void method_badly_named_is_not_accessor() {

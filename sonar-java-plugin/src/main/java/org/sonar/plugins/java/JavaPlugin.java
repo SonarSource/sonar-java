@@ -45,6 +45,7 @@ public class JavaPlugin implements Plugin {
     if (!sonarQubeVersion.isGreaterThanOrEqual(SQ_6_0) || context.getRuntime().getProduct() != SonarProduct.SONARLINT) {
       builder.addAll(SurefireExtensions.getExtensions());
       builder.addAll(JaCoCoExtensions.getExtensions(sonarQubeVersion));
+      builder.add(JavaSonarWayProfile.class);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
@@ -58,8 +59,7 @@ public class JavaPlugin implements Plugin {
         .subCategory("General")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-      JavaRulesDefinition.class,
-      JavaSonarWayProfile.class,
+      new JavaRulesDefinition(context.getSonarQubeVersion()),
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,

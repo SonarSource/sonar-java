@@ -26,9 +26,11 @@ import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.JavaConfiguration;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -36,7 +38,6 @@ import org.sonar.squidbridge.api.AnalysisException;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InterruptedIOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -44,17 +45,12 @@ public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
 
   private final ActionParser<Tree> parser;
+  private final SonarComponents sonarComponents;
   private VisitorsBridge visitor;
 
-  public JavaAstScanner(ActionParser<Tree> parser) {
+  public JavaAstScanner(ActionParser<Tree> parser, @Nullable SonarComponents sonarComponents) {
     this.parser = parser;
-  }
-
-  /**
-   * Takes parser and index from another instance of {@link JavaAstScanner}
-   */
-  public JavaAstScanner(JavaAstScanner astScanner) {
-    this.parser = astScanner.parser;
+    this.sonarComponents = sonarComponents;
   }
 
   public void scan(Iterable<File> files) {
@@ -80,7 +76,13 @@ public class JavaAstScanner {
   private void simpleScan(File file) {
     visitor.setCurrentFile(file);
     try {
-      Tree ast = parser.parse(file);
+      String fileContent = getFileContent(file);
+      Tree ast;
+      if(fileContent.isEmpty()) {
+        ast = parser.parse(file);
+      } else {
+        ast = parser.parse(fileContent);
+      }
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
@@ -95,6 +97,13 @@ public class JavaAstScanner {
       LOG.error("A stack overflow error occured while analyzing file: " + file.getAbsolutePath());
       throw error;
     }
+  }
+
+  private String getFileContent(File file) {
+    if(sonarComponents == null) {
+      return "";
+    }
+    return sonarComponents.fileContent(file);
   }
 
   private static void checkInterrupted(Exception e) {
@@ -123,27 +132,18 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
-    scanSingleFileForTests(file, visitorsBridge, new JavaConfiguration(Charset.forName("UTF-8")));
+    scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl());
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaConfiguration conf) {
+  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    JavaAstScanner scanner = create(conf, visitorsBridge);
-
-    scanner.scan(Collections.singleton(file));
-  }
-
-  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
-    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
-    if (visitorsBridge != null) {
-      visitorsBridge.setCharset(conf.getCharset());
-      visitorsBridge.setJavaVersion(conf.javaVersion());
-      astScanner.setVisitorBridge(visitorsBridge);
-    }
-    return astScanner;
+    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
+    visitorsBridge.setJavaVersion(javaVersion);
+    astScanner.setVisitorBridge(visitorsBridge);
+    astScanner.scan(Collections.singleton(file));
   }
 
 }

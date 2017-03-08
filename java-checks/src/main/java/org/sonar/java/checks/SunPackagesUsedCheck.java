@@ -26,14 +26,16 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Rule(key = "S1191")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Set<Integer> reportedLines = new HashSet<>();
+  private List<Tree> reportedTrees = new ArrayList<>();
 
   private static final String DEFAULT_EXCLUDE = "";
 
@@ -43,31 +45,38 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
       defaultValue = "" + DEFAULT_EXCLUDE)
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
-  private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    reportedLines.clear();
+    reportedTrees.clear();
     excludePackages = exclude.split(",");
     scan(context.getTree());
+
+    if (!reportedTrees.isEmpty()) {
+      reportIssueWithSecondaries(context);
+    }
+  }
+
+  private void reportIssueWithSecondaries(JavaFileScannerContext context) {
+    List<JavaFileScannerContext.Location> secondaries = reportedTrees.stream()
+      .skip(1)
+      .map(tree -> new JavaFileScannerContext.Location("", tree))
+      .collect(Collectors.toList());
+
+    int effortToFix = reportedTrees.size();
+    context.reportIssue(this, reportedTrees.get(0), "Use classes from the Java API instead of Sun classes.", secondaries, effortToFix);
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     String reference = ExpressionsHelper.concatenate(tree);
-    if (!isExcluded(reference)) {
-      int line = tree.firstToken().line();
-      if (!reportedLines.contains(line) && isSunClass(reference)) {
-        context.addIssue(line, this, "Replace this usage of Sun classes by ones from the Java API.");
-        reportedLines.add(line);
-      }
-      super.visitMemberSelectExpression(tree);
+    if (!isExcluded(reference) && isSunClass(reference)) {
+      reportedTrees.add(tree);
     }
   }
 
   private static boolean isSunClass(String reference) {
-    return "com.sun".equals(reference) || reference.matches("sun\\.[^\\.]*");
+    return reference.startsWith("com.sun.") || reference.startsWith("sun.");
   }
 
   private boolean isExcluded(String reference) {

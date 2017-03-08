@@ -25,9 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -52,7 +51,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -83,9 +82,10 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   public void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
     sensorContext.fileSystem().add(
-      new DefaultInputFile("myProjectKey", JAVA_FILE.getPath())
+      new TestInputFileBuilder("myProjectKey", JAVA_FILE.getPath())
         .setLanguage("java")
         .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath()), StandardCharsets.UTF_8))
+        .build()
     );
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);
@@ -94,7 +94,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
     sonarComponents = spy(sonarComponents);
     when(sonarComponents.getRuleKey(any())).thenReturn(RuleKey.of("repository", "rule"));
 
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(JAVA_FILE);
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(JAVA_FILE);
     tree = cut.types().get(0);
     scannerContext = new DefaultJavaFileScannerContext(cut, JAVA_FILE, null, sonarComponents, null, true);
   }

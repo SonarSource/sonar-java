@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -37,7 +36,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -139,6 +137,16 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
+  }
+
+  @Override
+  public List<String> getFileLines() {
+    return sonarComponents.fileLines(file);
+  }
+
+  @Override
+  public String getFileContent() {
+    return sonarComponents.fileContent(file);
   }
 
   protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, Iterable<List<Location>> flows,

@@ -21,6 +21,8 @@ package org.sonar.java.model;
 
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -33,12 +35,63 @@ public final class ExpressionUtils {
    * In case of simple assignments, only the expression is evaluated, as we only use the reference to the variable to store the result.
    * For SE-Based checks, only a single value should be unstacked if its the case. For other cases, two values should be unstacked.
    * See JLS8-15.26
-   * 
+   *
    * @param tree The assignment tree
-   * @return true if the tree is a simple assignment 
+   * @return true if the tree is a simple assignment
+   * @see #extractIdentifier(AssignmentExpressionTree)
    */
   public static boolean isSimpleAssignment(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.ASSIGNMENT) && ExpressionUtils.skipParentheses(tree.variable()).is(Tree.Kind.IDENTIFIER);
+    if (!tree.is(Tree.Kind.ASSIGNMENT)) {
+      // This can't possibly be a simple assignment.
+      return false;
+    }
+
+    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    return variable.is(Tree.Kind.IDENTIFIER) || isSelectOnThisOrSuper(tree);
+  }
+
+  /**
+   * Checks of is the given tree is a {@link MemberSelectExpressionTree} which is selecting with <code>this</code> or <code>super</code>
+   * @param tree The tree to check.
+   * @return true when the tree is a select on <code>this</code> or <code>super</code>
+   * @see #isSelectOnThisOrSuper(MemberSelectExpressionTree)
+   */
+  public static boolean isSelectOnThisOrSuper(AssignmentExpressionTree tree) {
+    ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+    return variable.is(Tree.Kind.MEMBER_SELECT) && isSelectOnThisOrSuper((MemberSelectExpressionTree) variable);
+  }
+
+  /**
+   * Checks of is the given tree is selecting with <code>this</code> or <code>super</code>
+   * @param tree The tree to check.
+   * @return true when the tree is a select on <code>this</code> or <code>super</code>
+   * @see #isSelectOnThisOrSuper(AssignmentExpressionTree)
+   */
+  public static boolean isSelectOnThisOrSuper(MemberSelectExpressionTree tree) {
+    if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      // This is no longer simple.
+      return false;
+    }
+
+    String selectSourceName = ((IdentifierTree) tree.expression()).name();
+    return "this".equalsIgnoreCase(selectSourceName) || "super".equalsIgnoreCase(selectSourceName);
+  }
+
+  public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
+    ExpressionTree variable = skipParentheses(tree.variable());
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      return (IdentifierTree) variable;
+    }
+
+    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
+      if (isSelectOnThisOrSuper(selectTree)) {
+        return selectTree.identifier();
+      }
+    }
+
+    // This should not be possible.
+    throw new IllegalArgumentException("Can not extract identifier.");
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {

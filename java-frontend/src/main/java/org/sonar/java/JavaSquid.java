@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -32,6 +33,8 @@ import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
@@ -48,7 +51,7 @@ public class JavaSquid {
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
 
-  public JavaSquid(JavaConfiguration conf,
+  public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
 
@@ -66,28 +69,31 @@ public class JavaSquid {
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
-    if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
-      codeVisitors = Iterables.concat(
+    if (sonarComponents != null) {
+      if(!sonarComponents.isSonarLintContext()) {
+        codeVisitors = Iterables.concat(
           codeVisitors,
           Arrays.asList(
-              new FileLinesVisitor(sonarComponents),
-              new SyntaxHighlighterVisitor(sonarComponents)
+            new FileLinesVisitor(sonarComponents),
+            new SyntaxHighlighterVisitor(sonarComponents)
           )
-      );
-      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        );
+        testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        testCodeVisitors.addAll(sonarComponents.testCheckClasses());
+      }
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
-      testCodeVisitors.addAll(sonarComponents.testCheckClasses());
     }
 
     //AstScanner for main files
-    astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
+    ActionParser<Tree> parser = JavaParser.createParser();
+    astScanner = new JavaAstScanner(parser, sonarComponents);
     boolean enableSymbolicExecution = hasASymbolicExecutionCheck(visitors);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents, enableSymbolicExecution));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, enableSymbolicExecution));
 
     //AstScanner for test files
-    astScannerForTests = new JavaAstScanner(astScanner);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents, false));
+    astScannerForTests = new JavaAstScanner(parser, sonarComponents);
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, false));
 
   }
 
@@ -96,10 +102,9 @@ public class JavaSquid {
   }
 
   private static VisitorsBridge createVisitorBridge(
-      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
+    Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
-    visitorsBridge.setCharset(conf.getCharset());
-    visitorsBridge.setJavaVersion(conf.javaVersion());
+    visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;
   }
 

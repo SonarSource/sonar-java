@@ -20,13 +20,16 @@
 package org.sonar.java.model;
 
 import org.junit.Test;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,14 +38,18 @@ public class VisitorsBridgeForTestsTest {
 
   @Test
   public void test_semantic_disabled() {
-    Tree parse = JavaParser.createParser(Charset.defaultCharset()).parse("class A{}");
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    sonarComponents.setSensorContext(context);
+
+    Tree parse = JavaParser.createParser().parse("class A{}");
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(new File("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
 
-    parse = JavaParser.createParser(Charset.defaultCharset()).parse("class A{}");
-    visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor());
+    parse = JavaParser.createParser().parse("class A{}");
+    visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor(), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(new File("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNotNull();

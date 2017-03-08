@@ -17,12 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.checks;
 
-import java.nio.charset.Charset;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public interface CharsetAwareVisitor {
+public class StaticFieldUpdateInConstructorCheckTest {
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/StaticFieldUpdateInConstructorCheck.java", new StaticFieldUpdateInConstructorCheck());
+  }
 
-  void setCharset(Charset charset);
-
+  @Test
+  public void no_issue_without_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StaticFieldUpdateInConstructorCheck.java", new StaticFieldUpdateInConstructorCheck());
+  }
 }

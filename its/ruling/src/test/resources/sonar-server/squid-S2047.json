@@ -1,0 +1,13 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/Select.java':[
+76,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/monitoring/DatabaseMonitorMBean.java':[
+66,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/monitoring/SonarQubeMonitor.java':[
+63,
+67,
+71,
+],
+}

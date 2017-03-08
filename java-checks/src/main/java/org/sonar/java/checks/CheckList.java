@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -33,6 +33,7 @@ import org.sonar.java.checks.naming.BadPackageNameCheck;
 import org.sonar.java.checks.naming.BadTestClassNameCheck;
 import org.sonar.java.checks.naming.BadTestMethodNameCheck;
 import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
+import org.sonar.java.checks.naming.BooleanMethodNameCheck;
 import org.sonar.java.checks.naming.ClassNamedLikeExceptionCheck;
 import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
 import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
@@ -210,6 +211,7 @@ public final class CheckList {
       .add(NoCheckstyleTagPresenceCheck.class)
       .add(ParameterReassignedToCheck.class)
       .add(HardcodedIpCheck.class)
+      .add(HardcodedURICheck.class)
       .add(LoggersDeclarationCheck.class)
       .add(MethodNameSameAsClassCheck.class)
       .add(CollectionImplementationReferencedCheck.class)
@@ -464,6 +466,8 @@ public final class CheckList {
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
       .add(S3749Check.class)
+      .add(BooleanMethodNameCheck.class)
+      .add(StaticFieldUpdateInConstructorCheck.class)
       .build();
   }
 

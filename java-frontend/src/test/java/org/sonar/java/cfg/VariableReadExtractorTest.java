@@ -30,14 +30,13 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VariableReadExtractorTest {
 
-  public static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
+  public static final ActionParser<Tree> PARSER = JavaParser.createParser();
 
 
   private static MethodTree buildMethodTree(String methodCode) {

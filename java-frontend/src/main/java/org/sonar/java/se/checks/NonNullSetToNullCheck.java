@@ -154,7 +154,7 @@ public class NonNullSetToNullCheck extends SECheck {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
-        IdentifierTree variable = (IdentifierTree) ExpressionUtils.skipParentheses(tree.variable());
+        IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
         String nonNullAnnotation = nonNullAnnotation(symbol);
         if (nonNullAnnotation != null) {

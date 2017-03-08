@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.BatchSide;
@@ -39,14 +40,20 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
 
 @BatchSide
 @SonarLintSide
@@ -237,5 +244,42 @@ public class SonarComponents {
 
   public boolean isSonarLintContext() {
     return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.runtime().getProduct() == SonarProduct.SONARLINT;
+  }
+
+  public String fileContent(File file) {
+    try {
+      if(isSQGreaterThan62()) {
+        return inputFromIOFile(file).contents();
+      }
+      return Files.toString(file, getCharset(file));
+    } catch (IOException e) {
+      throw new AnalysisException("Unable to read file "+file, e);
+    }
+  }
+
+  public List<String> fileLines(File file) {
+    List<String> lines = new ArrayList<>();
+    try(Scanner scanner = new Scanner(getInputStream(file), getCharset(file).name())) {
+      while (scanner.hasNextLine()) {
+        lines.add(scanner.nextLine());
+      }
+    } catch (IOException e) {
+      throw new AnalysisException("Unable to read file "+file, e);
+    }
+    return lines;
+  }
+
+  private InputStream getInputStream(File file) throws IOException {
+    if(isSQGreaterThan62()) {
+      return inputFromIOFile(file).inputStream();
+    }
+    return new FileInputStream(file);
+  }
+
+  private Charset getCharset(File file) {
+    if(context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0)) {
+      return inputFromIOFile(file).charset();
+    }
+    return fs.encoding();
   }
 }

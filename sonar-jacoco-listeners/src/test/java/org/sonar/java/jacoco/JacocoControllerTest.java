@@ -30,7 +30,7 @@ import org.sonar.java.jacoco.JacocoController.JacocoControllerError;
 
 import java.io.IOException;
 
-import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;

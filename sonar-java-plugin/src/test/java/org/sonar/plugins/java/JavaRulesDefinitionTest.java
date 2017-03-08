@@ -22,20 +22,33 @@ package org.sonar.plugins.java;
 import org.junit.Test;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.Version;
 import org.sonar.check.Cardinality;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.JavaCheck;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaRulesDefinitionTest {
+  private Version sqVersion60 = Version.create(6, 0);
+  private Version sqVersion56 = Version.create(5, 6);
 
   @Test
-  public void test() {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+  public void test_creation_of_rules_for_version_60() {
+    test_creation_of_rules_for(sqVersion60);
+  }
+
+  @Test
+  public void test_creation_of_rules_for_version_56() {
+    test_creation_of_rules_for(sqVersion56);
+  }
+
+  private void test_creation_of_rules_for(Version version) {
+    JavaRulesDefinition definition = new JavaRulesDefinition(version);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -50,8 +63,10 @@ public class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
     assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
+    assertThat(repository.rule("S2095").activatedByDefault()).isEqualTo(version.isGreaterThanOrEqual(Version.create(6, 0)));
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
+    assertThat(magicNumber.activatedByDefault()).isFalse();
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
   }
@@ -61,7 +76,7 @@ public class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale= Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(sqVersion60);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -78,31 +93,33 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("myCardinality");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(sqVersion60);
+    JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
+    profile.ruleKeys = new ArrayList<>();
     try {
-      definition.newRule(CheckWithNoAnnotation.class, newRepository);
+      definition.newRule(CheckWithNoAnnotation.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("No Rule annotation was found on class "+CheckWithNoAnnotation.class.getName());
     }
 
     try {
-      definition.newRule(EmptyRuleKey.class, newRepository);
+      definition.newRule(EmptyRuleKey.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("No key is defined in Rule annotation of class "+EmptyRuleKey.class.getName());
     }
 
     try {
-      definition.newRule(UnregisteredRule.class, newRepository);
+      definition.newRule(UnregisteredRule.class, newRepository, profile);
     } catch (IllegalStateException ise) {
       assertThat(ise).hasMessage("No rule was created for class "+UnregisteredRule.class.getName()+" in test");
     }
     try {
-      definition.newRule(CardinalityRule.class, newRepository);
+      definition.newRule(CardinalityRule.class, newRepository, profile);
     } catch (IllegalArgumentException ise) {
       assertThat(ise).hasMessage("Cardinality is not supported, use the RuleTemplate annotation instead for class "+CardinalityRule.class.getName());
     }
     // no metadata defined, does not fail on registration of rule
-    definition.newRule(CorrectRule.class, newRepository);
+    definition.newRule(CorrectRule.class, newRepository, profile);
 
   }
 

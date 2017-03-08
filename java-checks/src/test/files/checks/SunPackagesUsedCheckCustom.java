@@ -1,19 +1,19 @@
-import com.sun.imageio.plugins;
-import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.imageio.plugins; // Compliant
+import com.sun.jersey.api.client.ClientHandlerException; // Compliant
 import java.util.ArrayList;
 
 class A {
   private void f() {
-    com.sun.imageio.plugins.bmp d = new com.sun.imageio.plugins.bmp();
-    new com.sun.imageio.plugins.bmp();
+    com.sun.imageio.plugins.bmp d =  // Compliant
+      new com.sun.imageio.plugins.bmp(); // Compliant
     java.util.List a;
-    sun.Foo b; // Noncompliant {{Replace this usage of Sun classes by ones from the Java API.}}
+    sun.Foo b; // Noncompliant [[sc=5;ec=12;secondary=13,17]]  {{Use classes from the Java API instead of Sun classes.}}
     db.setErrorHandler(new com.sun.org.apache.xml.internal.security.utils
         .IgnoreAllErrorHandler());
-    sun       // Noncompliant {{Replace this usage of Sun classes by ones from the Java API.}}
+    sun       // secondary
         .Foo.toto
         .asd c;
 
-    new Foo<com.sun.Bar>() {}; // Noncompliant
+    new Foo<com.sun.Bar>() {}; // secondary
   }
 }

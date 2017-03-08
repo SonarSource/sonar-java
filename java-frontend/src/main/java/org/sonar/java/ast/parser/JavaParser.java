@@ -25,19 +25,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class JavaParser extends ActionParser<Tree> {
 
-  private JavaParser(Charset charset, LexerlessGrammarBuilder grammarBuilder, Class<JavaGrammar> javaGrammarClass,
+  private JavaParser(LexerlessGrammarBuilder grammarBuilder, Class<JavaGrammar> javaGrammarClass,
     TreeFactory treeFactory, JavaNodeBuilder javaNodeBuilder, JavaLexer compilationUnit) {
-    super(charset, grammarBuilder, javaGrammarClass, treeFactory, javaNodeBuilder, compilationUnit);
+    super(StandardCharsets.UTF_8, grammarBuilder, javaGrammarClass, treeFactory, javaNodeBuilder, compilationUnit);
   }
 
-  public static ActionParser<Tree> createParser(Charset charset) {
-    return new JavaParser(
-      charset,
-      JavaLexer.createGrammarBuilder(),
+  public static ActionParser<Tree> createParser() {
+    return new JavaParser(JavaLexer.createGrammarBuilder(),
       JavaGrammar.class,
       new TreeFactory(),
       new JavaNodeBuilder(),

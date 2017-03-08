@@ -20,19 +20,16 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -41,7 +38,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -75,18 +72,13 @@ public class XmlFileSensorTest {
     SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/"));
     DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new DefaultInputFile("", "pom.xml"));
+    fs.add(new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).build());
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 
     sensor.execute(context);
 
-    verify(sonarComponents, times(1)).reportIssue(Mockito.argThat(new ArgumentMatcher<AnalyzerMessage>() {
-      @Override
-      public boolean matches(Object argument) {
-        return file.getAbsolutePath().equals(((AnalyzerMessage) argument).getFile().getAbsolutePath());
-      }
-    }));
+    verify(sonarComponents, times(1)).reportIssue(Mockito.argThat(argument -> file.getAbsolutePath().equals(argument.getFile().getAbsolutePath())));
   }
 
   @Test

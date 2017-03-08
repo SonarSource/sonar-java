@@ -21,11 +21,9 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -40,7 +38,7 @@ import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +57,7 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), Lists.newArrayList(), null);
+    this(Collections.singletonList(visitor), new ArrayList<>(), null);
   }
 
   @VisibleForTesting
@@ -81,14 +79,6 @@ public class VisitorsBridge {
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
   }
 
-  public void setCharset(Charset charset) {
-    for (JavaFileScanner scanner : scanners) {
-      if (scanner instanceof CharsetAwareVisitor) {
-        ((CharsetAwareVisitor) scanner).setCharset(charset);
-      }
-    }
-  }
-
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
     this.executableScanners = executableScanners(scanners, javaVersion);
@@ -96,7 +86,7 @@ public class VisitorsBridge {
 
   public void visitFile(@Nullable Tree parsedTree) {
     semanticModel = null;
-    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.newArrayList(), Lists.newArrayList(), null);
+    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null);
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;

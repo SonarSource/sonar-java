@@ -20,9 +20,8 @@
 package org.sonar.java.viewer;
 
 import com.google.common.collect.Lists;
-
 import com.sonar.sslr.api.typed.ActionParser;
-
+import javafx.scene.web.WebEngine;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
@@ -41,20 +40,18 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javafx.scene.web.WebEngine;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class EGViewer {
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
+  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
   private final Viewer viewer;
   private static final boolean SHOW_MULTIPLE_PARENTS = true;
 

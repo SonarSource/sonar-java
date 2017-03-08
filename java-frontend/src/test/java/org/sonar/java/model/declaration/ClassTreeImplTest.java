@@ -31,12 +31,11 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassTreeImplTest {
-  private final ActionParser p = JavaParser.createParser(StandardCharsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser();
 
   private CompilationUnitTree createTree(String code) {
     CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);

@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -467,7 +466,7 @@ public class LeastUpperBoundTest {
     for (String line : lines) {
       builder.append(line).append(System.lineSeparator());
     }
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse(builder.toString());
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(builder.toString());
     SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     return cut;
   }

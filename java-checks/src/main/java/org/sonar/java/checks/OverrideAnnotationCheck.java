@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.BooleanUtils;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -40,26 +40,26 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic() || isExcludedByVersion(context.getJavaVersion())) {
+      return;
+    }
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (isOverriding(methodTree) && !methodTree.isAnnotatedOverride() && !isExcluded(context.getJavaVersion(), methodTree)) {
+    Symbol.MethodSymbol overriddenSymbol = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).overriddenSymbol();
+    if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
+      return;
+    }
+    if (!overriddenSymbol.isAbstract()
+      && !overriddenSymbol.owner().type().is("java.lang.Object")
+      && !methodTree.isAnnotatedOverride()) {
       reportIssue(methodTree.simpleName(), "Add the \"@Override\" annotation above this method signature");
     }
   }
 
-  private static boolean isOverriding(MethodTreeImpl methodTree) {
-    return BooleanUtils.isTrue(methodTree.isOverriding());
-  }
-
-  private static boolean isExcluded(JavaVersion javaVersion, MethodTreeImpl methodTree) {
+  private static boolean isExcludedByVersion(JavaVersion javaVersion) {
     if (javaVersion.isNotSet()) {
       return false;
     }
-    int javaIntVersion = javaVersion.asInt();
-    return javaIntVersion <= 4 || (javaIntVersion == 5 && (methodTree.symbol().owner().isInterface() || overrideFromInterface(methodTree)));
-  }
-
-  private static boolean overrideFromInterface(MethodTree methodTree) {
-    return ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).overriddenSymbol().owner().isInterface();
+    return javaVersion.asInt() <= 4;
   }
 
 }

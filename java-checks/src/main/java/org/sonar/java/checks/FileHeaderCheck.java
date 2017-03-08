@@ -19,18 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.io.Files;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.AnalysisException;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Rule(key = "S1451")
-public class FileHeaderCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
+public class FileHeaderCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";
   private static final String MESSAGE = "Add or update the header of this file.";
@@ -56,14 +50,8 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor implements Char
     defaultValue = "false")
   public boolean isRegularExpression = false;
 
-  private Charset charset;
   private String[] expectedLines;
   private Pattern searchPattern = null;
-
-  @Override
-  public void setCharset(Charset charset) {
-    this.charset = charset;
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -84,7 +72,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor implements Char
     } else {
       expectedLines = headerFormat.split("(?:\r)?\n|\r");
     }
-    visitFile(context.getFile());
+    visitFile();
   }
 
   private String getHeaderFormat() {
@@ -95,23 +83,11 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor implements Char
     return format;
   }
 
-  public void visitFile(File file) {
+  private void visitFile() {
     if (isRegularExpression) {
-      String fileContent;
-      try {
-        fileContent = Files.toString(file, charset);
-      } catch (IOException e) {
-        throw new AnalysisException(e);
-      }
-      checkRegularExpression(fileContent);
+      checkRegularExpression(context.getFileContent());
     } else {
-      List<String> lines;
-      try {
-        lines = Files.readLines(file, charset);
-      } catch (IOException e) {
-        throw new AnalysisException(e);
-      }
-      if (!matches(expectedLines, lines)) {
+      if (!matches(expectedLines, context.getFileLines())) {
         addIssueOnFile(MESSAGE);
       }
     }

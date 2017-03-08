@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 
@@ -28,12 +29,20 @@ import java.io.File;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ParsingErrorCheckTest {
 
   @Test
   public void test() {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck());
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    when(sonarComponents.isSQGreaterThan62()).thenReturn(false);
+    when(sonarComponents.fileContent(any())).thenCallRealMethod();
+    when(sonarComponents.fileLength(any())).thenCallRealMethod();
+
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);

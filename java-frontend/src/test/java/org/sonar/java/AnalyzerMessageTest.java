@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -94,7 +93,7 @@ public class AnalyzerMessageTest {
 
   @Test
   public void textSpanForTrees() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8).parse("class A {\n}\n");
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse("class A {\n}\n");
     ClassTree classTree = (ClassTree) cut.types().get(0);
 
     TextSpan textSpan;
@@ -114,7 +113,7 @@ public class AnalyzerMessageTest {
 
   @Test
   public void shouldFailOnEmptyTrees() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(StandardCharsets.UTF_8)
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser()
       .parse("class A {\n}\n");
 
     try {

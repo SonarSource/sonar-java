@@ -24,15 +24,15 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,12 +50,11 @@ public class CommonsCollectionsTest {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
     File srcDir = new File(prjDir, "src");
 
-    JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
     context = SensorContextTester.create(srcDir);
     DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
-      fs.add(new DefaultInputFile("", file.getPath()));
+      fs.add(new TestInputFileBuilder("", file.getPath()).build());
     }
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
@@ -91,7 +90,7 @@ public class CommonsCollectionsTest {
         }
       }
     };
-    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
+    squid = new JavaSquid(new JavaVersionImpl(), null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList());
   }
 

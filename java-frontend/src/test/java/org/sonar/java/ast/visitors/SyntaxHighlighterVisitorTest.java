@@ -27,16 +27,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaClasspath;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -80,7 +80,7 @@ public class SyntaxHighlighterVisitorTest {
     SensorContextTester spy = spy(context);
     File file = temp.newFile();
     Files.write("ParseError", file, StandardCharsets.UTF_8);
-    fs.add(new DefaultInputFile("", file.getName()));
+    fs.add(new TestInputFileBuilder("", file.getName()).build());
     scan(file);
     verify(spy, never()).newHighlighting();
   }
@@ -110,7 +110,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(File file) {
-    JavaSquid squid = new JavaSquid(new JavaConfiguration(StandardCharsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 
@@ -119,7 +119,7 @@ public class SyntaxHighlighterVisitorTest {
     Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(eol).join(lines);
-    fs.add(new DefaultInputFile("", file.getName()).initMetadata(content));
+    fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
     return file;
   }
 

@@ -27,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -35,15 +36,15 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.utils.Version;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -69,10 +70,12 @@ public class JavaSquidTest {
 
     // set up a file to analyze
     File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/java/org/sonar/java/JavaSquidTest.java"), StandardCharsets.UTF_8), file, StandardCharsets.UTF_8);
-    DefaultInputFile defaultFile = new DefaultInputFile("myProjectKey", file.getName())
+    Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n}", file, StandardCharsets.UTF_8);
+    DefaultInputFile defaultFile = new TestInputFileBuilder("myProjectKey", file.getName())
       .setLanguage("java")
-      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
     context.fileSystem().add(defaultFile);
 
     // Set sonarLint runtime
@@ -84,15 +87,16 @@ public class JavaSquidTest {
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
     FileSystem fs = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    JavaSquid javaSquid = new JavaSquid(conf, sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Lists.newArrayList(file), Lists.newArrayList());
 
     if(version.isGreaterThanOrEqual(Version.create(6, 0))) {
-      // No symbol table : check reference to file is empty.
-      assertThat(context.referencesForSymbolAt(defaultFile.key(), 71, 9)).isNull();
+      // No symbol table : check reference to foo is empty.
+      assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
       // No metrics on lines
       verify(fileLinesContext, never()).save();
       // No highlighting
@@ -100,12 +104,15 @@ public class JavaSquidTest {
       // No measures
       assertThat(context.measures(defaultFile.key())).isEmpty();
     } else {
-      assertThat(context.referencesForSymbolAt(defaultFile.key(), 71, 9)).hasSize(4);
+      assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).hasSize(1);
       verify(fileLinesContext, times(1)).save();
       assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).hasSize(1).contains(TypeOfText.COMMENT);
       // No measures
       assertThat(context.measures(defaultFile.key())).isNotEmpty();
     }
+
+    verify(javaClasspath, times(1)).getElements();
+    verify(javaTestClasspath, times(1)).getElements();
 
   }
 }

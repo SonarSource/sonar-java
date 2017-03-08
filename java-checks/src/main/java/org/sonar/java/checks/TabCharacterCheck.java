@@ -19,29 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.io.Files;
 import org.sonar.check.Rule;
-import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S00105")
 @RspecKey("S105")
-public class TabCharacterCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
-
-  private Charset charset;
-  @Override
-  public void setCharset(Charset charset) {
-    this.charset = charset;
-  }
+public class TabCharacterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -51,16 +40,7 @@ public class TabCharacterCheck extends IssuableSubscriptionVisitor implements Ch
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.context = context;
-    visitFile(context.getFile());
-  }
-
-  public void visitFile(File file) {
-    List<String> lines;
-    try {
-      lines = Files.readLines(file, charset);
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    }
+    List<String> lines = context.getFileLines();
     for (String line : lines) {
       if (line.contains("\t")) {
         addIssueOnFile("Replace all tab characters in this file by sequences of white-spaces.");

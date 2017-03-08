@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.scan.filesystem.PathResolver;
@@ -37,8 +38,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -152,8 +153,7 @@ public class JaCoCoOverallSensorTest {
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
     File to = new File(outputDir, "HelloWorld.class");
     Files.copy(TestUtils.getResource("HelloWorld.class.toCopy"), to);
-    DefaultInputFile resource = new DefaultInputFile("", "");
-    resource.setLines(25);
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
 
     when(javaResourceLocator.findResourceByClassName("com/sonar/coverages/HelloWorld")).thenReturn(resource);
     when(configuration.getReportPath()).thenReturn(utReport);

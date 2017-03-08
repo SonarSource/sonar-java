@@ -26,11 +26,9 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.nio.charset.StandardCharsets;
-
 public class TreeViewer {
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
+  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
   private final Viewer viewer;
 
   public TreeViewer(Viewer viewer) {

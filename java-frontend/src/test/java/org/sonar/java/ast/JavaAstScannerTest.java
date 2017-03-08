@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.Measurer;
@@ -55,7 +56,7 @@ import java.io.File;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -79,7 +80,7 @@ public class JavaAstScannerTest {
   @Test
   public void comments() {
     File file = new File("src/test/files/metrics/Comments.java");
-    DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/Comments.java");
+    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/metrics/Comments.java").build();
     fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
@@ -89,7 +90,7 @@ public class JavaAstScannerTest {
   @Test
   public void noSonarLines() throws Exception {
     File file = new File("src/test/files/metrics/NoSonar.java");
-    DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/NoSonar.java");
+    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/metrics/NoSonar.java").build();
     fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
@@ -182,7 +183,7 @@ public class JavaAstScannerTest {
   }
 
   private static JavaAstScanner defaultJavaAstScanner() {
-    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
+    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT), null);
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {

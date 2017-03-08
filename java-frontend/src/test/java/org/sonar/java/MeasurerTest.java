@@ -23,14 +23,14 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,12 +98,11 @@ public class MeasurerTest {
    */
   private void checkMetric(String filename, String metric, Number expectedValue) {
     String relativePath = PathUtils.sanitize(new File(baseDir, filename).getPath());
-    DefaultInputFile inputFile = new DefaultInputFile(context.module().key(), relativePath);
+    TestInputFileBuilder inputFile = new TestInputFileBuilder(context.module().key(), relativePath);
     inputFile.setModuleBaseDir(fs.baseDirPath());
-    fs.add(inputFile);
+    fs.add(inputFile.build());
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
-    JavaConfiguration conf = new JavaConfiguration(StandardCharsets.UTF_8);
-    squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
+    squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);
     assertThat(context.measure("projectKey:"+relativePath, metric).value()).isEqualTo(expectedValue);

@@ -43,7 +43,6 @@ import java.util.Map;
 @SonarLintSide
 public class JavaSonarWayProfile extends ProfileDefinition {
 
-  private final Gson gson = new Gson();
   private final RuleFinder ruleFinder;
   public JavaSonarWayProfile(RuleFinder ruleFinder) {
     this.ruleFinder = ruleFinder;
@@ -56,21 +55,13 @@ public class JavaSonarWayProfile extends ProfileDefinition {
     if(duplicatedBlocks != null) {
       profile.activateRule(duplicatedBlocks, null);
     }
-    URL resource = JavaRulesDefinition.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
-    Profile jsonProfile = gson.fromJson(readResource(resource), Profile.class);
+
+    Profile jsonProfile = readProfile();
     Map<String, String> keys = legacyKeys();
     for (String key : jsonProfile.ruleKeys) {
       profile.activateRule(ruleFinder.findByKey(CheckList.REPOSITORY_KEY, keys.get(key)), null);
     }
     return profile;
-  }
-
-  private static String readResource(URL resource) {
-    try {
-      return Resources.toString(resource, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new IllegalStateException("Failed to read: " + resource, e);
-    }
   }
 
   private static Map<String, String> legacyKeys() {
@@ -88,7 +79,20 @@ public class JavaSonarWayProfile extends ProfileDefinition {
     return result;
   }
 
-  private static class Profile {
+  static Profile readProfile() {
+    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
+    return new Gson().fromJson(readResource(resource), Profile.class);
+  }
+
+  private static String readResource(URL resource) {
+    try {
+      return Resources.toString(resource, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read: " + resource, e);
+    }
+  }
+
+  static class Profile {
     String name;
     List<String> ruleKeys;
   }

@@ -29,9 +29,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -42,8 +42,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,12 +51,10 @@ import static org.mockito.Mockito.when;
 
 public class FileLinesVisitorTest {
 
-  private JavaConfiguration conf;
   private File baseDir;
 
   @Before
   public void setUp() throws Exception {
-    conf = new JavaConfiguration(StandardCharsets.UTF_8);
     baseDir = new File("src/test/files/metrics");
   }
   private void checkLines(String filename, FileLinesContext context) {
@@ -72,13 +70,13 @@ public class FileLinesVisitorTest {
     when(sonarComponents.isSQGreaterThan62()).thenReturn(sqGreaterThan62);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new FileLinesVisitor(sonarComponents));
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
   }
 
   private int countTrivia(String filename) {
     TriviaVisitor triviaVisitor = new TriviaVisitor();
-    JavaSquid squid = new JavaSquid(conf, null, null, null, null, triviaVisitor);
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, triviaVisitor);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     return triviaVisitor.numberTrivia;
   }

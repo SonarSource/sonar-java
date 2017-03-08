@@ -88,7 +88,7 @@ public class MainClass {
 
   public String returnColor() {
     if (secondary == null) {
-      this.primary = null; // FN does not handle fields accessed by this.
+      this.primary = null; // Noncompliant {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
       return secondary;
     }
     return primary;

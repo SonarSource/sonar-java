@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
@@ -37,11 +37,12 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -58,7 +59,7 @@ public class SurefireJavaParserTest {
     perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new DefaultInputFile("", (String) invocation.getArguments()[0]));
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new TestInputFileBuilder("", (String) invocation.getArguments()[0]).build());
 
     parser = new SurefireJavaParser(perspectives, javaResourceLocator);
   }
@@ -70,20 +71,13 @@ public class SurefireJavaParserTest {
     MutableTestCase testCase = mock(MutableTestCase.class);
     when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
     when(testCase.setStatus(any(TestCase.Status.class))).thenReturn(testCase);
-    when(testCase.setMessage(anyString())).thenReturn(testCase);
+    when(testCase.setMessage(isNull())).thenReturn(testCase);
     when(testCase.setStackTrace(anyString())).thenReturn(testCase);
     when(testCase.setType(anyString())).thenReturn(testCase);
     MutableTestPlan testPlan = mock(MutableTestPlan.class);
     when(testPlan.addTestCase(anyString())).thenReturn(testCase);
-    when(perspectives.as(eq(MutableTestPlan.class), argThat(new ArgumentMatcher<InputFile>() {
-      @Override
-      public boolean matches(Object o) {
-        if(o instanceof InputFile) {
-          return ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(((InputFile) o).key());
-        }
-        return false;
-      }
-    }))).thenReturn(testPlan);
+    when(perspectives.as(eq(MutableTestPlan.class),
+      argThat((ArgumentMatcher<InputFile>) o -> ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(o.key())))).thenReturn(testPlan);
 
     parser.collect(context, getDir("multipleReports"), true);
 

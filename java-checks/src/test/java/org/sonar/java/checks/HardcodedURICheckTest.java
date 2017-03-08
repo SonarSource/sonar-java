@@ -17,32 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.checks;
 
-import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.JavaVersion;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import java.nio.charset.Charset;
-
-public class JavaConfiguration {
-
-  private final Charset charset;
-  private JavaVersion javaVersion = new JavaVersionImpl();
-
-  public JavaConfiguration(Charset charset) {
-    this.charset = charset;
-  }
-
-  public Charset getCharset() {
-    return charset;
-  }
-
-  public JavaVersion javaVersion() {
-    return javaVersion;
-  }
-
-  public void setJavaVersion(JavaVersion javaVersion) {
-    this.javaVersion = javaVersion;
+public class HardcodedURICheckTest {
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/HardcodedURICheck.java", new HardcodedURICheck());
   }
 
 }

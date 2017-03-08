@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LiveVariablesTest {
 
-  public static final ActionParser<Tree> PARSER = JavaParser.createParser(StandardCharsets.UTF_8);
+  public static final ActionParser<Tree> PARSER = JavaParser.createParser();
 
   private static CFG buildCFG(String methodCode) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
