@@ -757,8 +757,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     List<JavaType> result = parameterTypes;
     JavaSymbol owner = constructorIdentifierSymbol.owner();
     if (!owner.isPackageSymbol() && !constructorIdentifierSymbol.isStatic()) {
-      List<JavaType> res = new ArrayList<>(parameterTypes);
-      res.add(0, owner.enclosingClass().type);
+      List<JavaType> res = new ArrayList<>();
+      res.add(owner.enclosingClass().type);
+      res.addAll(parameterTypes);
       result = Collections.unmodifiableList(res);
     }
     return result;

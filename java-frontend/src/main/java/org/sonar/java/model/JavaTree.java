@@ -185,9 +185,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public Iterable<Tree> children() {
       List<Tree> child = new ArrayList<>();
-      if(packageDeclaration != null) {
-        child.add(packageDeclaration);
-      }
+      child.add(packageDeclaration);
       child.addAll(imports);
       child.addAll(types);
       child.add(eofToken);
@@ -255,7 +253,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      List childs = new ArrayList();
+      List<Tree> childs = new ArrayList();
       childs.addAll(annotations);
       childs.add(packageKeyword);
       childs.add(packageName);
@@ -434,7 +432,7 @@ public abstract class JavaTree implements Tree {
         builder.add(extendsOrSuperToken);
         builder.add(bound);
       }
-      return Collections.unmodifiableCollection(builder);
+      return builder;
     }
   }
 
@@ -605,7 +603,7 @@ public abstract class JavaTree implements Tree {
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
       super(Kind.ARRAY_TYPE);
       this.type = type;
-      this.annotations = getAnnotations(annotations);
+      this.annotations = Collections.unmodifiableList(annotations);
       this.openBracketToken = openBracketToken;
       this.closeBracketToken = closeBracketToken;
       this.ellipsisToken = null;
@@ -614,7 +612,7 @@ public abstract class JavaTree implements Tree {
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellispsisToken) {
       super(Kind.ARRAY_TYPE);
       this.type = type;
-      this.annotations = getAnnotations(annotations);
+      this.annotations = Collections.unmodifiableList(annotations);
       this.openBracketToken = null;
       this.closeBracketToken = null;
       this.ellipsisToken = ellispsisToken;
@@ -680,14 +678,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken ellipsisToken() {
       return ellipsisToken;
-    }
-
-    private static List<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
-      List<AnnotationTree> annotationBuilder = new ArrayList<>();
-      for (AnnotationTreeImpl annotation : annotations) {
-        annotationBuilder.add(annotation);
-      }
-      return Collections.unmodifiableList(annotationBuilder);
     }
 
     public void complete(List<AnnotationTree> typeAnnotations) {
