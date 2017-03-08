@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
@@ -41,14 +41,21 @@ public class NestedTernaryOperatorsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ConditionalExpressionTree ternary = (ConditionalExpressionTree) tree;
+    Stream.of(ternary.condition(), ternary.trueExpression(), ternary.falseExpression()).forEach(expr -> expr.accept(new TernaryVisitor()));
 
-    Stream.of(ternary.condition(), ternary.trueExpression(), ternary.falseExpression())
-      .filter(NestedTernaryOperatorsCheck::isTernary)
-      .findFirst().ifPresent(nested -> reportIssue(nested, "Extract this nested ternary operation into an independent statement."));
   }
 
-  private static boolean isTernary(ExpressionTree tree) {
-    return ExpressionUtils.skipParentheses(tree).is(Tree.Kind.CONDITIONAL_EXPRESSION);
+  private class TernaryVisitor extends BaseTreeVisitor {
+    @Override
+    public void visitConditionalExpression(ConditionalExpressionTree tree) {
+      // cut the exploration to report only 1 level
+      reportIssue(tree, "Extract this nested ternary operation into an independent statement.");
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip nested anonymous classes which could be declared within condition or true/false branches, and using ternary operator
+    }
   }
 
 }
