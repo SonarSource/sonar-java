@@ -10,7 +10,7 @@ SonarJava is a code analyzer for Java projects. Information about the SonarJava 
 Features
 --------
 
-* 370+ rules (including 80+ bug detection)
+* 390+ rules (including 140+ bug detection)
 * Metrics (complexity, number of lines etc.)
 * Import of [test coverage reports](http://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
 * [Custom rules](http://docs.sonarqube.org/display/DEV/Custom+Rules+for+Java)
@@ -70,7 +70,9 @@ To run integration tests, you will need to create a properties file like the one
 
 With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as: 
 
-    ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
+    export ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
+
+Before running the ITs, be sure your MAVEN_HOME environment variable is set.
 
 #### Plugin Test
 
