@@ -45,42 +45,41 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   private static final String SHA1 = "SHA1";
 
   private static final Map<String, String> ALGORITHM_BY_METHOD_NAME = new HashMap<>();
-    static {
-
-      ALGORITHM_BY_METHOD_NAME.put("getMd5Digest", MD5);
-      ALGORITHM_BY_METHOD_NAME.put("getShaDigest", SHA1);
-      ALGORITHM_BY_METHOD_NAME.put("getSha1Digest", SHA1);
-      ALGORITHM_BY_METHOD_NAME.put("md5", MD5);
-      ALGORITHM_BY_METHOD_NAME.put("md5Hex", MD5);
-      ALGORITHM_BY_METHOD_NAME.put("sha1", SHA1);
-      ALGORITHM_BY_METHOD_NAME.put("sha1Hex", SHA1);
-      ALGORITHM_BY_METHOD_NAME.put("sha", SHA1);
-      ALGORITHM_BY_METHOD_NAME.put("shaHex", SHA1);
-    }
+  static {
+    ALGORITHM_BY_METHOD_NAME.put("getMd5Digest", MD5);
+    ALGORITHM_BY_METHOD_NAME.put("getShaDigest", SHA1);
+    ALGORITHM_BY_METHOD_NAME.put("getSha1Digest", SHA1);
+    ALGORITHM_BY_METHOD_NAME.put("md5", MD5);
+    ALGORITHM_BY_METHOD_NAME.put("md5Hex", MD5);
+    ALGORITHM_BY_METHOD_NAME.put("sha1", SHA1);
+    ALGORITHM_BY_METHOD_NAME.put("sha1Hex", SHA1);
+    ALGORITHM_BY_METHOD_NAME.put("sha", SHA1);
+    ALGORITHM_BY_METHOD_NAME.put("shaHex", SHA1);
+  }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     List<MethodMatcher> builder = new ArrayList<>();
-      builder.add(MethodMatcher.create()
-        .typeDefinition("java.security.MessageDigest")
-        .name("getInstance")
-        .addParameter(JAVA_LANG_STRING));
-      builder.add(MethodMatcher.create()
-        .typeDefinition("java.security.MessageDigest")
-        .name("getInstance")
-        .addParameter(JAVA_LANG_STRING)
-        .addParameter(TypeCriteria.anyType()));
-      builder.add(MethodMatcher.create()
-        .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
-        .name("getDigest")
-        .addParameter(JAVA_LANG_STRING));
+    builder.add(MethodMatcher.create()
+      .typeDefinition("java.security.MessageDigest")
+      .name("getInstance")
+      .addParameter(JAVA_LANG_STRING));
+    builder.add(MethodMatcher.create()
+      .typeDefinition("java.security.MessageDigest")
+      .name("getInstance")
+      .addParameter(JAVA_LANG_STRING)
+      .addParameter(TypeCriteria.anyType()));
+    builder.add(MethodMatcher.create()
+      .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
+      .name("getDigest")
+      .addParameter(JAVA_LANG_STRING));
     for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
       builder.add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name(methodName)
         .withAnyParameters());
     }
-    for (String methodName : new String[]{"md5", "sha1"}) {
+    for (String methodName : new String[] {"md5", "sha1"}) {
       builder.add(MethodMatcher.create()
         .typeDefinition("com.google.common.hash.Hashing")
         .name(methodName)

@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,11 +84,9 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
     if(openParenToken != null) {
       result.add(openParenToken);
     }
-    for (Tree tree : super.children()) {
-      result.add(tree);
-    }
-    if(closeParenToken != null) {
-        result.add(closeParenToken);
+    super.children().forEach(result::add);
+    if (closeParenToken != null) {
+      result.add(closeParenToken);
     }
     return result;
   }
