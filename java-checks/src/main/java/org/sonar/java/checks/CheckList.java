@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -48,6 +48,7 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.S3749Check;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
@@ -84,7 +85,7 @@ import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 public final class CheckList {
 
@@ -464,6 +465,7 @@ public final class CheckList {
       .add(SynchronizationOnGetClassCheck.class)
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
+      .add(S3749Check.class)
       .add(BooleanMethodNameCheck.class)
       .add(StaticFieldUpdateInConstructorCheck.class)
       .add(NestedTernaryOperatorsCheck.class)

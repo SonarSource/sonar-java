@@ -1,0 +1,26 @@
+<p>Spring <code>@Controller</code>s, <code>@Service</code>s, and <code>@Repository</code>s are singletons by default, meaning only one instance of the
+class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members, such as a logger, but all
+non-<code>static</code> members should be managed by Spring. That is, they should have the <code>@Autowired</code> annotation. </p>
+<p>Having non-<code>@Autowired</code> members in one of these classes could indicate an attempt to manage state. Because they are singletons, such an
+attempt is almost guaranteed to eventually expose data from User1's session to User2. </p>
+<p>This rule raises an issue when a singleton <code>@Controller</code>, <code>@Service</code>, or <code>@Repository</code> has
+non-<code>static</code>, non-<code>@Autowired</code> members.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Controller
+public class HelloWorld {
+
+  private String name = null;
+
+  @RequestMapping("/greet", method = GET)
+  public String greet(String greetee) {
+
+    if (greetee != null) {
+      this.name = greetee;
+    }
+
+    return "Hello " + this.name;  // if greetee is null, you see the previous user's data
+  }
+}
+</pre>
+
