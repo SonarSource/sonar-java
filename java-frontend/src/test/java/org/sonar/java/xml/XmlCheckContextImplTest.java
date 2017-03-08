@@ -21,6 +21,8 @@ package org.sonar.java.xml;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -40,6 +42,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -53,6 +56,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class XmlCheckContextImplTest {
 
@@ -300,6 +304,11 @@ public class XmlCheckContextImplTest {
         return null;
       }
     }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq(null));
+
+    when(sonarComponents.fileLines(Mockito.any(File.class))).thenAnswer(invocation -> {
+      File arg = (File) invocation.getArguments()[0];
+      return Files.readLines(arg, StandardCharsets.UTF_8);
+    });
 
     return sonarComponents;
   }

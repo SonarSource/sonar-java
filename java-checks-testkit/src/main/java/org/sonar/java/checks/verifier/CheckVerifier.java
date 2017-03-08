@@ -30,20 +30,30 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+import com.sonar.sslr.api.RecognitionException;
+
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
+import org.sonar.java.SonarComponents;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -170,6 +180,19 @@ public abstract class CheckVerifier {
     } else {
       assertMultipleIssue(issues);
     }
+  }
+
+  static SonarComponents sonarComponents(File file) {
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+      @Override
+      public boolean reportAnalysisError(RecognitionException re, File file) {
+        return false;
+      }
+    };
+    sonarComponents.setSensorContext(context);
+    context.fileSystem().add(new TestInputFileBuilder("", file.getPath()).setCharset(StandardCharsets.UTF_8).build());
+    return sonarComponents;
   }
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {

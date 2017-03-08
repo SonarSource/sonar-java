@@ -165,7 +165,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
     }
   }
 
-  public static AnalyzerMessage buildAnalyzerMessage(JavaCheck check, String message, Integer line, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost, File file) {
+  public AnalyzerMessage buildAnalyzerMessage(JavaCheck check, String message, Integer line, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost, File file) {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, file, line, message, cost != null ? cost.intValue() : 0);
     for (XmlDocumentLocation location : secondary) {
       AnalyzerMessage secondaryLocation = getSecondaryAnalyzerMessage(check, file, location);
@@ -177,12 +177,13 @@ public class XmlCheckContextImpl implements XmlCheckContext {
   }
 
   @CheckForNull
-  private static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, XmlDocumentLocation location) {
+  private AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, XmlDocumentLocation location) {
     Integer startLine = nodeLine(location.node);
     if (startLine == null) {
       return null;
     }
-    TextSpan ts = new TextSpan(startLine, 0, startLine, 0);
+    String line = sonarComponents.fileLines(file).get(startLine - 1);
+    TextSpan ts = new TextSpan(startLine, 0, startLine, line.length());
     return new AnalyzerMessage(check, file, ts, location.msg, 0);
   }
 

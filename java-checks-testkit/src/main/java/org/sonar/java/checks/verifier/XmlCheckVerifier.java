@@ -116,7 +116,7 @@ public class XmlCheckVerifier extends CheckVerifier {
     private final Set<AnalyzerMessage> messages = new HashSet<>();
 
     public FakeXmlCheckContext(Document document, File file) {
-      super(document, file, XPathFactory.newInstance().newXPath(), null);
+      super(document, file, XPathFactory.newInstance().newXPath(), CheckVerifier.sonarComponents(file));
     }
 
     public Set<AnalyzerMessage> getMessages() {
