@@ -466,6 +466,7 @@ public final class CheckList {
       .add(LazyArgEvaluationCheck.class)
       .add(BooleanMethodNameCheck.class)
       .add(StaticFieldUpdateInConstructorCheck.class)
+      .add(NestedTernaryOperatorsCheck.class)
       .build();
   }
 
