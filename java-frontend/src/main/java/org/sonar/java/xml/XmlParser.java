@@ -33,7 +33,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Deque;
@@ -53,6 +52,10 @@ public class XmlParser {
 
   public static Document parseXML(File file) {
     try {
+      if (file.length() == 0) {
+        LOG.warn("File {} is empty and won't be analyzed.", file.getPath());
+        return null;
+      }
       Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
       SAXParserFactory factory = SAXParserFactory.newInstance();
       factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);

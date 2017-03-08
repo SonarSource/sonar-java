@@ -20,7 +20,10 @@
 package org.sonar.java.xml;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -35,9 +38,19 @@ public class XmlParserTest {
   private Document doc;
   private NamedNodeMap attributes;
 
+  @Rule
+  public LogTester logTester = new LogTester();
+
   @Before
   public void setup() {
     doc = XmlParser.parseXML(new File("src/test/files/xml/parsing.xml"));
+  }
+
+  @Test
+  public void empty_xml_file_should_produce_a_nice_warning_log() throws Exception {
+    XmlParser.parseXML(new File("src/test/files/xml/empty.xml"));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("File src/test/files/xml/empty.xml is empty and won't be analyzed.");
   }
 
   @Test
