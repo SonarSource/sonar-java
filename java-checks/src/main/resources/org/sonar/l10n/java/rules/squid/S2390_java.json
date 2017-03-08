@@ -1,5 +1,5 @@
 {
-  "title": "Classes should not reference their own subclasses during initialization",
+  "title": "Classes should not access static members of their own subclasses during initialization",
   "type": "BUG",
   "status": "ready",
   "remediation": {

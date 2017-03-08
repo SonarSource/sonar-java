@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Rule(key = "S2390")
-public class SubClassReferenceInitalizationCheck extends IssuableSubscriptionVisitor {
+public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,15 +50,18 @@ public class SubClassReferenceInitalizationCheck extends IssuableSubscriptionVis
     Type classType = classTree.symbol().type();
     List<Tree> members = classTree.members();
 
-    checkVariables(members, classType);
+    // JLS 12.4. Initialization of Classes and Interfaces:
+    // Initialization of a class consists of executing its static initializers and the initializers for static fields (class variables)
+    // declared in the class.
+    checkStaticVariables(members, classType);
     checkStaticInitilizers(members, classType);
   }
 
-  private void checkVariables(List<Tree> members, Type classType) {
+  private void checkStaticVariables(List<Tree> members, Type classType) {
     members.stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .filter(SubClassReferenceInitalizationCheck::isStaticVariable)
+      .filter(SubClassStaticReferenceCheck::isStaticVariable)
       .map(VariableTree::initializer)
       .filter(Objects::nonNull)
       .forEach(initializer -> initializer.accept(new StaticAccessVisitor(classType)));
@@ -86,6 +89,11 @@ public class SubClassReferenceInitalizationCheck extends IssuableSubscriptionVis
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       // skip the variable
       scan(tree.expression());
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip anonymous classes
     }
 
     @Override

@@ -13,6 +13,11 @@ class Parent {
 class Child extends Parent {
    static int version = 6;
    static MoreChild singleton = new MoreChild(); // Noncompliant {{Remove this reference to "MoreChild".}}
+   static Child child = new Child() { // Compliant
+     MoreChild foo() { // Compliant
+       return null;
+     }
+   };
 
    static int getVersion() {
      return 0;

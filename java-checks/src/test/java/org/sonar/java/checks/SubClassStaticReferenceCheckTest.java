@@ -22,15 +22,15 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SubClassReferenceInitalizationCheckTest {
+public class SubClassStaticReferenceCheckTest {
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SubClassReferenceDuringClassInitalizationCheck.java", new SubClassReferenceInitalizationCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/SubClassStaticReferenceCheck.java", new SubClassStaticReferenceCheck());
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SubClassReferenceDuringClassInitalizationCheck.java",
-      new SubClassReferenceInitalizationCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SubClassStaticReferenceCheck.java",
+      new SubClassStaticReferenceCheck());
   }
 }
