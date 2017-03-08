@@ -19,9 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
@@ -36,7 +34,9 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
 
@@ -48,9 +48,9 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);
-    this.methodSelect = Preconditions.checkNotNull(methodSelect);
+    this.methodSelect = Objects.requireNonNull(methodSelect);
     this.typeArguments = typeArguments;
-    this.arguments = Preconditions.checkNotNull(arguments);
+    this.arguments = Objects.requireNonNull(arguments);
   }
 
   @Override
@@ -98,13 +98,17 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      typeArguments != null ? Collections.singletonList(typeArguments) : Collections.<Tree>emptyList(),
-      Lists.newArrayList(methodSelect, arguments));
+    List<Tree> res = new ArrayList<>();
+    if(typeArguments != null) {
+      res.add(typeArguments);
+    }
+    res.add(methodSelect);
+    res.add(arguments);
+    return res;
   }
 
   public void setSymbol(Symbol symbol) {
-    Preconditions.checkState(this.symbol.isUnknown());
+    Validate.isTrue(this.symbol.isUnknown());
     this.symbol = symbol;
   }
 }

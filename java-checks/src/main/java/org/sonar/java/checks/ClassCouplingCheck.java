@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -44,7 +43,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +75,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       nesting.push(types);
-      types = Sets.newHashSet();
+      types = new HashSet<>();
     }
     checkTypes(tree.superClass());
     checkTypes((List<? extends Tree>) tree.superInterfaces());

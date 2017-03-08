@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -30,6 +29,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1160")
@@ -37,7 +38,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
@@ -46,7 +47,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
     if (hasSemantic() && isPublic(methodTree) && !((MethodTreeImpl) methodTree).isMainMethod()) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverriden(methodTree)) {
-        reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+        reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + StringUtils.join(thrownCheckedExceptions, ", "));
       }
     }
   }
@@ -60,13 +61,13 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
   }
 
   private static List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
+    List<String> builder = new ArrayList<>();
     for (Type thrownClass : methodTree.symbol().thrownTypes()) {
       if (!thrownClass.isUnknown() && !isSubClassOfRuntimeException(thrownClass)) {
         builder.add(thrownClass.fullyQualifiedName());
       }
     }
-    return builder.build();
+    return builder;
   }
 
   private static boolean isSubClassOfRuntimeException(Type thrownClass) {

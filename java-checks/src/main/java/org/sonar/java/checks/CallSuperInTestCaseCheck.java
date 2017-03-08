@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,7 +32,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2188")
@@ -44,7 +45,7 @@ public class CallSuperInTestCaseCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
@@ -59,7 +60,7 @@ public class CallSuperInTestCaseCheck extends IssuableSubscriptionVisitor {
 
   private static boolean requiresSuperCall(Symbol.MethodSymbol methodSymbol) {
     Type superType = methodSymbol.owner().type().symbol().superClass();
-    Collection<Symbol> symbols = Lists.newArrayList();
+    Collection<Symbol> symbols = new ArrayList<>();
     while (superType != null && !superType.is(JUNIT_FRAMEWORK_TEST_CASE) && symbols.isEmpty()) {
       symbols = superType.symbol().lookupSymbols(methodSymbol.name());
       superType = superType.symbol().superClass();

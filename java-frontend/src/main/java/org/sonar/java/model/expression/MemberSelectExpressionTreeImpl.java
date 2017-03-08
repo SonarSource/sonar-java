@@ -19,10 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -35,7 +32,10 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
 
@@ -53,21 +53,21 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     this.nestedDimensions = nestedDimensions;
     this.dotToken = dotToken;
     this.identifier = identifier;
-    this.annotations = ImmutableList.<AnnotationTree>of();
+    this.annotations = Collections.emptyList();
   }
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = null;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.dotToken = dotToken;
-    this.identifier = Preconditions.checkNotNull(identifier);
-    this.annotations = ImmutableList.<AnnotationTree>of();
+    this.identifier = Objects.requireNonNull(identifier);
+    this.annotations = Collections.emptyList();
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
-    Preconditions.checkState(this.expression == null);
+    Validate.isTrue(this.expression == null);
     ExpressionTree result = expression;
 
     if (nestedDimensions != null) {
@@ -117,11 +117,10 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      annotations,
-      Lists.newArrayList(
-        expression,
-        dotToken,
-        identifier));
+    List<Tree> res = new ArrayList<>(annotations);
+    res.add(expression);
+    res.add(dotToken);
+    res.add(identifier);
+    return res;
   }
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -101,7 +101,7 @@ public class XmlFileSensorTest {
 
     Checks<JavaCheck> checks = mock(Checks.class);
     when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(PomElementOrderCheck.class)));
-    when(sonarComponents.checks()).thenReturn(Lists.<Checks<JavaCheck>>newArrayList(checks));
+    when(sonarComponents.checks()).thenReturn(Collections.singletonList(checks));
 
     return sonarComponents;
   }

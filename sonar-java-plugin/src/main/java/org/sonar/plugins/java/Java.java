@@ -19,8 +19,7 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.AbstractLanguage;
 
@@ -81,7 +80,7 @@ public class Java extends AbstractLanguage {
   public String[] getFileSuffixes() {
     String[] suffixes = Arrays.stream(settings.getStringArray(Java.FILE_SUFFIXES_KEY)).filter(s -> s != null && !s.trim().isEmpty()).toArray(String[]::new);
     if (suffixes.length == 0) {
-      suffixes = Iterables.toArray(Splitter.on(',').split(DEFAULT_FILE_SUFFIXES), String.class);
+      suffixes = StringUtils.split(DEFAULT_FILE_SUFFIXES, ',');
     }
     return suffixes;
   }

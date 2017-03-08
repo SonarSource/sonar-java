@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -37,7 +35,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.java.model.LiteralUtils.intLiteralValue;
@@ -46,7 +45,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.FOR_STATEMENT);
+    return Collections.singletonList(Tree.Kind.FOR_STATEMENT);
   }
 
   @Override
@@ -97,7 +96,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
     }
 
     public static Iterable<ForLoopInitializer> list(ForStatementTree forStatement) {
-      List<ForLoopInitializer> list = Lists.newArrayList();
+      List<ForLoopInitializer> list = new ArrayList<>();
       for (StatementTree statement : forStatement.initializer()) {
         if (statement.is(Tree.Kind.VARIABLE)) {
           VariableTree variable = (VariableTree) statement;
@@ -143,7 +142,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
     }
 
     public int value() {
-      Preconditions.checkState(value != null, "This ForLoopIncrement has no value");
+      Validate.isTrue(value != null, "This ForLoopIncrement has no value");
       return value;
     }
 

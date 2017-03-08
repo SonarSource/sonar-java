@@ -21,8 +21,7 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-
+import org.apache.commons.collections4.MultiValuedMap;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +97,7 @@ public class BaseTreeVisitorIssueFilterTest {
 
   @Test
   public void excluded_lines_are_correct() {
-    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    MultiValuedMap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
     assertThat(excludedLinesByRule).isNotNull();
     assertThat(excludedLinesByRule.isEmpty()).isFalse();
     assertThat(excludedLinesByRule.keySet()).containsOnly(RULE_KEY);
@@ -118,7 +116,7 @@ public class BaseTreeVisitorIssueFilterTest {
     // no component is set
     scanFile(filter);
 
-    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    MultiValuedMap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
     assertThat(excludedLinesByRule).isNotNull();
     assertThat(excludedLinesByRule.isEmpty()).isTrue();
   }

@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -28,11 +26,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetection {
-  private Deque<Boolean> withinSynchronizedBlock = Lists.newLinkedList();
+  private Deque<Boolean> withinSynchronizedBlock = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -43,7 +43,7 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.METHOD);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.METHOD);
   }
 
   @Override

@@ -19,9 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -31,7 +28,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
 
@@ -46,7 +45,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     super(Kind.ASSERT_STATEMENT);
     this.assertToken = assertToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.colonToken = null;
     this.detail = null;
     this.semicolonToken = semicolonToken;
@@ -55,12 +54,12 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
     super(Kind.ASSERT_STATEMENT);
     this.colonToken = colonToken;
-    this.detail = Preconditions.checkNotNull(detail);
+    this.detail = Objects.requireNonNull(detail);
   }
 
   public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     this.assertToken = assertToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.semicolonToken = semicolonToken;
 
     return this;
@@ -105,10 +104,15 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Lists.newArrayList(assertToken, condition),
-      colonToken != null ? Lists.newArrayList(colonToken, detail) : Collections.<Tree>emptyList(),
-      Collections.singletonList(semicolonToken));
+    List<Tree> res = new ArrayList<>();
+    res.add(assertToken);
+    res.add(condition);
+    if(colonToken != null) {
+      res.add(colonToken);
+      res.add(detail);
+    }
+    res.add(semicolonToken);
+    return res;
   }
 
 }

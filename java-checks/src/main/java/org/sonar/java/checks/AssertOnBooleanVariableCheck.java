@@ -19,19 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S3346")
 public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<Kind> SIDE_EFFECT_KIND = ImmutableList.of(
+  private static final List<Kind> SIDE_EFFECT_KIND = Arrays.asList(
     Kind.METHOD_INVOCATION,
 
     Kind.ASSIGNMENT,
@@ -58,10 +59,10 @@ public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.<Kind>builder()
-      .add(Kind.ASSERT_STATEMENT)
-      .addAll(SIDE_EFFECT_KIND)
-      .build();
+    List<Kind> kinds = new ArrayList<>();
+    kinds.add(Kind.ASSERT_STATEMENT);
+    kinds.addAll(SIDE_EFFECT_KIND);
+    return kinds;
   }
 
   @Override

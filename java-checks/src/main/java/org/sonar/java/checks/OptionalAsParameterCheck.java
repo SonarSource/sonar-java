@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
@@ -31,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,15 +37,14 @@ import java.util.Optional;
 public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
-  private static final List<String> PRIMITIVE_OPTIONALS = ImmutableList.<String>builder()
-    .add("java.util.OptionalDouble")
-    .add("java.util.OptionalInt")
-    .add("java.util.OptionalLong")
-    .build();
+  private static final List<String> PRIMITIVE_OPTIONALS = Arrays.asList(
+    "java.util.OptionalDouble",
+    "java.util.OptionalInt",
+    "java.util.OptionalLong");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2226")
@@ -46,7 +46,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE, Kind.METHOD);
+    return Arrays.asList(Tree.Kind.VARIABLE, Kind.METHOD);
   }
 
   @Override

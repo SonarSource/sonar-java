@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -48,7 +47,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
 
@@ -101,20 +103,20 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.typeParameters = new TypeParameterListTreeImpl();
     this.modifiers = null;
     this.returnType = returnType;
-    this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.parameters = Preconditions.checkNotNull(parameters);
+    this.simpleName = Objects.requireNonNull(simpleName);
+    this.parameters = Objects.requireNonNull(parameters);
     this.openParenToken = parameters.openParenToken();
     this.closeParenToken = parameters.closeParenToken();
     this.block = block;
     this.semicolonToken = semicolonToken;
     this.throwsToken = throwsToken;
-    this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
+    this.throwsClauses = Objects.requireNonNull(throwsClauses);
     this.defaultToken = null;
     this.defaultValue = null;
   }
 
   public MethodTreeImpl complete(TypeTree returnType, IdentifierTree simpleName, SyntaxToken semicolonToken) {
-    Preconditions.checkState(this.simpleName == null);
+    Validate.isTrue(this.simpleName == null);
     this.returnType = returnType;
     this.simpleName = simpleName;
     this.semicolonToken = semicolonToken;
@@ -128,7 +130,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public MethodTreeImpl completeWithModifiers(ModifiersTreeImpl modifiers) {
-    Preconditions.checkState(this.modifiers == null);
+    Validate.isTrue(this.modifiers == null);
     this.modifiers = modifiers;
 
     return this;
@@ -219,7 +221,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public void setSymbol(JavaSymbol.MethodJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol == null);
+    Validate.isTrue(this.symbol == null);
     this.symbol = symbol;
   }
 
@@ -230,27 +232,30 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(modifiers, typeParameters);
+    List<Tree> iteratorBuilder = new ArrayList<>();
+    iteratorBuilder.add(modifiers);
+    iteratorBuilder.add(typeParameters);
     if (returnType != null) {
       iteratorBuilder.add(returnType);
     }
-    iteratorBuilder.add(simpleName, openParenToken);
-    iteratorBuilder.addAll(parameters.iterator());
+    iteratorBuilder.add(simpleName);
+    iteratorBuilder.add(openParenToken);
+    parameters.iterator().forEachRemaining(iteratorBuilder::add);
     iteratorBuilder.add(closeParenToken);
     if (throwsToken != null) {
       iteratorBuilder.add(throwsToken);
       iteratorBuilder.add(throwsClauses);
     }
     if (defaultToken != null) {
-      iteratorBuilder.add(defaultToken, defaultValue);
+      iteratorBuilder.add(defaultToken);
+      iteratorBuilder.add(defaultValue);
     }
     if (block != null) {
       iteratorBuilder.add(block);
     } else {
       iteratorBuilder.add(semicolonToken);
     }
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(iteratorBuilder);
   }
 
   /**

@@ -19,9 +19,8 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -36,7 +35,6 @@ import java.util.List;
  *
  * @since Java 1.3
  */
-@Beta
 public interface TryStatementTree extends StatementTree {
 
   SyntaxToken tryKeyword();

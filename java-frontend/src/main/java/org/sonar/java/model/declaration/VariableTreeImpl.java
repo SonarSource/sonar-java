@@ -19,9 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -38,7 +36,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.util.Collections;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -81,8 +82,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(kind);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.simpleName = Preconditions.checkNotNull(simpleName);
+    this.modifiers = Objects.requireNonNull(modifiers);
+    this.simpleName = Objects.requireNonNull(simpleName);
     this.initializer = initializer;
   }
 
@@ -189,7 +190,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public void setSymbol(JavaSymbol.VariableJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol == null);
+    Validate.isTrue(this.symbol == null);
     this.symbol = symbol;
   }
 
@@ -200,11 +201,18 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Lists.newArrayList(modifiers, type, simpleName),
-      initializer != null ? Lists.newArrayList(equalToken, initializer) : Collections.<Tree>emptyList(),
-      endToken != null ? Collections.singletonList(endToken) : Collections.<Tree>emptyList()
-    );
+    List<Tree> res = new ArrayList<>();
+    res.add(modifiers);
+    res.add(type);
+    res.add(simpleName);
+    if (initializer != null) {
+      res.add(equalToken);
+      res.add(initializer);
+    }
+    if (endToken != null) {
+      res.add(endToken);
+    }
+    return res;
   }
 
   @CheckForNull

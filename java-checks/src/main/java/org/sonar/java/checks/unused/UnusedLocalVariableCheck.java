@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -40,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1481")
@@ -67,12 +66,12 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.PREFIX_INCREMENT
   };
 
-  private List<VariableTree> variables = Lists.newArrayList();
-  private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
+  private List<VariableTree> variables = new ArrayList<>();
+  private MultiValuedMap<Symbol, IdentifierTree> assignments = new ArrayListValuedHashMap<>();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(
+    return Arrays.asList(
       Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER,
       Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
       Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.COMPILATION_UNIT);

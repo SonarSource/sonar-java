@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rule.RuleStatus;
@@ -37,10 +34,11 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 /**
  * Definition of rules.
@@ -62,7 +60,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
     List<Class> checks = CheckList.getChecks();
-    new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
+    new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[0]));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
       newRule(ruleClass, repository, profile);
@@ -70,7 +68,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     repository.done();
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   protected void newRule(Class<?> ruleClass, NewRepository repository, JavaSonarWayProfile.Profile profile) {
 
     org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
@@ -108,34 +106,38 @@ public class JavaRulesDefinition implements RulesDefinition {
   }
 
   private void addMetadata(NewRule rule, String metadataKey) {
-    URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
-    if (resource != null) {
-      RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
-      rule.setSeverity(metatada.defaultSeverity.toUpperCase(Locale.US));
-      rule.setName(metatada.title);
-      rule.addTags(metatada.tags);
-      rule.setType(RuleType.valueOf(metatada.type));
-      rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase(Locale.US)));
-      if(metatada.remediation != null) {
-        rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
-        rule.setGapDescription(metatada.remediation.linearDesc);
+    String resourceName = RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json";
+    try(InputStream resource = JavaRulesDefinition.class.getResourceAsStream(resourceName)) {
+      if (resource != null) {
+        RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
+        rule.setSeverity(metatada.defaultSeverity.toUpperCase(Locale.US));
+        rule.setName(metatada.title);
+        rule.addTags(metatada.tags);
+        rule.setType(RuleType.valueOf(metatada.type));
+        rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase(Locale.US)));
+        if (metatada.remediation != null) {
+          rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
+          rule.setGapDescription(metatada.remediation.linearDesc);
+        }
       }
+    } catch (IOException e){
+      throw new IllegalStateException("Failed to read: " + resourceName, e);
     }
   }
 
   private static void addHtmlDescription(NewRule rule, String metadataKey) {
-    URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html");
-    if (resource != null) {
-      rule.setHtmlDescription(readResource(resource));
+    String resourceName = RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html";
+    try(InputStream resource = JavaRulesDefinition.class.getResourceAsStream(resourceName)) {
+      if (resource != null) {
+        rule.setHtmlDescription(readResource(resource));
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read: " + resourceName, e);
     }
   }
 
-  private static String readResource(URL resource) {
-    try {
-      return Resources.toString(resource, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new IllegalStateException("Failed to read: " + resource, e);
-    }
+  private static String readResource(InputStream resource) {
+    return new Scanner(resource, StandardCharsets.UTF_8.name()).useDelimiter("\\A").next();
   }
 
   private static class RuleMetatada {

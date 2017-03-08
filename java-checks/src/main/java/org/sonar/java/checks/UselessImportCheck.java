@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -37,7 +35,9 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +48,8 @@ import java.util.Set;
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
-  private final Set<String> pendingImports = Sets.newHashSet();
-  private final Set<String> pendingReferences = Sets.newHashSet();
+  private final Set<String> pendingImports = new HashSet<>();
+  private final Set<String> pendingReferences = new HashSet<>();
 
   private String currentPackage;
   private JavaFileScannerContext context;
@@ -189,7 +189,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.TRIVIA);
+      return Collections.singletonList(Tree.Kind.TRIVIA);
     }
 
     public void checkImportsFromComments(CompilationUnitTree cut, Set<String> pendingImports) {

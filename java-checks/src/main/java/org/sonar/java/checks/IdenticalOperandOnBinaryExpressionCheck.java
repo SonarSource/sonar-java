@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -31,6 +30,9 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1764")
@@ -39,37 +41,35 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
   /**
    * symetric operators : a OP b is equivalent to b OP a
    */
-  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
-    .add(Tree.Kind.EQUAL_TO)
-    .add(Tree.Kind.NOT_EQUAL_TO)
-    .add(Tree.Kind.AND)
-    .add(Tree.Kind.XOR)
-    .add(Tree.Kind.OR)
-    .add(Tree.Kind.CONDITIONAL_AND)
-    .add(Tree.Kind.CONDITIONAL_OR)
-    .build();
+  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = Arrays.asList(
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO,
+    Tree.Kind.AND,
+    Tree.Kind.XOR,
+    Tree.Kind.OR,
+    Tree.Kind.CONDITIONAL_AND,
+    Tree.Kind.CONDITIONAL_OR);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-      .add(Tree.Kind.DIVIDE)
-      .add(Tree.Kind.REMAINDER)
-      .add(Tree.Kind.MINUS)
-      .add(Tree.Kind.LEFT_SHIFT)
-      .add(Tree.Kind.RIGHT_SHIFT)
-      .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
-      .add(Tree.Kind.LESS_THAN)
-      .add(Tree.Kind.GREATER_THAN)
-      .add(Tree.Kind.LESS_THAN_OR_EQUAL_TO)
-      .add(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
-      .add(Tree.Kind.EQUAL_TO)
-      .add(Tree.Kind.NOT_EQUAL_TO)
-      .add(Tree.Kind.AND)
-      .add(Tree.Kind.XOR)
-      .add(Tree.Kind.OR)
-      .add(Tree.Kind.CONDITIONAL_AND)
-      .add(Tree.Kind.CONDITIONAL_OR)
-      .build();
+    return Arrays.asList(
+      Tree.Kind.DIVIDE,
+      Tree.Kind.REMAINDER,
+      Tree.Kind.MINUS,
+      Tree.Kind.LEFT_SHIFT,
+      Tree.Kind.RIGHT_SHIFT,
+      Tree.Kind.UNSIGNED_RIGHT_SHIFT,
+      Tree.Kind.LESS_THAN,
+      Tree.Kind.GREATER_THAN,
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+      Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
+      Tree.Kind.EQUAL_TO,
+      Tree.Kind.NOT_EQUAL_TO,
+      Tree.Kind.AND,
+      Tree.Kind.XOR,
+      Tree.Kind.OR,
+      Tree.Kind.CONDITIONAL_AND,
+      Tree.Kind.CONDITIONAL_OR);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       reportIssue(
         rightOperand,
         "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
-        ImmutableList.of(new JavaFileScannerContext.Location("", equivalentOperand)),
+        Collections.singletonList(new JavaFileScannerContext.Location("", equivalentOperand)),
         null);
     }
   }

@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Table;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -43,15 +42,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 @Rule(key = "S864")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Table<Tree.Kind, Tree.Kind, Boolean> OPERATORS_RELATION_TABLE;
+  private static final Map<Tree.Kind, Map<Tree.Kind, Boolean>> OPERATORS_RELATION_TABLE;
 
   private static final Set<Tree.Kind> ARITHMETIC_OPERATORS = EnumSet.of(
     Tree.Kind.MINUS,
@@ -82,12 +83,12 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   };
 
   static {
-    OPERATORS_RELATION_TABLE = HashBasedTable.create();
-    put(ARITHMETIC_OPERATORS, Iterables.concat(SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
-    put(SHIFT_OPERATORS, Iterables.concat(ARITHMETIC_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.AND), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.XOR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.OR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR)));
+    OPERATORS_RELATION_TABLE = new EnumMap<>(Tree.Kind.class);
+    put(ARITHMETIC_OPERATORS, IterableUtils.chainedIterable(SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(SHIFT_OPERATORS, IterableUtils.chainedIterable(ARITHMETIC_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.AND), IterableUtils.chainedIterable(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.XOR), IterableUtils.chainedIterable(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.OR), IterableUtils.chainedIterable(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR)));
     put(EnumSet.of(Tree.Kind.CONDITIONAL_AND), EnumSet.of(Tree.Kind.CONDITIONAL_OR));
     put(EnumSet.of(Tree.Kind.CONDITIONAL_OR), EnumSet.of(Tree.Kind.CONDITIONAL_AND));
   }
@@ -98,9 +99,9 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
     for (Tree.Kind first : firstSet) {
-      for (Tree.Kind second : secondSet) {
-        OPERATORS_RELATION_TABLE.put(first, second, true);
-      }
+      Map<Tree.Kind, Boolean> row = new EnumMap<>(Tree.Kind.class);
+      MapUtils.populateMap(row, secondSet, k -> k, k -> true);
+      OPERATORS_RELATION_TABLE.put(first, row);
     }
   }
 
@@ -146,7 +147,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
-    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
+    return BooleanUtils.isTrue(MapUtils.emptyIfNull(OPERATORS_RELATION_TABLE.get(kind1)).get(kind2));
   }
 
   @Override

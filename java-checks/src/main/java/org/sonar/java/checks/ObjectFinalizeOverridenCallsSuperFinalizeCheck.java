@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -38,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck")
@@ -50,7 +49,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -96,7 +95,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   private static boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
     if (blockTree != null) {
-      StatementTree last = Iterables.getLast(blockTree.body());
+      StatementTree last = blockTree.body().get(blockTree.body().size() - 1);
       if (last.is(Kind.EXPRESSION_STATEMENT)) {
         return lastStatementTree.equals(((ExpressionStatementTree) last).expression());
       } else if (last.is(Kind.TRY_STATEMENT)) {

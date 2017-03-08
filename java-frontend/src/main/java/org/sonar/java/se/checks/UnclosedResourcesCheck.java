@@ -19,9 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
@@ -50,7 +48,6 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -124,7 +121,7 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    ArrayList<Class<? extends Constraint>> domains = Lists.newArrayList(ResourceConstraint.class);
+    List<Class<? extends Constraint>> domains = Collections.singletonList(ResourceConstraint.class);
     FlowComputation.flow(node, sv, OPEN::equals, domains).stream().flatMap(Collection::stream)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);

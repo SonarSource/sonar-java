@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2089")
@@ -36,7 +36,7 @@ public class HttpRefererCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create()
+    return Arrays.asList(MethodMatcher.create()
       .typeDefinition("javax.servlet.http.HttpServletRequest")
       .name("getHeader")
       .addParameter("java.lang.String"));

@@ -19,9 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -39,6 +38,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,23 +55,23 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
 
-    List<CodeVisitor> commonVisitors = Lists.newArrayList(javaResourceLocator);
+    List<CodeVisitor> commonVisitors = new ArrayList<>();
+    commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
-
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<CodeVisitor> testCodeVisitors = Lists.newArrayList(commonVisitors);
+    Iterable<CodeVisitor> codeVisitors = IterableUtils.chainedIterable(commonVisitors, Arrays.asList(visitors));
+    Collection<CodeVisitor> testCodeVisitors = IterableUtils.toList(commonVisitors);
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList(measurer);
-      codeVisitors = Iterables.concat(measurers, codeVisitors);
+      codeVisitors = IterableUtils.chainedIterable(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
-    List<File> classpath = Lists.newArrayList();
-    List<File> testClasspath = Lists.newArrayList();
+    List<File> classpath = new ArrayList<>();
+    List<File> testClasspath = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
-        codeVisitors = Iterables.concat(
+        codeVisitors = IterableUtils.chainedIterable(
           codeVisitors,
           Arrays.asList(
             new FileLinesVisitor(sonarComponents),

@@ -19,10 +19,8 @@
  */
 package org.sonar.java.xml;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 
-@Beta
 public interface XmlCheck extends JavaCheck {
 
   void scanFile(XmlCheckContext context);

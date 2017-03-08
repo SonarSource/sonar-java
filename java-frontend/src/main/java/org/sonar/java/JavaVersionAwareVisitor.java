@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaVersion;
 
 /**
@@ -28,7 +27,6 @@ import org.sonar.plugins.java.api.JavaVersion;
  * <br />
  * In order to be taken into account during analysis, the property <code>sonar.java.source</code> must be set.
  */
-@Beta
 public interface JavaVersionAwareVisitor {
   /**
    * Control if the check is compatible with the java version of the project being analyzed. The version used as parameter depends of the

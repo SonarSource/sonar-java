@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
@@ -34,13 +33,17 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class JavaPlugin implements Plugin {
 
   private static final Version SQ_6_0 = Version.create(6, 0);
 
   @Override
   public void define(Context context) {
-    ImmutableList.Builder<Object> builder = ImmutableList.builder();
+    List<Object> builder = new ArrayList<>();
     Version sonarQubeVersion = context.getSonarQubeVersion();
     if (!sonarQubeVersion.isGreaterThanOrEqual(SQ_6_0) || context.getRuntime().getProduct() != SonarProduct.SONARLINT) {
       builder.addAll(SurefireExtensions.getExtensions());
@@ -48,7 +51,7 @@ public class JavaPlugin implements Plugin {
       builder.add(JavaSonarWayProfile.class);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
-    builder.add(
+    builder.addAll(Arrays.asList(
       JavaClasspath.class,
       JavaTestClasspath.class,
       Java.class,
@@ -64,8 +67,8 @@ public class JavaPlugin implements Plugin {
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
-      XmlFileSensor.class);
-    context.addExtensions(builder.build());
+      XmlFileSensor.class));
+    context.addExtensions(builder);
   }
 
 }

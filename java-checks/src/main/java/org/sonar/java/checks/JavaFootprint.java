@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.squidbridge.recognizer.CamelCaseDetector;
 import org.sonar.squidbridge.recognizer.ContainsDetector;
 import org.sonar.squidbridge.recognizer.Detector;
@@ -27,11 +26,12 @@ import org.sonar.squidbridge.recognizer.EndWithDetector;
 import org.sonar.squidbridge.recognizer.KeywordsDetector;
 import org.sonar.squidbridge.recognizer.LanguageFootprint;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class JavaFootprint implements LanguageFootprint {
 
-  private final Set<Detector> detectors = Sets.newHashSet();
+  private final Set<Detector> detectors = new HashSet<>();
 
   public JavaFootprint() {
     detectors.add(new EndWithDetector(0.95, '}', ';', '{'));

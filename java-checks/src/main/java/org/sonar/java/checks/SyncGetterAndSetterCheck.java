@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,6 +32,7 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2886")
@@ -75,7 +74,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
@@ -100,7 +99,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
         .map(symbol -> (MethodTree) symbol.declaration())
         .filter(pairMethod -> pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod))
         .forEach(pairMethod -> reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
-          Lists.newArrayList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
+          Collections.singletonList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
     }
   }
 

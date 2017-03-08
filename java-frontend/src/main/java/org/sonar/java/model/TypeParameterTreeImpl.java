@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -31,6 +30,9 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree {
 
@@ -53,7 +55,7 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   public TypeParameterTreeImpl complete(IdentifierTreeImpl identifier) {
-    Preconditions.checkState(this.identifier == null);
+    Validate.isTrue(this.identifier == null);
     this.identifier = identifier;
     return this;
   }
@@ -86,12 +88,12 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> builder = ImmutableList.<Tree>builder()
-      .add(identifier);
+    List<Tree> builder = new ArrayList<>();
+    builder.add(identifier);
     if (extendsToken != null) {
       builder.add(extendsToken);
       builder.add(bounds);
     }
-    return builder.build();
+    return Collections.unmodifiableList(builder);
   }
 }

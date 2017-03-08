@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,6 +32,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2885")
@@ -43,7 +44,7 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE);
+    return Collections.singletonList(Tree.Kind.VARIABLE);
   }
 
   @Override

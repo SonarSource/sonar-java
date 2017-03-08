@@ -19,7 +19,7 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -63,7 +63,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
   }
 
   private boolean useDeprecatedProperties() {
-    return !Strings.isNullOrEmpty(settings.getString("sonar.binaries")) && !Strings.isNullOrEmpty(settings.getString("sonar.libraries"));
+    return StringUtils.isNotBlank(settings.getString("sonar.binaries")) && StringUtils.isNotBlank(settings.getString("sonar.libraries"));
   }
 
 }

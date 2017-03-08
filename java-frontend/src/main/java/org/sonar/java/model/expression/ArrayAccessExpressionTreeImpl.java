@@ -19,13 +19,15 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements ArrayAccessExpressionTree {
 
@@ -64,6 +66,9 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(expression, dimension);
+    List<Tree> res = new ArrayList<>();
+    res.add(expression);
+    res.add(dimension);
+    return res;
   }
 }

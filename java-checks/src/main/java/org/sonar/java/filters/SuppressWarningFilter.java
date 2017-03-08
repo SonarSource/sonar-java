@@ -19,14 +19,8 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
@@ -45,15 +39,19 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
-  private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
+  private final Map<String, MultiValuedMap<String, Integer>> excludedLinesByComponent = new HashMap<>();
 
   private static final String SUPPRESS_WARNING_RULE_KEY = getSuppressWarningRuleKey();
 
@@ -63,25 +61,25 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
-    return ImmutableSet.of();
+    return Collections.emptySet();
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    excludedLinesByComponent.put(getComponentKey(), HashMultimap.create(excludedLinesByRule()));
+    excludedLinesByComponent.put(getComponentKey(), new HashSetValuedHashMap<>(excludedLinesByRule()));
   }
 
   @Override
   public boolean accept(FilterableIssue issue) {
-    Multimap<String, Integer> excludedLinesByRule = HashMultimap.create();
+    MultiValuedMap<String, Integer> excludedLinesByRule = new HashSetValuedHashMap<>();
     if (excludedLinesByComponent.containsKey(issue.componentKey())) {
       excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
     }
     return !issueShouldNotBeReported(issue, excludedLinesByRule);
   }
 
-  private static boolean issueShouldNotBeReported(FilterableIssue issue, Multimap<String, Integer> excludedLineByRule) {
+  private static boolean issueShouldNotBeReported(FilterableIssue issue, MultiValuedMap<String, Integer> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
       if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
@@ -127,7 +125,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private void handleSuppressWarning(List<AnnotationTree> annotationTrees, Tree tree) {
     int startLine = -1;
-    List<String> rules = Lists.newArrayList();
+    List<String> rules = new ArrayList<>();
     for (AnnotationTree annotationTree : annotationTrees) {
       if (isSuppressWarningsAnnotation(annotationTree)) {
         startLine = ((JavaTree) annotationTree).getLine();
@@ -138,9 +136,9 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = tree.lastToken().line();
-      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
+      Set<Integer> filteredLines = IntStream.range(startLine, endLine + 1).boxed().collect(Collectors.toSet());
       for (String rule : rules) {
-        excludeLines(filteredlines, rule);
+        excludeLines(filteredLines, rule);
       }
     }
   }
@@ -154,7 +152,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   }
 
   private static List<String> getRulesFromExpression(ExpressionTree expression) {
-    List<String> args = Lists.newArrayList();
+    List<String> args = new ArrayList<>();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
     } else if (expression.is(Tree.Kind.NEW_ARRAY)) {

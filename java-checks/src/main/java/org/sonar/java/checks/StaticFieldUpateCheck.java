@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
@@ -35,6 +34,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,12 +67,12 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
 
   @Override
   public List<Kind> nodesToVisit() {
-    ImmutableList.Builder<Kind> builder = ImmutableList.builder();
+    List<Kind> builder = new ArrayList<>();
     builder.addAll(super.nodesToVisit());
     builder.add(Kind.STATIC_INITIALIZER);
-    builder.add(ASSIGNMENT_EXPRESSIONS);
-    builder.add(UNARY_EXPRESSIONS);
-    return builder.build();
+    builder.addAll(Arrays.asList(ASSIGNMENT_EXPRESSIONS));
+    builder.addAll(Arrays.asList(UNARY_EXPRESSIONS));
+    return builder;
   }
 
   @Override
@@ -138,6 +140,6 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of();
+    return Collections.emptyList();
   }
 }

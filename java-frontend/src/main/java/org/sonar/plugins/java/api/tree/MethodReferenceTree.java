@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import javax.annotation.Nullable;
 
 /**
@@ -28,7 +26,6 @@ import javax.annotation.Nullable;
  *
  * @since Java 1.8
  */
-@Beta
 public interface MethodReferenceTree extends ExpressionTree {
 
   Tree expression();

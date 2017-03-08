@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyCollector;
@@ -30,6 +28,7 @@ import org.sonar.maven.model.LocatedAttribute;
 import org.sonar.maven.model.maven2.Dependency;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3422")
@@ -54,8 +53,8 @@ public class DependencyWithSystemScopeCheck implements PomCheck {
 
   private static List<PomCheckContext.Location> getSecondary(@Nullable LocatedAttribute systemPath) {
     if (systemPath != null && StringUtils.isNotBlank(systemPath.getValue())) {
-      return Lists.newArrayList(new PomCheckContext.Location("Remove this", systemPath));
+      return Collections.singletonList(new PomCheckContext.Location("Remove this", systemPath));
     }
-    return ImmutableList.of();
+    return Collections.emptyList();
   }
 }

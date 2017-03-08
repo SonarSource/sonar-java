@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.data.ExecutionDataReader;
@@ -86,15 +86,15 @@ public class JacocoReportReader {
     }
     try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
       byte firstByte = dis.readByte();
-      Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
-      Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
+      Validate.isTrue(firstByte == ExecutionDataWriter.BLOCK_HEADER);
+      Validate.isTrue(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
       char version = dis.readChar();
       boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
       if (!isCurrentFormat) {
         JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
       }
       return isCurrentFormat;
-    } catch (IOException | IllegalStateException e) {
+    } catch (IOException | IllegalArgumentException e) {
       throw new AnalysisException(String.format("Unable to read %s to determine JaCoCo binary format.", jacocoExecutionData.getAbsolutePath()), e);
     }
   }

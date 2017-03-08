@@ -19,10 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
@@ -43,12 +39,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -141,7 +138,7 @@ public class NullDereferenceCheck extends SECheck {
       val = currentVal;
     }
     Symbol dereferencedSymbol = dereferencedSymbol(syntaxNode);
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol).stream()
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Collections.singletonList(ObjectConstraint.class), dereferencedSymbol).stream()
       .map(f -> addDereferenceMessage(f, syntaxNode))
       .collect(Collectors.toSet());
     reportIssue(syntaxNode, message, flows);
@@ -166,10 +163,10 @@ public class NullDereferenceCheck extends SECheck {
     } else {
       msg = String.format("'%s' is dereferenced.", symbolName);
     }
-    return ImmutableList.<JavaFileScannerContext.Location>builder()
-      .add(new JavaFileScannerContext.Location(msg, syntaxNode))
-      .addAll(flow)
-      .build();
+    List<JavaFileScannerContext.Location> res = new ArrayList<>();
+    res.add(new JavaFileScannerContext.Location(msg, syntaxNode));
+    res.addAll(flow);
+    return Collections.unmodifiableList(res);
   }
 
   @Override
@@ -190,13 +187,13 @@ public class NullDereferenceCheck extends SECheck {
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
-      Preconditions.checkNotNull(val);
+      Objects.requireNonNull(val);
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }
-    return Lists.newArrayList(context.getState());
+    return Collections.singletonList(context.getState());
   }
 
   private static boolean isAnnotatedCheckForNull(MethodInvocationTree syntaxNode) {

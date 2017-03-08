@@ -19,13 +19,8 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
@@ -37,22 +32,25 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
   private String componentKey;
-  private final Multimap<String, Integer> excludedLinesByRule;
+  private final MultiValuedMap<String, Integer> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
 
   public BaseTreeVisitorIssueFilter() {
-    excludedLinesByRule = HashMultimap.create();
+    excludedLinesByRule = new HashSetValuedHashMap<>();
     rulesKeysByRulesClass = rulesKeysByRulesClass(filteredRules());
   }
 
   private static Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass(Set<Class<? extends JavaCheck>> rules) {
-    Map<Class<? extends JavaCheck>, String> results = Maps.newHashMap();
+    Map<Class<? extends JavaCheck>, String> results = new HashMap<>();
     for (Class<? extends JavaCheck> ruleClass : rules) {
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, Rule.class);
       if (ruleAnnotation != null) {
@@ -82,7 +80,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.get(issue.ruleKey().rule()).contains(issue.line()));
   }
 
-  public Multimap<String, Integer> excludedLinesByRule() {
+  public MultiValuedMap<String, Integer> excludedLinesByRule() {
     return excludedLinesByRule;
   }
 
@@ -117,8 +115,8 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(firstSyntaxToken.line(), lastSyntaxToken.line()), DiscreteDomain.integers());
-      computeFilteredLinesForRule(filteredlines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
+      Set<Integer> filteredLines = IntStream.range(firstSyntaxToken.line(), lastSyntaxToken.line()+1).boxed().collect(Collectors.toSet());
+      computeFilteredLinesForRule(filteredLines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
     }
   }
 

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -35,12 +34,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "S1226")
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Set<Symbol> variables = Sets.newHashSet();
+  private final Set<Symbol> variables = new HashSet<>();
 
   private JavaFileScannerContext context;
   private SemanticModel semanticModel;

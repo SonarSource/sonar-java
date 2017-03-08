@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -27,6 +26,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S2273")
@@ -51,11 +51,12 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().name("wait").withoutParameter())
-      .add(MethodMatcher.create().name("wait").addParameter("long"))
-      .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
-      .add(MethodMatcher.create().name("notify").withoutParameter())
-      .add(MethodMatcher.create().name("notifyAll").withoutParameter()).build();
+    List<MethodMatcher> matchers = new ArrayList<>();
+    matchers.add(MethodMatcher.create().name("wait").withoutParameter());
+    matchers.add(MethodMatcher.create().name("wait").addParameter("long"));
+    matchers.add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"));
+    matchers.add(MethodMatcher.create().name("notify").withoutParameter());
+    matchers.add(MethodMatcher.create().name("notifyAll").withoutParameter());
+    return matchers;
   }
 }

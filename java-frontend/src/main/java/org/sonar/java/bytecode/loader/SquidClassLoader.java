@@ -19,7 +19,7 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import com.google.common.collect.Iterators;
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.io.Closeable;
@@ -89,7 +89,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
         result.add(url);
       }
     }
-    return Iterators.asEnumeration(result.iterator());
+    return IteratorUtils.asEnumeration(result.iterator());
   }
 
   /**

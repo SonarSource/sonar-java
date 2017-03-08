@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -42,6 +40,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(key = "S2301")
@@ -49,7 +49,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD);
+    return Collections.singletonList(Kind.METHOD);
   }
 
   @Override
@@ -68,7 +68,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
       for (Symbol variable : booleanParameterSymbols) {
         Collection<IdentifierTree> usages = variable.usages();
         if (usages.size() == 1) {
-          blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), methodTree));
+          blockTree.accept(new ConditionalStatementVisitor(variable.name(), IterableUtils.get(usages, 0), methodTree));
         }
       }
     }
@@ -79,7 +79,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
-    List<Symbol> booleanParameters = Lists.newLinkedList();
+    List<Symbol> booleanParameters = new LinkedList<>();
     for (VariableTree variableTree : parameters) {
       if (isBooleanVariable(variableTree)) {
         booleanParameters.add(variableTree.symbol());

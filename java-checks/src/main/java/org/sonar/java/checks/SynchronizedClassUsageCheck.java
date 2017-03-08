@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -36,22 +35,24 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Rule(key = "S1149")
 public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
-    .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
-    .put("java.util.Hashtable", "\"HashMap\"")
-    .put("java.lang.StringBuffer", "\"StringBuilder\"")
-    .put("java.util.Stack", "\"Deque\"")
-    .build();
+  private static final Map<String, String> REPLACEMENTS = MapUtils.putAll(new HashMap<>(), new String[] {
+    "java.util.Vector", "\"ArrayList\" or \"LinkedList\"",
+    "java.util.Hashtable", "\"HashMap\"",
+    "java.lang.StringBuffer", "\"StringBuilder\"",
+    "java.util.Stack", "\"Deque\""
+  });
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
+    return Collections.singletonList(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.naming;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Rule(key = "S1700")
@@ -43,7 +43,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     currentClassName = "";
-    fields = Lists.newArrayList();
+    fields = new ArrayList<>();
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }

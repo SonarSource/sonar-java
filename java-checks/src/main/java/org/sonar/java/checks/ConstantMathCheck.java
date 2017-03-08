@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import javax.annotation.CheckForNull;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2185")
@@ -93,7 +93,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.REMAINDER, Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.REMAINDER, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

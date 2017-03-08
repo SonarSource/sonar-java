@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -35,6 +33,9 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
@@ -60,7 +61,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   public void checkSwitchStatement(SwitchStatementTree node) {
     int index = 0;
     List<CaseGroupTree> cases = node.cases();
-    Set<CaseLabelTree> reportedLabels = Sets.newHashSet();
+    Set<CaseLabelTree> reportedLabels = new HashSet<>();
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
       for (int i = index; i < cases.size(); i++) {
@@ -96,7 +97,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {
-    reportIssue(node, message, ImmutableList.of(new JavaFileScannerContext.Location("Original", secondary)), null);
+    reportIssue(node, message, Collections.singletonList(new JavaFileScannerContext.Location("Original", secondary)), null);
   }
 
   private static boolean areIfBlocksSyntacticalEquivalent(StatementTree first, StatementTree second) {

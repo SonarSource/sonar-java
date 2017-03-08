@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -42,6 +41,10 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
@@ -77,13 +80,13 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(Kind.ANNOTATION_TYPE);
-    this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
+    this.kind = Objects.requireNonNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superClass = null;
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
     this.openBraceToken = openBraceToken;
-    this.members = Preconditions.checkNotNull(members);
+    this.members = Objects.requireNonNull(members);
     this.closeBraceToken = closeBraceToken;
   }
 
@@ -119,7 +122,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
-    Preconditions.checkState(this.simpleName == null);
+    Validate.isTrue(this.simpleName == null);
     completeIdentifier(simpleName);
     this.atToken = atToken;
     completeDeclarationKeyword(interfaceToken);
@@ -195,7 +198,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public void setSymbol(JavaSymbol.TypeJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
+    Validate.isTrue(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }
 
@@ -209,7 +212,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return Stream.of(
       Collections.singletonList(modifiers),
       addIfNotNull(atToken),
       addIfNotNull(declarationKeyword),
@@ -222,7 +225,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       Collections.singletonList(openBraceToken),
       members,
       Collections.singletonList(closeBraceToken)
-    );
+    ).flatMap(it-> StreamSupport.stream(it.spliterator(), false)).collect(Collectors.toList());
   }
 
   private static Iterable<Tree> addIfNotNull(@Nullable Tree tree) {

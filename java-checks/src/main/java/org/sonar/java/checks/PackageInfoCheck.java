@@ -19,18 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "S1228")
 public class PackageInfoCheck implements JavaFileScanner {
 
-  Set<File> directoriesWithoutPackageFile = Sets.newHashSet();
+  Set<File> directoriesWithoutPackageFile = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

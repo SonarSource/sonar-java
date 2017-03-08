@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -31,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1258")
@@ -38,7 +38,7 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.CLASS, Kind.ENUM);
+    return Arrays.asList(Kind.CLASS, Kind.ENUM);
   }
 
   @Override

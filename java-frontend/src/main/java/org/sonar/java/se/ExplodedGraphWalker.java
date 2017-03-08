@@ -19,13 +19,8 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -85,10 +80,12 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -109,10 +106,10 @@ public class ExplodedGraphWalker {
   private static final int MAX_STEPS = 16_000;
   public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
-  private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
+  private static final Set<String> THIS_SUPER = new HashSet<>(Arrays.asList("this", "super"));
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
-  @VisibleForTesting
+//  @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
@@ -122,19 +119,19 @@ public class ExplodedGraphWalker {
 
   private ExplodedGraph explodedGraph;
 
-  @VisibleForTesting
+//  @VisibleForTesting
   Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
   ProgramPoint programPosition;
   ProgramState programState;
   private LiveVariables liveVariables;
-  @VisibleForTesting
+//  @VisibleForTesting
   CheckerDispatcher checkerDispatcher;
   private CFG.Block exitBlock;
 
   private final SemanticModel semanticModel;
   private final BehaviorCache behaviorCache;
-  @VisibleForTesting
+//  @VisibleForTesting
   int steps;
 
   ConstraintManager constraintManager;
@@ -162,17 +159,17 @@ public class ExplodedGraphWalker {
   public static class TooManyNestedBooleanStatesException extends RuntimeException {
 
   }
-  @VisibleForTesting
+//  @VisibleForTesting
   public ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
+    List<SECheck> checks = Arrays.asList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
     this.checkerDispatcher = new CheckerDispatcher(this, checks);
     this.behaviorCache = behaviorCache;
     this.semanticModel = semanticModel;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel, boolean cleanup) {
     this(behaviorCache, semanticModel);
     this.cleanup = cleanup;
@@ -708,7 +705,7 @@ public class ExplodedGraphWalker {
     List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
     SymbolicValue peekValue = ps.peekValue();
 
-    Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
+    Validate.isTrue(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
     SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
     // only consider the first match, as order of catch block is important
     Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
@@ -762,7 +759,9 @@ public class ExplodedGraphWalker {
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
-    return Lists.reverse(values.subList(0, values.size() - 1));
+    List<SymbolicValue> args = values.subList(0, values.size() - 1);
+    Collections.reverse(args);
+    return args;
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {
@@ -852,7 +851,7 @@ public class ExplodedGraphWalker {
       SymbolicValue value = unstack.values.get(0);
       programState = unstack.state;
       SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
-      symbolicValue.computedFrom(ImmutableList.of(assignedTo, value));
+      symbolicValue.computedFrom(Arrays.asList(assignedTo, value));
       programState = programState.stackValue(symbolicValue);
       programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
     }
@@ -896,7 +895,7 @@ public class ExplodedGraphWalker {
         ObjectConstraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1), ObjectConstraint.class);
         if (leftConstraint != null && !leftConstraint.isNull()) {
           List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
-          Preconditions.checkState(programStates.size() == 1);
+          Validate.isTrue(programStates.size() == 1);
           programState = programStates.get(0);
         }
 
@@ -904,7 +903,7 @@ public class ExplodedGraphWalker {
         ObjectConstraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0), ObjectConstraint.class);
         if (rightConstraint != null && !rightConstraint.isNull()) {
           List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
-          Preconditions.checkState(programStates.size() == 1);
+          Validate.isTrue(programStates.size() == 1);
           programState = programStates.get(0);
         }
 
@@ -1024,7 +1023,7 @@ public class ExplodedGraphWalker {
 
   private static void debugPrint(Object... toPrint) {
     if (DEBUG_MODE_ACTIVATED) {
-      LOG.error(Joiner.on(" - ").join(toPrint));
+      LOG.error(StringUtils.join(toPrint, " - "));
     }
   }
 
@@ -1091,7 +1090,7 @@ public class ExplodedGraphWalker {
   public static class ExplodedGraphWalkerFactory {
 
     private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
-    @VisibleForTesting
+//    @VisibleForTesting
     final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {

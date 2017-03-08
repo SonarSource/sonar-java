@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
@@ -38,7 +36,9 @@ import org.sonar.squidbridge.api.AnalysisException;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InterruptedIOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class JavaAstScanner {
@@ -55,7 +55,9 @@ public class JavaAstScanner {
 
   public void scan(Iterable<File> files) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Lists.newArrayList(files));
+    List<File> filesForReport = new ArrayList<>();
+    files.forEach(filesForReport::add);
+    progressReport.start(filesForReport);
 
     boolean successfullyCompleted = false;
     try {
@@ -107,7 +109,7 @@ public class JavaAstScanner {
   }
 
   private static void checkInterrupted(Exception e) {
-    Throwable cause = Throwables.getRootCause(e);
+    Throwable cause = ExceptionUtils.getRootCause(e);
     if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
       throw new AnalysisException("Analysis cancelled", e);
     }
@@ -130,12 +132,12 @@ public class JavaAstScanner {
     this.visitor = visitor;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
     scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl());
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");

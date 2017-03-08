@@ -19,8 +19,7 @@
  */
 package org.sonar.java.se.constraint;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.Validate;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -36,6 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ConstraintManager {
 
@@ -43,7 +44,7 @@ public class ConstraintManager {
   private SymbolicValueFactory symbolicValueFactory;
 
   public void setValueFactory(SymbolicValueFactory valueFactory) {
-    Preconditions.checkState(symbolicValueFactory == null, "The symbolic value factory has already been defined by another checker!");
+    Validate.isTrue(symbolicValueFactory == null, "The symbolic value factory has already been defined by another checker!");
     symbolicValueFactory = valueFactory;
   }
 
@@ -111,7 +112,7 @@ public class ConstraintManager {
       result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.METHOD_EQUALS);
       SymbolicValue leftOp = values.get(1);
       SymbolicValue rightOp = values.get(0);
-      result.computedFrom(ImmutableList.of(rightOp, leftOp));
+      result.computedFrom(Stream.of(rightOp, leftOp).collect(Collectors.toList()));
     } else {
       result = createDefaultSymbolicValue();
     }

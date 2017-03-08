@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -37,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -73,13 +72,13 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       OptionalConstraint optionalConstraint =  programState.getConstraint(optionalSV, OptionalConstraint.class);
       if (isImpossibleState(booleanConstraint, optionalConstraint)) {
-        return ImmutableList.of();
+        return Collections.emptyList();
       }
       if (optionalConstraint == OptionalConstraint.NOT_PRESENT || optionalConstraint == OptionalConstraint.PRESENT) {
-        return ImmutableList.of(programState);
+        return Collections.singletonList(programState);
       }
       OptionalConstraint newConstraint = booleanConstraint.isTrue() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
-      return ImmutableList.of(programState.addConstraint(optionalSV, newConstraint));
+      return Collections.singletonList(programState.addConstraint(optionalSV, newConstraint));
     }
 
     private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {

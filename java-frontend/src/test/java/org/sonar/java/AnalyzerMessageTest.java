@@ -120,7 +120,7 @@ public class AnalyzerMessageTest {
       AnalyzerMessage.textSpanFor(cut.eofToken());
       Fail.fail("Should have failed on empty issue location");
     } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalStateException.class);
+      assertThat(e).isInstanceOf(IllegalArgumentException.class);
       assertThat(e.getMessage()).isEqualTo("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
     }
   }

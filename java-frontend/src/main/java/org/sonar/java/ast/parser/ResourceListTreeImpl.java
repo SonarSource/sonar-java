@@ -19,11 +19,11 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ResourceListTreeImpl extends ListTreeImpl<VariableTree> {
@@ -33,6 +33,6 @@ public class ResourceListTreeImpl extends ListTreeImpl<VariableTree> {
   }
 
   public static ListTree<VariableTree> emptyList() {
-    return new ResourceListTreeImpl(ImmutableList.<VariableTree>of(), ImmutableList.<SyntaxToken>of());
+    return new ResourceListTreeImpl(Collections.emptyList(), Collections.emptyList());
   }
 }

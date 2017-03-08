@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
@@ -43,7 +43,7 @@ public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Lists.newArrayList(API_KINDS);
+    return Arrays.asList(API_KINDS);
   }
 
   public static boolean hasJavadocDeprecatedTag(Tree tree) {

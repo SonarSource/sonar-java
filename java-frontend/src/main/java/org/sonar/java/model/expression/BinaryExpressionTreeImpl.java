@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -28,6 +26,9 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class BinaryExpressionTreeImpl extends AbstractTypedTree implements BinaryExpressionTree {
 
@@ -39,10 +40,10 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   public BinaryExpressionTreeImpl(Kind kind, ExpressionTree leftOperand, InternalSyntaxToken operator, ExpressionTree rightOperand) {
     super(kind);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.leftOperand = Preconditions.checkNotNull(leftOperand);
+    this.kind = Objects.requireNonNull(kind);
+    this.leftOperand = Objects.requireNonNull(leftOperand);
     this.operator = operator;
-    this.rightOperand = Preconditions.checkNotNull(rightOperand);
+    this.rightOperand = Objects.requireNonNull(rightOperand);
   }
 
   @Override
@@ -72,7 +73,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       leftOperand,
       operator,
       rightOperand);

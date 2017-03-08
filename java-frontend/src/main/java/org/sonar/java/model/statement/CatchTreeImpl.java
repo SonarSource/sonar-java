@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -30,6 +28,9 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CatchTreeImpl extends JavaTree implements CatchTree {
 
@@ -44,9 +45,9 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
     this.catchToken = catchToken;
     this.openParenToken = openParenToken;
-    this.parameter = Preconditions.checkNotNull(parameter);
+    this.parameter = Objects.requireNonNull(parameter);
     this.closeParenToken = closeParenToken;
-    this.block = Preconditions.checkNotNull(block);
+    this.block = Objects.requireNonNull(block);
   }
 
   @Override
@@ -86,7 +87,7 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       catchToken,
       openParenToken,
       parameter,

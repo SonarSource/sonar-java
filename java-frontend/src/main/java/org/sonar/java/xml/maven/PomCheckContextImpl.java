@@ -19,7 +19,6 @@
  */
 package org.sonar.java.xml.maven;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
@@ -31,7 +30,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Document;
 
 import javax.xml.xpath.XPath;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +64,7 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
     getSonarComponents().reportIssue(analyzerMessage);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, Location location) {
     XmlLocation startLocation = location.tree.startLocation();
     XmlLocation endLocation = location.tree.endLocation();

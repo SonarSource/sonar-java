@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-
+import org.apache.commons.collections4.IterableUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
@@ -40,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -57,7 +56,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.COMPILATION_UNIT);
+    return Collections.singletonList(Kind.COMPILATION_UNIT);
   }
 
   @Override
@@ -137,7 +136,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     Iterable<Symbol> members = symbol.memberSymbols();
     JavaType superclass = symbol.getSuperclass();
     while (superclass != null && !"java.lang.Object".equals(superclass.fullyQualifiedName())) {
-      members = Iterables.concat(members, superclass.symbol().memberSymbols());
+      members = IterableUtils.chainedIterable(members, superclass.symbol().memberSymbols());
       superclass = superclass.getSymbol().getSuperclass();
     }
     return members;

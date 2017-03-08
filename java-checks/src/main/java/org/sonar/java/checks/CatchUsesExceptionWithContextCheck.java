@@ -19,10 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -39,10 +37,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Rule(key = "S1166")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -70,8 +71,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     validUsagesStack = new ArrayDeque<>();
-    exceptions = Splitter.on(",").trimResults().split(exceptionsCommaSeparated);
-    exceptionIdentifiers = Lists.newArrayList();
+    exceptions = Arrays.stream(StringUtils.split(exceptionsCommaSeparated, ',')).map(StringUtils::trim).collect(Collectors.toList());
+    exceptionIdentifiers = new ArrayList<>();
     for (String exception : exceptions) {
       exceptionIdentifiers.add(exception.substring(exception.lastIndexOf('.') + 1));
     }
@@ -84,7 +85,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void visitCatch(CatchTree tree) {
     if (!isExcludedType(tree.parameter().type())) {
       Symbol exception = tree.parameter().symbol();
-      validUsagesStack.addFirst(Lists.newArrayList(exception.usages()));
+      validUsagesStack.addFirst(new ArrayList<>(exception.usages()));
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
       if (usages.isEmpty()) {
@@ -126,7 +127,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-    return Iterables.contains(exceptions, ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
+    return IterableUtils.contains(exceptions, ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
   }
 
 }

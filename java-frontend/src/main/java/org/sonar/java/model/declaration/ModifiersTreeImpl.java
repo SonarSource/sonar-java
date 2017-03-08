@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -28,6 +27,8 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
@@ -37,8 +38,8 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
     super(JavaLexer.MODIFIERS, javaTrees);
-    ImmutableList.Builder<ModifierKeywordTree> modifierBuilder = ImmutableList.builder();
-    ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
+    List<ModifierKeywordTree> modifierBuilder = new ArrayList<>();
+    List<AnnotationTree> annotationBuilder = new ArrayList<>();
     for (ModifierTree modifierTree : this) {
       if (modifierTree.is(Kind.ANNOTATION)) {
         annotationBuilder.add((AnnotationTree) modifierTree);
@@ -46,12 +47,12 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
         modifierBuilder.add((ModifierKeywordTree) modifierTree);
       }
     }
-    this.annotations = annotationBuilder.build();
-    this.modifiers = modifierBuilder.build();
+    this.annotations = Collections.unmodifiableList(annotationBuilder);
+    this.modifiers = Collections.unmodifiableList(modifierBuilder);
   }
 
   public static ModifiersTreeImpl emptyModifiers() {
-    return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
+    return new ModifiersTreeImpl(Collections.emptyList());
   }
 
   @Override

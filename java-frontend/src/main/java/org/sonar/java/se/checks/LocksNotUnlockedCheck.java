@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -39,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2222")
@@ -78,9 +77,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, LockConstraint.LOCKED));
+        return Collections.singletonList(programState.addConstraint(operand, LockConstraint.LOCKED));
       } else {
-        return ImmutableList.of(programState.addConstraint(operand, LockConstraint.UNLOCKED));
+        return Collections.singletonList(programState.addConstraint(operand, LockConstraint.UNLOCKED));
       }
     }
 
@@ -184,7 +183,7 @@ public class LocksNotUnlockedCheck extends SECheck {
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(LockConstraint.LOCKED).stream()
       .flatMap(sv ->{
-        List<Class<? extends Constraint>> domains = Lists.newArrayList(LockConstraint.class);
+        List<Class<? extends Constraint>> domains = Collections.singletonList(LockConstraint.class);
         return FlowComputation.flow(node, sv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, domains).stream().flatMap(Collection::stream);
       })
       .forEach(this::reportIssue);

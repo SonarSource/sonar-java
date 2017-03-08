@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(IF_STATEMENT, SYNCHRONIZED_STATEMENT, METHOD);
+    return Arrays.asList(IF_STATEMENT, SYNCHRONIZED_STATEMENT, METHOD);
   }
 
   @Override

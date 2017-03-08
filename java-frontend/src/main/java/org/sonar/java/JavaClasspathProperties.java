@@ -19,9 +19,10 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.config.PropertyDefinition;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaClasspathProperties {
@@ -35,7 +36,7 @@ public class JavaClasspathProperties {
   }
 
   public static List<PropertyDefinition> getProperties() {
-    ImmutableList.Builder<PropertyDefinition> extensions = ImmutableList.builder();
+    List<PropertyDefinition> extensions = new ArrayList<>();
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_BINARIES)
             .description("Comma-separated paths to directories containing the binary files (directories with class files).")
             .hidden()
@@ -56,6 +57,6 @@ public class JavaClasspathProperties {
             .hidden()
             .build()
     );
-    return extensions.build();
+    return Collections.unmodifiableList(extensions);
   }
 }

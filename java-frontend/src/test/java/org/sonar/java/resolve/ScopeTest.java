@@ -48,7 +48,7 @@ public class ScopeTest {
       JavaSymbol second = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
       scope.enter(second);
       fail("second symbol should not be accepted by scope");
-    } catch (IllegalStateException iae) {
+    } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("Registering symbol: 'overloaded' twice in the same scope");
     } catch (Exception e) {
       fail("second symbol should not be accepted by scope");

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -31,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2148")
@@ -66,7 +66,7 @@ public class UnderscoreOnNumberCheck extends IssuableSubscriptionVisitor impleme
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL);
+    return Arrays.asList(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL);
   }
 
   @Override

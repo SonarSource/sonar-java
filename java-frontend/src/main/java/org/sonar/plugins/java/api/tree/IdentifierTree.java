@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
@@ -33,7 +32,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
  *
  * @since Java 1.3
  */
-@Beta
 public interface IdentifierTree extends ExpressionTree, TypeTree {
 
   SyntaxToken identifierToken();

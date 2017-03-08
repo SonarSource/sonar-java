@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
@@ -28,6 +27,7 @@ import org.w3c.dom.Node;
 
 import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +62,7 @@ public class FormNameDuplicationCheck extends XPathXmlCheck {
   private void reportIssue(XmlCheckContext context, Node form, Node original) {
     String msg = "Rename this form; line " + XmlCheckUtils.nodeLine(original) + " holds another form declaration with the same name.";
     XmlCheckContext.XmlDocumentLocation secondary = new XmlCheckContext.XmlDocumentLocation("original", original);
-    context.reportIssue(this, form, msg, Lists.newArrayList(secondary));
+    context.reportIssue(this, form, msg, Collections.singletonList(secondary));
   }
 
   @CheckForNull

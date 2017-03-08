@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -30,26 +28,27 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2201")
 public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
-      .add("java.lang.String")
-      .add("java.lang.Boolean")
-      .add("java.lang.Integer")
-      .add("java.lang.Double")
-      .add("java.lang.Float")
-      .add("java.lang.Byte")
-      .add("java.lang.Character")
-      .add("java.lang.Short")
-      .add("java.lang.StackTraceElement")
-      .build();
+  private static final List<String> CHECKED_TYPES = Arrays.asList(
+      "java.lang.String",
+      "java.lang.Boolean",
+      "java.lang.Integer",
+      "java.lang.Double",
+      "java.lang.Float",
+      "java.lang.Byte",
+      "java.lang.Character",
+      "java.lang.Short",
+      "java.lang.StackTraceElement");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT);
+    return Collections.singletonList(Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   @Override

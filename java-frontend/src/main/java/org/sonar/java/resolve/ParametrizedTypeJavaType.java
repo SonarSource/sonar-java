@@ -19,13 +19,11 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
@@ -58,7 +56,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     if (typeSubstitution != null) {
       return typeSubstitution.typeVariables();
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   @Override
@@ -89,7 +87,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
   private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
     List<JavaType> myTypes = typeSubstitution.substitutedTypes();
     List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
-    Preconditions.checkState(myTypes.size() == itsTypes.size());
+    Validate.isTrue(myTypes.size() == itsTypes.size());
     if (itsTypes.size() != myTypes.size()) {
       return false;
     }

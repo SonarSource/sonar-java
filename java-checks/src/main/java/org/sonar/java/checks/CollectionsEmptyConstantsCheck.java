@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -28,16 +27,18 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Rule(key = "S1596")
 public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Map<String, String> IDENTIFIER_REPLACEMENT = new ImmutableMap.Builder<String, String>()
-    .put("EMPTY_LIST", "emptyList()")
-    .put("EMPTY_MAP", "emptyMap()")
-    .put("EMPTY_SET", "emptySet()")
-    .build();
+  private static final Map<String, String> IDENTIFIER_REPLACEMENT = new HashMap<>();
+  static {
+    IDENTIFIER_REPLACEMENT.put("EMPTY_LIST", "emptyList()");
+    IDENTIFIER_REPLACEMENT.put("EMPTY_MAP", "emptyMap()");
+    IDENTIFIER_REPLACEMENT.put("EMPTY_SET", "emptySet()");
+  }
 
   private JavaFileScannerContext context;
 

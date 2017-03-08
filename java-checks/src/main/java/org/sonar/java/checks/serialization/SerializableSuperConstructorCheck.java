@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -29,7 +28,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2055")
@@ -37,7 +38,7 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

@@ -19,16 +19,14 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import javax.annotation.CheckForNull;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
+  private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = new LinkedHashMap<>();
 
   public TypeSubstitution() {
     // default behavior
@@ -36,7 +34,7 @@ public class TypeSubstitution {
 
   public TypeSubstitution(TypeSubstitution typeSubstitution) {
     // copy the substitution
-    this.substitutions = Maps.newLinkedHashMap(typeSubstitution.substitutions);
+    this.substitutions = new LinkedHashMap<>(typeSubstitution.substitutions);
   }
 
   @CheckForNull
@@ -45,15 +43,15 @@ public class TypeSubstitution {
   }
 
   public List<TypeVariableJavaType> typeVariables() {
-    return Lists.newArrayList(substitutions.keySet());
+    return new ArrayList<>(substitutions.keySet());
   }
 
   public List<Map.Entry<TypeVariableJavaType, JavaType>> substitutionEntries() {
-    return Lists.newArrayList(substitutions.entrySet());
+    return new ArrayList<>(substitutions.entrySet());
   }
 
   public List<JavaType> substitutedTypes() {
-    return Lists.newArrayList(substitutions.values());
+    return new ArrayList<>(substitutions.values());
   }
 
   public TypeSubstitution add(TypeVariableJavaType typeVariableType, JavaType javaType) {

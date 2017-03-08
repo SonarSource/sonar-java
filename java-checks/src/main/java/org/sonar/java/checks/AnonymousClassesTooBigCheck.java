@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -31,6 +30,8 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Collections;
 
 @Rule(key = "S1188")
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -82,7 +83,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
       SyntaxToken lastSyntaxToken = lambdaExpressionTree.lastToken();
       JavaFileScannerContext.Location lastTokenLocation = new JavaFileScannerContext.Location(lines + " lines", lastSyntaxToken);
       context.reportIssue(this, firstToken, lambdaExpressionTree.arrowToken(),
-        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Lists.newArrayList(lastTokenLocation), null);
+        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Collections.singletonList(lastTokenLocation), null);
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

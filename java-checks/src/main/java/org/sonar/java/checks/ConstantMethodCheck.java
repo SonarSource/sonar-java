@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -36,6 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3400")
@@ -43,7 +42,7 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD);
+    return Collections.singletonList(Kind.METHOD);
   }
 
   @Override

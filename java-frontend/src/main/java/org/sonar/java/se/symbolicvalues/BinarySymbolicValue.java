@@ -19,12 +19,12 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-
+import org.apache.commons.lang.Validate;
 import org.sonar.java.se.constraint.BooleanConstraint;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
 
@@ -44,14 +44,14 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
 
   @Override
   public void computedFrom(List<SymbolicValue> symbolicValues) {
-    Preconditions.checkArgument(symbolicValues.size() == 2);
+    Validate.isTrue(symbolicValues.size() == 2);
     rightOp = symbolicValues.get(0);
     leftOp = symbolicValues.get(1);
   }
 
   @Override
   public List<SymbolicValue> computedFrom() {
-    return ImmutableList.of(leftOp, rightOp);
+    return Stream.of(leftOp, rightOp).collect(Collectors.toList());
   }
 
   public SymbolicValue getLeftOp() {

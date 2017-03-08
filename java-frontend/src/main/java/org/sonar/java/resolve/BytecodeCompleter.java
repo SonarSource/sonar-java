@@ -19,23 +19,21 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Closeables;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.objectweb.asm.ClassReader;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +70,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   public JavaSymbol.TypeJavaSymbol registerClass(JavaSymbol.TypeJavaSymbol classSymbol) {
     String flatName = formFullName(classSymbol);
-    Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : %s", flatName);
+    Validate.isTrue(!classes.containsKey(flatName), "Registering class 2 times : %s", flatName);
     classes.put(flatName, classSymbol);
     return classSymbol;
   }
@@ -87,19 +85,15 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     if(symbol.isPackageSymbol()) {
       ((JavaSymbol.PackageJavaSymbol) symbol).packageInfo = classSymbol;
     }
-    Preconditions.checkState(symbol.isPackageSymbol() || classSymbol == symbol);
+    Validate.isTrue(symbol.isPackageSymbol() || classSymbol == symbol);
 
-    InputStream inputStream = null;
     ClassReader classReader = null;
-    try {
-      inputStream = inputStreamFor(bytecodeName);
+    try (InputStream inputStream = inputStreamFor(bytecodeName)) {
       if(inputStream != null) {
         classReader = new ClassReader(inputStream);
       }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
+      throw new AnalysisException(e);
     }
     if (classReader != null) {
       classReader.accept(
@@ -142,7 +136,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return result;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName) {
     return getClassSymbol(bytecodeName, 0);
   }
@@ -181,7 +175,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         if (!bytecodeName.endsWith("package-info")) {
           LOG.warn("Class not found: " + bytecodeName);
         }
-        ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+        ((ClassJavaType) symbol.type).interfaces = Collections.emptyList();
         ((ClassJavaType) symbol.type).supertype = Symbols.unknownType;
       }
 
@@ -209,25 +203,22 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
 
     // TODO(Godin): pull out conversion of name from the next method to avoid unnecessary conversion afterwards:
-    InputStream inputStream = inputStreamFor(fullname);
-    String bytecodeName = Convert.bytecodeName(fullname);
 
-    if (inputStream == null) {
-      return new Resolve.JavaSymbolNotFound();
-    }
+    try(InputStream inputStream = inputStreamFor(fullname)) {
+      String bytecodeName = Convert.bytecodeName(fullname);
 
-    try {
+      if (inputStream == null) {
+        return new Resolve.JavaSymbolNotFound();
+      }
+
       ClassReader classReader = new ClassReader(inputStream);
       String className = classReader.getClassName();
       if (!className.equals(bytecodeName)) {
         return new Resolve.JavaSymbolNotFound();
       }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
+      throw new RuntimeException(e);
     }
-
     return getClassSymbol(fullname);
   }
 

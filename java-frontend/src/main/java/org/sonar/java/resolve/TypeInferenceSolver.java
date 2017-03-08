@@ -19,8 +19,8 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -35,7 +35,7 @@ public class TypeInferenceSolver {
   private final Symbols symbols;
   private final LeastUpperBound leastUpperBound;
   private final TypeSubstitutionSolver typeSubstitutionSolver;
-  private final Multimap<Type, Type> handledFormals = HashMultimap.create();
+  private final MultiValuedMap<Type, Type> handledFormals = new HashSetValuedHashMap<>();
 
   public TypeInferenceSolver(LeastUpperBound leastUpperBound, Symbols symbols, TypeSubstitutionSolver typeSubstitutionSolver) {
     this.symbols = symbols;

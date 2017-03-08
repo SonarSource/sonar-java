@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,16 +32,18 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2092")
 public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
-  private List<Symbol.VariableSymbol> unsecuredCookies = Lists.newArrayList();
+  private List<Symbol.VariableSymbol> unsecuredCookies = new ArrayList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

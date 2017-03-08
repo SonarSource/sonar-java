@@ -19,10 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.MoreObjects;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -43,6 +39,11 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Objects;
+import java.util.Optional;
 
 @Rule(key = "S2970")
 public class AssertionsCompletenessCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -136,7 +137,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       return;
     }
     Boolean previous = chainedToAnyMethodButFestExclusions;
-    chainedToAnyMethodButFestExclusions = MoreObjects.firstNonNull(chainedToAnyMethodButFestExclusions, false) || !FEST_LIKE_EXCLUSIONS.anyMatch(mit);
+    chainedToAnyMethodButFestExclusions = Optional.ofNullable(chainedToAnyMethodButFestExclusions).orElse(false) || !FEST_LIKE_EXCLUSIONS.anyMatch(mit);
     scan(mit.methodSelect());
     // skip arguments
     chainedToAnyMethodButFestExclusions = previous;

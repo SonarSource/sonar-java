@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -36,7 +33,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,11 +47,11 @@ import java.util.regex.Pattern;
 public class PrintfCheck extends AbstractMethodDetection {
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
-  private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
+  private static final Set<String> TIME_CONVERSIONS = new HashSet<>(Arrays.asList(
     "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
     "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
     "R", "T", "r", "D", "F", "c"
-    );
+    ));
   private static final String FORMAT_METHOD_NAME = "format";
 
   private static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
@@ -64,7 +60,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),

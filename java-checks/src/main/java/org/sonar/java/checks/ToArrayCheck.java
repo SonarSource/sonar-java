@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -31,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3020")
@@ -41,7 +40,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(COLLECTION_TO_ARRAY);
+    return Collections.singletonList(COLLECTION_TO_ARRAY);
   }
 
   @Override

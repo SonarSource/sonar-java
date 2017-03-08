@@ -19,13 +19,12 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -320,7 +319,10 @@ public class TypeSubstitutionSolver {
             value = entry.getKey().bounds.get(0);
             break;
           case EXTENDS:
-            value = (JavaType) LeastUpperBound.greatestLowerBound(Lists.newArrayList(wildcardType.bound, entry.getKey().bounds.get(0)));
+            List<Type> types = new ArrayList<>();
+            types.add(wildcardType.bound);
+            types.add(entry.getKey().bounds.get(0));
+            value = (JavaType) LeastUpperBound.greatestLowerBound(types);
             break;
           case SUPER:
             value = wildcardType.bound;

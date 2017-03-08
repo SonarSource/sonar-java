@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Splitter;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -49,14 +49,14 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       IP.reset(tree.value());
       if (IP.matches()) {
         String ip = IP.group(1);
-        if (areAllBelow256(Splitter.on('.').split(ip))) {
+        if (areAllBelow256(StringUtils.split(ip, '.'))) {
           context.reportIssue(this, tree, "Make this IP \"" + ip + "\" address configurable.");
         }
       }
     }
   }
 
-  private static boolean areAllBelow256(Iterable<String> numbersAsStrings) {
+  private static boolean areAllBelow256(String[] numbersAsStrings) {
     for (String numberAsString : numbersAsStrings) {
       if (Integer.valueOf(numberAsString) > 255) {
         return false;

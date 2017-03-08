@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
 
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,7 +34,6 @@ import java.util.Objects;
 /**
  * Context injected in check classes and used to report issues.
  */
-@Beta
 public interface JavaFileScannerContext {
 
   /**

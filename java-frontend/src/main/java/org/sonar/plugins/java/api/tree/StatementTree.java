@@ -19,13 +19,10 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Common interface for all types of statements.
  *
  * JLS 14
  */
-@Beta
 public interface StatementTree extends Tree {
 }

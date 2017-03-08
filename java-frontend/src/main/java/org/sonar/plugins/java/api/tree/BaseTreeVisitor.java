@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 import javax.annotation.Nullable;
@@ -29,7 +28,6 @@ import java.util.List;
 /**
  * Default implementation of {@link TreeVisitor}.
  */
-@Beta
 public class BaseTreeVisitor implements TreeVisitor {
 
   protected void scan(List<? extends Tree> trees) {

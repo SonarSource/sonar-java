@@ -19,7 +19,6 @@
  */
 package org.sonar.java.xml;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
@@ -35,7 +34,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
@@ -81,7 +79,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
     try {
       NodeList nodeList = (NodeList) expression.evaluate(node, XPathConstants.NODESET);
       if (nodeList.getLength() == 0) {
-        return ImmutableList.of();
+        return Collections.emptyList();
       }
       return new NodeListIterable(nodeList);
     } catch (XPathExpressionException e) {

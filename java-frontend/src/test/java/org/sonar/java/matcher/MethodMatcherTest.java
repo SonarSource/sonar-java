@@ -20,12 +20,6 @@
 package org.sonar.java.matcher;
 
 import com.google.common.collect.ImmutableList;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,6 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +54,7 @@ public class MethodMatcherTest {
   public void should_fail_if_addParameter_is_called_after_withAnyParameters() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name")
       .withAnyParameters();
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.addParameter("int");
   }
 
@@ -61,14 +62,14 @@ public class MethodMatcherTest {
   public void should_fail_if_addParameter_is_called_after_withoutParameter() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name")
       .withoutParameter();
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.addParameter("int");
   }
 
   @Test
   public void should_fail_if_withAnyParameters_is_called_after_addParameter() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").addParameter("int");
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
@@ -76,70 +77,70 @@ public class MethodMatcherTest {
   public void should_fail_if_withAnyParameters_is_called_after_withoutParameter() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name")
         .withoutParameter();
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
   @Test
   public void should_fail_if_withAnyParameters_is_called_after_empty_parameters() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").parameters(new String[0]);
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
   @Test
   public void should_fail_if_withAnyParameters_is_called_after_parameters() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").parameters("int", "int");
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
   @Test
   public void should_fail_if_withoutParameter_is_called_after_parameters() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").parameters("int", "int");
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withoutParameter();
   }
 
   @Test
   public void should_fail_if_withAnyParameters_is_called_after_empty_parameters_TypeCriteria() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").parameters(new TypeCriteria[0]);
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
   @Test
   public void should_fail_if_withAnyParameters_is_called_after_parameters_TypeCriteria() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name").parameters(TypeCriteria.is("int"));
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.withAnyParameters();
   }
 
   @Test
   public void should_fail_if_name_called_twice() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("name");
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.name("otherName");
   }
 
   @Test
   public void should_fail_if_name_criteria_called_twice() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name(NameCriteria.is("name"));
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.name(NameCriteria.any());
   }
 
   @Test
   public void should_fail_if_typeDefinition_called_twice() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().typeDefinition("int");
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.typeDefinition("long");
   }
 
   @Test
   public void should_fail_if_typeDefinition_criteria_called_twice() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().typeDefinition(TypeCriteria.is("int"));
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.typeDefinition(TypeCriteria.anyType());
   }
 
@@ -147,7 +148,7 @@ public class MethodMatcherTest {
   public void should_fail_if_parameters_are_not_defined() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().name("toString");
     MethodTree tree = methodTreeMock("toString", mock(Symbol.TypeSymbol.class));
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.matches(tree);
   }
 
@@ -166,7 +167,7 @@ public class MethodMatcherTest {
   public void should_fail_if_name_is_not_defined() throws Exception {
     MethodMatcher matcher = MethodMatcher.create().withoutParameter();
     MethodTree tree = methodTreeMock("toString", mock(Symbol.TypeSymbol.class));
-    exception.expect(IllegalStateException.class);
+    exception.expect(IllegalArgumentException.class);
     matcher.matches(tree);
   }
 

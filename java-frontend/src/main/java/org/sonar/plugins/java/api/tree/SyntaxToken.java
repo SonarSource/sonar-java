@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import java.util.List;
 
 /**
@@ -28,7 +26,6 @@ import java.util.List;
  *
  * @since plugin 2.4
  */
-@Beta
 public interface SyntaxToken extends Tree {
 
   String text();

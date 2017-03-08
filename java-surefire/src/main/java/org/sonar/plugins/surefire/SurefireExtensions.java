@@ -19,12 +19,13 @@
  */
 package org.sonar.plugins.surefire;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.JavaConstants;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class SurefireExtensions {
@@ -33,17 +34,17 @@ public final class SurefireExtensions {
   }
 
   public static List getExtensions() {
-    return ImmutableList.of(
-        PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
-            .name("JUnit Reports")
-            .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
-            .onQualifiers(Qualifiers.PROJECT)
-            .category(JavaConstants.JAVA_CATEGORY)
-            .subCategory("JUnit")
-            .build(),
+    return Collections.unmodifiableList(Arrays.asList(
+      PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
+        .name("JUnit Reports")
+        .description("Path to the directory containing all the *.xml JUnit report files. The path may be absolute or relative to the project base directory.")
+        .onQualifiers(Qualifiers.PROJECT)
+        .category(JavaConstants.JAVA_CATEGORY)
+        .subCategory("JUnit")
+        .build(),
 
-        SurefireSensor.class,
-        SurefireJavaParser.class);
+      SurefireSensor.class,
+      SurefireJavaParser.class));
   }
 
 }

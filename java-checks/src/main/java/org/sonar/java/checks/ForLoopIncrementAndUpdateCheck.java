@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,7 +33,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1994")
@@ -43,7 +43,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.FOR_STATEMENT);
+    return Collections.singletonList(Tree.Kind.FOR_STATEMENT);
   }
 
   @Override
@@ -55,7 +55,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
         ConditionVisitor conditionVisitor = new ConditionVisitor(updateSymbols);
         forStatementTree.accept(conditionVisitor);
         if (conditionVisitor.shouldRaiseIssue) {
-          reportIssue(forStatementTree.forKeyword(), "This loop's stop condition tests \"" + Joiner.on(", ").join(conditionVisitor.conditionNames)
+          reportIssue(forStatementTree.forKeyword(), "This loop's stop condition tests \"" + StringUtils.join(conditionVisitor.conditionNames, ", ")
             + "\" but the incrementer updates \"" + getSymbols(updateSymbols) + "\".");
         }
       }
@@ -69,15 +69,15 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   }
 
   private static String getSymbols(Collection<Symbol> updateSymbols) {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
     for (Symbol updateSymbol : updateSymbols) {
       names.add(updateSymbol.name());
     }
-    return Joiner.on(", ").join(names);
+    return StringUtils.join(names, ", ");
   }
 
   private static class UpdateVisitor extends BaseTreeVisitor {
-    Collection<Symbol> symbols = Lists.newArrayList();
+    Collection<Symbol> symbols = new ArrayList<>();
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
@@ -120,7 +120,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
     ConditionVisitor(Collection<Symbol> updateSymbols) {
       this.updateSymbols = updateSymbols;
-      conditionNames = Lists.newArrayList();
+      conditionNames = new ArrayList<>();
       shouldRaiseIssue = !updateSymbols.isEmpty();
     }
 

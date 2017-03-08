@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multiset;
+import org.apache.commons.collections4.MultiSet;
+import org.apache.commons.collections4.multiset.HashMultiSet;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
   @RuleProperty(description = "Maximum allowed return statements per method", defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Multiset<Tree> returnStatementCounter = HashMultiset.create();
+  private final MultiSet<Tree> returnStatementCounter = new HashMultiSet<>();
   private final Deque<Tree> methods = new LinkedList<>();
 
   @Override
@@ -53,7 +53,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return Arrays.asList(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
       reportTree = ((LambdaExpressionTree) tree).arrowToken();
     }
     if (reportTree != null) {
-      int count = returnStatementCounter.count(tree);
+      int count = returnStatementCounter.getCount(tree);
       if (count > max) {
         reportIssue(reportTree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");
       }

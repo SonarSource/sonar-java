@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.PropertyType;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.config.PropertyDefinition;
@@ -28,6 +27,8 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.Version;
 import org.sonar.java.JavaConstants;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @BatchSide
@@ -66,7 +67,7 @@ public class JacocoConfiguration {
 
   public static List<PropertyDefinition> getPropertyDefinitions(Version sonarQubeVersion) {
     String subCategory = "JaCoCo";
-    ImmutableList.Builder<PropertyDefinition> properties = ImmutableList.builder();
+    List<PropertyDefinition> properties = new ArrayList<>();
     if(sonarQubeVersion.isGreaterThanOrEqual(SQ_6_2)) {
       properties.add(
         PropertyDefinition.builder(JacocoConfiguration.REPORT_PATHS_PROPERTY)
@@ -87,7 +88,8 @@ public class JacocoConfiguration {
           .name("UT JaCoCo Report")
           .description("Path to the JaCoCo report file containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
           .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-          .build(),
+          .build());
+      properties.add(
         PropertyDefinition.builder(JacocoConfiguration.IT_REPORT_PATH_PROPERTY)
           .defaultValue(JacocoConfiguration.IT_REPORT_PATH_DEFAULT_VALUE)
           .category(JavaConstants.JAVA_CATEGORY)
@@ -95,7 +97,8 @@ public class JacocoConfiguration {
           .name("IT JaCoCo Report")
           .description("Path to the JaCoCo report file containing coverage data by integration tests. The path may be absolute or relative to the project base directory.")
           .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-          .build(),
+          .build());
+      properties.add(
         PropertyDefinition.builder(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO)
           .defaultValue(Boolean.toString(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE))
           .name("Force zero coverage")
@@ -107,7 +110,7 @@ public class JacocoConfiguration {
           .build()
       );
     }
-    return properties.build();
+    return Collections.unmodifiableList(properties);
   }
 
 }

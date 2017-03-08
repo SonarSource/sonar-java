@@ -19,12 +19,12 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.apache.commons.lang.Validate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class Scope {
   final JavaSymbol owner;
   final Scope next;
 
-  protected ArrayListMultimap<String, JavaSymbol> symbols = ArrayListMultimap.create();
+  protected MultiValuedMap<String, JavaSymbol> symbols = new ArrayListValuedHashMap<>();
   protected final List<JavaSymbol> scopeSymbols = new ArrayList<>();
 
   public Scope(JavaSymbol owner) {
@@ -51,7 +51,7 @@ public class Scope {
   public void enter(JavaSymbol symbol) {
     if(!symbol.isMethodSymbol() && symbols.containsKey(symbol.name)) {
       for (JavaSymbol symInScope : symbols.get(symbol.name)) {
-        Preconditions.checkState(symInScope.kind != symbol.kind, "Registering symbol: '%s' twice in the same scope", symbol.name);
+        Validate.isTrue(symInScope.kind != symbol.kind, String.format("Registering symbol: '%s' twice in the same scope", symbol.name));
       }
     }
     symbols.put(symbol.name, symbol);
@@ -63,7 +63,7 @@ public class Scope {
     while (scope != null && !scope.symbols.containsKey(name)) {
       scope = scope.next;
     }
-    return scope == null ? ImmutableList.<JavaSymbol>of() : scope.symbols.get(name);
+    return scope == null ? Collections.emptyList() : new ArrayList<>(scope.symbols.get(name));
   }
 
   public List<JavaSymbol> scopeSymbols() {
@@ -92,7 +92,7 @@ public class Scope {
 
     @Override
     public List<JavaSymbol> lookup(String name) {
-      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      List<JavaSymbol> symbolsList = new ArrayList<>();
       for (JavaSymbol site : symbols.values()) {
         JavaSymbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
         if (symbol.kind < JavaSymbol.ERRONEOUS) {
@@ -114,7 +114,7 @@ public class Scope {
 
     @Override
     public List<JavaSymbol> lookup(String name) {
-      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      List<JavaSymbol> symbolsList = new ArrayList<>();
       for (JavaSymbol site : symbols.values()) {
         // site is a package, try to load referenced type.
         if ((site.kind & JavaSymbol.PCK) != 0) {

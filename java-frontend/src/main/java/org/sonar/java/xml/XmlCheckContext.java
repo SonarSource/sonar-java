@@ -19,7 +19,6 @@
  */
 package org.sonar.java.xml;
 
-import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Node;
 
@@ -28,7 +27,6 @@ import javax.xml.xpath.XPathExpression;
 
 import java.io.File;
 
-@Beta
 public interface XmlCheckContext {
 
   File getFile();

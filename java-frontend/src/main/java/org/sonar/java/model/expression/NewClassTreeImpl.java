@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -38,6 +37,9 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
@@ -121,12 +123,12 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+    List<Tree> builder = new ArrayList<>();
     addIfNotNull(builder, enclosingExpression, dotToken, newKeyword, typeArguments);
     builder.add(identifier);
     builder.add(arguments);
     addIfNotNull(builder, classBody);
-    return builder.build();
+    return Collections.unmodifiableList(builder);
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -168,7 +170,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return this.getConstructorIdentifier().symbol();
   }
 
-  private static void addIfNotNull(ImmutableList.Builder<Tree> builder, Tree... trees) {
+  private static void addIfNotNull(List<Tree> builder, Tree... trees) {
     for (Tree tree : trees) {
       if (tree != null) {
         builder.add(tree);

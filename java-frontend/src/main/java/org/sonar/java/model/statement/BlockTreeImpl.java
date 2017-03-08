@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -29,8 +27,9 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BlockTreeImpl extends JavaTree implements BlockTree {
 
@@ -48,7 +47,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
     this.kind = kind;
     this.openBraceToken = openBraceToken;
-    this.body = Preconditions.checkNotNull(body);
+    this.body = Objects.requireNonNull(body);
     this.closeBraceToken = closeBraceToken;
   }
 
@@ -79,10 +78,11 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Collections.singletonList(openBraceToken),
-      body,
-      Collections.singletonList(closeBraceToken));
+    List<Tree> res = new ArrayList<>();
+    res.add(openBraceToken);
+    res.addAll(body);
+    res.add(closeBraceToken);
+    return res;
   }
 
 }

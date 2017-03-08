@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,6 +26,9 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class InternalPostfixUnaryExpression extends AbstractTypedTree implements UnaryExpressionTree {
 
@@ -37,8 +38,8 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
 
   public InternalPostfixUnaryExpression(Kind kind, ExpressionTree expression, InternalSyntaxToken operatorToken) {
     super(kind);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.expression = Preconditions.checkNotNull(expression);
+    this.kind = Objects.requireNonNull(kind);
+    this.expression = Objects.requireNonNull(expression);
     this.operatorToken = operatorToken;
   }
 
@@ -64,7 +65,7 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       expression,
       operatorToken
     );

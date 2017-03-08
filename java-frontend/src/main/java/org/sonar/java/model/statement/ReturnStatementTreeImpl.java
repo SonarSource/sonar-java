@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,6 +28,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
   private final InternalSyntaxToken returnKeyword;
@@ -71,12 +73,13 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder().add(returnKeyword);
+    List<Tree> iteratorBuilder = new ArrayList<>();
+    iteratorBuilder.add(returnKeyword);
     if (expression != null) {
       iteratorBuilder.add(expression);
     }
     iteratorBuilder.add(semicolonToken);
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(iteratorBuilder);
   }
 
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.MethodsHelper;
@@ -28,6 +27,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2718")
@@ -40,7 +40,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       truncateMethodMatcher("java.util.Date"),
       truncateMethodMatcher("java.util.Calendar"),
       truncateMethodMatcher("java.lang.Object"));

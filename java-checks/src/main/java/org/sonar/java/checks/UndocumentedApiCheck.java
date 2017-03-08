@@ -19,10 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
@@ -47,7 +43,9 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -76,8 +74,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private WildcardPattern[] inclusionPatterns;
   private WildcardPattern[] exclusionPatterns;
 
-  private final Deque<ClassTree> classTrees = Lists.newLinkedList();
-  private final Deque<Tree> currentParents = Lists.newLinkedList();
+  private final Deque<ClassTree> classTrees = new LinkedList<>();
+  private final Deque<Tree> currentParents = new LinkedList<>();
 
   private PublicApiChecker publicApiChecker;
   private String packageName;
@@ -140,7 +138,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       } else if (!javadoc.contains("{@inheritDoc}")) {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
+          context.reportIssue(this, reportTree, "Document the parameter(s): " + StringUtils.join(undocumentedParameters, ", "));
         }
         if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
           context.reportIssue(this, reportTree, "Document this method return value.");
@@ -258,17 +256,17 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
+    List<String> builder = new ArrayList<>();
     for (String parameter : parameters) {
       if (!hasParamJavadoc(javadoc, parameter)) {
         builder.add(parameter);
       }
     }
-    return builder.build();
+    return builder;
   }
 
   private static List<String> getParameters(Tree tree) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
+    List<String> builder = new ArrayList<>();
     if (tree.is(METHOD_KINDS)) {
       MethodTree methodTree = (MethodTree) tree;
       for (VariableTree variableTree : methodTree.parameters()) {
@@ -280,7 +278,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         builder.add("<" + typeParam.identifier().name() + ">");
       }
     }
-    return builder.build();
+    return builder;
   }
 
   private static boolean hasParamJavadoc(String comment, String parameter) {

@@ -19,9 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -29,9 +26,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -43,7 +40,7 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
   public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list) {
     super(grammarRuleKey);
     this.list = list;
-    this.separators = Lists.newArrayList();
+    this.separators = new ArrayList<>();
   }
 
   public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list, List<SyntaxToken> separators) {
@@ -71,44 +68,14 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
 
   @Override
   public Iterable<Tree> children() {
-    return new InterleaveIterable(list, separators);
-  }
-
-  private class InterleaveIterable implements Iterable<Tree> {
-
-    private final ImmutableList<Iterator<? extends Tree>> iterators;
-
-    public InterleaveIterable(List<T> list, List<SyntaxToken> separators) {
-      iterators = ImmutableList.of(list.iterator(), separators.iterator());
-    }
-
-    @Override
-    public Iterator<Tree> iterator() {
-      return new InterleaveIterator<>(iterators);
-    }
-  }
-
-  private static class InterleaveIterator<E> extends AbstractIterator<E> {
-
-    private final LinkedList<Iterator<? extends E>> iterables;
-
-    public InterleaveIterator(List<Iterator<? extends E>> iterables) {
-      super();
-      this.iterables = new LinkedList<>(iterables);
-    }
-
-    @Override
-    protected E computeNext() {
-      while (!iterables.isEmpty()) {
-        Iterator<? extends E> topIter = iterables.poll();
-        if (topIter.hasNext()) {
-          E result = topIter.next();
-          iterables.offer(topIter);
-          return result;
-        }
+    List<Tree> result = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      result.add(list.get(i));
+      if (i < separators.size()) {
+        result.add(separators.get(i));
       }
-      return endOfData();
     }
+    return result;
   }
 
   @Override

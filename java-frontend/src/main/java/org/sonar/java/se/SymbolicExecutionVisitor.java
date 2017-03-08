@@ -19,9 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -37,13 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
-
+import java.util.Arrays;
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
-  @VisibleForTesting
+//  @VisibleForTesting
   public final BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
@@ -54,7 +51,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Lists.newArrayList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

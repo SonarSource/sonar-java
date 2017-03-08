@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 import javax.annotation.Nullable;
 
 import java.util.List;
@@ -35,7 +33,6 @@ import java.util.List;
  * </pre>
  *
  */
-@Beta
 public interface ArrayDimensionTree extends Tree {
 
   List<AnnotationTree> annotations();

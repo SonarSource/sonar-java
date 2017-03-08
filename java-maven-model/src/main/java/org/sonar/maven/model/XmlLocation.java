@@ -19,7 +19,7 @@
  */
 package org.sonar.maven.model;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang.Validate;
 
 public class XmlLocation {
   private final int line;
@@ -27,17 +27,17 @@ public class XmlLocation {
   private final int offset;
 
   public XmlLocation(int line, int column, int offset) {
-    Preconditions.checkArgument(line >= 0);
-    Preconditions.checkArgument(column >= 0);
-    Preconditions.checkArgument(offset >= 0);
+    Validate.isTrue(line >= 0);
+    Validate.isTrue(column >= 0);
+    Validate.isTrue(offset >= 0);
     this.line = line;
     this.column = column;
     this.offset = offset;
   }
 
   public XmlLocation(int line, int offset) {
-    Preconditions.checkArgument(line >= 0);
-    Preconditions.checkArgument(offset >= 0);
+    Validate.isTrue(line >= 0);
+    Validate.isTrue(offset >= 0);
     this.line = line;
     this.column = -1;
     this.offset = offset;

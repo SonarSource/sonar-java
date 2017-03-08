@@ -19,13 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 /**
  * @see BaseTreeVisitor
  */
-@Beta
 public interface TreeVisitor {
 
   void visitCompilationUnit(CompilationUnitTree tree);

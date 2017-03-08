@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.MethodsHelper;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "ObjectFinalizeCheck")
@@ -40,7 +40,7 @@ public class ObjectFinalizeCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

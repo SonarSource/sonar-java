@@ -19,13 +19,11 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
 
 /**
  * Represents the java version used by the project under analysis.
  * Destinated to be used by checks to determine if they should report issue depending on java version.
  */
-@Beta
 public interface JavaVersion {
 
   /**

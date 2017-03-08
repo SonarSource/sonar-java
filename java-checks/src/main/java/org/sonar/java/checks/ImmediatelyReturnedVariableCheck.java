@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -35,16 +35,18 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Rule(key = "S1488")
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Map<Kind, String> MESSAGE_KEYS = ImmutableMap.of(
-    Kind.THROW_STATEMENT, "throw",
-    Kind.RETURN_STATEMENT, "return"
-  );
+  private static final Map<Kind, String> MESSAGE_KEYS = MapUtils.putAll(new HashMap<>(), new Object[][] {
+    {Kind.THROW_STATEMENT, "throw"},
+    {Kind.RETURN_STATEMENT, "return"}
+  });
 
   private JavaFileScannerContext context;
   private String lastTypeForMessage;

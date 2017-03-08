@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Array access expression.
  *
@@ -32,7 +30,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.3
  */
-@Beta
 public interface ArrayAccessExpressionTree extends ExpressionTree {
 
   ExpressionTree expression();

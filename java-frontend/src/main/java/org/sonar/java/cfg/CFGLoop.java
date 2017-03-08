@@ -19,12 +19,10 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,17 +52,17 @@ public class CFGLoop {
     collectWaysOut(container);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   CFG.Block startingBlock() {
     return startingBlock;
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   Collection<CFG.Block> blocks() {
     return new ArrayList<>(blocks);
   }
 
-  @VisibleForTesting
+//  @VisibleForTesting
   Collection<CFG.Block> successors() {
     return new ArrayList<>(successors);
   }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -45,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2293")
@@ -69,7 +69,7 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.NEW_CLASS);
+    return Collections.singletonList(Tree.Kind.NEW_CLASS);
   }
 
   @Override

@@ -19,14 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "EmptyStatementUsageCheck")
@@ -35,7 +34,7 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EMPTY_STATEMENT);
+    return Collections.singletonList(Tree.Kind.EMPTY_STATEMENT);
   }
 
   @Override

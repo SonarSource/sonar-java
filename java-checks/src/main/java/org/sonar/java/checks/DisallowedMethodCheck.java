@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -29,6 +28,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2253")
@@ -50,7 +50,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     if (StringUtils.isEmpty(methodName)) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     MethodMatcher invocationMatcher = MethodMatcher.create().name(methodName);
     if (StringUtils.isNotEmpty(className)) {
@@ -68,7 +68,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
         }
       }
     }
-    return ImmutableList.of(invocationMatcher);
+    return Collections.singletonList(invocationMatcher);
   }
 
   @Override

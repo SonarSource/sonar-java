@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -27,12 +26,14 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1860")
 public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> FORBIDDEN_TYPES = ImmutableList.of(
+  private static final List<String> FORBIDDEN_TYPES = Arrays.asList(
     Boolean.class.getName(),
     Byte.class.getName(),
     Character.class.getName(),
@@ -45,7 +46,7 @@ public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SYNCHRONIZED_STATEMENT);
+    return Collections.singletonList(Tree.Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override

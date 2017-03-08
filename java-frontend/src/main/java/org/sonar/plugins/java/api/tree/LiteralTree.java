@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
-
 /**
  * Literal expression.
  *
@@ -41,7 +39,6 @@ import com.google.common.annotations.Beta;
  *
  * @since Java 1.3
  */
-@Beta
 public interface LiteralTree extends ExpressionTree {
 
   String value();

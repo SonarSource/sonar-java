@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -28,6 +26,8 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +37,13 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
   private static final String JAVA_NIO_FILE_FILES = "java.nio.file.Files";
   private static final String EXISTS = "exists";
   private static final String IS_DIRECTORY = "isDirectory";
-  private static final Map<String, String> messageParam = ImmutableMap.<String, String>builder()
-    .put(EXISTS, EXISTS)
-    .put("notExists", EXISTS)
-    .put("isRegularFile", "isFile")
-    .put(IS_DIRECTORY, IS_DIRECTORY)
-    .build();
+  private static final Map<String, String> messageParam = new HashMap<>();
+  static {
+    messageParam.put(EXISTS, EXISTS);
+    messageParam.put("notExists", EXISTS);
+    messageParam.put("isRegularFile", "isFile");
+    messageParam.put(IS_DIRECTORY, IS_DIRECTORY);
+  }
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -51,7 +52,7 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name(EXISTS).withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("notExists").withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("isRegularFile").withAnyParameters(),

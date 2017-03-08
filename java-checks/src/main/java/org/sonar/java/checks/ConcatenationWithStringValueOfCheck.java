@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "S1153")
@@ -52,7 +52,7 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
       return;
     }
 
-    Set<ExpressionTree> valueOfTrees = Sets.newHashSet();
+    Set<ExpressionTree> valueOfTrees = new HashSet<>();
     boolean flagIssue = false;
     ExpressionTree current = tree;
     while (current.is(Kind.PLUS)) {
