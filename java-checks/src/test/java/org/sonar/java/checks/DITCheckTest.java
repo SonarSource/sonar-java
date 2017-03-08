@@ -37,4 +37,12 @@ public class DITCheckTest {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/Dit.java", check);
   }
 
+  @Test
+  public void max_level_is_2_and_filtered() {
+    DITCheck check = new DITCheck();
+    check.setMax(2);
+    check.setFilteredClasses("java.lang.Object");
+    JavaCheckVerifier.verify("src/test/files/checks/DitFiltered.java", check);
+  }
+
 }
