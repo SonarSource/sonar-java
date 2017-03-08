@@ -72,7 +72,7 @@ With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as:
 
     export ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
 
-Because running the ITs, be sure your MAVEN_HOME environment variable is set.
+Before running the ITs, be sure your MAVEN_HOME environment variable is set.
 
 #### Plugin Test
 
