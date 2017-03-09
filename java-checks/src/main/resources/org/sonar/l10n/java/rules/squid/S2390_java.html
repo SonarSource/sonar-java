@@ -1,0 +1,22 @@
+<p>When a parent class references a static member of a subclass during its own initialization, the results will not be what you expect because the
+child class won't exist yet. </p>
+<p>In a best-case scenario, you'll see immediate failures in the code as a result. Worst-case, the damage will be more insidious and difficult to
+track down.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+class Parent {
+  public static final int childVersion = Child.version;
+}
+
+class Child extends Parent {
+  public static final int version = 6;
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/display/java/DCL00-J.+Prevent+class+initialization+cycles">CERT, DCL00-J.</a> - Prevent
+  class initialization cycles </li>
+  <li> Java Language Specifications - <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4">Section 12.4: Initialization of
+  Classes and Interfaces</a> </li>
+</ul>
+

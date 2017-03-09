@@ -1,0 +1,17 @@
+{
+  "title": "Classes should not access static members of their own subclasses during initialization",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "bug",
+    "cert"
+  ],
+  "standards": [
+    "CERT"
+  ],
+  "defaultSeverity": "Major"
+}

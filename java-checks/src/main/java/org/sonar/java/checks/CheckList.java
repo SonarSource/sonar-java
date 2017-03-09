@@ -425,6 +425,7 @@ public final class CheckList {
       .add(CatchRethrowingCheck.class)
       .add(InappropriateRegexpCheck.class)
       .add(CallOuterPrivateMethodCheck.class)
+      .add(SubClassStaticReferenceCheck.class)
       .add(InterruptedExceptionCheck.class)
       .add(RawByteBitwiseOperationsCheck.class)
       .add(EnumSetCheck.class)
