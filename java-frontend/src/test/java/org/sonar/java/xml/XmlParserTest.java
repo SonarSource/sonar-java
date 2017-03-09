@@ -19,15 +19,17 @@
  */
 package org.sonar.java.xml;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.utils.log.LogTester;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 
 import java.io.File;
 
@@ -50,14 +52,16 @@ public class XmlParserTest {
   public void empty_xml_file_should_produce_a_nice_warning_log() throws Exception {
     XmlParser.parseXML(new File("src/test/files/xml/empty.xml"));
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("File src/test/files/xml/empty.xml is empty and won't be analyzed.");
+    String filename = FilenameUtils.separatorsToSystem("src/test/files/xml/empty.xml");
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("File " + filename + " is empty and won't be analyzed.");
   }
 
   @Test
   public void should_return_null_when_encountering_parsing_issue() {
     logTester.setLevel(LoggerLevel.DEBUG);
     assertThat(XmlParser.parseXML(new File("src/test/files/xml/parsing-issue.xml"))).isNull();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).contains("Unable to parse xml file: src/test/files/xml/parsing-issue.xml");
+    String filename = FilenameUtils.separatorsToSystem("src/test/files/xml/parsing-issue.xml");
+    assertThat(logTester.logs(LoggerLevel.ERROR)).contains("Unable to parse xml file: " + filename);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).hasSize(1).allSatisfy(s -> s.startsWith("XML file parsing failed because of : org.xml.sax.SAXParseException; systemId: file: "));
   }
 
