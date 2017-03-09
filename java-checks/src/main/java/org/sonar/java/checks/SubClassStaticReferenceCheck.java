@@ -54,7 +54,7 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     // Initialization of a class consists of executing its static initializers and the initializers for static fields (class variables)
     // declared in the class.
     checkStaticVariables(members, classType);
-    checkStaticInitilizers(members, classType);
+    checkStaticInitializers(members, classType);
   }
 
   private void checkStaticVariables(List<Tree> members, Type classType) {
@@ -71,7 +71,7 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     return tree.symbol().isStatic();
   }
 
-  private void checkStaticInitilizers(List<Tree> members, Type classType) {
+  private void checkStaticInitializers(List<Tree> members, Type classType) {
     members.stream()
       .filter(member -> member.is(Tree.Kind.STATIC_INITIALIZER))
       .forEach(tree -> tree.accept(new StaticAccessVisitor(classType)));
