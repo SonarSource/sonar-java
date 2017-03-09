@@ -55,7 +55,10 @@ public class XmlParserTest {
 
   @Test
   public void should_return_null_when_encountering_parsing_issue() {
+    logTester.setLevel(LoggerLevel.DEBUG);
     assertThat(XmlParser.parseXML(new File("src/test/files/xml/parsing-issue.xml"))).isNull();
+    assertThat(logTester.logs(LoggerLevel.ERROR)).contains("Unable to parse xml file: src/test/files/xml/parsing-issue.xml");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).hasSize(1).allSatisfy(s -> s.startsWith("XML file parsing failed because of : org.xml.sax.SAXParseException; systemId: file: "));
   }
 
   @Test
