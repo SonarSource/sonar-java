@@ -22,9 +22,11 @@ package org.sonar.java.checks.spring;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class S3749CheckTest {
+public class SpringComponentWithNonAutowiredMembersCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/S3749Check.java", new S3749Check());
+    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck.java", new SpringComponentWithNonAutowiredMembersCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck.java",
+      new SpringComponentWithNonAutowiredMembersCheck());
   }
 }

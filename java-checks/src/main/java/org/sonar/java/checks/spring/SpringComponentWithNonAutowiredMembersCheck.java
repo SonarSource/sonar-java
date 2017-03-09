@@ -31,10 +31,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3749")
-public class S3749Check extends BaseTreeVisitor implements JavaFileScanner {
+public class SpringComponentWithNonAutowiredMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-
+ 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
