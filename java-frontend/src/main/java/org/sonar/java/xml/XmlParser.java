@@ -20,6 +20,7 @@
 package org.sonar.java.xml;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.w3c.dom.Document;
@@ -33,6 +34,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Deque;
@@ -62,7 +64,10 @@ public class XmlParser {
       factory.newSAXParser().parse(file, new LocationHandler(document));
       return document;
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      LOG.error("Unable to parse xml file: " + file.getPath(), e);
+      LOG.error("Unable to parse xml file: {}", file.getPath());
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("XML file parsing failed because of : {}", ExceptionUtils.getFullStackTrace(e));
+      }
     }
     return null;
   }
