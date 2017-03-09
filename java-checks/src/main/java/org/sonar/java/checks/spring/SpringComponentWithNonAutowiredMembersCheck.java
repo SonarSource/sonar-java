@@ -19,48 +19,41 @@
  */
 package org.sonar.java.checks.spring;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3749")
-public class SpringComponentWithNonAutowiredMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscriptionVisitor {
 
-  private JavaFileScannerContext context;
- 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    SymbolMetadata symbolMeta = tree.symbol().metadata();
+  public void visitNode(Tree tree) {
+    ClassTree clazzTree = (ClassTree) tree;
+    SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
 
-    if (symbolMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
-      || symbolMeta.isAnnotatedWith("org.springframework.stereotype.Service")
-      || symbolMeta.isAnnotatedWith("org.springframework.stereotype.Repository")) {
-      List<Tree> members = tree.members();
-      for (Tree member : members) {
-        if (member.is(Kind.VARIABLE)) {
-          raiseIssueOnNonStaticMemberWithoutAutowired(member);
-        }
-      }
+    if (isSpringComponent(clazzMeta)) {
+      clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
+        .map(m -> (VariableTree) m)
+        .filter(v -> !v.symbol().isStatic())
+        .filter(v -> !v.symbol().metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired"))
+        .forEach(v -> reportIssue(v.simpleName(), "Make this member @Autowired or remove it."));
     }
   }
 
-  private void raiseIssueOnNonStaticMemberWithoutAutowired(Tree member) {
-    VariableTree var = (VariableTree) member;
-    if (!var.symbol().isStatic() && !var.symbol().metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")) {
-      context.reportIssue(this, var.simpleName(), "Make this member @Autowired or remove it.");
-    }
+  private static boolean isSpringComponent(SymbolMetadata clazzMeta) {
+    return clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
+      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
+      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
   }
 }

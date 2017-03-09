@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class HelloWorld {
@@ -12,17 +13,10 @@ public class HelloWorld {
   public String address = null; // Noncompliant [[sc=17;ec=24]] {{Make this member @Autowired or remove it.}}
   String phone = null; // Noncompliant [[sc=10;ec=15]] {{Make this member @Autowired or remove it.}}
 
+  @Autowired 
+  String email = null; // Compliant
+  
   private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorld.class); // Compliant
-
-  @RequestMapping(value = "/greet", method = GET)
-  public String greet(String greetee) {
-
-    if (greetee != null) {
-      this.name = greetee;
-    }
-
-    return "Hello " + this.name; // if greetee is null, you see the previous user's data
-  }
 }
 
 @Service
@@ -33,4 +27,13 @@ class ServiceHelloWorld {
 @Repository
 class RepositoryHelloWorld {
   protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Make this member @Autowired or remove it.}}
+}
+
+class NonSpringComponentClazz {
+  private String name = null; // Compliant
+  public String address = null; // Compliant
+  String phone = null; // Compliant
+  
+  @Autowired 
+  String email = null; // Compliant
 }
