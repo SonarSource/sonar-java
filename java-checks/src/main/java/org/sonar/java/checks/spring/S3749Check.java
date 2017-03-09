@@ -51,13 +51,16 @@ public class S3749Check extends BaseTreeVisitor implements JavaFileScanner {
       List<Tree> members = tree.members();
       for (Tree member : members) {
         if (member.is(Kind.VARIABLE)) {
-          VariableTree var = (VariableTree) member;
-          if (!var.symbol().isStatic() && !var.symbol().metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")) {
-            context.reportIssue(this, var.simpleName(), "Make this member @Autowired or remove it.");
-          }
+          raiseIssueOnNonStaticMemberWithoutAutowired(member);
         }
       }
     }
   }
 
+  private void raiseIssueOnNonStaticMemberWithoutAutowired(Tree member) {
+    VariableTree var = (VariableTree) member;
+    if (!var.symbol().isStatic() && !var.symbol().metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")) {
+      context.reportIssue(this, var.simpleName(), "Make this member @Autowired or remove it.");
+    }
+  }
 }
