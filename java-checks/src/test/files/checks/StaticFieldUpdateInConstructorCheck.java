@@ -23,12 +23,18 @@ class A {
     (A.staticField) = "hello"; // Noncompliant
     (words)[1] = "polo"; // Noncompliant
 
+    A.values()[1] = 14; // Compliant
+
     synchronized (new Object()) {
       field = "reworld"; // Compliant - synchronized block
     }
   }
 
   static A getA() {
+    return null;
+  }
+
+  static int[] values() {
     return null;
   }
 
