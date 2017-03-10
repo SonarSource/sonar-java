@@ -57,6 +57,6 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test_transitivity() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/TransitivityCPP.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionAlwaysTrueOrFalseCheck());
   }
 }
