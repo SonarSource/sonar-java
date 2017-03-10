@@ -69,11 +69,21 @@ class RelationStateTable {
     return givenMap.getOrDefault(when, UNDETERMINED);
   }
 
-  static RelationState solveRelation(Kind given, Kind when) {
-    RelationState relationState = get(given, when);
+  /**
+   * Solve the state of {@code toSolve} relation given that {@code known} relation is fulfilled (satisfied).
+   *
+   * It is assumed that relations share operands and that certain combinations of operands
+   * were already eliminated in {@link BinaryRelation#implies(BinaryRelation)}
+   *
+   * @param known relation we know is fulfilled
+   * @param toSolve relation of which state we are trying to determine
+   * @return state of the toSolve relation
+   */
+  static RelationState solveRelation(Kind known, Kind toSolve) {
+    RelationState relationState = get(known, toSolve);
     if (relationState.isDetermined()) {
       return relationState;
     }
-    return get(given, when.inverse()).invert();
+    return get(known, toSolve.inverse()).invert();
   }
 }

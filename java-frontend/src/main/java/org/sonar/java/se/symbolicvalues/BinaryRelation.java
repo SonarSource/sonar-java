@@ -26,9 +26,10 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import javax.annotation.CheckForNull;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
@@ -39,6 +40,9 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS;
 
 public class BinaryRelation {
+
+  private static final int MAX_ITERATIONS = 10_000;
+  private static final int MAX_DEDUCED_RELATIONS = 200;
 
   private static final Set<Kind> NORMALIZED_OPERATORS = EnumSet.of(
       EQUAL, NOT_EQUAL,
@@ -58,7 +62,11 @@ public class BinaryRelation {
     this.kind = kind;
     leftOp = v1;
     rightOp = v2;
-    hashcode = kind.hashCode() + leftOp.hashCode() + rightOp.hashCode();
+    hashcode = computeHash();
+  }
+
+  private int computeHash() {
+    return leftOp.id() < rightOp.id() ? Objects.hash(kind, leftOp, rightOp) : Objects.hash(kind, rightOp, leftOp);
   }
 
   static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -75,6 +83,12 @@ public class BinaryRelation {
         return new BinaryRelation(kind.symmetric(), rightOp, leftOp);
       default:
         throw new IllegalStateException("Creation of relation of kind " + kind + " is missing!");
+    }
+  }
+
+  public static class TransitiveRelationExceededException extends RuntimeException {
+    public TransitiveRelationExceededException(String msg) {
+      super("Number of transitive relations exceeded!" + msg);
     }
   }
 
@@ -119,49 +133,46 @@ public class BinaryRelation {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
     }
-    List<BinaryRelation> allRelations = deduce(knownRelations);
-    for (BinaryRelation relation : allRelations) {
-      RelationState result = relation.implies(this);
-      if (result.isDetermined()) {
-        return result;
+    Set<BinaryRelation> usedRelations = new HashSet<>();
+    Set<BinaryRelation> relations = new HashSet<>(knownRelations);
+    int iterations = 0;
+    while (!relations.isEmpty()) {
+      if (usedRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        // should not happen under normal conditions
+        throw new TransitiveRelationExceededException("Used relations: " + relations.size() + ". Iterations " + iterations);
       }
+      iterations++;
+      for (BinaryRelation relation : relations) {
+        RelationState result = relation.implies(this);
+        if (result.isDetermined()) {
+          return result;
+        }
+      }
+      usedRelations.addAll(relations);
+      relations = deduceTransitiveRelations(usedRelations);
     }
     return RelationState.UNDETERMINED;
   }
 
-  static List<BinaryRelation> deduce(List<BinaryRelation> relations) {
-    List<BinaryRelation> result = new ArrayList<>(relations);
-    List<BinaryRelation> newRelations = new ArrayList<>();
-    for (int i = 0; i < relations.size(); i++) {
-      for (int j = i + 1; j < relations.size(); j++) {
-        BinaryRelation deduced = deduce(result.get(i), result.get(j));
-        if (deduced != null) {
-          newRelations.add(deduced);
+  static Set<BinaryRelation> deduceTransitiveRelations(Set<BinaryRelation> relations) {
+    Set<BinaryRelation> result = new HashSet<>();
+    BinaryRelation[] binaryRelations = relations.toArray(new BinaryRelation[relations.size()]);
+    for (int i = 0; i < binaryRelations.length; i++) {
+      for (int j = i + 1; j < binaryRelations.length; j++) {
+        BinaryRelation rel1 = binaryRelations[i];
+        BinaryRelation rel2 = binaryRelations[j];
+        BinaryRelation simplified = simplify(rel1, rel2);
+        if (simplified != null && !relations.contains(simplified)) {
+          result.add(simplified);
         }
-      }
-    }
-    result.addAll(newRelations);
-    for (BinaryRelation newRelation : newRelations) {
-      for (BinaryRelation existing : relations) {
-        BinaryRelation deduced = deduce(newRelation, existing);
-        if (deduced != null) {
-          result.add(deduced);
+        BinaryRelation transitive = combineTransitively(rel1, rel2);
+        if (transitive != null && !relations.contains(transitive)) {
+          result.add(transitive);
         }
       }
     }
     return result;
-  }
-
-  @CheckForNull
-  private static BinaryRelation deduce(BinaryRelation a, BinaryRelation b) {
-    BinaryRelation simplified = simplify(a, b);
-    if (simplified != null) {
-      return simplified;
-    }
-    if (a.inTransitiveRelationship(b)) {
-      return combineTransitively(a, b);
-    }
-    return null;
   }
 
   @CheckForNull
@@ -189,18 +200,18 @@ public class BinaryRelation {
 
   @VisibleForTesting
   SymbolicValue differentOperand(BinaryRelation other) {
-    Preconditions.checkState(inTransitiveRelationship(other), "%s is not in transitive relationship with %s", this, other);
+    Preconditions.checkState(potentiallyTransitiveWith(other), "%s is not in transitive relationship with %s", this, other);
     return other.hasOperand(leftOp) ? rightOp : leftOp;
   }
 
   @VisibleForTesting
   SymbolicValue commonOperand(BinaryRelation other) {
-    Preconditions.checkState(inTransitiveRelationship(other));
+    Preconditions.checkState(potentiallyTransitiveWith(other));
     return other.hasOperand(leftOp) ? leftOp : rightOp;
   }
 
   @VisibleForTesting
-  boolean inTransitiveRelationship(BinaryRelation other) {
+  boolean potentiallyTransitiveWith(BinaryRelation other) {
     if (hasSameOperand() || other.hasSameOperand()) {
       return false;
     }
@@ -256,6 +267,9 @@ public class BinaryRelation {
 
   @CheckForNull
   private static BinaryRelation combineTransitively(BinaryRelation rel1, BinaryRelation rel2) {
+    if (!rel1.potentiallyTransitiveWith(rel2)) {
+      return null;
+    }
     if (isEqualityRelation(rel1.kind)) {
       return equalityTransitiveBuilder(rel1, rel2);
     }

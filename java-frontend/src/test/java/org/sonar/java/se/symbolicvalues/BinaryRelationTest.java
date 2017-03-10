@@ -27,7 +27,9 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -85,13 +87,13 @@ public class BinaryRelationTest {
     BinaryRelation ab = relSV(EQUAL, a, b).binaryRelation();
     BinaryRelation ba = relSV(EQUAL, b, a).binaryRelation();
     BinaryRelation bc = relSV(LESS_THAN, b, c).binaryRelation();
-    assertThat(ab.inTransitiveRelationship(ab)).isFalse();
-    assertThat(ab.inTransitiveRelationship(ba)).isFalse();
-    assertThat(ba.inTransitiveRelationship(ab)).isFalse();
-    assertThat(bc.inTransitiveRelationship(bc)).isFalse();
+    assertThat(ab.potentiallyTransitiveWith(ab)).isFalse();
+    assertThat(ab.potentiallyTransitiveWith(ba)).isFalse();
+    assertThat(ba.potentiallyTransitiveWith(ab)).isFalse();
+    assertThat(bc.potentiallyTransitiveWith(bc)).isFalse();
 
-    assertThat(ab.inTransitiveRelationship(bc)).isTrue();
-    assertThat(ba.inTransitiveRelationship(bc)).isTrue();
+    assertThat(ab.potentiallyTransitiveWith(bc)).isTrue();
+    assertThat(ba.potentiallyTransitiveWith(bc)).isTrue();
   }
 
   @Test
@@ -132,8 +134,8 @@ public class BinaryRelationTest {
       for (Kind t : Kind.values()) {
         RelationalSymbolicValue first = relSV(r, a, b);
         RelationalSymbolicValue second = relSV(t, b, c);
-        List<BinaryRelation> given = given(first, second);
-        Collection<BinaryRelation> deduced = BinaryRelation.deduce(given);
+        Set<BinaryRelation> given = givenSet(first, second);
+        Collection<BinaryRelation> deduced = BinaryRelation.deduceTransitiveRelations(given);
         deduced.removeAll(given);
         actual.add(String.format("%s && %s => %s", relationToString(first), relationToString(second), deduced));
       }
@@ -155,24 +157,43 @@ public class BinaryRelationTest {
   public void test_transitive_GE() throws Exception {
     RelationalSymbolicValue ab = relSV(GREATER_THAN_OR_EQUAL, a, b);
     RelationalSymbolicValue bc = relSV(GREATER_THAN_OR_EQUAL, b, c);
-    Collection<BinaryRelation> deduce = BinaryRelation.deduce(given(ab, bc));
+    Collection<BinaryRelation> deduce = BinaryRelation.deduceTransitiveRelations(givenSet(ab, bc));
     assertThat(deduce).contains(binaryRelation(GREATER_THAN_OR_EQUAL, a, c));
   }
 
   @Test
   public void test_transitive_method_equals() throws Exception {
     RelationalSymbolicValue equalAB = relSV(EQUAL, a, b);
-    RelationalSymbolicValue bMEQc = relSV(METHOD_EQUALS, b, c);
-    Collection<BinaryRelation> deduce = BinaryRelation.deduce(given(equalAB, bMEQc));
+    RelationalSymbolicValue methodEqualBC = relSV(METHOD_EQUALS, b, c);
+    Collection<BinaryRelation> deduce = BinaryRelation.deduceTransitiveRelations(givenSet(equalAB, methodEqualBC));
     assertThat(deduce).contains(binaryRelation(METHOD_EQUALS, a, c));
-    deduce = BinaryRelation.deduce(given(bMEQc, equalAB));
+    deduce = BinaryRelation.deduceTransitiveRelations(givenSet(methodEqualBC, equalAB));
     assertThat(deduce).contains(binaryRelation(METHOD_EQUALS, a, c));
+  }
+
+  @Test
+  public void test_chained_transitivity() throws Exception {
+    int chainLength = 21;
+    SymbolicValue[] sv = new SymbolicValue[chainLength];
+    List<BinaryRelation> given = new ArrayList<>();
+    sv[0] = new SymbolicValue(0);
+    for (int i = 1; i < chainLength; i++) {
+      sv[i] = new SymbolicValue(i);
+      given.add(relSV(LESS_THAN, sv[i - 1], sv[i]).binaryRelation());
+    }
+    BinaryRelation firstLessThanLast = relSV(LESS_THAN, sv[0], sv[chainLength - 1]).binaryRelation();
+    RelationState relationState = firstLessThanLast.resolveState(given);
+    assertThat(relationState).isEqualTo(FULFILLED);
   }
 
   private RelationalSymbolicValue relSV(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(++id, kind);
     relationalSymbolicValue.computedFrom(Arrays.asList(rightOp, leftOp));
     return relationalSymbolicValue;
+  }
+
+  private Set<BinaryRelation> givenSet(SymbolicValue... sv) {
+    return Arrays.stream(sv).map(SymbolicValue::binaryRelation).collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   private List<BinaryRelation> given(SymbolicValue... sv) {
