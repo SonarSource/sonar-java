@@ -21,79 +21,68 @@ package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import javax.annotation.CheckForNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-public abstract class BinaryRelation {
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS;
+
+public class BinaryRelation {
+
+  private static final int MAX_ITERATIONS = 10_000;
+
+  private static final Set<Kind> NORMALIZED_OPERATORS = EnumSet.of(
+      EQUAL, NOT_EQUAL,
+      LESS_THAN, GREATER_THAN_OR_EQUAL,
+      METHOD_EQUALS, NOT_METHOD_EQUALS);
 
   protected final Kind kind;
   protected final SymbolicValue leftOp;
   protected final SymbolicValue rightOp;
-  protected BinaryRelation symmetric;
-  protected BinaryRelation inverse;
+  private BinaryRelation inverse;
   private final int hashcode;
 
-  protected BinaryRelation(Kind kind, SymbolicValue v1, SymbolicValue v2) {
+  private BinaryRelation(Kind kind, SymbolicValue v1, SymbolicValue v2) {
+    if (!NORMALIZED_OPERATORS.contains(kind)) {
+      throw new IllegalArgumentException("Relation " + v1 + kind.operand + v2 + " not normalized!");
+    }
     this.kind = kind;
     leftOp = v1;
     rightOp = v2;
-    hashcode = Objects.hash(kind, leftOp, rightOp);
+    hashcode = kind.hashCode() + leftOp.hashCode() + rightOp.hashCode();
   }
 
-  public static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
-    BinaryRelation relation;
+  static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     switch (kind) {
       case EQUAL:
-        relation = new EqualRelation(leftOp, rightOp);
-        relation.inverse = new NotEqualRelation(leftOp, rightOp);
-        relation.inverse.symmetric = new NotEqualRelation(rightOp, leftOp);
-        relation.inverse.inverse = relation;
-        relation.symmetric = new EqualRelation(rightOp, leftOp);
-        relation.symmetric.symmetric = relation;
-        relation.symmetric.inverse = relation.inverse.symmetric;
-        break;
       case NOT_EQUAL:
-        relation = binaryRelation(Kind.EQUAL, leftOp, rightOp).inverse;
-        break;
       case LESS_THAN:
-        relation = new LessThanRelation(leftOp, rightOp);
-        break;
-      case LESS_THAN_OR_EQUAL:
-        relation = new LessThanOrEqualRelation(leftOp, rightOp);
-        break;
-      case GREATER_THAN:
-        relation = new GreaterThanRelation(leftOp, rightOp);
-        break;
       case GREATER_THAN_OR_EQUAL:
-        relation = new GreaterThanOrEqualRelation(leftOp, rightOp);
-        break;
       case METHOD_EQUALS:
-        relation = new MethodEqualsRelation(leftOp, rightOp);
-        break;
       case NOT_METHOD_EQUALS:
-        relation = new NotMethodEqualsRelation(leftOp, rightOp);
-        break;
+        return new BinaryRelation(kind, leftOp, rightOp);
+      case LESS_THAN_OR_EQUAL:
+      case GREATER_THAN:
+        return new BinaryRelation(kind.symmetric(), rightOp, leftOp);
       default:
         throw new IllegalStateException("Creation of relation of kind " + kind + " is missing!");
     }
-    return relation;
-
-
   }
 
-
   public static class TransitiveRelationExceededException extends RuntimeException {
-    public TransitiveRelationExceededException() {
-      super("Number of transitive relations exceeded!");
+    public TransitiveRelationExceededException(String msg) {
+      super("Number of transitive relations exceeded!" + msg);
     }
   }
 
@@ -110,11 +99,19 @@ public abstract class BinaryRelation {
     return false;
   }
 
-  private boolean equalsRelation(BinaryRelation rel) {
-    if (kind.equals(rel.kind)) {
-      return leftOp.id() == rel.leftOp.id() && rightOp.id() == rel.rightOp.id();
+  private boolean equalsRelation(BinaryRelation other) {
+    if (!kind.equals(other.kind)) {
+      return false;
     }
-    return false;
+    switch (kind) {
+      case EQUAL:
+      case NOT_EQUAL:
+      case METHOD_EQUALS:
+      case NOT_METHOD_EQUALS:
+        return hasSameOperandsAs(other);
+      default:
+        return leftOp.equals(other.leftOp) && rightOp.equals(other.rightOp);
+    }
   }
 
   @Override
@@ -127,140 +124,109 @@ public abstract class BinaryRelation {
   }
 
   protected RelationState resolveState(Collection<BinaryRelation> knownRelations) {
-    return resolveState(knownRelations, new HashSet<BinaryRelation>());
-  }
-
-  @CheckForNull
-  protected RelationState resolveState(Collection<BinaryRelation> knownRelations, Set<BinaryRelation> usedRelations) {
-    //relation on same operand
-    if(leftOp.equals(rightOp)) {
+    if(hasSameOperand()) {
       return relationStateForSameOperand();
     }
-    if (knownRelations.isEmpty()) {
-      return RelationState.UNDETERMINED;
-    }
-    if (usedRelations.size() > 200) {
-      throw new TransitiveRelationExceededException();
-    }
-    for (BinaryRelation relation : knownRelations) {
-      RelationState result = relation.implies(this);
-      if (result.isDetermined()) {
-        return result;
+    Set<BinaryRelation> usedRelations = new HashSet<>();
+    Set<BinaryRelation> relations = new HashSet<>(knownRelations);
+    int iterations = 0;
+    while (!relations.isEmpty()) {
+      if (usedRelations.size() > 200 || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        // should not happen under normal conditions
+        throw new TransitiveRelationExceededException("Used relations: " + relations.size() + ". Iterations " + iterations);
       }
-      usedRelations.add(relation);
-      usedRelations.add(relation.symmetric());
+      iterations++;
+      for (BinaryRelation relation : relations) {
+        RelationState result = relation.implies(this);
+        if (result.isDetermined()) {
+          return result;
+        }
+        usedRelations.add(relation);
+      }
+      relations = deduce(usedRelations);
     }
-    Collection<BinaryRelation> transitiveReduction = transitiveReduction(knownRelations, usedRelations);
-    if (transitiveReduction.isEmpty()) {
-      // If no new combination, try with the symmetric (because transitive reduction only checks the operand on the left side.
-      transitiveReduction = symmetric().transitiveReduction(knownRelations, usedRelations);
-    }
-    return resolveState(transitiveReduction, usedRelations);
+    return RelationState.UNDETERMINED;
   }
 
-  private RelationState relationStateForSameOperand() {
-    switch (kind) {
-      case EQUAL:
-      case GREATER_THAN_OR_EQUAL:
-      case LESS_THAN_OR_EQUAL:
-      case METHOD_EQUALS:
-        return RelationState.FULFILLED;
-      case NOT_EQUAL:
-      case GREATER_THAN:
-      case LESS_THAN:
-      case NOT_METHOD_EQUALS:
-        return RelationState.UNFULFILLED;
-      default:
-        throw new IllegalStateException("Binary relation kind unsupported" + kind);
-    }
-  }
-
-  /**
-   * Returns a new list of relations, built by combining one of the known relations that can be combined transitively with the receiver
-   * 
-   * @param knownRelations the list of relations known so far
-   * @param usedRelations the list of relation that have been used in past recursive checks
-   * @return a list of relations containing at least one new relation; empty if no new combination was found.
-   */
-  private Collection<BinaryRelation> transitiveReduction(Collection<BinaryRelation> knownRelations, Set<BinaryRelation> usedRelations) {
-    boolean changed = false;
-    List<BinaryRelation> result = new ArrayList<>();
-    for (BinaryRelation relation : knownRelations) {
-      boolean used = false;
-      if (leftOp.equals(relation.leftOp)) {
-        used = result.addAll(relation.combinedRelations(knownRelations, usedRelations));
-      } else if (leftOp.equals(relation.rightOp)) {
-        used = result.addAll(relation.symmetric().combinedRelations(knownRelations, usedRelations));
-      }
-      if (used) {
-        changed = true;
-      } else {
-        result.add(relation);
-      }
-    }
-    return changed ? result : Collections.<BinaryRelation>emptyList();
-  }
-
-  private Collection<BinaryRelation> combinedRelations(Collection<BinaryRelation> relations, Set<BinaryRelation> usedRelations) {
-    List<BinaryRelation> result = new ArrayList<>();
-    for (BinaryRelation relation : relations) {
-      if (!this.equals(relation)) {
-        BinaryRelation combined = combineUnordered(relation);
-        if (combined != null && !usedRelations.contains(combined)) {
-          result.add(combined);
+  static Set<BinaryRelation> deduce(Set<BinaryRelation> relations) {
+    Set<BinaryRelation> result = new HashSet<>();
+    BinaryRelation[] binaryRelations = relations.toArray(new BinaryRelation[relations.size()]);
+    for (int i = 0; i < binaryRelations.length; i++) {
+      for (int j = i + 1; j < binaryRelations.length; j++) {
+        BinaryRelation a = binaryRelations[i];
+        BinaryRelation b = binaryRelations[j];
+        BinaryRelation simplified = simplify(a, b);
+        if (simplified != null && !relations.contains(simplified)) {
+          result.add(simplified);
+        }
+        if (a.inTransitiveRelationship(b)) {
+          BinaryRelation transitive = combineTransitively(a, b);
+          if (transitive != null && !relations.contains(transitive)) {
+            result.add(transitive);
+          }
         }
       }
     }
     return result;
   }
 
-  /**
-   * Create a new relation, if any, that is a transitive combination of the receiver with the supplied relation.
-   * @param relation another SymbolicValueRelation
-   * @return a SymbolicValueRelation or null if the receiver and the supplied relation cannot be combined
-   */
-  @VisibleForTesting
   @CheckForNull
-  BinaryRelation combineUnordered(BinaryRelation relation) {
-    BinaryRelation combined = null;
-    if (rightOp.equals(relation.leftOp)) {
-      combined = relation.combineOrdered(this);
-    } else if (rightOp.equals(relation.rightOp)) {
-      combined = relation.symmetric().combineOrdered(this);
+  private static BinaryRelation simplify(BinaryRelation a, BinaryRelation b) {
+    // a >= b && b >= a -> a == b
+    if (a.kind == GREATER_THAN_OR_EQUAL && b.kind == GREATER_THAN_OR_EQUAL
+      && a.hasSameOperandsAs(b) && !a.equals(b)) {
+      return binaryRelation(EQUAL, a.leftOp, a.rightOp);
     }
-    return combined;
-  }
-
-  /**
-   * Create a new relation, if any, that is a transitive combination of the receiver with the supplied relation.
-   * Schema aSb & bRc => aTc
-   * where aRb is the relation described by the receiver, bSc that of the supplied relation, aTc is the returned relation.
-   * 
-   * @param relation another SymbolicValueRelation that can be combined transitively with the receiver.
-   * @return a SymbolicValueRelation or null if the receiver and the supplied relation cannot be combined
-   */
-  @CheckForNull
-  private BinaryRelation combineOrdered(BinaryRelation relation) {
-    Preconditions.checkArgument(leftOp.equals(relation.rightOp), "Transitive condition not matched!");
-    if (rightOp.equals(relation.leftOp)) {
-      return conjunction(relation.symmetric());
-    }
-    return combinedAfter(relation);
-  }
-
-  /**
-   * Returns a new relation resulting of the conjunction of the receiver with the supplied relation.
-   * Schema aRb & aSb => aTb
-   * where aRb is the relation described by the receiver, bSc that of the supplied relation, aTc is the returned relation.
-   * 
-   * @param relation another relation bearing on the same operands as those of the receiver
-   * @return the resulting relation or null if the conjunction of both relations does not bring any new information
-   */
-
-  @CheckForNull
-  protected BinaryRelation conjunction(BinaryRelation relation) {
-    Preconditions.checkArgument(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
     return null;
+  }
+
+  private boolean hasSameOperand() {
+    return leftOp.equals(rightOp);
+  }
+
+  private boolean hasOperand(SymbolicValue operand) {
+    return leftOp.equals(operand) || rightOp.equals(operand);
+  }
+
+  private boolean hasSameOperandsAs(BinaryRelation other) {
+    return (leftOp.equals(other.leftOp) && rightOp.equals(other.rightOp))
+      || (leftOp.equals(other.rightOp) && rightOp.equals(other.leftOp));
+  }
+
+  @VisibleForTesting
+  SymbolicValue differentOperand(BinaryRelation other) {
+    Preconditions.checkState(inTransitiveRelationship(other), "%s is not in transitive relationship with %s", this, other);
+    return other.hasOperand(leftOp) ? rightOp : leftOp;
+  }
+
+  @VisibleForTesting
+  SymbolicValue commonOperand(BinaryRelation other) {
+    Preconditions.checkState(inTransitiveRelationship(other));
+    return other.hasOperand(leftOp) ? leftOp : rightOp;
+  }
+
+  @VisibleForTesting
+  boolean inTransitiveRelationship(BinaryRelation other) {
+    if (hasSameOperand() || other.hasSameOperand()) {
+      return false;
+    }
+    return (hasOperand(other.leftOp) || hasOperand(other.rightOp)) && !hasSameOperandsAs(other);
+  }
+
+  private RelationState relationStateForSameOperand() {
+    switch (kind) {
+      case EQUAL:
+      case GREATER_THAN_OR_EQUAL:
+      case METHOD_EQUALS:
+        return RelationState.FULFILLED;
+      case NOT_EQUAL:
+      case LESS_THAN:
+      case NOT_METHOD_EQUALS:
+        return RelationState.UNFULFILLED;
+      default:
+        throw new IllegalStateException("Unknown resolution for same operand " + this);
+    }
   }
 
   /**
@@ -274,16 +240,6 @@ public abstract class BinaryRelation {
   }
 
   /**
-   * @return a new relation, equivalent to the receiver with inverted parameters
-   */
-  protected BinaryRelation symmetric() {
-    if (symmetric == null) {
-      symmetric = binaryRelation(kind.symmetric(), rightOp, leftOp);
-    }
-    return symmetric;
-  }
-
-  /**
    * @param relation a relation between symbolic values
    * @return a RelationState<ul>
    * <li>FULFILLED  if the receiver implies that the supplied relation is true</li>
@@ -292,65 +248,88 @@ public abstract class BinaryRelation {
    * </ul>
    * @see RelationState
    */
-  protected RelationState implies(BinaryRelation relation) {
-    if (leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp)) {
-      return relation.isImpliedBy(this);
-    } else if (leftOp.equals(relation.rightOp) && rightOp.equals(relation.leftOp)) {
-      return relation.symmetric().isImpliedBy(this);
+  private RelationState implies(BinaryRelation relation) {
+    if (this.equals(relation)) {
+      return RelationState.FULFILLED;
+    }
+    if (inverse().equals(relation)) {
+      return RelationState.UNFULFILLED;
+    }
+    if (hasSameOperandsAs(relation)) {
+      return RelationStateTable.solveRelation(kind, relation.kind);
     }
     return RelationState.UNDETERMINED;
   }
 
-  protected abstract RelationState isImpliedBy(BinaryRelation relation);
+  private static BinaryRelation combineTransitively(BinaryRelation a, BinaryRelation b) {
+    if (isEqualityRelation(a.kind) || isEqualityRelation(b.kind)) {
+      return equalityTransitiveBuilder(a, b);
+    }
+    if (a.kind == LESS_THAN) {
+      return lessThanTransitiveBuilder(a, b);
+    }
+    if (b.kind == LESS_THAN) {
+      return lessThanTransitiveBuilder(b, a);
+    }
+    if (a.kind == GREATER_THAN_OR_EQUAL && b.kind == GREATER_THAN_OR_EQUAL) {
+      BinaryRelation greaterThanEqual = greaterThanEqualTransitiveBuilder(a, b);
+      return greaterThanEqual != null ? greaterThanEqual : greaterThanEqualTransitiveBuilder(b, a);
+    }
+    return null;
+  }
 
-  protected abstract RelationState impliesEqual();
+  private static boolean isEqualityRelation(Kind kind) {
+    return kind == EQUAL || kind == METHOD_EQUALS;
+  }
 
-  protected abstract RelationState impliesNotEqual();
+  private static BinaryRelation equalityTransitiveBuilder(BinaryRelation a, BinaryRelation b) {
+    BinaryRelation equality = isEqualityRelation(a.kind) ? a : b;
+    BinaryRelation other = equality == a ? b : a;
+    SymbolicValue transitiveOperand = equality.differentOperand(other);
+    boolean leftTransitive = equality.hasOperand(other.leftOp);
 
-  protected abstract RelationState impliesMethodEquals();
+    if (equality.kind == METHOD_EQUALS && other.kind == EQUAL) {
+      return equalityTransitiveBuilder(other, equality);
+    }
 
-  protected abstract RelationState impliesNotMethodEquals();
-
-  protected abstract RelationState impliesGreaterThan();
-
-  protected abstract RelationState impliesGreaterThanOrEqual();
-
-  protected abstract RelationState impliesLessThan();
-
-  protected abstract RelationState impliesLessThanOrEqual();
-
-  /**
-   * Returns a new relation resulting of the transitive combination of the receiver with the supplied relation.
-   * Schema aRb & bSc => aTc
-   * where aRb is the relation described by the receiver, bSc that of the supplied relation, aTc is the returned relation.
-   * 
-   * @param relation another relation whose left operand is the same as the receiver's right operand
-   * @return the resulting relation or null if the conjunction of both relations does not bring any new information
-   */
-  @CheckForNull
-  protected abstract BinaryRelation combinedAfter(BinaryRelation relation);
-
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithEqual(EqualRelation relation);
-
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithNotEqual(NotEqualRelation relation);
-
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithMethodEquals(MethodEqualsRelation relation);
+    return binaryRelation(other.kind,
+      leftTransitive ? transitiveOperand : other.leftOp,
+      leftTransitive ? other.rightOp : transitiveOperand);
+  }
 
   @CheckForNull
-  protected abstract BinaryRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation);
+  private static BinaryRelation lessThanTransitiveBuilder(BinaryRelation lessThan, BinaryRelation other) {
+    BinaryRelation deduced = null;
+    if (other.kind == LESS_THAN) {
+      // a < x && x < b -> a < b
+      if (lessThan.rightOp.equals(other.leftOp)) {
+        deduced = binaryRelation(LESS_THAN, lessThan.leftOp, other.rightOp);
+      }
+      // x < a && b < x -> b < a
+      if (lessThan.leftOp.equals(other.rightOp)) {
+        deduced = binaryRelation(LESS_THAN, other.leftOp, lessThan.rightOp);
+      }
+    }
+    if (other.kind == GREATER_THAN_OR_EQUAL) {
+      // a < x && b >= x -> a < b
+      if (lessThan.rightOp.equals(other.rightOp)) {
+        deduced = binaryRelation(LESS_THAN, lessThan.leftOp, other.leftOp);
+      }
+      // x < a && x >= b -> b < a
+      if (lessThan.leftOp.equals(other.leftOp)) {
+        deduced = binaryRelation(LESS_THAN, other.rightOp, lessThan.rightOp);
+      }
+    }
+    return deduced;
+  }
 
   @CheckForNull
-  protected abstract BinaryRelation combinedWithGreaterThan(GreaterThanRelation relation);
+  private static BinaryRelation greaterThanEqualTransitiveBuilder(BinaryRelation a, BinaryRelation b) {
+    // a >= x && x >= b -> a >= b
+    if (a.rightOp.equals(b.leftOp)) {
+      return binaryRelation(GREATER_THAN_OR_EQUAL, a.leftOp, b.rightOp);
+    }
+    return null;
+  }
 
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation);
-
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithLessThan(LessThanRelation relation);
-
-  @CheckForNull
-  protected abstract BinaryRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation);
 }

@@ -31,15 +31,30 @@ public enum RelationState {
   /**
    * This value means that the checked relation is fulfilled by the set of known relations
    */
-  FULFILLED(true, BooleanConstraint.FALSE),
+  FULFILLED(true, BooleanConstraint.FALSE) {
+    @Override
+    RelationState invert() {
+      return UNFULFILLED;
+    }
+  },
   /**
    * This value means that the checked relation is not fulfilled by the set of known relations
    */
-  UNFULFILLED(true, BooleanConstraint.TRUE),
+  UNFULFILLED(true, BooleanConstraint.TRUE) {
+    @Override
+    RelationState invert() {
+      return FULFILLED;
+    }
+  },
   /**
    * This value means that the checked relation is not determined by the set of known relations
    */
-  UNDETERMINED(false, null);
+  UNDETERMINED(false, null) {
+    @Override
+    RelationState invert() {
+      return UNDETERMINED;
+    }
+  };
 
   private final boolean determined;
   private final BooleanConstraint checkedConstraint;
@@ -56,6 +71,8 @@ public enum RelationState {
   public boolean isDetermined() {
     return determined;
   }
+
+  abstract RelationState invert();
 
 }
 
