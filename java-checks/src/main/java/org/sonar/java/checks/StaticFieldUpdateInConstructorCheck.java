@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,11 +103,12 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
 
     private void checkExpression(ExpressionTree expressionTree) {
       IdentifierTree variable = getVariable(expressionTree);
-      if (staticFields.contains(variable.symbol())) {
+      if (variable != null && staticFields.contains(variable.symbol())) {
         assignedStaticFields.add(variable);
       }
     }
 
+    @CheckForNull
     private static IdentifierTree getVariable(ExpressionTree expressionTree) {
       Tree variable = ExpressionUtils.skipParentheses(expressionTree);
       if (variable.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
@@ -114,7 +117,10 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
       if (variable.is(Tree.Kind.MEMBER_SELECT)) {
         return getVariable(((MemberSelectExpressionTree) variable).identifier());
       }
-      return (IdentifierTree) variable;
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
+        return (IdentifierTree) variable;
+      }
+      return null;
     }
   }
 
