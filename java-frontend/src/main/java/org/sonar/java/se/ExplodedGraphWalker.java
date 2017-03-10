@@ -992,7 +992,7 @@ public class ExplodedGraphWalker {
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
-    if (isLocalMethodInvocation(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
+    if (isLocalMethodInvocation(tree) || isProvidingThisAsArgument(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
       resetFieldValues();
     }
   }
@@ -1010,6 +1010,12 @@ public class ExplodedGraphWalker {
       }
     }
     return false;
+  }
+
+  private static boolean isProvidingThisAsArgument(MethodInvocationTree tree) {
+    return tree.arguments().stream()
+      .map(ExpressionUtils::skipParentheses)
+      .anyMatch(expr -> expr.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expr).name()));
   }
 
   private void resetFieldValues() {

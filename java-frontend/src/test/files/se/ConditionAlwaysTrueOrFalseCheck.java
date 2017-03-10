@@ -2091,3 +2091,24 @@ class SimpleAssignments {
     }
   }
 }
+
+class ResetFieldWhenThisUsedAsParameter {
+  static class A {
+    boolean value;
+    B b;
+
+    void foo() {
+      this.value = true;
+      b.bar(this);
+      if (value) { // Compliant
+        // do something
+      }
+    }
+  }
+
+  static class B {
+    void bar(A a) {
+      // do something to 'a'
+    }
+  }
+}
