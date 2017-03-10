@@ -87,4 +87,20 @@ class A {
 
     }
   }
+
+  private static void makeQuery(Connection p_con) {
+    try {
+      String query = null;
+      StringBuffer qryBuffer = new StringBuffer();
+
+      qryBuffer = new StringBuffer();
+      qryBuffer.append(" select abc from xyz ");
+      qryBuffer.append(" where bulubulu=?");
+      query = qryBuffer.toString();
+
+      p_con.prepareStatement(query); // Compliant
+    } catch (Exception e) {
+      System.out.println("makeQuery");
+    }
+  }
 }
