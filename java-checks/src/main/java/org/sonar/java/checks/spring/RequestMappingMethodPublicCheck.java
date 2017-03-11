@@ -42,7 +42,8 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
 
-    if (isClassController(methodSymbol)
+    if (methodSymbol != null
+      && isClassController(methodSymbol)
       && isRequestMappingAnnotated(methodSymbol)
       && !isPublicMethod(methodSymbol)) {
       reportIssue(methodTree.simpleName(), "Make this method \"public\".");
