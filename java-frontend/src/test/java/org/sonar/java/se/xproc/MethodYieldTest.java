@@ -196,6 +196,16 @@ public class MethodYieldTest {
   }
 
   @Test
+  public void calling_varargs_method_with_no_arg() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java");
+    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "toArr");
+    MethodBehavior mb = entry.getValue();
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(1);
+    assertThat(mb.isMethodVarArgs()).isTrue();
+  }
+
+  @Test
   public void constraints_on_varargs() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsYields.java");
 
