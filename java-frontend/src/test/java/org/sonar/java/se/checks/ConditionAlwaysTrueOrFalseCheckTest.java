@@ -54,4 +54,9 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
     // Checks flow iterating through the correct parent
     JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionAlwaysTrueOrFalseCheck());
   }
+
+  @Test
+  public void test_transitivity() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
 }
