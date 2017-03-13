@@ -26,6 +26,8 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,7 +133,7 @@ public class BinaryRelationTest {
       for (Kind t : Kind.values()) {
         RelationalSymbolicValue first = relSV(r, a, b);
         RelationalSymbolicValue second = relSV(t, b, c);
-        BinaryRelation deduced = deduce(first, second);
+        Collection<BinaryRelation> deduced = deduce(first, second);
         actual.add(String.format("%s && %s => %s", relationToString(first), relationToString(second), deduced));
       }
     }
@@ -152,23 +154,24 @@ public class BinaryRelationTest {
   public void test_transitive_GE() throws Exception {
     RelationalSymbolicValue ab = relSV(GREATER_THAN_OR_EQUAL, a, b);
     RelationalSymbolicValue bc = relSV(GREATER_THAN_OR_EQUAL, b, c);
-    BinaryRelation deduced = deduce(ab, bc);
-    assertThat(deduced).isEqualTo(relSV(GREATER_THAN_OR_EQUAL, a, c).binaryRelation());
+    Collection<BinaryRelation> deduced = deduce(ab, bc);
+    assertThat(deduced).containsExactly(relSV(GREATER_THAN_OR_EQUAL, a, c).binaryRelation());
   }
 
-  private BinaryRelation deduce(RelationalSymbolicValue ab, RelationalSymbolicValue bc) {
-    return BinaryRelation.deduceTransitiveOrSimplified(ab.binaryRelation(), bc.binaryRelation());
+  private Collection<BinaryRelation> deduce(RelationalSymbolicValue rel1, RelationalSymbolicValue rel2) {
+    BinaryRelation binaryRelation = rel1.binaryRelation().deduceTransitiveOrSimplified(rel2.binaryRelation());
+    return binaryRelation == null ? Collections.emptySet() : Collections.singleton(binaryRelation);
   }
 
   @Test
   public void test_transitive_method_equals() throws Exception {
     RelationalSymbolicValue equalAB = relSV(EQUAL, a, b);
     RelationalSymbolicValue methodEqualBC = relSV(METHOD_EQUALS, b, c);
-    BinaryRelation deduce = deduce(equalAB, methodEqualBC);
+    Collection<BinaryRelation> deduce = deduce(equalAB, methodEqualBC);
     BinaryRelation expected = relSV(METHOD_EQUALS, a, c).binaryRelation();
-    assertThat(deduce).isEqualTo(expected);
+    assertThat(deduce).containsExactly(expected);
     deduce = deduce(methodEqualBC, equalAB);
-    assertThat(deduce).isEqualTo(expected);
+    assertThat(deduce).containsExactly(expected);
   }
 
   @Test

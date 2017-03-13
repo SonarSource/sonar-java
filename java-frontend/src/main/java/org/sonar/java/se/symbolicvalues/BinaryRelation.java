@@ -27,13 +27,13 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 import javax.annotation.CheckForNull;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
@@ -138,7 +138,6 @@ public class BinaryRelation {
     }
     Set<BinaryRelation> allRelations = new HashSet<>(knownRelations);
     Deque<BinaryRelation> workList = new ArrayDeque<>(knownRelations);
-    List<BinaryRelation> newRelations = new ArrayList<>();
     int iterations = 0;
     while (!workList.isEmpty()) {
       if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
@@ -152,38 +151,33 @@ public class BinaryRelation {
       if (result.isDetermined()) {
         return result;
       }
-      for (BinaryRelation other : allRelations) {
-        BinaryRelation deduced = deduceTransitiveOrSimplified(relation, other);
-        if (deduced != null && !allRelations.contains(deduced)) {
-          newRelations.add(deduced);
-        }
-      }
+      List<BinaryRelation> newRelations = allRelations.stream()
+        .map(relation::deduceTransitiveOrSimplified)
+        .filter(Objects::nonNull)
+        .filter(r -> !allRelations.contains(r))
+        .collect(Collectors.toList());
+
       allRelations.addAll(newRelations);
       workList.addAll(newRelations);
-      newRelations.clear();
     }
     return RelationState.UNDETERMINED;
   }
 
   @VisibleForTesting
-  static BinaryRelation deduceTransitiveOrSimplified(BinaryRelation rel1, BinaryRelation rel2) {
-    BinaryRelation simplified = simplify(rel1, rel2);
-    if (simplified != null) {
-      return simplified;
+  BinaryRelation deduceTransitiveOrSimplified(BinaryRelation other) {
+    BinaryRelation result = simplify(other);
+    if (result != null) {
+      return result;
     }
-    BinaryRelation transitive = combineTransitively(rel1, rel2);
-    if (transitive != null) {
-      return transitive;
-    }
-    return null;
+    return combineTransitively(other);
   }
 
   @CheckForNull
-  private static BinaryRelation simplify(BinaryRelation rel1, BinaryRelation rel2) {
+  private BinaryRelation simplify(BinaryRelation other) {
     // a >= b && b >= a -> a == b
-    if (rel1.kind == GREATER_THAN_OR_EQUAL && rel2.kind == GREATER_THAN_OR_EQUAL
-      && rel1.hasSameOperandsAs(rel2) && !rel1.equals(rel2)) {
-      return binaryRelation(EQUAL, rel1.leftOp, rel1.rightOp);
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL
+      && hasSameOperandsAs(other) && !equals(other)) {
+      return binaryRelation(EQUAL, leftOp, rightOp);
     }
     return null;
   }
@@ -269,76 +263,79 @@ public class BinaryRelation {
   }
 
   @CheckForNull
-  private static BinaryRelation combineTransitively(BinaryRelation rel1, BinaryRelation rel2) {
-    if (!rel1.potentiallyTransitiveWith(rel2)) {
+  private BinaryRelation combineTransitively(BinaryRelation other) {
+    if (!potentiallyTransitiveWith(other)) {
       return null;
     }
-    if (isEqualityRelation(rel1.kind)) {
-      return equalityTransitiveBuilder(rel1, rel2);
+    BinaryRelation transitive = combineTransitivelyOneWay(other);
+    if (transitive != null) {
+      return transitive;
     }
-    if (isEqualityRelation(rel2.kind)) {
-      return equalityTransitiveBuilder(rel2, rel1);
-    }
-    if (rel1.kind == LESS_THAN) {
-      return lessThanTransitiveBuilder(rel1, rel2);
-    }
-    if (rel2.kind == LESS_THAN) {
-      return lessThanTransitiveBuilder(rel2, rel1);
-    }
-    if (rel1.kind == GREATER_THAN_OR_EQUAL && rel2.kind == GREATER_THAN_OR_EQUAL) {
-      BinaryRelation greaterThanEqual = greaterThanEqualTransitiveBuilder(rel1, rel2);
-      return greaterThanEqual != null ? greaterThanEqual : greaterThanEqualTransitiveBuilder(rel2, rel1);
-    }
-    return null;
-  }
-
-  private static boolean isEqualityRelation(Kind kind) {
-    return kind == EQUAL || kind == METHOD_EQUALS;
-  }
-
-  private static BinaryRelation equalityTransitiveBuilder(BinaryRelation equality, BinaryRelation other) {
-    SymbolicValue transitiveOperand = equality.differentOperand(other);
-    boolean leftTransitive = equality.hasOperand(other.leftOp);
-
-    if (equality.kind == METHOD_EQUALS && other.kind == EQUAL) {
-      return equalityTransitiveBuilder(other, equality);
-    }
-
-    return binaryRelation(other.kind,
-      leftTransitive ? transitiveOperand : other.leftOp,
-      leftTransitive ? other.rightOp : transitiveOperand);
+    return other.combineTransitivelyOneWay(this);
   }
 
   @CheckForNull
-  private static BinaryRelation lessThanTransitiveBuilder(BinaryRelation lessThan, BinaryRelation other) {
+  private BinaryRelation combineTransitivelyOneWay(BinaryRelation other) {
+    BinaryRelation transitive = equalityTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    transitive = lessThanTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    return greaterThanEqualTransitiveBuilder(other);
+  }
+
+  private boolean isEqualityRelation() {
+    return kind == EQUAL || kind == METHOD_EQUALS;
+  }
+
+  @CheckForNull
+  private BinaryRelation equalityTransitiveBuilder(BinaryRelation other) {
+    if (!isEqualityRelation()
+      || (kind == METHOD_EQUALS && other.kind == EQUAL)) {
+      return null;
+    }
+
+    return binaryRelation(other.kind,
+      hasOperand(other.leftOp) ? differentOperand(other) : other.leftOp,
+      hasOperand(other.leftOp) ? other.rightOp : differentOperand(other));
+  }
+
+  @CheckForNull
+  private BinaryRelation lessThanTransitiveBuilder(BinaryRelation other) {
+    if (kind != LESS_THAN) {
+      return null;
+    }
     if (other.kind == LESS_THAN) {
       // a < x && x < b => a < b
-      if (lessThan.rightOp.equals(other.leftOp)) {
-        return binaryRelation(LESS_THAN, lessThan.leftOp, other.rightOp);
+      if (rightOp.equals(other.leftOp)) {
+        return binaryRelation(LESS_THAN, leftOp, other.rightOp);
       }
       // x < a && b < x => b < a
-      if (lessThan.leftOp.equals(other.rightOp)) {
-        return binaryRelation(LESS_THAN, other.leftOp, lessThan.rightOp);
+      if (leftOp.equals(other.rightOp)) {
+        return binaryRelation(LESS_THAN, other.leftOp, rightOp);
       }
     }
     if (other.kind == GREATER_THAN_OR_EQUAL) {
       // a < x && b >= x => a < b
-      if (lessThan.rightOp.equals(other.rightOp)) {
-        return binaryRelation(LESS_THAN, lessThan.leftOp, other.leftOp);
+      if (rightOp.equals(other.rightOp)) {
+        return binaryRelation(LESS_THAN, leftOp, other.leftOp);
       }
       // x < a && x >= b => b < a
-      if (lessThan.leftOp.equals(other.leftOp)) {
-        return binaryRelation(LESS_THAN, other.rightOp, lessThan.rightOp);
+      if (leftOp.equals(other.leftOp)) {
+        return binaryRelation(LESS_THAN, other.rightOp, rightOp);
       }
     }
     return null;
   }
 
   @CheckForNull
-  private static BinaryRelation greaterThanEqualTransitiveBuilder(BinaryRelation rel1, BinaryRelation rel2) {
+  private BinaryRelation greaterThanEqualTransitiveBuilder(BinaryRelation other) {
     // a >= x && x >= b -> a >= b
-    if (rel1.rightOp.equals(rel2.leftOp)) {
-      return binaryRelation(GREATER_THAN_OR_EQUAL, rel1.leftOp, rel2.rightOp);
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL && rightOp.equals(other.leftOp)) {
+      return binaryRelation(GREATER_THAN_OR_EQUAL, leftOp, other.rightOp);
     }
     return null;
   }
