@@ -61,7 +61,8 @@ public class HappyPathYield extends MethodYield {
 
     // applied all constraints from parameters, stack return value
     SymbolicValue sv;
-    if (resultIndex < 0) {
+    if (resultIndex < 0 || resultIndex == invocationArguments.size()) {
+      // if returnIndex is the size of invocationArguments : returning vararg parameter on a call with no elements specified
       sv = svSupplier.get();
     } else {
       // returned SV is the same as one of the arguments.
