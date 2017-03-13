@@ -26,10 +26,7 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -134,9 +131,7 @@ public class BinaryRelationTest {
       for (Kind t : Kind.values()) {
         RelationalSymbolicValue first = relSV(r, a, b);
         RelationalSymbolicValue second = relSV(t, b, c);
-        Set<BinaryRelation> given = givenSet(first, second);
-        Collection<BinaryRelation> deduced = BinaryRelation.deduceTransitiveRelations(given);
-        deduced.removeAll(given);
+        BinaryRelation deduced = deduce(first, second);
         actual.add(String.format("%s && %s => %s", relationToString(first), relationToString(second), deduced));
       }
     }
@@ -157,18 +152,23 @@ public class BinaryRelationTest {
   public void test_transitive_GE() throws Exception {
     RelationalSymbolicValue ab = relSV(GREATER_THAN_OR_EQUAL, a, b);
     RelationalSymbolicValue bc = relSV(GREATER_THAN_OR_EQUAL, b, c);
-    Collection<BinaryRelation> deduce = BinaryRelation.deduceTransitiveRelations(givenSet(ab, bc));
-    assertThat(deduce).contains(binaryRelation(GREATER_THAN_OR_EQUAL, a, c));
+    BinaryRelation deduced = deduce(ab, bc);
+    assertThat(deduced).isEqualTo(relSV(GREATER_THAN_OR_EQUAL, a, c).binaryRelation());
+  }
+
+  private BinaryRelation deduce(RelationalSymbolicValue ab, RelationalSymbolicValue bc) {
+    return BinaryRelation.deduceTransitiveOrSimplified(ab.binaryRelation(), bc.binaryRelation());
   }
 
   @Test
   public void test_transitive_method_equals() throws Exception {
     RelationalSymbolicValue equalAB = relSV(EQUAL, a, b);
     RelationalSymbolicValue methodEqualBC = relSV(METHOD_EQUALS, b, c);
-    Collection<BinaryRelation> deduce = BinaryRelation.deduceTransitiveRelations(givenSet(equalAB, methodEqualBC));
-    assertThat(deduce).contains(binaryRelation(METHOD_EQUALS, a, c));
-    deduce = BinaryRelation.deduceTransitiveRelations(givenSet(methodEqualBC, equalAB));
-    assertThat(deduce).contains(binaryRelation(METHOD_EQUALS, a, c));
+    BinaryRelation deduce = deduce(equalAB, methodEqualBC);
+    BinaryRelation expected = relSV(METHOD_EQUALS, a, c).binaryRelation();
+    assertThat(deduce).isEqualTo(expected);
+    deduce = deduce(methodEqualBC, equalAB);
+    assertThat(deduce).isEqualTo(expected);
   }
 
   @Test
@@ -190,10 +190,6 @@ public class BinaryRelationTest {
     RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(++id, kind);
     relationalSymbolicValue.computedFrom(Arrays.asList(rightOp, leftOp));
     return relationalSymbolicValue;
-  }
-
-  private Set<BinaryRelation> givenSet(SymbolicValue... sv) {
-    return Arrays.stream(sv).map(SymbolicValue::binaryRelation).collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   private List<BinaryRelation> given(SymbolicValue... sv) {

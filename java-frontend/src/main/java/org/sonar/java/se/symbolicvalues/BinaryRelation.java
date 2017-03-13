@@ -26,6 +26,9 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import javax.annotation.CheckForNull;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +45,7 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_
 public class BinaryRelation {
 
   private static final int MAX_ITERATIONS = 10_000;
-  private static final int MAX_DEDUCED_RELATIONS = 200;
+  private static final int MAX_DEDUCED_RELATIONS = 1000;
 
   private static final Set<Kind> NORMALIZED_OPERATORS = EnumSet.of(
       EQUAL, NOT_EQUAL,
@@ -133,46 +136,46 @@ public class BinaryRelation {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
     }
-    Set<BinaryRelation> usedRelations = new HashSet<>();
-    Set<BinaryRelation> relations = new HashSet<>(knownRelations);
+    Set<BinaryRelation> allRelations = new HashSet<>(knownRelations);
+    Deque<BinaryRelation> workList = new ArrayDeque<>(knownRelations);
+    List<BinaryRelation> newRelations = new ArrayList<>();
     int iterations = 0;
-    while (!relations.isEmpty()) {
-      if (usedRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+    while (!workList.isEmpty()) {
+      if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
         // should not happen under normal conditions
-        throw new TransitiveRelationExceededException("Used relations: " + relations.size() + ". Iterations " + iterations);
+        throw new TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
       }
       iterations++;
-      for (BinaryRelation relation : relations) {
-        RelationState result = relation.implies(this);
-        if (result.isDetermined()) {
-          return result;
+      BinaryRelation relation = workList.pop();
+      RelationState result = relation.implies(this);
+      if (result.isDetermined()) {
+        return result;
+      }
+      for (BinaryRelation other : allRelations) {
+        BinaryRelation deduced = deduceTransitiveOrSimplified(relation, other);
+        if (deduced != null && !allRelations.contains(deduced)) {
+          newRelations.add(deduced);
         }
       }
-      usedRelations.addAll(relations);
-      relations = deduceTransitiveRelations(usedRelations);
+      allRelations.addAll(newRelations);
+      workList.addAll(newRelations);
+      newRelations.clear();
     }
     return RelationState.UNDETERMINED;
   }
 
-  static Set<BinaryRelation> deduceTransitiveRelations(Set<BinaryRelation> relations) {
-    Set<BinaryRelation> result = new HashSet<>();
-    BinaryRelation[] binaryRelations = relations.toArray(new BinaryRelation[relations.size()]);
-    for (int i = 0; i < binaryRelations.length; i++) {
-      for (int j = i + 1; j < binaryRelations.length; j++) {
-        BinaryRelation rel1 = binaryRelations[i];
-        BinaryRelation rel2 = binaryRelations[j];
-        BinaryRelation simplified = simplify(rel1, rel2);
-        if (simplified != null && !relations.contains(simplified)) {
-          result.add(simplified);
-        }
-        BinaryRelation transitive = combineTransitively(rel1, rel2);
-        if (transitive != null && !relations.contains(transitive)) {
-          result.add(transitive);
-        }
-      }
+  @VisibleForTesting
+  static BinaryRelation deduceTransitiveOrSimplified(BinaryRelation rel1, BinaryRelation rel2) {
+    BinaryRelation simplified = simplify(rel1, rel2);
+    if (simplified != null) {
+      return simplified;
     }
-    return result;
+    BinaryRelation transitive = combineTransitively(rel1, rel2);
+    if (transitive != null) {
+      return transitive;
+    }
+    return null;
   }
 
   @CheckForNull
