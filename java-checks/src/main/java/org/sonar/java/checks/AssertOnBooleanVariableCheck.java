@@ -19,68 +19,53 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Rule(key = "S3346")
 public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<Kind> SIDE_EFFECT_KIND = ImmutableList.of(
-    Kind.METHOD_INVOCATION,
-
-    Kind.ASSIGNMENT,
-    Kind.MULTIPLY_ASSIGNMENT,
-    Kind.DIVIDE_ASSIGNMENT,
-    Kind.REMAINDER_ASSIGNMENT,
-    Kind.PLUS_ASSIGNMENT,
-    Kind.MINUS_ASSIGNMENT,
-    Kind.LEFT_SHIFT_ASSIGNMENT,
-    Kind.RIGHT_SHIFT_ASSIGNMENT,
-    Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-    Kind.AND_ASSIGNMENT,
-    Kind.XOR_ASSIGNMENT,
-    Kind.OR_ASSIGNMENT,
-
-    Kind.POSTFIX_DECREMENT,
-    Kind.POSTFIX_INCREMENT,
-    Kind.PREFIX_DECREMENT,
-    Kind.PREFIX_INCREMENT
-  );
-
-  private boolean withinAssert;
-  private boolean containsSideEffect;
+  private static final Pattern SIDE_EFFECT_METHOD_NAMES = Pattern.compile("^(remove|delete|retain|put|set|add|pop|update).*$", Pattern.CASE_INSENSITIVE);
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.<Kind>builder()
-      .add(Kind.ASSERT_STATEMENT)
-      .addAll(SIDE_EFFECT_KIND)
-      .build();
+    return Collections.singletonList(Tree.Kind.ASSERT_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Kind.ASSERT_STATEMENT)) {
-      withinAssert = true;
-      containsSideEffect = false;
-    } else if (withinAssert && !containsSideEffect) {
-      containsSideEffect = true;
+    ((AssertStatementTree) tree).condition().accept(new MethodInvocationVisitor());
+  }
+
+  private class MethodInvocationVisitor extends BaseTreeVisitor {
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      IdentifierTree methodNameTree = MethodsHelper.methodName(tree);
+      if (SIDE_EFFECT_METHOD_NAMES.matcher(methodNameTree.name()).find()) {
+        reportIssue(methodNameTree, "Move this \"assert\" side effect to another statement.");
+      } else {
+        // only report once
+        super.visitMethodInvocation(tree);
+      }
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip anonymous classes
     }
   }
 
-  @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Kind.ASSERT_STATEMENT)) {
-      if (containsSideEffect) {
-        reportIssue(((AssertStatementTree) tree).condition(), "Move this \"assert\" side effect to another statement.");
-      }
-      withinAssert = false;
-    }
-  }
 }
