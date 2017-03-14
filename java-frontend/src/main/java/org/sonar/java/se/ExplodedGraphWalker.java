@@ -851,8 +851,7 @@ public class ExplodedGraphWalker {
       SymbolicValue assignedTo = unstack.values.get(1);
       SymbolicValue value = unstack.values.get(0);
       programState = unstack.state;
-      SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
-      symbolicValue.computedFrom(ImmutableList.of(assignedTo, value));
+      SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, ImmutableList.of(assignedTo, value));
       programState = programState.stackValue(symbolicValue);
       programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
     }
@@ -888,8 +887,7 @@ public class ExplodedGraphWalker {
     // Consume two and produce one SV.
     ProgramState.Pop unstackBinary = programState.unstackValue(2);
     programState = unstackBinary.state;
-    SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
-    symbolicValue.computedFrom(unstackBinary.values);
+    SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, unstackBinary.values);
     if(tree.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree bt = (BinaryExpressionTree) tree;
       if (bt.leftOperand().symbolType().is("java.lang.String")) {
@@ -992,7 +990,7 @@ public class ExplodedGraphWalker {
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
-    if (isLocalMethodInvocation(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
+    if (isLocalMethodInvocation(tree) || isProvidingThisAsArgument(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
       resetFieldValues();
     }
   }
@@ -1010,6 +1008,12 @@ public class ExplodedGraphWalker {
       }
     }
     return false;
+  }
+
+  private static boolean isProvidingThisAsArgument(MethodInvocationTree tree) {
+    return tree.arguments().stream()
+      .map(ExpressionUtils::skipParentheses)
+      .anyMatch(expr -> expr.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expr).name()));
   }
 
   private void resetFieldValues() {

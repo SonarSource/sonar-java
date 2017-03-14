@@ -20,6 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -52,6 +53,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
     public Kind inverse() {
       switch (this) {
+        case EQUAL:
+          return NOT_EQUAL;
+        case NOT_EQUAL:
+          return EQUAL;
         case GREATER_THAN:
           return LESS_THAN_OR_EQUAL;
         case GREATER_THAN_OR_EQUAL:
@@ -65,7 +70,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
         case NOT_METHOD_EQUALS:
           return METHOD_EQUALS;
         default:
-          return this;
+          throw new IllegalStateException("Unsupported relation!");
       }
     }
 
@@ -91,7 +96,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     }
   }
 
-  private final Kind kind;
+  final Kind kind;
 
   public RelationalSymbolicValue(int id, Kind kind) {
     super(id);

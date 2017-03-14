@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -72,7 +73,7 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
     } else if (arg.is(Tree.Kind.METHOD_INVOCATION)) {
       return false;
     }
-    return !arg.is(Tree.Kind.STRING_LITERAL);
+    return !arg.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NULL_LITERAL);
   }
 
   protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {

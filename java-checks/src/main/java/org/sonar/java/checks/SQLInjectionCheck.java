@@ -58,7 +58,6 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     if (isHibernateCall || isExecuteQueryOrPrepareStatement(methodTree) || isEntityManagerCreateNativeQuery(methodTree)) {
       //We want to check the argument for the three methods.
       ExpressionTree arg = methodTree.arguments().get(0);
-      parameterName = "";
       if (isDynamicString(methodTree, arg, null, true)) {
         String message = "\"" + parameterName + "\" is provided externally to the method and not sanitized before use.";
         if (isHibernateCall) {

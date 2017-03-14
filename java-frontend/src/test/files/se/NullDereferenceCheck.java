@@ -738,3 +738,22 @@ class SimpleAssignments {
     myField.toString(); // Noncompliant
   }
 }
+
+class ResetFieldWhenThisUsedAsParameter {
+  static class A {
+    Object value;
+    B b;
+
+    void foo() {
+      this.value = null;
+      b.bar(this);
+      value.toString(); // Compliant
+    }
+  }
+
+  static class B {
+    void bar(A a) {
+      // do something to 'a'
+    }
+  }
+}
