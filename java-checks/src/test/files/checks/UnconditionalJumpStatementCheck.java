@@ -101,6 +101,22 @@ class A {
 
     return;
   }
+
+  boolean foo(int last, char[] b, char[] src) {
+    boolean hasClassPathAttribute = false;
+    int i = 0;
+    next: while (i <= last) {
+      for (int j = 0; j < 10; j++) {
+        char c = b[i];
+        if (c != src[j]) {
+          continue next;
+        }
+      }
+      hasClassPathAttribute = true;
+      break; // compliant, there is another way to get back to the 'while' loop from the inner 'for' loop
+    }
+    return hasClassPathAttribute;
+  }
 }
 
 class B {

@@ -19,26 +19,23 @@
  */
 package org.sonar.java.checks;
 
+
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFG.Block;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1751")
 public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor {
@@ -70,37 +67,47 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    if (tree.is(Tree.Kind.CONTINUE_STATEMENT) || !canExecuteMoreThanOnce(parent)) {
+    if (tree.is(Tree.Kind.CONTINUE_STATEMENT) || executeUnconditionnally(parent)) {
       SyntaxToken jumpKeyword = jumpKeyword(tree);
       reportIssue(jumpKeyword, String.format("Remove this \"%s\" statement or make it conditional.", jumpKeyword.text()));
     }
   }
 
-  private static boolean canExecuteMoreThanOnce(Tree loopTree) {
+  private static boolean executeUnconditionnally(Tree loopTree) {
     CFG cfg = getCFG(loopTree);
-    return cfg.blocks().stream().anyMatch(block -> loopTree.equals(block.terminator()) && hasPredecessorInLoopBody(block.predecessors(), loopTree));
+    CFG.Block loopBlock = getLoopBlock(cfg, loopTree);
+    // we cannot find a path in the CFG that goes twice through this instruction.
+    return !hasPredecessorInBlock(loopBlock, loopTree);
   }
 
-  private static boolean hasPredecessorInLoopBody(Set<Block> predecessors, Tree loop) {
-    for (CFG.Block predecessor : predecessors) {
-      List<Tree> predecessorElements = predecessor.elements();
-      if (!predecessorElements.isEmpty()) {
-        Tree predecessorLastElement = predecessorElements.get(predecessorElements.size() - 1);
+  private static CFG.Block getLoopBlock(CFG cfg, Tree loopTree) {
+    return cfg.blocks().stream()
+      .filter(block -> loopTree.equals(block.terminator()))
+      .findFirst()
+      .orElseThrow(() -> new IllegalStateException("CFG necessarily contains the loop block."));
+  }
 
-        if (isForStatementInitializer(predecessorLastElement, loop)) {
+  private static boolean hasPredecessorInBlock(CFG.Block block, Tree loop) {
+    for (CFG.Block predecessor : block.predecessors()) {
+      List<Tree> predecessorElements = predecessor.elements();
+      if (predecessorElements.isEmpty()) {
+        return hasPredecessorInBlock(predecessor, loop);
+      } else {
+        Tree predecessorFirstElement = predecessorElements.get(0);
+
+        if (isForStatementInitializer(predecessorFirstElement, loop)) {
+          // skip 'for' loops initializers
           continue;
         }
 
-        if (isForStatementUpdate(predecessorLastElement, loop)) {
-          // there is a way to reach the update
+        if (isForStatementUpdate(predecessorFirstElement, loop)) {
+          // there is no way to reach the 'for' loop update
           return !predecessor.predecessors().isEmpty();
         }
 
-        if (isDescendant(predecessorLastElement, loop)) {
+        if (isDescendant(predecessorFirstElement, loop)) {
           return true;
         }
-      } else {
-        return hasPredecessorInLoopBody(predecessor.predecessors(), loop);
       }
     }
     return false;
@@ -108,10 +115,7 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
 
   private static boolean isForStatementInitializer(Tree lastElement, Tree loop) {
     if (loop.is(Tree.Kind.FOR_STATEMENT)) {
-      ListTree<StatementTree> initializer = ((ForStatementTree) loop).initializer();
-      if (!initializer.isEmpty()) {
-        return isDescendant(lastElement, initializer);
-      }
+      return isDescendant(lastElement, ((ForStatementTree) loop).initializer());
     } else if (loop.is(Tree.Kind.FOR_EACH_STATEMENT)) {
       return isDescendant(lastElement, ((ForEachStatement) loop).expression());
     }
@@ -120,10 +124,7 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
 
   private static boolean isForStatementUpdate(Tree lastElement, Tree loop) {
     if (loop.is(Tree.Kind.FOR_STATEMENT)) {
-      ListTree<StatementTree> update = ((ForStatementTree) loop).update();
-      if (!update.isEmpty()) {
-        return isDescendant(lastElement, update);
-      }
+      return isDescendant(lastElement, ((ForStatementTree) loop).update());
     }
     return false;
   }
