@@ -253,7 +253,7 @@ public class SymbolicValue {
 
     @Override
     public String toString() {
-      return "!" + operand;
+      return "!(" + operand + ")";
     }
   }
 
