@@ -30,4 +30,28 @@ abstract class ReturnAndFinally {
   }
 
   public abstract Object bar(Object o) throws RuntimeException;
+  private class MyException extends Exception {}
+
+  private boolean returnInFinally() {
+    try {
+      foo();
+    } catch (MyException e) {
+      throw e;
+    } finally {
+      if(true) return true;
+    }
+    return false;
+  }
+
+  abstract void foo() throws MyException;
+
+  private Exception returningException() {
+    try {
+      doSomething();
+    } catch (Exception e) {
+      return e;
+    }
+    return null;
+  }
+  abstract void doSomething() throws Exception;
 }

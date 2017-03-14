@@ -67,7 +67,7 @@ public class MethodBehaviorTest {
   @Test
   public void method_behavior_handling_finally() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);
@@ -87,6 +87,16 @@ public class MethodBehaviorTest {
     assertThat(qixYield.stream()
       .filter(y -> y instanceof HappyPathYield)
       .allMatch(y -> y.parametersConstraints.get(0).get(ObjectConstraint.class) == ObjectConstraint.NULL)).isTrue();
+
+    MethodBehavior returnInFinally = getMethodBehavior(sev, "returnInFinally");
+    assertThat(returnInFinally.yields()).hasSize(1);
+    assertThat(returnInFinally.yields().get(0)).isInstanceOf(HappyPathYield.class);
+
+    MethodBehavior returningException = getMethodBehavior(sev, "returningException");
+    assertThat(returningException.yields()).hasSize(3);
+    // FIXME : there should be only one exceptional path and 2 happy paths : see SONARJAVA-2188
+    assertThat(returningException.yields().stream().filter(y-> y instanceof HappyPathYield).count()).isEqualTo(1);
+    assertThat(returningException.yields().stream().filter(y-> y instanceof ExceptionalYield).count()).isEqualTo(2);
   }
 
 }
