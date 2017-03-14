@@ -33,8 +33,6 @@ public class SymbolicValueTest {
   @Test
   public void exceptional_SV_should_contain_exception_type_in_toString() {
     SymbolicValue.ExceptionalSymbolicValue unknownException = new SymbolicValue.ExceptionalSymbolicValue(null);
-    // contains the key
-    assertThat(unknownException.toString()).contains(String.valueOf(unknownException.hashCode() % 100));
     // contains the exception
     assertThat(unknownException.toString()).contains("!unknownException!");
 
@@ -43,8 +41,6 @@ public class SymbolicValueTest {
     Type exceptionType = new ClassJavaType(exceptionSymbol);
     SymbolicValue.ExceptionalSymbolicValue knownException = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
-    // contains the key
-    assertThat(knownException.toString()).contains(String.valueOf(knownException.hashCode() % 100));
     // contains the exception
     assertThat(knownException.toString()).contains("org.foo.bar.MyException!");
   }
