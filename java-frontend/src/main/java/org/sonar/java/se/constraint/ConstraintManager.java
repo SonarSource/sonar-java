@@ -77,35 +77,44 @@ public class ConstraintManager {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
-        return createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+        result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+        break;
       case NOT_EQUAL_TO:
-        return not(createRelationalSymbolicValue(Kind.EQUAL, computedFrom));
+        result = not(createRelationalSymbolicValue(Kind.EQUAL, computedFrom));
+        break;
       case LESS_THAN:
-        return createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
+        result = createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
+        break;
       case LESS_THAN_OR_EQUAL_TO:
         // a <= b -> ! (b < a)
-        return not(createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom)));
+        result = not(createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom)));
+        break;
       case GREATER_THAN:
-        return createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
+        result = createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
+        break;
       case GREATER_THAN_OR_EQUAL_TO:
         // a >= b -> ! (a < b)
-        return not(createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom));
+        result = not(createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom));
+        break;
       case AND:
       case AND_ASSIGNMENT:
         result = new SymbolicValue.AndSymbolicValue(nextId());
+        result.computedFrom(computedFrom);
         break;
       case OR:
       case OR_ASSIGNMENT:
         result = new SymbolicValue.OrSymbolicValue(nextId());
+        result.computedFrom(computedFrom);
         break;
       case XOR:
       case XOR_ASSIGNMENT:
         result = new SymbolicValue.XorSymbolicValue(nextId());
+        result.computedFrom(computedFrom);
         break;
       default:
         result = createDefaultSymbolicValue();
+        result.computedFrom(computedFrom);
     }
-    result.computedFrom(computedFrom);
     return result;
   }
 
@@ -122,8 +131,7 @@ public class ConstraintManager {
   }
 
   public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(@Nullable Type exceptionType) {
-    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(nextId(), exceptionType);
-    return result;
+    return new SymbolicValue.ExceptionalSymbolicValue(nextId(), exceptionType);
   }
 
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
