@@ -21,10 +21,13 @@ package org.sonar.java.se.constraint;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,6 +38,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
+import java.util.Collections;
 import java.util.List;
 
 public class ConstraintManager {
@@ -50,38 +55,8 @@ public class ConstraintManager {
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
-      case EQUAL_TO:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.EQUAL);
-        break;
-      case NOT_EQUAL_TO:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.NOT_EQUAL);
-        break;
-      case LESS_THAN:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.LESS_THAN);
-        break;
-      case LESS_THAN_OR_EQUAL_TO:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL);
-        break;
-      case GREATER_THAN:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.GREATER_THAN);
-        break;
-      case GREATER_THAN_OR_EQUAL_TO:
-        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL);
-        break;
       case LOGICAL_COMPLEMENT:
         result = new SymbolicValue.NotSymbolicValue(counter);
-        break;
-      case AND:
-      case AND_ASSIGNMENT:
-        result = new SymbolicValue.AndSymbolicValue(counter);
-        break;
-      case OR:
-      case OR_ASSIGNMENT:
-        result = new SymbolicValue.OrSymbolicValue(counter);
-        break;
-      case XOR:
-      case XOR_ASSIGNMENT:
-        result = new SymbolicValue.XorSymbolicValue(counter);
         break;
       case INSTANCE_OF:
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
@@ -96,6 +71,57 @@ public class ConstraintManager {
         result = createDefaultSymbolicValue();
     }
     counter++;
+    return result;
+  }
+
+  public SymbolicValue createBinarySymbolicValue(Tree syntaxNode, List<SymbolicValue> computedFrom) {
+    SymbolicValue result;
+    switch (syntaxNode.kind()) {
+      case EQUAL_TO:
+        return createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+      case NOT_EQUAL_TO:
+        return not(createRelationalSymbolicValue(Kind.EQUAL, computedFrom));
+      case LESS_THAN:
+        return createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
+      case LESS_THAN_OR_EQUAL_TO:
+        // a <= b -> ! (b < a)
+        return not(createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom)));
+      case GREATER_THAN:
+        return createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
+      case GREATER_THAN_OR_EQUAL_TO:
+        // a >= b -> ! (a < b)
+        return not(createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom));
+      case AND:
+      case AND_ASSIGNMENT:
+        result = new SymbolicValue.AndSymbolicValue(counter);
+        break;
+      case OR:
+      case OR_ASSIGNMENT:
+        result = new SymbolicValue.OrSymbolicValue(counter);
+        break;
+      case XOR:
+      case XOR_ASSIGNMENT:
+        result = new SymbolicValue.XorSymbolicValue(counter);
+        break;
+      default:
+        result = createDefaultSymbolicValue();
+    }
+    result.computedFrom(computedFrom);
+    counter++;
+    return result;
+  }
+
+  private SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
+    SymbolicValue result = new SymbolicValue.NotSymbolicValue(counter);
+    counter++;
+    result.computedFrom(Collections.singletonList(relationalSymbolicValue));
+    return result;
+  }
+
+  private RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
+    RelationalSymbolicValue result = new RelationalSymbolicValue(counter, kind);
+    counter++;
+    result.computedFrom(computedFrom);
     return result;
   }
 
