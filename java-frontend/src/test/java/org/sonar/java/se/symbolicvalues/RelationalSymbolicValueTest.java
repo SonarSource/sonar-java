@@ -42,11 +42,11 @@ public class RelationalSymbolicValueTest {
   public void test_create() throws Exception {
     ImmutableList<SymbolicValue> computedFrom = ImmutableList.of(b, a);
     assertThat(create(Tree.Kind.EQUAL_TO, computedFrom)).hasToString("SV_1==SV_2");
-    assertThat(create(Tree.Kind.NOT_EQUAL_TO, computedFrom)).hasToString("!SV_1==SV_2");
+    assertThat(create(Tree.Kind.NOT_EQUAL_TO, computedFrom)).hasToString("!(SV_1==SV_2)");
     assertThat(create(Tree.Kind.GREATER_THAN, computedFrom)).hasToString("SV_2<SV_1");
-    assertThat(create(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, computedFrom)).hasToString("!SV_1<SV_2");
+    assertThat(create(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, computedFrom)).hasToString("!(SV_1<SV_2)");
     assertThat(create(Tree.Kind.LESS_THAN, computedFrom)).hasToString("SV_1<SV_2");
-    assertThat(create(Tree.Kind.LESS_THAN_OR_EQUAL_TO, computedFrom)).hasToString("!SV_2<SV_1");
+    assertThat(create(Tree.Kind.LESS_THAN_OR_EQUAL_TO, computedFrom)).hasToString("!(SV_2<SV_1)");
   }
 
   private SymbolicValue create(Tree.Kind kind, ImmutableList<SymbolicValue> computedFrom) {
