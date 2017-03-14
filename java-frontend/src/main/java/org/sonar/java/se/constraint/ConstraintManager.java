@@ -56,10 +56,10 @@ public class ConstraintManager {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case LOGICAL_COMPLEMENT:
-        result = new SymbolicValue.NotSymbolicValue(counter);
+        result = new SymbolicValue.NotSymbolicValue(nextId());
         break;
       case INSTANCE_OF:
-        result = new SymbolicValue.InstanceOfSymbolicValue(counter);
+        result = new SymbolicValue.InstanceOfSymbolicValue(nextId());
         break;
       case MEMBER_SELECT:
         result = createIdentifierSymbolicValue(((MemberSelectExpressionTree) syntaxNode).identifier());
@@ -70,7 +70,6 @@ public class ConstraintManager {
       default:
         result = createDefaultSymbolicValue();
     }
-    counter++;
     return result;
   }
 
@@ -93,55 +92,50 @@ public class ConstraintManager {
         return not(createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom));
       case AND:
       case AND_ASSIGNMENT:
-        result = new SymbolicValue.AndSymbolicValue(counter);
+        result = new SymbolicValue.AndSymbolicValue(nextId());
         break;
       case OR:
       case OR_ASSIGNMENT:
-        result = new SymbolicValue.OrSymbolicValue(counter);
+        result = new SymbolicValue.OrSymbolicValue(nextId());
         break;
       case XOR:
       case XOR_ASSIGNMENT:
-        result = new SymbolicValue.XorSymbolicValue(counter);
+        result = new SymbolicValue.XorSymbolicValue(nextId());
         break;
       default:
         result = createDefaultSymbolicValue();
     }
     result.computedFrom(computedFrom);
-    counter++;
     return result;
   }
 
   private SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
-    SymbolicValue result = new SymbolicValue.NotSymbolicValue(counter);
-    counter++;
+    SymbolicValue result = new SymbolicValue.NotSymbolicValue(nextId());
     result.computedFrom(Collections.singletonList(relationalSymbolicValue));
     return result;
   }
 
   private RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
-    RelationalSymbolicValue result = new RelationalSymbolicValue(counter, kind);
-    counter++;
+    RelationalSymbolicValue result = new RelationalSymbolicValue(nextId(), kind);
     result.computedFrom(computedFrom);
     return result;
   }
 
   public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(@Nullable Type exceptionType) {
-    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(counter, exceptionType);
-    counter++;
+    SymbolicValue.ExceptionalSymbolicValue result = new SymbolicValue.ExceptionalSymbolicValue(nextId(), exceptionType);
     return result;
   }
 
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
-      result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.METHOD_EQUALS);
+      result = new RelationalSymbolicValue(nextId(), RelationalSymbolicValue.Kind.METHOD_EQUALS);
       SymbolicValue leftOp = values.get(1);
       SymbolicValue rightOp = values.get(0);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
     } else {
       result = createDefaultSymbolicValue();
     }
-    counter++;
     return result;
   }
 
@@ -177,7 +171,7 @@ public class ConstraintManager {
 
   private SymbolicValue createDefaultSymbolicValue() {
     SymbolicValue result;
-    result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter);
+    result = symbolicValueFactory == null ? new SymbolicValue(nextId()) : symbolicValueFactory.createSymbolicValue(nextId());
     symbolicValueFactory = null;
     return result;
   }
@@ -194,5 +188,9 @@ public class ConstraintManager {
     List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
+  }
+
+  private int nextId() {
+    return counter++;
   }
 }
