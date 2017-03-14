@@ -47,10 +47,26 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_
 
 public class BinaryRelationTest {
 
-  private final SymbolicValue a = new SymbolicValue(1);
-  private final SymbolicValue b = new SymbolicValue(2);
-  private final SymbolicValue c = new SymbolicValue(3);
-  private int id;
+  private final SymbolicValue a = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_1";
+    }
+  };
+
+  private final SymbolicValue b = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_2";
+    }
+  };
+
+  private final SymbolicValue c = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_3";
+    }
+  };
 
   @Test
   public void test_normalization() {
@@ -179,9 +195,9 @@ public class BinaryRelationTest {
     int chainLength = 21;
     SymbolicValue[] sv = new SymbolicValue[chainLength];
     List<BinaryRelation> given = new ArrayList<>();
-    sv[0] = new SymbolicValue(0);
+    sv[0] = new SymbolicValue();
     for (int i = 1; i < chainLength; i++) {
-      sv[i] = new SymbolicValue(i);
+      sv[i] = new SymbolicValue();
       given.add(relSV(LESS_THAN, sv[i - 1], sv[i]).binaryRelation());
     }
     BinaryRelation firstLessThanLast = relSV(LESS_THAN, sv[0], sv[chainLength - 1]).binaryRelation();
@@ -190,7 +206,7 @@ public class BinaryRelationTest {
   }
 
   private RelationalSymbolicValue relSV(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
-    RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(++id, kind);
+    RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(kind);
     relationalSymbolicValue.computedFrom(Arrays.asList(rightOp, leftOp));
     return relationalSymbolicValue;
   }

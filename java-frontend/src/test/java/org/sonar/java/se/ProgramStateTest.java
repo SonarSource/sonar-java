@@ -44,7 +44,7 @@ public class ProgramStateTest {
 
   @Test
   public void testing_equals() {
-    SymbolicValue sv1 = new SymbolicValue(1);
+    SymbolicValue sv1 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.NOT_NULL);
     assertThat(state.equals(null)).isFalse();
     assertThat(state.equals(new String())).isFalse();
@@ -54,10 +54,10 @@ public class ProgramStateTest {
 
   @Test
   public void testStackUnstack() {
-    SymbolicValue sv1 = new SymbolicValue(1);
+    SymbolicValue sv1 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv1);
     assertThat(state.peekValue()).isSameAs(sv1);
-    SymbolicValue sv2 = new SymbolicValue(2);
+    SymbolicValue sv2 = new SymbolicValue();
     state = state.stackValue(sv2);
     List<SymbolicValue> values = state.peekValues(2);
     assertThat(values).hasSize(2).containsSequence(sv2, sv1);
@@ -77,23 +77,28 @@ public class ProgramStateTest {
 
   @Test
   public void testToString() {
-    SymbolicValue sv3 = new SymbolicValue(3);
+    SymbolicValue sv3 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv3);
     Symbol variable = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
-    SymbolicValue sv4 = new SymbolicValue(4);
+    SymbolicValue sv4 = new SymbolicValue() {
+      @Override
+      public String toString() {
+        return "SV_4";
+      }
+    };
     state = state.put(variable, sv4);
-    SymbolicValue sv5 = new SymbolicValue(5);
+    SymbolicValue sv5 = new SymbolicValue();
     state = state.stackValue(sv5);
     state.lastEvaluated = variable;
     // FIXME to string is not really nice by displaying classes and order is not guaranteed.
-    assertThat(state.toString()).contains("{ A#x->SV_4}  { SV_0_NULL-> ");
+    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE");
       //.isEqualTo("{ A#x->SV_4}  { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] } { A#x } ");
   }
 
   @Test
   public void testAddingSameConstraintTwice() {
     ProgramState state = ProgramState.EMPTY_STATE;
-    SymbolicValue sv3 = new SymbolicValue(3);
+    SymbolicValue sv3 = new SymbolicValue();
     assertThat(state.getConstraint(sv3, ObjectConstraint.class)).isNull();
     state = state.addConstraint(sv3, ObjectConstraint.NOT_NULL);
     assertThat(state.getConstraint(sv3, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
@@ -106,7 +111,7 @@ public class ProgramStateTest {
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE;
     assertThat(child.learnedConstraints(parent)).isEmpty();
-    SymbolicValue sv = new SymbolicValue(1);
+    SymbolicValue sv = new SymbolicValue();
     child = child.addConstraint(sv, ObjectConstraint.NULL);
     Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
     assertThat(learnedConstraints).hasSize(1);
@@ -117,9 +122,9 @@ public class ProgramStateTest {
 
   @Test
   public void test_learned_constraint_binary_SV() {
-    SymbolicValue sv1 = new SymbolicValue(1);
-    SymbolicValue sv2 = new SymbolicValue(2);
-    RelationalSymbolicValue relation = new RelationalSymbolicValue(3, RelationalSymbolicValue.Kind.EQUAL);
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    RelationalSymbolicValue relation = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
     relation.computedFrom(ImmutableList.of(sv1, sv2));
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE.addConstraint(relation, BooleanConstraint.TRUE);
@@ -140,7 +145,7 @@ public class ProgramStateTest {
     assertThat(child.learnedAssociations(parent)).isEmpty();
 
     Symbol symbol = new JavaSymbol.VariableJavaSymbol(0, "symbol", mock(JavaSymbol.MethodJavaSymbol.class));
-    SymbolicValue sv1 = new SymbolicValue(1);
+    SymbolicValue sv1 = new SymbolicValue();
     child = child.put(symbol, sv1);
     Set<LearnedAssociation> learnedAssociations = child.learnedAssociations(parent);
     assertThat(learnedAssociations).hasSize(1);
@@ -157,10 +162,10 @@ public class ProgramStateTest {
     ProgramState state = ProgramState.EMPTY_STATE;
     ProgramState finalState = state;
     assertThatThrownBy(() -> finalState.peekValue(0)).isInstanceOf(IllegalStateException.class);
-    SymbolicValue sv1 = new SymbolicValue(1);
+    SymbolicValue sv1 = new SymbolicValue();
     state = state.stackValue(sv1);
     assertThat(state.peekValue(0)).isEqualTo(sv1);
-    SymbolicValue sv2 = new SymbolicValue(2);
+    SymbolicValue sv2 = new SymbolicValue();
     state = state.stackValue(sv2);
     assertThat(state.peekValue(1)).isEqualTo(sv1);
   }

@@ -47,7 +47,7 @@ public class ExceptionalCheckBasedYieldTest {
   public ExpectedException thrown = ExpectedException.none();
 
   private static final String FILENAME = "src/test/files/se/ExceptionalCheckBasedYields.java";
-  private static final SymbolicValue SV_CAUSING_EXCEPTION = new SymbolicValue(42);
+  private static final SymbolicValue SV_CAUSING_EXCEPTION = new SymbolicValue();
 
   @Test
   public void creation_of_new_yield() {
@@ -172,7 +172,7 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same exception, different SV
-    otherYield = new ExceptionalCheckBasedYield(new SymbolicValue(7), mockedExceptionType1, seCheckClass2, null, mb);
+    otherYield = new ExceptionalCheckBasedYield(new SymbolicValue(), mockedExceptionType1, seCheckClass2, null, mb);
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same exception, different check

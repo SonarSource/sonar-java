@@ -32,19 +32,19 @@ public class SymbolicValueTest {
 
   @Test
   public void exceptional_SV_should_contain_exception_type_in_toString() {
-    SymbolicValue.ExceptionalSymbolicValue unknownException = new SymbolicValue.ExceptionalSymbolicValue(42, null);
+    SymbolicValue.ExceptionalSymbolicValue unknownException = new SymbolicValue.ExceptionalSymbolicValue(null);
     // contains the key
-    assertThat(unknownException.toString()).contains("42");
+    assertThat(unknownException.toString()).contains(String.valueOf(unknownException.hashCode() % 100));
     // contains the exception
     assertThat(unknownException.toString()).contains("!unknownException!");
 
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol exceptionSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyException", packageSymbol);
     Type exceptionType = new ClassJavaType(exceptionSymbol);
-    SymbolicValue.ExceptionalSymbolicValue knownException = new SymbolicValue.ExceptionalSymbolicValue(42, exceptionType);
+    SymbolicValue.ExceptionalSymbolicValue knownException = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
     // contains the key
-    assertThat(knownException.toString()).contains("42");
+    assertThat(knownException.toString()).contains(String.valueOf(knownException.hashCode() % 100));
     // contains the exception
     assertThat(knownException.toString()).contains("org.foo.bar.MyException!");
   }
@@ -55,28 +55,28 @@ public class SymbolicValueTest {
     JavaSymbol.TypeJavaSymbol exceptionSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyException", packageSymbol);
     Type exceptionType = new ClassJavaType(exceptionSymbol);
 
-    SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(42, exceptionType);
+    SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
     assertThat(sv).isEqualTo(sv);
     assertThat(sv).isNotEqualTo(null);
-    assertThat(sv).isNotEqualTo(new SymbolicValue(sv.id()));
+    assertThat(sv).isNotEqualTo(new SymbolicValue());
 
     // different IDs but same exception
-    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id() + 1, sv.exceptionType()));
+    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.exceptionType()));
     // same IDs but different exception
-    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.id(), null));
+    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(null));
   }
 
   @Test
   public void test_computed_from() throws Exception {
-    SymbolicValue symbolicValue = new SymbolicValue(3);
+    SymbolicValue symbolicValue = new SymbolicValue();
     assertThat(symbolicValue.computedFrom()).isEmpty();
 
-    SymbolicValue.NotSymbolicValue notSymbolicValue = new SymbolicValue.NotSymbolicValue(4);
+    SymbolicValue.NotSymbolicValue notSymbolicValue = new SymbolicValue.NotSymbolicValue();
     notSymbolicValue.computedFrom(ImmutableList.of(symbolicValue));
     assertThat(notSymbolicValue.computedFrom()).contains(symbolicValue);
 
-    RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(5, RelationalSymbolicValue.Kind.METHOD_EQUALS);
+    RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
     relationalSymbolicValue.computedFrom(ImmutableList.of(symbolicValue, notSymbolicValue));
     assertThat(relationalSymbolicValue.computedFrom()).contains(symbolicValue, notSymbolicValue);
   }

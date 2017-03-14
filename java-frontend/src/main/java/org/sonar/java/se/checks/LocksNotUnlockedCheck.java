@@ -65,8 +65,7 @@ public class LocksNotUnlockedCheck extends SECheck {
 
     private final SymbolicValue operand;
 
-    public TryLockSymbolicValue(final int id, final SymbolicValue operand) {
-      super(id);
+    public TryLockSymbolicValue(final SymbolicValue operand) {
       this.operand = operand;
     }
 
@@ -99,8 +98,8 @@ public class LocksNotUnlockedCheck extends SECheck {
     }
 
     @Override
-    public SymbolicValue createSymbolicValue(int id) {
-      return new TryLockSymbolicValue(id, operand);
+    public SymbolicValue createSymbolicValue() {
+      return new TryLockSymbolicValue(operand);
     }
 
   }

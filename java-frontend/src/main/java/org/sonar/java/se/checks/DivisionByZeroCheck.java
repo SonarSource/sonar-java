@@ -89,8 +89,7 @@ public class DivisionByZeroCheck extends SECheck {
     @Nullable
     private final ZeroConstraint deferredConstraint;
 
-    DeferredConstraintHolderSV(int id, @Nullable ZeroConstraint deferredConstraint) {
-      super(id);
+    DeferredConstraintHolderSV(@Nullable ZeroConstraint deferredConstraint) {
       this.deferredConstraint = deferredConstraint;
     }
   }
@@ -233,11 +232,11 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void deferConstraint(@Nullable ZeroConstraint constraint) {
-      constraintManager.setValueFactory(id -> new DeferredConstraintHolderSV(id, constraint));
+      constraintManager.setValueFactory(() -> new DeferredConstraintHolderSV(constraint));
     }
 
     private void reuseSymbolicValue(SymbolicValue sv) {
-      constraintManager.setValueFactory(id -> new DeferredConstraintHolderSV(id, programState.getConstraint(sv, ZeroConstraint.class)) {
+      constraintManager.setValueFactory(() -> new DeferredConstraintHolderSV(programState.getConstraint(sv, ZeroConstraint.class)) {
         @Override
         public SymbolicValue wrappedValue() {
           return sv.wrappedValue();
