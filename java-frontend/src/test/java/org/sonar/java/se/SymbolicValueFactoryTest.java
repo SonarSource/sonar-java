@@ -36,16 +36,13 @@ public class SymbolicValueFactoryTest {
 
   private static class TestSymbolicValue extends SymbolicValue {
 
-    public TestSymbolicValue(int id) {
-      super(id);
-    }
   }
 
   private static class TestSymbolicValueFactory implements SymbolicValueFactory {
 
     @Override
-    public SymbolicValue createSymbolicValue(int id) {
-      return new TestSymbolicValue(id);
+    public SymbolicValue createSymbolicValue() {
+      return new TestSymbolicValue();
     }
   }
 

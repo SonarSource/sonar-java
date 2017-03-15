@@ -34,9 +34,18 @@ import static org.mockito.Mockito.mock;
 public class RelationalSymbolicValueTest {
 
   ConstraintManager constraintManager = new ConstraintManager();
-  SymbolicValue a = new SymbolicValue(1);
-  SymbolicValue b = new SymbolicValue(2);
-  int id = 3;
+  SymbolicValue a = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_1";
+    }
+  };
+  SymbolicValue b = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_2";
+    }
+  };
 
   @Test
   public void test_create() throws Exception {

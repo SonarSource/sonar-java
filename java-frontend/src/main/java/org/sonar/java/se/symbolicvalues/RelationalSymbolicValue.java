@@ -98,8 +98,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   final Kind kind;
 
-  public RelationalSymbolicValue(int id, Kind kind) {
-    super(id);
+  public RelationalSymbolicValue(Kind kind) {
     this.kind = kind;
   }
 

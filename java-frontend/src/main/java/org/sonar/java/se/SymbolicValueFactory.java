@@ -23,5 +23,5 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 public interface SymbolicValueFactory {
 
-  SymbolicValue createSymbolicValue(int id);
+  SymbolicValue createSymbolicValue();
 }

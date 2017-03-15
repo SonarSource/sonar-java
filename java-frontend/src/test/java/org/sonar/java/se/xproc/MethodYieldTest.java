@@ -69,9 +69,9 @@ public class MethodYieldTest {
     Symbol.MethodSymbol methodSymbol = entry.getKey();
 
     ProgramState ps = ProgramState.EMPTY_STATE;
-    SymbolicValue sv1 = new SymbolicValue(41);
-    SymbolicValue sv2 = new SymbolicValue(42);
-    SymbolicValue sv3 = new SymbolicValue(43);
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
     Symbol sym = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
     ps = ps.put(sym, sv1);
 
@@ -232,10 +232,10 @@ public class MethodYieldTest {
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     ProgramState psResult;
-    SymbolicValue svFirstArg = new SymbolicValue(41);
-    SymbolicValue svVarArg1 = new SymbolicValue(42);
-    SymbolicValue svVarArg2 = new SymbolicValue(43);
-    SymbolicValue svResult = new SymbolicValue(43);
+    SymbolicValue svFirstArg = new SymbolicValue();
+    SymbolicValue svVarArg1 = new SymbolicValue();
+    SymbolicValue svVarArg2 = new SymbolicValue();
+    SymbolicValue svResult = new SymbolicValue();
 
     // apply constraint NotNull to parameter
     Collection<ProgramState> arrayOfA = yield.statesAfterInvocation(Lists.newArrayList(svFirstArg, svVarArg1), arguments.get(0), ps, () -> svResult).collect(Collectors.toList());

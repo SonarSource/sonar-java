@@ -31,9 +31,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   SymbolicValue leftOp;
   SymbolicValue rightOp;
 
-  public BinarySymbolicValue(int id) {
-    super(id);
-  }
 
   public abstract BooleanConstraint shouldNotInverse();
 

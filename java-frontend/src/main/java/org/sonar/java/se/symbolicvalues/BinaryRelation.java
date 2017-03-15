@@ -69,7 +69,7 @@ public class BinaryRelation {
   }
 
   private int computeHash() {
-    return leftOp.id() < rightOp.id() ? Objects.hash(kind, leftOp, rightOp) : Objects.hash(kind, rightOp, leftOp);
+    return 31 * (kind.hashCode() + leftOp.hashCode() + rightOp.hashCode());
   }
 
   static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
