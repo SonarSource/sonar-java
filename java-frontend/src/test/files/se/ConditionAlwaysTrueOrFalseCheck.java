@@ -1812,7 +1812,7 @@ class KeyboardFocusManager {
 
     Throwable caughtEx = null;
     try {
-      if (localLightweightRequests != null) { // False negative : Noncompliant {{Change this condition so that it does not always evaluate to "true"}} this big method requires more than 10000 steps
+      if (localLightweightRequests != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}} this big method requires more than 10000 steps
         Component lastFocusOwner = null;
         Component currentFocusOwner = null;
 

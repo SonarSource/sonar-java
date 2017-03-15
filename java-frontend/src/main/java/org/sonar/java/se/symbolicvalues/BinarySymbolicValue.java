@@ -31,6 +31,13 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   SymbolicValue leftOp;
   SymbolicValue rightOp;
 
+  public BinarySymbolicValue() {
+  }
+
+  protected BinarySymbolicValue(SymbolicValue leftOp, SymbolicValue rightOp) {
+    this.leftOp = leftOp;
+    this.rightOp = rightOp;
+  }
 
   public abstract BooleanConstraint shouldNotInverse();
 
@@ -42,6 +49,7 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   @Override
   public void computedFrom(List<SymbolicValue> symbolicValues) {
     Preconditions.checkArgument(symbolicValues.size() == 2);
+    Preconditions.checkState(leftOp == null && rightOp == null, "Operands already set!");
     rightOp = symbolicValues.get(0);
     leftOp = symbolicValues.get(1);
   }

@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class SymbolicValue {
 
@@ -161,6 +162,12 @@ public class SymbolicValue {
   public abstract static class UnarySymbolicValue extends SymbolicValue {
     protected SymbolicValue operand;
 
+    public UnarySymbolicValue() {
+    }
+
+    public UnarySymbolicValue(SymbolicValue operand) {
+      this.operand = operand;
+    }
 
     @Override
     public boolean references(SymbolicValue other) {
@@ -201,6 +208,12 @@ public class SymbolicValue {
 
   public static class NotSymbolicValue extends UnarySymbolicValue {
 
+    public NotSymbolicValue() {
+    }
+
+    public NotSymbolicValue(SymbolicValue operand) {
+      super(operand);
+    }
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -208,9 +221,40 @@ public class SymbolicValue {
     }
 
     @Override
+    protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
+      return operand.inverse().copyAllConstraints(booleanConstraint, programState);
+    }
+
+    @Override
+    protected SymbolicValue inverse() {
+      return operand;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      NotSymbolicValue other = (NotSymbolicValue) o;
+      return operand.equals(other.operand);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(operand);
+    }
+
+    @Override
     public String toString() {
       return "!(" + operand + ")";
     }
+  }
+
+  protected SymbolicValue inverse() {
+    throw new UnsupportedOperationException("Inverse is not supported on generic SV");
   }
 
   public static class InstanceOfSymbolicValue extends UnarySymbolicValue {
@@ -330,5 +374,9 @@ public class SymbolicValue {
   @CheckForNull
   public BinaryRelation binaryRelation() {
     return null;
+  }
+
+  protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
+    return Collections.singletonList(programState);
   }
 }

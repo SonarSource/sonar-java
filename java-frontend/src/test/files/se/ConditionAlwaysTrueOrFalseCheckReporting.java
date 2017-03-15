@@ -13,7 +13,7 @@ public class Class {
   }
 
   void relationship(int a, int b) {
-    if(a < b) {
+    if(a < b) { // flow@rel {{Implies 'b' is true.}}  FIXME -- name of symbol is wrong here, should be whole expression
       if(b > a) { // Noncompliant [[flows=rel]] flow@rel {{Condition is always true.}}
       }
     }

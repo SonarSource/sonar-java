@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ConstraintManager {
@@ -118,9 +117,7 @@ public class ConstraintManager {
   }
 
   private static SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
-    SymbolicValue result = new SymbolicValue.NotSymbolicValue();
-    result.computedFrom(Collections.singletonList(relationalSymbolicValue));
-    return result;
+    return new SymbolicValue.NotSymbolicValue(relationalSymbolicValue);
   }
 
   private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {

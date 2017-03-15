@@ -20,13 +20,18 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.junit.Test;
 
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -46,6 +51,12 @@ public class RelationalSymbolicValueTest {
       return "SV_2";
     }
   };
+  SymbolicValue c = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_3";
+    }
+  };
 
   @Test
   public void test_create() throws Exception {
@@ -61,5 +72,23 @@ public class RelationalSymbolicValueTest {
   private SymbolicValue create(Tree.Kind kind, ImmutableList<SymbolicValue> computedFrom) {
     return constraintManager
       .createBinarySymbolicValue(new BinaryExpressionTreeImpl(kind, mock(ExpressionTree.class), mock(InternalSyntaxToken.class), mock(ExpressionTree.class)), computedFrom);
+  }
+
+
+  @Test
+  public void test_transitive_constraint_copy() throws Exception {
+    SymbolicValue aNEb = create(Tree.Kind.NOT_EQUAL_TO, ImmutableList.of(b, a));
+    SymbolicValue bNEc = create(Tree.Kind.NOT_EQUAL_TO, ImmutableList.of(c, b));
+    ProgramState programState = ProgramState.EMPTY_STATE;
+    List<ProgramState> programStates = aNEb.setConstraint(programState, BooleanConstraint.TRUE);
+    programState = Iterables.getOnlyElement(programStates);
+    programStates = bNEc.setConstraint(programState, BooleanConstraint.TRUE);
+    programState = Iterables.getOnlyElement(programStates);
+
+    SymbolicValue aNEc = create(Tree.Kind.NOT_EQUAL_TO, ImmutableList.of(c, a));
+    programStates = aNEc.setConstraint(programState, BooleanConstraint.FALSE);
+    assertThat(programStates).hasSize(1);
+    programStates = aNEc.setConstraint(programState, BooleanConstraint.TRUE);
+    assertThat(programStates).hasSize(1);
   }
 }

@@ -27,10 +27,9 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
-import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
@@ -97,8 +96,14 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   final Kind kind;
+  private BinaryRelation binaryRelation;
 
   public RelationalSymbolicValue(Kind kind) {
+    this.kind = kind;
+  }
+
+  private RelationalSymbolicValue(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
+    super(leftOp, rightOp);
     this.kind = kind;
   }
 
@@ -115,14 +120,37 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    ProgramState programState = checkRelation(booleanConstraint, initialProgramState);
-    if (programState == null) {
+    if (!checkRelation(booleanConstraint, initialProgramState)) {
       return ImmutableList.of();
     }
+    return booleanConstraint == BooleanConstraint.TRUE ? getNewProgramStates(initialProgramState) : inverse().getNewProgramStates(initialProgramState);
+  }
+
+  private List<ProgramState> getNewProgramStates(ProgramState initialProgramState) {
+    List<SymbolicValue> newRelations = transitiveRelations(initialProgramState);
+    newRelations.add(this);
+
+    List<ProgramState> programStates = new ArrayList<>();
+    programStates.add(initialProgramState);
+    for (SymbolicValue relationalSymbolicValue : newRelations) {
+      List<ProgramState> intermediateStates = new ArrayList<>();
+      for (ProgramState programState: programStates) {
+        intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(BooleanConstraint.TRUE, programState));
+      }
+      programStates = intermediateStates;
+    }
+    return programStates;
+  }
+
+  protected RelationalSymbolicValue inverse() {
+    return new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
+  }
+
+  protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
     List<ProgramState> results = new ArrayList<>();
     List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
     if (Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind) {
-      copiedConstraints = addNullConstraintsForBooleanWrapper(booleanConstraint, initialProgramState, copiedConstraints);
+      copiedConstraints = addNullConstraintsForBooleanWrapper(booleanConstraint, programState, copiedConstraints);
     }
     for (ProgramState ps : copiedConstraints) {
       List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
@@ -148,7 +176,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return copiedConstraints;
   }
 
-  protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+  private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     ProgramState newState = programState;
     if (programState.canReach(from) || programState.canReach(to)) {
       newState = programState.addConstraint(this, booleanConstraint);
@@ -188,18 +216,64 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  @CheckForNull
-  private ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
+  private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
     RelationState relationState = binaryRelation().resolveState(programState.getKnownRelations());
-    if (relationState.rejects(booleanConstraint)) {
-      return null;
+    return !relationState.rejects(booleanConstraint);
+  }
+
+  private List<SymbolicValue> transitiveRelations(ProgramState programState) {
+    BinaryRelation relation = binaryRelation();
+    return programState.getKnownRelations().stream()
+      .map(r -> r.deduceTransitiveOrSimplified(relation))
+      .filter(Objects::nonNull)
+      .map(RelationalSymbolicValue::binaryRelationToSymbolicValue)
+      .collect(Collectors.toList());
+  }
+
+  private static SymbolicValue binaryRelationToSymbolicValue(BinaryRelation binaryRelation) {
+    switch (binaryRelation.kind) {
+      case EQUAL:
+      case METHOD_EQUALS:
+      case LESS_THAN:
+        return new RelationalSymbolicValue(binaryRelation.kind, binaryRelation.leftOp, binaryRelation.rightOp);
+      case NOT_EQUAL:
+        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.EQUAL, binaryRelation.leftOp, binaryRelation.rightOp));
+      case GREATER_THAN:
+        return new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.rightOp, binaryRelation.leftOp);
+      case GREATER_THAN_OR_EQUAL:
+        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.leftOp, binaryRelation.rightOp));
+      case LESS_THAN_OR_EQUAL:
+        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.rightOp, binaryRelation.leftOp));
+      case NOT_METHOD_EQUALS:
+        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.METHOD_EQUALS, binaryRelation.rightOp, binaryRelation.leftOp));
+      default:
+        throw new IllegalStateException("Unable to convert to relational SV " + binaryRelation);
     }
-    return programState;
   }
 
   @Override
   public BinaryRelation binaryRelation() {
-    return BinaryRelation.binaryRelation(kind, leftOp, rightOp);
+    if (binaryRelation == null) {
+      binaryRelation = BinaryRelation.binaryRelation(kind, leftOp, rightOp);
+    }
+    return binaryRelation;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RelationalSymbolicValue that = (RelationalSymbolicValue) o;
+    return binaryRelation().equals(that.binaryRelation());
+  }
+
+  @Override
+  public int hashCode() {
+    return binaryRelation().hashCode();
   }
 
   @Override

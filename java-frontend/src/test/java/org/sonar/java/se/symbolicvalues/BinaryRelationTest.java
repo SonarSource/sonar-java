@@ -205,6 +205,14 @@ public class BinaryRelationTest {
     assertThat(relationState).isEqualTo(FULFILLED);
   }
 
+  @Test
+  public void test_not_equals_is_not_transitive() throws Exception {
+    BinaryRelation aNEb = binaryRelation(NOT_EQUAL, a, b);
+    BinaryRelation bNEc = binaryRelation(NOT_EQUAL, b, c);
+    BinaryRelation relation = aNEb.deduceTransitiveOrSimplified(bNEc);
+    assertThat(relation).isNull();
+  }
+
   private RelationalSymbolicValue relSV(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(kind);
     relationalSymbolicValue.computedFrom(Arrays.asList(rightOp, leftOp));
