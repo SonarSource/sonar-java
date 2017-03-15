@@ -4,6 +4,8 @@ class A {
   boolean isFoo() { return true; } // Compliant
   boolean hasFoo() { return true; } // Compliant
 
+  boolean getBooleanBecauseIWantTo() { return true; } // Compliant
+
   int bar() { return 0; }
 }
 
