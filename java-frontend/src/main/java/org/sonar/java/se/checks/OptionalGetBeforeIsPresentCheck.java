@@ -61,8 +61,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
     private final SymbolicValue optionalSV;
 
-    public OptionalSymbolicValue(int id, SymbolicValue sv) {
-      super(id);
+    public OptionalSymbolicValue(SymbolicValue sv) {
       this.optionalSV = sv;
     }
 
@@ -109,7 +108,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
-        constraintManager.setValueFactory(id -> new OptionalSymbolicValue(id, peek));
+        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);

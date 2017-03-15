@@ -41,7 +41,7 @@ public class SECheckTest {
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), mock(ProgramState.class));
     node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), mock(ProgramState.class)), null);
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, new SymbolicValue(12), Lists.newArrayList(ObjectConstraint.class));
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, new SymbolicValue(), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flows.iterator().next()).isEmpty();
   }
 

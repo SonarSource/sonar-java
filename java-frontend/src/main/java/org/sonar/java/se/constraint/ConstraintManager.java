@@ -44,7 +44,6 @@ import java.util.List;
 
 public class ConstraintManager {
 
-  private int counter = ProgramState.EMPTY_STATE.constraintsSize();
   private SymbolicValueFactory symbolicValueFactory;
 
   public void setValueFactory(SymbolicValueFactory valueFactory) {
@@ -56,10 +55,10 @@ public class ConstraintManager {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case LOGICAL_COMPLEMENT:
-        result = new SymbolicValue.NotSymbolicValue(nextId());
+        result = new SymbolicValue.NotSymbolicValue();
         break;
       case INSTANCE_OF:
-        result = new SymbolicValue.InstanceOfSymbolicValue(nextId());
+        result = new SymbolicValue.InstanceOfSymbolicValue();
         break;
       case MEMBER_SELECT:
         result = createIdentifierSymbolicValue(((MemberSelectExpressionTree) syntaxNode).identifier());
@@ -98,17 +97,17 @@ public class ConstraintManager {
         break;
       case AND:
       case AND_ASSIGNMENT:
-        result = new SymbolicValue.AndSymbolicValue(nextId());
+        result = new SymbolicValue.AndSymbolicValue();
         result.computedFrom(computedFrom);
         break;
       case OR:
       case OR_ASSIGNMENT:
-        result = new SymbolicValue.OrSymbolicValue(nextId());
+        result = new SymbolicValue.OrSymbolicValue();
         result.computedFrom(computedFrom);
         break;
       case XOR:
       case XOR_ASSIGNMENT:
-        result = new SymbolicValue.XorSymbolicValue(nextId());
+        result = new SymbolicValue.XorSymbolicValue();
         result.computedFrom(computedFrom);
         break;
       default:
@@ -118,26 +117,26 @@ public class ConstraintManager {
     return result;
   }
 
-  private SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
-    SymbolicValue result = new SymbolicValue.NotSymbolicValue(nextId());
+  private static SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
+    SymbolicValue result = new SymbolicValue.NotSymbolicValue();
     result.computedFrom(Collections.singletonList(relationalSymbolicValue));
     return result;
   }
 
-  private RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
-    RelationalSymbolicValue result = new RelationalSymbolicValue(nextId(), kind);
+  private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
+    RelationalSymbolicValue result = new RelationalSymbolicValue(kind);
     result.computedFrom(computedFrom);
     return result;
   }
 
   public SymbolicValue.ExceptionalSymbolicValue createExceptionalSymbolicValue(@Nullable Type exceptionType) {
-    return new SymbolicValue.ExceptionalSymbolicValue(nextId(), exceptionType);
+    return new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
   }
 
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
-      result = new RelationalSymbolicValue(nextId(), RelationalSymbolicValue.Kind.METHOD_EQUALS);
+      result = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
       SymbolicValue leftOp = values.get(1);
       SymbolicValue rightOp = values.get(0);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
@@ -179,7 +178,7 @@ public class ConstraintManager {
 
   private SymbolicValue createDefaultSymbolicValue() {
     SymbolicValue result;
-    result = symbolicValueFactory == null ? new SymbolicValue(nextId()) : symbolicValueFactory.createSymbolicValue(nextId());
+    result = symbolicValueFactory == null ? new SymbolicValue() : symbolicValueFactory.createSymbolicValue();
     symbolicValueFactory = null;
     return result;
   }
@@ -197,8 +196,5 @@ public class ConstraintManager {
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
-
-  private int nextId() {
-    return counter++;
-  }
+  
 }
