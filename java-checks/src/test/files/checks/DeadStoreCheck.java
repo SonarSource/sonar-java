@@ -9,8 +9,9 @@ class A {
   abstract int foo();
 
   int foo(int u) {
-    int x = 0;// Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=11;ec=14]]
-    x = 3;
+    int x = 0;// Compliant - default value
+    x = 3; // Noncompliant
+    x = 4;
     int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}} [[sc=11;ec=18]]
     x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=7;ec=10]]
     x = 3;
@@ -36,7 +37,7 @@ class A {
   }
 
   Object anonymous_class() {
-    int a,b = 0; // Noncompliant
+    int a,b = 7; // Noncompliant
     a = 42;
     if(a == 42) {
       b = 12; // Noncompliant
@@ -235,7 +236,7 @@ class A {
 
 class Stuff {
   void foo(boolean b1, boolean b2) {
-    boolean x = false;  // Noncompliant
+    boolean x = false;  // Compliant
     x = b1 && b2;       // Noncompliant
     ((x)) = b1 && b2;   // Noncompliant
   }
@@ -245,4 +246,83 @@ class Stuff {
     assert y;
   }
 
+}
+
+class NoIssueOnInitializers {
+
+  // no issue if variable initializer is 'true' or 'false'
+  boolean testBoolean(boolean arg0) {
+    boolean b1 = true; // Compliant
+    b1 = false;        // Noncompliant
+    b1 = true;         // Noncompliant
+    b1 = arg0;
+
+    boolean b2 = false; // Compliant
+    b2 = true;          // Noncompliant
+    b2 = false;         // Noncompliant
+    b2 = arg0;
+
+    boolean b3 = arg0;  // Noncompliant
+    b3 = true;          // Noncompliant
+    b3 = false;         // Noncompliant
+    b3 = arg0;
+
+    return b1 && b2 && b3;
+  }
+
+  // no issue if initializer is 'null'
+  Object testNull(boolean b, Object o) {
+    Object o1 = null;  // Compliant
+    o1 = new Object(); // Noncompliant
+    o1 = null;         // Noncompliant
+    o1 = o;
+
+    Object o2 = o; // Noncompliant
+    o2 = null;
+
+    return b ? o1 : o2;
+  }
+
+  //no issue if initializer is the empty String
+  String testNull(String s) {
+    String s1 = ""; // Compliant
+    s1 = "yolo";    // Noncompliant
+    s1 = "hello";
+
+    String s2 = "world"; // Noncompliant
+    s2 = "moto";
+
+    return s1 + s2;
+  }
+
+  // no issue if variable initializer is '-1', '0', or '1'
+  int testIntLiterals(int i) {
+
+    int w = 42; // Noncompliant
+    w = 1;      // Noncompliant
+    w = 0;      // Noncompliant
+    w = -1;
+
+    int x = (0); // Compliant
+    x = 1;       // Noncompliant
+    x = 0;       // Noncompliant
+    x = i;
+
+    int y = 1; // Compliant
+    y = 0;     // Noncompliant
+    y = -1;    // Noncompliant
+    y = i;
+
+    int z1 = -(1); // Compliant
+    z1 = 0;        // Noncompliant
+    z1 = 1;        // Noncompliant
+    z1 = i;
+
+    int z2 = -1;   // Compliant
+    z2 = 0;        // Noncompliant
+    z2 = 1;        // Noncompliant
+    z2 = i;
+
+    return w + x + y + (z1 * z2);
+  }
 }

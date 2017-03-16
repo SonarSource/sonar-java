@@ -31,11 +31,4 @@
 'com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java':[
 358,
 ],
-'com.google.guava:guava:src/com/google/common/net/HostAndPort.java':[
-214,
-215,
-],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-890,
-],
 }

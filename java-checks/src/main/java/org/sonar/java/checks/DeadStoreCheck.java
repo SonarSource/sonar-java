@@ -27,6 +27,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -176,10 +178,36 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private void handleVariable(Set<Symbol> out, VariableTree localVar) {
     Symbol symbol = localVar.symbol();
-    if (localVar.initializer() != null && !out.contains(symbol)) {
-      createIssue(((VariableTreeImpl) localVar).equalToken(), localVar.initializer(), symbol);
+    ExpressionTree initializer = localVar.initializer();
+    if (initializer != null && !isUsualDefaultValue(initializer) && !out.contains(symbol)) {
+      createIssue(((VariableTreeImpl) localVar).equalToken(), initializer, symbol);
     }
     out.remove(symbol);
+  }
+
+  private static boolean isUsualDefaultValue(ExpressionTree initializer) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(initializer);
+    return expr.is(Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.NULL_LITERAL) || isMinusOne(expr) || isZeroOrOne(expr) || isEmptyString(expr);
+  }
+
+  private static boolean isMinusOne(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.UNARY_MINUS)) {
+      ExpressionTree minusValue = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
+      return isIntLiteralWithValue(minusValue, "1");
+    }
+    return false;
+  }
+
+  private static boolean isZeroOrOne(ExpressionTree tree) {
+    return isIntLiteralWithValue(tree, "1") || isIntLiteralWithValue(tree, "0");
+  }
+
+  private static boolean isEmptyString(ExpressionTree expr) {
+    return expr.is(Tree.Kind.STRING_LITERAL) && LiteralUtils.trimQuotes(((LiteralTree) expr).value()).isEmpty();
+  }
+
+  private static boolean isIntLiteralWithValue(ExpressionTree tree, String value) {
+    return tree.is(Tree.Kind.INT_LITERAL) && value.equals(((LiteralTree) tree).value());
   }
 
   private static void handleNewClass(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, NewClassTree element) {
