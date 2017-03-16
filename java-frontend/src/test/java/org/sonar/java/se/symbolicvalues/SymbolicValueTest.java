@@ -76,11 +76,4 @@ public class SymbolicValueTest {
     relationalSymbolicValue.computedFrom(ImmutableList.of(symbolicValue, notSymbolicValue));
     assertThat(relationalSymbolicValue.computedFrom()).contains(symbolicValue, notSymbolicValue);
   }
-
-  @Test
-  public void test_NotSymbolicValue_hashCode() throws Exception {
-    SymbolicValue a = new SymbolicValue();
-    SymbolicValue not = new SymbolicValue.NotSymbolicValue(a);
-    assertThat(a.hashCode()).isNotEqualTo(not.hashCode());
-  }
 }

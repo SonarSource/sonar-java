@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class SymbolicValue {
 
@@ -243,7 +242,7 @@ public class SymbolicValue {
 
     @Override
     public int hashCode() {
-      return Objects.hash(operand);
+      return 31 * operand.hashCode();
     }
 
     @Override
