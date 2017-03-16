@@ -46,9 +46,14 @@ public class BooleanMethodNameCheck extends IssuableSubscriptionVisitor {
     }
     MethodTree methodTree = (MethodTree) tree;
     IdentifierTree simpleName = methodTree.simpleName();
-    if (returnsBoolean(methodTree) && simpleName.identifierToken().text().startsWith("get") && isNotOverriding(methodTree)) {
+    if (returnsBoolean(methodTree) && isBooleanGetter(simpleName) && isNotOverriding(methodTree)) {
       reportIssue(simpleName, "Rename this method to start with \"is\" or \"has\".");
     }
+  }
+
+  private static boolean isBooleanGetter(IdentifierTree simpleName) {
+    String text = simpleName.identifierToken().text();
+    return text.startsWith("get") && !text.startsWith("getBoolean");
   }
 
   private static boolean isNotOverriding(MethodTree methodTree) {
