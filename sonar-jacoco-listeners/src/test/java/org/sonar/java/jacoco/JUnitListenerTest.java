@@ -19,6 +19,8 @@
  */
 package org.sonar.java.jacoco;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -49,7 +51,14 @@ public class JUnitListenerTest {
   public void setUp() {
     jacoco = mock(JacocoController.class);
     listener = new JUnitListener(jacoco);
-  }
+    final JacocoController jacocoController = mock(JacocoController.class);
+    JacocoController.singleton = jacocoController;
+ }
+
+  @After
+  public void clean() {
+    JacocoController.singleton = null;
+ }
 
   @Test
   public void should_have_public_no_arg_constructor() throws Exception {
@@ -57,12 +66,23 @@ public class JUnitListenerTest {
   }
 
   @Test
+  public void lazyController() throws Exception {
+    final JUnitListener listener = new JUnitListener();
+    Assert.assertNull(listener.jacoco);
+    Assert.assertSame(JacocoController.getInstance(), listener.getJacocoController());
+    Assert.assertSame(JacocoController.getInstance(), listener.jacoco);
+
+    // Check the instance is stored
+    Assert.assertSame(JacocoController.getInstance(), listener.getJacocoController());
+  }
+
+  @Test
   public void test_success() {
     execute(Success.class);
     String testName = getClass().getCanonicalName() + "$Success test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart();
-    orderedExecution.verify(jacoco).onTestFinish(testName);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish();
   }
 
   @Test
@@ -70,11 +90,11 @@ public class JUnitListenerTest {
     execute(Failure.class);
     String testName = getClass().getCanonicalName() + "$Failure test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart();
-    orderedExecution.verify(jacoco).onTestFinish(testName);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish();
   }
 
-  private void execute(Class cls) {
+  private void execute(Class<?> cls) {
     JUnitCore junit = new JUnitCore();
     junit.addListener(listener);
     junit.run(cls);
