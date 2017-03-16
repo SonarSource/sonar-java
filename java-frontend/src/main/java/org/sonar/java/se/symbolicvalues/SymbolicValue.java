@@ -222,10 +222,10 @@ public class SymbolicValue {
     }
 
     @Override
-    protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
+    protected List<ProgramState> copyAllConstraints(ProgramState programState) {
       Preconditions.checkState(operand instanceof RelationalSymbolicValue,
         "Copy of constraints should only be done on relational SV, but operand is %s", operand);
-      return ((RelationalSymbolicValue) operand).inverse().copyAllConstraints(booleanConstraint, programState);
+      return ((RelationalSymbolicValue) operand).inverse().copyAllConstraints(programState);
     }
 
 
@@ -276,12 +276,6 @@ public class SymbolicValue {
   }
 
   public abstract static class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
-
-
-    @Override
-    public BooleanConstraint shouldNotInverse() {
-      return BooleanConstraint.TRUE;
-    }
 
     protected static void addStates(List<ProgramState> states, List<ProgramState> newStates) {
       if (states.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES || newStates.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES) {
@@ -371,7 +365,7 @@ public class SymbolicValue {
     return null;
   }
 
-  protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
+  protected List<ProgramState> copyAllConstraints(ProgramState programState) {
     throw new UnsupportedOperationException("Copying constraints is only supported on relational SV, but this is " + toString());
   }
 }

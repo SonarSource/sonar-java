@@ -22,8 +22,6 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.java.se.constraint.BooleanConstraint;
-
 import java.util.List;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
@@ -38,8 +36,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     this.leftOp = leftOp;
     this.rightOp = rightOp;
   }
-
-  public abstract BooleanConstraint shouldNotInverse();
 
   @Override
   public boolean references(SymbolicValue other) {

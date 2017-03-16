@@ -108,17 +108,6 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   @Override
-  public BooleanConstraint shouldNotInverse() {
-    switch (kind) {
-      case EQUAL:
-      case METHOD_EQUALS:
-        return BooleanConstraint.TRUE;
-      default:
-        return BooleanConstraint.FALSE;
-    }
-  }
-
-  @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
     if (!checkRelation(booleanConstraint, initialProgramState)) {
       return ImmutableList.of();
@@ -135,7 +124,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     for (SymbolicValue relationalSymbolicValue : newRelations) {
       List<ProgramState> intermediateStates = new ArrayList<>();
       for (ProgramState programState: programStates) {
-        intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(BooleanConstraint.TRUE, programState));
+        intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(programState));
       }
       programStates = intermediateStates;
     }
@@ -147,16 +136,16 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   @Override
-  protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
+  protected List<ProgramState> copyAllConstraints(ProgramState programState) {
     List<ProgramState> results = new ArrayList<>();
-    List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
+    List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState);
     if (Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind) {
-      copiedConstraints = addNullConstraintsForBooleanWrapper(booleanConstraint, programState, copiedConstraints);
+      copiedConstraints = addNullConstraintsForBooleanWrapper(programState, copiedConstraints);
     }
     for (ProgramState ps : copiedConstraints) {
-      List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
+      List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps);
       if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
-        results.add(programState.addConstraint(this, booleanConstraint));
+        results.add(programState.addConstraint(this, BooleanConstraint.TRUE));
       } else {
         results.addAll(copiedConstraintsRightToLeft);
       }
@@ -164,10 +153,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return results;
   }
 
-  private List<ProgramState> addNullConstraintsForBooleanWrapper(BooleanConstraint booleanConstraint, ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
+  private List<ProgramState> addNullConstraintsForBooleanWrapper(ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
     BooleanConstraint leftConstraint = initialProgramState.getConstraint(leftOp, BooleanConstraint.class);
     BooleanConstraint rightConstraint = initialProgramState.getConstraint(rightOp, BooleanConstraint.class);
-    if (leftConstraint != null && rightConstraint == null && !shouldNotInverse().equals(booleanConstraint)) {
+    if (leftConstraint != null && rightConstraint == null && !isEquality()) {
       List<ProgramState> nullConstraints = copiedConstraints.stream()
         .flatMap(ps -> rightOp.setConstraint(ps, ObjectConstraint.NULL).stream())
         .map(ps -> ps.removeConstraintsOnDomain(rightOp, BooleanConstraint.class)
@@ -177,22 +166,22 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return copiedConstraints;
   }
 
-  private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+  private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState) {
     ProgramState newState = programState;
     if (programState.canReach(from) || programState.canReach(to)) {
-      newState = programState.addConstraint(this, booleanConstraint);
+      newState = programState.addConstraint(this, BooleanConstraint.TRUE);
     }
-    return copyConstraintFromTo(from, to, newState, booleanConstraint);
+    return copyConstraintFromTo(from, to, newState);
   }
 
-  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState) {
     List<ProgramState> states = new ArrayList<>();
     states.add(programState);
     PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
     if (leftConstraints != null) {
       leftConstraints.forEach((d, c) -> {
         List<ProgramState> newStates = new ArrayList<>();
-        Constraint constraint = shouldNotInverse().equals(booleanConstraint) ? c : c.inverse();
+        Constraint constraint = isEquality() ? c : c.inverse();
         states.forEach(state -> {
           if (constraint == null) {
             PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
