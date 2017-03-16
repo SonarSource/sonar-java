@@ -222,7 +222,12 @@ public class BytecodeVisitor extends ClassVisitor {
           getCompletedClassSymbolsType(exceptions),
           classSymbol
       );
-      final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
+      int methodFlags = bytecodeCompleter.filterBytecodeFlags(flags);
+      if(classSymbol.isInterface() && (methodFlags & Flags.ABSTRACT) == 0) {
+        // non abstract method of interface is a default method
+        methodFlags |= Flags.DEFAULT;
+      }
+      final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(methodFlags, name, type, classSymbol);
       classSymbol.members.enter(methodSymbol);
       if (signature != null) {
         SignatureReader signatureReader = new SignatureReader(signature);
