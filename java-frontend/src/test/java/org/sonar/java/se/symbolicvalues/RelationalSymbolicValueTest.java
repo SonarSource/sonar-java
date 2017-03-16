@@ -91,4 +91,23 @@ public class RelationalSymbolicValueTest {
     programStates = aNEc.setConstraint(programState, BooleanConstraint.TRUE);
     assertThat(programStates).hasSize(1);
   }
+
+  @Test
+  public void test_equals_hashCode() throws Exception {
+    SymbolicValue ab = create(Tree.Kind.EQUAL_TO, ImmutableList.of(a, b));
+    SymbolicValue ba = create(Tree.Kind.EQUAL_TO, ImmutableList.of(b, a));
+    assertThat(ab).isEqualTo(ba);
+    assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
+
+    ab = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
+    ab.computedFrom(ImmutableList.of(a, b));
+    ba = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
+    ba.computedFrom(ImmutableList.of(b, a));
+    assertThat(ab).isEqualTo(ba);
+    assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
+
+    ab = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, b));
+    ba = create(Tree.Kind.LESS_THAN, ImmutableList.of(b, a));
+    assertThat(ab).isNotEqualTo(ba);
+  }
 }

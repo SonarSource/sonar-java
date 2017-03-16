@@ -258,10 +258,6 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       return false;
     }
     RelationalSymbolicValue that = (RelationalSymbolicValue) o;
-    return equalRelation(that);
-  }
-
-  private boolean equalRelation(RelationalSymbolicValue that) {
     if (kind != that.kind) {
       return false;
     }
@@ -283,6 +279,6 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public String toString() {
-    return String.valueOf(leftOp) + kind.operand + rightOp;
+    return leftOp.toString() + kind.operand + rightOp.toString();
   }
 }
