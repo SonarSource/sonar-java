@@ -209,6 +209,7 @@ public class SymbolicValue {
   public static class NotSymbolicValue extends UnarySymbolicValue {
 
     public NotSymbolicValue() {
+      // used by ConstraintManager, operand is set by computedFrom
     }
 
     public NotSymbolicValue(SymbolicValue operand) {
@@ -222,13 +223,11 @@ public class SymbolicValue {
 
     @Override
     protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
-      return operand.inverse().copyAllConstraints(booleanConstraint, programState);
+      Preconditions.checkState(operand instanceof RelationalSymbolicValue,
+        "Copy of constraints should only be done on relational SV, but operand is %s", operand);
+      return ((RelationalSymbolicValue) operand).inverse().copyAllConstraints(booleanConstraint, programState);
     }
 
-    @Override
-    protected SymbolicValue inverse() {
-      return operand;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -251,10 +250,6 @@ public class SymbolicValue {
     public String toString() {
       return "!(" + operand + ")";
     }
-  }
-
-  protected SymbolicValue inverse() {
-    throw new UnsupportedOperationException("Inverse is not supported on generic SV");
   }
 
   public static class InstanceOfSymbolicValue extends UnarySymbolicValue {
@@ -377,6 +372,6 @@ public class SymbolicValue {
   }
 
   protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
-    return Collections.singletonList(programState);
+    throw new UnsupportedOperationException("Copying constraints is only supported on relational SV, but this is " + toString());
   }
 }

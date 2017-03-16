@@ -142,10 +142,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return programStates;
   }
 
-  protected RelationalSymbolicValue inverse() {
+  RelationalSymbolicValue inverse() {
     return new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
   }
 
+  @Override
   protected List<ProgramState> copyAllConstraints(BooleanConstraint booleanConstraint, ProgramState programState) {
     List<ProgramState> results = new ArrayList<>();
     List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
@@ -268,16 +269,31 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       return false;
     }
     RelationalSymbolicValue that = (RelationalSymbolicValue) o;
-    return binaryRelation().equals(that.binaryRelation());
+    return equalRelation(that);
+  }
+
+  private boolean equalRelation(RelationalSymbolicValue that) {
+    if (kind != that.kind) {
+      return false;
+    }
+    if (leftOp.equals(that.leftOp) && rightOp.equals(that.rightOp)) {
+      return true;
+    }
+    return isEquality() && leftOp.equals(that.rightOp) && rightOp.equals(that.leftOp);
+  }
+
+  private boolean isEquality() {
+    return kind == Kind.EQUAL || kind == Kind.METHOD_EQUALS;
   }
 
   @Override
   public int hashCode() {
-    return binaryRelation().hashCode();
+    // hashCode doesn't depend on order of operands, to make commutative operators equal when operands are swapped
+    return kind.hashCode() + leftOp.hashCode() + rightOp.hashCode();
   }
 
   @Override
   public String toString() {
-    return binaryRelation().toString();
+    return String.valueOf(leftOp) + kind.operand + rightOp;
   }
 }
