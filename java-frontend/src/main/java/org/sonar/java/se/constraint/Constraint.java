@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.constraint;
 
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
+
 import javax.annotation.Nullable;
 
 public interface Constraint {
@@ -36,5 +38,21 @@ public interface Constraint {
 
   default boolean isValidWith(@Nullable Constraint constraint) {
     return true;
+  }
+
+  /**
+   * Returning null means that constraint can't be transferred over relation
+   * @param kind
+   * @return
+   */
+  @Nullable
+  default Constraint copyOver(RelationalSymbolicValue.Kind kind) {
+    switch (kind) {
+      case EQUAL:
+      case METHOD_EQUALS:
+        return this;
+      default:
+        return inverse();
+    }
   }
 }

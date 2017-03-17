@@ -181,7 +181,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (leftConstraints != null) {
       leftConstraints.forEach((d, c) -> {
         List<ProgramState> newStates = new ArrayList<>();
-        Constraint constraint = isEquality() ? c : c.inverse();
+        Constraint constraint = c.copyOver(kind);
         states.forEach(state -> {
           if (constraint == null) {
             PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
