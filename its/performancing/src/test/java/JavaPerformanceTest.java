@@ -52,6 +52,7 @@ public class JavaPerformanceTest {
       .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx1024m -server")
       .setProperty("sonar.importSources", "false")
       .setProperty("sonar.showProfiling", "true")
+      .setProperty("sonar.preloadFileMetadata", "true")
       .setProjectKey("project")
       .setProjectName("project")
       .setProjectVersion("1")
@@ -62,7 +63,7 @@ public class JavaPerformanceTest {
 
     double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
 
-    double expected = 170;
+    double expected = 165;
     assertThat(time).isEqualTo(expected, offset(expected * 0.04));
   }
 
