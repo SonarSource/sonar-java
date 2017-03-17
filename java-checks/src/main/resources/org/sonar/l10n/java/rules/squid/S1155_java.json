@@ -1,6 +1,6 @@
 {
   "title": "Collection.isEmpty() should be used to test for emptiness",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,18 +1,13 @@
 {
   "title": "\"assert\" should only be used with boolean variables",
   "type": "BUG",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
-    "cert",
-    "suspicious"
-  ],
-  "standards": [
-    "CERT"
+    
   ],
   "defaultSeverity": "Major"
 }
