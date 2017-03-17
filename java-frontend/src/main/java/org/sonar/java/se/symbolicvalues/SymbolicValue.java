@@ -238,12 +238,6 @@ public class SymbolicValue {
 
   public abstract static class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
 
-
-    @Override
-    public BooleanConstraint shouldNotInverse() {
-      return BooleanConstraint.TRUE;
-    }
-
     protected static void addStates(List<ProgramState> states, List<ProgramState> newStates) {
       if (states.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES || newStates.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES) {
         throw new ExplodedGraphWalker.TooManyNestedBooleanStatesException();

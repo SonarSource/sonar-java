@@ -401,3 +401,13 @@ class Assignment {
     return i / this.myField; // Noncompliant
   }
 }
+
+class ConstraintCopy {
+  void f(int x) {
+    boolean b1 = x < 0 || (x == 0.0 && 1 / x); // Noncompliant
+  }
+
+  void g(int x) {
+    boolean b2 = x >= -1 && x == 0 && 1 / x; // Noncompliant
+  }
+}

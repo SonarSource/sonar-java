@@ -36,6 +36,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -213,6 +214,8 @@ public class ProgramState {
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
+    Preconditions.checkState(!(symbolicValue instanceof RelationalSymbolicValue && constraint == BooleanConstraint.FALSE),
+      "Relations stored in PS should always use TRUE constraint. SV: %s", symbolicValue);
     PMap<Class<? extends Constraint>, Constraint> constraintsForSV = constraints.get(symbolicValue);
     if(constraintsForSV == null) {
       constraintsForSV = PCollections.emptyMap();

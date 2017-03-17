@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -30,6 +31,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -54,7 +56,8 @@ public class DivisionByZeroCheck extends SECheck {
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method %s().");
 
-  private enum ZeroConstraint implements Constraint {
+  @VisibleForTesting
+  public enum ZeroConstraint implements Constraint {
     ZERO,
     NON_ZERO;
 
@@ -69,6 +72,23 @@ public class DivisionByZeroCheck extends SECheck {
     @Override
     public boolean isValidWith(@Nullable Constraint constraint) {
       return constraint == null || this == constraint;
+    }
+
+    @Nullable
+    @Override
+    public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
+      switch (kind) {
+        case EQUAL:
+        case METHOD_EQUALS:
+          return this;
+        case LESS_THAN:
+        case GREATER_THAN:
+        case NOT_EQUAL:
+        case NOT_METHOD_EQUALS:
+          return inverse();
+        default:
+          return null;
+      }
     }
 
     @Override

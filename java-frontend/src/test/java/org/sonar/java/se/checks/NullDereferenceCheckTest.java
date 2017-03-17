@@ -63,4 +63,9 @@ public class NullDereferenceCheckTest {
   public void test_deferred_reporting() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/NPE_deferred.java", new NullDereferenceCheck());
   }
+
+  @Test
+  public void test_npe_transitive() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/NPE_transitive.java", new NullDereferenceCheck());
+  }
 }
