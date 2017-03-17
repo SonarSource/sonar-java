@@ -185,29 +185,27 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     out.remove(symbol);
   }
 
-  private static boolean isUsualDefaultValue(ExpressionTree initializer) {
-    ExpressionTree expr = ExpressionUtils.skipParentheses(initializer);
-    return expr.is(Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.NULL_LITERAL) || isMinusOne(expr) || isZeroOrOne(expr) || isEmptyString(expr);
-  }
-
-  private static boolean isMinusOne(ExpressionTree tree) {
-    if (tree.is(Tree.Kind.UNARY_MINUS)) {
-      ExpressionTree minusValue = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
-      return isIntLiteralWithValue(minusValue, "1");
+  private static boolean isUsualDefaultValue(ExpressionTree tree) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(tree);
+    switch (expr.kind()) {
+      case BOOLEAN_LITERAL:
+      case NULL_LITERAL:
+        return true;
+      case STRING_LITERAL:
+        return isEmptyString((LiteralTree) expr);
+      case INT_LITERAL:
+        String value = ((LiteralTree) expr).value();
+        return "0".equals(value) || "1".equals(value);
+      case UNARY_MINUS:
+      case UNARY_PLUS:
+        return isUsualDefaultValue(((UnaryExpressionTree) tree).expression());
+      default:
+        return false;
     }
-    return false;
   }
 
-  private static boolean isZeroOrOne(ExpressionTree tree) {
-    return isIntLiteralWithValue(tree, "1") || isIntLiteralWithValue(tree, "0");
-  }
-
-  private static boolean isEmptyString(ExpressionTree expr) {
-    return expr.is(Tree.Kind.STRING_LITERAL) && LiteralUtils.trimQuotes(((LiteralTree) expr).value()).isEmpty();
-  }
-
-  private static boolean isIntLiteralWithValue(ExpressionTree tree, String value) {
-    return tree.is(Tree.Kind.INT_LITERAL) && value.equals(((LiteralTree) tree).value());
+  private static boolean isEmptyString(LiteralTree expr) {
+    return LiteralUtils.trimQuotes(expr.value()).isEmpty();
   }
 
   private static void handleNewClass(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, NewClassTree element) {

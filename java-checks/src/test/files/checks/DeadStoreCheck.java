@@ -254,17 +254,13 @@ class NoIssueOnInitializers {
   boolean testBoolean(boolean arg0) {
     boolean b1 = true; // Compliant
     b1 = false;        // Noncompliant
-    b1 = true;         // Noncompliant
     b1 = arg0;
 
     boolean b2 = false; // Compliant
     b2 = true;          // Noncompliant
-    b2 = false;         // Noncompliant
     b2 = arg0;
 
     boolean b3 = arg0;  // Noncompliant
-    b3 = true;          // Noncompliant
-    b3 = false;         // Noncompliant
     b3 = arg0;
 
     return b1 && b2 && b3;
@@ -296,33 +292,26 @@ class NoIssueOnInitializers {
   }
 
   // no issue if variable initializer is '-1', '0', or '1'
-  int testIntLiterals(int i) {
+  int testIntLiterals() {
 
-    int w = 42; // Noncompliant
-    w = 1;      // Noncompliant
-    w = 0;      // Noncompliant
-    w = -1;
+    int a = +42;  // Noncompliant
 
-    int x = (0); // Compliant
-    x = 1;       // Noncompliant
-    x = 0;       // Noncompliant
-    x = i;
+    int b = (0);  // Compliant
+    b = -1;       // Noncompliant - Only taken into consideration when used in initializer
+    b = 0;        // Noncompliant
+    b = 1;        // Noncompliant
+    int c = +1;   // Compliant
+    int d = -(1); // Compliant
+    int e = -1;   // Compliant
 
-    int y = 1; // Compliant
-    y = 0;     // Noncompliant
-    y = -1;    // Noncompliant
-    y = i;
+    // Only int literals are excluded
+    long myLong = -1L;       // Noncompliant
+    double myDouble = -1.0d; // Noncompliant
+    float myFloat = -1.0f;   // Noncompliant
 
-    int z1 = -(1); // Compliant
-    z1 = 0;        // Noncompliant
-    z1 = 1;        // Noncompliant
-    z1 = i;
+    short myShort = -1; // Compliant
+    byte myByte = 1; //Compliant
 
-    int z2 = -1;   // Compliant
-    z2 = 0;        // Noncompliant
-    z2 = 1;        // Noncompliant
-    z2 = i;
-
-    return w + x + y + (z1 * z2);
+    return 0;
   }
 }
