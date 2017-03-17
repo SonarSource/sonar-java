@@ -78,21 +78,19 @@ public class ConstraintManager {
         result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
         break;
       case NOT_EQUAL_TO:
-        result = not(createRelationalSymbolicValue(Kind.EQUAL, computedFrom));
+        result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
         break;
       case LESS_THAN:
         result = createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
         break;
       case LESS_THAN_OR_EQUAL_TO:
-        // a <= b -> ! (b < a)
-        result = not(createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom)));
+        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, Lists.reverse(computedFrom));
         break;
       case GREATER_THAN:
         result = createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
         break;
       case GREATER_THAN_OR_EQUAL_TO:
-        // a >= b -> ! (a < b)
-        result = not(createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom));
+        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, computedFrom);
         break;
       case AND:
       case AND_ASSIGNMENT:
@@ -114,10 +112,6 @@ public class ConstraintManager {
         result.computedFrom(computedFrom);
     }
     return result;
-  }
-
-  private static SymbolicValue not(RelationalSymbolicValue relationalSymbolicValue) {
-    return new SymbolicValue.NotSymbolicValue(relationalSymbolicValue);
   }
 
   private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {

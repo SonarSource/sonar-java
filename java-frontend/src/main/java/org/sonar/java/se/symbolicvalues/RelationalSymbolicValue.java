@@ -227,15 +227,15 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       case LESS_THAN:
         return new RelationalSymbolicValue(binaryRelation.kind, binaryRelation.leftOp, binaryRelation.rightOp);
       case NOT_EQUAL:
-        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.EQUAL, binaryRelation.leftOp, binaryRelation.rightOp));
+        return new RelationalSymbolicValue(Kind.NOT_EQUAL, binaryRelation.leftOp, binaryRelation.rightOp);
       case GREATER_THAN:
         return new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.rightOp, binaryRelation.leftOp);
       case GREATER_THAN_OR_EQUAL:
-        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.leftOp, binaryRelation.rightOp));
+        return new RelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, binaryRelation.leftOp, binaryRelation.rightOp);
       case LESS_THAN_OR_EQUAL:
-        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.LESS_THAN, binaryRelation.rightOp, binaryRelation.leftOp));
+        return new RelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, binaryRelation.rightOp, binaryRelation.leftOp);
       case NOT_METHOD_EQUALS:
-        return new NotSymbolicValue(new RelationalSymbolicValue(Kind.METHOD_EQUALS, binaryRelation.rightOp, binaryRelation.leftOp));
+        return new RelationalSymbolicValue(Kind.NOT_METHOD_EQUALS, binaryRelation.rightOp, binaryRelation.leftOp);
       default:
         throw new IllegalStateException("Unable to convert to relational SV " + binaryRelation);
     }
