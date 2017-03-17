@@ -116,12 +116,12 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private List<ProgramState> getNewProgramStates(ProgramState initialProgramState) {
-    List<SymbolicValue> newRelations = transitiveRelations(initialProgramState);
+    List<RelationalSymbolicValue> newRelations = transitiveRelations(initialProgramState);
     newRelations.add(this);
 
     List<ProgramState> programStates = new ArrayList<>();
     programStates.add(initialProgramState);
-    for (SymbolicValue relationalSymbolicValue : newRelations) {
+    for (RelationalSymbolicValue relationalSymbolicValue : newRelations) {
       List<ProgramState> intermediateStates = new ArrayList<>();
       for (ProgramState programState: programStates) {
         intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(programState));
@@ -135,8 +135,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
   }
 
-  @Override
-  protected List<ProgramState> copyAllConstraints(ProgramState programState) {
+  private List<ProgramState> copyAllConstraints(ProgramState programState) {
     List<ProgramState> results = new ArrayList<>();
     List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState);
     if (Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind) {
@@ -211,7 +210,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return !relationState.rejects(booleanConstraint);
   }
 
-  private List<SymbolicValue> transitiveRelations(ProgramState programState) {
+  private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
     BinaryRelation relation = binaryRelation();
     return programState.getKnownRelations().stream()
       .map(r -> r.deduceTransitiveOrSimplified(relation))
@@ -220,7 +219,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       .collect(Collectors.toList());
   }
 
-  private static SymbolicValue binaryRelationToSymbolicValue(BinaryRelation binaryRelation) {
+  private static RelationalSymbolicValue binaryRelationToSymbolicValue(BinaryRelation binaryRelation) {
     switch (binaryRelation.kind) {
       case EQUAL:
       case METHOD_EQUALS:

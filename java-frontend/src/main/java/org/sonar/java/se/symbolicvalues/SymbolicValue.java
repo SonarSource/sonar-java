@@ -207,26 +207,10 @@ public class SymbolicValue {
 
   public static class NotSymbolicValue extends UnarySymbolicValue {
 
-    public NotSymbolicValue() {
-      // used by ConstraintManager, operand is set by computedFrom
-    }
-
-    public NotSymbolicValue(SymbolicValue operand) {
-      super(operand);
-    }
-
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       return operand.setConstraint(programState, booleanConstraint.inverse());
     }
-
-    @Override
-    protected List<ProgramState> copyAllConstraints(ProgramState programState) {
-      Preconditions.checkState(operand instanceof RelationalSymbolicValue,
-        "Copy of constraints should only be done on relational SV, but operand is %s", operand);
-      return ((RelationalSymbolicValue) operand).inverse().copyAllConstraints(programState);
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -364,7 +348,4 @@ public class SymbolicValue {
     return null;
   }
 
-  protected List<ProgramState> copyAllConstraints(ProgramState programState) {
-    throw new UnsupportedOperationException("Copying constraints is only supported on relational SV, but this is " + toString());
-  }
 }
