@@ -578,6 +578,22 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void defaultMethods_should_be_correctly_flagged() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DefaultMethods");
+    ((TypeJavaSymbol) clazz).complete();
+
+    assertThat(((TypeJavaSymbol) clazz).flags() & Flags.INTERFACE).isNotZero();
+    JavaSymbol.MethodJavaSymbol abstractMethod = (JavaSymbol.MethodJavaSymbol) ((TypeJavaSymbol) clazz).members().lookup("abstractMethod").get(0);
+    assertThat(abstractMethod.flags() & Flags.ABSTRACT).isNotZero();
+    assertThat(abstractMethod.flags() & Flags.DEFAULT).isZero();
+
+    JavaSymbol.MethodJavaSymbol defaultMethod = (JavaSymbol.MethodJavaSymbol) ((TypeJavaSymbol) clazz).members().lookup("defaultMethod").get(0);
+    assertThat(defaultMethod.flags() & Flags.ABSTRACT).isZero();
+    assertThat(defaultMethod.flags() & Flags.DEFAULT).isNotZero();
+  }
+
+
+  @Test
   public void bridge_method_not_synthetic_should_not_be_created_as_symbol_nor_fail_analysis() throws Exception {
     TypeJavaSymbol prezModel42 = bytecodeCompleter.getClassSymbol("model42.PresentationModel42");
     prezModel42.complete();
