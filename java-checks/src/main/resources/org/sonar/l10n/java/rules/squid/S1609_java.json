@@ -1,13 +1,13 @@
 {
   "title": "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   "type": "CODE_SMELL",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
   "tags": [
-    "java8"
+    
   ],
   "defaultSeverity": "Critical"
 }
