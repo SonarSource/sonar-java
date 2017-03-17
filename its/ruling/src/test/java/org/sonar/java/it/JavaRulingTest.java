@@ -72,7 +72,7 @@ public class JavaRulingTest {
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
   .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
-  .setOrchestratorProperty("litsVersion", "0.5")
+  .setOrchestratorProperty("litsVersion", "0.6")
   .addPlugin("lits")
   .build();
 
