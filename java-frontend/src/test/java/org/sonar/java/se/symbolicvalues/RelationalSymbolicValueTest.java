@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -109,5 +110,22 @@ public class RelationalSymbolicValueTest {
     ab = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, b));
     ba = create(Tree.Kind.LESS_THAN, ImmutableList.of(b, a));
     assertThat(ab).isNotEqualTo(ba);
+  }
+
+  @Test
+  public void test_constraint_copy() throws Exception {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue a = new SymbolicValue();
+    SymbolicValue b = new SymbolicValue();
+    List<ProgramState> newProgramStates = a.setConstraint(ps, DivisionByZeroCheck.ZeroConstraint.ZERO);
+    ps = Iterables.getOnlyElement(newProgramStates);
+    // 0 >= b
+    SymbolicValue aGEb = create(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, ImmutableList.of(b, a));
+    newProgramStates = aGEb.setConstraint(ps, BooleanConstraint.TRUE);
+    ps = Iterables.getOnlyElement(newProgramStates);
+
+    // Zero constraint should stay when Zero is >= to SV without any constraint
+    assertThat(ps.getConstraint(a, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(DivisionByZeroCheck.ZeroConstraint.ZERO);
+    assertThat(ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
   }
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -54,7 +55,8 @@ public class DivisionByZeroCheck extends SECheck {
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method %s().");
 
-  private enum ZeroConstraint implements Constraint {
+  @VisibleForTesting
+  public enum ZeroConstraint implements Constraint {
     ZERO,
     NON_ZERO;
 
