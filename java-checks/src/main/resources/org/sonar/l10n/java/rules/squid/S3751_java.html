@@ -1,0 +1,16 @@
+<p>A <code>@Controller</code> method with a <code>@RequestMapping</code> annotation will be called to handle matching web requests. That will happen
+even if the method is <code>private</code>, because Spring invokes such methods via reflection, without checking visibility. </p>
+<p>So marking a sensitive method <code>private</code> may seem like a good way to control how such code is called. Unfortunately, not all Spring
+frameworks ignore visibility in this way. For instance, if you've tried to control web access to your sensitive, <code>private</code>,
+<code>@RequestMapping</code> method by marking it <code>@Secured</code> ... it will still be called, whether or not the user is authorized to access
+it. That's because AOP proxies are not applied to non-public methods. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@RequestMapping("/greet", method = GET)
+private String greet(String greetee) {  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@RequestMapping("/greet", method = GET)
+public String greet(String greetee) {
+</pre>

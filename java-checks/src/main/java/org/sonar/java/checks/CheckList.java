@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -47,6 +48,7 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
@@ -84,8 +86,6 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
-
-import java.util.List;
 
 public final class CheckList {
 
@@ -471,6 +471,7 @@ public final class CheckList {
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
+      .add(RequestMappingMethodPublicCheck.class)
       .build();
   }
 
