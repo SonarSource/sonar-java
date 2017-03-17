@@ -41,9 +41,11 @@ public interface Constraint {
   }
 
   /**
-   * Returning null means that constraint can't be transferred over relation
-   * @param kind
-   * @return
+   * Return constraint which should be applied to the rhs of the relation,
+   * if this constraint is set on the lhs of the relation.
+   *
+   * @param kind kind of relation over which constraint is copied
+   * @return constraint to be set on rhs, null if no constraint should be set
    */
   @Nullable
   default Constraint copyOver(RelationalSymbolicValue.Kind kind) {

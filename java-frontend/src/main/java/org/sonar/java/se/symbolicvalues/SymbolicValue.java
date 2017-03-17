@@ -161,12 +161,6 @@ public class SymbolicValue {
   public abstract static class UnarySymbolicValue extends SymbolicValue {
     protected SymbolicValue operand;
 
-    public UnarySymbolicValue() {
-    }
-
-    public UnarySymbolicValue(SymbolicValue operand) {
-      this.operand = operand;
-    }
 
     @Override
     public boolean references(SymbolicValue other) {
@@ -207,26 +201,10 @@ public class SymbolicValue {
 
   public static class NotSymbolicValue extends UnarySymbolicValue {
 
+
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       return operand.setConstraint(programState, booleanConstraint.inverse());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      NotSymbolicValue other = (NotSymbolicValue) o;
-      return operand.equals(other.operand);
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 * operand.hashCode();
     }
 
     @Override
@@ -347,5 +325,4 @@ public class SymbolicValue {
   public BinaryRelation binaryRelation() {
     return null;
   }
-
 }

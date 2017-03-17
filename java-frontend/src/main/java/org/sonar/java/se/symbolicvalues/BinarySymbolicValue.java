@@ -29,13 +29,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   SymbolicValue leftOp;
   SymbolicValue rightOp;
 
-  public BinarySymbolicValue() {
-  }
-
-  protected BinarySymbolicValue(SymbolicValue leftOp, SymbolicValue rightOp) {
-    this.leftOp = leftOp;
-    this.rightOp = rightOp;
-  }
 
   @Override
   public boolean references(SymbolicValue other) {
