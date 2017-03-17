@@ -9,8 +9,9 @@ class A {
   abstract int foo();
 
   int foo(int u) {
-    int x = 0;// Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=11;ec=14]]
-    x = 3;
+    int x = 0;// Compliant - default value
+    x = 3; // Noncompliant
+    x = 4;
     int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}} [[sc=11;ec=18]]
     x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=7;ec=10]]
     x = 3;
@@ -36,7 +37,7 @@ class A {
   }
 
   Object anonymous_class() {
-    int a,b = 0; // Noncompliant
+    int a,b = 7; // Noncompliant
     a = 42;
     if(a == 42) {
       b = 12; // Noncompliant
@@ -235,7 +236,7 @@ class A {
 
 class Stuff {
   void foo(boolean b1, boolean b2) {
-    boolean x = false;  // Noncompliant
+    boolean x = false;  // Compliant
     x = b1 && b2;       // Noncompliant
     ((x)) = b1 && b2;   // Noncompliant
   }
@@ -245,4 +246,72 @@ class Stuff {
     assert y;
   }
 
+}
+
+class NoIssueOnInitializers {
+
+  // no issue if variable initializer is 'true' or 'false'
+  boolean testBoolean(boolean arg0) {
+    boolean b1 = true; // Compliant
+    b1 = false;        // Noncompliant
+    b1 = arg0;
+
+    boolean b2 = false; // Compliant
+    b2 = true;          // Noncompliant
+    b2 = arg0;
+
+    boolean b3 = arg0;  // Noncompliant
+    b3 = arg0;
+
+    return b1 && b2 && b3;
+  }
+
+  // no issue if initializer is 'null'
+  Object testNull(boolean b, Object o) {
+    Object o1 = null;  // Compliant
+    o1 = new Object(); // Noncompliant
+    o1 = null;         // Noncompliant
+    o1 = o;
+
+    Object o2 = o; // Noncompliant
+    o2 = null;
+
+    return b ? o1 : o2;
+  }
+
+  //no issue if initializer is the empty String
+  String testNull(String s) {
+    String s1 = ""; // Compliant
+    s1 = "yolo";    // Noncompliant
+    s1 = "hello";
+
+    String s2 = "world"; // Noncompliant
+    s2 = "moto";
+
+    return s1 + s2;
+  }
+
+  // no issue if variable initializer is '-1', '0', or '1'
+  int testIntLiterals() {
+
+    int a = +42;  // Noncompliant
+
+    int b = (0);  // Compliant
+    b = -1;       // Noncompliant - Only taken into consideration when used in initializer
+    b = 0;        // Noncompliant
+    b = 1;        // Noncompliant
+    int c = +1;   // Compliant
+    int d = -(1); // Compliant
+    int e = -1;   // Compliant
+
+    // Only int literals are excluded
+    long myLong = -1L;       // Noncompliant
+    double myDouble = -1.0d; // Noncompliant
+    float myFloat = -1.0f;   // Noncompliant
+
+    short myShort = -1; // Compliant
+    byte myByte = 1; //Compliant
+
+    return 0;
+  }
 }

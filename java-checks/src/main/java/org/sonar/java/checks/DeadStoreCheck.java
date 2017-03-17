@@ -27,6 +27,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -176,10 +178,34 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private void handleVariable(Set<Symbol> out, VariableTree localVar) {
     Symbol symbol = localVar.symbol();
-    if (localVar.initializer() != null && !out.contains(symbol)) {
-      createIssue(((VariableTreeImpl) localVar).equalToken(), localVar.initializer(), symbol);
+    ExpressionTree initializer = localVar.initializer();
+    if (initializer != null && !isUsualDefaultValue(initializer) && !out.contains(symbol)) {
+      createIssue(((VariableTreeImpl) localVar).equalToken(), initializer, symbol);
     }
     out.remove(symbol);
+  }
+
+  private static boolean isUsualDefaultValue(ExpressionTree tree) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(tree);
+    switch (expr.kind()) {
+      case BOOLEAN_LITERAL:
+      case NULL_LITERAL:
+        return true;
+      case STRING_LITERAL:
+        return isEmptyString((LiteralTree) expr);
+      case INT_LITERAL:
+        String value = ((LiteralTree) expr).value();
+        return "0".equals(value) || "1".equals(value);
+      case UNARY_MINUS:
+      case UNARY_PLUS:
+        return isUsualDefaultValue(((UnaryExpressionTree) tree).expression());
+      default:
+        return false;
+    }
+  }
+
+  private static boolean isEmptyString(LiteralTree expr) {
+    return LiteralUtils.trimQuotes(expr.value()).isEmpty();
   }
 
   private static void handleNewClass(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, NewClassTree element) {
