@@ -28,6 +28,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
+import org.sonar.java.JavaConstants;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
@@ -54,6 +55,7 @@ public class JavaPlugin implements Plugin {
       Java.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
         .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
+        .category(JavaConstants.JAVA_CATEGORY)
         .name("File suffixes")
         .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
         .subCategory("General")
