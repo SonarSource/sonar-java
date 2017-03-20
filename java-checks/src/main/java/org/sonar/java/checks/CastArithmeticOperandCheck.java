@@ -59,30 +59,41 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     if (hasSemantic()) {
       Type varType;
       ExpressionTree expr;
-      if (tree.is(Tree.Kind.ASSIGNMENT)) {
-        AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-        varType = aet.symbolType();
-        expr = aet.expression();
-        checkExpression(varType, expr);
-      } else if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
-        varType = variableTree.type().symbolType();
-        expr = variableTree.initializer();
-        checkExpression(varType, expr);
-      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkMethodInvocationArgument((MethodInvocationTree) tree);
-      } else if (tree.is(Tree.Kind.METHOD)) {
-        MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-        Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
-        if (returnType != null && isVarTypeErrorProne(returnType)) {
-          methodTree.accept(new ReturnStatementVisitor(returnType));
-        }
-      } else if (tree.is(Tree.Kind.DIVIDE)) {
-        BinaryExpressionTree binaryExpr = (BinaryExpressionTree) tree;
-        if (isIntOrLong(binaryExpr.symbolType())) {
-          checkIntegerDivisionInsideFloatingPointExpression(binaryExpr);
-        }
+      switch (tree.kind()) {
+        case ASSIGNMENT:
+          AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
+          varType = aet.symbolType();
+          expr = aet.expression();
+          checkExpression(varType, expr);
+          break;
+        case VARIABLE:
+          VariableTree variableTree = (VariableTree) tree;
+          varType = variableTree.type().symbolType();
+          expr = variableTree.initializer();
+          checkExpression(varType, expr);
+          break;
+        case METHOD_INVOCATION:
+          checkMethodInvocationArgument((MethodInvocationTree) tree);
+          break;
+        case METHOD:
+          checkMethodTree((MethodTreeImpl) tree);
+          break;
+        case DIVIDE:
+          BinaryExpressionTree binaryExpr = (BinaryExpressionTree) tree;
+          if (isIntOrLong(binaryExpr.symbolType())) {
+            checkIntegerDivisionInsideFloatingPointExpression(binaryExpr);
+          }
+          break;
+        default:
+          throw new IllegalArgumentException("Tree " + tree.kind() + " not handled.");
       }
+    }
+  }
+
+  private void checkMethodTree(MethodTreeImpl methodTree) {
+    Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
+    if (returnType != null && isVarTypeErrorProne(returnType)) {
+      methodTree.accept(new ReturnStatementVisitor(returnType));
     }
   }
 
