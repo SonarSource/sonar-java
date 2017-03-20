@@ -84,7 +84,7 @@ public class PomElementOrderCheck implements PomCheck {
       LocatedTree expected = expectedOrder.get(index);
       int indexObserved = observedOrder.indexOf(expected);
       if (!issues.isEmpty() || index != indexObserved) {
-        issues.add(new Location("Expected position: " + (index + 1), expected));
+        issues.add(new Location("Expected position: " + (index + 1), expected.startLocation().line()));
       }
     }
 
