@@ -5,6 +5,11 @@
 3427,
 3429,
 ],
+'jdk6:java/awt/image/Raster.java':[
+566,
+570,
+574,
+],
 'jdk6:java/awt/image/SinglePixelPackedSampleModel.java':[
 180,
 ],

@@ -50,4 +50,10 @@ class A {
       return 1 + 2; // Noncompliant {{Cast one of the operands of this addition operation to a "float".}}
     }
   }
+
+  void test_int_division() {
+    double a = 1 / 2 * 5.0; // Noncompliant [[sc=16;ec=21]] {{Cast one of the operands of this integer division to a "double".}}
+    double b = (1+3) / 5.0; // Compliant
+    double c = ((1 + 0) / 2 + 0) / 5.0; // Noncompliant [[sc=17;ec=28]] {{Cast one of the operands of this integer division to a "double".}}
+  }
 }

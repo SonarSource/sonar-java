@@ -51,7 +51,7 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD, Tree.Kind.DIVIDE);
   }
 
   @Override
@@ -76,6 +76,11 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
         Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
         if (returnType != null && isVarTypeErrorProne(returnType)) {
           methodTree.accept(new ReturnStatementVisitor(returnType));
+        }
+      } else if (tree.is(Tree.Kind.DIVIDE)) {
+        BinaryExpressionTree binaryExpr = (BinaryExpressionTree) tree;
+        if (isIntOrLong(binaryExpr.symbolType())) {
+          checkIntegerDivisionInsideFloatingPointExpression(binaryExpr);
         }
       }
     }
@@ -132,5 +137,21 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     public void visitReturnStatement(ReturnStatementTree tree) {
       checkExpression(returnType, tree.expression());
     }
+  }
+
+  private void checkIntegerDivisionInsideFloatingPointExpression(BinaryExpressionTree integerDivision) {
+    Tree parent = integerDivision.parent();
+    while (parent != null && parent instanceof ExpressionTree) {
+      ExpressionTree expressionTree = (ExpressionTree) parent;
+      if (isFloatingPoint(expressionTree.symbolType())) {
+        reportIssue(integerDivision, "Cast one of the operands of this integer division to a \"double\".");
+        break;
+      }
+      parent = expressionTree.parent();
+    }
+  }
+
+  private static boolean isFloatingPoint(Type exprType) {
+    return exprType.isPrimitive(Type.Primitives.DOUBLE) || exprType.isPrimitive(Type.Primitives.FLOAT);
   }
 }
