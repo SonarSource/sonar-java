@@ -24,15 +24,19 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+
 @Rule(key = "S1698")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private JavaFileScannerContext context;
 
   @Override
@@ -60,8 +64,8 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       Type leftOpType = tree.leftOperand().symbolType();
       Type rightOpType = tree.rightOperand().symbolType();
-      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
-        context.reportIssue(this, tree.operatorToken(), "Change this comparison to use the equals method.");
+      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType) && bothImplementsEqualsMethod(leftOpType, rightOpType)) {
+        context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
       }
     }
   }
@@ -71,7 +75,14 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean isExcluded(Type leftOpType, Type rightOpType) {
-    return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
+    return isNullComparison(leftOpType, rightOpType)
+      || isNumericalComparison(leftOpType, rightOpType)
+      || isJavaLangClassComparison(leftOpType, rightOpType)
+      || isObjectType(leftOpType, rightOpType);
+  }
+
+  private static boolean isObjectType(Type leftOpType, Type rightOpType) {
+    return leftOpType.is(JAVA_LANG_OBJECT) || rightOpType.is(JAVA_LANG_OBJECT);
   }
 
   private static boolean isObject(Type operandType) {
@@ -92,6 +103,38 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private static boolean isBot(Type type) {
     return ((JavaType) type).isTagged(JavaType.BOT);
+  }
 
+  private static boolean bothImplementsEqualsMethod(Type leftOpType, Type rightOpType) {
+    return implementsEqualsMethod(leftOpType) && implementsEqualsMethod(rightOpType);
+  }
+
+  private static boolean implementsEqualsMethod(Type type) {
+    Symbol.TypeSymbol symbol = type.symbol();
+    return hasEqualsMethod(symbol) || parentClassImplementsEquals(symbol);
+  }
+
+  private static boolean parentClassImplementsEquals(Symbol.TypeSymbol symbol) {
+    Type superClass = symbol.superClass();
+    while (superClass != null && superClass.symbol().isTypeSymbol()) {
+      Symbol.TypeSymbol superClassSymbol = superClass.symbol();
+      if (!superClass.is(JAVA_LANG_OBJECT) && hasEqualsMethod(superClassSymbol)) {
+        return true;
+      }
+      superClass = superClassSymbol.superClass();
+    }
+    return false;
+  }
+
+  private static boolean hasEqualsMethod(Symbol.TypeSymbol symbol) {
+    return symbol.lookupSymbols("equals").stream().anyMatch(CompareObjectWithEqualsCheck::isEqualsMethod);
+  }
+
+  private static boolean isEqualsMethod(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      List<Type> parameterTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
+      return parameterTypes.size() == 1 && parameterTypes.get(0).is(JAVA_LANG_OBJECT);
+    }
+    return false;
   }
 }

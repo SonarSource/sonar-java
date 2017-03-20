@@ -1,17 +1,7 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanPropertyValueEqualsPredicate.java':[
-249,
-],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/WeakFastHashMap.java':[
 675,
 682,
 695,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/AbstractArrayConverter.java':[
-78,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/BooleanConverter.java':[
-83,
-140,
 ],
 }
