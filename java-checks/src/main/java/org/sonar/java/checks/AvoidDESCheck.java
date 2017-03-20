@@ -47,7 +47,7 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     if (defaultPropertyValue == null) {
       defaultPropertyValue = firstArg;
     }
-    if (defaultPropertyValue != null && defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
+    if (defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
       checkIssue(firstArg, (LiteralTree) defaultPropertyValue);
     }
   }
