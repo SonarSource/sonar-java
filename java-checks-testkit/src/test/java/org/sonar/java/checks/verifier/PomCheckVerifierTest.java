@@ -20,6 +20,7 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.collect.Lists;
+
 import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.check.Rule;
@@ -75,6 +76,20 @@ public class PomCheckVerifierTest {
           dependency.startLocation().line(),
           "Message1",
           Lists.newArrayList(new PomCheckContext.Location("", dependency.getVersion())));
+      }
+    });
+  }
+
+  @Test
+  public void should_detect_issues_using_secondaries_on_specific_line() {
+    PomCheckVerifier.verify(POM_WITH_ISSUES_AND_SECONDARIES, new TestPomCheck() {
+      @Override
+      public void scanFile(PomCheckContext context) {
+        Dependency dependency = context.getMavenProject().getDependencies().getDependencies().get(0);
+        context.reportIssue(this,
+          dependency.startLocation().line(),
+          "Message1",
+          Lists.newArrayList(new PomCheckContext.Location("", dependency.getVersion().startLocation().line())));
       }
     });
   }

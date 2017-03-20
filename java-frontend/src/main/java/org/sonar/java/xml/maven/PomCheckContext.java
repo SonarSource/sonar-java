@@ -20,9 +20,12 @@
 package org.sonar.java.xml.maven;
 
 import com.google.common.annotations.Beta;
+
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.maven2.MavenProject;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -37,12 +40,31 @@ public interface PomCheckContext extends XmlCheckContext {
 
   class Location {
     public final String msg;
+    @Nullable
     public final LocatedTree tree;
+    @Nullable
+    public final Integer line;
 
     public Location(String msg, LocatedTree tree) {
       this.msg = msg;
       this.tree = tree;
+      this.line = null;
     }
+
+    public Location(String msg, int line) {
+      this.msg = msg;
+      this.tree = null;
+      this.line = line;
+    }
+
+    public boolean onLine() {
+      return tree == null;
+    }
+
+    public int startLine() {
+      return onLine() ? line : tree.startLocation().line();
+    }
+
   }
 
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.annotations.Beta;
+
 import org.assertj.core.api.Fail;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.checks.verifier.XmlCheckVerifier.FakeXmlCheckContext;
@@ -104,7 +105,7 @@ public class PomCheckVerifier extends CheckVerifier {
     public void reportIssue(PomCheck check, int line, String message, List<Location> secondary) {
       AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, getFile(), line, message, 0);
       for (Location location : secondary) {
-        AnalyzerMessage secondaryLocation = new AnalyzerMessage(check, getFile(), location.tree.startLocation().line(), location.msg, 0);
+        AnalyzerMessage secondaryLocation = new AnalyzerMessage(check, getFile(), location.startLine(), location.msg, 0);
         analyzerMessage.flows.add(Collections.singletonList(secondaryLocation));
       }
       getMessages().add(analyzerMessage);

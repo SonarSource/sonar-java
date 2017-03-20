@@ -20,6 +20,7 @@
 package org.sonar.java.xml.maven;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
@@ -67,13 +68,26 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
   }
 
   @VisibleForTesting
-  static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, Location location) {
-    XmlLocation startLocation = location.tree.startLocation();
-    XmlLocation endLocation = location.tree.endLocation();
-    TextSpan ts = new TextSpan(
-      startLocation.line(), offsetFromColumn(startLocation.column()),
-      endLocation.line(), offsetFromColumn(endLocation.column()));
+  AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, Location location) {
+    TextSpan ts;
+    if (location.onLine()) {
+      ts = textSpanForLine(file, location.line);
+    } else {
+      XmlLocation startLocation = location.tree.startLocation();
+      XmlLocation endLocation = location.tree.endLocation();
+      ts = new TextSpan(
+        startLocation.line(), offsetFromColumn(startLocation.column()),
+        endLocation.line(), offsetFromColumn(endLocation.column()));
+      if (ts.isEmpty()) {
+        ts = textSpanForLine(file, startLocation.line());
+      }
+    }
     return new AnalyzerMessage(check, file, ts, location.msg, 0);
+  }
+
+  private TextSpan textSpanForLine(File file, int line) {
+    String lineAsText = getSonarComponents().fileLines(file).get(line - 1);
+    return new TextSpan(line, 0, line, lineAsText.length());
   }
 
   private static int offsetFromColumn(int column) {

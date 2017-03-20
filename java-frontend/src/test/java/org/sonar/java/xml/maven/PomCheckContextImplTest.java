@@ -21,6 +21,7 @@ package org.sonar.java.xml.maven;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.java.AnalyzerMessage;
@@ -38,6 +39,7 @@ import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,32 +99,41 @@ public class PomCheckContextImplTest {
 
   @Test
   public void should_report_issue_on_lines_of_all_locations() {
-    ArrayList<Location> secondaries = new ArrayList<Location>();
+    ArrayList<Location> secondaries = new ArrayList<>();
 
     // secondary on located tree
-    int secondary1Line = 42;
+    int secondary1Line = 1;
     int secondary1Column = 3;
     int secondary1Size = 5;
     String msg1 = "msg1";
     secondaries.add(new Location(msg1, fakeLocatedTree(secondary1Line, secondary1Column, secondary1Size)));
 
-    // secondary on located tree with unknown column
-    int secondary2Line = 43;
+    // secondary on located tree with unknown column - will use the complete line
+    int secondary2Line = 2;
     String msg2 = "msg2";
     secondaries.add(new Location(msg2, fakeLocatedTreeWithUnknownColumn(secondary2Line)));
+
+    // secondary on a given line with unknown column
+    int secondary3Line = 3;
+    String msg3 = "msg3";
+    secondaries.add(new Location(msg3, secondary3Line));
 
     String msg = "message";
     context.reportIssue(CHECK, LINE, msg, secondaries);
 
     String expected = "analyzerMessage:" + msg;
     expected += ";" + msg1 + "[" + secondary1Line + ";" + (secondary1Column - 1) + "/" + secondary1Line + ";" + (secondary1Column + secondary1Size - 1) + "]";
-    expected += ";" + msg2 + "[" + secondary2Line + ";0/" + secondary2Line + ";0]";
+    expected += ";" + msg2 + "[" + secondary2Line + ";0/" + secondary2Line + ";6]";
+    expected += ";" + msg3 + "[" + secondary3Line + ";0/" + secondary3Line + ";16]";
 
     assertThat(reportedMessage).isEqualTo(expected);
   }
 
   private static SonarComponents createSonarComponentsMock() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
+
+    Mockito.when(sonarComponents.fileLines(any(File.class))).thenReturn(Arrays.asList("line 1", "line 2", "line 3 is longer"));
+
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
