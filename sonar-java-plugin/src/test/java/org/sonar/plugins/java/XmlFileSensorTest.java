@@ -20,6 +20,8 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,7 +37,11 @@ import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,7 +79,7 @@ public class XmlFileSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
     fs.add(new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, file);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 
     sensor.execute(context);
@@ -93,11 +99,18 @@ public class XmlFileSensorTest {
     verify(sonarComponents, Mockito.never()).reportIssue(any());
   }
 
-  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
+  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) throws IOException {
+    return createSonarComponentsMock(fs, null);
+  }
+
+  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs, @Nullable File file) throws IOException {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[] {new PomElementOrderCheck()});
 
     when(sonarComponents.getFileSystem()).thenReturn(fs);
+    if (file != null) {
+      when(sonarComponents.fileLines(any(File.class))).thenReturn(Files.readLines(file, StandardCharsets.UTF_8));
+    }
 
     Checks<JavaCheck> checks = mock(Checks.class);
     when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(PomElementOrderCheck.class)));
