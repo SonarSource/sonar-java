@@ -60,7 +60,9 @@ public class AvoidDESCheck extends AbstractMethodDetection {
   }
 
   private static boolean isExcludedAlgorithm(String algorithm) {
-    return "DES".equals(algorithm) || "DESede".equals(algorithm);
+    return "DES".equals(algorithm)
+      || "DESede".equals(algorithm)
+      || "RC2".equals(algorithm);
   }
 
 }
