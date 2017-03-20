@@ -239,7 +239,9 @@ public abstract class CheckVerifier {
       }
     } catch (IOException | JsonParseException e) {
       // Failed to open json file, as this is not part of API yet, we should not fail because of this
-      LOG.warn("Exception parsing JSON for rule " + ruleKey, e);
+      LOG.warn("JSON metadata for rule " + ruleKey + " couldn't be loaded. Constant remediation function will be assumed."
+        + " Provide rule JSON file if you want to customize metadata for tests.");
+      LOG.debug(e.getMessage());
       return null;
     }
   }
