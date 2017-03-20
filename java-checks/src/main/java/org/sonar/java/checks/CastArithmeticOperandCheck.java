@@ -44,7 +44,7 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
     .put(Tree.Kind.PLUS, "addition")
-    .put(Tree.Kind.MINUS, "substraction")
+    .put(Tree.Kind.MINUS, "subtraction")
     .put(Tree.Kind.MULTIPLY, "multiplication")
     .put(Tree.Kind.DIVIDE, "division")
     .build();
