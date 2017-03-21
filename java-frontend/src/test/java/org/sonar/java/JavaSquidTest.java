@@ -69,7 +69,7 @@ public class JavaSquidTest {
     SensorContextTester context = SensorContextTester.create(temp.getRoot());
 
     // set up a file to analyze
-    File file = temp.newFile();
+    File file = temp.newFile().getCanonicalFile();
     Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n}", file, StandardCharsets.UTF_8);
     DefaultInputFile defaultFile = new TestInputFileBuilder("myProjectKey", file.getName())
       .setLanguage("java")

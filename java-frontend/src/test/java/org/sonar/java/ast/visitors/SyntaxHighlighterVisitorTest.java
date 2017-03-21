@@ -78,7 +78,7 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void parse_error() throws Exception {
     SensorContextTester spy = spy(context);
-    File file = temp.newFile();
+    File file = temp.newFile().getCanonicalFile();
     Files.write("ParseError", file, StandardCharsets.UTF_8);
     fs.add(new TestInputFileBuilder("", file.getName()).build());
     scan(file);
@@ -115,7 +115,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private File generateTestFile() throws IOException {
-    File file = temp.newFile();
+    File file = temp.newFile().getCanonicalFile();
     Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(eol).join(lines);
