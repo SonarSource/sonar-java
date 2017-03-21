@@ -3,10 +3,23 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 class A {
+
+  public static @interface MyAnnotation {
+    String stuff() default "none";
+    String path() default "/";
+  }
+
   String fileName = "//my-network-drive/folder/file.txt"; // Noncompliant
   String[] stuffs = new String[1];
 
-  void foo(String s) throws URISyntaxException {
+  @MyAnnotation(stuff = "yolo", path = "/{var}/bulu/stuff") // Compliant - annotations are ignored
+  void bar(String var) { }
+
+  @MyAnnotation(stuff = "/{var}/bulu/stuff") // Compliant - not a path assignmnet
+  void qix(String var) { }
+
+  @MyAnnotation(path = "/{var}/bulu/stuff") // Compliant - annotations are ignored
+  void foo(String s, String var) throws URISyntaxException {
     new Object();
 
     new URI(s); // Compliant
@@ -32,7 +45,7 @@ class A {
     fileNAME = s + "\\\\" + s; // Noncompliant {{Remove this hard-coded path-delimiter.}}t
     fileNAME = s + "hello" + s; // Compliant
     fileNAME = "c:\\blah\\blah\\blah.txt"; // Noncompliant
-    
+
     int fIleNaMe = 14 - 2;
 
     String v1 = s + "//" + s; // Compliant - not a file name

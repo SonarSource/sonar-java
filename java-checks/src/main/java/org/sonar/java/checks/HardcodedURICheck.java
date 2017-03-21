@@ -96,9 +96,20 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkAssignment(AssignmentExpressionTree tree) {
-    if (isFileNameVariable(getVariableIdentifier(tree))) {
+    if (isFileNameVariable(getVariableIdentifier(tree)) && !isPartOfAnnotation(tree)) {
       checkExpression(tree.expression());
     }
+  }
+
+  private static boolean isPartOfAnnotation(AssignmentExpressionTree tree) {
+    Tree parent = tree.parent();
+    while (parent != null) {
+      if (parent.is(Tree.Kind.ANNOTATION)) {
+        return true;
+      }
+      parent = parent.parent();
+    }
+    return false;
   }
 
   private static boolean isFileNameVariable(@Nullable IdentifierTree variable) {
