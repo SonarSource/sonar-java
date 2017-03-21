@@ -8,9 +8,14 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 class A {
   void myMethod(String algorithm, Provider provider, Properties props) {
     MessageDigest md = null;
+    md = MessageDigest.getInstance("MD2"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD2.}}
     md = MessageDigest.getInstance("MD5"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD5.}}
     md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    md = MessageDigest.getInstance("MD4"); // Noncompliant {{Use a stronger hashing algorithm than MD4.}}
+    md = MessageDigest.getInstance("MD6"); // Noncompliant {{Use a stronger hashing algorithm than MD6.}}
+    md = MessageDigest.getInstance("RIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD160.}}
     md = MessageDigest.getInstance("SHA-256");
+    md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD2"); // Noncompliant
     md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD5"); // Noncompliant
     md = DigestUtils.getDigest("SHA-1"); // Noncompliant
     md = DigestUtils.getDigest("SHA-256");
@@ -18,6 +23,8 @@ class A {
     md = DigestUtils.getShaDigest(); // Noncompliant
     md = DigestUtils.getSha1Digest(); // Noncompliant
     md = DigestUtils.getSha256Digest();
+    DigestUtils.md2(""); // Noncompliant
+    DigestUtils.md2Hex(""); // Noncompliant
     DigestUtils.md5(""); // Noncompliant
     DigestUtils.md5Hex(""); // Noncompliant
     DigestUtils.sha1(""); // Noncompliant
@@ -54,5 +61,41 @@ class B extends java.io.File {
   void myMethod() {
     MessageDigest md = null;
     md = MessageDigest.getInstance(separator);
+  }
+}
+
+class CryptoAPIs {
+
+  void mac() {
+    javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacMD5"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    mac = javax.crypto.Mac.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    mac = javax.crypto.Mac.getInstance("HmacSHA256");
+  }
+
+  void signature() {
+    java.security.Signature signature = java.security.Signature.getInstance("SHA1withDSA"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    signature = java.security.Signature.getInstance("SHA1withRSA"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    signature = java.security.Signature.getInstance("MD2withRSA"); // Noncompliant {{Use a stronger hashing algorithm than MD2.}}
+    signature = java.security.Signature.getInstance("MD5withRSA"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    signature = java.security.Signature.getInstance("SHA256withRSA"); // Compliant
+  }
+
+  void keys() {
+    javax.crypto.KeyGenerator keyGenerator = javax.crypto.KeyGenerator.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    keyGenerator = javax.crypto.KeyGenerator.getInstance("HmacSHA256");
+    keyGenerator = javax.crypto.KeyGenerator.getInstance("AES");
+
+    javax.crypto.KeyPairGenerator keyPair = java.security.KeyPairGenerator.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+  }
+
+  void dsa() {
+    java.security.AlgorithmParameters.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
+    java.security.AlgorithmParameters.getInstance("DiffieHellman");
+    java.security.AlgorithmParameterGenerator.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
+    java.security.AlgorithmParameterGenerator.getInstance("DiffieHellman");
+    java.security.KeyPairGenerator.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
+    java.security.KeyPairGenerator.getInstance("DiffieHellman");
+    java.security.KeyFactory.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
+    java.security.KeyFactory.getInstance("DiffieHellman");
   }
 }
