@@ -35,12 +35,11 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD2;
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD5;
@@ -68,15 +67,15 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     };
 
     boolean match(String algorithm) {
-      String normalizedName = algorithm.replaceAll("-", "").toLowerCase(Locale.ROOT);
-      return normalizedName.contains(name().toLowerCase(Locale.ROOT));
+      String normalizedName = algorithm.replaceAll("-", "").toLowerCase(Locale.ENGLISH);
+      return normalizedName.contains(name().toLowerCase(Locale.ENGLISH));
     }
   }
 
   /**
    * These APIs have static getInstance method to get an implementation of some crypto algorithm.
    * javax.crypto.Cipher is missing from this list, because it is covered by rule S2278 {@link AvoidDESCheck}
-   * Details can be found here <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
+   * Details can be found here <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
    */
   private static final List<String> CRYPTO_APIS = Arrays.asList(
     "java.security.AlgorithmParameters",
@@ -143,15 +142,14 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     String methodName = MethodsHelper.methodName(mit).name();
     InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {
-      algorithm = algorithm(mit.arguments().get(0));
+      algorithm = algorithm(mit.arguments().get(0)).orElse(null);
     }
     if (algorithm != null) {
       reportIssue(MethodsHelper.methodName(mit), "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
     }
   }
 
-  @CheckForNull
-  private static InsecureAlgorithm algorithm(ExpressionTree invocationArgument) {
+  private static Optional<InsecureAlgorithm> algorithm(ExpressionTree invocationArgument) {
     ExpressionTree expectedAlgorithm = invocationArgument;
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(invocationArgument);
     if (defaultPropertyValue != null) {
@@ -161,9 +159,9 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
       String algorithmName = LiteralUtils.trimQuotes(((LiteralTree) expectedAlgorithm).value());
       return Arrays.stream(InsecureAlgorithm.values())
         .filter(alg -> alg.match(algorithmName))
-        .findFirst().orElse(null);
+        .findFirst();
     }
-    return null;
+    return Optional.empty();
   }
 
 }
