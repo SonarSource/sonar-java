@@ -23,13 +23,19 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -37,7 +43,7 @@ import java.util.LinkedList;
 @Rule(key = "S1143")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Deque<Boolean> isInFinally = new LinkedList<>();
+  private final Deque<Tree.Kind> isInFinally = new LinkedList<>();
   private JavaFileScannerContext context;
 
   @Override
@@ -52,53 +58,131 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     scan(tree.resources());
     scan(tree.block());
     scan(tree.catches());
-    if (tree.finallyBlock() != null) {
-      isInFinally.push(true);
-      scan(tree.finallyBlock());
+    BlockTree finallyBlock = tree.finallyBlock();
+    if (finallyBlock != null) {
+      isInFinally.push(finallyBlock.kind());
+      scan(finallyBlock);
       isInFinally.pop();
     }
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    isInFinally.push(false);
+    isInFinally.push(tree.kind());
     super.visitMethod(tree);
     isInFinally.pop();
   }
 
   @Override
+  public void visitForStatement(ForStatementTree tree) {
+    isInFinally.push(tree.kind());
+    super.visitForStatement(tree);
+    isInFinally.pop();
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    isInFinally.push(tree.kind());
+    super.visitForEachStatement(tree);
+    isInFinally.pop();
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    isInFinally.push(tree.kind());
+    super.visitWhileStatement(tree);
+    isInFinally.pop();
+  }
+
+  @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    isInFinally.push(tree.kind());
+    super.visitDoWhileStatement(tree);
+    isInFinally.pop();
+  }
+
+  @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    isInFinally.push(tree.kind());
+    super.visitSwitchStatement(tree);
+    isInFinally.pop();
+  }
+
+  @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    reportIssue(tree.returnKeyword(), "return");
+    reportIssue(tree.returnKeyword(), tree.kind());
     super.visitReturnStatement(tree);
   }
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    reportIssue(tree.throwKeyword(), "throw");
+    reportIssue(tree.throwKeyword(), tree.kind());
     super.visitThrowStatement(tree);
   }
 
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
-    reportIssue(tree.continueKeyword(), "continue");
+    reportIssue(tree.continueKeyword(), tree.kind());
     super.visitContinueStatement(tree);
   }
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
-    reportIssue(tree.breakKeyword(), "break");
+    reportIssue(tree.breakKeyword(), tree.kind());
     super.visitBreakStatement(tree);
   }
 
-  private void reportIssue(Tree tree, String statement) {
-    if (isInFinally()) {
-      context.reportIssue(this, tree, "Remove this "+statement+" statement from this finally block.");
+  private void reportIssue(Tree tree, Tree.Kind jumpKind) {
+    if (isAbruptFinallyBlock(jumpKind)) {
+      context.reportIssue(this, tree, "Remove this " + statement(jumpKind) + " statement from this finally block.");
     }
   }
 
-  private boolean isInFinally() {
-    return !isInFinally.isEmpty() && isInFinally.peek();
+  private static String statement(Tree.Kind kind) {
+    switch (kind) {
+      case BREAK_STATEMENT:
+        return "break";
+      case CONTINUE_STATEMENT:
+        return "continue";
+      case RETURN_STATEMENT:
+        return "return";
+      case THROW_STATEMENT:
+        return "throw";
+      default:
+        throw new IllegalArgumentException("Unsupported jump statement!");
+    }
   }
 
+  private boolean isAbruptFinallyBlock(Tree.Kind jumpKind) {
+    if (isInFinally.isEmpty()) {
+      return false;
+    }
+    Tree.Kind blockKind = isInFinally.peek();
+    switch (blockKind) {
+      case BLOCK:
+        return true;
+      case FOR_STATEMENT:
+      case FOR_EACH_STATEMENT:
+      case WHILE_STATEMENT:
+      case DO_STATEMENT:
+      case SWITCH_STATEMENT:
+        return handleControlFlowInFinally(jumpKind);
+      case METHOD:
+      default:
+        return false;
+    }
+  }
+
+  private boolean handleControlFlowInFinally(Tree.Kind jumpKind) {
+    if (jumpKind == Tree.Kind.BREAK_STATEMENT || jumpKind == Tree.Kind.CONTINUE_STATEMENT) {
+      return false;
+    } else {
+      Tree.Kind parentOfControlFlowStatement = isInFinally.stream()
+        .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD)
+        .findFirst()
+        .orElse(Tree.Kind.METHOD);
+      return parentOfControlFlowStatement == Tree.Kind.BLOCK;
+    }
+  }
 
 }
