@@ -52,6 +52,7 @@ public class PomParser {
     try (FileInputStream is = new FileInputStream(file)) {
       JAXBContext context = JAXBContext.newInstance(org.sonar.maven.model.maven2.ObjectFactory.class);
       XMLInputFactory factory = XMLInputFactory.newInstance();
+      enableLocationPropertyForIBM(factory);
       XMLStreamReader reader = factory.createXMLStreamReader(is);
       StreamListener streamListener = new StreamListener(reader);
       Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -66,6 +67,20 @@ public class PomParser {
       LOG.error("Unable to parse pom file " + file.getPath(), e);
     }
     return null;
+  }
+
+  /**
+   * By default, the location of XML element is enabled, except on IBM JVM where it is disabled and has to be manually enabled.
+   * The property is a IBM-specific property, not recognized by non-IBM JVMs.
+   *
+   * See {@link https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zos.80.doc/user/xml/xlxpj_reference.html}.
+   *
+   * @param factory
+   */
+  private static void enableLocationPropertyForIBM(XMLInputFactory factory) {
+    if (factory.isPropertySupported("javax.xml.stream.isSupportingLocationCoordinates")) {
+      factory.setProperty("javax.xml.stream.isSupportingLocationCoordinates", true);
+    }
   }
 
   private static class StreamListener extends Listener {
