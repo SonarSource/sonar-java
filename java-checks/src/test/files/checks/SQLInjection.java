@@ -7,6 +7,12 @@ import org.hibernate.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import javax.jdo.PersistenceManager;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+
 class A {
   private static final String CONSTANT = "SELECT * FROM TABLE";
   public void method(String param, String param2, EntityManager entityManager) {
@@ -14,7 +20,7 @@ class A {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
-      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=17;ec=29]] {{"param" is provided externally to the method and not sanitized before use.}}
+      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Use a variable binding mechanism to construct this query instead of concatenation.}}
       String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
       rs = stmt.executeQuery(query); // Noncompliant
 
@@ -38,7 +44,7 @@ class A {
       //Callable Statement
       CallableStatement cs = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = 2001");
       cs.executeQuery(query); // Noncompliant
-      cs  = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = "+param2); // Noncompliant {{"param2" is provided externally to the method and not sanitized before use.}}
+      cs  = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = "+param2); // Noncompliant
       cs = conn.prepareCall(query); // Noncompliant
       cs = conn.prepareCall(query2);
       cs = conn.prepareCall(CONSTANT);
@@ -66,13 +72,13 @@ class A {
 
       Session session;
       session.createQuery("From Customer where id > ?");
-      session.createQuery("From Customer where id > "+param); // Noncompliant {{Use Hibernate's parameter binding instead of concatenation.}}
-      session.createQuery(query); // Noncompliant {{Use Hibernate's parameter binding instead of concatenation.}}
+      session.createQuery("From Customer where id > "+param); // Noncompliant
+      session.createQuery(query); // Noncompliant
       conn.prepareStatement(param);
       conn.prepareStatement(sqlQuery + "plop");
 
       String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
-      entityManager.createNativeQuery(sql); // Noncompliant {{"param" is provided externally to the method and not sanitized before use.}}
+      entityManager.createNativeQuery(sql); // Noncompliant
     } catch (Exception e) {
     }
   }
@@ -102,5 +108,29 @@ class A {
     } catch (Exception e) {
       System.out.println("makeQuery");
     }
+  }
+
+  PersistenceManager pm;
+
+  void jdo(int id, String name) {
+    javax.jdo.Query q = pm.newQuery(Person.class, id + " > query_id "); // Noncompliant
+    q.setFilter("name == " + name); // Noncompliant
+  }
+}
+
+
+class Spring {
+
+  private JdbcTemplate jdbcTemplate;
+  private JdbcOperations jdbcOperations;
+  private PreparedStatementCreatorFactory preparedStatementCreatorFactory;
+
+  void test(String parameter) {
+    java.lang.String sqlInjection = "select count(*) from t_actor where column =  " + parameter;
+    jdbcTemplate.queryForObject(sqlInjection, Integer.class); // Noncompliant
+    jdbcOperations.queryForObject(sqlInjection, Integer.class);  // Noncompliant
+
+    new PreparedStatementCreatorFactory(sqlInjection);  // Noncompliant
+    preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new int[] {});  // Noncompliant
   }
 }
