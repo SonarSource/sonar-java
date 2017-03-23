@@ -106,7 +106,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
   }
 
   private static boolean anyMatch(Tree tree) {
-    if (!arguments(tree).findAny().isPresent()) {
+    if (!hasArguments(tree)) {
       return false;
     }
     if (tree.is(Tree.Kind.NEW_CLASS)) {
@@ -116,5 +116,9 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
       return SQL_INJECTION_SUSPECTS.anyMatch((MethodInvocationTree) tree);
     }
     return false;
+  }
+
+  private static boolean hasArguments(Tree tree) {
+    return arguments(tree).findAny().isPresent();
   }
 }

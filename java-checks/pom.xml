@@ -130,6 +130,11 @@
                   <version>4.3.7.RELEASE</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-jdbc</artifactId>
+                  <version>4.3.7.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.projectlombok</groupId>
                   <artifactId>lombok</artifactId>
                   <version>1.16.4</version>
@@ -234,11 +239,6 @@
                   <groupId>org.junit.jupiter</groupId>
                   <artifactId>junit-jupiter-api</artifactId>
                   <version>5.0.0-M3</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.springframework</groupId>
-                  <artifactId>spring-jdbc</artifactId>
-                  <version>4.3.7.RELEASE</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax.jdo</groupId>
