@@ -219,8 +219,8 @@ public class BinaryRelationTest {
     return relationalSymbolicValue;
   }
 
-  private List<BinaryRelation> given(SymbolicValue... sv) {
-    return Arrays.stream(sv).map(SymbolicValue::binaryRelation).collect(Collectors.toList());
+  private List<BinaryRelation> given(RelationalSymbolicValue... sv) {
+    return Arrays.stream(sv).map(RelationalSymbolicValue::binaryRelation).collect(Collectors.toList());
   }
 
   private String relationToString(RelationalSymbolicValue rsv) {

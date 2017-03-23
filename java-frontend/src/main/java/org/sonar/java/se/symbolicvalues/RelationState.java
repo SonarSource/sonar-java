@@ -25,7 +25,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
  * This enum values are the possible returns of the method implies(SymbolicValueRelation) of class SymbolicValueRelation.
  * @see BinaryRelation#implies
  */
-public enum RelationState {
+enum RelationState {
   /**
    * This value means that the checked relation is fulfilled by the set of known relations
    */

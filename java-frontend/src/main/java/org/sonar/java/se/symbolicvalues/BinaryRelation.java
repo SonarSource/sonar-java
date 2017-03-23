@@ -42,7 +42,7 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METH
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS;
 
-public class BinaryRelation {
+class BinaryRelation {
 
   private static final int MAX_ITERATIONS = 10_000;
   private static final int MAX_DEDUCED_RELATIONS = 1000;
@@ -89,11 +89,7 @@ public class BinaryRelation {
     }
   }
 
-  public static class TransitiveRelationExceededException extends RuntimeException {
-    public TransitiveRelationExceededException(String msg) {
-      super("Number of transitive relations exceeded!" + msg);
-    }
-  }
+
 
   @Override
   public int hashCode() {
@@ -143,7 +139,7 @@ public class BinaryRelation {
       if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
         // should not happen under normal conditions
-        throw new TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
       }
       iterations++;
       BinaryRelation relation = workList.pop();

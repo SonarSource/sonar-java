@@ -218,21 +218,26 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
-    RelationState relationState = binaryRelation().resolveState(programState.getKnownRelations());
+    List<BinaryRelation> knownRelations = knownRelations(programState)
+      .map(RelationalSymbolicValue::binaryRelation)
+      .collect(Collectors.toList());
+
+    RelationState relationState = binaryRelation().resolveState(knownRelations);
     return !relationState.rejects(booleanConstraint);
   }
 
   private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
     return knownRelations(programState)
-      .map(sv -> deduceTransitiveOrSimplified((RelationalSymbolicValue) sv))
+      .map(this::deduceTransitiveOrSimplified)
       .filter(Objects::nonNull)
       .collect(Collectors.toList());
   }
 
-  private Stream<SymbolicValue> knownRelations(ProgramState programState) {
+  private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
     return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
       .stream()
-      .filter(sv -> sv instanceof RelationalSymbolicValue);
+      .filter(sv -> sv instanceof RelationalSymbolicValue)
+      .map(sv -> (RelationalSymbolicValue) sv);
   }
 
   @VisibleForTesting
@@ -355,8 +360,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return other.hasOperand(leftOp) ? rightOp : leftOp;
   }
 
-  @Override
-  public BinaryRelation binaryRelation() {
+  BinaryRelation binaryRelation() {
     if (binaryRelation == null) {
       binaryRelation = BinaryRelation.binaryRelation(kind, leftOp, rightOp);
     }
@@ -394,5 +398,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   @Override
   public String toString() {
     return leftOp.toString() + kind.operand + rightOp.toString();
+  }
+
+  public static class TransitiveRelationExceededException extends RuntimeException {
+    public TransitiveRelationExceededException(String msg) {
+      super("Number of transitive relations exceeded!" + msg);
+    }
   }
 }
