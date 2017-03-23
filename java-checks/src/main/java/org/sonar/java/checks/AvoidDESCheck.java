@@ -47,7 +47,7 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     if (defaultPropertyValue == null) {
       defaultPropertyValue = firstArg;
     }
-    if (defaultPropertyValue != null && defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
+    if (defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
       checkIssue(firstArg, (LiteralTree) defaultPropertyValue);
     }
   }
@@ -60,7 +60,9 @@ public class AvoidDESCheck extends AbstractMethodDetection {
   }
 
   private static boolean isExcludedAlgorithm(String algorithm) {
-    return "DES".equals(algorithm) || "DESede".equals(algorithm);
+    return "DES".equals(algorithm)
+      || "DESede".equals(algorithm)
+      || "RC2".equals(algorithm);
   }
 
 }
