@@ -54,10 +54,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   public enum Kind {
     EQUAL("=="),
     NOT_EQUAL("!="),
-    GREATER_THAN(">"),
     GREATER_THAN_OR_EQUAL(">="),
     LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL("<="),
     METHOD_EQUALS(".EQ."),
     NOT_METHOD_EQUALS(".NE.");
 
@@ -67,20 +65,16 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       this.operand = operand;
     }
 
-    public Kind inverse() {
+    Kind inverse() {
       switch (this) {
         case EQUAL:
           return NOT_EQUAL;
         case NOT_EQUAL:
           return EQUAL;
-        case GREATER_THAN:
-          return LESS_THAN_OR_EQUAL;
         case GREATER_THAN_OR_EQUAL:
           return LESS_THAN;
         case LESS_THAN:
           return GREATER_THAN_OR_EQUAL;
-        case LESS_THAN_OR_EQUAL:
-          return GREATER_THAN;
         case METHOD_EQUALS:
           return NOT_METHOD_EQUALS;
         case NOT_METHOD_EQUALS:
@@ -90,30 +84,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       }
     }
 
-    public Kind symmetric() {
-      Kind sym;
-      switch (this) {
-        case GREATER_THAN:
-          sym = LESS_THAN;
-          break;
-        case GREATER_THAN_OR_EQUAL:
-          sym = LESS_THAN_OR_EQUAL;
-          break;
-        case LESS_THAN:
-          sym = GREATER_THAN;
-          break;
-        case LESS_THAN_OR_EQUAL:
-          sym = GREATER_THAN_OR_EQUAL;
-          break;
-        default:
-          sym = this;
-      }
-      return sym;
-    }
   }
 
   final Kind kind;
-  private BinaryRelation binaryRelation;
 
   public RelationalSymbolicValue(Kind kind) {
     this.kind = kind;
@@ -421,13 +394,6 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   SymbolicValue differentOperand(RelationalSymbolicValue other) {
     Preconditions.checkState(potentiallyTransitiveWith(other), "%s is not in transitive relationship with %s", this, other);
     return other.hasOperand(leftOp) ? rightOp : leftOp;
-  }
-
-  BinaryRelation binaryRelation() {
-    if (binaryRelation == null) {
-      binaryRelation = BinaryRelation.binaryRelation(kind, leftOp, rightOp);
-    }
-    return binaryRelation;
   }
 
   @Override

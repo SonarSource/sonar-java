@@ -82,7 +82,6 @@ public class DivisionByZeroCheck extends SECheck {
         case METHOD_EQUALS:
           return this;
         case LESS_THAN:
-        case GREATER_THAN:
         case NOT_EQUAL:
         case NOT_METHOD_EQUALS:
           return inverse();
