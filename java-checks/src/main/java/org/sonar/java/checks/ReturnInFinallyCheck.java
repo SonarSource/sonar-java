@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -43,13 +44,13 @@ import java.util.LinkedList;
 @Rule(key = "S1143")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Deque<Tree.Kind> isInFinally = new LinkedList<>();
+  private final Deque<Tree.Kind> treeKindStack = new LinkedList<>();
   private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    isInFinally.clear();
+    treeKindStack.clear();
     scan(context.getTree());
   }
 
@@ -60,52 +61,52 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     scan(tree.catches());
     BlockTree finallyBlock = tree.finallyBlock();
     if (finallyBlock != null) {
-      isInFinally.push(finallyBlock.kind());
+      treeKindStack.push(finallyBlock.kind());
       scan(finallyBlock);
-      isInFinally.pop();
+      treeKindStack.pop();
     }
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitMethod(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitForStatement(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitForEachStatement(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitWhileStatement(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitDoWhileStatement(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    isInFinally.push(tree.kind());
+    treeKindStack.push(tree.kind());
     super.visitSwitchStatement(tree);
-    isInFinally.pop();
+    treeKindStack.pop();
   }
 
   @Override
@@ -132,32 +133,17 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     super.visitBreakStatement(tree);
   }
 
-  private void reportIssue(Tree tree, Tree.Kind jumpKind) {
+  private void reportIssue(SyntaxToken syntaxToken, Tree.Kind jumpKind) {
     if (isAbruptFinallyBlock(jumpKind)) {
-      context.reportIssue(this, tree, "Remove this " + statement(jumpKind) + " statement from this finally block.");
-    }
-  }
-
-  private static String statement(Tree.Kind kind) {
-    switch (kind) {
-      case BREAK_STATEMENT:
-        return "break";
-      case CONTINUE_STATEMENT:
-        return "continue";
-      case RETURN_STATEMENT:
-        return "return";
-      case THROW_STATEMENT:
-        return "throw";
-      default:
-        throw new IllegalArgumentException("Unsupported jump statement!");
+      context.reportIssue(this, syntaxToken, "Remove this " + syntaxToken.text() + " statement from this finally block.");
     }
   }
 
   private boolean isAbruptFinallyBlock(Tree.Kind jumpKind) {
-    if (isInFinally.isEmpty()) {
+    if (treeKindStack.isEmpty()) {
       return false;
     }
-    Tree.Kind blockKind = isInFinally.peek();
+    Tree.Kind blockKind = treeKindStack.peek();
     switch (blockKind) {
       case BLOCK:
         return true;
@@ -177,7 +163,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     if (jumpKind == Tree.Kind.BREAK_STATEMENT || jumpKind == Tree.Kind.CONTINUE_STATEMENT) {
       return false;
     } else {
-      Tree.Kind parentOfControlFlowStatement = isInFinally.stream()
+      Tree.Kind parentOfControlFlowStatement = treeKindStack.stream()
         .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD)
         .findFirst()
         .orElse(Tree.Kind.METHOD);
