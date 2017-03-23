@@ -70,7 +70,7 @@ public class SonarSymbolTableVisitorTest {
 
   @Test
   public void sonar_symbol_table() throws Exception {
-    File file = temp.newFile();
+    File file = temp.newFile().getCanonicalFile();
     Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(EOL).join(lines);
