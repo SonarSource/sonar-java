@@ -60,7 +60,7 @@ public class XmlParser {
       }
       Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      disableXmlValidation(factory);
       factory.newSAXParser().parse(file, new LocationHandler(document));
       return document;
     } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -70,6 +70,15 @@ public class XmlParser {
       }
     }
     return null;
+  }
+
+  private static void disableXmlValidation(SAXParserFactory factory) throws ParserConfigurationException, SAXException {
+    factory.setValidating(false);
+    factory.setFeature("http://xml.org/sax/features/validation", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
   }
 
   private static class LocationHandler extends DefaultHandler {

@@ -49,6 +49,13 @@ public class XmlParserTest {
   }
 
   @Test
+  public void do_not_perform_any_xml_validation() {
+    assertThat(XmlParser.parseXML(new File("src/test/files/xml/noValidation.xml"))).isNotNull();
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+  }
+
+  @Test
   public void empty_xml_file_should_produce_a_nice_warning_log() throws Exception {
     XmlParser.parseXML(new File("src/test/files/xml/empty.xml"));
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
@@ -63,6 +70,15 @@ public class XmlParserTest {
     String filename = FilenameUtils.separatorsToSystem("src/test/files/xml/parsing-issue.xml");
     assertThat(logTester.logs(LoggerLevel.ERROR)).contains("Unable to parse xml file: " + filename);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).hasSize(1).allSatisfy(s -> s.startsWith("XML file parsing failed because of : org.xml.sax.SAXParseException; systemId: file: "));
+  }
+
+  @Test
+  public void should_not_log_debug_info_if_debug_is_disabled() {
+    logTester.setLevel(LoggerLevel.INFO);
+    assertThat(XmlParser.parseXML(new File("src/test/files/xml/parsing-issue.xml"))).isNull();
+    String filename = FilenameUtils.separatorsToSystem("src/test/files/xml/parsing-issue.xml");
+    assertThat(logTester.logs(LoggerLevel.ERROR)).contains("Unable to parse xml file: " + filename);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
   }
 
   @Test

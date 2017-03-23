@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+   <!ENTITY rfc2119  PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
+]>
+<?xml-stylesheet type='text/xsl' href='http://www.wearegreat.con/stylus.xslt' ?>
+<rfc category="info" ipr="full" docName="stuff.txt">
+  <back>
+    <references title="References">&rfc2119;</references>
+  </back>
+</rfc>
