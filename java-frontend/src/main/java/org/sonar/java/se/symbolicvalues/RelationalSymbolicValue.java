@@ -31,9 +31,13 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 
 import javax.annotation.CheckForNull;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +47,9 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
+
+  private static final int MAX_ITERATIONS = 10_000;
+  private static final int MAX_DEDUCED_RELATIONS = 1000;
 
   public enum Kind {
     EQUAL("=="),
@@ -218,12 +225,68 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
-    List<BinaryRelation> knownRelations = knownRelations(programState)
-      .map(RelationalSymbolicValue::binaryRelation)
-      .collect(Collectors.toList());
-
-    RelationState relationState = binaryRelation().resolveState(knownRelations);
+    RelationState relationState = resolveState(programState);
     return !relationState.rejects(booleanConstraint);
+  }
+
+  RelationState resolveState(ProgramState programState) {
+    if (hasSameOperand()) {
+      return relationStateForSameOperand();
+    }
+
+    Set<RelationalSymbolicValue> allRelations = knownRelations(programState).collect(Collectors.toCollection(HashSet::new));
+    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>(allRelations);
+    int iterations = 0;
+    while (!workList.isEmpty()) {
+      if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        // should not happen under normal conditions
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
+      }
+      iterations++;
+      RelationalSymbolicValue relation = workList.pop();
+      RelationState result = relation.implies(this);
+      if (result.isDetermined()) {
+        return result;
+      }
+      List<RelationalSymbolicValue> newRelations = allRelations.stream()
+        .map(relation::deduceTransitiveOrSimplified)
+        .filter(Objects::nonNull)
+        .filter(r -> !allRelations.contains(r))
+        .collect(Collectors.toList());
+
+      allRelations.addAll(newRelations);
+      workList.addAll(newRelations);
+    }
+    return RelationState.UNDETERMINED;
+  }
+
+  private RelationState relationStateForSameOperand() {
+    switch (kind) {
+      case EQUAL:
+      case GREATER_THAN_OR_EQUAL:
+      case METHOD_EQUALS:
+        return RelationState.FULFILLED;
+      case NOT_EQUAL:
+      case LESS_THAN:
+      case NOT_METHOD_EQUALS:
+        return RelationState.UNFULFILLED;
+      default:
+        throw new IllegalStateException("Unknown resolution for same operand " + this);
+    }
+  }
+
+  private RelationState implies(RelationalSymbolicValue relation) {
+    if (this.equals(relation)) {
+      return RelationState.FULFILLED;
+    }
+    if (inverse().equals(relation)) {
+      return RelationState.UNFULFILLED;
+    }
+    if (hasSameOperandsAs(relation)) {
+      return RelationStateTable.solveRelation(kind, relation.kind);
+    }
+    return RelationState.UNDETERMINED;
   }
 
   private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
@@ -382,7 +445,19 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (leftOp.equals(that.leftOp) && rightOp.equals(that.rightOp)) {
       return true;
     }
-    return isEquality() && leftOp.equals(that.rightOp) && rightOp.equals(that.leftOp);
+    return isCommutative() && leftOp.equals(that.rightOp) && rightOp.equals(that.leftOp);
+  }
+
+  private boolean isCommutative() {
+    switch (kind) {
+      case EQUAL:
+      case NOT_EQUAL:
+      case METHOD_EQUALS:
+      case NOT_METHOD_EQUALS:
+        return true;
+      default:
+        return false;
+    }
   }
 
   private boolean isEquality() {

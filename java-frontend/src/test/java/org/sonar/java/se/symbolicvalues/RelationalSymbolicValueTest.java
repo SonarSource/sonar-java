@@ -39,10 +39,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.sonar.java.se.symbolicvalues.RelationState.FULFILLED;
+import static org.sonar.java.se.symbolicvalues.RelationState.UNFULFILLED;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
 
 public class RelationalSymbolicValueTest {
 
@@ -72,33 +78,149 @@ public class RelationalSymbolicValueTest {
     Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO);
 
   @Test
-  public void test_create() throws Exception {
-    assertThat(create(Tree.Kind.EQUAL_TO, b, a)).hasToString("SV_1==SV_2");
-    assertThat(create(Tree.Kind.NOT_EQUAL_TO, b, a)).hasToString("SV_1!=SV_2");
-    assertThat(create(Tree.Kind.GREATER_THAN, b, a)).hasToString("SV_2<SV_1");
-    assertThat(create(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a)).hasToString("SV_1>=SV_2");
-    assertThat(create(Tree.Kind.LESS_THAN, b, a)).hasToString("SV_1<SV_2");
-    assertThat(create(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a)).hasToString("SV_2>=SV_1");
+  public void test_normalization() throws Exception {
+    assertThat(relationalSV(Tree.Kind.EQUAL_TO, b, a)).hasToString("SV_1==SV_2");
+    assertThat(relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a)).hasToString("SV_1!=SV_2");
+    assertThat(relationalSV(Tree.Kind.GREATER_THAN, b, a)).hasToString("SV_2<SV_1");
+    assertThat(relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a)).hasToString("SV_1>=SV_2");
+    assertThat(relationalSV(Tree.Kind.LESS_THAN, b, a)).hasToString("SV_1<SV_2");
+    assertThat(relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a)).hasToString("SV_2>=SV_1");
   }
 
-  private RelationalSymbolicValue create(Tree.Kind kind, SymbolicValue... computedFrom) {
+  private RelationalSymbolicValue relationalSV(Tree.Kind kind, SymbolicValue... computedFrom) {
     return (RelationalSymbolicValue) constraintManager
       .createBinarySymbolicValue(new BinaryExpressionTreeImpl(kind, mock(ExpressionTree.class), mock(InternalSyntaxToken.class), mock(ExpressionTree.class)),
         Arrays.asList(computedFrom));
   }
 
+  @Test
+  public void test_same_operand() {
+    assertThat(sameOperandResolution(Tree.Kind.EQUAL_TO)).isEqualTo(FULFILLED);
+    RelationalSymbolicValue eq = new RelationalSymbolicValue(METHOD_EQUALS, a, a);
+    assertThat(eq.resolveState(ProgramState.EMPTY_STATE)).isEqualTo(FULFILLED);
+    assertThat(sameOperandResolution(Tree.Kind.LESS_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
+    assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
+
+    assertThat(sameOperandResolution(Tree.Kind.NOT_EQUAL_TO)).isEqualTo(UNFULFILLED);
+    assertThat(eq.inverse().resolveState(ProgramState.EMPTY_STATE)).isEqualTo(UNFULFILLED);
+    assertThat(sameOperandResolution(Tree.Kind.LESS_THAN)).isEqualTo(UNFULFILLED);
+    assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN)).isEqualTo(UNFULFILLED);
+  }
+
+  private RelationState sameOperandResolution(Tree.Kind kind) {
+    return relationalSV(kind, a, a).resolveState(ProgramState.EMPTY_STATE);
+  }
+
+  @Test
+  public void test_different_operand() throws Exception {
+    RelationalSymbolicValue ab = new RelationalSymbolicValue(EQUAL, a, b);
+    RelationalSymbolicValue bc = new RelationalSymbolicValue(EQUAL, b, c);
+    assertThat(ab.differentOperand(bc)).isEqualTo(a);
+    assertThat(bc.differentOperand(ab)).isEqualTo(c);
+  }
+
+  @Test
+  public void test_direct_deduction() throws Exception {
+    List<String> actual = new ArrayList<>();
+    for (Tree.Kind operator : operators) {
+      actual.addAll(resolveRelationStateForAllKinds(relationalSV(operator, b, a), () -> relationToString(operator, a, b)));
+      actual.addAll(resolveRelationStateForAllKinds(relationalSV(operator, a, b), () -> relationToString(operator, b, a)));
+    }
+    RelationalSymbolicValue eqAB = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
+    RelationalSymbolicValue eqBA = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, b, a);
+    Stream.of(eqAB, eqBA, eqAB.inverse(), eqBA.inverse()).forEach(rel -> actual.addAll(resolveRelationStateForAllKinds(rel, rel::toString)));
+    List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/direct.txt"));
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  private List<String> resolveRelationStateForAllKinds(RelationalSymbolicValue known, Supplier<String> knownAsString) {
+    List<String> actual = new ArrayList<>();
+    for (Tree.Kind operator : operators) {
+      RelationalSymbolicValue test = relationalSV(operator, b, a);
+      RelationState relationState = test.resolveState(stateWithRelations(known));
+      actual.add(String.format("given %s when %s -> %s", knownAsString.get(), relationToString(operator, a, b), relationState));
+    }
+    RelationalSymbolicValue eq = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
+    Stream.of(eq, eq.inverse()).forEach(rel -> {
+        RelationState relationState = rel.resolveState(stateWithRelations(known));
+        actual.add(String.format("given %s when %s -> %s", knownAsString.get(), rel, relationState));
+      }
+    );
+    return actual;
+  }
+
+  private ProgramState stateWithRelations(RelationalSymbolicValue... known) {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    for (RelationalSymbolicValue rel : known) {
+      ps = Iterables.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
+    }
+    return ps;
+  }
+
+  @Test
+  public void test_conjuction_equal() throws Exception {
+    RelationalSymbolicValue aLEb = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, a, b);
+    RelationalSymbolicValue bLEa = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a);
+    RelationalSymbolicValue aEb = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    RelationState state = aEb.resolveState(stateWithRelations(aLEb, bLEa));
+    assertThat(state).isEqualTo(FULFILLED);
+  }
+
+  @Test
+  public void test_transitive_GE() throws Exception {
+    RelationalSymbolicValue ab = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, a, b);
+    RelationalSymbolicValue bc = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, c);
+    RelationalSymbolicValue deduced = ab.deduceTransitiveOrSimplified(bc);
+    assertThat(deduced).isEqualTo(relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, a, c));
+  }
+
+  @Test
+  public void test_transitive_method_equals() throws Exception {
+    RelationalSymbolicValue equalAB = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    RelationalSymbolicValue methodEqualBC = new RelationalSymbolicValue(METHOD_EQUALS, b, c);
+    RelationalSymbolicValue deduced = equalAB.deduceTransitiveOrSimplified(methodEqualBC);
+    RelationalSymbolicValue expected = new RelationalSymbolicValue(METHOD_EQUALS, a, c);
+    assertThat(deduced).isEqualTo(expected);
+    deduced = methodEqualBC.deduceTransitiveOrSimplified(equalAB);
+    assertThat(deduced).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_chained_transitivity() throws Exception {
+    // create chain of relations in the form sv1 < sv2 < ... < sv45
+    // and test if relation sv1 < sv45 is deduced
+    int chainLength = 45;
+    SymbolicValue[] sv = new SymbolicValue[chainLength];
+    RelationalSymbolicValue[] given = new RelationalSymbolicValue[chainLength - 1];
+    sv[0] = new SymbolicValue();
+    for (int i = 1; i < chainLength; i++) {
+      sv[i] = new SymbolicValue();
+      given[i - 1] = relationalSV(Tree.Kind.LESS_THAN, sv[i - 1], sv[i]);
+    }
+    RelationalSymbolicValue firstLessThanLast = relationalSV(Tree.Kind.LESS_THAN, sv[0], sv[chainLength - 1]);
+    RelationState relationState = firstLessThanLast.resolveState(stateWithRelations(given));
+    assertThat(relationState).isEqualTo(FULFILLED);
+  }
+
+  @Test
+  public void test_not_equals_is_not_transitive() throws Exception {
+    RelationalSymbolicValue aNEb = relationalSV(Tree.Kind.NOT_EQUAL_TO, a, b);
+    RelationalSymbolicValue bNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, c);
+    RelationalSymbolicValue relation = aNEb.deduceTransitiveOrSimplified(bNEc);
+    assertThat(relation).isNull();
+  }
 
   @Test
   public void test_transitive_constraint_copy() throws Exception {
-    SymbolicValue aNEb = create(Tree.Kind.NOT_EQUAL_TO, b, a);
-    SymbolicValue bNEc = create(Tree.Kind.NOT_EQUAL_TO, c, b);
+    SymbolicValue aNEb = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a);
+    SymbolicValue bNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, c, b);
     ProgramState programState = ProgramState.EMPTY_STATE;
     List<ProgramState> programStates = aNEb.setConstraint(programState, BooleanConstraint.TRUE);
     programState = Iterables.getOnlyElement(programStates);
     programStates = bNEc.setConstraint(programState, BooleanConstraint.TRUE);
     programState = Iterables.getOnlyElement(programStates);
 
-    SymbolicValue aNEc = create(Tree.Kind.NOT_EQUAL_TO, c, a);
+    SymbolicValue aNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, c, a);
     programStates = aNEc.setConstraint(programState, BooleanConstraint.FALSE);
     assertThat(programStates).hasSize(1);
     programStates = aNEc.setConstraint(programState, BooleanConstraint.TRUE);
@@ -107,8 +229,8 @@ public class RelationalSymbolicValueTest {
 
   @Test
   public void test_equals_hashCode() throws Exception {
-    SymbolicValue ab = create(Tree.Kind.EQUAL_TO, a, b);
-    SymbolicValue ba = create(Tree.Kind.EQUAL_TO, b, a);
+    SymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    SymbolicValue ba = relationalSV(Tree.Kind.EQUAL_TO, b, a);
     assertThat(ab).isEqualTo(ba);
     assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
 
@@ -117,14 +239,14 @@ public class RelationalSymbolicValueTest {
     assertThat(ab).isEqualTo(ba);
     assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
 
-    ab = create(Tree.Kind.LESS_THAN, a, b);
-    ba = create(Tree.Kind.LESS_THAN, b, a);
+    ab = relationalSV(Tree.Kind.LESS_THAN, a, b);
+    ba = relationalSV(Tree.Kind.LESS_THAN, b, a);
     assertThat(ab).isNotEqualTo(ba);
 
-    SymbolicValue eq = create(Tree.Kind.EQUAL_TO, a, b);
-    SymbolicValue eq1 = create(Tree.Kind.EQUAL_TO, b, b);
-    SymbolicValue eq2 = create(Tree.Kind.EQUAL_TO, a, a);
-    SymbolicValue neq = create(Tree.Kind.NOT_EQUAL_TO, b, a);
+    SymbolicValue eq = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    SymbolicValue eq1 = relationalSV(Tree.Kind.EQUAL_TO, b, b);
+    SymbolicValue eq2 = relationalSV(Tree.Kind.EQUAL_TO, a, a);
+    SymbolicValue neq = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a);
     assertThat(eq).isNotEqualTo(neq);
     assertThat(eq).isEqualTo(eq);
     assertThat(eq).isNotEqualTo(eq1);
@@ -132,11 +254,10 @@ public class RelationalSymbolicValueTest {
     assertThat(eq).isNotEqualTo(null);
     assertThat(eq).isNotEqualTo(new Object());
 
-
-    SymbolicValue ab1 = create(Tree.Kind.LESS_THAN, a, b);
-    SymbolicValue ab2 = create(Tree.Kind.LESS_THAN, a, b);
-    SymbolicValue ab3 = create(Tree.Kind.LESS_THAN, a, new SymbolicValue());
-    SymbolicValue ab4 = create(Tree.Kind.LESS_THAN, new SymbolicValue(), b);
+    SymbolicValue ab1 = relationalSV(Tree.Kind.LESS_THAN, a, b);
+    SymbolicValue ab2 = relationalSV(Tree.Kind.LESS_THAN, a, b);
+    SymbolicValue ab3 = relationalSV(Tree.Kind.LESS_THAN, a, new SymbolicValue());
+    SymbolicValue ab4 = relationalSV(Tree.Kind.LESS_THAN, new SymbolicValue(), b);
     assertThat(ab1).isEqualTo(ab2);
     assertThat(ab1).isNotEqualTo(ab3);
     assertThat(ab1).isNotEqualTo(ab4);
@@ -150,7 +271,7 @@ public class RelationalSymbolicValueTest {
     List<ProgramState> newProgramStates = a.setConstraint(ps, DivisionByZeroCheck.ZeroConstraint.ZERO);
     ps = Iterables.getOnlyElement(newProgramStates);
     // 0 >= b
-    SymbolicValue aGEb = create(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a);
+    SymbolicValue aGEb = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a);
     newProgramStates = aGEb.setConstraint(ps, BooleanConstraint.TRUE);
     ps = Iterables.getOnlyElement(newProgramStates);
 
@@ -173,39 +294,34 @@ public class RelationalSymbolicValueTest {
   @Test
   public void test_transitive_deduction() throws Exception {
     List<String> actual = new ArrayList<>();
-    RelationalSymbolicValue eq = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, b, c);
-    RelationalSymbolicValue neq = eq.inverse();
     for (Tree.Kind r : operators) {
-      RelationalSymbolicValue first = create(r, b, a);
-      for (Tree.Kind t : operators) {
-        RelationalSymbolicValue second = create(t, c, b);
-        RelationalSymbolicValue deduced = first.deduceTransitiveOrSimplified(second);
-        actual.add(String.format("%s && %s => %s", relationToString(r, a, b), relationToString(t, b, c), nullableToCollection(deduced)));
-      }
-      actual.add(String.format("%s && %s.EQ.%s => %s", relationToString(r, a, b), b, c, nullableToCollection(first.deduceTransitiveOrSimplified(eq))));
-      actual.add(String.format("%s && %s.NE.%s => %s", relationToString(r, a, b), b, c, nullableToCollection(first.deduceTransitiveOrSimplified(neq))));
+      RelationalSymbolicValue first = relationalSV(r, b, a);
+      actual.addAll(combineWithAll(first, () -> relationToString(r, a, b)));
     }
     RelationalSymbolicValue eqAB = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
-    actual.addAll(methodEquals(eq, neq, eqAB));
+    actual.addAll(combineWithAll(eqAB, eqAB::toString));
     RelationalSymbolicValue neqAB = eqAB.inverse();
-    actual.addAll(methodEquals(eq, neq, neqAB));
+    actual.addAll(combineWithAll(neqAB, neqAB::toString));
 
     List<String> expected = IOUtils.readLines(getClass().getResourceAsStream("/relations/transitive.txt"));
     assertThat(actual).isEqualTo(expected);
   }
 
-  private List<String> methodEquals(RelationalSymbolicValue eq, RelationalSymbolicValue neq, RelationalSymbolicValue eqAB) {
+  private List<String> combineWithAll(RelationalSymbolicValue relation, Supplier<String> relationAsString) {
     List<String> actual = new ArrayList<>();
     for (Tree.Kind r : operators) {
-      actual.add(String.format("%s && %s => %s", eqAB, relationToString(r, b, c), nullableToCollection(eqAB.deduceTransitiveOrSimplified(create(r, c, b)))));
+      actual.add(
+        String.format("%s && %s => %s", relationAsString.get(), relationToString(r, b, c), nullableToCollection(relation.deduceTransitiveOrSimplified(relationalSV(r, c, b)))));
     }
-    actual.add(String.format("%s && %s.EQ.%s => %s", eqAB, b, c, nullableToCollection(eqAB.deduceTransitiveOrSimplified(eq))));
-    actual.add(String.format("%s && %s.NE.%s => %s", eqAB, b, c, nullableToCollection(eqAB.deduceTransitiveOrSimplified(neq))));
+    RelationalSymbolicValue eq = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, b, c);
+    Stream.of(eq, eq.inverse()).forEach(rel ->
+      actual.add(String.format("%s && %s => %s", relationAsString.get(), rel, nullableToCollection(relation.deduceTransitiveOrSimplified(rel))))
+    );
     return actual;
   }
 
-  private Collection<SymbolicValue> nullableToCollection(@Nullable RelationalSymbolicValue deduced) {
-    return deduced == null ? Collections.emptySet() : Collections.singleton(deduced);
+  private Collection<SymbolicValue> nullableToCollection(@Nullable RelationalSymbolicValue symbolicValue) {
+    return symbolicValue == null ? Collections.emptySet() : Collections.singleton(symbolicValue);
   }
 
   private String relationToString(Tree.Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
