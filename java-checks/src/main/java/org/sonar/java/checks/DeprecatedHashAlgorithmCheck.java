@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
@@ -34,20 +35,66 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD2;
+import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD5;
+import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.SHA1;
 
 @Rule(key = "S2070")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final String MD5 = "MD5";
-  private static final String SHA1 = "SHA1";
 
-  private static final Map<String, String> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, String>builder()
+  enum InsecureAlgorithm {
+    MD2, MD4, MD5, MD6, RIPEMD160,
+    SHA1 {
+      @Override
+      public String toString() {
+        return "SHA-1";
+      }
+    },
+    DSA {
+      @Override
+      boolean match(String algorithm) {
+        // exact match required for DSA, so it doesn't match ECDSA
+        return "DSA".equals(algorithm);
+      }
+    };
+
+    boolean match(String algorithm) {
+      String normalizedName = algorithm.replaceAll("-", "").toLowerCase(Locale.ENGLISH);
+      return normalizedName.contains(name().toLowerCase(Locale.ENGLISH));
+    }
+  }
+
+  /**
+   * These APIs have static getInstance method to get an implementation of some crypto algorithm.
+   * javax.crypto.Cipher is missing from this list, because it is covered by rule S2278 {@link AvoidDESCheck}
+   * Details can be found here <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
+   */
+  private static final List<String> CRYPTO_APIS = Arrays.asList(
+    "java.security.AlgorithmParameters",
+    "java.security.AlgorithmParameterGenerator",
+    "java.security.MessageDigest",
+    "java.security.KeyFactory",
+    "java.security.KeyPairGenerator",
+    "java.security.Signature",
+    "javax.crypto.Mac",
+    "javax.crypto.KeyGenerator"
+  );
+
+  private static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, InsecureAlgorithm>builder()
+    .put("getMd2Digest", MD2)
     .put("getMd5Digest", MD5)
     .put("getShaDigest", SHA1)
     .put("getSha1Digest", SHA1)
+    .put("md2", MD2)
+    .put("md2Hex", MD2)
     .put("md5", MD5)
     .put("md5Hex", MD5)
     .put("sha1", SHA1)
@@ -60,15 +107,6 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     Builder<MethodMatcher> builder = ImmutableList.<MethodMatcher>builder()
       .add(MethodMatcher.create()
-        .typeDefinition("java.security.MessageDigest")
-        .name("getInstance")
-        .addParameter(JAVA_LANG_STRING))
-      .add(MethodMatcher.create()
-        .typeDefinition("java.security.MessageDigest")
-        .name("getInstance")
-        .addParameter(JAVA_LANG_STRING)
-        .addParameter(TypeCriteria.anyType()))
-      .add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name("getDigest")
         .addParameter(JAVA_LANG_STRING));
@@ -77,6 +115,18 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name(methodName)
         .withAnyParameters());
+    }
+    for (String cryptoApi : CRYPTO_APIS) {
+      builder
+        .add(MethodMatcher.create()
+          .typeDefinition(cryptoApi)
+          .name("getInstance")
+          .addParameter(JAVA_LANG_STRING))
+        .add(MethodMatcher.create()
+          .typeDefinition(cryptoApi)
+          .name("getInstance")
+          .addParameter(JAVA_LANG_STRING)
+          .addParameter(TypeCriteria.anyType()));
     }
     for (String methodName : ImmutableList.of("md5", "sha1")) {
       builder.add(MethodMatcher.create()
@@ -90,29 +140,28 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = MethodsHelper.methodName(mit).name();
-    String algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
+    InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {
-      algorithm = algorithm(mit.arguments().get(0));
+      algorithm = algorithm(mit.arguments().get(0)).orElse(null);
     }
-    boolean isMd5 = MD5.equalsIgnoreCase(algorithm);
-    boolean isSha1 = SHA1.equalsIgnoreCase(algorithm);
-    if (isMd5 || isSha1) {
-      String msgAlgo = isSha1 ? "SHA-1" : algorithm;
-      reportIssue(MethodsHelper.methodName(mit), "Use a stronger hashing algorithm than " + msgAlgo + ".");
+    if (algorithm != null) {
+      reportIssue(MethodsHelper.methodName(mit), "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
     }
   }
 
-  private static String algorithm(ExpressionTree invocationArgument) {
+  private static Optional<InsecureAlgorithm> algorithm(ExpressionTree invocationArgument) {
     ExpressionTree expectedAlgorithm = invocationArgument;
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(invocationArgument);
     if (defaultPropertyValue != null) {
       expectedAlgorithm = defaultPropertyValue;
     }
     if (expectedAlgorithm.is(Tree.Kind.STRING_LITERAL)) {
-      String algo = LiteralUtils.trimQuotes(((LiteralTree) expectedAlgorithm).value());
-      return algo.replaceAll("-", "");
+      String algorithmName = LiteralUtils.trimQuotes(((LiteralTree) expectedAlgorithm).value());
+      return Arrays.stream(InsecureAlgorithm.values())
+        .filter(alg -> alg.match(algorithmName))
+        .findFirst();
     }
-    return null;
+    return Optional.empty();
   }
 
 }
