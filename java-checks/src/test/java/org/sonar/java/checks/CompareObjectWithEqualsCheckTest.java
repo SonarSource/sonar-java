@@ -29,4 +29,9 @@ public class CompareObjectWithEqualsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/CompareObjectWithEqualsCheck.java", new CompareObjectWithEqualsCheck());
   }
 
+  @Test
+  public void no_issue_without_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CompareObjectWithEqualsCheck.java", new CompareObjectWithEqualsCheck());
+  }
+
 }

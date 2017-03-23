@@ -1,52 +1,25 @@
-<p>Using the equality (<code>==</code>) and inequality (<code>!=</code>) operators to compare two objects does not check to see if they have the same
-values. Rather it checks to see if both object references point to exactly the same object in memory. The vast majority of the time, this is not what
-you want to do. Use the <code>.equals()</code> method to compare the values of two objects or to compare a string object to a string literal.</p>
+<p>It is equivalent to use the equality <code>==</code> operator and the <code>equals</code> method to compare two objects if the <code>equals</code>
+method inherited <code>Object</code> has not been overridden. In this case both checks compare the object references.</p>
+<p>But as soon as <code>equals</code> is overridden, two objects not having the same reference but having the same value can be equal. This rule spots
+suspicious uses of <code>==</code> and <code>!=</code> operators on objects whose <code>equals</code> methods are overridden.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-String str1 = "blue";
-String str2 = "blue";
-String str3 = str1;
+String firstName = getFirstName();   //String is a good example of a class overriding the equals method
+String lastName = getLastName();
 
-if (str1 == str2)
-{
-  System.out.println("they're both 'blue'"); // this doesn't print because the objects are different
-}
-
-if (str1 == "blue")
-{
-  System.out.println("they're both 'blue'"); // this doesn't print because the objects are different
-}
-
-if (str1 == str3)
-{
-  System.out.println("they're the same object"); // this prints
-}
+if (firstName == lastName) { ... };   // Non-compliant, the two literals can have the same value and yet the condition is false
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-String str1 = "blue";
-String str2 = "blue";
-String str3 = str1;
+String firstName = getFirstName();
+String lastName = getLastName();
 
-if (str1.equals(str2))
-{
-  System.out.println("they're both 'blue'"); // this prints
-}
-
-if (str1.equals("blue"))
-{
-  System.out.println("they're both 'blue'"); // this prints
-}
-
-if (str1 == str3)
-{
-  System.out.println("they're the same object"); // this still prints, but it's probably not what you meant to do
-}
+if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
 </pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/595.html">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/597">MITRE, CWE-597</a> - Use of Wrong Operator in String Comparison </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/597.html">MITRE, CWE-597</a> - Use of Wrong Operator in String Comparison </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/wwD1AQ">CERT, EXP03-J.</a> - Do not use the equality operators when comparing values of
   boxed primitives </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/8AEqAQ">CERT, EXP50-J.</a> - Do not confuse abstract object equality with reference
