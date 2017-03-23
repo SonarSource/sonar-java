@@ -65,3 +65,68 @@ enum A {
   }
 
 }
+
+class FPs {
+
+  int i;
+
+  void f() {
+    try {
+
+    } finally {
+      switch (i) {
+        case 1:
+          break; // Compliant
+        case 2:
+          return; // Noncompliant
+        case 3:
+          throw new RuntimeException(); // Noncompliant
+        default:
+          break; // Compliant
+      }
+      for (;;) {
+        if (i > 0) continue; // Compliant
+        break; // Compliant
+        return; // Noncompliant
+        throw new RuntimeException(); // Noncompliant
+      }
+      while (true) {
+        if (i > 0) continue; // Compliant
+        break; // Compliant
+        return; // Noncompliant
+        throw new RuntimeException(); // Noncompliant
+      }
+      do {
+        if (i > 0) continue; // Compliant
+        break; // Compliant
+        return; // Noncompliant
+        throw new RuntimeException(); // Noncompliant
+      } while (true);
+    }
+  }
+
+  void g() {
+    for (;;) {
+      try {
+        throw new IllegalStateException();
+      } finally {
+        continue; // Noncompliant
+        break; // Noncompliant
+      }
+    }
+  }
+
+  void fp() {
+    outer:
+    for (;;) {
+      try {
+        throw new IllegalStateException();
+      } finally {
+        while (true) {
+          continue outer; // FN - requires CFG to detect this, but let's not overcomplicate this rule
+          break; // Compliant
+        }
+      }
+    }
+  }
+}
