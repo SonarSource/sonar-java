@@ -19,13 +19,40 @@
  */
 package org.sonar.java.checks;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 public class CastArithmeticOperandCheckTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/CastArithmeticOperandCheck.java", new CastArithmeticOperandCheck());
+  }
+
+  @Test
+  public void test_no_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CastArithmeticOperandCheck.java", new CastArithmeticOperandCheck());
+  }
+
+  @Test
+  public void test_unhandled_tree_kind() throws Exception {
+    CastArithmeticOperandCheck check = new CastArithmeticOperandCheck() {
+      @Override
+      public boolean hasSemantic() {
+        return true;
+      }
+    };
+    Assertions.assertThatThrownBy(() -> check.visitNode(new ClassTreeImpl(Tree.Kind.CLASS, mock(SyntaxToken.class), Collections.emptyList(), mock(SyntaxToken.class))))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Tree CLASS not handled.");
   }
 }

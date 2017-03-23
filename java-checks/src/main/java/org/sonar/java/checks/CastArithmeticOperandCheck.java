@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
@@ -44,14 +45,14 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
     .put(Tree.Kind.PLUS, "addition")
-    .put(Tree.Kind.MINUS, "substraction")
+    .put(Tree.Kind.MINUS, "subtraction")
     .put(Tree.Kind.MULTIPLY, "multiplication")
     .put(Tree.Kind.DIVIDE, "division")
     .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD, Tree.Kind.DIVIDE);
   }
 
   @Override
@@ -59,25 +60,42 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     if (hasSemantic()) {
       Type varType;
       ExpressionTree expr;
-      if (tree.is(Tree.Kind.ASSIGNMENT)) {
-        AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-        varType = aet.symbolType();
-        expr = aet.expression();
-        checkExpression(varType, expr);
-      } else if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
-        varType = variableTree.type().symbolType();
-        expr = variableTree.initializer();
-        checkExpression(varType, expr);
-      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkMethodInvocationArgument((MethodInvocationTree) tree);
-      } else if (tree.is(Tree.Kind.METHOD)) {
-        MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-        Type returnType = methodTree.returnType() != null ? methodTree.returnType().symbolType() : null;
-        if (returnType != null && isVarTypeErrorProne(returnType)) {
-          methodTree.accept(new ReturnStatementVisitor(returnType));
-        }
+      switch (tree.kind()) {
+        case ASSIGNMENT:
+          AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
+          varType = aet.symbolType();
+          expr = aet.expression();
+          checkExpression(varType, expr);
+          break;
+        case VARIABLE:
+          VariableTree variableTree = (VariableTree) tree;
+          varType = variableTree.type().symbolType();
+          expr = variableTree.initializer();
+          checkExpression(varType, expr);
+          break;
+        case METHOD_INVOCATION:
+          checkMethodInvocationArgument((MethodInvocationTree) tree);
+          break;
+        case METHOD:
+          checkMethodTree((MethodTreeImpl) tree);
+          break;
+        case DIVIDE:
+          BinaryExpressionTree binaryExpr = (BinaryExpressionTree) tree;
+          if (isIntOrLong(binaryExpr.symbolType())) {
+            checkIntegerDivisionInsideFloatingPointExpression(binaryExpr);
+          }
+          break;
+        default:
+          throw new IllegalArgumentException("Tree " + tree.kind() + " not handled.");
       }
+    }
+  }
+
+  private void checkMethodTree(MethodTreeImpl methodTree) {
+    TypeTree returnTypeTree = methodTree.returnType();
+    Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
+    if (returnType != null && isVarTypeErrorProne(returnType)) {
+      methodTree.accept(new ReturnStatementVisitor(returnType));
     }
   }
 
@@ -132,5 +150,21 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     public void visitReturnStatement(ReturnStatementTree tree) {
       checkExpression(returnType, tree.expression());
     }
+  }
+
+  private void checkIntegerDivisionInsideFloatingPointExpression(BinaryExpressionTree integerDivision) {
+    Tree parent = integerDivision.parent();
+    while (parent instanceof ExpressionTree) {
+      ExpressionTree expressionTree = (ExpressionTree) parent;
+      if (isFloatingPoint(expressionTree.symbolType())) {
+        reportIssue(integerDivision, "Cast one of the operands of this integer division to a \"double\".");
+        break;
+      }
+      parent = expressionTree.parent();
+    }
+  }
+
+  private static boolean isFloatingPoint(Type exprType) {
+    return exprType.isPrimitive(Type.Primitives.DOUBLE) || exprType.isPrimitive(Type.Primitives.FLOAT);
   }
 }
