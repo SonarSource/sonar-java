@@ -33,6 +33,7 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -168,5 +169,14 @@ public class ProgramStateTest {
     SymbolicValue sv2 = new SymbolicValue();
     state = state.stackValue(sv2);
     assertThat(state.peekValue(1)).isEqualTo(sv1);
+  }
+
+  @Test
+  public void test_setting_constraint_on_relational_sv() throws Exception {
+    RelationalSymbolicValue rel = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
+    rel.computedFrom(Arrays.asList(new SymbolicValue(), new SymbolicValue()));
+    assertThatThrownBy(() -> ProgramState.EMPTY_STATE.addConstraint(rel, BooleanConstraint.FALSE))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessageStartingWith("Relations stored in PS should always use TRUE constraint");
   }
 }

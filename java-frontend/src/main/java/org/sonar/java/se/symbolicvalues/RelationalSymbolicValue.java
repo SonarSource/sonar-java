@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.collections.PMap;
@@ -102,7 +103,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     this.kind = kind;
   }
 
-  private RelationalSymbolicValue(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
+  @VisibleForTesting
+  RelationalSymbolicValue(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     this.kind = kind;
     this.leftOp = leftOp;
     this.rightOp = rightOp;

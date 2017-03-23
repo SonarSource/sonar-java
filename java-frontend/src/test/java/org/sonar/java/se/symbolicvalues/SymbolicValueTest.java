@@ -26,7 +26,10 @@ import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymbolicValueTest {
 
@@ -75,5 +78,26 @@ public class SymbolicValueTest {
     RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
     relationalSymbolicValue.computedFrom(ImmutableList.of(symbolicValue, notSymbolicValue));
     assertThat(relationalSymbolicValue.computedFrom()).contains(symbolicValue, notSymbolicValue);
+  }
+
+  @Test
+  public void test_toString() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue.NotSymbolicValue notSV = new SymbolicValue.NotSymbolicValue();
+    notSV.computedFrom(Collections.singletonList(sv1));
+    assertThat(notSV).hasToString("!("+sv1.toString()+")");
+
+    SymbolicValue.AndSymbolicValue andSV = new SymbolicValue.AndSymbolicValue();
+    andSV.computedFrom(Arrays.asList(sv1, sv2));
+    assertThat(andSV).hasToString(sv2 + " & " + sv1);
+
+    SymbolicValue.OrSymbolicValue orSV = new SymbolicValue.OrSymbolicValue();
+    orSV.computedFrom(Arrays.asList(sv1, sv2));
+    assertThat(orSV).hasToString(sv2 + " | " + sv1);
+
+    SymbolicValue.XorSymbolicValue xorSV = new SymbolicValue.XorSymbolicValue();
+    xorSV.computedFrom(Arrays.asList(sv1, sv2));
+    assertThat(xorSV).hasToString(sv2 + " ^ " + sv1);
   }
 }
