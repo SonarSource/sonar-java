@@ -32,9 +32,12 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 
 public class RelationalSymbolicValueTest {
@@ -110,6 +113,26 @@ public class RelationalSymbolicValueTest {
     ab = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, b));
     ba = create(Tree.Kind.LESS_THAN, ImmutableList.of(b, a));
     assertThat(ab).isNotEqualTo(ba);
+
+    SymbolicValue eq = create(Tree.Kind.EQUAL_TO, ImmutableList.of(a, b));
+    SymbolicValue eq1 = create(Tree.Kind.EQUAL_TO, ImmutableList.of(b, b));
+    SymbolicValue eq2 = create(Tree.Kind.EQUAL_TO, ImmutableList.of(a, a));
+    SymbolicValue neq = create(Tree.Kind.NOT_EQUAL_TO, ImmutableList.of(b, a));
+    assertThat(eq).isNotEqualTo(neq);
+    assertThat(eq).isEqualTo(eq);
+    assertThat(eq).isNotEqualTo(eq1);
+    assertThat(eq).isNotEqualTo(eq2);
+    assertThat(eq).isNotEqualTo(null);
+    assertThat(eq).isNotEqualTo(new Object());
+
+
+    SymbolicValue ab1 = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, b));
+    SymbolicValue ab2 = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, b));
+    SymbolicValue ab3 = create(Tree.Kind.LESS_THAN, ImmutableList.of(a, new SymbolicValue()));
+    SymbolicValue ab4 = create(Tree.Kind.LESS_THAN, ImmutableList.of(new SymbolicValue(), b));
+    assertThat(ab1).isEqualTo(ab2);
+    assertThat(ab1).isNotEqualTo(ab3);
+    assertThat(ab1).isNotEqualTo(ab4);
   }
 
   @Test
@@ -127,5 +150,16 @@ public class RelationalSymbolicValueTest {
     // Zero constraint should stay when Zero is >= to SV without any constraint
     assertThat(ps.getConstraint(a, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(DivisionByZeroCheck.ZeroConstraint.ZERO);
     assertThat(ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
+  }
+
+  @Test
+  public void test_setting_operands() throws Exception {
+    RelationalSymbolicValue relSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL, a, b);
+    assertThatThrownBy(() -> relSV.computedFrom(Arrays.asList(b, a)))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Operands already set!");
+
+    assertThatThrownBy(() -> relSV.computedFrom(Arrays.asList(a, b, a)))
+      .isInstanceOf(IllegalArgumentException.class);
   }
 }
