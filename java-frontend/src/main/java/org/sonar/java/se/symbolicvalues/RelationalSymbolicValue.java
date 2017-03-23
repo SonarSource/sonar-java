@@ -20,6 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.collections.PMap;
@@ -28,10 +29,18 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
+import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
 
@@ -214,29 +223,136 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
-    BinaryRelation relation = binaryRelation();
-    return programState.getKnownRelations().stream()
-      .map(r -> r.deduceTransitiveOrSimplified(relation))
+    return knownRelations(programState)
+      .map(sv -> deduceTransitiveOrSimplified((RelationalSymbolicValue) sv))
       .filter(Objects::nonNull)
-      .map(RelationalSymbolicValue::binaryRelationToSymbolicValue)
       .collect(Collectors.toList());
   }
 
-  private static RelationalSymbolicValue binaryRelationToSymbolicValue(BinaryRelation binaryRelation) {
-    switch (binaryRelation.kind) {
-      case EQUAL:
-      case METHOD_EQUALS:
-      case NOT_EQUAL:
-      case NOT_METHOD_EQUALS:
-      case LESS_THAN:
-      case GREATER_THAN_OR_EQUAL:
-        return new RelationalSymbolicValue(binaryRelation.kind, binaryRelation.leftOp, binaryRelation.rightOp);
-      case GREATER_THAN:
-      case LESS_THAN_OR_EQUAL:
-        return new RelationalSymbolicValue(binaryRelation.kind.symmetric(), binaryRelation.rightOp, binaryRelation.leftOp);
-      default:
-        throw new IllegalStateException("Unable to convert to relational SV " + binaryRelation);
+  private Stream<SymbolicValue> knownRelations(ProgramState programState) {
+    return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
+      .stream()
+      .filter(sv -> sv instanceof RelationalSymbolicValue);
+  }
+
+  @VisibleForTesting
+  RelationalSymbolicValue deduceTransitiveOrSimplified(RelationalSymbolicValue other) {
+    RelationalSymbolicValue result = simplify(other);
+    if (result != null) {
+      return result;
     }
+    return combineTransitively(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue simplify(RelationalSymbolicValue other) {
+    // a >= b && b >= a -> a == b
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL
+      && hasSameOperandsAs(other) && !equals(other)) {
+      return new RelationalSymbolicValue(EQUAL, leftOp, rightOp);
+    }
+    return null;
+  }
+
+  @VisibleForTesting
+  boolean potentiallyTransitiveWith(RelationalSymbolicValue other) {
+    if (hasSameOperand() || other.hasSameOperand()) {
+      return false;
+    }
+    return (hasOperand(other.leftOp) || hasOperand(other.rightOp)) && !hasSameOperandsAs(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue combineTransitively(RelationalSymbolicValue other) {
+    if (!potentiallyTransitiveWith(other)) {
+      return null;
+    }
+    RelationalSymbolicValue transitive = combineTransitivelyOneWay(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    return other.combineTransitivelyOneWay(this);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue combineTransitivelyOneWay(RelationalSymbolicValue other) {
+    RelationalSymbolicValue transitive = equalityTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    transitive = lessThanTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    return greaterThanEqualTransitiveBuilder(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue equalityTransitiveBuilder(RelationalSymbolicValue other) {
+    if (!isEquality()
+      || (kind == METHOD_EQUALS && other.kind == EQUAL)) {
+      return null;
+    }
+
+    return new RelationalSymbolicValue(other.kind,
+      hasOperand(other.leftOp) ? differentOperand(other) : other.leftOp,
+      hasOperand(other.leftOp) ? other.rightOp : differentOperand(other));
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue lessThanTransitiveBuilder(RelationalSymbolicValue other) {
+    if (kind != LESS_THAN) {
+      return null;
+    }
+    if (other.kind == LESS_THAN) {
+      // a < x && x < b => a < b
+      if (rightOp.equals(other.leftOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, leftOp, other.rightOp);
+      }
+      // x < a && b < x => b < a
+      if (leftOp.equals(other.rightOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, other.leftOp, rightOp);
+      }
+    }
+    if (other.kind == GREATER_THAN_OR_EQUAL) {
+      // a < x && b >= x => a < b
+      if (rightOp.equals(other.rightOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, leftOp, other.leftOp);
+      }
+      // x < a && x >= b => b < a
+      if (leftOp.equals(other.leftOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, other.rightOp, rightOp);
+      }
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue greaterThanEqualTransitiveBuilder(RelationalSymbolicValue other) {
+    // a >= x && x >= b -> a >= b
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL && rightOp.equals(other.leftOp)) {
+      return new RelationalSymbolicValue(GREATER_THAN_OR_EQUAL, leftOp, other.rightOp);
+    }
+    return null;
+  }
+
+  private boolean hasSameOperand() {
+    return leftOp.equals(rightOp);
+  }
+
+  private boolean hasOperand(SymbolicValue operand) {
+    return leftOp.equals(operand) || rightOp.equals(operand);
+  }
+
+  private boolean hasSameOperandsAs(RelationalSymbolicValue other) {
+    return (leftOp.equals(other.leftOp) && rightOp.equals(other.rightOp))
+      || (leftOp.equals(other.rightOp) && rightOp.equals(other.leftOp));
+  }
+
+  @VisibleForTesting
+  SymbolicValue differentOperand(RelationalSymbolicValue other) {
+    Preconditions.checkState(potentiallyTransitiveWith(other), "%s is not in transitive relationship with %s", this, other);
+    return other.hasOperand(leftOp) ? rightOp : leftOp;
   }
 
   @Override
