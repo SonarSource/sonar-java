@@ -23,7 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
@@ -44,6 +46,19 @@ public class ObjectFinalizeOverloadedCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isFinalizeOverload(MethodTree methodTree) {
-    return "finalize".equals(methodTree.simpleName().name()) && !methodTree.parameters().isEmpty();
+    return isNamedFinalize(methodTree) && !(hasNoParameter(methodTree) && isVoid(methodTree));
+  }
+
+  private static boolean isNamedFinalize(MethodTree methodTree) {
+    return "finalize".equals(methodTree.simpleName().name());
+  }
+
+  private static boolean hasNoParameter(MethodTree methodTree) {
+    return methodTree.parameters().isEmpty();
+  }
+
+  private static boolean isVoid(MethodTree methodTree) {
+    TypeTree typeTree = methodTree.returnType();
+    return typeTree.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) typeTree).keyword().text());
   }
 }
