@@ -331,3 +331,14 @@ class UsesVisibleForTesting {
   @MyAnnotation
   public void doNothing() {} // Noncompliant
 }
+
+@Deprecated
+public class DeprecatedAPI { //Compliant
+  public void bar() {} // Noncompliant
+
+  @Deprecated
+  public void foo() {} // Compliant
+
+  @org.foo.qix.Deprecated
+  public void foo() {} // Noncompliant
+}

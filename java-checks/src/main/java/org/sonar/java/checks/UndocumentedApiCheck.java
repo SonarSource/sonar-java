@@ -113,7 +113,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   @Override
   public void visitClass(ClassTree tree) {
     //No anonymous class, no visit of new class trees.
-    visitNode(tree, tree.simpleName());
+    visitNode(tree, tree.simpleName(), tree.symbol().metadata());
     super.visitClass(tree);
     classTrees.pop();
     currentParents.pop();
@@ -121,19 +121,19 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitVariable(VariableTree tree) {
-    visitNode(tree, tree.simpleName());
+    visitNode(tree, tree.simpleName(), tree.symbol().metadata());
     super.visitVariable(tree);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitNode(tree, tree.simpleName());
+    visitNode(tree, tree.simpleName(), tree.symbol().metadata());
     super.visitMethod(tree);
     currentParents.pop();
   }
 
-  private void visitNode(Tree tree, Tree reportTree) {
-    if (!isExcluded(tree)) {
+  private void visitNode(Tree tree, Tree reportTree, SymbolMetadata symbolMetadata) {
+    if (!isExcluded(tree, symbolMetadata)) {
       String javadoc = PublicApiChecker.getApiJavadoc(tree);
       if (javadoc == null || isEmptyJavadoc(javadoc)) {
         context.reportIssue(this, reportTree, "Document this public " + getType(tree) + ".");
@@ -175,13 +175,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return result;
   }
 
-  private boolean isExcluded(Tree tree) {
+  private boolean isExcluded(Tree tree, SymbolMetadata symbolMetadata) {
     return !isPublicApi(tree)
       || isAccessor(tree)
       || !isMatchingInclusionPattern()
       || isMatchingExclusionPattern()
       || isOverridingMethod(tree)
-      || isVisibleForTestingMethod(tree);
+      || isVisibleForTestingMethod(tree, symbolMetadata)
+      || hasDeprecatedAnnotation(symbolMetadata);
   }
 
   private boolean isAccessor(Tree tree) {
@@ -218,12 +219,13 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return tree.is(Tree.Kind.METHOD) && BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
-  private static boolean isVisibleForTestingMethod(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
-      SymbolMetadata metadata = ((MethodTree) tree).symbol().metadata();
-      return metadata.isAnnotatedWith("org.fest.util.VisibleForTesting") || metadata.isAnnotatedWith("com.google.common.annotations.VisibleForTesting");
-    }
-    return false;
+  private static boolean isVisibleForTestingMethod(Tree tree, SymbolMetadata symbolMetadata) {
+    return tree.is(Tree.Kind.METHOD)
+      && (symbolMetadata.isAnnotatedWith("org.fest.util.VisibleForTesting") || symbolMetadata.isAnnotatedWith("com.google.common.annotations.VisibleForTesting"));
+  }
+
+  private static boolean hasDeprecatedAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.isAnnotatedWith("java.lang.Deprecated");
   }
 
   private String className() {
