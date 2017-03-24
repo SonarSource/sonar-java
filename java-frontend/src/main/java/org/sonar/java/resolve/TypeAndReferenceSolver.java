@@ -368,6 +368,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           return resolveClassType(tree, resolveEnv, mse);
         }
         identifierTree = mse.identifier();
+        List<AnnotationTree> identifierAnnotations = identifierTree.annotations();
+        scan(identifierAnnotations);
+        completeMetadata((JavaSymbol) identifierTree.symbol(), identifierAnnotations);
         Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         resolvedSymbol = res.symbol();
         JavaType resolvedType = resolve.resolveTypeSubstitution(res.type(), getType(mse.expression()));
