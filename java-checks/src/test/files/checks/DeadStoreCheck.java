@@ -301,7 +301,7 @@ class NoIssueOnInitializers {
     b = 0;        // Noncompliant
     b = 1;        // Noncompliant
     int c = +1;   // Compliant
-    int d = -(1); // Compliant
+    int d = (-1); // Compliant
     int e = -1;   // Compliant
 
     // Only int literals are excluded
