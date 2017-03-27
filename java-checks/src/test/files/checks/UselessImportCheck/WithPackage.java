@@ -12,6 +12,9 @@ import a.b.c.*;
 import static a.b.c.Foo.*;
 import a.b.c.MyException;
 import a.b.c.MyException2;
+import a.b.c.MyAnnotation1;
+import a.b.c.MyAnnotation2;
+import a.b.c.MyAnnotation3;
 import java.lang.String;            // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
 import java.lang.*;                 // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
 import a.b.c.Foo;                   // Noncompliant {{Remove this duplicated import.}}
@@ -33,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nonnull;
+
 class Foo2 extends Foo {
   Bar a = new Baz<String>();
   Map<@Nonnull String, @Nonnull String> modulesMap = new HashMap<>();
@@ -53,4 +57,15 @@ class Foo2 extends Foo {
     return new a.b.c.NonCompliant();
   }
   void foo(@Nullable int x){}
+}
+
+class A {
+  byte @MyAnnotation2 [] table = null;
+  org.foo.@MyAnnotation1 B myB;
+
+  void foo(java.util.List<String> list) {
+    for (@MyAnnotation3 Object o : list) {
+      o.toString();
+    }
+  }
 }

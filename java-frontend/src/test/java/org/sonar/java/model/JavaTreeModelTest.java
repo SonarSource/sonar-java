@@ -620,6 +620,12 @@ public class JavaTreeModelTest {
   }
 
   @Test
+  public void annotations_in_for_each_statements() {
+    ForEachStatement tree = (ForEachStatement) firstMethodFirstStatement("class C { void foo(Object[] values) { for(@Nullable Object value : values) { } } }");
+    assertThat(tree.variable().modifiers().annotations()).hasSize(1);
+  }
+
+  @Test
   public void class_init_declaration() {
     BlockTree tree = (BlockTree) firstTypeMember("class T { { ; ; } }");
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();

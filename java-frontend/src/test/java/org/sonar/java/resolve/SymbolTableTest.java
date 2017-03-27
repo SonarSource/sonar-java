@@ -1232,6 +1232,20 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void annotation_usages() throws Exception {
+    Result result = Result.createFor("AnnotationUsages");
+
+    JavaSymbol.TypeSymbol myAnnotation1 = (JavaSymbol.TypeSymbol) result.symbol("MyAnnotation1");
+    assertThat(myAnnotation1.usages()).hasSize(1);
+
+    JavaSymbol.TypeSymbol myAnnotation2 = (JavaSymbol.TypeSymbol) result.symbol("MyAnnotation2");
+    assertThat(myAnnotation2.usages()).hasSize(1);
+
+    JavaSymbol.TypeSymbol myAnnotation3 = (JavaSymbol.TypeSymbol) result.symbol("MyAnnotation3");
+    assertThat(myAnnotation3.usages()).hasSize(1);
+  }
+
+  @Test
   public void annotations_on_fields() throws Exception {
     Result result = Result.createFor("AnnotationOnFields");
 

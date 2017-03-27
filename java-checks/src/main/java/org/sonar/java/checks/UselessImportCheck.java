@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -123,8 +124,15 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   }
 
   @Override
+  public void visitArrayType(ArrayTypeTree tree) {
+    scan(tree.annotations());
+    super.visitArrayType(tree);
+  }
+
+  @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     scan(tree.annotations());
+    scan(tree.identifier().annotations());
     pendingReferences.add(ExpressionsHelper.concatenate(tree));
     //Don't visit identifiers of a member select expression.
     if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
