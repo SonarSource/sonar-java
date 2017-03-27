@@ -198,7 +198,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         return "0".equals(value) || "1".equals(value);
       case UNARY_MINUS:
       case UNARY_PLUS:
-        return isUsualDefaultValue(((UnaryExpressionTree) tree).expression());
+        return isUsualDefaultValue(((UnaryExpressionTree) expr).expression());
       default:
         return false;
     }
