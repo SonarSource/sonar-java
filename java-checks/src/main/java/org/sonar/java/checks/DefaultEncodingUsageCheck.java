@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,6 +45,8 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String BOOLEAN = "boolean";
   private static final String BYTE_ARRAY = "byte[]";
   private static final String JAVA_IO_FILE = "java.io.File";
+  private static final String JAVA_IO_READER = "java.io.Reader";
+  private static final String JAVA_IO_WRITER = "java.io.Writer";
   private static final String JAVA_IO_FILEWRITER = "java.io.FileWriter";
   private static final String JAVA_IO_FILEREADER = "java.io.FileReader";
   private static final String JAVA_IO_PRINTWRITER = "java.io.PrintWriter";
@@ -54,11 +57,14 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String JAVA_IO_OUTPUTSTREAMWRITER = "java.io.OutputStreamWriter";
   private static final String JAVA_IO_INPUTSTREAMREADER = "java.io.InputStreamReader";
   private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_LANG_CHARSEQUENCE = "java.lang.CharSequence";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_SCANNER = "java.util.Scanner";
   private static final String JAVA_UTIL_FORMATTER = "java.util.Formatter";
 
   private static final String[] FORBIDDEN_TYPES = {JAVA_IO_FILEREADER, JAVA_IO_FILEWRITER};
+  private static final String COMMONS_IOUTILS = "org.apache.commons.io.IOUtils";
+  private static final String COMMONS_FILEUTILS = "org.apache.commons.io.FileUtils";
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -125,7 +131,27 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_UTIL_FORMATTER).parameters(JAVA_IO_OUTPUTSTREAM),
       constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE),
       constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM));
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM),
+      method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_INPUTSTREAM, JAVA_IO_WRITER),
+      method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_READER, JAVA_IO_OUTPUTSTREAM),
+      method(COMMONS_IOUTILS, "readLines").parameters(JAVA_IO_INPUTSTREAM),
+      method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_IO_READER),
+      method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_LANG_STRING),
+      method(COMMONS_IOUTILS, "toCharArray").parameters(JAVA_IO_INPUTSTREAM),
+      method(COMMONS_IOUTILS, "toInputStream").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
+      method(COMMONS_IOUTILS, "toString").parameters(BYTE_ARRAY),
+      method(COMMONS_IOUTILS, "toString").parameters("java.net.URI"),
+      method(COMMONS_IOUTILS, "toString").parameters("java.net.URL"),
+      method(COMMONS_IOUTILS, "write").parameters("char[]", JAVA_IO_OUTPUTSTREAM),
+      method(COMMONS_IOUTILS, "write").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(JAVA_IO_OUTPUTSTREAM)),
+      method(COMMONS_IOUTILS, "writeLines").parameters("java.util.Collection", JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM),
+
+      method(COMMONS_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE),
+      method(COMMONS_FILEUTILS, "readLines").parameters(JAVA_IO_FILE),
+      method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
+      method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is("boolean")),
+      method(COMMONS_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING)
+    );
   }
 
   private static MethodMatcher method(String type, String methodName) {

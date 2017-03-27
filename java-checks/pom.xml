@@ -183,6 +183,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>commons-io</groupId>
+                  <artifactId>commons-io</artifactId>
+                  <version>2.5</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.testng</groupId>
                   <artifactId>testng</artifactId>
                   <version>6.9.6</version>
