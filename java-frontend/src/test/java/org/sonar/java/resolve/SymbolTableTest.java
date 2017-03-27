@@ -1366,4 +1366,13 @@ public class SymbolTableTest {
     Result result = Result.createFor("CastTargetType");
     assertThat(result.symbol("s").usages()).hasSize(1);
   }
+
+  @Test
+  public void enum_protected_constructor_should_not_be_resolved() {
+    Result result = Result.createFor("EnumConstructor");
+    Symbol constructorRef = result.referenceTree(2, 3).symbol();
+    assertThat(constructorRef.name()).isEqualTo("<init>");
+    assertThat(constructorRef.owner().type().is("java.lang.Enum")).overridingErrorMessage("Wrongly resolving unaccessible protected enum constructor").isFalse();
+    assertThat(constructorRef.owner().type().is("EnumConstructor")).isTrue();
+  }
 }

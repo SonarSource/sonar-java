@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -473,9 +474,12 @@ public class Resolve {
 
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);
     // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
-
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
+      // sole constructor of java.lang.Enum is inaccessible by programmers.
+      if (name.equals(CONSTRUCTOR_NAME) && superclass.is("java.lang.Enum")) {
+        return bestSoFar;
+      }
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
       Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
