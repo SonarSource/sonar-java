@@ -4,7 +4,7 @@ enum EnumConstructor {
   private String string;
   private Integer i;
 
-  EnumConstructor(String string, Integer i) { // unused private constructor because the constructor from the superclass was picked (strict invocation over loose invocation).
+  EnumConstructor(String string, Integer i) {
     this.string = string;
     this.i = i;
   }

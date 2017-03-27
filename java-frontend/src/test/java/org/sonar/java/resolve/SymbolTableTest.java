@@ -738,11 +738,6 @@ public class SymbolTableTest {
   }
 
   @Test
-  public void Example() {
-    Result.createFor("Example");
-  }
-
-  @Test
   public void ScopesAndSymbols() {
     Result.createFor("ScopesAndSymbols");
   }
