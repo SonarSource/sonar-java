@@ -12,7 +12,7 @@ class A {
   private void finalize(int a, int b) { // Noncompliant {{Rename this method to avoid any possible confusion with Object.finalize().}}
   }
 
-  private int finalize() { // Compliant
+  private int finalize() { // Noncompliant
     return 0;
   }
 
@@ -25,5 +25,11 @@ class A {
 
   private int foo(int a) { // Compliant
     return a;
+  }
+}
+
+class B {
+  private Object finalize() { // Noncompliant
+    return null;
   }
 }
