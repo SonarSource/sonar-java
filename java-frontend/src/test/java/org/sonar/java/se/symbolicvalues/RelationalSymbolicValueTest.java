@@ -97,18 +97,18 @@ public class RelationalSymbolicValueTest {
   public void test_same_operand() {
     assertThat(sameOperandResolution(Tree.Kind.EQUAL_TO)).isEqualTo(FULFILLED);
     RelationalSymbolicValue eq = new RelationalSymbolicValue(METHOD_EQUALS, a, a);
-    assertThat(eq.resolveState(ProgramState.EMPTY_STATE)).isEqualTo(FULFILLED);
+    assertThat(eq.resolveState(Collections.emptySet())).isEqualTo(FULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.LESS_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
 
     assertThat(sameOperandResolution(Tree.Kind.NOT_EQUAL_TO)).isEqualTo(UNFULFILLED);
-    assertThat(eq.inverse().resolveState(ProgramState.EMPTY_STATE)).isEqualTo(UNFULFILLED);
+    assertThat(eq.inverse().resolveState(Collections.emptySet())).isEqualTo(UNFULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.LESS_THAN)).isEqualTo(UNFULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN)).isEqualTo(UNFULFILLED);
   }
 
   private RelationState sameOperandResolution(Tree.Kind kind) {
-    return relationalSV(kind, a, a).resolveState(ProgramState.EMPTY_STATE);
+    return relationalSV(kind, a, a).resolveState(Collections.emptySet());
   }
 
   @Test
@@ -137,12 +137,12 @@ public class RelationalSymbolicValueTest {
     List<String> actual = new ArrayList<>();
     for (Tree.Kind operator : operators) {
       RelationalSymbolicValue test = relationalSV(operator, b, a);
-      RelationState relationState = test.resolveState(stateWithRelations(known));
+      RelationState relationState = test.resolveState(Collections.singleton(known));
       actual.add(String.format("given %s when %s -> %s", knownAsString.get(), relationToString(operator, a, b), relationState));
     }
     RelationalSymbolicValue eq = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
     Stream.of(eq, eq.inverse()).forEach(rel -> {
-        RelationState relationState = rel.resolveState(stateWithRelations(known));
+        RelationState relationState = rel.resolveState(Collections.singleton(known));
         actual.add(String.format("given %s when %s -> %s", knownAsString.get(), rel, relationState));
       }
     );
@@ -162,8 +162,8 @@ public class RelationalSymbolicValueTest {
     RelationalSymbolicValue aLEb = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, a, b);
     RelationalSymbolicValue bLEa = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a);
     RelationalSymbolicValue aEb = relationalSV(Tree.Kind.EQUAL_TO, a, b);
-    RelationState state = aEb.resolveState(stateWithRelations(aLEb, bLEa));
-    assertThat(state).isEqualTo(FULFILLED);
+    ProgramState state = Iterables.getOnlyElement(aEb.setConstraint(stateWithRelations(aLEb, bLEa), BooleanConstraint.TRUE));
+    assertThat(state.getConstraint(aEb, BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
   }
 
   @Test
@@ -198,8 +198,8 @@ public class RelationalSymbolicValueTest {
       given[i - 1] = relationalSV(Tree.Kind.LESS_THAN, sv[i - 1], sv[i]);
     }
     RelationalSymbolicValue firstLessThanLast = relationalSV(Tree.Kind.LESS_THAN, sv[0], sv[chainLength - 1]);
-    RelationState relationState = firstLessThanLast.resolveState(stateWithRelations(given));
-    assertThat(relationState).isEqualTo(FULFILLED);
+    ProgramState programState = Iterables.getOnlyElement(firstLessThanLast.setConstraint(stateWithRelations(given), BooleanConstraint.TRUE));
+    assertThat(programState.getConstraint(firstLessThanLast, BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
   }
 
   @Test

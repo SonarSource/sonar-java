@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,7 +107,12 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     newRelations.add(this);
     newRelations.addAll(transitiveRelations(knownRelations));
-    if (!checkRelation(initialProgramState)) {
+
+    boolean unfulfilled = newRelations.stream()
+      .map(r -> r.resolveState(knownRelations))
+      .anyMatch(RelationState.UNFULFILLED::equals);
+
+    if (unfulfilled) {
       return ImmutableList.of();
     }
     return getNewProgramStates(initialProgramState, newRelations);
@@ -201,41 +205,15 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  private boolean checkRelation(ProgramState programState) {
-    RelationState relationState = resolveState(programState);
-    return relationState != RelationState.UNFULFILLED;
-  }
-
-  RelationState resolveState(ProgramState programState) {
+  RelationState resolveState(Set<RelationalSymbolicValue> knownRelations) {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
     }
 
-    Set<RelationalSymbolicValue> allRelations = knownRelations(programState).collect(Collectors.toCollection(HashSet::new));
-    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>(allRelations);
-    int iterations = 0;
-    while (!workList.isEmpty()) {
-      if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
-        // safety mechanism in case of an error in the algorithm
-        // should not happen under normal conditions
-        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
-      }
-      iterations++;
-      RelationalSymbolicValue relation = workList.pop();
-      RelationState result = relation.implies(this);
-      if (result.isDetermined()) {
-        return result;
-      }
-      List<RelationalSymbolicValue> newRelations = allRelations.stream()
-        .map(relation::deduceTransitiveOrSimplified)
-        .filter(Objects::nonNull)
-        .filter(r -> !allRelations.contains(r))
-        .collect(Collectors.toList());
-
-      allRelations.addAll(newRelations);
-      workList.addAll(newRelations);
-    }
-    return RelationState.UNDETERMINED;
+    return knownRelations.stream()
+      .map(r -> r.implies(this))
+      .filter(RelationState::isDetermined)
+      .findAny().orElse(RelationState.UNDETERMINED);
   }
 
   private RelationState relationStateForSameOperand() {
