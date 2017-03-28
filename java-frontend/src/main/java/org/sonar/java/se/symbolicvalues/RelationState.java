@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import org.sonar.java.se.constraint.BooleanConstraint;
-
 /**
  * This enum values are the possible returns of the method implies(SymbolicValueRelation) of class SymbolicValueRelation.
  * @see RelationalSymbolicValue#implies(RelationalSymbolicValue)
@@ -38,16 +36,6 @@ enum RelationState {
    * This value means that the checked relation is not determined by the set of known relations
    */
   UNDETERMINED;
-
-  public boolean rejects(BooleanConstraint constraint) {
-    if (this == FULFILLED) {
-      return constraint == BooleanConstraint.FALSE;
-    }
-    if (this == UNFULFILLED) {
-      return constraint == BooleanConstraint.TRUE;
-    }
-    return false;
-  }
 
   public boolean isDetermined() {
     return this != UNDETERMINED;

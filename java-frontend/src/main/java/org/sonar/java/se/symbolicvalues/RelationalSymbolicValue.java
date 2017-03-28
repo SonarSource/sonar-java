@@ -33,12 +33,10 @@ import javax.annotation.CheckForNull;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -103,16 +101,20 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    if (!checkRelation(booleanConstraint, initialProgramState)) {
+    if (booleanConstraint == BooleanConstraint.FALSE) {
+      return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE);
+    }
+    Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState).collect(Collectors.toSet());
+    Set<RelationalSymbolicValue> newRelations = new HashSet<>();
+    newRelations.add(this);
+    newRelations.addAll(transitiveRelations(knownRelations));
+    if (!checkRelation(initialProgramState)) {
       return ImmutableList.of();
     }
-    return booleanConstraint == BooleanConstraint.TRUE ? getNewProgramStates(initialProgramState) : inverse().getNewProgramStates(initialProgramState);
+    return getNewProgramStates(initialProgramState, newRelations);
   }
 
-  private List<ProgramState> getNewProgramStates(ProgramState initialProgramState) {
-    Set<RelationalSymbolicValue> newRelations = transitiveRelations(initialProgramState);
-    newRelations.add(this);
-
+  private static List<ProgramState> getNewProgramStates(ProgramState initialProgramState, Set<RelationalSymbolicValue> newRelations) {
     List<ProgramState> programStates = new ArrayList<>();
     programStates.add(initialProgramState);
     for (RelationalSymbolicValue relationalSymbolicValue : newRelations) {
@@ -199,9 +201,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
+  private boolean checkRelation(ProgramState programState) {
     RelationState relationState = resolveState(programState);
-    return !relationState.rejects(booleanConstraint);
+    return relationState != RelationState.UNFULFILLED;
   }
 
   RelationState resolveState(ProgramState programState) {
@@ -264,8 +266,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return RelationState.UNDETERMINED;
   }
 
-  private Set<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
-    Set<RelationalSymbolicValue> knownRelations = knownRelations(programState).collect(Collectors.toSet());
+  private Set<RelationalSymbolicValue> transitiveRelations(Set<RelationalSymbolicValue> knownRelations) {
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     Deque<RelationalSymbolicValue> workList = new ArrayDeque<>();
     int iterations = 0;
