@@ -33,10 +33,12 @@ import javax.annotation.CheckForNull;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,7 +110,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private List<ProgramState> getNewProgramStates(ProgramState initialProgramState) {
-    List<RelationalSymbolicValue> newRelations = transitiveRelations(initialProgramState);
+    Set<RelationalSymbolicValue> newRelations = transitiveRelations(initialProgramState);
     newRelations.add(this);
 
     List<ProgramState> programStates = new ArrayList<>();
@@ -262,11 +264,29 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return RelationState.UNDETERMINED;
   }
 
-  private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
-    return knownRelations(programState)
-      .map(this::deduceTransitiveOrSimplified)
-      .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+  private Set<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
+    Set<RelationalSymbolicValue> knownRelations = knownRelations(programState).collect(Collectors.toSet());
+    Set<RelationalSymbolicValue> newRelations = new HashSet<>();
+    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>();
+    int iterations = 0;
+    workList.add(this);
+    while (!workList.isEmpty()) {
+      if (newRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        // should not happen under normal conditions
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + newRelations.size() + ". Iterations " + iterations);
+      }
+      iterations++;
+      RelationalSymbolicValue relation = workList.pop();
+      for (RelationalSymbolicValue knownRelation : knownRelations) {
+        RelationalSymbolicValue r = relation.deduceTransitiveOrSimplified(knownRelation);
+        if (r != null && !knownRelations.contains(r) && !newRelations.contains(r)) {
+          newRelations.add(r);
+          workList.add(r);
+        }
+      }
+    }
+    return newRelations;
   }
 
   private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
