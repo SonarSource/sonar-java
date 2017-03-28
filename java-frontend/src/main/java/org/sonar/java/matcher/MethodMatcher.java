@@ -21,6 +21,7 @@ package org.sonar.java.matcher;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -46,6 +47,16 @@ public class MethodMatcher {
 
   public static MethodMatcher create() {
     return new MethodMatcher();
+  }
+
+  public MethodMatcher copy() {
+    MethodMatcher copy = new MethodMatcher();
+    copy.typeDefinition = typeDefinition;
+    copy.callSite = callSite;
+    copy.methodName = methodName;
+    copy.parameterTypes = parameterTypes == null ? null : new ArrayList<>(parameterTypes);
+    copy.parameters = parameterTypes == null ? null : ParametersCriteria.of(copy.parameterTypes);
+    return copy;
   }
 
   public MethodMatcher name(String methodName) {

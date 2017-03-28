@@ -22,6 +22,7 @@ package org.sonar.java.matcher;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -222,6 +225,36 @@ public class MethodMatcherTest {
     assertThat(matches.get(objectToStringWithAnyParam)).containsExactly(6, 10, 11, 14);
     assertThat(matches.get(integerToString)).containsExactly(19);
     assertThat(matches.get(callSiteIsTest)).containsExactly(6, 10, 11, 14, 18, 22);
+  }
+
+  @Test
+  public void test_copy() throws Exception {
+    MethodMatcher vanilla = MethodMatcher.create().typeDefinition("Test").name("f").withoutParameter();
+    MethodMatcher copyInt = vanilla.copy().addParameter("int");
+    MethodMatcher copyString = vanilla.copy().addParameter("java.lang.String");
+    Map<MethodMatcher, List<Integer>> matches = new HashMap<>();
+    matches.put(vanilla, new ArrayList<>());
+    matches.put(copyInt, new ArrayList<>());
+    matches.put(copyString, new ArrayList<>());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/matcher/Copy.java", new IssuableSubscriptionVisitor() {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return Collections.singletonList(Tree.Kind.METHOD);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        MethodTree methodTree = (MethodTree) tree;
+        matches.forEach((matcher, list) -> {
+          if (matcher.matches(methodTree)) {
+            list.add(methodTree.firstToken().line());
+          }
+        });
+      }
+    });
+    assertThat(matches.get(vanilla)).containsExactly(3);
+    assertThat(matches.get(copyInt)).containsExactly(5);
+    assertThat(matches.get(copyString)).containsExactly(7);
   }
 
   class Visitor extends SubscriptionVisitor {
