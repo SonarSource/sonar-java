@@ -74,7 +74,6 @@ class A {
     IOUtils.copy(reader, output); // Noncompliant
     IOUtils.readLines(input); // Noncompliant
     IOUtils.toByteArray(reader); // Noncompliant
-    IOUtils.toByteArray(s); // Noncompliant
     IOUtils.toCharArray(input); // Noncompliant
     IOUtils.toInputStream(charSequence); // Noncompliant
     IOUtils.toInputStream(s); // Noncompliant
@@ -94,5 +93,32 @@ class A {
     FileUtils.write(file, charSequence, false); // Noncompliant
     FileUtils.writeStringToFile(file, "data"); // Noncompliant
   }
+
+  void commons_io_with_null(Reader reader, Writer writer, InputStream input, OutputStream output, String s, CharSequence charSequence, byte[] bytes,
+                  java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) {
+    IOUtils.copy(input, writer, (String) null); // Noncompliant
+    IOUtils.copy(reader, output, (String) null); // Noncompliant
+    IOUtils.readLines(input, (String) null); // Noncompliant
+    IOUtils.toByteArray(reader, (String) null); // Noncompliant
+    IOUtils.toCharArray(input, (String) null); // Noncompliant
+    IOUtils.toInputStream(charSequence, (String) null); // Noncompliant
+    IOUtils.toInputStream(s, (String) null); // Noncompliant
+    IOUtils.toString(bytes, (String) null); // Noncompliant
+    IOUtils.toString(uri, (String) null); // Noncompliant
+    IOUtils.toString(url, (String) null); // Noncompliant
+    IOUtils.write(chars, output, (String) null); // Noncompliant
+    IOUtils.write(buffer, output, (String) null); // Noncompliant
+    IOUtils.write(s, output, (String) null); // Noncompliant
+    IOUtils.writeLines(lines, "\n", output, (String) null); // Noncompliant
+  }
+
+  void commons_fileutils_with_null(File file, CharSequence charSequence) {
+    FileUtils.readFileToString(file, (java.nio.charset.Charset) null); // Noncompliant
+    FileUtils.readLines(file, (java.nio.charset.Charset) null); // Noncompliant
+    FileUtils.write(file, charSequence, (java.nio.charset.Charset) null); // Noncompliant
+    FileUtils.write(file, charSequence, (java.nio.charset.Charset) null, false); // Noncompliant
+    FileUtils.writeStringToFile(file, "data", (java.nio.charset.Charset) null); // Noncompliant
+  }
+
 
 }

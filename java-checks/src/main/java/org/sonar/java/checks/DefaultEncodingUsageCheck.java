@@ -26,17 +26,24 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "S1943")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
@@ -57,6 +64,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String JAVA_IO_OUTPUTSTREAMWRITER = "java.io.OutputStreamWriter";
   private static final String JAVA_IO_INPUTSTREAMREADER = "java.io.InputStreamReader";
   private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_NIO_CHARSET = "java.nio.charset.Charset";
   private static final String JAVA_LANG_CHARSEQUENCE = "java.lang.CharSequence";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_SCANNER = "java.util.Scanner";
@@ -65,6 +73,44 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String[] FORBIDDEN_TYPES = {JAVA_IO_FILEREADER, JAVA_IO_FILEWRITER};
   private static final String COMMONS_IOUTILS = "org.apache.commons.io.IOUtils";
   private static final String COMMONS_FILEUTILS = "org.apache.commons.io.FileUtils";
+
+  private static final List<MethodMatcher> COMMONS_IO = ImmutableList.of(
+    method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_INPUTSTREAM, JAVA_IO_WRITER),
+    method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_READER, JAVA_IO_OUTPUTSTREAM),
+    method(COMMONS_IOUTILS, "readLines").parameters(JAVA_IO_INPUTSTREAM),
+    method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_IO_READER),
+    method(COMMONS_IOUTILS, "toCharArray").parameters(JAVA_IO_INPUTSTREAM),
+    method(COMMONS_IOUTILS, "toInputStream").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
+    method(COMMONS_IOUTILS, "toString").parameters(BYTE_ARRAY),
+    method(COMMONS_IOUTILS, "toString").parameters("java.net.URI"),
+    method(COMMONS_IOUTILS, "toString").parameters("java.net.URL"),
+    method(COMMONS_IOUTILS, "write").parameters("char[]", JAVA_IO_OUTPUTSTREAM),
+    method(COMMONS_IOUTILS, "write").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(JAVA_IO_OUTPUTSTREAM)),
+    method(COMMONS_IOUTILS, "writeLines").parameters("java.util.Collection", JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM),
+
+    method(COMMONS_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE),
+    method(COMMONS_FILEUTILS, "readLines").parameters(JAVA_IO_FILE),
+    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
+    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(BOOLEAN)),
+    method(COMMONS_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING)
+  );
+
+  private static final List<MethodMatcher> COMMONS_IO_WITH_CHARSET = COMMONS_IO.stream()
+    .flatMap(m -> Stream.of(m.copy().addParameter(JAVA_LANG_STRING), m.copy().addParameter(JAVA_NIO_CHARSET)))
+    .collect(Collectors.toList());
+
+  private static final MethodMatcherCollection COMMONS_IO_CHARSET_MATCHERS =
+    MethodMatcherCollection.create(COMMONS_IO_WITH_CHARSET.toArray(new MethodMatcher[COMMONS_IO_WITH_CHARSET.size()]));
+
+  private static final List<MethodMatcher> FILEUTILS_WRITE_WITH_CHARSET = ImmutableList.of(
+    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE),
+      TypeCriteria.is(JAVA_LANG_STRING), TypeCriteria.is(BOOLEAN)),
+    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE),
+      TypeCriteria.is(JAVA_NIO_CHARSET), TypeCriteria.is(BOOLEAN))
+  );
+
+  private static final MethodMatcherCollection FILEUTILS_WRITE_WITH_CHARSET_MATCHERS =
+    MethodMatcherCollection.create(FILEUTILS_WRITE_WITH_CHARSET.toArray(new MethodMatcher[FILEUTILS_WRITE_WITH_CHARSET.size()]));
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -108,7 +154,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    ImmutableList.Builder<MethodMatcher> matchers = ImmutableList.<MethodMatcher>builder().add(
       method(JAVA_LANG_STRING, "getBytes").withoutParameter(),
       method(JAVA_LANG_STRING, "getBytes").parameters(INT, INT, BYTE_ARRAY, INT),
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY),
@@ -131,27 +177,13 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_UTIL_FORMATTER).parameters(JAVA_IO_OUTPUTSTREAM),
       constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE),
       constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM),
-      method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_INPUTSTREAM, JAVA_IO_WRITER),
-      method(COMMONS_IOUTILS, "copy").parameters(JAVA_IO_READER, JAVA_IO_OUTPUTSTREAM),
-      method(COMMONS_IOUTILS, "readLines").parameters(JAVA_IO_INPUTSTREAM),
-      method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_IO_READER),
-      method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_LANG_STRING),
-      method(COMMONS_IOUTILS, "toCharArray").parameters(JAVA_IO_INPUTSTREAM),
-      method(COMMONS_IOUTILS, "toInputStream").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
-      method(COMMONS_IOUTILS, "toString").parameters(BYTE_ARRAY),
-      method(COMMONS_IOUTILS, "toString").parameters("java.net.URI"),
-      method(COMMONS_IOUTILS, "toString").parameters("java.net.URL"),
-      method(COMMONS_IOUTILS, "write").parameters("char[]", JAVA_IO_OUTPUTSTREAM),
-      method(COMMONS_IOUTILS, "write").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(JAVA_IO_OUTPUTSTREAM)),
-      method(COMMONS_IOUTILS, "writeLines").parameters("java.util.Collection", JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM),
-
-      method(COMMONS_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE),
-      method(COMMONS_FILEUTILS, "readLines").parameters(JAVA_IO_FILE),
-      method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
-      method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is("boolean")),
-      method(COMMONS_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING)
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM)
     );
+    matchers.addAll(COMMONS_IO);
+    matchers.addAll(COMMONS_IO_WITH_CHARSET);
+    matchers.addAll(FILEUTILS_WRITE_WITH_CHARSET);
+
+    return matchers.build();
   }
 
   private static MethodMatcher method(String type, String methodName) {
@@ -164,7 +196,27 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\"");
+    if (COMMONS_IO_CHARSET_MATCHERS.anyMatch(mit)) {
+      Arguments arguments = mit.arguments();
+      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+      testNullLiteralPassedForEncoding(lastArgument);
+    } else if (FILEUTILS_WRITE_WITH_CHARSET_MATCHERS.anyMatch(mit)) {
+      testNullLiteralPassedForEncoding(mit.arguments().get(2));
+    } else {
+      reportIssue(MethodsHelper.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\"");
+    }
+  }
+
+  private void testNullLiteralPassedForEncoding(ExpressionTree argument) {
+    if (isNullLiteral(argument)) {
+      reportIssue(argument, "Replace this \"null\" with actual charset.");
+    }
+  }
+
+  private static boolean isNullLiteral(ExpressionTree lastArgument) {
+    ExpressionTree arg = ExpressionUtils.skipParentheses(lastArgument);
+    return arg.is(Tree.Kind.NULL_LITERAL)
+      || (arg.is(Tree.Kind.TYPE_CAST) && ((TypeCastTree) arg).expression().is(Tree.Kind.NULL_LITERAL));
   }
 
   @Override
