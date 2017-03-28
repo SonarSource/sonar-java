@@ -25,8 +25,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.Build;
+import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
 import no.finn.lambdacompanion.Try;
 import org.assertj.core.api.Assertions;
@@ -48,12 +50,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class JavaRulingTest {
 
+  private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
 
   // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
@@ -174,8 +179,9 @@ public class JavaRulingTest {
       .setProjectVersion("0.1.0-SNAPSHOT")
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
+      .setDebugLogs(true)
       .setProperty("sonar.java.source", "1.5");
-    executeBuildWithCommonProperties(build, projectName);
+    executeDebugBuildWithCommonProperties(build, projectName);
   }
 
   /**
@@ -213,7 +219,15 @@ public class JavaRulingTest {
     orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
   }
 
+  private static void executeDebugBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
+    executeBuildWithCommonProperties(build, projectName, true);
+  }
+
   private static void executeBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
+    executeBuildWithCommonProperties(build, projectName, false);
+  }
+
+  private static void executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
     build.setProperty("sonar.cpd.skip", "true")
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
@@ -223,8 +237,38 @@ public class JavaRulingTest {
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName));
-    orchestrator.executeBuild(build);
-    assertNoDifferences(projectName);
+    BuildResult buildResult;
+    if (buildQuietly) {
+      // if build fail, ruling job is not violently interrupted, allowing time to dump SQ logs
+      buildResult = orchestrator.executeBuildQuietly(build);
+    } else {
+      buildResult = orchestrator.executeBuild(build);
+    }
+    if (buildResult.isSuccess()) {
+      assertNoDifferences(projectName);
+    } else {
+      dumpServerLogs();
+    }
+  }
+
+  private static void dumpServerLogs() throws IOException {
+    Server server = orchestrator.getServer();
+    LOG.error("::::::::::::::::::::::::::::::::::: DUMPING SERVER LOGS :::::::::::::::::::::::::::::::::::");
+    dumpServerLogLastLines(server.getAppLogs());
+    dumpServerLogLastLines(server.getCeLogs());
+    dumpServerLogLastLines(server.getEsLogs());
+    dumpServerLogLastLines(server.getWebLogs());
+  }
+
+  private static void dumpServerLogLastLines(File logFile) throws IOException {
+    List<String> logs = Files.readAllLines(logFile.toPath());
+    int nbLines = logs.size();
+    if (nbLines > LOGS_NUMBER_LINES) {
+      logs = logs.subList(nbLines - LOGS_NUMBER_LINES, nbLines);
+    }
+    LOG.error("=================================== START " + logFile.getName() + " ===================================");
+    LOG.error(System.lineSeparator() + logs.stream().collect(Collectors.joining(System.lineSeparator())));
+    LOG.error("===================================== END " + logFile.getName() + " ===================================");
   }
 
   private static String litsDifferencesPath(String projectName) {
