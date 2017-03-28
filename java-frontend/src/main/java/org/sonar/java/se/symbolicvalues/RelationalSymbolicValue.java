@@ -20,6 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.collections.PMap;
@@ -28,20 +29,33 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
+import javax.annotation.CheckForNull;
+
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
+
+  private static final int MAX_ITERATIONS = 10_000;
+  private static final int MAX_DEDUCED_RELATIONS = 1000;
 
   public enum Kind {
     EQUAL("=="),
     NOT_EQUAL("!="),
-    GREATER_THAN(">"),
     GREATER_THAN_OR_EQUAL(">="),
     LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL("<="),
     METHOD_EQUALS(".EQ."),
     NOT_METHOD_EQUALS(".NE.");
 
@@ -51,20 +65,16 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       this.operand = operand;
     }
 
-    public Kind inverse() {
+    Kind inverse() {
       switch (this) {
         case EQUAL:
           return NOT_EQUAL;
         case NOT_EQUAL:
           return EQUAL;
-        case GREATER_THAN:
-          return LESS_THAN_OR_EQUAL;
         case GREATER_THAN_OR_EQUAL:
           return LESS_THAN;
         case LESS_THAN:
           return GREATER_THAN_OR_EQUAL;
-        case LESS_THAN_OR_EQUAL:
-          return GREATER_THAN;
         case METHOD_EQUALS:
           return NOT_METHOD_EQUALS;
         case NOT_METHOD_EQUALS:
@@ -74,30 +84,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       }
     }
 
-    public Kind symmetric() {
-      Kind sym;
-      switch (this) {
-        case GREATER_THAN:
-          sym = LESS_THAN;
-          break;
-        case GREATER_THAN_OR_EQUAL:
-          sym = LESS_THAN_OR_EQUAL;
-          break;
-        case LESS_THAN:
-          sym = GREATER_THAN;
-          break;
-        case LESS_THAN_OR_EQUAL:
-          sym = GREATER_THAN_OR_EQUAL;
-          break;
-        default:
-          sym = this;
-      }
-      return sym;
-    }
   }
 
   final Kind kind;
-  private BinaryRelation binaryRelation;
 
   public RelationalSymbolicValue(Kind kind) {
     this.kind = kind;
@@ -209,42 +198,202 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
-    RelationState relationState = binaryRelation().resolveState(programState.getKnownRelations());
+    RelationState relationState = resolveState(programState);
     return !relationState.rejects(booleanConstraint);
   }
 
+  RelationState resolveState(ProgramState programState) {
+    if (hasSameOperand()) {
+      return relationStateForSameOperand();
+    }
+
+    Set<RelationalSymbolicValue> allRelations = knownRelations(programState).collect(Collectors.toCollection(HashSet::new));
+    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>(allRelations);
+    int iterations = 0;
+    while (!workList.isEmpty()) {
+      if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        // should not happen under normal conditions
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
+      }
+      iterations++;
+      RelationalSymbolicValue relation = workList.pop();
+      RelationState result = relation.implies(this);
+      if (result.isDetermined()) {
+        return result;
+      }
+      List<RelationalSymbolicValue> newRelations = allRelations.stream()
+        .map(relation::deduceTransitiveOrSimplified)
+        .filter(Objects::nonNull)
+        .filter(r -> !allRelations.contains(r))
+        .collect(Collectors.toList());
+
+      allRelations.addAll(newRelations);
+      workList.addAll(newRelations);
+    }
+    return RelationState.UNDETERMINED;
+  }
+
+  private RelationState relationStateForSameOperand() {
+    switch (kind) {
+      case EQUAL:
+      case GREATER_THAN_OR_EQUAL:
+      case METHOD_EQUALS:
+        return RelationState.FULFILLED;
+      case NOT_EQUAL:
+      case LESS_THAN:
+      case NOT_METHOD_EQUALS:
+        return RelationState.UNFULFILLED;
+      default:
+        throw new IllegalStateException("Unknown resolution for same operand " + this);
+    }
+  }
+
+  private RelationState implies(RelationalSymbolicValue relation) {
+    if (this.equals(relation)) {
+      return RelationState.FULFILLED;
+    }
+    if (inverse().equals(relation)) {
+      return RelationState.UNFULFILLED;
+    }
+    if (hasSameOperandsAs(relation)) {
+      return RelationStateTable.solveRelation(kind, relation.kind);
+    }
+    return RelationState.UNDETERMINED;
+  }
+
   private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
-    BinaryRelation relation = binaryRelation();
-    return programState.getKnownRelations().stream()
-      .map(r -> r.deduceTransitiveOrSimplified(relation))
+    return knownRelations(programState)
+      .map(this::deduceTransitiveOrSimplified)
       .filter(Objects::nonNull)
-      .map(RelationalSymbolicValue::binaryRelationToSymbolicValue)
       .collect(Collectors.toList());
   }
 
-  private static RelationalSymbolicValue binaryRelationToSymbolicValue(BinaryRelation binaryRelation) {
-    switch (binaryRelation.kind) {
-      case EQUAL:
-      case METHOD_EQUALS:
-      case NOT_EQUAL:
-      case NOT_METHOD_EQUALS:
-      case LESS_THAN:
-      case GREATER_THAN_OR_EQUAL:
-        return new RelationalSymbolicValue(binaryRelation.kind, binaryRelation.leftOp, binaryRelation.rightOp);
-      case GREATER_THAN:
-      case LESS_THAN_OR_EQUAL:
-        return new RelationalSymbolicValue(binaryRelation.kind.symmetric(), binaryRelation.rightOp, binaryRelation.leftOp);
-      default:
-        throw new IllegalStateException("Unable to convert to relational SV " + binaryRelation);
-    }
+  private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
+    return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
+      .stream()
+      .filter(RelationalSymbolicValue.class::isInstance)
+      .map(RelationalSymbolicValue.class::cast);
   }
 
-  @Override
-  public BinaryRelation binaryRelation() {
-    if (binaryRelation == null) {
-      binaryRelation = BinaryRelation.binaryRelation(kind, leftOp, rightOp);
+  @VisibleForTesting
+  RelationalSymbolicValue deduceTransitiveOrSimplified(RelationalSymbolicValue other) {
+    RelationalSymbolicValue result = simplify(other);
+    if (result != null) {
+      return result;
     }
-    return binaryRelation;
+    return combineTransitively(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue simplify(RelationalSymbolicValue other) {
+    // a >= b && b >= a -> a == b
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL
+      && hasSameOperandsAs(other) && !equals(other)) {
+      return new RelationalSymbolicValue(EQUAL, leftOp, rightOp);
+    }
+    return null;
+  }
+
+  @VisibleForTesting
+  boolean potentiallyTransitiveWith(RelationalSymbolicValue other) {
+    if (hasSameOperand() || other.hasSameOperand()) {
+      return false;
+    }
+    return (hasOperand(other.leftOp) || hasOperand(other.rightOp)) && !hasSameOperandsAs(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue combineTransitively(RelationalSymbolicValue other) {
+    if (!potentiallyTransitiveWith(other)) {
+      return null;
+    }
+    RelationalSymbolicValue transitive = combineTransitivelyOneWay(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    return other.combineTransitivelyOneWay(this);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue combineTransitivelyOneWay(RelationalSymbolicValue other) {
+    RelationalSymbolicValue transitive = equalityTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    transitive = lessThanTransitiveBuilder(other);
+    if (transitive != null) {
+      return transitive;
+    }
+    return greaterThanEqualTransitiveBuilder(other);
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue equalityTransitiveBuilder(RelationalSymbolicValue other) {
+    if (!isEquality()
+      || (kind == METHOD_EQUALS && other.kind == EQUAL)) {
+      return null;
+    }
+
+    return new RelationalSymbolicValue(other.kind,
+      hasOperand(other.leftOp) ? differentOperand(other) : other.leftOp,
+      hasOperand(other.leftOp) ? other.rightOp : differentOperand(other));
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue lessThanTransitiveBuilder(RelationalSymbolicValue other) {
+    if (kind != LESS_THAN) {
+      return null;
+    }
+    if (other.kind == LESS_THAN) {
+      // a < x && x < b => a < b
+      if (rightOp.equals(other.leftOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, leftOp, other.rightOp);
+      }
+      // x < a && b < x => b < a
+      if (leftOp.equals(other.rightOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, other.leftOp, rightOp);
+      }
+    }
+    if (other.kind == GREATER_THAN_OR_EQUAL) {
+      // a < x && b >= x => a < b
+      if (rightOp.equals(other.rightOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, leftOp, other.leftOp);
+      }
+      // x < a && x >= b => b < a
+      if (leftOp.equals(other.leftOp)) {
+        return new RelationalSymbolicValue(LESS_THAN, other.rightOp, rightOp);
+      }
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private RelationalSymbolicValue greaterThanEqualTransitiveBuilder(RelationalSymbolicValue other) {
+    // a >= x && x >= b -> a >= b
+    if (kind == GREATER_THAN_OR_EQUAL && other.kind == GREATER_THAN_OR_EQUAL && rightOp.equals(other.leftOp)) {
+      return new RelationalSymbolicValue(GREATER_THAN_OR_EQUAL, leftOp, other.rightOp);
+    }
+    return null;
+  }
+
+  private boolean hasSameOperand() {
+    return leftOp.equals(rightOp);
+  }
+
+  private boolean hasOperand(SymbolicValue operand) {
+    return leftOp.equals(operand) || rightOp.equals(operand);
+  }
+
+  private boolean hasSameOperandsAs(RelationalSymbolicValue other) {
+    return (leftOp.equals(other.leftOp) && rightOp.equals(other.rightOp))
+      || (leftOp.equals(other.rightOp) && rightOp.equals(other.leftOp));
+  }
+
+  @VisibleForTesting
+  SymbolicValue differentOperand(RelationalSymbolicValue other) {
+    Preconditions.checkState(potentiallyTransitiveWith(other), "%s is not in transitive relationship with %s", this, other);
+    return other.hasOperand(leftOp) ? rightOp : leftOp;
   }
 
   @Override
@@ -262,7 +411,19 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (leftOp.equals(that.leftOp) && rightOp.equals(that.rightOp)) {
       return true;
     }
-    return isEquality() && leftOp.equals(that.rightOp) && rightOp.equals(that.leftOp);
+    return isCommutative() && leftOp.equals(that.rightOp) && rightOp.equals(that.leftOp);
+  }
+
+  private boolean isCommutative() {
+    switch (kind) {
+      case EQUAL:
+      case NOT_EQUAL:
+      case METHOD_EQUALS:
+      case NOT_METHOD_EQUALS:
+        return true;
+      default:
+        return false;
+    }
   }
 
   private boolean isEquality() {
@@ -278,5 +439,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   @Override
   public String toString() {
     return leftOp.toString() + kind.operand + rightOp.toString();
+  }
+
+  public static class TransitiveRelationExceededException extends RuntimeException {
+    public TransitiveRelationExceededException(String msg) {
+      super("Number of transitive relations exceeded!" + msg);
+    }
   }
 }

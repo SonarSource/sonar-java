@@ -73,7 +73,7 @@ class RelationStateTable {
    * Solve the state of {@code toSolve} relation given that {@code known} relation is fulfilled (satisfied).
    *
    * It is assumed that relations share operands and that certain combinations of operands
-   * were already eliminated in {@link BinaryRelation#implies(BinaryRelation)}
+   * were already eliminated in {@link RelationalSymbolicValue#implies(RelationalSymbolicValue)}
    *
    * @param known relation we know is fulfilled
    * @param toSolve relation of which state we are trying to determine

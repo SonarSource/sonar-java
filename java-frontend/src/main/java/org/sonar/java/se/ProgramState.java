@@ -34,7 +34,6 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -441,21 +440,6 @@ public class ProgramState {
       }
     });
     return result;
-  }
-
-  public List<BinaryRelation> getKnownRelations() {
-    final List<BinaryRelation> knownRelations = new ArrayList<>();
-    constraints.forEach((symbolicValue, pMap) -> {
-      BinaryRelation relation = symbolicValue.binaryRelation();
-      if (relation != null) {
-        if (BooleanConstraint.TRUE.equals(pMap.get(BooleanConstraint.class))) {
-          knownRelations.add(relation);
-        } else if (BooleanConstraint.FALSE.equals(pMap.get(BooleanConstraint.class))) {
-          knownRelations.add(relation.inverse());
-        }
-      }
-    });
-    return knownRelations;
   }
 
   public void storeExitValue() {

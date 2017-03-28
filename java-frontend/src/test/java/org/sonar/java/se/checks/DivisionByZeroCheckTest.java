@@ -35,10 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
-import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
-import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
 
 public class DivisionByZeroCheckTest {
@@ -62,13 +60,9 @@ public class DivisionByZeroCheckTest {
 
     bConstraint = copyConstraint(a, b, NOT_EQUAL, NON_ZERO);
     assertThat(bConstraint).isEqualTo(NON_ZERO);
-    bConstraint = copyConstraint(a, b, GREATER_THAN, NON_ZERO);
-    assertThat(bConstraint).isEqualTo(NON_ZERO);
     bConstraint = copyConstraint(a, b, LESS_THAN, NON_ZERO);
     assertThat(bConstraint).isEqualTo(NON_ZERO);
 
-    bConstraint = copyConstraint(a, b, LESS_THAN_OR_EQUAL, null);
-    assertThat(bConstraint).isNull();
     bConstraint = copyConstraint(a, b, GREATER_THAN_OR_EQUAL, null);
     assertThat(bConstraint).isNull();
   }

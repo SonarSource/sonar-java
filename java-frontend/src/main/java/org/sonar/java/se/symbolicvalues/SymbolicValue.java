@@ -321,8 +321,4 @@ public class SymbolicValue {
     }
   }
 
-  @CheckForNull
-  public BinaryRelation binaryRelation() {
-    return null;
-  }
 }
