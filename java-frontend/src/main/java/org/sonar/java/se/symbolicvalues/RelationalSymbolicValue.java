@@ -272,8 +272,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
     return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
       .stream()
-      .filter(sv -> sv instanceof RelationalSymbolicValue)
-      .map(sv -> (RelationalSymbolicValue) sv);
+      .filter(RelationalSymbolicValue.class::isInstance)
+      .map(RelationalSymbolicValue.class::cast);
   }
 
   @VisibleForTesting
