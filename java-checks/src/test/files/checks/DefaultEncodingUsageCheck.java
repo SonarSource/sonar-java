@@ -81,6 +81,7 @@ class A {
     IOUtils.toString(uri); // Noncompliant
     IOUtils.toString(url); // Noncompliant
     IOUtils.write(chars, output); // Noncompliant
+    IOUtils.write(charSequence, output); // Noncompliant
     IOUtils.write(buffer, output); // Noncompliant
     IOUtils.write(s, output); // Noncompliant
     IOUtils.writeLines(lines, "\n", output); // Noncompliant
@@ -97,6 +98,7 @@ class A {
   void commons_io_with_null(Reader reader, Writer writer, InputStream input, OutputStream output, String s, CharSequence charSequence, byte[] bytes,
                   java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) {
     IOUtils.copy(input, writer, (String) null); // Noncompliant
+    IOUtils.copy(input, writer, ((String) (((null))))); // Noncompliant
     IOUtils.copy(reader, output, (String) null); // Noncompliant
     IOUtils.readLines(input, (String) null); // Noncompliant
     IOUtils.toByteArray(reader, (String) null); // Noncompliant
@@ -107,6 +109,7 @@ class A {
     IOUtils.toString(uri, (String) null); // Noncompliant
     IOUtils.toString(url, (String) null); // Noncompliant
     IOUtils.write(chars, output, (String) null); // Noncompliant
+    IOUtils.write(charSequence, output, (String) null); // Noncompliant
     IOUtils.write(buffer, output, (String) null); // Noncompliant
     IOUtils.write(s, output, (String) null); // Noncompliant
     IOUtils.writeLines(lines, "\n", output, (String) null); // Noncompliant

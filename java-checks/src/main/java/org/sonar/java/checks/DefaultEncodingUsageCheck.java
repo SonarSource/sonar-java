@@ -80,18 +80,20 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     method(COMMONS_IOUTILS, "readLines").parameters(JAVA_IO_INPUTSTREAM),
     method(COMMONS_IOUTILS, "toByteArray").parameters(JAVA_IO_READER),
     method(COMMONS_IOUTILS, "toCharArray").parameters(JAVA_IO_INPUTSTREAM),
-    method(COMMONS_IOUTILS, "toInputStream").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
+    method(COMMONS_IOUTILS, "toInputStream").parameters(JAVA_LANG_CHARSEQUENCE),
+    method(COMMONS_IOUTILS, "toInputStream").parameters(JAVA_LANG_STRING),
     method(COMMONS_IOUTILS, "toString").parameters(BYTE_ARRAY),
     method(COMMONS_IOUTILS, "toString").parameters("java.net.URI"),
     method(COMMONS_IOUTILS, "toString").parameters("java.net.URL"),
     method(COMMONS_IOUTILS, "write").parameters("char[]", JAVA_IO_OUTPUTSTREAM),
+    // TypeCriteria.subtypeOf is used to cover also signatures with String and StringBuffer
     method(COMMONS_IOUTILS, "write").parameters(TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(JAVA_IO_OUTPUTSTREAM)),
     method(COMMONS_IOUTILS, "writeLines").parameters("java.util.Collection", JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM),
 
     method(COMMONS_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE),
     method(COMMONS_FILEUTILS, "readLines").parameters(JAVA_IO_FILE),
-    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE)),
-    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE), TypeCriteria.is(BOOLEAN)),
+    method(COMMONS_FILEUTILS, "write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE),
+    method(COMMONS_FILEUTILS, "write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, BOOLEAN),
     method(COMMONS_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING)
   );
 
@@ -100,17 +102,15 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     .collect(Collectors.toList());
 
   private static final MethodMatcherCollection COMMONS_IO_CHARSET_MATCHERS =
-    MethodMatcherCollection.create(COMMONS_IO_WITH_CHARSET.toArray(new MethodMatcher[COMMONS_IO_WITH_CHARSET.size()]));
+    MethodMatcherCollection.create(COMMONS_IO_WITH_CHARSET.toArray(new MethodMatcher[0]));
 
   private static final List<MethodMatcher> FILEUTILS_WRITE_WITH_CHARSET = ImmutableList.of(
-    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE),
-      TypeCriteria.is(JAVA_LANG_STRING), TypeCriteria.is(BOOLEAN)),
-    method(COMMONS_FILEUTILS, "write").parameters(TypeCriteria.is(JAVA_IO_FILE), TypeCriteria.subtypeOf(JAVA_LANG_CHARSEQUENCE),
-      TypeCriteria.is(JAVA_NIO_CHARSET), TypeCriteria.is(BOOLEAN))
+    method(COMMONS_FILEUTILS, "write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, BOOLEAN),
+    method(COMMONS_FILEUTILS, "write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_NIO_CHARSET, BOOLEAN)
   );
 
   private static final MethodMatcherCollection FILEUTILS_WRITE_WITH_CHARSET_MATCHERS =
-    MethodMatcherCollection.create(FILEUTILS_WRITE_WITH_CHARSET.toArray(new MethodMatcher[FILEUTILS_WRITE_WITH_CHARSET.size()]));
+    MethodMatcherCollection.create(FILEUTILS_WRITE_WITH_CHARSET.toArray(new MethodMatcher[0]));
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -216,7 +216,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static boolean isNullLiteral(ExpressionTree lastArgument) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(lastArgument);
     return arg.is(Tree.Kind.NULL_LITERAL)
-      || (arg.is(Tree.Kind.TYPE_CAST) && ((TypeCastTree) arg).expression().is(Tree.Kind.NULL_LITERAL));
+      || (arg.is(Tree.Kind.TYPE_CAST) && isNullLiteral(((TypeCastTree) arg).expression()));
   }
 
   @Override
