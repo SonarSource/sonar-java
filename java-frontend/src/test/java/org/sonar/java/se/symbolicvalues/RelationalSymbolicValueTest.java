@@ -97,18 +97,18 @@ public class RelationalSymbolicValueTest {
   public void test_same_operand() {
     assertThat(sameOperandResolution(Tree.Kind.EQUAL_TO)).isEqualTo(FULFILLED);
     RelationalSymbolicValue eq = new RelationalSymbolicValue(METHOD_EQUALS, a, a);
-    assertThat(eq.resolveState(Collections.emptySet())).isEqualTo(FULFILLED);
+    assertThat(eq.resolveRelationState(Collections.emptySet())).isEqualTo(FULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.LESS_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)).isEqualTo(FULFILLED);
 
     assertThat(sameOperandResolution(Tree.Kind.NOT_EQUAL_TO)).isEqualTo(UNFULFILLED);
-    assertThat(eq.inverse().resolveState(Collections.emptySet())).isEqualTo(UNFULFILLED);
+    assertThat(eq.inverse().resolveRelationState(Collections.emptySet())).isEqualTo(UNFULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.LESS_THAN)).isEqualTo(UNFULFILLED);
     assertThat(sameOperandResolution(Tree.Kind.GREATER_THAN)).isEqualTo(UNFULFILLED);
   }
 
   private RelationState sameOperandResolution(Tree.Kind kind) {
-    return relationalSV(kind, a, a).resolveState(Collections.emptySet());
+    return relationalSV(kind, a, a).resolveRelationState(Collections.emptySet());
   }
 
   @Test
@@ -137,12 +137,12 @@ public class RelationalSymbolicValueTest {
     List<String> actual = new ArrayList<>();
     for (Tree.Kind operator : operators) {
       RelationalSymbolicValue test = relationalSV(operator, b, a);
-      RelationState relationState = test.resolveState(Collections.singleton(known));
+      RelationState relationState = test.resolveRelationState(Collections.singleton(known));
       actual.add(String.format("given %s when %s -> %s", knownAsString.get(), relationToString(operator, a, b), relationState));
     }
     RelationalSymbolicValue eq = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
     Stream.of(eq, eq.inverse()).forEach(rel -> {
-        RelationState relationState = rel.resolveState(Collections.singleton(known));
+        RelationState relationState = rel.resolveRelationState(Collections.singleton(known));
         actual.add(String.format("given %s when %s -> %s", knownAsString.get(), rel, relationState));
       }
     );

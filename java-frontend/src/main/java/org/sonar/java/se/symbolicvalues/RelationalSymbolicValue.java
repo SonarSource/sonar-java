@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
@@ -103,13 +102,13 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (booleanConstraint == BooleanConstraint.FALSE) {
       return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE);
     }
-    Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState).collect(Collectors.toSet());
+    Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState);
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     newRelations.add(this);
     newRelations.addAll(transitiveRelations(knownRelations));
 
     boolean unfulfilled = newRelations.stream()
-      .map(r -> r.resolveState(knownRelations))
+      .map(r -> r.resolveRelationState(knownRelations))
       .anyMatch(RelationState.UNFULFILLED::equals);
 
     if (unfulfilled) {
@@ -205,7 +204,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  RelationState resolveState(Set<RelationalSymbolicValue> knownRelations) {
+  @VisibleForTesting
+  RelationState resolveRelationState(Set<RelationalSymbolicValue> knownRelations) {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
     }
@@ -252,15 +252,13 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     while (!workList.isEmpty()) {
       if (newRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
-        // should not happen under normal conditions
         throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + newRelations.size() + ". Iterations " + iterations);
       }
       iterations++;
       RelationalSymbolicValue relation = workList.pop();
       for (RelationalSymbolicValue knownRelation : knownRelations) {
         RelationalSymbolicValue r = relation.deduceTransitiveOrSimplified(knownRelation);
-        if (r != null && !knownRelations.contains(r) && !newRelations.contains(r)) {
-          newRelations.add(r);
+        if (r != null && !knownRelations.contains(r) && newRelations.add(r)) {
           workList.add(r);
         }
       }
@@ -268,11 +266,12 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return newRelations;
   }
 
-  private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
+  private static Set<RelationalSymbolicValue> knownRelations(ProgramState programState) {
     return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
       .stream()
       .filter(RelationalSymbolicValue.class::isInstance)
-      .map(RelationalSymbolicValue.class::cast);
+      .map(RelationalSymbolicValue.class::cast)
+      .collect(Collectors.toSet());
   }
 
   @VisibleForTesting
