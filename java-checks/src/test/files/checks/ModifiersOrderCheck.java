@@ -11,6 +11,7 @@ class Foo {
   @RequestMapping(value = "/restComTool", method = RequestMethod.GET)
   public
   @ResponseBody
+  static
   Map<String, List<Query>> queries(@RequestParam(value = "id", required = true, defaultValue = "-1") final Long id,
                                    @RequestParam(value = "q", required = false, defaultValue = "") final String query,
                                    @RequestParam(value = "callback", required = false, defaultValue = "") final String callback){}
@@ -25,4 +26,13 @@ interface Bar{
   default void fun(){}
 }
 
-
+class A {
+  @Annotation1
+  private
+  @Annotation2  // Compliant - annotation on type from java 8
+    String foo;
+  @Annotation1 @Annotation2 private String bar; // Compliant
+  private @Annotation1 @Annotation2 String qix; // Compliant
+  @interface Annotation1 {}
+  @interface Annotation2 {}
+}

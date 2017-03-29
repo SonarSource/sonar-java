@@ -9,9 +9,6 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java':[
 113,
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java':[
-671,
-],
 'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java':[
 49,
 ],
@@ -21,8 +18,5 @@
 ],
 'com.google.guava:guava:src/com/google/common/hash/AbstractStreamingHashFunction.java':[
 85,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/Callables.java':[
-43,
 ],
 }

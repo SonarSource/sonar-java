@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 @Rule(key = "ModifiersOrderCheck")
@@ -65,23 +66,45 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
   }
 
   private static ModifierTree getFirstBadlyOrdered(ModifiersTree modifiersTree) {
-    int modifierIndex = -1;
+    ListIterator<ModifierTree> modifiersIterator = modifiersTree.listIterator();
+    skipAnnotations(modifiersIterator);
     Modifier[] modifiers = Modifier.values();
-    for (ModifierTree modifier : modifiersTree) {
+    int modifierIndex = 0;
+    while (modifiersIterator.hasNext()){
+      ModifierTree modifier = modifiersIterator.next();
       if (modifier.is(Kind.ANNOTATION)) {
-        if (modifierIndex >= 0) {
-          return modifier;
-        }
-      } else {
-        if (modifierIndex < 0) {
-          modifierIndex = 0;
-        }
-        ModifierKeywordTree mkt = (ModifierKeywordTree) modifier;
-        for (; modifierIndex < modifiers.length && !mkt.modifier().equals(modifiers[modifierIndex]); modifierIndex++) {
-          // We're just interested in the final value of modifierIndex
-        }
-        if (modifierIndex == modifiers.length) {
-          return modifier;
+        break;
+      }
+      ModifierKeywordTree mkt = (ModifierKeywordTree) modifier;
+      for (; modifierIndex < modifiers.length && !mkt.modifier().equals(modifiers[modifierIndex]); modifierIndex++) {
+        // We're just interested in the final value of modifierIndex
+      }
+      if (modifierIndex == modifiers.length) {
+        return modifier;
+      }
+    }
+    return testOnlyAnnotationsAreLeft(modifiersIterator);
+  }
+
+  /**
+   * Move iterator on the first element which is not an annotation
+   */
+  private static void skipAnnotations(ListIterator<ModifierTree> modifiersIterator) {
+    while (modifiersIterator.hasNext() && modifiersIterator.next().is(Kind.ANNOTATION)) {
+      // skip modifiers which are annotations
+    }
+    if (modifiersIterator.hasNext()) {
+      modifiersIterator.previous();
+    }
+  }
+
+  private static ModifierTree testOnlyAnnotationsAreLeft(ListIterator<ModifierTree> modifiersIterator) {
+    while (modifiersIterator.hasNext()) {
+      ModifierTree modifier = modifiersIterator.next();
+      if (!modifier.is(Kind.ANNOTATION)) {
+        modifiersIterator.previous();
+        if (modifiersIterator.hasPrevious()) {
+          return modifiersIterator.previous();
         }
       }
     }
