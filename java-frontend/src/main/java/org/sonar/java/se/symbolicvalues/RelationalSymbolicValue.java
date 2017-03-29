@@ -36,10 +36,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
@@ -101,16 +99,25 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    if (!checkRelation(booleanConstraint, initialProgramState)) {
+    if (booleanConstraint == BooleanConstraint.FALSE) {
+      return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE);
+    }
+    Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState);
+    Set<RelationalSymbolicValue> newRelations = new HashSet<>();
+    newRelations.add(this);
+    newRelations.addAll(transitiveRelations(knownRelations));
+
+    boolean unfulfilled = newRelations.stream()
+      .map(r -> r.resolveRelationState(knownRelations))
+      .anyMatch(RelationState.UNFULFILLED::equals);
+
+    if (unfulfilled) {
       return ImmutableList.of();
     }
-    return booleanConstraint == BooleanConstraint.TRUE ? getNewProgramStates(initialProgramState) : inverse().getNewProgramStates(initialProgramState);
+    return getNewProgramStates(initialProgramState, newRelations);
   }
 
-  private List<ProgramState> getNewProgramStates(ProgramState initialProgramState) {
-    List<RelationalSymbolicValue> newRelations = transitiveRelations(initialProgramState);
-    newRelations.add(this);
-
+  private static List<ProgramState> getNewProgramStates(ProgramState initialProgramState, Set<RelationalSymbolicValue> newRelations) {
     List<ProgramState> programStates = new ArrayList<>();
     programStates.add(initialProgramState);
     for (RelationalSymbolicValue relationalSymbolicValue : newRelations) {
@@ -197,41 +204,16 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  private boolean checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
-    RelationState relationState = resolveState(programState);
-    return !relationState.rejects(booleanConstraint);
-  }
-
-  RelationState resolveState(ProgramState programState) {
+  @VisibleForTesting
+  RelationState resolveRelationState(Set<RelationalSymbolicValue> knownRelations) {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
     }
 
-    Set<RelationalSymbolicValue> allRelations = knownRelations(programState).collect(Collectors.toCollection(HashSet::new));
-    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>(allRelations);
-    int iterations = 0;
-    while (!workList.isEmpty()) {
-      if (allRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
-        // safety mechanism in case of an error in the algorithm
-        // should not happen under normal conditions
-        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + allRelations.size() + ". Iterations " + iterations);
-      }
-      iterations++;
-      RelationalSymbolicValue relation = workList.pop();
-      RelationState result = relation.implies(this);
-      if (result.isDetermined()) {
-        return result;
-      }
-      List<RelationalSymbolicValue> newRelations = allRelations.stream()
-        .map(relation::deduceTransitiveOrSimplified)
-        .filter(Objects::nonNull)
-        .filter(r -> !allRelations.contains(r))
-        .collect(Collectors.toList());
-
-      allRelations.addAll(newRelations);
-      workList.addAll(newRelations);
-    }
-    return RelationState.UNDETERMINED;
+    return knownRelations.stream()
+      .map(r -> r.implies(this))
+      .filter(RelationState::isDetermined)
+      .findAny().orElse(RelationState.UNDETERMINED);
   }
 
   private RelationState relationStateForSameOperand() {
@@ -262,18 +244,35 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return RelationState.UNDETERMINED;
   }
 
-  private List<RelationalSymbolicValue> transitiveRelations(ProgramState programState) {
-    return knownRelations(programState)
-      .map(this::deduceTransitiveOrSimplified)
-      .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+  @VisibleForTesting
+  Set<RelationalSymbolicValue> transitiveRelations(Set<RelationalSymbolicValue> knownRelations) {
+    Set<RelationalSymbolicValue> newRelations = new HashSet<>();
+    Deque<RelationalSymbolicValue> workList = new ArrayDeque<>();
+    int iterations = 0;
+    workList.add(this);
+    while (!workList.isEmpty()) {
+      if (newRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+        // safety mechanism in case of an error in the algorithm
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + newRelations.size() + ". Iterations " + iterations);
+      }
+      iterations++;
+      RelationalSymbolicValue relation = workList.pop();
+      for (RelationalSymbolicValue knownRelation : knownRelations) {
+        RelationalSymbolicValue r = relation.deduceTransitiveOrSimplified(knownRelation);
+        if (r != null && !knownRelations.contains(r) && newRelations.add(r)) {
+          workList.add(r);
+        }
+      }
+    }
+    return newRelations;
   }
 
-  private static Stream<RelationalSymbolicValue> knownRelations(ProgramState programState) {
+  private static Set<RelationalSymbolicValue> knownRelations(ProgramState programState) {
     return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
       .stream()
       .filter(RelationalSymbolicValue.class::isInstance)
-      .map(RelationalSymbolicValue.class::cast);
+      .map(RelationalSymbolicValue.class::cast)
+      .collect(Collectors.toSet());
   }
 
   @VisibleForTesting

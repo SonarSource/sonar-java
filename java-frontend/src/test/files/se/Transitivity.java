@@ -347,4 +347,12 @@ class A {
     }
   }
 
+  void test_transitive_relations_are_not_generated_when_already_present(boolean a) {
+    boolean b = a == false;
+    if (b == false) {
+      if (b) { // Noncompliant
+      }
+    }
+  }
+
 }
