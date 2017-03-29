@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
@@ -295,6 +294,10 @@ public class FlowComputation {
       if (symbolicValues.contains(returnSV)) {
         // to retrieve flow for return value
         argumentIndices.add(-1);
+      }
+      if (argumentIndices.isEmpty()) {
+        // no need to compute any flow on yields : no arg nor return value are corresponding to tracked SVs
+        return ImmutableSet.of(ImmutableList.of());
       }
       return methodYields.stream()
         .map(y -> y.flow(argumentIndices, domains))

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -170,6 +171,7 @@ public abstract class MethodYield {
   }
 
   public Set<List<JavaFileScannerContext.Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+    Preconditions.checkArgument(!parameterIndices.isEmpty(), "computing flow on empty symbolic value list should never happen");
     if(node == null || behavior == null) {
       return Collections.emptySet();
     }

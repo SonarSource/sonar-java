@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
-
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
@@ -48,6 +47,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getSymbolWithMethodBehavior;
@@ -108,6 +109,17 @@ public class MethodYieldTest {
   public void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
     assertThat(methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
+  }
+
+  @Test
+  public void flow_should_fail_if_no_parameters_are_passed() throws Exception {
+    MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
+    try {
+      methodYield.flow(Collections.emptyList(), Collections.singletonList(ObjectConstraint.class));
+      fail("calling flow with empty list should have failed");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae).hasMessage("computing flow on empty symbolic value list should never happen");
+    }
   }
 
   private static ExplodedGraph.Node mockNode() {
