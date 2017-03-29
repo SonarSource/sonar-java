@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -72,6 +71,10 @@ public class FlowComputationTest {
   @Test
   public void test_multiple_paths_xproc() {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePathXProc.java", new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+  }
 
+  @Test
+  public void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/UselessFlowComputation.java",  new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
   }
 }
