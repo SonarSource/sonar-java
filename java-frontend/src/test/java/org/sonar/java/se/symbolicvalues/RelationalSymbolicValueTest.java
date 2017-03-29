@@ -19,16 +19,21 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -39,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -71,6 +77,8 @@ public class RelationalSymbolicValueTest {
       return "SV_3";
     }
   };
+  SymbolicValue d = new SymbolicValue();
+  SymbolicValue e = new SymbolicValue();
 
   private final List<Tree.Kind> operators = Arrays.asList(
     Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO,
@@ -322,6 +330,57 @@ public class RelationalSymbolicValueTest {
 
   private Collection<SymbolicValue> nullableToCollection(@Nullable RelationalSymbolicValue symbolicValue) {
     return symbolicValue == null ? Collections.emptySet() : Collections.singleton(symbolicValue);
+  }
+
+  @Test
+  public void test_all_transitive_relations_are_computed() throws Exception {
+    RelationalSymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    RelationalSymbolicValue bc = relationalSV(Tree.Kind.EQUAL_TO, b, c);
+    RelationalSymbolicValue cd = relationalSV(Tree.Kind.EQUAL_TO, c, d);
+    Set<RelationalSymbolicValue> transitive = ab.transitiveRelations(ImmutableSet.of(ab, bc, cd));
+    assertThat(transitive).containsOnly(relationalSV(Tree.Kind.EQUAL_TO, a, c), relationalSV(Tree.Kind.EQUAL_TO, b, d), relationalSV(Tree.Kind.EQUAL_TO, a, d));
+  }
+
+  @Test
+  public void test_constraints_are_copied_over_transitive_relations() throws Exception {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    ps = Iterables.getOnlyElement(a.setConstraint(ps, ObjectConstraint.NULL));
+    RelationalSymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    ps = setTrue(ps, ab);
+    assertNullConstraint(ps, b);
+
+    RelationalSymbolicValue cd = relationalSV(Tree.Kind.EQUAL_TO, c, d);
+    ps = setTrue(ps, cd);
+    RelationalSymbolicValue de = relationalSV(Tree.Kind.EQUAL_TO, d, e);
+    ps = setTrue(ps, de);
+    assertNoConstraints(ps, c);
+    assertNoConstraints(ps, d);
+    assertNoConstraints(ps, e);
+    assertThat(ps.getConstraint(relationalSV(Tree.Kind.EQUAL_TO, c, e), BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
+
+    // this relation will connect two distinct groups of relations (ab) -- (cde)
+    RelationalSymbolicValue bc = relationalSV(Tree.Kind.EQUAL_TO, b, c);
+    ps = setTrue(ps, bc);
+    // we assert that NULL was copied over to all values
+    assertNullConstraint(ps, b);
+    assertNullConstraint(ps, c);
+    assertNullConstraint(ps, d);
+    assertNullConstraint(ps, e);
+  }
+
+  private void assertNullConstraint(ProgramState ps, SymbolicValue sv) {
+    assertThat(ps.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
+  }
+
+  private void assertNoConstraints(ProgramState ps, SymbolicValue sv) {
+    PMap<Class<? extends Constraint>, Constraint> constraints = ps.getConstraints(sv);
+    if (constraints != null) {
+      assertThat(constraints).isEqualTo(PCollections.emptyMap());
+    }
+  }
+
+  private ProgramState setTrue(ProgramState ps, RelationalSymbolicValue ab) {
+    return Iterables.getOnlyElement(ab.setConstraint(ps, BooleanConstraint.TRUE));
   }
 
   private String relationToString(Tree.Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {

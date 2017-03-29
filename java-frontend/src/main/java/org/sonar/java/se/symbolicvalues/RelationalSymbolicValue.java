@@ -244,7 +244,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return RelationState.UNDETERMINED;
   }
 
-  private Set<RelationalSymbolicValue> transitiveRelations(Set<RelationalSymbolicValue> knownRelations) {
+  @VisibleForTesting
+  Set<RelationalSymbolicValue> transitiveRelations(Set<RelationalSymbolicValue> knownRelations) {
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     Deque<RelationalSymbolicValue> workList = new ArrayDeque<>();
     int iterations = 0;
