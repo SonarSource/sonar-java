@@ -58,3 +58,105 @@ public class RedundantThrowsDeclarationCheck {
     }
   }
 }
+
+abstract class MySuperClass {
+  abstract foo() throws MyException;
+}
+
+abstract class ThrownCheckedExceptions extends MySuperClass {
+  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from constructor's body.}}
+    bar();
+  }
+
+  @Override
+  void foo() throws MyException { //Compliant - Override
+    bar();
+  }
+
+  void foo0() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    bar();
+  }
+
+  void foo1() throws MyException { // Compliant - unknown method is called
+    unknownMethod();
+    bar();
+  }
+
+  void foo2() throws MyException { // Compliant - unknown exception is thrown by qix
+    qix();
+  }
+
+  void foo3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    new MyClass() {
+      void foo() {
+        throw new MyException();
+      }
+    };
+  }
+
+  void foo4() throws MyException { // Noncompliant
+    gul(o -> { throw new RuntimeException(); });
+  }
+
+  void foo5() throws MyException { // Compliant
+    bar();
+    mok();
+  }
+
+  void foo6() { // Compliant
+    puf();
+    kal();
+  }
+
+  void foo7() throws MyException { // Compliant - False-Negative - studying control flow is not done
+    try {
+      mok();
+    } catch(MyException e) {
+      // do nothing
+    }
+  }
+
+  void foo8(Throwable t) throws java.io.IOException { // Compliant - kill the noise due to SONARJAVA-1778
+    throwIfException(t, java.io.IOException.class);
+  }
+
+  <X> void foo9(int i) throws MyException {
+    new MyOtherClass<X>(i);
+  }
+
+  protected Object readResolve() throws java.io.ObjectStreamException { // Compliant - Serializable contract
+    // do nothing
+  }
+
+  int foo9() throws MyException { // Compliant - designed for extension
+    return 0;
+  }
+
+  public int foo10() throws MyException { // Compliant - designed for extension
+    throw new UnsupportedOperationException();
+  }
+
+  private int foo11() throws MyException { // Noncompliant - private
+    return 0;
+  }
+
+  Object foo12() throws MyException { // Noncompliant - only target litteral
+    return new Object();
+  }
+
+  abstract void bar();
+  abstract void qix() throws UnknownException;
+  abstract void gul(java.util.function.Function<Object, String> s);
+  abstract void mok() throws MyException;
+  abstract void puf() throws MyError;
+  abstract void kal() throws MyRuntimeException; // Noncompliant
+  abstract <X extends Exception> void throwIfException(Throwable t, Class<X> declaredType) throws X;
+  static class MyClass { }
+  static class MyOtherClass<X> {
+    public MyOtherClass(int i) throws MyException { }
+  }
+}
+
+class MyException extends Exception {}
+class MyError extends Error {}
+class MyRuntimeException extends RuntimeException {}
