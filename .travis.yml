@@ -12,6 +12,8 @@ matrix:
   fast_finish: true
   include:
   - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
     env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
   - jdk: oraclejdk8
     env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
@@ -21,8 +23,6 @@ matrix:
     env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
   - jdk: oraclejdk8
     env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
-  - jdk: oraclejdk8
-    env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
 before_cache:
   # remove all the artifacts that are installed in local repo because of mvn deploy
   - rm -rf $HOME/.m2/repository/org/sonarsource/java
