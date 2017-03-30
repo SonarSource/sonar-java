@@ -85,9 +85,9 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void big_flows_should_log_when_then_fail() throws Exception {
+  public void avoid_visiting_equivalent_paths() throws Exception {
     logTester.setLevel(LoggerLevel.DEBUG);
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationStepOverflow.java",  new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Flow was not able to complete");
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java",  new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Flow was not able to complete");
   }
 }

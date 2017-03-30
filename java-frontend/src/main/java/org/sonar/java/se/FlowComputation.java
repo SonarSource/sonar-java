@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -113,6 +114,7 @@ public class FlowComputation {
     Deque<ExecutionPath> workList = new ArrayDeque<>();
     node.edges().stream().flatMap(e -> startPath(e, trackSymbol)).forEach(workList::push);
     int flowSteps = 0;
+    Set<ExecutionPath> visited = new HashSet<>(workList);
     while (!workList.isEmpty()) {
       ExecutionPath path = workList.pop();
       if (path.finished) {
@@ -121,7 +123,11 @@ public class FlowComputation {
         path.lastEdge.parent.edges().stream()
           .filter(path::notVisited)
           .flatMap(path::addEdge)
-          .forEach(workList::push);
+          .forEach(ep -> {
+            if(visited.add(ep)) {
+              workList.push(ep);
+            }
+          });
       }
       flowSteps++;
       if(flowSteps == MAX_FLOW_STEPS) {
@@ -151,6 +157,25 @@ public class FlowComputation {
       this.visited = visited;
       this.flow = flow;
       this.finished = finished;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      ExecutionPath that = (ExecutionPath) o;
+      return Objects.equals(trackSymbol, that.trackSymbol) &&
+        Objects.equals(lastEdge.parent, that.lastEdge.parent) &&
+        Objects.equals(flow, that.flow);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(trackSymbol, lastEdge.parent, flow);
     }
 
     Stream<ExecutionPath> addEdge(ExplodedGraph.Edge edge) {
