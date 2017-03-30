@@ -39,14 +39,18 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class MethodYield {
   final ExplodedGraph.Node node;
+  private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
   private final MethodBehavior behavior;
   List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 
@@ -175,6 +179,15 @@ public abstract class MethodYield {
     if(node == null || behavior == null) {
       return Collections.emptySet();
     }
+    String key = parameterIndices.stream().sorted().map(Object::toString).collect(Collectors.joining(","));
+    String domainKey = domains.stream().map(Class::getName).sorted().reduce("", String::concat);
+
+    Map<String, Set<List<JavaFileScannerContext.Location>>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
+    return flowByDomain.computeIfAbsent(domainKey,
+      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, node.programState.getLastEvaluated()));
+  }
+
+  private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {
     ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
     for (Integer parameterIndex : parameterIndices) {
       if (parameterIndex == -1) {
@@ -183,6 +196,6 @@ public abstract class MethodYield {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
     }
-    return FlowComputation.flow(node, parameterSVs.build(), c -> true, c -> false, domains, node.programState.getLastEvaluated());
+    return parameterSVs.build();
   }
 }

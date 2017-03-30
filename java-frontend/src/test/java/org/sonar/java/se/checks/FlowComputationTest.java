@@ -19,7 +19,10 @@
  */
 package org.sonar.java.se.checks;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -32,6 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class FlowComputationTest {
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   @Test
   public void test() throws Exception {
@@ -76,5 +82,12 @@ public class FlowComputationTest {
   @Test
   public void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/UselessFlowComputation.java",  new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+  }
+
+  @Test
+  public void big_flows_should_log_when_then_fail() throws Exception {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationStepOverflow.java",  new NullDereferenceCheck(), new ConditionAlwaysTrueOrFalseCheck());
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Flow was not able to complete");
   }
 }

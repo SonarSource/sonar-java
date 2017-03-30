@@ -22,6 +22,8 @@ package org.sonar.java.se;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
@@ -50,6 +52,8 @@ import java.util.stream.Stream;
 public class FlowComputation {
 
   public static final String IMPLIES_MSG = "Implies '%s' is %s.";
+  private static final int MAX_FLOW_STEPS = 3_000_000;
+  private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
   private final Set<SymbolicValue> symbolicValues;
@@ -107,8 +111,8 @@ public class FlowComputation {
   private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
     Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
-
     node.edges().stream().flatMap(e -> startPath(e, trackSymbol)).forEach(workList::push);
+    int flowSteps = 0;
     while (!workList.isEmpty()) {
       ExecutionPath path = workList.pop();
       if (path.finished) {
@@ -118,6 +122,11 @@ public class FlowComputation {
           .filter(path::notVisited)
           .flatMap(path::addEdge)
           .forEach(workList::push);
+      }
+      flowSteps++;
+      if(flowSteps == MAX_FLOW_STEPS) {
+        LOG.debug("Flow was not able to complete");
+        break;
       }
     }
     return flows;
