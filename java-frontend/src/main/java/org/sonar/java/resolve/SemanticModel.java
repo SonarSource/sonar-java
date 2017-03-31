@@ -83,10 +83,7 @@ public class SemanticModel {
       @Override
       protected void scan(@Nullable Tree tree) {
         if (tree instanceof AbstractTypedTree) {
-          AbstractTypedTree typedNode = (AbstractTypedTree) tree;
-          if (!typedNode.isTypeSet() || ((JavaType) typedNode.symbolType()).isTagged(JavaType.DEFERRED)) {
-            typedNode.setType(Symbols.unknownType);
-          }
+          ((AbstractTypedTree) tree).completeMissingType();
         }
         super.scan(tree);
       }
@@ -94,7 +91,7 @@ public class SemanticModel {
       @Override
       protected void scan(@Nullable ListTree<? extends Tree> listTree) {
         if (listTree != null) {
-          scan((List<? extends Tree>) listTree);
+          listTree.forEach(this::scan);
         }
       }
     });
