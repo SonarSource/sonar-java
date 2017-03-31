@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
@@ -54,6 +56,12 @@ public abstract class AbstractTypedTree extends JavaTree {
 
   public void setInferedType(Type type) {
     this.type = type;
+  }
+
+  public void completeMissingType() {
+    if(type == null || ((JavaType) type).isTagged(JavaType.DEFERRED)) {
+      type = Symbols.unknownType;
+    }
   }
 
 }

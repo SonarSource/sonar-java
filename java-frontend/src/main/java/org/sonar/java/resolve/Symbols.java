@@ -44,7 +44,7 @@ public class Symbols {
   /**
    * Type, which can't be modelled for the moment.
    */
-  static final UnknownType unknownType;
+  public static final UnknownType unknownType;
   public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
   public static final JavaSymbol.MethodJavaSymbol unknownMethodSymbol;
 
