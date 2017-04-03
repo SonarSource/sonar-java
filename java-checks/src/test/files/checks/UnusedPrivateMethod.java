@@ -138,3 +138,23 @@ class ReturnTypeInference {
     foo(l.stream().sorted().collect(Collectors.toList()));
   }
 }
+
+class KillTheNoiseUnresolvedMethodCall {
+
+  static class A {
+    private A(int i) {}  // Compliant - unresolved constructor invocation
+  }
+
+  void foo(Object o) {
+    unresolvedMethod(o); // unresolved
+
+    A a;
+    a = new A(o); // unresolved
+    a = new org.sonar.java.checks.targets.KillTheNoiseUnresolvedMethodCall.A(o); // unresolved
+    A[] as = new A[0];
+
+    new Unknown<String>(o); // unresolved
+  }
+
+  private void unresolvedMethod(int i) {} // Compliant - method not with the same name not resolved
+}
