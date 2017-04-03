@@ -34,4 +34,9 @@ public class UnusedPrivateFieldCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/unused/UnusedPrivateFieldCheckWithNative.java", new UnusedPrivateFieldCheck());
   }
 
+  @Test
+  public void no_issue_without_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedPrivateFieldCheck.java", new UnusedPrivateFieldCheck());
+  }
+
 }
