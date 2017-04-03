@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -51,7 +52,11 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return ImmutableList.of(
+      // declarations
+      Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
+      // usages
+      Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.NEW_CLASS);
   }
 
   @Override
@@ -76,49 +81,77 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     if(!hasSemantic()) {
       return;
     }
-    if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
-      checkIfUnused((MethodTree) tree);
-    } else {
-      checkIfUnknown(tree);
+    switch (tree.kind()) {
+      case METHOD:
+      case CONSTRUCTOR:
+        checkIfUnused((MethodTree) tree);
+        break;
+      case NEW_CLASS:
+        checkIfUnknown((NewClassTree) tree);
+        break;
+      case METHOD_INVOCATION:
+        checkIfUnknown((MethodInvocationTree) tree);
+        break;
+      case METHOD_REFERENCE:
+        checkIfUnknown((MethodReferenceTree) tree);
+        break;
+      default:
+        throw new IllegalStateException("Unexpected subscribed tree.");
     }
   }
 
-  private void checkIfUnknown(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (mit.symbol().isUnknown()) {
-        unresolvedMethodNames.add(MethodsHelper.methodName(mit).name());
-      }
-    } else {
-      NewClassTree nct = (NewClassTree) tree;
-      if (nct.constructorSymbol().isUnknown()) {
-        unresolvedMethodNames.add(constructorName(nct.identifier()));
-      }
+  private void checkIfUnknown(MethodInvocationTree mit) {
+    if (mit.symbol().isUnknown()) {
+      unresolvedMethodNames.add(MethodsHelper.methodName(mit).name());
+    }
+  }
+
+  private void checkIfUnknown(NewClassTree nct) {
+    if (nct.constructorSymbol().isUnknown()) {
+      unresolvedMethodNames.add(constructorName(nct.identifier()));
+    }
+  }
+
+  private void checkIfUnknown(MethodReferenceTree mref) {
+    IdentifierTree methodIdentifier = mref.method();
+    if (methodIdentifier.symbol().isUnknown()) {
+      unresolvedMethodNames.add(methodIdentifier.name());
     }
   }
 
   private static String constructorName(TypeTree typeTree) {
-    if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      return constructorName(((ParameterizedTypeTree) typeTree).type());
-    } else if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) typeTree).identifier().name();
-    } else {
-      return ((IdentifierTree) typeTree).name();
+    switch (typeTree.kind()) {
+      case PARAMETERIZED_TYPE:
+        return constructorName(((ParameterizedTypeTree) typeTree).type());
+      case MEMBER_SELECT:
+        return ((MemberSelectExpressionTree) typeTree).identifier().name();
+      case IDENTIFIER:
+        return ((IdentifierTree) typeTree).name();
+      default:
+        throw new IllegalStateException("Unexpected TypeTree used as constructor.");
     }
   }
 
   private void checkIfUnused(MethodTree methodTree) {
     Symbol symbol = methodTree.symbol();
-    if (methodTree.modifiers().annotations().isEmpty() && symbol.isPrivate() && symbol.usages().isEmpty()) {
-      if (methodTree.is(Tree.Kind.CONSTRUCTOR)) {
-        if (!methodTree.parameters().isEmpty()) {
-          unusedPrivateMethods.add(methodTree);
-        }
-      } else if (!SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name())) {
-        unusedPrivateMethods.add(methodTree);
-      }
+    if (isUnusedPrivate(symbol) && hasNoAnnotation(methodTree) && (isConstructorWithParameters(methodTree) || isNotMethodFromSerializable(methodTree, symbol))) {
+      unusedPrivateMethods.add(methodTree);
     }
-
   }
 
+  private static boolean isUnusedPrivate(Symbol symbol) {
+    return symbol.isPrivate() && symbol.usages().isEmpty();
+  }
+
+  private static boolean hasNoAnnotation(MethodTree methodTree) {
+    return methodTree.modifiers().annotations().isEmpty();
+  }
+
+  private static boolean isConstructorWithParameters(MethodTree methodTree) {
+    return methodTree.is(Tree.Kind.CONSTRUCTOR) && !methodTree.parameters().isEmpty();
+  }
+
+  private static boolean isNotMethodFromSerializable(MethodTree methodTree, Symbol symbol) {
+    return methodTree.is(Tree.Kind.METHOD) && !SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name());
+  }
 }
