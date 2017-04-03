@@ -23,13 +23,14 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -367,6 +368,14 @@ public class RelationalSymbolicValueTest {
     assertNullConstraint(ps, d);
     assertNullConstraint(ps, e);
   }
+
+
+  @Test
+  public void relationships_transitivity_should_take_known_relationships_into_account() throws Exception {
+    // Testcase in that file can fail with a stackoverflow if known relations in program state are not taken into account.
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/InifiniteTransitiveRelationshipConstraintCopy.java", new NullDereferenceCheck());
+  }
+
 
   private void assertNullConstraint(ProgramState ps, SymbolicValue sv) {
     assertThat(ps.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);

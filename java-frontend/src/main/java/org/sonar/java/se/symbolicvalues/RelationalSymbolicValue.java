@@ -22,7 +22,6 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -33,6 +32,7 @@ import javax.annotation.CheckForNull;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -103,6 +103,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE);
     }
     Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState);
+    if(knownRelations.contains(this)) {
+      return Collections.singletonList(initialProgramState);
+    }
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     newRelations.add(this);
     newRelations.addAll(transitiveRelations(knownRelations));
