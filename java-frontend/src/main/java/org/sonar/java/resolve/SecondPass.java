@@ -113,7 +113,7 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     // Register default constructor
-    if (tree.is(Tree.Kind.CLASS) && symbol.lookupSymbols(CONSTRUCTOR_NAME).isEmpty()) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM) && symbol.lookupSymbols(CONSTRUCTOR_NAME).isEmpty()) {
       List<JavaType> argTypes = ImmutableList.of();
       if (!symbol.isStatic()) {
         // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type

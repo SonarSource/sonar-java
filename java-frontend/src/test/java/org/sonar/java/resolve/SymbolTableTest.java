@@ -340,6 +340,9 @@ public class SymbolTableTest {
     JavaSymbol.VariableJavaSymbol superSymbol = (JavaSymbol.VariableJavaSymbol) enumSymbol.members.lookup("super").get(0);
     assertThat(superSymbol.type).isSameAs(superType);
 
+    // check default constructor is registered.
+    assertThat(enumSymbol.members.lookup("<init>")).hasSize(1);
+
     assertThat(enumSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
       result.symbol("SecondInterface").type);
