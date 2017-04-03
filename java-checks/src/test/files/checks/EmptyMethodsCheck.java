@@ -1,5 +1,5 @@
 class A {
-  // Noncompliant@+1 [[sc=10;ec=11]]
+  // Compliant
   public A() {
   }
 
