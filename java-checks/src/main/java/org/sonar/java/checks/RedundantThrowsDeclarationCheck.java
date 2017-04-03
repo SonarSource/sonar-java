@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -55,13 +55,6 @@ import java.util.Set;
 @Rule(key = "RedundantThrowsDeclarationCheck")
 @RspecKey("S1130")
 public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
-
-  public static final Set<String> SERIALIZABLE_CONTRACT_METHODS = ImmutableSet.of(
-    "writeObject",
-    "writeReplace",
-    "readObject",
-    "readResolve",
-    "readObjectNoData");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,7 +98,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     }
 
     if (thrownExceptions.stream().anyMatch(t -> ((JavaType) t).isTagged(JavaType.TYPEVAR))) {
-      // kill the noise due to SONARJAVA-1778 - type substitution not applied on thrown type when parameterized on parametric methods
+      // should be handled by SONARJAVA-1778 - type substitution not applied on thrown type when parameterized on parametric methods
       return false;
     }
 
@@ -115,8 +108,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private static boolean isOverridingOrDesignedForExtension(MethodTree methodTree) {
     // we need to be sure that it's not an override
     return !Boolean.FALSE.equals(((MethodTreeImpl) methodTree).isOverriding())
-      || SERIALIZABLE_CONTRACT_METHODS.contains(methodTree.simpleName().name())
-      // kill the noise - usually designed for extension
+      || SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(methodTree.simpleName().name())
       || isDesignedForExtension(methodTree);
   }
 

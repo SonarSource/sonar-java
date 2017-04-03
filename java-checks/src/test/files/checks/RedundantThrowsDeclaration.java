@@ -116,7 +116,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
-  void foo8(Throwable t) throws java.io.IOException { // Compliant - kill the noise due to SONARJAVA-1778
+  void foo8(Throwable t) throws java.io.IOException { // Compliant
     throwIfException(t, java.io.IOException.class);
   }
 
