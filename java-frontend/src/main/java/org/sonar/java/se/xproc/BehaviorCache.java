@@ -44,8 +44,8 @@ public class BehaviorCache {
     this.sev = sev;
   }
 
-  public void add(Symbol.MethodSymbol symbol, MethodBehavior behavior) {
-    behaviors.put(symbol, behavior);
+  public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
+    return behaviors.computeIfAbsent(symbol, MethodBehavior::new);
   }
 
   @CheckForNull

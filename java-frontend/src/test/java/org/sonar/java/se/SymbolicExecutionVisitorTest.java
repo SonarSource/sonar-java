@@ -19,7 +19,10 @@
  */
 package org.sonar.java.se;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
@@ -40,12 +43,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
 
 public class SymbolicExecutionVisitorTest {
+
+  @Rule
+  public LogTester logTester  = new LogTester();
 
   @Test
   public void method_behavior_cache_should_be_filled() {
@@ -61,6 +68,14 @@ public class SymbolicExecutionVisitorTest {
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
       .filter(s -> "nativeMethod".equals(s.name()) || "abstractMethod".equals(s.name()) || "publicMethod".equals(s.name()))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
+  }
+
+  @Test
+  public void compute_beahvior_only_once() throws Exception {
+    SymbolicExecutionVisitor sev = spy(createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java"));
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
+    assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
   }
 
   @Test
