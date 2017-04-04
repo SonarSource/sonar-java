@@ -87,6 +87,35 @@ public class SonarLintTest {
   }
 
   @Test
+  public void simpleTestFileJava() throws Exception {
+    ClientInputFile inputFile = prepareInputFile("FooTest.java",
+      "public class FooTest {\n"
+        + "  @org.junit.Test\n"
+        + "  @org.junit.Ignore\n"
+        + "  public void testName() throws Exception {\n" // S1607(ignored test) - requires semantic
+        + "    Foo foo = new Foo();\n"
+        + "    org.assertj.core.api.Assertions.assertThat(foo.isFooActive());\n" // S2970(incomplete assertions) - requires semantic
+        + "    java.lang.Thread.sleep(Long.MAX_VALUE);" // S2925(thread.sleep in test)
+        + "  }\n\n"
+
+        + "  private static class Foo {"
+        + "    public boolean isFooActive() {"
+        + "      return false;"
+        + "    }"
+        + "  }"
+        + "}",
+      true);
+
+    final List<Issue> issues = new ArrayList<>();
+    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+
+    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
+      // tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
+      // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
+      tuple("squid:S2925", 7, inputFile.getPath(), "MAJOR"));
+  }
+
+  @Test
   public void simplePom() throws Exception {
     ClientInputFile inputFile = prepareInputFile("pom.xml",
       "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
