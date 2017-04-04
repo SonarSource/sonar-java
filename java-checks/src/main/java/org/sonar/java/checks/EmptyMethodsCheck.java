@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -45,16 +46,10 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
-      for (Tree member : classTree.members()) {
-        if (member.is(Kind.METHOD) || isPublicNoArgConstructor(member)) {
-          checkMethod((MethodTree) member);
-        }
-      }
+      classTree.members().stream()
+        .filter(member -> member.is(Tree.Kind.METHOD))
+        .forEach(method -> checkMethod((MethodTree) method));
     }
-  }
-
-  private static boolean isPublicNoArgConstructor(Tree node) {
-    return node.is(Kind.CONSTRUCTOR) && ModifiersUtils.hasModifier(((MethodTree) node).modifiers(), Modifier.PUBLIC) && ((MethodTree) node).parameters().isEmpty();
   }
 
   private void checkMethod(MethodTree methodTree) {

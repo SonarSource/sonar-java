@@ -2,16 +2,4 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/app/NullJarScanner.java':[
 46,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/exceptions/Errors.java':[
-37,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/Platform.java':[
-44,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
-62,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/ui/Views.java':[
-43,
-],
 }
