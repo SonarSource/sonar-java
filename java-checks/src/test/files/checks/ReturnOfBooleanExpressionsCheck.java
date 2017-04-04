@@ -68,4 +68,23 @@ class A {
     else
       return false;
   }
+
+  boolean bar() {
+    if(something) // Noncompliant
+      return true;
+    return false;
+
+    if(something) { // Noncompliant
+      return true;
+    }
+    return false;
+
+    if(something) // compliant
+      return true;
+    System.out.println("");
+    return false;
+
+    if(something)
+      return true;
+  }
 }
