@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S1126")
@@ -44,9 +46,27 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     IfStatementTree ifStatementTree = (IfStatementTree) tree;
-    if (hasOneReturnBoolean(ifStatementTree.elseStatement()) && hasOneReturnBoolean(ifStatementTree.thenStatement())) {
+    StatementTree elseStatementOrNextStatement = getStatementTree(ifStatementTree);
+    if (hasOneReturnBoolean(elseStatementOrNextStatement) && hasOneReturnBoolean(ifStatementTree.thenStatement())) {
       reportIssue(ifStatementTree.ifKeyword(), "Replace this if-then-else statement by a single return statement.");
     }
+  }
+
+  private static StatementTree getStatementTree(IfStatementTree ifStatementTree) {
+    StatementTree elseStatementOrNextStatement = ifStatementTree.elseStatement();
+    if (elseStatementOrNextStatement == null) {
+      JavaTree parent = (JavaTree) ifStatementTree.parent();
+      List<Tree> children = parent.getChildren();
+      int indexOfIf = children.indexOf(ifStatementTree);
+      if (indexOfIf < children.size() - 1) {
+        // Defensive, this condition should always be true as if necessarily followed by a statement or a token.
+        Tree next = children.get(indexOfIf + 1);
+        if(!next.is(Kind.TOKEN)) {
+          elseStatementOrNextStatement = (StatementTree) next;
+        }
+      }
+    }
+    return elseStatementOrNextStatement;
   }
 
   private static boolean hasOneReturnBoolean(@Nullable StatementTree statementTree) {
