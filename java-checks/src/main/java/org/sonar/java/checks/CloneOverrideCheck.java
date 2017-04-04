@@ -22,8 +22,11 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -38,10 +41,30 @@ public class CloneOverrideCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     IdentifierTree identifierTree = methodTree.simpleName();
-    if (methodTree.parameters().isEmpty() && "clone".equals(identifierTree.name())) {
+    if (methodTree.parameters().isEmpty() && "clone".equals(identifierTree.name()) && !isUnsupportedCloneOverride(methodTree)) {
       reportIssue(identifierTree, "Remove this \"clone\" implementation; use a copy constructor or copy factory instead.");
     }
   }
+
+  private static boolean isUnsupportedCloneOverride(MethodTree methodTree) {
+    if (isOneStatementMethod(methodTree)) {
+      StatementTree statementTree = methodTree.block().body().get(0);
+      return statementTree.is(Tree.Kind.THROW_STATEMENT) && ((ThrowStatementTree) statementTree).expression().symbolType().is("java.lang.CloneNotSupportedException");
+    }
+    return false;
+  }
+
+  private static boolean isOneStatementMethod(MethodTree methodTree) {
+    BlockTree block = methodTree.block();
+    return block != null && block.body().size() == 1;
+  }
+
+
+
+
 }

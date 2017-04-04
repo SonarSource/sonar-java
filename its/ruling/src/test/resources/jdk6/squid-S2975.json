@@ -85,15 +85,6 @@
 'jdk6:java/awt/print/Paper.java':[
 84,
 ],
-'jdk6:java/lang/Enum.java':[
-131,
-],
-'jdk6:java/lang/Object.java':[
-195,
-],
-'jdk6:java/lang/Thread.java':[
-383,
-],
 'jdk6:java/net/HttpCookie.java':[
 826,
 ],
