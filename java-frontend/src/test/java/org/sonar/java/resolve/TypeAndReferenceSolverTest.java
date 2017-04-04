@@ -133,6 +133,7 @@ public class TypeAndReferenceSolverTest {
     try {
       treeOf(code);
     } catch (StackOverflowError soe) {
+      soe.printStackTrace();
       throw new AssertionError("Stackoverflow error was thrown !");
     }
   }
