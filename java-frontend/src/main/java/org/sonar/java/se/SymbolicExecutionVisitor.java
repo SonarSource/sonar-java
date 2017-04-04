@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -64,14 +63,15 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @CheckForNull
   public MethodBehavior execute(MethodTree methodTree) {
+    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-      ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
       if (methodCanNotBeOverriden(methodSymbol)) {
-        MethodBehavior methodBehavior = new MethodBehavior(methodSymbol);
-        behaviorCache.add(methodSymbol, methodBehavior);
-        methodBehavior = walker.visitMethod(methodTree, methodBehavior);
-        methodBehavior.completed();
+        MethodBehavior methodBehavior = behaviorCache.methodBehaviorForSymbol(methodSymbol);
+        if (!methodBehavior.isVisited()) {
+          methodBehavior = walker.visitMethod(methodTree, methodBehavior);
+          methodBehavior.completed();
+        }
         return methodBehavior;
       } else {
         return walker.visitMethod(methodTree);
@@ -80,6 +80,9 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
       | ExplodedGraphWalker.ExplodedGraphTooBigException
       | RelationalSymbolicValue.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
+      if (walker.methodBehavior != null) {
+        walker.methodBehavior.visited();
+      }
     }
     return null;
   }

@@ -194,8 +194,9 @@ public class ExplodedGraphWalker {
   }
 
   public MethodBehavior visitMethod(MethodTree tree, @Nullable MethodBehavior methodBehavior) {
-    BlockTree body = tree.block();
+    Preconditions.checkArgument(methodBehavior == null || !methodBehavior.isComplete() || !methodBehavior.isVisited(), "Trying to execute an already visited methodBehavior");
     this.methodBehavior = methodBehavior;
+    BlockTree body = tree.block();
     if (body != null) {
       execute(tree);
     }
