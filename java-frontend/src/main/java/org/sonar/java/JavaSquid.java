@@ -79,10 +79,10 @@ public class JavaSquid {
           )
         );
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
-        testCodeVisitors.addAll(sonarComponents.testCheckClasses());
       }
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
+      testCodeVisitors.addAll(sonarComponents.testCheckClasses());
     }
 
     //AstScanner for main files
