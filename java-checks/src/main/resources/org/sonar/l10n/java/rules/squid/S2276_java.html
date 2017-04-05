@@ -1,4 +1,4 @@
-<p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance, and scalability issues, or even
+<p>If <code>Thread.sleep(...)</code> is called when the current thread holds a lock, it could lead to performance and scalability issues, or even
 worse to deadlocks because the execution of the thread holding the lock is frozen. It's better to call <code>wait(...)</code> on the monitor object to
 temporarily release the lock and allow other threads to run.</p>
 <h2>Noncompliant Code Example</h2>

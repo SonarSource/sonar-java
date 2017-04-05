@@ -1,7 +1,38 @@
 <p>Applications that execute SQL commands should neutralize any externally-provided values used in those commands. Failure to do so could allow an
 attacker to include input that changes the query so that unintended commands are executed, or sensitive data is exposed.</p>
-<p>This rule checks that method parameters are not used directly in non-Hibernate SQL statements, and that parameter binding, rather than
-concatenation is used in Hibernate statements.</p>
+<p>This rule checks a variety of methods from different frameworks which are susceptible to SQL injection if not used properly. Frameworks which are
+covered are Java JDBC, JPA, JDO, Hibernate and Spring. The following specific method signatures are tested. </p>
+<ul>
+  <li> <code>org.hibernate.Session.createQuery</code> </li>
+  <li> <code>org.hibernate.Session.createSQLQuery</code> </li>
+  <li> <code>java.sql.Statement.executeQuery</code> </li>
+  <li> <code>java.sql.Statement.execute</code> </li>
+  <li> <code>java.sql.Statement.executeUpdate</code> </li>
+  <li> <code>java.sql.Statement.executeLargeUpdate</code> </li>
+  <li> <code>java.sql.Statement.addBatch</code> </li>
+  <li> <code>java.sql.Connection.prepareStatement</code> </li>
+  <li> <code>java.sql.Connection.prepareCall</code> </li>
+  <li> <code>java.sql.Connection.nativeSQL</code> </li>
+  <li> <code>javax.persistence.EntityManager.createNativeQuery</code> </li>
+  <li> <code>javax.persistence.EntityManager.createQuery</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.batchUpdate</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.execute</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.query</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForList</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForMap</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForObject</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForRowSet</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForInt</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForLong</code> </li>
+  <li> <code>org.springframework.jdbc.core.JdbcOperations.update</code> </li>
+  <li> <code>org.springframework.jdbc.core.PreparedStatementCreatorFactory.&lt;init&gt;</code> </li>
+  <li> <code>org.springframework.jdbc.core.PreparedStatementCreatorFactory.newPreparedStatementCreator</code> </li>
+  <li> <code>javax.jdo.PersistenceManager.newQuery</code> </li>
+  <li> <code>javax.jdo.Query.setFilter</code> </li>
+  <li> <code>javax.jdo.Query.setGrouping</code> </li>
+</ul>
+<p>If a method is defined in an interface, implementations are also tested. For example this is the case for
+<code>org.springframework.jdbc.core.JdbcOperations</code> , which is usually used as <code>org.springframework.jdbc.core.JdbcTemplate</code>). </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public User getUser(Connection con, String user) throws SQLException {

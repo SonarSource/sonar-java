@@ -1,14 +1,13 @@
 {
   "title": "\"URL.hashCode\" and \"URL.equals\" should be avoided",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
   "defaultSeverity": "Major"
 }

@@ -1,6 +1,6 @@
 {
   "title": "String function use should be optimized for single characters",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,8 +8,7 @@
   },
   "tags": [
     "performance",
-    "bug",
     "clumsy"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Major"
 }

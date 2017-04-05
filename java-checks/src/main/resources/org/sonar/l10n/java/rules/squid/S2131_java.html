@@ -5,7 +5,7 @@ argument should be avoided, as should concatenating empty string <code>""</code>
 <h2>Noncompliant Code Example</h2>
 <pre>
 int myInt = 4;
-String myIntString = new Integer(myInt).toString(); // Noncompliant; creates &amp; discards an Integer object
+String myIntString = (new Integer(myInt)).toString(); // Noncompliant; creates &amp; discards an Integer object
 myIntString = Integer.valueOf(myInt).toString(); // Noncompliant
 myIntString = 4 + "";  // Noncompliant
 </pre>

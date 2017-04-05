@@ -1,7 +1,7 @@
 <p>Use of <code>File.deleteOnExit()</code> is not recommended for the following reasons:</p>
 <ul>
   <li> The deletion occurs only in the case of a normal JVM shutdown but not when the JVM crashes or is killed. </li>
-  <li> For each file handler, the memory associated to the handler is released only at the end of the process. </li>
+  <li> For each file handler, the memory associated with the handler is released only at the end of the process. </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
