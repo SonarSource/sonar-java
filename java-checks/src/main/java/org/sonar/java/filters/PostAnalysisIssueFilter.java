@@ -35,7 +35,8 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter(),
     new LombokFilter(),
-    new SuppressWarningFilter());
+    new SuppressWarningFilter(),
+    new GeneratedCodeFilter());
   private Iterable<JavaIssueFilter> issueFilers;
   private final FileSystem fileSystem;
 
