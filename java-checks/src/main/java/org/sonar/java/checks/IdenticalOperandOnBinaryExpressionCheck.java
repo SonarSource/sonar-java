@@ -111,10 +111,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
 
   private static boolean isNanTest(BinaryExpressionTree tree) {
     Type leftOperandType = tree.leftOperand().symbolType();
-    if (tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE))) {
-      return true;
-    }
-    return false;
+    return tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE));
   }
 
   private static boolean isLeftShiftOnOne(BinaryExpressionTree tree) {

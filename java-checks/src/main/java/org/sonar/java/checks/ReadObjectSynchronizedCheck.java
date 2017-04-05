@@ -68,13 +68,9 @@ public class ReadObjectSynchronizedCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isReadObject(MethodTree methodTree) {
-    if (!"readObject".equals(methodTree.simpleName().name())) {
-      return false;
-    }
-    if (methodTree.parameters().size() != 1 || !methodTree.parameters().get(0).type().symbolType().is("java.io.ObjectInputStream")) {
-      return false;
-    }
-    return true;
+    return "readObject".equals(methodTree.simpleName().name())
+      && methodTree.parameters().size() == 1
+      && methodTree.parameters().get(0).type().symbolType().is("java.io.ObjectInputStream");
   }
 
 }
