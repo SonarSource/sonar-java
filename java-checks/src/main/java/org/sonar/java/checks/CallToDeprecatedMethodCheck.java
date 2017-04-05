@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
@@ -75,6 +76,9 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIdentifierIssue(IdentifierTree identifierTree) {
+    if (isSimpleNameOfVariableTree(identifierTree)) {
+      return;
+    }
     Symbol symbol = identifierTree.symbol();
     if (isDeprecated(symbol)) {
       String name;
@@ -85,6 +89,11 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
       }
       reportIssue(identifierTree, "Remove this use of \"" + name + "\"; it is deprecated.");
     }
+  }
+
+  private static boolean isSimpleNameOfVariableTree(IdentifierTree identifierTree) {
+    Tree parent = identifierTree.parent();
+    return parent.is(Tree.Kind.VARIABLE) && identifierTree.equals(((VariableTree) parent).simpleName());
   }
 
   private void checkMethodIssue(MethodTree methodTree) {

@@ -139,6 +139,17 @@ public class TypeAndReferenceSolverTest {
   }
 
   @Test
+  public void identifier_of_variable_symbol() {
+    CompilationUnitTree compilationUnit = treeOf("class A { Object field; }");
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+    VariableTree variable = (VariableTree) clazz.members().get(0);
+    assertThat(variable.symbol().isUnknown()).isFalse();
+    assertThat(variable.symbol().usages()).isEmpty();
+    assertThat(variable.simpleName().symbol().isUnknown()).isFalse();
+    assertThat(variable.simpleName().symbol()).isEqualTo(variable.symbol());
+  }
+
+  @Test
   public void annotation_on_method() {
     CompilationUnitTree compilationUnit = treeOf("@interface MyAnnotation { } class Class { @MyAnnotation void method() { } }");
     ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
