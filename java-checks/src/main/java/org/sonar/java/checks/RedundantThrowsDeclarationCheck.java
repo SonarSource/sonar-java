@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -127,16 +128,23 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       return false;
     }
     StatementTree singleStatement = body.get(0);
-    return singleStatement.is(Tree.Kind.THROW_STATEMENT) 
-      || (singleStatement.is(Tree.Kind.RETURN_STATEMENT) && ExpressionUtils.skipParentheses(((ReturnStatementTree) singleStatement).expression()).is(
-      Tree.Kind.NULL_LITERAL,
-      Tree.Kind.STRING_LITERAL,
-      Tree.Kind.BOOLEAN_LITERAL,
-      Tree.Kind.CHAR_LITERAL,
-      Tree.Kind.DOUBLE_LITERAL,
-      Tree.Kind.FLOAT_LITERAL,
-      Tree.Kind.LONG_LITERAL,
-      Tree.Kind.INT_LITERAL));
+    return singleStatement.is(Tree.Kind.THROW_STATEMENT) || returnStatementWithLiteral(singleStatement);
+  }
+
+  private static boolean returnStatementWithLiteral(StatementTree statement) {
+    if (statement.is(Tree.Kind.RETURN_STATEMENT)) {
+      ExpressionTree expression = ((ReturnStatementTree) statement).expression();
+      return expression == null || ExpressionUtils.skipParentheses(expression).is(
+        Tree.Kind.NULL_LITERAL,
+        Tree.Kind.STRING_LITERAL,
+        Tree.Kind.BOOLEAN_LITERAL,
+        Tree.Kind.CHAR_LITERAL,
+        Tree.Kind.DOUBLE_LITERAL,
+        Tree.Kind.FLOAT_LITERAL,
+        Tree.Kind.LONG_LITERAL,
+        Tree.Kind.INT_LITERAL);
+    }
+    return false;
   }
 
   private static boolean emptyBody(MethodTree methodTree) {
