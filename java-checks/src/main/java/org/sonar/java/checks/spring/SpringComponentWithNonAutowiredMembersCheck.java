@@ -51,7 +51,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     }
   }
 
-  private boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
+  private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
     return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
       || metadata.isAnnotatedWith("javax.annotation.Resource");
   }
