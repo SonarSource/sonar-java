@@ -144,6 +144,10 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     return new Object();
   }
 
+  void foo13() throws MyException { // Compliant - designed for extension
+    return;
+  }
+
   abstract void bar();
   abstract void qix() throws UnknownException;
   abstract void gul(java.util.function.Function<Object, String> s);
