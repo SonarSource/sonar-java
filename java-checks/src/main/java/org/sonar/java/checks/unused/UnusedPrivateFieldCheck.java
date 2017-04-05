@@ -112,9 +112,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void collectUnknownIdentifier(IdentifierTree identifier) {
-    if (identifier.symbol().isUnknown()
-      && !isVariableIdentifier(identifier)
-      && !isMethodIdentifier(identifier)) {
+    if (identifier.symbol().isUnknown() && !isMethodIdentifier(identifier)) {
       unknownIdentifiers.add(identifier.name());
     }
   }
@@ -132,16 +130,6 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     } else {
       return identifier.equals(((MethodReferenceTree) parent).method());
     }
-  }
-
-  private static boolean isVariableIdentifier(IdentifierTree identifier) {
-    Tree current = identifier;
-    Tree parent = identifier.parent();
-    while (parent != null && !parent.is(Tree.Kind.VARIABLE)) {
-      current = parent;
-      parent = current.parent();
-    }
-    return parent != null && ((VariableTree) parent).simpleName().equals(current);
   }
 
   private void checkIfNativeMethod(MethodTree method) {
