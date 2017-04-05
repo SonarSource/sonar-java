@@ -4,6 +4,7 @@
   provides the security that is needed to protect federal government information.</p>
   <p>Federal agencies are encouraged to use the Advanced Encryption Standard, a faster and stronger algorithm approved as FIPS 197 in 2001.</p>
 </blockquote>
+<p>For similar reasons, RC2 should also be avoided.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Cipher c = Cipher.getInstance("DESede/ECB/PKCS5Padding");

@@ -1,14 +1,13 @@
 {
   "title": "\"entrySet()\" should be iterated when both the key and value are needed",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
   "defaultSeverity": "Major"
 }

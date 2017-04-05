@@ -3,8 +3,6 @@
   <li> It is an unintentional omission, and should be fixed to prevent an unexpected behavior in production. </li>
   <li> It is not yet, or never will be, supported. In this case an <code>UnsupportedOperationException</code> should be thrown. </li>
   <li> The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override. </li>
-  <li> There is a desire to provide a public, no-args constructor. In this case, it can simply be omitted from the code; a default constructor will
-  automatically be generated. </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -27,10 +25,10 @@ public void doSomethingElse() {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>An abstract class may have empty methods, in order to provide default implementations for child classes.</p>
+<p>Default (no-argument) constructors are ignored when there are other constructors in the class, as are empty methods in abstract classes.</p>
 <pre>
 public abstract class Animal {
-  void speak() {
+  void speak() {  // default implementation ignored
   }
 }
 </pre>

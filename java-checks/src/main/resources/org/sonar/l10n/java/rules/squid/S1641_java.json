@@ -1,14 +1,13 @@
 {
   "title": "Sets with elements that are enum values should be replaced with EnumSet",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
   "defaultSeverity": "Minor"
 }

@@ -1,15 +1,15 @@
 {
   "title": "Classes and methods that rely on the default system encoding should not be used",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
   "tags": [
-    "bug",
     "unpredictable",
-    "cert"
+    "cert",
+    "i18n"
   ],
   "standards": [
     "CERT"

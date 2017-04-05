@@ -1,14 +1,13 @@
 {
   "title": "Maps with keys that are enum values should be replaced with EnumMap",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
   "defaultSeverity": "Minor"
 }

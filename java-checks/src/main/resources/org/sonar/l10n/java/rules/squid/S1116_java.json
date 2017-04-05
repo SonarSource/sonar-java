@@ -1,13 +1,12 @@
 {
   "title": "Empty statements should be removed",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
   "tags": [
-    "bug",
     "misra",
     "cert",
     "unused"
@@ -15,5 +14,5 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Critical"
 }

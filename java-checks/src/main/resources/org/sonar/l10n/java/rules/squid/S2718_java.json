@@ -1,6 +1,6 @@
 {
   "title": "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,7 +8,6 @@
   },
   "tags": [
     "performance",
-    "bug",
     "java8"
   ],
   "defaultSeverity": "Major"

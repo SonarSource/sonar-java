@@ -1,6 +1,6 @@
 {
   "title": "Generic exceptions should never be thrown",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,7 +9,6 @@
   "tags": [
     "cwe",
     "error-handling",
-    "bug",
     "cert"
   ],
   "standards": [
