@@ -289,6 +289,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void xproc_reporting_with_var_args() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcReportingWithVarArgs.java", seChecks());
+  }
+
+  @Test
   public void xproc_keep_yield_for_reporting() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/YieldReporting.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
       @Override
