@@ -32,7 +32,7 @@ class JacocoController {
 
   private boolean testStarted;
 
-  private static JacocoController singleton;
+  static JacocoController singleton;
 
   private JacocoController() {
     try {
@@ -53,31 +53,50 @@ class JacocoController {
     return singleton;
   }
 
-  public synchronized void onTestStart() {
+  public synchronized void onTestStart(String name) {
     if (testStarted) {
-      throw new JacocoControllerError("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
+      throw new JacocoControllerError(
+          "Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
     }
     // Dump coverage between tests
-    dump("");
+    start(name);
     testStarted = true;
   }
 
-  public synchronized void onTestFinish(String name) {
+  /**
+   * Dump the current session, whatever it's name since has been fixed at the start.
+   */
+  public synchronized void onTestFinish() {
     // Dump coverage for test
-    dump(name);
+    start("");
     testStarted = false;
   }
 
-  private void dump(String sessionId) {
-    agent.setSessionId(sessionId);
+  /**
+   * Dump the current session keeping its name, then update the session name with a new session
+   * identifier.
+   * 
+   * @param sessionId
+   *          The new session identifier used for the fresh session.
+   */
+  private void start(final String sessionId) {
     try {
+      // Dump the current session with its actual name
       agent.dump(true);
     } catch (IOException e) {
       throw new JacocoControllerError(e);
     }
+    // For this fresh (empty) session, set the given name
+    agent.setSessionId(sessionId);
   }
 
   public static class JacocoControllerError extends Error {
+
+    /**
+     * SID
+     */
+    private static final long serialVersionUID = 1L;
+
     public JacocoControllerError(String message) {
       super(message);
     }

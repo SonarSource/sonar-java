@@ -52,20 +52,20 @@ public class JacocoControllerTest {
 
   @Test
   public void test_onStart() throws Exception {
-    jacoco.onTestStart();
+    jacoco.onTestStart("test");
     InOrder inOrder = Mockito.inOrder(agent);
-    inOrder.verify(agent).setSessionId("");
     inOrder.verify(agent).dump(true);
+    inOrder.verify(agent).setSessionId("test");
     verifyNoMoreInteractions(agent);
   }
 
   @Test
   public void test_onFinish() throws Exception {
     when(agent.getExecutionData(false)).thenReturn(new byte[] {});
-    jacoco.onTestFinish("test");
+    jacoco.onTestFinish();
     InOrder inOrder = Mockito.inOrder(agent);
-    inOrder.verify(agent).setSessionId("test");
     inOrder.verify(agent).dump(true);
+    inOrder.verify(agent).setSessionId("");
     verifyNoMoreInteractions(agent);
   }
 
@@ -73,15 +73,16 @@ public class JacocoControllerTest {
   public void should_throw_exception_when_dump_failed() throws Exception {
     doThrow(IOException.class).when(agent).dump(anyBoolean());
     thrown.expect(JacocoControllerError.class);
-    jacoco.onTestFinish("test");
+    jacoco.onTestFinish();
   }
 
   @Test
   public void should_throw_exception_when_two_tests_started_in_parallel() {
-    jacoco.onTestStart();
+    jacoco.onTestStart("test1");
     thrown.expect(JacocoControllerError.class);
-    thrown.expectMessage("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
-    jacoco.onTestStart();
+    thrown.expectMessage(
+        "Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
+    jacoco.onTestStart("test2");
   }
 
 }

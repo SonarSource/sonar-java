@@ -28,17 +28,24 @@ import org.testng.ITestResult;
  */
 public class TestNGListener extends JUnitListener implements ITestListener {
 
+  /**
+   * Constructor used by the runner. Note the {@link JacocoController} is not yet requested.
+   */
   public TestNGListener() {
-    this(JacocoController.getInstance());
+    this(null);
   }
 
+  /**
+   * Only for there for injection from test.
+   */
   TestNGListener(JacocoController jacoco) {
     super(jacoco);
   }
 
   @Override
   public void onTestStart(ITestResult result) {
-    jacoco.onTestStart();
+    // Be sure the controller is loaded
+    getJacocoController().onTestStart(getName(result));
   }
 
   private static String getName(ITestResult result) {
@@ -47,22 +54,22 @@ public class TestNGListener extends JUnitListener implements ITestListener {
 
   @Override
   public void onTestSuccess(ITestResult result) {
-    jacoco.onTestFinish(getName(result));
+    jacoco.onTestFinish();
   }
 
   @Override
   public void onTestFailure(ITestResult result) {
-    jacoco.onTestFinish(getName(result));
+    jacoco.onTestFinish();
   }
 
   @Override
   public void onTestSkipped(ITestResult result) {
-    jacoco.onTestFinish(getName(result));
+    jacoco.onTestFinish();
   }
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-    jacoco.onTestFinish(getName(result));
+    jacoco.onTestFinish();
   }
 
   @Override

@@ -27,24 +27,53 @@ import org.junit.runner.notification.RunListener;
  */
 public class JUnitListener extends RunListener {
 
-  protected final JacocoController jacoco;
+  /**
+   * {@link JacocoController} instance attached to this listener. Is <code>null</code> until a test
+   * starts.
+   */
+  protected JacocoController jacoco;
 
+  /**
+   * Constructor used by the runner. Note the {@link JacocoController} is not yet requested.
+   */
   public JUnitListener() {
-    this(JacocoController.getInstance());
+    this(null);
   }
 
   JUnitListener(JacocoController jacoco) {
     this.jacoco = jacoco;
   }
 
+  /**
+   * Lazy getter of {@link JacocoController} instance. This is required in order to wait for the
+   * first test class is loaded, and "this" class loaded. Since this class is loaded before the
+   * tests and cause issues with forked JVM.
+   * 
+   * @return either the previously loaded instance, either the newly available controller from the
+   *         Jacoco agent.
+   */
+  protected JacocoController getJacocoController() {
+    if (jacoco == null) {
+      // First test ever, request the instance from the agent
+      jacoco = JacocoController.getInstance();
+    }
+    return jacoco;
+  }
+
+  @Override
+  public void testRunStarted(Description description) throws Exception {
+    // Force the load of the controller
+    getJacocoController();
+  }
+
   @Override
   public void testStarted(Description description) {
-    jacoco.onTestStart();
+    jacoco.onTestStart(getName(description));
   }
 
   @Override
   public void testFinished(Description description) {
-    jacoco.onTestFinish(getName(description));
+    jacoco.onTestFinish();
   }
 
   private static String getName(Description description) {

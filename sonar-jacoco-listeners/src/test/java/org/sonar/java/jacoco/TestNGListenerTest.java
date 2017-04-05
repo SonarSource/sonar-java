@@ -19,6 +19,8 @@
  */
 package org.sonar.java.jacoco;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -62,6 +64,13 @@ public class TestNGListenerTest {
   public void setUp() {
     jacoco = mock(JacocoController.class);
     listener = new TestNGListener(jacoco);
+    final JacocoController jacocoController = mock(JacocoController.class);
+    JacocoController.singleton = jacocoController;
+  }
+
+  @After
+  public void clean() {
+    JacocoController.singleton = null;
   }
 
   @Test
@@ -70,12 +79,23 @@ public class TestNGListenerTest {
   }
 
   @Test
+  public void lazyController() throws Exception {
+    final TestNGListener listener = new TestNGListener();
+    Assert.assertNull(listener.jacoco);
+    Assert.assertSame(JacocoController.getInstance(), listener.getJacocoController());
+    Assert.assertSame(JacocoController.getInstance(), listener.jacoco);
+
+    // Check the instance is stored
+    Assert.assertSame(JacocoController.getInstance(), listener.getJacocoController());
+  }
+
+  @Test
   public void test_success() {
     execute(Success.class);
     String testName = getClass().getCanonicalName() + "$Success test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart();
-    orderedExecution.verify(jacoco).onTestFinish(testName);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish();
   }
 
   @Test
@@ -83,8 +103,8 @@ public class TestNGListenerTest {
     execute(Failure.class);
     String testName = getClass().getCanonicalName() + "$Failure test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart();
-    orderedExecution.verify(jacoco).onTestFinish(testName);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish();
   }
 
   @Test
@@ -92,14 +112,14 @@ public class TestNGListenerTest {
     execute(Skip.class);
     String testName = getClass().getCanonicalName() + "$Skip test";
     InOrder orderedExecution = inOrder(jacoco);
-    orderedExecution.verify(jacoco).onTestStart();
-    orderedExecution.verify(jacoco).onTestFinish(testName);
+    orderedExecution.verify(jacoco).onTestStart(testName);
+    orderedExecution.verify(jacoco).onTestFinish();
   }
 
-  private void execute(Class cls) {
+  private void execute(Class<?> cls) {
     TestNG testNg = new TestNG(false);
     testNg.addListener(listener);
-    testNg.setTestClasses(new Class[] {cls});
+    testNg.setTestClasses(new Class[] { cls });
     testNg.run();
   }
 
@@ -108,13 +128,13 @@ public class TestNGListenerTest {
   @Test
   public void testStarted() {
     listener.testStarted(mockDescription());
-    verify(jacoco).onTestStart();
+    verify(jacoco).onTestStart("class method");
   }
 
   @Test
   public void testFinished() {
     listener.testFinished(mockDescription());
-    verify(jacoco).onTestFinish("class method");
+    verify(jacoco).onTestFinish();
   }
 
   // TestNG
@@ -122,31 +142,31 @@ public class TestNGListenerTest {
   @Test
   public void onTestStart() {
     listener.onTestStart(mockTestResult());
-    verify(jacoco).onTestStart();
+    verify(jacoco).onTestStart("class method");
   }
 
   @Test
   public void onTestSuccess() {
     listener.onTestSuccess(mockTestResult());
-    verify(jacoco).onTestFinish("class method");
+    verify(jacoco).onTestFinish();
   }
 
   @Test
   public void onTestFailure() {
     listener.onTestFailure(mockTestResult());
-    verify(jacoco).onTestFinish("class method");
+    verify(jacoco).onTestFinish();
   }
 
   @Test
   public void onTestSkipped() {
     listener.onTestSkipped(mockTestResult());
-    verify(jacoco).onTestFinish("class method");
+    verify(jacoco).onTestFinish();
   }
 
   @Test
   public void onTestFailedButWithinSuccessPercentage() {
     listener.onTestFailedButWithinSuccessPercentage(mockTestResult());
-    verify(jacoco).onTestFinish("class method");
+    verify(jacoco).onTestFinish();
   }
 
   private ITestResult mockTestResult() {
