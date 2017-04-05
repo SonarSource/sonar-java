@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.inject.Inject;
-import javax.annotation.Resource
+import javax.annotation.Resource;
 
 @Controller
 public class HelloWorld {
