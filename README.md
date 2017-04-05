@@ -67,7 +67,9 @@ To run integration tests, you will need to create a properties file like the one
     sonar.runtimeVersion=5.6
 
     orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
-    maven.localRepository=/home/bmurray/.m2/repository
+    
+    # Location of Maven local repository is not automatically guessed. It can also be set with the env variable MAVEN_LOCAL_REPOSITORY.
+    maven.localRepository=/home/myName/.m2/repository
 
 With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as: 
 
