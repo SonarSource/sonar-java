@@ -189,13 +189,16 @@ public abstract class MethodYield {
 
   private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {
     ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
-    for (Integer parameterIndex : parameterIndices) {
+    parameterIndices.stream()
+      // Ignore last parameter(s) of a variadic method
+      .filter(i -> !behavior.isMethodVarArgs() || i < behavior.methodArity() -1)
+      .forEach(parameterIndex ->  {
       if (parameterIndex == -1) {
         parameterSVs.add(node.programState.exitValue());
       } else {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
-    }
+    });
     return parameterSVs.build();
   }
 }
