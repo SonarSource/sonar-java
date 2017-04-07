@@ -50,6 +50,7 @@ public class JUnitListenerTest {
   @Before
   public void setUp() {
     jacoco = mock(JacocoController.class);
+    JacocoController.singleton = jacoco;
     listener = new JUnitListener();
     listener.jacoco = jacoco;
   }
@@ -63,6 +64,7 @@ public class JUnitListenerTest {
   public void lazy_initialization_of_controller() throws Exception {
     JUnitListener jUnitListener = new JUnitListener();
     assertNull(jUnitListener.jacoco);
+    assertEquals(jacoco, jUnitListener.getJacocoController());
     jUnitListener.jacoco = jacoco;
     assertEquals(jUnitListener.jacoco, jUnitListener.getJacocoController());
   }

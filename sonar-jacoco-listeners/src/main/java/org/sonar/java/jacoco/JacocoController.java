@@ -32,7 +32,8 @@ class JacocoController {
 
   private boolean testStarted;
 
-  private static JacocoController singleton;
+  // Visible for testing
+  static JacocoController singleton;
 
   private JacocoController() {
     try {
