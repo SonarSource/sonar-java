@@ -23,13 +23,14 @@ import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
-import java.util.List;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.client.GetRequest;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.sonar.it.java.suite.TestUtils.newAdminWsClient;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +76,17 @@ public class JaCoCoControllerTest {
       .setProperty("skipTests", "false")
       .setProperty("javaPluginVersion", javaVersion)
       .setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify", "sonar:sonar");
+    BuildResult buildResult = orchestrator.executeBuildQuietly(build);
+    assertThat(buildResult.isSuccess()).isTrue();
+
+  }
+
+  @Test
+  public void test_coverage_per_test_reuse_forks() throws Exception {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("coverage_error"))
+      .setProperty("skipTests", "false")
+      .setProperty("javaPluginVersion", javaVersion)
+      .setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify", "sonar:sonar").addArgument("-P coverage-per-test-forked");
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
     assertThat(buildResult.isSuccess()).isTrue();
 

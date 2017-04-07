@@ -27,24 +27,23 @@ import org.junit.runner.notification.RunListener;
  */
 public class JUnitListener extends RunListener {
 
-  protected final JacocoController jacoco;
-
-  public JUnitListener() {
-    this(JacocoController.getInstance());
-  }
-
-  JUnitListener(JacocoController jacoco) {
-    this.jacoco = jacoco;
-  }
+  protected JacocoController jacoco;
 
   @Override
   public void testStarted(Description description) {
-    jacoco.onTestStart();
+    getJacocoController().onTestStart();
   }
 
   @Override
   public void testFinished(Description description) {
     jacoco.onTestFinish(getName(description));
+  }
+
+  protected JacocoController getJacocoController() {
+    if (jacoco == null) {
+      jacoco = JacocoController.getInstance();
+    }
+    return jacoco;
   }
 
   private static String getName(Description description) {

@@ -28,6 +28,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -61,12 +63,21 @@ public class TestNGListenerTest {
   @Before
   public void setUp() {
     jacoco = mock(JacocoController.class);
-    listener = new TestNGListener(jacoco);
+    listener = new TestNGListener();
+    listener.jacoco = jacoco;
   }
 
   @Test
   public void should_have_public_no_arg_constructor() throws Exception {
     TestNGListener.class.getConstructor();
+  }
+
+  @Test
+  public void lazy_initialization_of_controller() throws Exception {
+    TestNGListener testNGListener = new TestNGListener();
+    assertNull(testNGListener.jacoco);
+    testNGListener.jacoco = jacoco;
+    assertEquals(testNGListener.jacoco, testNGListener.getJacocoController());
   }
 
   @Test
