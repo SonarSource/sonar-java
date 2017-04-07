@@ -44,7 +44,7 @@ public class XmlFileSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.name(this.toString());
+    descriptor.name("SonarJavaXmlFileSensor");
   }
 
   @Override
@@ -64,8 +64,4 @@ public class XmlFileSensor implements Sensor {
     return fs.files(xmlFilePredicate);
   }
 
-  @Override
-  public String toString() {
-    return XmlFileSensor.class.getSimpleName();
-  }
 }

@@ -21,7 +21,6 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,12 +37,10 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -62,15 +59,10 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void to_string() {
-    assertThat(sensor.toString()).isEqualTo("XmlFileSensor");
-  }
-
-  @Test
   public void describe() {
     SensorDescriptor sensorDescriptor = mock(SensorDescriptor.class);
     sensor.describe(sensorDescriptor);
-    verify(sensorDescriptor).name("XmlFileSensor");
+    verify(sensorDescriptor).name("SonarJavaXmlFileSensor");
   }
 
   @Test
