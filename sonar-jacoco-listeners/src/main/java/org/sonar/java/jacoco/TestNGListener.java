@@ -28,17 +28,9 @@ import org.testng.ITestResult;
  */
 public class TestNGListener extends JUnitListener implements ITestListener {
 
-  public TestNGListener() {
-    this(JacocoController.getInstance());
-  }
-
-  TestNGListener(JacocoController jacoco) {
-    super(jacoco);
-  }
-
   @Override
   public void onTestStart(ITestResult result) {
-    jacoco.onTestStart();
+    getJacocoController().onTestStart();
   }
 
   private static String getName(ITestResult result) {
