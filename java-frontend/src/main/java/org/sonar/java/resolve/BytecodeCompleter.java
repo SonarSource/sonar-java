@@ -32,7 +32,6 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,12 +158,9 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       String packageName = Convert.packagePart(flatName);
       JavaSymbol.TypeJavaSymbol owner = classSymbolOwner;
       if(owner == null) {
-        String enclosingClassName = Convert.enclosingClassName(shortName);
-        if(StringUtils.isNotEmpty(enclosingClassName)) {
-          owner = getClassSymbol(Convert.fullName(packageName, enclosingClassName));
-        }
+        owner = getEnclosingClass(shortName, packageName);
       }
-      if ( owner != null) {
+      if (owner != null) {
         //handle innerClasses
         String name = Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName);
         symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), name, owner, bytecodeName);
@@ -188,6 +184,27 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       classes.put(flatName, symbol);
     }
     return symbol;
+  }
+
+  @Nullable
+  private JavaSymbol.TypeJavaSymbol getEnclosingClass(String shortName, String packageName) {
+    JavaSymbol.TypeJavaSymbol owner = null;
+    String enclosingClassName = Convert.enclosingClassName(shortName);
+    if (StringUtils.isNotEmpty(enclosingClassName)) {
+      enclosingClassName = Convert.fullName(packageName, enclosingClassName);
+      InputStream inputStream = null;
+      try {
+        inputStream = inputStreamFor(enclosingClassName);
+        while (inputStream == null && enclosingClassName.endsWith("$")) {
+          enclosingClassName = enclosingClassName.substring(0, enclosingClassName.length() - 1);
+          inputStream = inputStreamFor(enclosingClassName);
+        }
+      } finally {
+        Closeables.closeQuietly(inputStream);
+      }
+      owner = getClassSymbol(enclosingClassName);
+    }
+    return owner;
   }
 
   public int filterBytecodeFlags(int flags) {

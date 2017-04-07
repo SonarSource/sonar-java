@@ -371,6 +371,18 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void owning_class_name() throws Exception {
+    TypeJavaSymbol classSymbolCase1 = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DistinguishNames$Case1$OWNER$$Child");
+    TypeJavaSymbol classSymbolCase2 = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DistinguishNames$Case2$OWNER$$Child");
+    assertThat(classSymbolCase1.owner().name).isEqualTo("OWNER");
+    assertThat(classSymbolCase1.name).isEqualTo("$Child");
+    assertThat(classSymbolCase2.owner().name).isEqualTo("OWNER$");
+    assertThat(classSymbolCase2.name).isEqualTo("Child");
+    // No warning about a class not found
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+  }
+
+  @Test
   public void wildcards_type_equality() {
     JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Wildcards");
 
