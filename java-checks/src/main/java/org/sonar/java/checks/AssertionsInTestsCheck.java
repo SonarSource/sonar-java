@@ -47,6 +47,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   private static final TypeCriteria ORG_MOCKITO_MOCKITO = TypeCriteria.is("org.mockito.Mockito");
   private static final TypeCriteria ORG_ASSERTJ_ASSERTIONS = TypeCriteria.is("org.assertj.core.api.Assertions");
   private static final TypeCriteria ORG_ASSERTJ_FAIL = TypeCriteria.is("org.assertj.core.api.Fail");
+  private static final TypeCriteria IO_RESTASSURED = TypeCriteria.is("io.restassured.response.ValidatableResponseOptions");
 
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
@@ -68,6 +69,16 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // fest 2.x
     method(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
     method("org.fest.assertions.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
+
+    // rest assured 2.0
+    method(IO_RESTASSURED, NameCriteria.is("body")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.is("time")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.startsWith("content")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.startsWith("status")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.startsWith("header")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.startsWith("cookie")).withAnyParameters(),
+    method(IO_RESTASSURED, NameCriteria.startsWith("spec")).withAnyParameters(),
+
     // assertJ
     method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
     method(ORG_ASSERTJ_FAIL, STARTS_WITH_FAIL).withAnyParameters(),
