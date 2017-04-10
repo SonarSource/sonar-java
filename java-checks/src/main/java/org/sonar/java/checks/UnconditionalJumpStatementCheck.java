@@ -22,23 +22,34 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1751")
 public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatcherCollection NEXT_ELEMENT = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Enumeration")).name("hasMoreElements").withoutParameter(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator")).name("hasNext").withoutParameter());
 
   private static final Tree.Kind[] LOOP_KINDS = {
     Tree.Kind.DO_STATEMENT,
@@ -67,10 +78,26 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    if (tree.is(Tree.Kind.CONTINUE_STATEMENT) || executeUnconditionnally(parent)) {
+    if (tree.is(Tree.Kind.CONTINUE_STATEMENT) || (executeUnconditionnally(parent) && !isWhileNextElement(parent))) {
       SyntaxToken jumpKeyword = jumpKeyword(tree);
       reportIssue(jumpKeyword, String.format("Remove this \"%s\" statement or make it conditional.", jumpKeyword.text()));
     }
+  }
+
+  /**
+   * While loops are sometimes used to get only the first element of an enumeration/collection, using code similar to:
+   * <code>
+   * while(myIterator.hasNext()) {
+   *   return myIterator.next();
+   * }
+   * </code>
+   */
+  private static boolean isWhileNextElement(Tree loopTree) {
+    if (loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
+      ExpressionTree condition = ExpressionUtils.skipParentheses(((WhileStatementTree) loopTree).condition());
+      return condition.is(Tree.Kind.METHOD_INVOCATION) && NEXT_ELEMENT.anyMatch((MethodInvocationTree) condition);
+    }
+    return false;
   }
 
   private static boolean executeUnconditionnally(Tree loopTree) {
@@ -116,17 +143,12 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
   private static boolean isForStatementInitializer(Tree lastElement, Tree loop) {
     if (loop.is(Tree.Kind.FOR_STATEMENT)) {
       return isDescendant(lastElement, ((ForStatementTree) loop).initializer());
-    } else if (loop.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-      return isDescendant(lastElement, ((ForEachStatement) loop).expression());
     }
-    return false;
+    return loop.is(Tree.Kind.FOR_EACH_STATEMENT) && isDescendant(lastElement, ((ForEachStatement) loop).expression());
   }
 
   private static boolean isForStatementUpdate(Tree lastElement, Tree loop) {
-    if (loop.is(Tree.Kind.FOR_STATEMENT)) {
-      return isDescendant(lastElement, ((ForStatementTree) loop).update());
-    }
-    return false;
+    return loop.is(Tree.Kind.FOR_STATEMENT) && isDescendant(lastElement, ((ForStatementTree) loop).update());
   }
 
   private static boolean isDescendant(Tree descendant, Tree target) {
@@ -141,14 +163,17 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
   }
 
   private static SyntaxToken jumpKeyword(Tree jumpStatement) {
-    if (jumpStatement.is(Tree.Kind.BREAK_STATEMENT)) {
-      return ((BreakStatementTree) jumpStatement).breakKeyword();
-    } else if (jumpStatement.is(Tree.Kind.CONTINUE_STATEMENT)) {
-      return ((ContinueStatementTree) jumpStatement).continueKeyword();
-    } else if (jumpStatement.is(Tree.Kind.RETURN_STATEMENT)) {
-      return ((ReturnStatementTree) jumpStatement).returnKeyword();
-    } else {
-      return ((ThrowStatementTree) jumpStatement).throwKeyword();
+    switch (jumpStatement.kind()) {
+      case BREAK_STATEMENT:
+        return ((BreakStatementTree) jumpStatement).breakKeyword();
+      case CONTINUE_STATEMENT:
+        return ((ContinueStatementTree) jumpStatement).continueKeyword();
+      case RETURN_STATEMENT:
+        return ((ReturnStatementTree) jumpStatement).returnKeyword();
+      case THROW_STATEMENT:
+        return ((ThrowStatementTree) jumpStatement).throwKeyword();
+      default:
+        throw new IllegalStateException("Unexpected jump statement.");
     }
   }
 

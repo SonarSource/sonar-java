@@ -231,3 +231,29 @@ class B {
   private static boolean foo() { return false; }
 }
 
+class C {
+  void foo(java.util.Iterator<String> itr) {
+    String s = null;
+    while(itr.hasNext()) {
+      s = itr.next();
+      break; // Compliant
+    }
+  }
+
+  String bar(java.util.Enumeration<String> e) {
+    while((((e.hasMoreElements())))) {
+      String s = e.nextElement();
+      return s; // Compliant
+    }
+    return null;
+  }
+
+  String qix(java.util.Enumeration<String> e) {
+    String s = null;
+    while(e.hasMoreElements()) {
+      s = e.nextElement();
+      continue; // Noncompliant - continue statement is always wrong here
+    }
+    return s;
+  }
+}
