@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -539,6 +540,23 @@ public class SymbolTableTest {
     assertThat(fooA).isSameAs(result.reference(9, 5));
     assertThat(fooA.usages()).hasSize(1);
     assertThat(fooC.usages()).hasSize(0);
+  }
+
+  @Test
+  public void AutoboxingAndLooseInvocation() throws Exception {
+    Result result = Result.createFor("AutoboxingAndLooseInvocation");
+    JavaSymbol fooVariadicInteger = result.symbol("foo", 2);
+    JavaSymbol fooStrictInt = result.symbol("foo", 9);
+
+    JavaSymbol barVariadicObject = result.symbol("bar", 14);
+    JavaSymbol barStrictString = result.symbol("bar", 21);
+
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(fooVariadicInteger.usages()).isEmpty();
+    softly.assertThat(fooStrictInt.usages()).hasSize(1);
+    softly.assertThat(barVariadicObject.usages()).isEmpty();
+    softly.assertThat(barStrictString.usages()).hasSize(1);
+    softly.assertAll();
   }
 
   @Test
