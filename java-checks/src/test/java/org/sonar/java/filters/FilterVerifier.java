@@ -133,10 +133,13 @@ public class FilterVerifier {
     @Override
     public void visitTrivia(SyntaxTrivia syntaxTrivia) {
       String comment = syntaxTrivia.comment().trim();
-      if (comment.endsWith("NoIssue")) {
-        rejectedIssuesLines.add(syntaxTrivia.startLine());
-      } else if (comment.endsWith("WithIssue")) {
-        acceptedIssuesLines.add(syntaxTrivia.startLine());
+      String[] lines = comment.split("\\r\\n|\\r|\\n");
+      for (int i = 0; i < lines.length; i++) {
+        if (lines[i].endsWith("NoIssue")) {
+          rejectedIssuesLines.add(syntaxTrivia.startLine() + i);
+        } else if (lines[i].endsWith("WithIssue")) {
+          acceptedIssuesLines.add(syntaxTrivia.startLine() + i);
+        }
       }
     }
   }
