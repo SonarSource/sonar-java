@@ -30,9 +30,11 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -78,21 +80,64 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    if (tree.is(Tree.Kind.CONTINUE_STATEMENT) || (executeUnconditionnally(parent) && !isWhileNextElement(parent))) {
+    if (tree.is(Tree.Kind.CONTINUE_STATEMENT)
+      || (!isWhileNextElementLoop(parent) && !isEmptyConditionLoop(parent) && executeUnconditionnally(parent))) {
       SyntaxToken jumpKeyword = jumpKeyword(tree);
       reportIssue(jumpKeyword, String.format("Remove this \"%s\" statement or make it conditional.", jumpKeyword.text()));
     }
   }
 
   /**
-   * While loops are sometimes used to get only the first element of an enumeration/collection, using code similar to:
+   * For or while loops are sometimes used as short-cut simulating goto's, when having always true conditions:
    * <code>
-   * while(myIterator.hasNext()) {
-   *   return myIterator.next();
+   * for(;;) {
+   *  if (...) {
+   *    // ...
+   *    break;
+   *  }
+   *  while (...) {
+   *    // ...
+   *    if (...) {
+   *      break;
+   *    }
+   *  }
+   *  break; // last unconditional jump to exit the infinite loop
    * }
    * </code>
    */
-  private static boolean isWhileNextElement(Tree loopTree) {
+  private static boolean isEmptyConditionLoop(Tree loopTree) {
+    switch (loopTree.kind()) {
+      case FOR_STATEMENT:
+        ForStatementTree fst = (ForStatementTree) loopTree;
+        return fst.initializer().isEmpty() && fst.condition() == null && fst.update().isEmpty();
+      case WHILE_STATEMENT:
+        // 'while(false)' does not compile, unreachable code
+        return isTrue(((WhileStatementTree) loopTree).condition());
+      case DO_STATEMENT:
+        // only target true literal, which needs a break statement.
+        // For a 'do {...} while (false);', loop the jump is useless and issue should be raised.
+        return isTrue(((DoWhileStatementTree) loopTree).condition());
+      default:
+        // variable and expression of For-Each statement can not be empty
+        return false;
+    }
+  }
+
+  private static boolean isTrue(ExpressionTree expressionTree) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
+    return expr.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expr).value());
+  }
+
+  /**
+   * While loops are sometimes used to get only the first element of an enumeration/collection, using code similar to:
+   * <code>
+   * while(myIterator.hasNext()) {
+   *   // ...
+   *   return myIterator.next(); // unconditional jump
+   * }
+   * </code>
+   */
+  private static boolean isWhileNextElementLoop(Tree loopTree) {
     if (loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
       ExpressionTree condition = ExpressionUtils.skipParentheses(((WhileStatementTree) loopTree).condition());
       return condition.is(Tree.Kind.METHOD_INVOCATION) && NEXT_ELEMENT.anyMatch((MethodInvocationTree) condition);

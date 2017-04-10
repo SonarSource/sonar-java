@@ -231,8 +231,8 @@ class B {
   private static boolean foo() { return false; }
 }
 
-class C {
-  void foo(java.util.Iterator<String> itr) {
+abstract class C {
+  void m1(java.util.Iterator<String> itr) {
     String s = null;
     while(itr.hasNext()) {
       s = itr.next();
@@ -240,7 +240,7 @@ class C {
     }
   }
 
-  String bar(java.util.Enumeration<String> e) {
+  String m2(java.util.Enumeration<String> e) {
     while((((e.hasMoreElements())))) {
       String s = e.nextElement();
       return s; // Compliant
@@ -248,7 +248,7 @@ class C {
     return null;
   }
 
-  String qix(java.util.Enumeration<String> e) {
+  String m3(java.util.Enumeration<String> e) {
     String s = null;
     while(e.hasMoreElements()) {
       s = e.nextElement();
@@ -256,4 +256,77 @@ class C {
     }
     return s;
   }
+
+  void m4() {
+    while(true) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Compliant
+    }
+
+    while(isItTrue()) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Noncompliant
+    }
+  }
+
+  void m5() {
+    for(;;) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Compliant
+    }
+
+    for(int i = 0;;) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Noncompliant
+    }
+
+    for(;isItTrue();) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Noncompliant
+    }
+
+    int i = 0;
+    for(;;i++) {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Noncompliant
+    }
+  }
+
+  void m6() {
+    do {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Noncompliant
+    } while (false);
+
+    do {
+      if (isItTrue()) {
+        // ...
+        break;
+      }
+      break; // Compliant
+    } while ((((true))));
+  }
+
+  abstract boolean isItTrue();
 }
