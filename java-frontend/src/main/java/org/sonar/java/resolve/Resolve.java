@@ -638,6 +638,9 @@ public class Resolve {
 
   private boolean isAcceptableDeferredType(Env env, DeferredType arg, JavaType formal) {
     AbstractTypedTree tree = arg.tree();
+    if(tree.is(Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION) && !formal.symbol.isFlag(Flags.INTERFACE)) {
+      return false;
+    }
     List<JavaType> samMethodArgs = findSamMethodArgs(formal);
     if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
       return validMethodReference(env, (MethodReferenceTree) tree, samMethodArgs);

@@ -1373,4 +1373,12 @@ public class SymbolTableTest {
     assertThat(constructorRef.owner().type().is("java.lang.Enum")).overridingErrorMessage("Wrongly resolving unaccessible protected enum constructor").isFalse();
     assertThat(constructorRef.owner().type().is("EnumConstructor")).isTrue();
   }
+
+  @Test
+  public void defered_type_wrongly_resolve_methods() {
+    Result res = Result.createFor("DeferedLambdaShouldOnlyBeAppliedToInterface");
+    assertThat(res.symbol("foo", 2).usages()).isEmpty();
+    assertThat(res.symbol("foo", 6).usages()).hasSize(1);
+    assertThat(res.symbol("foo", 9).usages()).isEmpty();
+  }
 }
