@@ -94,6 +94,7 @@ public class BytecodeCompleterTest {
   @Test
   public void annotations() throws Exception {
     bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
+    assertThat(bytecodeCompleter.classesNotFound()).isEmpty();
   }
 
   @Test
@@ -489,6 +490,7 @@ public class BytecodeCompleterTest {
     List<Type> interfaces = clazz.interfaces();
     assertThat(interfaces).isNotNull();
     assertThat(interfaces).isEmpty();
+    assertThat(bytecodeCompleter.classesNotFound()).containsOnly("org.sonar.java.resolve.targets.UnknownClass");
   }
 
   @Test

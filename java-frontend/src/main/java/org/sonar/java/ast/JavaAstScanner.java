@@ -70,6 +70,7 @@ public class JavaAstScanner {
       } else {
         progressReport.cancel();
       }
+      visitor.endOfAnalysis();
     }
   }
 

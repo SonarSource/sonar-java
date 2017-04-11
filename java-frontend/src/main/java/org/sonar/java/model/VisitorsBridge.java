@@ -41,6 +41,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class VisitorsBridge {
 
@@ -54,6 +57,7 @@ public class VisitorsBridge {
   private List<File> projectClasspath;
   protected File currentFile;
   protected JavaVersion javaVersion;
+  private Set<String> classesNotFound = new TreeSet<>();
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -113,6 +117,7 @@ public class VisitorsBridge {
     if (semanticModel != null) {
       // Close class loader after all the checks.
       semanticModel.done();
+      classesNotFound.addAll(semanticModel.classesNotFound());
     }
   }
 
@@ -179,4 +184,13 @@ public class VisitorsBridge {
     this.currentFile = currentFile;
   }
 
+  public void endOfAnalysis() {
+    if(!classesNotFound.isEmpty()) {
+      String message = "";
+      if(classesNotFound.size() > 50) {
+        message = ", ...";
+      }
+      LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
+    }
+  }
 }
