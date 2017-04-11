@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ExpressionUtils;
@@ -47,6 +48,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_AND;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_OR;
@@ -242,20 +245,31 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if(tree.is(CONDITIONAL_AND, CONDITIONAL_OR)) {
-        increaseComplexityByOne(tree.operatorToken());
-        ExpressionTree left = ExpressionUtils.skipParentheses(tree.leftOperand());
-        if(left.kind() == tree.kind()) {
-          ignored.add(((BinaryExpressionTree) left).operatorToken());
-          complexity--;
-        }
-        ExpressionTree right = ExpressionUtils.skipParentheses(tree.rightOperand());
-        if(right.kind() == tree.kind()) {
-          ignored.add(((BinaryExpressionTree) right).operatorToken());
-          complexity--;
+      if (tree.is(CONDITIONAL_AND, CONDITIONAL_OR) && !ignored.contains(tree)) {
+        List<BinaryExpressionTree> flattenedLogicalExpressions = flattenLogicalExpression(tree).collect(Collectors.toList());
+
+        BinaryExpressionTree previous = null;
+        for (BinaryExpressionTree current : flattenedLogicalExpressions) {
+          if (previous == null || !previous.is(current.kind())) {
+            increaseComplexityByOne(current.operatorToken());
+          }
+          previous = current;
         }
       }
       super.visitBinaryExpression(tree);
+    }
+
+    private Stream<BinaryExpressionTree> flattenLogicalExpression(ExpressionTree expression) {
+      if (expression.is(CONDITIONAL_AND, CONDITIONAL_OR)) {
+        ignored.add(expression);
+
+        BinaryExpressionTree binaryExpr = (BinaryExpressionTree) expression;
+        ExpressionTree left = ExpressionUtils.skipParentheses(binaryExpr.leftOperand());
+        ExpressionTree right = ExpressionUtils.skipParentheses(binaryExpr.rightOperand());
+
+        return Stream.concat(Stream.concat(flattenLogicalExpression(left), Stream.of(binaryExpr)), flattenLogicalExpression(right));
+      }
+      return Stream.empty();
     }
   }
 

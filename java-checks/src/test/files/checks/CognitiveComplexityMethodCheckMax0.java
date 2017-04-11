@@ -12,16 +12,16 @@ class CognitiveComplexityCheck {
   public boolean extraConditions() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
     return a && b || foo(b && c);
   }
-  public boolean extraConditions2() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
+  public boolean extraConditions2() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
     return a && (b || c) || d;
   }
   public void extraConditions3() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
     if (a && b || c || d) {}
   }
-  public void extraConditions4() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
+  public void extraConditions4() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 5 to the 0 allowed.}}
     if (a && b || c && d || e) {}
   }
-  public void extraConditions5() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 4 to the 0 allowed.}}
+  public void extraConditions5() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 5 to the 0 allowed.}}
     if (a || b && c || d && e) {}
   }
   public void extraConditions6() {// Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 3 to the 0 allowed.}}
@@ -64,6 +64,24 @@ class CognitiveComplexityCheck {
 
   public void extraCondition11() { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
     if (a || (b || c)) {}
+  }
+
+  public void extraConditions12() { // Noncompliant [[secondary=70,72,74,76,78,80,81]] {{Refactor this method to reduce its Cognitive Complexity from 7 to the 0 allowed.}}
+    if (     // +1
+      a
+      && b   // +1 - secondary on each first operator of a new sequence
+      && c
+      || d   // +1
+      || e
+      && f   // +1
+      && g
+      || (h  // +1
+      || (i
+      && j   // +1
+      || k)) // +1 - parentheses completely ignored
+      || l
+      || m
+      ){}
   }
 
   public void breakWithLabel(java.util.Collection<Boolean> objects) { // Noncompliant {{Refactor this method to reduce its Cognitive Complexity from 2 to the 0 allowed.}}
