@@ -26,8 +26,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
@@ -38,10 +36,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
-
-  private static final Logger LOG = Loggers.get(BytecodeCompleter.class);
 
   private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
       Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
@@ -59,6 +57,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<>();
 
   private ClassLoader classLoader;
+  private Set<String> classesNotFound = new TreeSet<>();
 
   public BytecodeCompleter(List<File> projectClasspath, ParametrizedTypeCache parametrizedTypeCache) {
     this.projectClasspath = projectClasspath;
@@ -175,7 +174,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         symbol.completer = this;
       } else {
         if (!bytecodeName.endsWith("package-info")) {
-          LOG.warn("Class not found: " + bytecodeName);
+          classesNotFound.add(bytecodeName);
         }
         ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
         ((ClassJavaType) symbol.type).supertype = Symbols.unknownType;
@@ -274,4 +273,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return (flags & Flags.SYNTHETIC) != 0;
   }
 
+  public Set<String> classesNotFound() {
+    return classesNotFound;
+  }
 }
