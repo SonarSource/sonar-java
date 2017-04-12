@@ -60,9 +60,6 @@
 'jdk6:java/util/XMLUtils.java':[
 28,
 ],
-'jdk6:java/util/prefs/Base64.java':[
-19,
-],
 'jdk6:java/util/prefs/XmlSupport.java':[
 28,
 ],
