@@ -147,9 +147,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private static int startLineIncludingTrivia(Tree tree) {
     SyntaxToken firstToken = tree.firstToken();
-    if (firstToken == null) {
-      return -1;
-    }
+    // first token can't be null, because tree has @SuppressWarnings annotation
     if (!firstToken.trivias().isEmpty()) {
       return firstToken.trivias().get(0).startLine();
     }
