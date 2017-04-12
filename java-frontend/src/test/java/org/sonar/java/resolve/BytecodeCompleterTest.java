@@ -368,6 +368,7 @@ public class BytecodeCompleterTest {
       assertThat(arg.metadata().annotations()).hasSize(1);
       assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable")).isTrue();
     }
+    assertThat(bytecodeCompleter.classesNotFound()).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Class not found: java.lang.Synthetic");
   }
 

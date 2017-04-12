@@ -173,7 +173,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       if (getClassLoader().getResource(Convert.bytecodeName(flatName) + ".class") != null) {
         symbol.completer = this;
       } else {
-        if (!bytecodeName.endsWith("package-info")) {
+        // Do not log missing annotation as they are not necessarily required in classpath for compiling
+        if (!bytecodeName.endsWith("package-info") && isNotAnnotation(flags)) {
           classesNotFound.add(bytecodeName);
         }
         ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
@@ -183,6 +184,10 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       classes.put(flatName, symbol);
     }
     return symbol;
+  }
+
+  private boolean isNotAnnotation(int flags) {
+    return (flags & Flags.ANNOTATION) == 0;
   }
 
   @Nullable
