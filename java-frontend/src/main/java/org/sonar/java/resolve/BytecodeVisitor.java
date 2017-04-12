@@ -124,7 +124,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    JavaType annotationType = convertAsmType(org.objectweb.asm.Type.getType(desc));
+    JavaType annotationType = convertAsmType(org.objectweb.asm.Type.getType(desc), Flags.ANNOTATION);
     AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     classSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, this);
@@ -251,12 +251,15 @@ public class BytecodeVisitor extends ClassVisitor {
     }
     return result.build();
   }
-
   public JavaType convertAsmType(org.objectweb.asm.Type asmType) {
+    return convertAsmType(asmType, 0);
+  }
+
+  public JavaType convertAsmType(org.objectweb.asm.Type asmType, int flags) {
     JavaType result;
     switch (asmType.getSort()) {
       case org.objectweb.asm.Type.OBJECT:
-        result = getClassSymbol(asmType.getInternalName()).type;
+        result = getClassSymbol(asmType.getInternalName(), flags).type;
         break;
       case org.objectweb.asm.Type.BYTE:
         result = symbols.byteType;
