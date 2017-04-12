@@ -47,7 +47,7 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (hasSemantic() && shouldImplementEquals(classTree)) {
-      reportIssue(classTree.simpleName(), "Override this superclass' \"equals\" method.");
+      reportIssue(classTree.simpleName(), "Override the \"equals\" method in this class.");
     }
   }
 

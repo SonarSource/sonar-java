@@ -14,7 +14,7 @@ class A {
   }
 }
 
-class B extends A { // Noncompliant [[sc=7;ec=8]]  {{Override this superclass' "equals" method.}}
+class B extends A { // Noncompliant [[sc=7;ec=8]]  {{Override the "equals" method in this class.}}
   String s2;
 }
 
