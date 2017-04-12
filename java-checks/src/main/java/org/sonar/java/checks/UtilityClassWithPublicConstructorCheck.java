@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -44,7 +45,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!hasSemantic() || anonymousClass(classTree) || extendsAnotherClassOrImplementsSerializable(classTree) || !hasOnlyStaticMembers(classTree)) {
+    if (!hasSemantic() || !isUtilityClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;
@@ -57,6 +58,17 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     if (hasImplicitPublicConstructor) {
       reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
     }
+  }
+
+  private static boolean isUtilityClass(ClassTree classTree) {
+    return hasOnlyStaticMembers(classTree) && !anonymousClass(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
+      && !containsMainMethod(classTree);
+  }
+
+  private static boolean containsMainMethod(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .anyMatch(method -> ((MethodTreeImpl) method).isMainMethod());
   }
 
   private static boolean anonymousClass(ClassTree classTree) {

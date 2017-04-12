@@ -113,3 +113,19 @@ class Foo15 {
 class Foo16 implements Serializable { // Compliant
   private static final long serialVersionUID = 1L;
 }
+
+public class Main { // Compliant - contains main method
+  public static void main(String[] args) throws Exception {
+    System.out.println("Hello world!");
+  }
+}
+
+public class NotMain { // Noncompliant
+  static void main(String[] args) throws Exception {
+    System.out.println("Hello world!");
+  }
+
+  static int main(String[] args) {
+    System.out.println("Hello world!");
+  }
+}
