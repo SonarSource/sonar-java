@@ -180,7 +180,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  public JavaFileScannerContext.CognitiveComplexity getCognitiveComplexity(MethodTree methodTree) {
-    return CognitiveComplexityVisitor.methodComplexity(semanticModel, methodTree);
+  public JavaFileScannerContext.CognitiveComplexity cognitiveComplexity(MethodTree methodTree) {
+    return CognitiveComplexityVisitor.methodComplexity(methodTree);
+  }
+
+  @Override
+  public int compilationUnitCognitiveComplexity() {
+    return CognitiveComplexityVisitor.compilationUnitComplexity(tree);
   }
 }

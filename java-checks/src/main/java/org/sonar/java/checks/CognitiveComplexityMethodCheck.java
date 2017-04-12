@@ -53,11 +53,11 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    JavaFileScannerContext.CognitiveComplexity result = context.getCognitiveComplexity(method);
+    JavaFileScannerContext.CognitiveComplexity result = context.cognitiveComplexity(method);
     int total = result.complexity;
     if (total > max) {
       reportIssue(method.simpleName(),
-        "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", result.flow, total - max);
+        "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", result.locations, total - max);
     }
   }
 

@@ -118,7 +118,14 @@ public interface JavaFileScannerContext {
    * @param method the method or constructor to evaluate
    * @return the cognitive complexity of the method, including the resulting value and the corresponding flow.
    */
-  CognitiveComplexity getCognitiveComplexity(MethodTree methodTree);
+  CognitiveComplexity cognitiveComplexity(MethodTree methodTree);
+
+  /**
+   * Compute the total cognitive complexity of the Compilation Unit.
+   * Initializer blocks and static initializers are counted on top of all the constructors and methods.
+   * @return the sum the cognitive complexity of all the initializers, constructors and methods.
+   */
+  int compilationUnitCognitiveComplexity();
 
   /**
    * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
@@ -235,17 +242,28 @@ public interface JavaFileScannerContext {
     }
   }
 
-  public static class CognitiveComplexity {
-    public final int complexity;
-    public final List<JavaFileScannerContext.Location> flow;
+  /**
+   * Cognitive complexity and associated locations
+   */
+  class CognitiveComplexity {
+    private static final CognitiveComplexity EMPTY = new CognitiveComplexity(0, Collections.emptyList());
 
-    public CognitiveComplexity(int complexity, List<Location> flow) {
+    /**
+     * Numerical value corresponding to the cognitive complexity
+     */
+    public final int complexity;
+    /**
+     * Secondary locations related to the cognitive complexity nodes
+     */
+    public final List<Location> locations;
+
+    public CognitiveComplexity(int complexity, List<Location> locations) {
       this.complexity = complexity;
-      this.flow = flow;
+      this.locations = locations;
     }
 
     public static CognitiveComplexity empty() {
-      return new CognitiveComplexity(0, Collections.emptyList());
+      return EMPTY;
     }
   }
 
