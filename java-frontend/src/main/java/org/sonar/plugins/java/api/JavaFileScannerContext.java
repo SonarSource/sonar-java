@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.Nullable;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,6 +111,14 @@ public interface JavaFileScannerContext {
    * @return true if parsing was successful
    */
   boolean fileParsed();
+
+  /**
+   * Compute the cognitive complexity of the given MethodTree (include methods and constructors).
+   * Abstract methods, methods of anonymous classes and methods of local classes are ignored and will return 0.
+   * @param method the method or constructor to evaluate
+   * @return the cognitive complexity of the method, including the resulting value and the corresponding flow.
+   */
+  CognitiveComplexity getCognitiveComplexity(MethodTree methodTree);
 
   /**
    * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
@@ -225,4 +234,19 @@ public interface JavaFileScannerContext {
       return Objects.hash(msg, syntaxNode);
     }
   }
+
+  public static class CognitiveComplexity {
+    public final int complexity;
+    public final List<JavaFileScannerContext.Location> flow;
+
+    public CognitiveComplexity(int complexity, List<Location> flow) {
+      this.complexity = complexity;
+      this.flow = flow;
+    }
+
+    public static CognitiveComplexity empty() {
+      return new CognitiveComplexity(0, Collections.emptyList());
+    }
+  }
+
 }

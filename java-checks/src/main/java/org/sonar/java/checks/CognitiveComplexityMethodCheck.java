@@ -23,9 +23,8 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -54,21 +53,12 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    if (method.block() == null || ((ClassTree)method.parent()).simpleName() == null || isWithinLocalClass(method)) {
-      return;
-    }
-    CognitiveComplexityVisitor complexityVisitor = new CognitiveComplexityVisitor();
-    method.accept(complexityVisitor);
-    int total = complexityVisitor.complexity();
+    JavaFileScannerContext.CognitiveComplexity result = context.getCognitiveComplexity(method);
+    int total = result.complexity;
     if (total > max) {
       reportIssue(method.simpleName(),
-        "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", complexityVisitor.flow(), total - max);
+        "Refactor this method to reduce its Cognitive Complexity from " + total + " to the " + max + " allowed.", result.flow, total - max);
     }
-
-  }
-
-  private boolean isWithinLocalClass(MethodTree method) {
-    return hasSemantic() && method.symbol().owner().owner().isMethodSymbol();
   }
 
   public void setMax(int max) {

@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -33,10 +34,13 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,11 +56,11 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.IF_STATEMENT;
 public class CognitiveComplexityVisitor extends BaseTreeVisitor {
   private final List<JavaFileScannerContext.Location> flow;
   private final Set<Tree> ignored;
-  int complexity;
-  int nesting;
-  boolean ignoreNesting;
+  private int complexity;
+  private int nesting;
+  private boolean ignoreNesting;
 
-  public CognitiveComplexityVisitor() {
+  private CognitiveComplexityVisitor() {
     complexity = 0;
     nesting = 1;
     ignoreNesting = false;
@@ -64,12 +68,22 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
     ignored = new HashSet<>();
   }
 
-  public int complexity() {
-    return complexity;
+  public static JavaFileScannerContext.CognitiveComplexity methodComplexity(@Nullable SemanticModel semanticModel, MethodTree methodTree) {
+    if (shouldAnalyzeMethod(semanticModel, methodTree)) {
+      CognitiveComplexityVisitor visitor = new CognitiveComplexityVisitor();
+      methodTree.accept(visitor);
+      return new JavaFileScannerContext.CognitiveComplexity(visitor.complexity, visitor.flow);
+    }
+
+    return JavaFileScannerContext.CognitiveComplexity.empty();
   }
 
-  public List<JavaFileScannerContext.Location> flow() {
-    return flow;
+  private static boolean shouldAnalyzeMethod(@Nullable SemanticModel semanticModel, MethodTree methodTree) {
+    return methodTree.block() != null && ((ClassTree) methodTree.parent()).simpleName() != null && !isWithinLocalClass(semanticModel, methodTree);
+  }
+
+  private static boolean isWithinLocalClass(@Nullable SemanticModel semanticModel, MethodTree method) {
+    return semanticModel != null && method.symbol().owner().owner().isMethodSymbol();
   }
 
   private void increaseComplexityByNesting(Tree tree) {
