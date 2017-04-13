@@ -31,10 +31,16 @@ public class MissingNewLineAtEndOfFileCheck implements JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    String content = context.getFileContent();
-    char lastChar = content.charAt(content.length() - 1);
-    if( lastChar != '\n' && lastChar != '\r') {
+    if (isEmptyOrNotEndingWithNewLine(context.getFileContent())) {
       context.addIssueOnFile(this, "Add a new line at the end of this file.");
     }
+  }
+
+  private static boolean isEmptyOrNotEndingWithNewLine(String content) {
+    if (content.isEmpty()) {
+      return true;
+    }
+    char lastChar = content.charAt(content.length() - 1);
+    return lastChar != '\n' && lastChar != '\r';
   }
 }
