@@ -411,3 +411,19 @@ class ConstraintCopy {
     boolean b2 = x >= -1 && x == 0 && 1 / x; // Noncompliant
   }
 }
+
+public class TwoCompoundAssignments {
+
+  double sSum;
+  double mSum;
+
+  public void xxx() {
+    this.sSum = 0.0d;
+    this.mSum = 0.0d;
+
+    double sSumAdd = 1;
+
+    this.sSum += sSumAdd;
+    this.mSum += sSumAdd;
+  }
+}

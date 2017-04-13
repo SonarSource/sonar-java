@@ -35,6 +35,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -330,6 +331,58 @@ public class ExplodedGraphWalkerTest {
     MethodAsInstruction check = new MethodAsInstruction();
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/EvaluateMethodOnce.java", check);
     assertThat(check.toStringCall).isEqualTo(1);
+  }
+
+  @Test
+  public void compound_assignment_should_create_new_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/CompoundAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue preStatementStack;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          preStatementStack = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isNotEqualTo(preStatementStack);
+        }
+        return state;
+      }
+    });
+  }
+
+  @Test
+  public void simple_assignment_should_preserve_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SimpleAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue preStatementStack;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          preStatementStack = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isEqualTo(preStatementStack);
+        }
+        return state;
+      }
+    });
   }
 
   @Test
