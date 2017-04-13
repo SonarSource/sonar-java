@@ -2,9 +2,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/CustomBarRenderer.java':[
 36,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java':[
-204,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/AssignAction.java':[
 39,
 ],
@@ -19,8 +16,5 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/TransitionAction.java':[
 39,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/UserSession.java':[
-163,
 ],
 }
