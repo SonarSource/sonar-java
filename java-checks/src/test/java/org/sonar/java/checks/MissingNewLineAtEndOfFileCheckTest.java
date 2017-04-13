@@ -32,6 +32,7 @@ public class MissingNewLineAtEndOfFileCheckTest {
   @Test
   public void test2() {
     JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/EmptyFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/CompletelyEmptyFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
   }
 
   @Test
