@@ -102,6 +102,8 @@ class ABuilder {
 class SameName {
   Object m;
   Object f1;
+  Object flambda;
+  Object fAnon;
 
   Object m() {  // Compliant
     return m;
@@ -117,5 +119,32 @@ class SameName {
 
   Object f1() { // Noncompliant
     return;  // just for coverage, doesn't compile
+  }
+
+  Object f1() { // Noncompliant
+    return new Object();
+  }
+
+  Object flambda() {
+    call(f -> {
+      return new Object();
+    });
+    return flambda;
+  }
+
+  Object fAnon() {
+    Object o = new Object() {
+      String toString() {
+        return "";
+      }
+    };
+    return fAnon;
+  }
+
+  Object f1() { // Noncompliant
+    if (cond) {
+      return new Object();
+    }
+    return f1;
   }
 }

@@ -34,7 +34,9 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -102,10 +104,12 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   }
 
   private static boolean invalidMethodAndVariable(Symbol currentMember, Symbol knownMember) {
+    if (!sameVisibilityNotPrivate(currentMember, knownMember)) {
+      return false;
+    }
     Symbol methodSymbol = currentMember.isMethodSymbol() ? currentMember : knownMember;
     Symbol variableSymbol = methodSymbol == currentMember ? knownMember : currentMember;
-    return sameVisibilityNotPrivate(currentMember, knownMember)
-      && !methodReturningVariableWithSameName(methodSymbol, variableSymbol)
+    return !methodReturningVariableWithSameName(methodSymbol, variableSymbol)
       && !isBuilderPattern(methodSymbol, variableSymbol);
   }
 
@@ -246,6 +250,16 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
       if (returnExpression != null && returnExpression.is(Tree.Kind.IDENTIFIER)) {
         returnsVariable = ((IdentifierTree) returnExpression).symbol().equals(variableSymbol);
       }
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // not interested in returns in lambda bodies
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // not interested in anonymous class bodies
     }
 
     boolean singleReturnWithVariableSymbol() {
