@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 public class JavaType implements Type {
@@ -74,6 +75,11 @@ public class JavaType implements Type {
   public JavaSymbol.TypeJavaSymbol getSymbol() {
     symbol.complete();
     return symbol;
+  }
+
+  @CheckForNull
+  public JavaType getSuperType() {
+    return getSymbol().getSuperclass();
   }
 
   @Override
