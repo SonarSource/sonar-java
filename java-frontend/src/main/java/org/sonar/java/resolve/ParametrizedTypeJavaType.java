@@ -21,11 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
@@ -105,5 +103,10 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       }
     }
     return true;
+  }
+
+  @Override
+  protected ClassJavaType substitutedType(ClassJavaType type) {
+    return (ClassJavaType) typeSubstitutionSolver.applySubstitution(type, typeSubstitution);
   }
 }
