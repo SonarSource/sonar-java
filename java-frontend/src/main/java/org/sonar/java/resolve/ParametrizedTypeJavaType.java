@@ -74,14 +74,9 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
   }
 
   private boolean verifySuperTypes(Type superType) {
-    JavaType superclass = symbol.getSuperclass();
-    if (superclass != null) {
-      superclass = typeSubstitutionSolver.applySubstitution(superclass, this.typeSubstitution);
-      if (superclass.isSubtypeOf(superType)) {
-        return true;
-      }
-    }
-    return symbol.getInterfaces().stream().map(si -> typeSubstitutionSolver.applySubstitution(si, this.typeSubstitution)).anyMatch(si -> si.isSubtypeOf(superType));
+    JavaType superclass = getSuperType();
+    return (superclass != null && superclass.isSubtypeOf(superType))
+      || symbol.getInterfaces().stream().map(si -> typeSubstitutionSolver.applySubstitution(si, this.typeSubstitution)).anyMatch(si -> si.isSubtypeOf(superType));
   }
 
   private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {

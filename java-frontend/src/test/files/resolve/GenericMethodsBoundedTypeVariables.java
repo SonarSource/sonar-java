@@ -2,7 +2,7 @@ class PreTest<T> {
   <S extends T> void foo(S s) {}
 }
 
-class Test<T> extends PreTest<T> {
+class Test<U> extends PreTest<U> {
   void test() {
     new Test<A>().<A>foo(new A());
     new Test<A>().<B>foo(new B());
