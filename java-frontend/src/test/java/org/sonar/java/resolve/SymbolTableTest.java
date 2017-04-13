@@ -1399,4 +1399,11 @@ public class SymbolTableTest {
     assertThat(res.symbol("foo", 6).usages()).hasSize(1);
     assertThat(res.symbol("foo", 9).usages()).isEmpty();
   }
+
+  @Test
+  public void return_type_inference() {
+    Result res = Result.createFor("ReturnTypeInference");
+    assertThat(res.symbol("mapToString").usages()).hasSize(1);
+
+  }
 }

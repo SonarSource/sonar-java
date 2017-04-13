@@ -19,9 +19,11 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.ImmutableSet;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.List;
+import java.util.Set;
 
 public class ClassJavaType extends JavaType {
 
@@ -85,4 +87,32 @@ public class ClassJavaType extends JavaType {
     }
     return false;
   }
+
+  private Set<ClassJavaType> directSuperTypes() {
+    ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+    ClassJavaType superClassType = (ClassJavaType) symbol.superClass();
+    if(superClassType != null) {
+      types.add(substitutedType(superClassType));
+    }
+    for (JavaType interfaceType : symbol.getInterfaces()) {
+      types.add(substitutedType((ClassJavaType) interfaceType));
+    }
+    return types.build();
+  }
+
+  protected ClassJavaType substitutedType(ClassJavaType type) {
+    return type;
+  }
+
+  public Set<ClassJavaType> superTypes() {
+    ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+    for (ClassJavaType classJavaType : directSuperTypes()) {
+      types.add(classJavaType);
+      types.addAll(classJavaType.superTypes());
+    }
+    return types.build();
+  }
+
+
+
 }
