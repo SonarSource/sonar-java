@@ -186,7 +186,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return symbol;
   }
 
-  private boolean isNotAnnotation(int flags) {
+  private static boolean isNotAnnotation(int flags) {
     return (flags & Flags.ANNOTATION) == 0;
   }
 
