@@ -10,7 +10,7 @@ class A {
 
 class B extends HttpServlet {
   
-  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance fields or make it "static" and/or "final"}}
+  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
   private static String staticVar;
   private final String finalVar;
   private String storageType;
