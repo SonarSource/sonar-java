@@ -80,9 +80,9 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
           .ifPresent(conflictingSymbol ->
             reportIssue(reportTree,
               "Rename "
-                + getSymbolTypeName(symbol) + " \"" + name + "\" "
+                + getSymbolKindName(symbol) + " \"" + name + "\" "
                 + "to prevent any misunderstanding/clash with "
-                + getSymbolTypeName(conflictingSymbol) + " \"" + knownMemberName + "\""
+                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName + "\""
                 + getDefinitionPlace(symbol, conflictingSymbol) + "."));
       }
     }
@@ -98,7 +98,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static boolean isInvalidMember(Symbol currentMember, Symbol knownMember) {
     if (!isOverriding(currentMember)) {
-      return differentTypes(currentMember, knownMember) ? invalidMethodAndVariable(currentMember, knownMember) : !sameName(currentMember, knownMember);
+      return differentSymbolKinds(currentMember, knownMember) ? invalidMethodAndVariable(currentMember, knownMember) : !sameName(currentMember, knownMember);
     }
     return false;
   }
@@ -158,7 +158,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     return currentMember.name().equals(knownMember.name());
   }
 
-  private static boolean differentTypes(Symbol s1, Symbol s2) {
+  private static boolean differentSymbolKinds(Symbol s1, Symbol s2) {
     return variableAndMethod(s1, s2) || variableAndMethod(s2, s1);
   }
 
@@ -187,7 +187,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().line();
   }
 
-  private static String getSymbolTypeName(Symbol symbol) {
+  private static String getSymbolKindName(Symbol symbol) {
     return symbol.isMethodSymbol() ? "method" : "field";
   }
 
