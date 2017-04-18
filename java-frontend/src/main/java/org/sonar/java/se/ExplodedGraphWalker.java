@@ -522,7 +522,7 @@ public class ExplodedGraphWalker {
       case LEFT_SHIFT_ASSIGNMENT:
       case RIGHT_SHIFT_ASSIGNMENT:
       case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
-        executeAssignement((AssignmentExpressionTree) tree);
+        executeAssignment((AssignmentExpressionTree) tree);
         break;
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
@@ -825,7 +825,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void executeAssignement(AssignmentExpressionTree tree) {
+  private void executeAssignment(AssignmentExpressionTree tree) {
     ProgramState.Pop unstack;
     SymbolicValue value;
 
