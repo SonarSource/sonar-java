@@ -830,7 +830,7 @@ public class ExplodedGraphWalker {
     SymbolicValue value;
 
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      unstack = programState.unstackValue(1);
+      unstack = ExpressionUtils.isSimpleAssignment(tree) ? programState.unstackValue(1) : programState.unstackValue(2);
       value = unstack.values.get(0);
     } else {
       unstack = programState.unstackValue(2);
@@ -846,6 +846,7 @@ public class ExplodedGraphWalker {
 
   private void executeLogicalAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
+    // FIXME handle also assignments with this SONARJAVA-2242
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
       SymbolicValue assignedTo = unstack.values.get(1);

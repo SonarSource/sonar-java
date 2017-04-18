@@ -1,10 +1,12 @@
 class A {
 
   int f;
+  static int field;
 
-  void compoundAssignment(int a) {
+  void simpleAssignment() {
+    int a;
     a = 1;
     this.f = 1;
-    some.complex().lhs = 1;
+    A.field = 1;
   }
 }

@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 public class ExplodedGraphWalkerTest {
@@ -337,13 +338,13 @@ public class ExplodedGraphWalkerTest {
   public void compound_assignment_should_create_new_value_on_stack() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/CompoundAssignmentExecution.java", new SECheck() {
 
-      private SymbolicValue preStatementStack;
+      private SymbolicValue rhsValue;
 
       @Override
       public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
         ProgramState state = context.getState();
         if (syntaxNode instanceof AssignmentExpressionTree) {
-          preStatementStack = state.peekValue();
+          rhsValue = state.peekValue();
         }
         return state;
       }
@@ -352,7 +353,9 @@ public class ExplodedGraphWalkerTest {
       public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
         ProgramState state = context.getState();
         if (syntaxNode instanceof AssignmentExpressionTree) {
-          assertThat(state.peekValue()).isNotEqualTo(preStatementStack);
+          assertThat(state.peekValue()).isNotEqualTo(rhsValue);
+          // there should be only one value after compound assignment, result of compound operator
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
         }
         return state;
       }
@@ -363,13 +366,13 @@ public class ExplodedGraphWalkerTest {
   public void simple_assignment_should_preserve_value_on_stack() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/SimpleAssignmentExecution.java", new SECheck() {
 
-      private SymbolicValue preStatementStack;
+      private SymbolicValue rhsValue;
 
       @Override
       public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
         ProgramState state = context.getState();
         if (syntaxNode instanceof AssignmentExpressionTree) {
-          preStatementStack = state.peekValue();
+          rhsValue = state.peekValue();
         }
         return state;
       }
@@ -378,7 +381,9 @@ public class ExplodedGraphWalkerTest {
       public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
         ProgramState state = context.getState();
         if (syntaxNode instanceof AssignmentExpressionTree) {
-          assertThat(state.peekValue()).isEqualTo(preStatementStack);
+          assertThat(state.peekValue()).isEqualTo(rhsValue);
+          // there should be only one value after simple assignment, which is symbolic value of RHS
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
         }
         return state;
       }
