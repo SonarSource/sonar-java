@@ -81,7 +81,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private void reportIssuesOnVariable() {
     issuableVariables.removeAll(excludedVariables);
     for (VariableTree variable : issuableVariables) {
-      reportIssue(variable.simpleName(), "Remove this misleading mutable servlet instance fields or make it \"static\" and/or \"final\"");
+      reportIssue(variable.simpleName(), "Remove this misleading mutable servlet instance field or make it \"static\" and/or \"final\"");
     }
     issuableVariables.clear();
     excludedVariables.clear();
