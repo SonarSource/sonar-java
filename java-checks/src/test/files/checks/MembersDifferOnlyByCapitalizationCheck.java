@@ -125,20 +125,29 @@ class SameName {
     return new Object();
   }
 
-  Object flambda() {
+  Object flambda() { // Compliant
     call(f -> {
       return new Object();
     });
     return flambda;
   }
 
-  Object fAnon() {
+  Object fAnon() { // Compliant
     Object o = new Object() {
       String toString() {
         return "";
       }
     };
     return fAnon;
+  }
+
+  Object foo;
+  void foo() { // Noncompliant
+    SameName sn = new SameName() {
+      Object bar() {
+        return foo;
+      }
+    };
   }
 
   Object f1() { // Noncompliant
