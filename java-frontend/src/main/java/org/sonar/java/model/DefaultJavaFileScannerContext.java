@@ -22,10 +22,8 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
@@ -38,7 +36,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -177,15 +174,5 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
     return getComplexityNodes(tree);
-  }
-
-  @Override
-  public JavaFileScannerContext.CognitiveComplexity cognitiveComplexity(MethodTree methodTree) {
-    return CognitiveComplexityVisitor.methodComplexity(methodTree);
-  }
-
-  @Override
-  public int compilationUnitCognitiveComplexity() {
-    return CognitiveComplexityVisitor.compilationUnitComplexity(tree);
   }
 }

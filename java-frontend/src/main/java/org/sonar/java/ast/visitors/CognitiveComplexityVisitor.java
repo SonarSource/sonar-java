@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +55,32 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.CONDITIONAL_OR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IF_STATEMENT;
 
 public class CognitiveComplexityVisitor extends BaseTreeVisitor {
+
+  /**
+   * Cognitive complexity and associated locations
+   */
+  public static class Result {
+    private static final Result EMPTY = new Result(0, Collections.emptyList());
+
+    /**
+     * Numerical value corresponding to the cognitive complexity
+     */
+    public final int complexity;
+    /**
+     * Secondary locations related to the cognitive complexity nodes
+     */
+    public final List<JavaFileScannerContext.Location> locations;
+
+    public Result(int complexity, List<JavaFileScannerContext.Location> locations) {
+      this.complexity = complexity;
+      this.locations = locations;
+    }
+
+    public static Result empty() {
+      return EMPTY;
+    }
+  }
+
   private final List<JavaFileScannerContext.Location> locations;
   private final Set<Tree> ignored;
   private int complexity;
@@ -68,14 +95,14 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
     ignored = new HashSet<>();
   }
 
-  public static JavaFileScannerContext.CognitiveComplexity methodComplexity(MethodTree methodTree) {
+  public static Result methodComplexity(MethodTree methodTree) {
     if (shouldAnalyzeMethod(methodTree)) {
       CognitiveComplexityVisitor visitor = new CognitiveComplexityVisitor();
       methodTree.accept(visitor);
-      return new JavaFileScannerContext.CognitiveComplexity(visitor.complexity, visitor.locations);
+      return new Result(visitor.complexity, visitor.locations);
     }
 
-    return JavaFileScannerContext.CognitiveComplexity.empty();
+    return Result.empty();
   }
 
   public static int compilationUnitComplexity(CompilationUnitTree cut) {
@@ -108,7 +135,11 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
 
 
   private static boolean shouldAnalyzeMethod(MethodTree methodTree) {
-    return methodTree.block() != null && ((ClassTree) methodTree.parent()).simpleName() != null && !isWithinLocalClass(methodTree);
+    return methodTree.block() != null && !memberOfAnonymousClass(methodTree) && !isWithinLocalClass(methodTree);
+  }
+
+  private static boolean memberOfAnonymousClass(MethodTree methodTree) {
+    return ((ClassTree) methodTree.parent()).simpleName() == null;
   }
 
   private static boolean isWithinLocalClass(MethodTree methodTree) {

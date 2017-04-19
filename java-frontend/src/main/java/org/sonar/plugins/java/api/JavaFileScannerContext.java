@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.Nullable;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -111,21 +110,6 @@ public interface JavaFileScannerContext {
    * @return true if parsing was successful
    */
   boolean fileParsed();
-
-  /**
-   * Compute the cognitive complexity of the given MethodTree (include methods and constructors).
-   * Abstract methods, methods of anonymous classes and methods of local classes are ignored and will return 0.
-   * @param method the method or constructor to evaluate
-   * @return the cognitive complexity of the method, including the resulting value and the corresponding flow.
-   */
-  CognitiveComplexity cognitiveComplexity(MethodTree methodTree);
-
-  /**
-   * Compute the total cognitive complexity of the Compilation Unit.
-   * Initializer blocks and static initializers are counted on top of all the constructors and methods.
-   * @return the sum the cognitive complexity of all the initializers, constructors and methods.
-   */
-  int compilationUnitCognitiveComplexity();
 
   /**
    * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
@@ -241,30 +225,4 @@ public interface JavaFileScannerContext {
       return Objects.hash(msg, syntaxNode);
     }
   }
-
-  /**
-   * Cognitive complexity and associated locations
-   */
-  class CognitiveComplexity {
-    private static final CognitiveComplexity EMPTY = new CognitiveComplexity(0, Collections.emptyList());
-
-    /**
-     * Numerical value corresponding to the cognitive complexity
-     */
-    public final int complexity;
-    /**
-     * Secondary locations related to the cognitive complexity nodes
-     */
-    public final List<Location> locations;
-
-    public CognitiveComplexity(int complexity, List<Location> locations) {
-      this.complexity = complexity;
-      this.locations = locations;
-    }
-
-    public static CognitiveComplexity empty() {
-      return EMPTY;
-    }
-  }
-
 }

@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -53,7 +53,7 @@ public class CognitiveComplexityMethodCheck  extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    JavaFileScannerContext.CognitiveComplexity result = context.cognitiveComplexity(method);
+    CognitiveComplexityVisitor.Result result = CognitiveComplexityVisitor.methodComplexity(method);
     int total = result.complexity;
     if (total > max) {
       reportIssue(method.simpleName(),

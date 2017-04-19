@@ -30,6 +30,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.Version;
+import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.StatementVisitor;
@@ -114,7 +115,7 @@ public class Measurer extends SubscriptionVisitor {
     saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
 
     if (isSonarQubeGreaterThanOrEqualTo63()) {
-      saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, context.compilationUnitCognitiveComplexity());
+      saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
     }
   }
 
