@@ -48,22 +48,17 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
 
     if (isClassController(methodSymbol)
       && isRequestMappingAnnotated(methodSymbol)
-      && !isPublicMethod(methodSymbol)) {
+      && !methodSymbol.isPublic()) {
       reportIssue(methodTree.simpleName(), "Make this method \"public\".");
     }
   }
 
   private static boolean isClassController(Symbol.MethodSymbol methodSymbol) {
-    SymbolMetadata parentClassOwner = methodSymbol.owner().metadata();
-    return parentClassOwner.isAnnotatedWith("org.springframework.stereotype.Controller");
+    return methodSymbol.owner().metadata().isAnnotatedWith("org.springframework.stereotype.Controller");
   }
 
   private static boolean isRequestMappingAnnotated(MethodSymbol methodSymbol) {
     return methodSymbol.metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RequestMapping");
-  }
-
-  private static boolean isPublicMethod(MethodSymbol methodSymbol) {
-    return methodSymbol.isPublic();
   }
 
 }
