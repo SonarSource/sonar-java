@@ -2,12 +2,13 @@
 
 set -euo pipefail
 
-function configureTravis {
+function installTravisTools {
   mkdir ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v33 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/c7751d11d1abcba792f4e92a306ceaa4f56b5915 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
-configureTravis
+installTravisTools
+cancel_branch_build_with_pr
 
 if [ "$TEST" != "CI_MACOSX" ]; then
   . installJDK8
