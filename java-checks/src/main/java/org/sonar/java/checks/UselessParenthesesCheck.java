@@ -19,21 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(key = "UselessParenthesesCheck")
@@ -71,20 +65,21 @@ public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasParentExpression((ParenthesizedTree) tree)) {
-      reportIssue(((ParenthesizedTree) tree).openParenToken(),
-          "Remove those useless parentheses.",
-          ImmutableList.of(new JavaFileScannerContext.Location("Original", ((ParenthesizedTree) tree).closeParenToken())), null);
+    ParenthesizedTree parenthesizedTree = (ParenthesizedTree) tree;
+    if (uselessParentheses(parenthesizedTree)) {
+      reportIssue(parenthesizedTree.openParenToken(),
+          "Remove these useless parentheses.",
+          Collections.singletonList(new JavaFileScannerContext.Location("", parenthesizedTree.closeParenToken())), null);
     }
   }
 
-  private static boolean hasParentExpression(ParenthesizedTree tree) {
+  private static boolean uselessParentheses(ParenthesizedTree tree) {
     Tree parentTree = tree.parent();
-    if(parentTree.is(Kind.CONDITIONAL_EXPRESSION)) {
-      return tree.expression().is(Kind.METHOD_INVOCATION, Kind.IDENTIFIER, Kind.MEMBER_SELECT) || tree.expression() instanceof LiteralTree;
+    if (!parentTree.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      return false;
     }
-    //Exclude expression of array access expression
-    if (parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression())) {
+    Tree grandParentTree = parentTree.parent();
+    if (grandParentTree == null) {
       return false;
     }
     return parentTree.is(PARENT_EXPRESSION);
