@@ -237,7 +237,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(3, "a is assigned to null here", 12, 20)
           .flowItem(9, "a is assigned to b here", 7, 12)
@@ -264,7 +264,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_unexpected_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(5, "a is assigned to null here", 12, 20)
           .flowItem(6, "a is assigned to b here", 7, 12)
@@ -285,7 +285,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_missing_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(7, "b is assigned to null here", 7, 15)
         .add()
@@ -302,7 +302,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_flow_messages() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(3, "invalid 1", 12, 20)
           .flowItem(9, "invalid 2", 7, 12)
@@ -321,7 +321,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_flow_locations() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(3, "a is assigned to null here", 6, 20)
           .flowItem(9, "a is assigned to b here", 7, 12)
@@ -340,7 +340,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_superfluous_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
-      .issueWithFlow(11, "NullPointerException might be thrown as 'b' is nullable here", 5, 11, 15)
+      .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
         .flow()
           .flowItem(3, "a is assigned to null here", 12, 20)
           .flowItem(9, "a is assigned to b here", 7, 12)

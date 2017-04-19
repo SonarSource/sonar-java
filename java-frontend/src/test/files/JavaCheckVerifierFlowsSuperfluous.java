@@ -8,7 +8,7 @@ class A {
     } else { // flow@superfluous
       b = a; // flow@npe1 [[sc=7;ec=12]] {{a is assigned to b here}}
     }
-    b.toString(); // Noncompliant [[sc=5;ec=15;flows=npe1]] {{NullPointerException might be thrown as 'b' is nullable here}}
+    b.toString(); // Noncompliant [[sc=5;ec=15;flows=npe1]] {{A "NullPointerException" could be thrown; "b" is nullable here}}
   }
 
 }
