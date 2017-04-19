@@ -35,6 +35,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,6 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 public class ExplodedGraphWalkerTest {
@@ -330,6 +332,62 @@ public class ExplodedGraphWalkerTest {
     MethodAsInstruction check = new MethodAsInstruction();
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/EvaluateMethodOnce.java", check);
     assertThat(check.toStringCall).isEqualTo(1);
+  }
+
+  @Test
+  public void compound_assignment_should_create_new_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/CompoundAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue rhsValue;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          rhsValue = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isNotEqualTo(rhsValue);
+          // there should be only one value after compound assignment, result of compound operator
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
+        }
+        return state;
+      }
+    });
+  }
+
+  @Test
+  public void simple_assignment_should_preserve_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SimpleAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue rhsValue;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          rhsValue = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isEqualTo(rhsValue);
+          // there should be only one value after simple assignment, which is symbolic value of RHS
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
+        }
+        return state;
+      }
+    });
   }
 
   @Test

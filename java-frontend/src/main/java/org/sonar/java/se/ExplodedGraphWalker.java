@@ -522,7 +522,7 @@ public class ExplodedGraphWalker {
       case LEFT_SHIFT_ASSIGNMENT:
       case RIGHT_SHIFT_ASSIGNMENT:
       case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
-        executeAssignement((AssignmentExpressionTree) tree);
+        executeAssignment((AssignmentExpressionTree) tree);
         break;
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
@@ -825,13 +825,12 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void executeAssignement(AssignmentExpressionTree tree) {
+  private void executeAssignment(AssignmentExpressionTree tree) {
     ProgramState.Pop unstack;
     SymbolicValue value;
 
-    boolean isSimpleAssignment = ExpressionUtils.isSimpleAssignment(tree) || ExpressionUtils.isSelectOnThisOrSuper(tree);
-    if (isSimpleAssignment) {
-      unstack = programState.unstackValue(1);
+    if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      unstack = ExpressionUtils.isSimpleAssignment(tree) ? programState.unstackValue(1) : programState.unstackValue(2);
       value = unstack.values.get(0);
     } else {
       unstack = programState.unstackValue(2);
@@ -840,13 +839,14 @@ public class ExplodedGraphWalker {
 
     programState = unstack.state;
     programState = programState.stackValue(value);
-    if (isSimpleAssignment || tree.variable().is(Tree.Kind.IDENTIFIER)) {
+    if (tree.variable().is(Tree.Kind.IDENTIFIER) || ExpressionUtils.isSelectOnThisOrSuper(tree)) {
       programState = programState.put(ExpressionUtils.extractIdentifier(tree).symbol(), value);
     }
   }
 
   private void executeLogicalAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
+    // FIXME handle also assignments with this SONARJAVA-2242
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
       SymbolicValue assignedTo = unstack.values.get(1);
