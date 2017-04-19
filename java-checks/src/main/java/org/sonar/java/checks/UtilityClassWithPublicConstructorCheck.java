@@ -80,15 +80,20 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {
-    if (classTree.members().isEmpty()) {
+    List<Tree> members = classTree.members();
+    if (members.isEmpty() || noStaticMember(members)) {
       return false;
     }
-    for (Tree member : classTree.members()) {
+    for (Tree member : members) {
       if (!isConstructor(member) && !isStatic(member) && !member.is(Tree.Kind.EMPTY_STATEMENT)) {
         return false;
       }
     }
     return true;
+  }
+
+  private static boolean noStaticMember(List<Tree> members) {
+    return members.stream().noneMatch(UtilityClassWithPublicConstructorCheck::isStatic);
   }
 
   private static boolean isStatic(Tree member) {
