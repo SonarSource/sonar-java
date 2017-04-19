@@ -46,7 +46,6 @@
 873,
 873,
 873,
-1648,
 ],
 'jdk6:java/awt/geom/Area.java':[
 423,
@@ -145,7 +144,6 @@
 379,
 1383,
 1564,
-2130,
 ],
 'jdk6:java/net/URLEncoder.java':[
 249,
@@ -159,9 +157,6 @@
 'jdk6:java/util/ArrayDeque.java':[
 200,
 ],
-'jdk6:java/util/ArrayList.java':[
-589,
-],
 'jdk6:java/util/EnumMap.java':[
 361,
 399,
@@ -172,17 +167,11 @@
 905,
 945,
 ],
-'jdk6:java/util/Hashtable.java':[
-1017,
-],
 'jdk6:java/util/IdentityHashMap.java':[
 706,
 935,
 1004,
 1074,
-],
-'jdk6:java/util/LinkedHashMap.java':[
-377,
 ],
 'jdk6:java/util/PriorityQueue.java':[
 466,
@@ -208,7 +197,6 @@
 ],
 'jdk6:java/util/concurrent/ArrayBlockingQueue.java':[
 709,
-723,
 725,
 ],
 'jdk6:java/util/concurrent/ConcurrentHashMap.java':[

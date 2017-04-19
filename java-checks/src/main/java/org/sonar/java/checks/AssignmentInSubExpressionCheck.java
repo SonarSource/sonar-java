@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -30,9 +31,9 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
@@ -58,7 +59,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    //skip lambda if body is an assignement
+    //skip lambda if body is an assignment
     if(!lambdaExpressionTree.body().is(Kind.ASSIGNMENT)) {
       super.visitLambdaExpression(lambdaExpressionTree);
     }
@@ -66,15 +67,19 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
 
   @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
-    ExpressionTree expressionTree = tree.expression();
-
-    while (expressionTree instanceof AssignmentExpressionTree) {
-      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) expressionTree;
-      scan(assignmentExpressionTree.variable());
-      expressionTree = assignmentExpressionTree.expression();
-    }
-
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree.expression());
+    expressionTree = skipChainedAssignments(expressionTree);
     scan(expressionTree);
+  }
+
+  private ExpressionTree skipChainedAssignments(ExpressionTree expressionTree) {
+    ExpressionTree tree = ExpressionUtils.skipParentheses(expressionTree);
+    while (tree instanceof AssignmentExpressionTree) {
+      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
+      scan(assignmentExpressionTree.variable());
+      tree = ExpressionUtils.skipParentheses(assignmentExpressionTree.expression());
+    }
+    return tree;
   }
 
   @Override
@@ -98,14 +103,10 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
 
   @Nullable
   private static AssignmentExpressionTree getInnerAssignmentExpression(ExpressionTree tree) {
-    if (tree.is(Kind.PARENTHESIZED_EXPRESSION)) {
-      ParenthesizedTree parenthesizedTree = (ParenthesizedTree) tree;
-
-      if (parenthesizedTree.expression().is(Kind.ASSIGNMENT)) {
-        return (AssignmentExpressionTree) parenthesizedTree.expression();
-      }
+    ExpressionTree expressionTree = ExpressionUtils.skipParentheses(tree);
+    if (expressionTree.is(Kind.ASSIGNMENT)) {
+      return (AssignmentExpressionTree) expressionTree;
     }
-
     return null;
   }
 
@@ -122,6 +123,15 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     scan(tree.statement());
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    ExpressionTree initializer = tree.initializer();
+    if (initializer != null) {
+      ExpressionTree expressionTree = skipChainedAssignments(initializer);
+      scan(expressionTree);
+    }
   }
 
   @Override

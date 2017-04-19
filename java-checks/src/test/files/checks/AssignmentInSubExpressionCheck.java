@@ -75,4 +75,14 @@ class Foo {
     }
   }
 
+  void sonarJava2193() {
+    int i = j = 0; // Compliant
+    int l = i;
+    int k = (l += 1); // Compliant
+    double a = b = c = defaultValue();
+    Object[] result;
+    result = (bresult = new byte[len]);
+    char[] buf = lineBuffer = new char[128];
+  }
+
 }
