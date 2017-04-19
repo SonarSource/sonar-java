@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +40,6 @@ import java.util.List;
 @RspecKey("S1110")
 public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
-  private final Deque<Tree> parent = new LinkedList<>();
   private static final Kind[] PARENT_EXPRESSION =  {
       Kind.ANNOTATION,
       Kind.LIST,
@@ -70,23 +70,16 @@ public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    parent.clear();
-    super.scanFile(context);
-  }
-
-  @Override
   public void visitNode(Tree tree) {
-    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression((ParenthesizedTree) tree)) {
+    if (hasParentExpression((ParenthesizedTree) tree)) {
       reportIssue(((ParenthesizedTree) tree).openParenToken(),
           "Remove those useless parentheses.",
           ImmutableList.of(new JavaFileScannerContext.Location("Original", ((ParenthesizedTree) tree).closeParenToken())), null);
     }
-    parent.push(tree);
   }
 
-  private boolean hasParentExpression(ParenthesizedTree tree) {
-    Tree parentTree = this.parent.peek();
+  private static boolean hasParentExpression(ParenthesizedTree tree) {
+    Tree parentTree = tree.parent();
     if(parentTree.is(Kind.CONDITIONAL_EXPRESSION)) {
       return tree.expression().is(Kind.METHOD_INVOCATION, Kind.IDENTIFIER, Kind.MEMBER_SELECT) || tree.expression() instanceof LiteralTree;
     }
@@ -98,13 +91,7 @@ public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void leaveNode(Tree tree) {
-    parent.pop();
-  }
-
-
-  @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.values());
+    return Collections.singletonList(Kind.PARENTHESIZED_EXPRESSION);
   }
 }
