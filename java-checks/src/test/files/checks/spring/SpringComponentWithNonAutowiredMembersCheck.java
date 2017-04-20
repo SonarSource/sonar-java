@@ -20,6 +20,9 @@ public class HelloWorld {
 
   @Resource
   String email2 = null; // Compliant
+
+  @Inject
+  String email3 = null; // Compliant
   
   private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorld.class); // Compliant
 }
