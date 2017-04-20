@@ -25,9 +25,11 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -36,9 +38,17 @@ import java.util.List;
 @Rule(key = "S1610")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
+  private int javaVersionAsInt;
+
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava8Compatible();
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    javaVersionAsInt = context.getJavaVersion().asInt();
+    super.scanFile(context);
   }
 
   @Override
@@ -49,7 +59,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree)) {
+    if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree) && supportPrivateMethod(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();
       reportIssue(
         simpleName,
@@ -59,6 +69,20 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
 
   private static boolean classIsAbstract(ClassTree tree) {
     return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
+  }
+
+  /**
+   * Java 9 introduce private method in interfaces.
+   * Before Java 9, an abstract class with private methods can not be turned into an interface.
+   */
+  private boolean supportPrivateMethod(ClassTree tree) {
+    return !hasPrivateMethod(tree) || javaVersionAsInt >= 9;
+  }
+
+  private static boolean hasPrivateMethod(ClassTree tree) {
+    return tree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .anyMatch(member -> ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE));
   }
 
   private static boolean classHasNoFieldAndProtectedMethod(ClassTree tree) {
