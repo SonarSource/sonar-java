@@ -81,15 +81,10 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {
     List<Tree> members = classTree.members();
-    if (members.isEmpty() || noStaticMember(members)) {
+    if (noStaticMember(members)) {
       return false;
     }
-    for (Tree member : members) {
-      if (!isConstructor(member) && !isStatic(member) && !member.is(Tree.Kind.EMPTY_STATEMENT)) {
-        return false;
-      }
-    }
-    return true;
+    return members.stream().allMatch(member -> isConstructor(member) || isStatic(member) || member.is(Tree.Kind.EMPTY_STATEMENT));
   }
 
   private static boolean noStaticMember(List<Tree> members) {
