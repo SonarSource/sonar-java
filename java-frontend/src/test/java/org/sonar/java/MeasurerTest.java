@@ -20,17 +20,25 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.measure.Measure;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +46,7 @@ import static org.mockito.Mockito.mock;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 10;
+  private static final int NB_OF_METRICS = 11;
   private SensorContextTester context;
   private JavaSquid squid;
   private File baseDir;
@@ -64,6 +72,17 @@ public class MeasurerTest {
   @Test
   public void verify_complexity_metric() {
     checkMetric("Complexity.java", "complexity", 16);
+  }
+
+  @Test
+  public void verify_cognitive_complexity_metric() {
+    checkMetric("CognitiveComplexity.java", "cognitive_complexity", 25);
+  }
+
+  @Test
+  public void no_cognitive_complexity_metric_with_SQ_lower_than_6_3() {
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 0), SonarQubeSide.SCANNER));
+    checkMetric("CognitiveComplexity.java", "cognitive_complexity", null, NB_OF_METRICS - 1);
   }
 
   @Test
@@ -97,6 +116,10 @@ public class MeasurerTest {
    * Utility method to quickly get metric out of a file.
    */
   private void checkMetric(String filename, String metric, Number expectedValue) {
+    checkMetric(filename, metric, expectedValue, NB_OF_METRICS);
+  }
+
+  private void checkMetric(String filename, String metric, @Nullable Number expectedValue, int numberOfMetrics) {
     String relativePath = PathUtils.sanitize(new File(baseDir, filename).getPath());
     TestInputFileBuilder inputFile = new TestInputFileBuilder(context.module().key(), relativePath);
     inputFile.setModuleBaseDir(fs.baseDirPath());
@@ -104,8 +127,13 @@ public class MeasurerTest {
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
-    assertThat(context.measures("projectKey:"+relativePath)).hasSize(NB_OF_METRICS);
-    assertThat(context.measure("projectKey:"+relativePath, metric).value()).isEqualTo(expectedValue);
+    assertThat(context.measures("projectKey:" + relativePath)).hasSize(numberOfMetrics);
+    Measure<Serializable> measure = context.measure("projectKey:" + relativePath, metric);
+    if (expectedValue == null) {
+      assertThat(measure).isNull();
+    } else {
+      assertThat(measure.value()).isEqualTo(expectedValue);
+    }
   }
 
 }
