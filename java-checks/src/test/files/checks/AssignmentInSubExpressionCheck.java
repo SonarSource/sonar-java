@@ -54,11 +54,14 @@ class Foo {
     while (null != (foo = bar())) { // Compliant
     }
   }
+
+  boolean field;
+
   @MyAnnotation(name="toto", type=Type.SubType) // Compliant
   void bar(){
-    eventBus.register((NextPlayer) event -> isPlaying = !isPlaying);
-    eventBus.register((NextPlayer) event -> {isPlaying = !isPlaying;});
-    eventBus.register((NextPlayer) event -> {if(isPlaying = !isPlaying) return false;}); // Noncompliant
+    eventBus.register((NextPlayer) event -> field = !field);
+    eventBus.register((NextPlayer) event -> {field = !field;});
+    eventBus.register((NextPlayer) event -> {if(field = !field) return false;}); // Noncompliant
   }
 
   void sonarJava1516() {
