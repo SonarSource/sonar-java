@@ -84,7 +84,7 @@ public class CommentedCode {
    *   continue;
    * }
    */
-  public void method() {
+  public void method(String s) {
   }
 
   /**
@@ -95,5 +95,13 @@ public class CommentedCode {
    */
   public int getField() {
     return field;
+  }
+
+  /**
+   * FIXME: the following method calls {@link CommentedCode#method(String)}
+   */
+  public void foo() {
+    // FIXME: the following line calls {@link CommentedCode#method(String)} - javadoc links are accepted in comments
+    method("");
   }
 }
