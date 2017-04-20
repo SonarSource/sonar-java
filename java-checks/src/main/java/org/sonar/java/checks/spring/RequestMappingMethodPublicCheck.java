@@ -24,8 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -57,7 +55,7 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
     return methodSymbol.owner().metadata().isAnnotatedWith("org.springframework.stereotype.Controller");
   }
 
-  private static boolean isRequestMappingAnnotated(MethodSymbol methodSymbol) {
+  private static boolean isRequestMappingAnnotated(Symbol.MethodSymbol methodSymbol) {
     return methodSymbol.metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RequestMapping");
   }
 
