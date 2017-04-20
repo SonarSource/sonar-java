@@ -101,3 +101,20 @@ class A {
     request.getSession().putValue( "userid", bar); // Noncompliant
   }
 }
+
+class B {
+
+  public void doPost1(HttpServletRequest request) throws Exception {
+    String param = "";
+    param = URLDecoder.decode(param, "UTF-8");
+
+    request.getSession().putValue("userid", param); // Compliant
+  }
+
+  public void doPost2(HttpServletRequest request) throws Exception {
+    String param = request.getParameter("");
+    param = URLDecoder.decode(param, "UTF-8");
+
+    request.getSession().putValue("userid", param); // FN - param should have been detected as being a non-protected data.
+  }
+}
