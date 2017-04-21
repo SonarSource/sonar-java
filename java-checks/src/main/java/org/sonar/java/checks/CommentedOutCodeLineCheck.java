@@ -105,7 +105,8 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     List<Integer> commentedOutCodeLines = new ArrayList<>();
     String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
     for (int i = 0; i < lines.length; i++) {
-      if (codeRecognizer.isLineOfCode(lines[i])) {
+      String line = lines[i];
+      if (codeRecognizer.isLineOfCode(line) && !isJavadocLink(line)) {
         // Mark all remaining lines from this comment as a commented out lines of code
         for (int j = i; j < lines.length; j++) {
           commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
@@ -114,6 +115,10 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       }
     }
     return commentedOutCodeLines;
+  }
+
+  private static boolean isJavadocLink(String line) {
+    return line.contains("{@link");
   }
 
   /**
