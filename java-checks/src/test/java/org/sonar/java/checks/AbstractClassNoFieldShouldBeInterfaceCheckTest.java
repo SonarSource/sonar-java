@@ -41,4 +41,9 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
     JavaCheckVerifier.verify(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 8);
     JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_javalang.java", new AbstractClassNoFieldShouldBeInterfaceCheck(), 8);
   }
+
+  @Test
+  public void test_with_java_9() {
+    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java", new AbstractClassNoFieldShouldBeInterfaceCheck(), 9);
+  }
 }

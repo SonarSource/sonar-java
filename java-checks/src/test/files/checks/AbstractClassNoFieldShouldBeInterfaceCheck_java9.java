@@ -41,7 +41,7 @@ public abstract class G {
   }
 }
 
-public abstract class Car { // Compliant - has private methods
+public abstract class Car { // Noncompliant
   public void start() {
       turnOnLights();
       startEngine();
