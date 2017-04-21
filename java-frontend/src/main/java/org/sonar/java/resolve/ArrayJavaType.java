@@ -52,6 +52,31 @@ public class ArrayJavaType extends JavaType implements Type.ArrayType {
   }
 
   @Override
+  public boolean is(String fullyQualifiedName) {
+    return fullyQualifiedName.endsWith("[]") && elementType.is(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2));
+  }
+
+  @Override
+  public boolean isSubtypeOf(String fullyQualifiedName) {
+    return "java.lang.Object".equals(fullyQualifiedName)
+      || (fullyQualifiedName.endsWith("[]") && elementType.isSubtypeOf(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
+  }
+
+  @Override
+  public boolean isSubtypeOf(Type superType) {
+    JavaType supType = (JavaType) superType;
+    // Handle covariance of arrays.
+    if (supType.isTagged(ARRAY)) {
+      return elementType.isSubtypeOf(((ArrayType) supType).elementType());
+    }
+    if (supType.isTagged(WILDCARD)) {
+      return ((WildCardType) superType).isSubtypeOfBound(this);
+    }
+    // Only possibility to be supertype of array without being an array is to be Object.
+    return "java.lang.Object".equals(supType.fullyQualifiedName());
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (obj == null) {
       return false;

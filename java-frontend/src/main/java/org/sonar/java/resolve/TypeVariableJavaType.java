@@ -44,6 +44,11 @@ public class TypeVariableJavaType extends JavaType {
   }
 
   @Override
+  public boolean isSubtypeOf(String fullyQualifiedName) {
+    return erasure().isSubtypeOf(fullyQualifiedName);
+  }
+
+  @Override
   public boolean isSubtypeOf(Type superType) {
     JavaType supType = (JavaType) superType;
     if (supType.isTagged(WILDCARD)) {
