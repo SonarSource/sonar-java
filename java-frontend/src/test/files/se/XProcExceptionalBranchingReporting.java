@@ -19,7 +19,7 @@ abstract class A {
         if (o == null) {} // Noncompliant [[flows=catof1]] {{Change this condition so that it does not always evaluate to "true"}} flow@catof1 {{Condition is always true.}}
       }
     } finally {
-      o.toString(); // Noncompliant [[flows=npe]] {{NullPointerException might be thrown as 'o' is nullable here}}  flow@npe {{'o' is dereferenced.}}
+      o.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "o" is nullable here}}  flow@npe {{'o' is dereferenced.}}
     }
   }
 
@@ -28,7 +28,7 @@ abstract class A {
 
   void tst1(Object o) {
     Object o2 = bar(o); // flow@npe1 {{'bar()' returns null.}} flow@npe1 {{'o2' is assigned null.}}
-    o2.toString(); // Noncompliant [[flows=npe1]] {{NullPointerException might be thrown as 'o2' is nullable here}} flow@npe1 {{'o2' is dereferenced.}}
+    o2.toString(); // Noncompliant [[flows=npe1]] {{A "NullPointerException" could be thrown; "o2" is nullable here}} flow@npe1 {{'o2' is dereferenced.}}
   }
 
   private Object returnParam(Object o) {
@@ -38,7 +38,7 @@ abstract class A {
   void tst2(Object o) {
     if (o == null) { // flow@npe2 {{Implies 'o' is null.}}
       Object o2 = returnParam(o); // flow@npe2 {{'o2' is assigned null.}}
-      o2.toString(); // Noncompliant [[flows=npe2]] {{NullPointerException might be thrown as 'o2' is nullable here}} flow@npe2 {{'o2' is dereferenced.}}
+      o2.toString(); // Noncompliant [[flows=npe2]] {{A "NullPointerException" could be thrown; "o2" is nullable here}} flow@npe2 {{'o2' is dereferenced.}}
     }
   }
 
@@ -52,7 +52,7 @@ abstract class A {
   void tst3(Object o) {
     if (o != null) {
       Object o2 = returnNullIfParamNotNull(o); // flow@npe3 {{'returnNullIfParamNotNull()' returns null.}} flow@npe3 {{'o2' is assigned null.}}
-      o2.toString(); // Noncompliant [[flows=npe3]] {{NullPointerException might be thrown as 'o2' is nullable here}} flow@npe3 {{'o2' is dereferenced.}}
+      o2.toString(); // Noncompliant [[flows=npe3]] {{A "NullPointerException" could be thrown; "o2" is nullable here}} flow@npe3 {{'o2' is dereferenced.}}
     }
   }
 }

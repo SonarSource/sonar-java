@@ -45,7 +45,7 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
         methodName = (IdentifierTree) mit.methodSelect();
         lockName = "this";
       }
-      reportIssue(methodName, "Make this call to \"" + methodName + "()\" only inside a synchronized block to be sure to hold the monitor on \"" + lockName + "\" object.");
+      reportIssue(methodName, "Move this call to \"" + methodName + "()\" into a synchronized block to be sure the monitor on \"" + lockName + "\" is held.");
     }
   }
 
