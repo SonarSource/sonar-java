@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ConcurrentLinkedQueueSizeCheckTest {
+public class CollectionMethodsWithLinearComplexityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConcurrentLinkedQueueSizeCheck.java", new ConcurrentLinkedQueueSizeCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/CollectionMethodsWithLinearComplexity.java", new CollectionMethodsWithLinearComplexityCheck());
   }
 
 }

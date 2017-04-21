@@ -293,7 +293,7 @@ public final class CheckList {
       .add(DeprecatedHashAlgorithmCheck.class)
       .add(NullCipherCheck.class)
       .add(GetRequestedSessionIdCheck.class)
-      .add(ConcurrentLinkedQueueSizeCheck.class)
+      .add(CollectionMethodsWithLinearComplexityCheck.class)
       .add(ServletInstanceFieldCheck.class)
       .add(BigDecimalDoubleConstructorCheck.class)
       .add(ReflectionOnNonRuntimeAnnotationCheck.class)
