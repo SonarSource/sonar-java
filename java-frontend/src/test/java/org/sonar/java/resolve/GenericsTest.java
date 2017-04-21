@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -855,12 +853,11 @@ public class GenericsTest {
   public void parametrized_method_resolution_with_bounded_type_variable() {
     List<Type> elementTypes = declaredTypesFromFile("src/test/files/resolve/GenericMethodsBoundedTypeVariables.java");
 
-    JavaType type = (JavaType) elementTypes.get(0);
-    JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo");
-    // FIXME SONARJAVA-1859 should be 12 - explicit type arguments not handled
-    assertThat(methodSymbol.usages()).hasSize(6);
-    List<Integer> lines = methodSymbol.usages().stream().map(IdentifierTree::identifierToken).map(SyntaxToken::line).collect(Collectors.toList());
-    assertThat(lines).containsExactly(9, 10, 18, 19, 27, 28);
+    JavaSymbol.MethodJavaSymbol classMethod = getMethodSymbol((JavaType) elementTypes.get(0), "foo");
+    assertThat(classMethod.usages()).hasSize(12);
+
+    JavaSymbol.MethodJavaSymbol interfaceMethod = getMethodSymbol((JavaType) elementTypes.get(1), "bar");
+    assertThat(interfaceMethod.usages()).hasSize(12);
   }
 
   private static void methodHasUsagesWithSameTypeAs(JavaType type, String methodName, String... variables) {

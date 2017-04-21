@@ -30,6 +30,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,11 +68,20 @@ public class TypeSubstitutionSolver {
         substitution = typeInferenceSolver.inferTypeSubstitution(method, formals, argTypes);
       }
       if (!isValidSubtitution(substitution, site)) {
-        // substitution discarded
-        return null;
+        // check for valid substitution in supertypes, null if no valid substitution is found
+        return getTypeSubstitutionFromSuperTypes(method, site, typeParams, argTypes);
       }
     }
     return substitution;
+  }
+
+  @CheckForNull
+  private TypeSubstitution getTypeSubstitutionFromSuperTypes(JavaSymbol.MethodJavaSymbol method, JavaType site, List<JavaType> typeParams, List<JavaType> argTypes) {
+    return site.directSuperTypes().stream()
+      .filter(Objects::nonNull)
+      .map(superType -> getTypeSubstitution(method, superType, typeParams, argTypes))
+      .filter(Objects::nonNull)
+      .findFirst().orElse(null);
   }
 
   private static boolean constructParametrizedTypeWithoutSubstitution(JavaSymbol.MethodJavaSymbol method, JavaType site) {

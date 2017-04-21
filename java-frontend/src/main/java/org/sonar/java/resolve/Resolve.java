@@ -433,7 +433,6 @@ public class Resolve {
   }
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
-
     // handle constructors
     if ("this".equals(name)) {
       return findConstructor(env, site, argTypes, typeParams);
@@ -475,7 +474,6 @@ public class Resolve {
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean looseInvocation) {
     JavaType superclass = site.getSuperType();
-
     Resolution bestSoFar = unresolved();
 
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);

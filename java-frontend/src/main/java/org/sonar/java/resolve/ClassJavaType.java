@@ -90,7 +90,8 @@ public class ClassJavaType extends JavaType {
     return false;
   }
 
-  private Set<ClassJavaType> directSuperTypes() {
+  @Override
+  public Set<ClassJavaType> directSuperTypes() {
     ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
     ClassJavaType superClassType = getSuperType();
     if(superClassType != null) {
