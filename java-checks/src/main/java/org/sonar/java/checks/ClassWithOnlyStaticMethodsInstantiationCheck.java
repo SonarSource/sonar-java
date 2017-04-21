@@ -104,11 +104,16 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   private static Collection<Symbol> filterMethodsAndFields(Collection<Symbol> symbols) {
     List<Symbol> filtered = Lists.newArrayList();
     for (Symbol symbol : symbols) {
-      if ((symbol.isVariableSymbol() && symbol.declaration() != null) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
+      if ((symbol.isVariableSymbol() && !isThisOrSuper(symbol)) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
         filtered.add(symbol);
       }
     }
     return filtered;
+  }
+
+  private static boolean isThisOrSuper(Symbol symbol) {
+    String name = symbol.name();
+    return "this".equals(name) || "super".equals(name);
   }
 
   private static boolean isConstructor(Symbol symbol) {
