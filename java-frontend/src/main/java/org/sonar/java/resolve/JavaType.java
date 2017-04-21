@@ -25,6 +25,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.Set;
+
 public class JavaType implements Type {
 
   public static final int BYTE = 1;
@@ -80,6 +82,10 @@ public class JavaType implements Type {
   @CheckForNull
   public JavaType getSuperType() {
     return getSymbol().getSuperclass();
+  }
+
+  public Set<ClassJavaType> directSuperTypes() {
+    return getSymbol().directSuperTypes();
   }
 
   @Override
