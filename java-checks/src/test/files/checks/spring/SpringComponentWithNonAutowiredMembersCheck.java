@@ -11,9 +11,9 @@ import javax.annotation.Resource;
 @Controller
 public class HelloWorld {
 
-  private String name = null; // Noncompliant [[sc=18;ec=22]] {{Make this member injected via Annotation (@Autowired, @Inject, @Resource) or remove it.}}
-  public String address = null; // Noncompliant [[sc=17;ec=24]] {{Make this member injected via Annotation (@Autowired, @Inject, @Resource) or remove it.}}
-  String phone = null; // Noncompliant [[sc=10;ec=15]] {{Make this member injected via Annotation (@Autowired, @Inject, @Resource) or remove it.}}
+  private String name = null; // Noncompliant [[sc=18;ec=22]] {{Annotate this member with "@Autowired", "@Resource", or "@Inject", or remove it.}}
+  public String address = null; // Noncompliant [[sc=17;ec=24]] {{Annotate this member with "@Autowired", "@Resource", or "@Inject", or remove it.}}
+  String phone = null; // Noncompliant [[sc=10;ec=15]] {{Annotate this member with "@Autowired", "@Resource", or "@Inject", or remove it.}}
 
   @Autowired 
   String email = null; // Compliant
@@ -29,12 +29,12 @@ public class HelloWorld {
 
 @Service
 class ServiceHelloWorld {
-  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Make this member injected via Annotation (@Autowired, @Inject, @Resource) or remove it.}}
+  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", or "@Inject", or remove it.}}
 }
 
 @Repository
 class RepositoryHelloWorld {
-  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Make this member injected via Annotation (@Autowired, @Inject, @Resource) or remove it.}}
+  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", or "@Inject", or remove it.}}
 }
 
 class NonSpringComponentClazz {
