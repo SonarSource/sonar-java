@@ -40,6 +40,9 @@ public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     if (equalsWithSingleParam(methodTree) && !hasProperEquals(methodTree)) {
       reportIssue(methodTree.simpleName(), "Either override Object.equals(Object), or rename the method to prevent any confusion.");
@@ -52,14 +55,8 @@ public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasProperEquals(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (symbol == null) {
-      return true;
-    }
     Symbol.TypeSymbol enclosingClass = symbol.enclosingClass();
-    if (enclosingClass == null) {
-      return true;
-    }
-    return enclosingClass.memberSymbols().stream().anyMatch(MethodNamedEqualsCheck::isEqualsMethod);
+    return enclosingClass != null && enclosingClass.memberSymbols().stream().anyMatch(MethodNamedEqualsCheck::isEqualsMethod);
   }
 
   private static boolean isEqualsMethod(Symbol symbol) {
