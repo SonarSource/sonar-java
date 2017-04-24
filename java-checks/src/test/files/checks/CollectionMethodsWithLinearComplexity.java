@@ -3,7 +3,7 @@ import java.util.*;
 
 
 class A {
-  ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+  final ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
 
   void foo() {
     log.info("Queue contains " + queue.size() + " elements"); // Noncompliant [[sc=40;ec=44]] {{This call to "size()" may be a performance hot spot if the collection is large.}}
@@ -13,10 +13,10 @@ class A {
 class ArrayListUsage {
 
   ArrayList<Object> field;
-  List<Object> iface = new ArrayList<>();
+  private List<Object> iface = new ArrayList<>();
+  ArrayList<Object> accessible;
 
-  ArrayListUsage() {
-    local.contains(a);
+  ArrayListUsage(Object a) { // Compliant - usage in constructor
     field.contains(a);
     iface.contains(a);
   }
@@ -35,7 +35,7 @@ class ArrayListUsage {
 class ConcurrentLinkedQueueUsage {
 
   ConcurrentLinkedQueue<Object> field;
-  Queue<Object> iface = new ConcurrentLinkedQueue<>();
+  final Queue<Object> iface = new ConcurrentLinkedQueue<>();
 
   ConcurrentLinkedQueueUsage() {
     local.contains(a);
@@ -57,7 +57,7 @@ class ConcurrentLinkedQueueUsage {
 class ConcurrentLinkedDequeUsage {
 
   ConcurrentLinkedDeque<Object> field;
-  Deque<Object> iface = new ConcurrentLinkedDeque<>();
+  private Deque<Object> iface = new ConcurrentLinkedDeque<>();
 
   ConcurrentLinkedDequeUsage() {
     local.contains(a);
@@ -79,7 +79,7 @@ class ConcurrentLinkedDequeUsage {
 class CopyOnWriteArrayListUsage {
 
   CopyOnWriteArrayList<Object> field;
-  List<Object> iface = new CopyOnWriteArrayList<>();
+  private List<Object> iface = new CopyOnWriteArrayList<>();
 
   CopyOnWriteArrayListUsage() {
     local.contains(a);
@@ -104,7 +104,7 @@ class CopyOnWriteArrayListUsage {
 class CopyOnWriteArraySetUsage {
 
   CopyOnWriteArraySet<Object> field;
-  List<Object> iface = new CopyOnWriteArraySet<>();
+  private List<Object> iface = new CopyOnWriteArraySet<>();
 
   CopyOnWriteArraySetUsage() {
     local.contains(a);
@@ -129,7 +129,7 @@ class CopyOnWriteArraySetUsage {
 class LinkedListUsage {
 
   LinkedList<Object> field;
-  List<Object> iface = new LinkedList<>();
+  private List<Object> iface = new LinkedList<>();
 
   LinkedListUsage() {
     local.contains(a);
@@ -155,8 +155,34 @@ abstract class Coverage extends AbstractCollection {
   void f() {
     size();
     getQueue().size(); // FN
+    this.size();
+    super.size();
   }
 
+  private List<Object> field1 = new ArrayList<>();
+  ArrayList<Object> field2;
+  void g(Object o) {
+    field2 = (ArrayList<Object>) field1;
+    field1.contains(o); // Noncompliant
+  }
+
+}
+
+class Assignments {
+
+  private List<Object> list1 = new LinkedList();
+  private List<Object> list2;
+  List<Object> list3;
+
+  void f(Object a) {
+    list1 = new ArrayList();
+    list2 = new ArrayList();
+    list1.contains(a); // Noncompliant
+    list2.contains(a); // Noncompliant
+    list3.contains(a);
+    list2.remove(a);
+    list2 = new LinkedList();
+  }
 }
 
 
