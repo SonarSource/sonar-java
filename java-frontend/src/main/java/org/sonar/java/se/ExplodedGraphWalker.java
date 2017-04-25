@@ -37,7 +37,6 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Types;
-import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -117,7 +116,7 @@ public class ExplodedGraphWalker {
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
   private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
-  private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
+  private final AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector;
   private MethodTree methodTree;
 
   private ExplodedGraph explodedGraph;
@@ -164,9 +163,9 @@ public class ExplodedGraphWalker {
   }
   @VisibleForTesting
   public ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
-    alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    List<SECheck> checks = Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new DivisionByZeroCheck(),
+    List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
+    this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, checks);
     this.behaviorCache = behaviorCache;
     this.semanticModel = semanticModel;
@@ -178,8 +177,8 @@ public class ExplodedGraphWalker {
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks, BehaviorCache behaviorCache, SemanticModel semanticModel) {
-    this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
+  private ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, SemanticModel semanticModel) {
+    this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.behaviorCache = behaviorCache;
     this.semanticModel = semanticModel;
@@ -207,6 +206,7 @@ public class ExplodedGraphWalker {
     CFG cfg = CFG.build(tree);
     exitBlock = cfg.exitBlock();
     checkerDispatcher.init(tree, cfg);
+    alwaysTrueOrFalseExpressionCollector.init();
     liveVariables = LiveVariables.analyze(cfg);
     explodedGraph = new ExplodedGraph();
     methodTree = tree;
@@ -280,6 +280,7 @@ public class ExplodedGraphWalker {
   private void interrupted() {
     handleEndOfExecutionPath(true);
     checkerDispatcher.interruptedExecution();
+    alwaysTrueOrFalseExpressionCollector.interruptedExecution();
   }
 
   private void setNode(ExplodedGraph.Node node) {
@@ -459,7 +460,7 @@ public class ExplodedGraphWalker {
       // enqueue false-branch, if feasible
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToFalse(condition, node);
+        alwaysTrueOrFalseExpressionCollector.evaluatedToFalse(condition, node);
       }
     }
     ProgramPoint trueBlockProgramPoint = new ProgramPoint(programPosition.trueBlock());
@@ -473,7 +474,7 @@ public class ExplodedGraphWalker {
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseChecker.evaluatedToTrue(condition, node);
+        alwaysTrueOrFalseExpressionCollector.evaluatedToTrue(condition, node);
       }
     }
   }
@@ -1088,6 +1089,10 @@ public class ExplodedGraphWalker {
     }
   }
 
+  CheckerContext.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
+    return alwaysTrueOrFalseExpressionCollector.alwaysTrueOrFalseExpressions();
+  }
+
   /**
    * This class ensures that the SE checks are placed in the correct order for the ExplodedGraphWalker
    * In addition, checks that are needed for a correct ExplodedGraphWalker processing are provided in all cases.
@@ -1095,7 +1100,6 @@ public class ExplodedGraphWalker {
    */
   public static class ExplodedGraphWalkerFactory {
 
-    private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
     @VisibleForTesting
     final List<SECheck> seChecks = new ArrayList<>();
 
@@ -1106,9 +1110,8 @@ public class ExplodedGraphWalker {
           checks.add((SECheck) scanner);
         }
       }
-      alwaysTrueOrFalseChecker = removeOrDefault(checks, new ConditionAlwaysTrueOrFalseCheck());
+
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
-      seChecks.add(alwaysTrueOrFalseChecker);
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));
       seChecks.add(removeOrDefault(checks, new DivisionByZeroCheck()));
       seChecks.add(removeOrDefault(checks, new UnclosedResourcesCheck()));
@@ -1120,7 +1123,7 @@ public class ExplodedGraphWalker {
     }
 
     public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
-      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks, behaviorCache, semanticModel);
+      return new ExplodedGraphWalker(seChecks, behaviorCache, semanticModel);
     }
 
     @SuppressWarnings("unchecked")

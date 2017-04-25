@@ -26,37 +26,37 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void whole_stack_required_for_ps_equality() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void condition_always_true_with_optional() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void resetFields_ThreadSleepCalls() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void reporting() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void test_transitivity() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionalUnreachableCodeCheck());
   }
 }

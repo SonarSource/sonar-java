@@ -45,4 +45,12 @@ public interface CheckerContext {
   ExplodedGraph.Node getNode();
 
   ConstraintManager getConstraintManager();
+
+  AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions();
+
+  interface AlwaysTrueOrFalseExpressions {
+    Set<Tree> alwaysTrue();
+    Set<Tree> alwaysFalse();
+    Set<List<JavaFileScannerContext.Location>> flowForExpression(Tree expression);
+  }
 }

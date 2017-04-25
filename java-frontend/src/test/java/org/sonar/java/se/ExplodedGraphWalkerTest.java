@@ -23,7 +23,7 @@ import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -392,6 +393,9 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void eg_walker_factory_default_checks() throws IOException {
+    Set<String> nonDefaultChecks = Stream.of(CustomUnclosedResourcesCheck.class, ConditionalUnreachableCodeCheck.class)
+      .map(Class::getSimpleName)
+      .collect(Collectors.toSet());
     // Compute the list of SEChecks defined in package
     List<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")
@@ -399,7 +403,7 @@ public class ExplodedGraphWalkerTest {
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
       // CustomUnclosedResource is a template rule and should not be activated by default
-      .filter(name -> !name.equals(CustomUnclosedResourcesCheck.class.getSimpleName()))
+      .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
       .collect(Collectors.toList());
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
@@ -410,7 +414,7 @@ public class ExplodedGraphWalkerTest {
     return new SECheck[]{
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
-      new ConditionAlwaysTrueOrFalseCheck(),
+      new ConditionalUnreachableCodeCheck(),
       new UnclosedResourcesCheck(),
       new CustomUnclosedResourcesCheck(),
       new LocksNotUnlockedCheck(),
