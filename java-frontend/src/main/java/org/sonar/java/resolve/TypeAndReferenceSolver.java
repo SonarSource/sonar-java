@@ -219,7 +219,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
       );
       List<JavaType> typeParamTypes = getParameterTypes(tree.typeArguments());
-      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, (JavaType) mit.symbolType(), typeSubstitution);
+      JavaType resultType = ((MethodJavaType) mit.symbol().type()).resultType;
+      // if result type is a type var defined by the method we are solving, use the target type.
+      if(resultType.symbol.owner == mit.symbol()) {
+        resultType = (JavaType) mit.symbolType();
+      }
+      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, resultType, typeSubstitution);
       return;
     }
     scan(tree.arguments());
