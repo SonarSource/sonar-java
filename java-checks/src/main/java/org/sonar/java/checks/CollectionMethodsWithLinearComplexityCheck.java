@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -118,11 +117,11 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
     if (actualTypes.contains(declaredType.fullyQualifiedName())) {
       return true;
     }
+    // actual type is looked up only on private or final fields, otherwise it can't be guaranteed
     if (invocationTarget.isPrivate() || invocationTarget.isFinal()) {
       Set<String> assignedTypes = findAssignedTypes(invocationTarget);
       return !assignedTypes.isEmpty() && actualTypes.containsAll(assignedTypes);
     }
-    // we can't rely on assignments to be definitive
     return false;
   }
 
@@ -155,16 +154,17 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
   }
 
   private static Stream<AssignmentExpressionTree> usageInAssignment(IdentifierTree usage) {
+    Tree prevParent = usage;
     Tree parent = usage.parent();
-    while (parent != null && !parent.is(Tree.Kind.ASSIGNMENT)) {
+    while (parent != null && !parent.is(Tree.Kind.ASSIGNMENT) && parent.is(Tree.Kind.MEMBER_SELECT, Tree.Kind.IDENTIFIER)) {
+      prevParent = parent;
       parent = parent.parent();
     }
-    if (parent == null) {
-      return Stream.empty();
-    }
-    AssignmentExpressionTree assignment = (AssignmentExpressionTree) parent;
-    if (ExpressionUtils.skipParentheses(assignment.variable()).equals(usage)) {
-      return Stream.of(assignment);
+    if (parent != null && parent.is(Tree.Kind.ASSIGNMENT)) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) parent;
+      if (assignment.variable().equals(prevParent)) {
+        return Stream.of(assignment);
+      }
     }
     return Stream.empty();
   }

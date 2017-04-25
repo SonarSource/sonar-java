@@ -163,6 +163,7 @@ abstract class Coverage extends AbstractCollection {
   ArrayList<Object> field2;
   void g(Object o) {
     field2 = (ArrayList<Object>) field1;
+    field2 = this.field1;
     field1.contains(o); // Noncompliant
   }
 
@@ -173,6 +174,8 @@ class Assignments {
   private List<Object> list1 = new LinkedList();
   private List<Object> list2;
   List<Object> list3;
+  private List<Object> list4;
+  private List<Object> list5 = new LinkedList();
 
   void f(Object a) {
     list1 = new ArrayList();
@@ -182,6 +185,11 @@ class Assignments {
     list3.contains(a);
     list2.remove(a);
     list2 = new LinkedList();
+    this.list4 = new ArrayList();
+    this.list4.get(0).x = new LinkedList();
+    list4.contains(a); // Noncompliant
+    this.list5 = new ArrayList();
+    list5.remove(a); // Compliant
   }
 }
 
