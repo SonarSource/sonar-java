@@ -19,12 +19,19 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -39,18 +46,62 @@ public class ConditionalUnreachableCodeCheck extends SECheck {
   public void checkEndOfExecution(CheckerContext context) {
     CheckerContext.AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
     for (Tree condition : atof.alwaysFalse()) {
-      Set<List<JavaFileScannerContext.Location>> flows = atof.flowForExpression(condition).stream()
-        .map(flow -> addIssueLocation(flow, condition, false)).collect(Collectors.toSet());
-      context.reportIssue(condition, this, String.format(MESSAGE, false), flows);
+      reportBooleanExpression(context, atof, condition, false);
     }
     for (Tree condition : atof.alwaysTrue()) {
-      Set<List<JavaFileScannerContext.Location>> flows = atof.flowForExpression(condition).stream()
-        .map(flow -> addIssueLocation(flow, condition, true)).collect(Collectors.toSet());
-      context.reportIssue(condition, this, String.format(MESSAGE, true), flows);
+      reportBooleanExpression(context, atof, condition, true);
     }
   }
 
-  private static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
+  private void reportBooleanExpression(CheckerContext context, CheckerContext.AlwaysTrueOrFalseExpressions atof, Tree condition, boolean isTrue) {
+    if (hasUnreachableCode(condition, isTrue)) {
+      Set<List<JavaFileScannerContext.Location>> flows = atof.flowForExpression(condition).stream()
+        .map(flow -> addIssueLocation(flow, condition, isTrue))
+        .collect(Collectors.toSet());
+      context.reportIssue(condition, this, String.format(MESSAGE, isTrue), flows);
+    }
+  }
+
+  static boolean hasUnreachableCode(Tree booleanExpr, boolean isTrue) {
+    Tree parent = biggestTreeWithSameEvaluation(booleanExpr, isTrue);
+    if (parent.is(Tree.Kind.IF_STATEMENT)) {
+      IfStatementTree ifStatementTree = (IfStatementTree) parent;
+      return !isTrue || ifStatementTree.elseStatement() != null;
+    }
+    // Tree.Kind.DO_STATEMENT not considered, because it is always executed at least once
+    if (parent.is(Tree.Kind.WHILE_STATEMENT) && !isTrue) {
+      return true;
+    }
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION);
+  }
+
+  private static Tree biggestTreeWithSameEvaluation(Tree booleanExpr, boolean isTrue) {
+    Tree.Kind operator = isTrue ? Tree.Kind.CONDITIONAL_OR : Tree.Kind.CONDITIONAL_AND;
+    Tree prevParent = booleanExpr;
+    Tree parent = skipParentheses(booleanExpr.parent());
+    while (parent != null && parent.is(operator)
+      && equalsIgnoreParentheses(((BinaryExpressionTree) parent).leftOperand(), (ExpressionTree) prevParent)) {
+      prevParent = parent;
+      parent = skipParentheses(parent.parent());
+    }
+    Preconditions.checkState(parent != null, "Error getting parent tree with same evaluation, parent is null");
+    return parent;
+  }
+
+  @CheckForNull
+  private static Tree skipParentheses(@Nullable Tree tree) {
+    Tree result = tree;
+    while (result != null && result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      result = result.parent();
+    }
+    return result;
+  }
+
+  private static boolean equalsIgnoreParentheses(ExpressionTree tree, ExpressionTree other) {
+    return skipParentheses(tree) == skipParentheses(other);
+  }
+
+  static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
     return ImmutableList.<JavaFileScannerContext.Location>builder()
       .add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", issueTree))
       .addAll(flow)

@@ -23,6 +23,7 @@ import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -393,7 +394,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void eg_walker_factory_default_checks() throws IOException {
-    Set<String> nonDefaultChecks = Stream.of(CustomUnclosedResourcesCheck.class, ConditionalUnreachableCodeCheck.class)
+    Set<String> nonDefaultChecks = Stream.of(CustomUnclosedResourcesCheck.class, ConditionalUnreachableCodeCheck.class, BooleanGratuitousExpressionsCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toSet());
     // Compute the list of SEChecks defined in package
@@ -415,6 +416,7 @@ public class ExplodedGraphWalkerTest {
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
       new ConditionalUnreachableCodeCheck(),
+      new BooleanGratuitousExpressionsCheck(),
       new UnclosedResourcesCheck(),
       new CustomUnclosedResourcesCheck(),
       new LocksNotUnlockedCheck(),

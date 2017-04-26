@@ -35,7 +35,7 @@ class A {
     try {
       Thread.sleep(0);
     } catch (Exception ex) { // flow@ex {{Implies 'ex' is non-null.}}
-      if (ex != null) { // Noncompliant [[flows=ex]] {{Change this condition so that it does not always evaluate to "true"}}   flow@ex {{Condition is always true.}}
+      if (ex != null) { // Noncompliant [[flows=ex]] {{Remove this expression which always evaluates to "true"}}   flow@ex {{Condition is always true.}}
         ex.getClause();
       }
     }

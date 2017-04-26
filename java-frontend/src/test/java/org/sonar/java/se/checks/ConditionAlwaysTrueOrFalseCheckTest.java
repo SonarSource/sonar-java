@@ -20,43 +20,61 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
+
+import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.JavaCheckVerifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
+  public void test_unreachable_vs_gratuitous() {
+    JavaCheckVerifier.verify("src/test/files/se/UnreachableOrGratuitous.java", new ConditionalUnreachableCodeCheck());
   }
 
   @Test
   public void whole_stack_required_for_ps_equality() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new AssertNoAlwaysTrueOrFalseExpression());
   }
 
   @Test
   public void condition_always_true_with_optional() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new AssertNoAlwaysTrueOrFalseExpression());
   }
 
   @Test
   public void resetFields_ThreadSleepCalls() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new AssertNoAlwaysTrueOrFalseExpression());
   }
 
   @Test
   public void reporting() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
   }
 
   @Test
   public void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
   }
 
   @Test
   public void test_transitivity() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
+
+  private static class AssertNoAlwaysTrueOrFalseExpression extends SECheck {
+    @Override
+    public void checkEndOfExecution(CheckerContext context) {
+      CheckerContext.AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
+      assertThat(atof.alwaysFalse()).isEmpty();
+      assertThat(atof.alwaysTrue()).isEmpty();
+    }
   }
 }

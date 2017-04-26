@@ -75,6 +75,7 @@ import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
 import org.sonar.java.checks.xml.web.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -474,6 +475,7 @@ public final class CheckList {
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
+      .add(BooleanGratuitousExpressionsCheck.class)
       .build();
   }
 

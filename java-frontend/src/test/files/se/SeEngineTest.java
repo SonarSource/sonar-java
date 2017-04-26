@@ -34,7 +34,7 @@ class A0 {
     Object a = null;
     Object b = new Object();
     b = a;
-    if (b == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (b == null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       a.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "a" is nullable here}}
     }
   }
@@ -124,7 +124,7 @@ class DefaultValues {
     try {
       Thread.sleep(10);
     } catch (Exception ex) {
-      if (ex != null) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (ex != null) {  // Noncompliant {{Remove this expression which always evaluates to "true"}}
 
       }
     }
