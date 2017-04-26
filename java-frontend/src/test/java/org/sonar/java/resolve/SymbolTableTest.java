@@ -1421,4 +1421,11 @@ public class SymbolTableTest {
     VariableTree mySet = (VariableTree) res.symbol("mySet").declaration();
     assertThat(mySet.initializer().symbolType().is("VarInitializer$ImmutableSet")).isTrue();
   }
+
+  @Test
+  public void resolution_of_method_ref() throws Exception {
+    Result res = Result.createFor("InferedCalls");
+    assertThat(res.symbol("combine1").usages()).hasSize(1);
+    assertThat(res.symbol("combine2").usages()).hasSize(1);
+  }
 }
