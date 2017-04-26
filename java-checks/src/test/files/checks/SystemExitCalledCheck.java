@@ -1,4 +1,8 @@
 class A {
+  A() {
+    System.exit(0); // Noncompliant {{Remove this call to "exit" or ensure it is really required.}}
+  }
+
   void f() {
     System.exit(0);          // Noncompliant {{Remove this call to "exit" or ensure it is really required.}}
     int a = System.exit(0);  // Noncompliant [[sc=13;ec=24]] {{Remove this call to "exit" or ensure it is really required.}}
