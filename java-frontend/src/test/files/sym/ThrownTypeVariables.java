@@ -1,7 +1,7 @@
 class A<T extends Throwable> {
   void foo() throws T {
-  }
 
+  }
   void test() {
     new A<java.io.IOException>().foo();
   }
@@ -24,4 +24,3 @@ class Test {
     new B<String>().bar(java.io.IOException::new);
   }
 }
-

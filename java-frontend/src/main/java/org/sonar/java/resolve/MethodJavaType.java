@@ -46,4 +46,8 @@ public class MethodJavaType extends JavaType {
   public JavaType resultType() {
     return resultType;
   }
+
+  public List<JavaType> thrownTypes() {
+    return thrown;
+  }
 }

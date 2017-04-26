@@ -279,8 +279,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         MethodJavaType methodType = (MethodJavaType) resolution.type();
         if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
           registerType(tree, resolve.applySubstitution(methodType.resultType, typeSubstitution));
-          // change type associated to identifier as it may have been inferred in the process
-          registerType(identifier, resolution.type());
+          // update type associated to identifier as it may have been inferred deeper when re-resolving method with new parameter types
+          registerType(identifier, methodType);
         }
       }
     } else {

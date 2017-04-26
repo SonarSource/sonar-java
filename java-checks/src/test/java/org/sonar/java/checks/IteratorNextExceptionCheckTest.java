@@ -27,6 +27,7 @@ public class IteratorNextExceptionCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/IteratorNextExceptionCheck.java", new IteratorNextExceptionCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/IteratorNextExceptionCheck.java", new IteratorNextExceptionCheck());
   }
 
 }
