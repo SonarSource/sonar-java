@@ -1181,8 +1181,7 @@ public class SymbolTableTest {
     JavaSymbol reverse = result.symbol("reverse");
     //lookup on defered type allow method resolution
     assertThat(sortKeysByValue.usages()).hasSize(1);
-    //Lack of resolution when target type is deduced, we should be able to redo the lookup
-    assertThat(reverse.usages()).isEmpty();
+    assertThat(reverse.usages()).hasSize(1);
   }
 
   @Test
@@ -1405,5 +1404,12 @@ public class SymbolTableTest {
     Result res = Result.createFor("ReturnTypeInference");
     assertThat(res.symbol("mapToString").usages()).hasSize(1);
 
+  }
+
+  @Test
+  public void resolve_return_type_after_inference() throws Exception {
+    Result res = Result.createFor("VarInitializerInference");
+    VariableTree mySet = (VariableTree) res.symbol("mySet").declaration();
+    assertThat(mySet.initializer().symbolType().is("VarInitializer$ImmutableSet")).isTrue();
   }
 }
