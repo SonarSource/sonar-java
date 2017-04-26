@@ -566,7 +566,10 @@ public class Resolve {
       thrownTypes = erasure(thrownTypes);
     } else {
       returnType = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod);
-      thrownTypes = thrownTypes.stream().map(t -> typeSubstitutionSolver.applySiteSubstitution(t, callSite)).collect(Collectors.toList());
+      thrownTypes = thrownTypes.stream()
+        .map(t -> typeSubstitutionSolver.applySiteSubstitution(t, callSite))
+        .map(t -> typeSubstitutionSolver.applySubstitution(t, substitution))
+        .collect(Collectors.toList());
     }
     resolution.type = new MethodJavaType(formals, returnType, thrownTypes, defSite.symbol);
     return resolution;
