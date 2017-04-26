@@ -335,5 +335,13 @@ public class TypeSubstitutionSolverTest {
     IdentifierTree fooInvocation = result.referenceTree(6, 34);
     assertThat(((MethodJavaType) fooInvocation.symbolType()).thrown).hasSize(1);
     assertThat(((MethodJavaType) fooInvocation.symbolType()).thrown.get(0).is("java.io.IOException")).isTrue();
+
+    IdentifierTree barInvocation1 = result.referenceTree(23, 21);
+    assertThat(((MethodJavaType) barInvocation1.symbolType()).thrown).hasSize(1);
+    assertThat(((MethodJavaType) barInvocation1.symbolType()).thrown.get(0).is("java.util.NoSuchElementException")).isTrue();
+
+    IdentifierTree barInvocation2 = result.referenceTree(24, 21);
+    assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown).hasSize(1);
+    assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown.get(0).is("java.io.IOException")).isTrue();
   }
 }

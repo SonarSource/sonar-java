@@ -259,10 +259,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private void inferReturnTypeFromInferedArgs(MethodInvocationTree tree, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes,
                                               JavaType returnType, TypeSubstitution typeSubstitution) {
     List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
-    Resolution resolution = null;
-    Tree methodSelect = tree.methodSelect();
     if(!parameterTypes.equals(argTypes)) {
-      IdentifierTree identifier;
+      IdentifierTree identifier = null;
+      Resolution resolution = null;
+      Tree methodSelect = tree.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
         JavaType type = getType(mset.expression());
@@ -279,6 +279,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         MethodJavaType methodType = (MethodJavaType) resolution.type();
         if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
           registerType(tree, resolve.applySubstitution(methodType.resultType, typeSubstitution));
+          // change type associated to identifier as it may have been inferred in the process
+          registerType(identifier, resolution.type());
         }
       }
     } else {

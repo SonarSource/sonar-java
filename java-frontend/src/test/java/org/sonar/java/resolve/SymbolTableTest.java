@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1222,8 +1223,7 @@ public class SymbolTableTest {
 
     IdentifierTree map = result.referenceTree(63, 8);
     MethodJavaType methodJavaType = (MethodJavaType) map.symbolType();
-    // expression type is correctly infered but method type is not recomputed and thus is still defered
-    assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
 
      JavaSymbol booleanToInt = result.symbol("booleanToInt");
      assertThat(booleanToInt.usages()).hasSize(1);
@@ -1316,8 +1316,7 @@ public class SymbolTableTest {
 
     IdentifierTree map = result.referenceTree(8, 8);
     MethodJavaType mapJavaType = (MethodJavaType) map.symbolType();
-    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
-    assertThat(mapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    assertThat(mapJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
 
     JavaType lambdaType = (JavaType) ((MethodInvocationTree) map.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
@@ -1332,8 +1331,7 @@ public class SymbolTableTest {
 
     IdentifierTree flatMap = result.referenceTree(13, 8);
     MethodJavaType flatMapJavaType = (MethodJavaType) flatMap.symbolType();
-    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
-    assertThat(flatMapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    assertThat(flatMapJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
 
     lambdaType = (JavaType) ((MethodInvocationTree) flatMap.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
