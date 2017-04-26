@@ -41,46 +41,46 @@ class AlwaysTrueOrFalseExpressionCollector {
 
   private Deque<EvaluatedConditions> evaluatedConditions = new LinkedList<>();
 
-  public void init() {
+  void init() {
     evaluatedConditions.push(new EvaluatedConditions());
   }
 
-  public void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
+  void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
     evaluatedConditions.peek().evaluatedToFalse(condition, node);
   }
 
-  public void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
+  void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
     evaluatedConditions.peek().evaluatedToTrue(condition, node);
   }
 
-  public void interruptedExecution() {
+  void interruptedExecution() {
     evaluatedConditions.pop();
   }
 
-  public CheckerContext.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
+  CheckerContext.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
     return evaluatedConditions.peek();
   }
 
   private static class EvaluatedConditions implements CheckerContext.AlwaysTrueOrFalseExpressions {
-    final Multimap<Tree, ExplodedGraph.Node> evaluatedToFalse = HashMultimap.create();
-    final Multimap<Tree, ExplodedGraph.Node> evaluatedToTrue = HashMultimap.create();
+    final Multimap<Tree, ExplodedGraph.Node> falseEvaluations = HashMultimap.create();
+    final Multimap<Tree, ExplodedGraph.Node> trueEvaluations = HashMultimap.create();
 
     void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
-      evaluatedToFalse.put(condition, node);
+      falseEvaluations.put(condition, node);
     }
 
     void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
-      evaluatedToTrue.put(condition, node);
+      trueEvaluations.put(condition, node);
     }
 
     @Override
     public Set<Tree> alwaysTrue() {
-      return Sets.difference(evaluatedToTrue.keySet(), evaluatedToFalse.keySet());
+      return Sets.difference(trueEvaluations.keySet(), falseEvaluations.keySet());
     }
 
     @Override
     public Set<Tree> alwaysFalse() {
-      return Sets.difference(evaluatedToFalse.keySet(), evaluatedToTrue.keySet());
+      return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
     }
 
     @Override
@@ -90,8 +90,8 @@ class AlwaysTrueOrFalseExpressionCollector {
     }
 
     private Collection<ExplodedGraph.Node> getNodes(Tree expression) {
-      Collection<ExplodedGraph.Node> falseNodes = evaluatedToFalse.get(expression);
-      return falseNodes.isEmpty() ? evaluatedToTrue.get(expression) : falseNodes;
+      Collection<ExplodedGraph.Node> falseNodes = falseEvaluations.get(expression);
+      return falseNodes.isEmpty() ? trueEvaluations.get(expression) : falseNodes;
     }
 
     private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes) {
