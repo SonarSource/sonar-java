@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1222,8 +1221,12 @@ public class SymbolTableTest {
     assertThat(result.reference(67, 17)).isEqualTo(stringToBoolean);
 
     IdentifierTree map = result.referenceTree(63, 8);
-    MethodJavaType methodJavaType = (MethodJavaType) map.symbolType();
-    assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
+    JavaType mapResultType = ((MethodJavaType) map.symbolType()).resultType;
+    assertThat(mapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(mapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(mapResultType.isParameterized()).isTrue();
+    JavaType substitutionType = ((ParametrizedTypeJavaType) mapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitutionType.is("java.lang.Boolean")).isTrue();
 
      JavaSymbol booleanToInt = result.symbol("booleanToInt");
      assertThat(booleanToInt.usages()).hasSize(1);
@@ -1315,8 +1318,12 @@ public class SymbolTableTest {
     assertThat(foo.usages()).hasSize(1);
 
     IdentifierTree map = result.referenceTree(8, 8);
-    MethodJavaType mapJavaType = (MethodJavaType) map.symbolType();
-    assertThat(mapJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
+    JavaType mapResultType = ((MethodJavaType) map.symbolType()).resultType;
+    assertThat(mapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(mapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(mapResultType.isParameterized()).isTrue();
+    JavaType substitutionType = ((ParametrizedTypeJavaType) mapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitutionType.is("java.lang.Comparable")).isTrue();
 
     JavaType lambdaType = (JavaType) ((MethodInvocationTree) map.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
@@ -1330,8 +1337,12 @@ public class SymbolTableTest {
     assertThat(bar.usages()).hasSize(1);
 
     IdentifierTree flatMap = result.referenceTree(13, 8);
-    MethodJavaType flatMapJavaType = (MethodJavaType) flatMap.symbolType();
-    assertThat(flatMapJavaType.resultType.isTagged(JavaType.DEFERRED)).isFalse();
+    JavaType flatMapResultType = ((MethodJavaType) flatMap.symbolType()).resultType;
+    assertThat(flatMapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(flatMapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(flatMapResultType.isParameterized()).isTrue();
+    JavaType flatMapSubstitutionType = ((ParametrizedTypeJavaType) flatMapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(flatMapSubstitutionType.is("java.lang.Integer")).isTrue();
 
     lambdaType = (JavaType) ((MethodInvocationTree) flatMap.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();

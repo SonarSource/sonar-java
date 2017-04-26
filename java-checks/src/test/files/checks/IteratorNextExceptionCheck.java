@@ -122,7 +122,7 @@ class K implements Iterator<String> {
 
 abstract class L implements Iterator<String> {
   @Override
-  public String next() { // Noncompliant FP - symbol does not have correct parameterizaton
+  public String next() { // Compliant
     return getOptional().orElseThrow(NoSuchElementException::new);
   }
 
