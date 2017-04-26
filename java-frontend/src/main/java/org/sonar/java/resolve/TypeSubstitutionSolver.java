@@ -67,7 +67,7 @@ public class TypeSubstitutionSolver {
         formals = applySiteSubstitutionToFormalParameters(formals, site);
         substitution = typeInferenceSolver.inferTypeSubstitution(method, formals, argTypes);
       }
-      if (!isValidSubtitution(substitution, site)) {
+      if (!isValidSubstitution(substitution, site)) {
         // check for valid substitution in supertypes, null if no valid substitution is found
         return getTypeSubstitutionFromSuperTypes(method, site, typeParams, argTypes);
       }
@@ -217,13 +217,13 @@ public class TypeSubstitutionSolver {
       return typevar;
     }
     typevarExplored.push((JavaSymbol.TypeVariableJavaSymbol) typevar.symbol);
-    List<JavaType> subtitutedBounds = typevar.bounds.stream().map(t -> applySubstitution(t, substitution)).collect(Collectors.toList());
+    List<JavaType> substitutedBounds = typevar.bounds.stream().map(t -> applySubstitution(t, substitution)).collect(Collectors.toList());
     typevarExplored.pop();
-    if(subtitutedBounds.equals(typevar.bounds)) {
+    if(substitutedBounds.equals(typevar.bounds)) {
       return typevar;
     }
     TypeVariableJavaType typeVariableJavaType = new TypeVariableJavaType((JavaSymbol.TypeVariableJavaSymbol) typevar.symbol);
-    typeVariableJavaType.bounds = subtitutedBounds;
+    typeVariableJavaType.bounds = substitutedBounds;
     return typeVariableJavaType;
   }
 
@@ -267,7 +267,7 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  private boolean isValidSubtitution(TypeSubstitution substitutions, JavaType site) {
+  private boolean isValidSubstitution(TypeSubstitution substitutions, JavaType site) {
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : substitutions.substitutionEntries()) {
       if (!isValidSubstitution(substitutions, substitution.getKey(), substitution.getValue(), site)) {
         return false;
