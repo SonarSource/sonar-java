@@ -103,7 +103,7 @@ public class ConditionalUnreachableCodeCheck extends SECheck {
 
   static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
     return ImmutableList.<JavaFileScannerContext.Location>builder()
-      .add(new JavaFileScannerContext.Location("Condition is always " + conditionIsAlwaysTrue + ".", issueTree))
+      .add(new JavaFileScannerContext.Location("Expression is always " + conditionIsAlwaysTrue + ".", issueTree))
       .addAll(flow)
       .build();
   }
