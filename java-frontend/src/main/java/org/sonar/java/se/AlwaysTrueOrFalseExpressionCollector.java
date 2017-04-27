@@ -37,53 +37,29 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.Nullable;
 
 import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AlwaysTrueOrFalseExpressionCollector {
 
-  private Deque<AlwaysTrueOrFalseExpressions> evaluatedConditions = new LinkedList<>();
-
-  void init() {
-    evaluatedConditions.push(new AlwaysTrueOrFalseExpressions());
-  }
+  private final Multimap<Tree, ExplodedGraph.Node> falseEvaluations = HashMultimap.create();
+  private final Multimap<Tree, ExplodedGraph.Node> trueEvaluations = HashMultimap.create();
 
   void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
-    evaluatedConditions.peek().evaluatedToFalse(condition, node);
+    falseEvaluations.put(condition, node);
   }
 
   void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
-    evaluatedConditions.peek().evaluatedToTrue(condition, node);
-  }
-
-  void interruptedExecution() {
-    evaluatedConditions.pop();
-  }
-
-  private static class AlwaysTrueOrFalseExpressions {
-    final Multimap<Tree, ExplodedGraph.Node> falseEvaluations = HashMultimap.create();
-    final Multimap<Tree, ExplodedGraph.Node> trueEvaluations = HashMultimap.create();
-
-    void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
-      falseEvaluations.put(condition, node);
-    }
-
-    void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
-      trueEvaluations.put(condition, node);
-    }
+    trueEvaluations.put(condition, node);
   }
 
   public Set<Tree> alwaysTrue() {
-    AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions = evaluatedConditions.peek();
-    return Sets.difference(alwaysTrueOrFalseExpressions.trueEvaluations.keySet(), alwaysTrueOrFalseExpressions.falseEvaluations.keySet());
+    return Sets.difference(trueEvaluations.keySet(), falseEvaluations.keySet());
   }
 
   public Set<Tree> alwaysFalse() {
-    AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions = evaluatedConditions.peek();
-    return Sets.difference(alwaysTrueOrFalseExpressions.falseEvaluations.keySet(), alwaysTrueOrFalseExpressions.trueEvaluations.keySet());
+    return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
   }
 
   public Set<List<JavaFileScannerContext.Location>> flowForExpression(Tree expression) {
@@ -92,9 +68,8 @@ public class AlwaysTrueOrFalseExpressionCollector {
   }
 
   private Collection<ExplodedGraph.Node> getNodes(Tree expression) {
-    AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions = evaluatedConditions.peek();
-    Collection<ExplodedGraph.Node> falseNodes = alwaysTrueOrFalseExpressions.falseEvaluations.get(expression);
-    return falseNodes.isEmpty() ? alwaysTrueOrFalseExpressions.trueEvaluations.get(expression) : falseNodes;
+    Collection<ExplodedGraph.Node> falseNodes = falseEvaluations.get(expression);
+    return falseNodes.isEmpty() ? trueEvaluations.get(expression) : falseNodes;
   }
 
   private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes) {

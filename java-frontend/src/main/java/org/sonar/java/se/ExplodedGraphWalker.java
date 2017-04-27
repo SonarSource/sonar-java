@@ -206,7 +206,6 @@ public class ExplodedGraphWalker {
     CFG cfg = CFG.build(tree);
     exitBlock = cfg.exitBlock();
     checkerDispatcher.init(tree, cfg);
-    alwaysTrueOrFalseExpressionCollector.init();
     liveVariables = LiveVariables.analyze(cfg);
     explodedGraph = new ExplodedGraph();
     methodTree = tree;
@@ -280,7 +279,6 @@ public class ExplodedGraphWalker {
   private void interrupted() {
     handleEndOfExecutionPath(true);
     checkerDispatcher.interruptedExecution();
-    alwaysTrueOrFalseExpressionCollector.interruptedExecution();
   }
 
   private void setNode(ExplodedGraph.Node node) {
