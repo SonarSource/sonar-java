@@ -476,6 +476,7 @@ public final class CheckList {
       .add(SpringComponentWithWrongScopeCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
       .add(BooleanGratuitousExpressionsCheck.class)
+      .add(AllBranchesAreIdenticalCheck.class)
       .build();
   }
 

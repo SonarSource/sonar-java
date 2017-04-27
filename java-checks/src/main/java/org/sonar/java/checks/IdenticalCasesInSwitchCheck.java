@@ -21,15 +21,14 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -43,7 +42,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
+    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT);
   }
 
   @Override
@@ -52,8 +51,6 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
       checkSwitchStatement((SwitchStatementTree) node);
     } else if (node.is(Tree.Kind.IF_STATEMENT)) {
       checkIfStatement((IfStatementTree) node);
-    } else {
-      checkConditionalExpression((ConditionalExpressionTree) node);
     }
   }
 
@@ -109,12 +106,6 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   private static String issueMessage(String type, Tree node) {
     return "This " + type + "'s code block is the same as the block for the " + type + " on line " + node.firstToken().line() + ".";
-  }
-
-  private void checkConditionalExpression(ConditionalExpressionTree node) {
-    if (SyntacticEquivalence.areEquivalent(ExpressionUtils.skipParentheses(node.trueExpression()), ExpressionUtils.skipParentheses(node.falseExpression()))) {
-      createIssue(node.falseExpression(), "This conditional operation returns the same value whether the condition is \"true\" or \"false\".", node.trueExpression());
-    }
   }
 
   private static CaseLabelTree getLastLabel(CaseGroupTree cases) {
