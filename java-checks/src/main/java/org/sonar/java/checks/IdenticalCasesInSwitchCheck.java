@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -28,14 +30,12 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1871")
 public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
@@ -48,32 +48,44 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree node) {
     if (node.is(Tree.Kind.SWITCH_STATEMENT)) {
-      checkSwitchStatement((SwitchStatementTree) node);
+      SwitchStatementTree switchStatement = (SwitchStatementTree) node;
+      Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
+      if (!allBranchesSame(identicalBranches, switchStatement.cases().size())) {
+        identicalBranches.asMap().forEach((first, others) -> {
+          if (!isTrivialCase(first.body())) {
+            others.forEach(other -> createIssue(other, issueMessage("case", first), first));
+          }
+        });
+      }
     } else if (node.is(Tree.Kind.IF_STATEMENT)) {
       checkIfStatement((IfStatementTree) node);
     }
   }
 
-  public void checkSwitchStatement(SwitchStatementTree node) {
-    int index = 0;
-    List<CaseGroupTree> cases = node.cases();
-    Set<CaseLabelTree> reportedLabels = Sets.newHashSet();
-    for (CaseGroupTree caseGroupTree : cases) {
-      index++;
-      for (int i = index; i < cases.size(); i++) {
-        checkCaseEquivalence(reportedLabels, caseGroupTree, cases.get(i));
-      }
-    }
+  protected static boolean allBranchesSame(Multimap<? extends Tree, ? extends Tree> identicalBranches, int size) {
+    return identicalBranches.keySet().size() == 1 && identicalBranches.size() == size - 1;
   }
 
-  private void checkCaseEquivalence(Set<CaseLabelTree> reportedLabels, CaseGroupTree caseGroupTree, CaseGroupTree current) {
-    if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), current.body())) {
-      CaseLabelTree labelToReport = getLastLabel(current);
-      if (!reportedLabels.contains(labelToReport)) {
-        reportedLabels.add(labelToReport);
-        createIssue(current, issueMessage("case", caseGroupTree), caseGroupTree);
+  private static boolean isTrivialCase(List<StatementTree> body) {
+    return body.size() == 1 || (body.size() == 2 && body.get(1).is(Tree.Kind.BREAK_STATEMENT));
+  }
+
+  protected Multimap<CaseGroupTree, CaseGroupTree> checkSwitchStatement(SwitchStatementTree node) {
+    SetMultimap<CaseGroupTree, CaseGroupTree> identicalBranches = HashMultimap.create();
+    int index = 0;
+    List<CaseGroupTree> cases = node.cases();
+    for (CaseGroupTree caseGroupTree : cases) {
+      index++;
+      if (identicalBranches.containsValue(caseGroupTree)) {
+        continue;
+      }
+      for (int i = index; i < cases.size(); i++) {
+        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), cases.get(i).body())) {
+          identicalBranches.put(caseGroupTree, cases.get(i));
+        }
       }
     }
+    return identicalBranches;
   }
 
   private void checkIfStatement(IfStatementTree node) {
@@ -106,10 +118,6 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   private static String issueMessage(String type, Tree node) {
     return "This " + type + "'s code block is the same as the block for the " + type + " on line " + node.firstToken().line() + ".";
-  }
-
-  private static CaseLabelTree getLastLabel(CaseGroupTree cases) {
-    return cases.labels().get(cases.labels().size() - 1);
   }
 
 }

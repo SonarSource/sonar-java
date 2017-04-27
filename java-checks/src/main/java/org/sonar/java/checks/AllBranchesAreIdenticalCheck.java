@@ -19,10 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Multimap;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
@@ -33,12 +37,20 @@ public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CONDITIONAL_EXPRESSION);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    checkConditionalExpression((ConditionalExpressionTree) tree);
+    if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
+      SwitchStatementTree switchStatement = (SwitchStatementTree) tree;
+      Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
+      if (allBranchesSame(identicalBranches, switchStatement.cases().size())) {
+        reportIssue(((SwitchStatementTree) tree).switchKeyword(), "Remove this conditional structure or edit its code blocks so that they're not all the same.");
+      }
+    } else {
+      checkConditionalExpression((ConditionalExpressionTree) tree);
+    }
   }
 
   private void checkConditionalExpression(ConditionalExpressionTree node) {

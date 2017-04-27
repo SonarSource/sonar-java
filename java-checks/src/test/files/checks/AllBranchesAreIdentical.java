@@ -8,5 +8,24 @@ class A {
     true ? true ? 1 : 1 : 1; // Noncompliant
   }
 
+  void switchStatement() {
+    switch (1) { // Noncompliant [[sc=5;ec=11]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+      case 1:
+        break;
+      case 2:
+        break;
+    }
+
+    switch (1) { // Compliant
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        f();
+        break;
+    }
+  }
+
 
 }
