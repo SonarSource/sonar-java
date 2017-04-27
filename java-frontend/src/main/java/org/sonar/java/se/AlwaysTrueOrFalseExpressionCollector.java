@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Collection;
@@ -131,29 +130,25 @@ public class AlwaysTrueOrFalseExpressionCollector {
     }
 
     private static Tree biggestTreeWithSameEvaluation(Tree booleanExpr, boolean isTrue) {
-      Tree.Kind operator = isTrue ? Tree.Kind.CONDITIONAL_OR : Tree.Kind.CONDITIONAL_AND;
-      Tree prevParent = booleanExpr;
-      Tree parent = skipParentheses(booleanExpr.parent());
-      while (parent != null && parent.is(operator)
-        && equalsIgnoreParentheses(((BinaryExpressionTree) parent).leftOperand(), prevParent)) {
-        prevParent = parent;
-        parent = skipParentheses(parent.parent());
+      Tree child = booleanExpr;
+      Tree parent = booleanExpr.parent();
+      while (isBiggerTreeWithSameTruthiness(parent, child, isTrue)) {
+        child = parent;
+        parent = parent.parent();
       }
       Preconditions.checkState(parent != null, "Error getting parent tree with same evaluation, parent is null");
       return parent;
     }
 
-    @CheckForNull
-    private static Tree skipParentheses(@Nullable Tree tree) {
-      Tree result = tree;
-      while (result != null && result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        result = result.parent();
+    private static boolean isBiggerTreeWithSameTruthiness(@Nullable Tree parent, Tree child, boolean isTrue) {
+      if (parent == null) {
+        return false;
       }
-      return result;
-    }
-
-    private static boolean equalsIgnoreParentheses(Tree tree, Tree other) {
-      return skipParentheses(tree) == skipParentheses(other);
+      if (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+        return true;
+      }
+      Tree.Kind operator = isTrue ? Tree.Kind.CONDITIONAL_OR : Tree.Kind.CONDITIONAL_AND;
+      return parent.is(operator) && ((BinaryExpressionTree) parent).leftOperand() == child;
     }
   }
 }
