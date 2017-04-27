@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -47,10 +48,4 @@ public interface CheckerContext {
   ConstraintManager getConstraintManager();
 
   AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions();
-
-  interface AlwaysTrueOrFalseExpressions {
-    Set<Tree> alwaysTrue();
-    Set<Tree> alwaysFalse();
-    Set<List<JavaFileScannerContext.Location>> flowForExpression(Tree expression);
-  }
 }

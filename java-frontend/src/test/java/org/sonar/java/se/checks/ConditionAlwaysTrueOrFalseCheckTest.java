@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.junit.Test;
 
+import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.JavaCheckVerifier;
 
@@ -72,7 +73,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   private static class AssertNoAlwaysTrueOrFalseExpression extends SECheck {
     @Override
     public void checkEndOfExecution(CheckerContext context) {
-      CheckerContext.AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
+      AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
       assertThat(atof.alwaysFalse()).isEmpty();
       assertThat(atof.alwaysTrue()).isEmpty();
     }

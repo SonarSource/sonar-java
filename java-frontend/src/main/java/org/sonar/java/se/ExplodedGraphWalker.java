@@ -37,6 +37,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Types;
+import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -1089,7 +1090,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  CheckerContext.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
+  AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
     return alwaysTrueOrFalseExpressionCollector.alwaysTrueOrFalseExpressions();
   }
 

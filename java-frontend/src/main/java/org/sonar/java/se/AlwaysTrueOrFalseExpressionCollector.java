@@ -19,7 +19,9 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -28,7 +30,12 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -37,12 +44,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class AlwaysTrueOrFalseExpressionCollector {
+public class AlwaysTrueOrFalseExpressionCollector {
 
-  private Deque<EvaluatedConditions> evaluatedConditions = new LinkedList<>();
+  private Deque<AlwaysTrueOrFalseExpressions> evaluatedConditions = new LinkedList<>();
 
   void init() {
-    evaluatedConditions.push(new EvaluatedConditions());
+    evaluatedConditions.push(new AlwaysTrueOrFalseExpressions());
   }
 
   void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
@@ -57,11 +64,11 @@ class AlwaysTrueOrFalseExpressionCollector {
     evaluatedConditions.pop();
   }
 
-  CheckerContext.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
+  AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
     return evaluatedConditions.peek();
   }
 
-  private static class EvaluatedConditions implements CheckerContext.AlwaysTrueOrFalseExpressions {
+  public static class AlwaysTrueOrFalseExpressions {
     final Multimap<Tree, ExplodedGraph.Node> falseEvaluations = HashMultimap.create();
     final Multimap<Tree, ExplodedGraph.Node> trueEvaluations = HashMultimap.create();
 
@@ -73,17 +80,14 @@ class AlwaysTrueOrFalseExpressionCollector {
       trueEvaluations.put(condition, node);
     }
 
-    @Override
     public Set<Tree> alwaysTrue() {
       return Sets.difference(trueEvaluations.keySet(), falseEvaluations.keySet());
     }
 
-    @Override
     public Set<Tree> alwaysFalse() {
       return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
     }
 
-    @Override
     public Set<List<JavaFileScannerContext.Location>> flowForExpression(Tree expression) {
       Collection<ExplodedGraph.Node> nodes = getNodes(expression);
       return collectFlow(nodes);
@@ -96,7 +100,7 @@ class AlwaysTrueOrFalseExpressionCollector {
 
     private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes) {
       return nodes.stream()
-        .map(EvaluatedConditions::flowFromNode)
+        .map(AlwaysTrueOrFalseExpressions::flowFromNode)
         .flatMap(Set::stream)
         .collect(Collectors.toSet());
     }
@@ -106,5 +110,50 @@ class AlwaysTrueOrFalseExpressionCollector {
       return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
     }
 
+    public static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
+      return ImmutableList.<JavaFileScannerContext.Location>builder()
+        .add(new JavaFileScannerContext.Location("Expression is always " + conditionIsAlwaysTrue + ".", issueTree))
+        .addAll(flow)
+        .build();
+    }
+
+    public static boolean hasUnreachableCode(Tree booleanExpr, boolean isTrue) {
+      Tree parent = biggestTreeWithSameEvaluation(booleanExpr, isTrue);
+      if (parent.is(Tree.Kind.IF_STATEMENT)) {
+        IfStatementTree ifStatementTree = (IfStatementTree) parent;
+        return !isTrue || ifStatementTree.elseStatement() != null;
+      }
+      // Tree.Kind.DO_STATEMENT not considered, because it is always executed at least once
+      if (parent.is(Tree.Kind.WHILE_STATEMENT) && !isTrue) {
+        return true;
+      }
+      return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION);
+    }
+
+    private static Tree biggestTreeWithSameEvaluation(Tree booleanExpr, boolean isTrue) {
+      Tree.Kind operator = isTrue ? Tree.Kind.CONDITIONAL_OR : Tree.Kind.CONDITIONAL_AND;
+      Tree prevParent = booleanExpr;
+      Tree parent = skipParentheses(booleanExpr.parent());
+      while (parent != null && parent.is(operator)
+        && equalsIgnoreParentheses(((BinaryExpressionTree) parent).leftOperand(), prevParent)) {
+        prevParent = parent;
+        parent = skipParentheses(parent.parent());
+      }
+      Preconditions.checkState(parent != null, "Error getting parent tree with same evaluation, parent is null");
+      return parent;
+    }
+
+    @CheckForNull
+    private static Tree skipParentheses(@Nullable Tree tree) {
+      Tree result = tree;
+      while (result != null && result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+        result = result.parent();
+      }
+      return result;
+    }
+
+    private static boolean equalsIgnoreParentheses(Tree tree, Tree other) {
+      return skipParentheses(tree) == skipParentheses(other);
+    }
   }
 }
