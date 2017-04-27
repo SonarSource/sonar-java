@@ -155,7 +155,7 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions alwaysTrueOrFalseExpressions() {
-    return explodedGraphWalker.alwaysTrueOrFalseExpressions();
+  public AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions() {
+    return explodedGraphWalker.alwaysTrueOrFalseExpressionCollector();
   }
 }

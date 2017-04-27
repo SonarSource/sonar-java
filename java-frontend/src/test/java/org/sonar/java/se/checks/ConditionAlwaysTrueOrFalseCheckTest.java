@@ -73,7 +73,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   private static class AssertNoAlwaysTrueOrFalseExpression extends SECheck {
     @Override
     public void checkEndOfExecution(CheckerContext context) {
-      AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
+      AlwaysTrueOrFalseExpressionCollector atof = context.alwaysTrueOrFalseExpressions();
       assertThat(atof.alwaysFalse()).isEmpty();
       assertThat(atof.alwaysTrue()).isEmpty();
     }

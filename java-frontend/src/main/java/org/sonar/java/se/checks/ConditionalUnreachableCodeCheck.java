@@ -20,7 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector.AlwaysTrueOrFalseExpressions;
+import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +36,7 @@ public class ConditionalUnreachableCodeCheck extends SECheck {
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    AlwaysTrueOrFalseExpressions atof = context.alwaysTrueOrFalseExpressions();
+    AlwaysTrueOrFalseExpressionCollector atof = context.alwaysTrueOrFalseExpressions();
     for (Tree condition : atof.alwaysFalse()) {
       reportBooleanExpression(context, atof, condition, false);
     }
@@ -45,10 +45,10 @@ public class ConditionalUnreachableCodeCheck extends SECheck {
     }
   }
 
-  private void reportBooleanExpression(CheckerContext context, AlwaysTrueOrFalseExpressions atof, Tree condition, boolean isTrue) {
-    if (AlwaysTrueOrFalseExpressions.hasUnreachableCode(condition, isTrue)) {
+  private void reportBooleanExpression(CheckerContext context, AlwaysTrueOrFalseExpressionCollector atof, Tree condition, boolean isTrue) {
+    if (AlwaysTrueOrFalseExpressionCollector.hasUnreachableCode(condition, isTrue)) {
       Set<List<JavaFileScannerContext.Location>> flows = atof.flowForExpression(condition).stream()
-        .map(flow -> AlwaysTrueOrFalseExpressions.addIssueLocation(flow, condition, isTrue))
+        .map(flow -> AlwaysTrueOrFalseExpressionCollector.addIssueLocation(flow, condition, isTrue))
         .collect(Collectors.toSet());
       context.reportIssue(condition, this, String.format(MESSAGE, isTrue), flows);
     }
