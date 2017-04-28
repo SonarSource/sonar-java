@@ -52,7 +52,7 @@ public class JavaSonarWayProfileTest {
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
     assertThat(profile.getActiveRulesByRepository("common-java")).hasSize(1);
-    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(270);
+    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(268);
     assertThat(profile.getName()).isEqualTo("Sonar way");
     Set<String> keys = new HashSet<>();
     for (ActiveRule activeRule : activeRules) {
@@ -75,7 +75,7 @@ public class JavaSonarWayProfileTest {
     RulesProfile profile = sonarWay.createProfile(validation);
     assertThat(profile.getActiveRules()).extracting("repositoryKey").containsOnly(CheckList.REPOSITORY_KEY);
     assertThat(profile.getActiveRulesByRepository("common-java")).isEmpty();
-    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY).size()).isGreaterThanOrEqualTo(269);
+    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY).size()).isGreaterThanOrEqualTo(268);
     assertThat(profile.getName()).isEqualTo("Sonar way");
 
     assertThat(validation.hasErrors()).isFalse();

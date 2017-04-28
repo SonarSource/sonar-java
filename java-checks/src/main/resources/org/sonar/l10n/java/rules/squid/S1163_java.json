@@ -1,6 +1,6 @@
 {
   "title": "Exceptions should not be thrown in finally blocks",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,12 +8,11 @@
   },
   "tags": [
     "error-handling",
-    "bug",
     "cert",
     "suspicious"
   ],
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

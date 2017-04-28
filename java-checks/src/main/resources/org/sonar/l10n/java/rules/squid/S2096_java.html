@@ -1,6 +1,6 @@
 <p>There's no reason for a <code>main</code> method to <code>throw</code> anything. After all, what's going to catch it? </p>
 <p>Instead, the method should itself gracefully handle any exceptions that may bubble up to it, attach as much contextual information as possible, and
-perform whatever logging or user communication is necessary, and <code>exit</code> with non-zero (i.e. non-success) exit code if necessary.</p>
+perform whatever logging or user communication is necessary, and <code>exit</code> with a non-zero (i.e. non-success) exit code if necessary.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public static void main(String args[]) throws Exception { // Noncompliant

@@ -1,6 +1,6 @@
 {
   "title": "\"Exception\" should not be caught when not required by called methods",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,11 +8,10 @@
   },
   "tags": [
     "cwe",
-    "error-handling",
-    "bug"
+    "error-handling"
   ],
   "standards": [
     "CWE"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

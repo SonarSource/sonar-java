@@ -1,12 +1,11 @@
-<p>Calling <code>System.gc()</code> or <code>Runtime.getRuntime().gc()</code> is a bad idea for a simple reason:</p>
-<p>there is no way to know exactly what will be done under the hood by the JVM because the behavior will depend on its vendor, version and
-options:</p>
+<p>Calling <code>System.gc()</code> or <code>Runtime.getRuntime().gc()</code> is a bad idea for a simple reason: there is no way to know exactly what
+will be done under the hood by the JVM because the behavior will depend on its vendor, version and options:</p>
 <ul>
   <li> Will the whole application be frozen during the call? </li>
-  <li> Is the -XX:DisableExplicitGC option activated? </li>
+  <li> Is the <code>-XX:DisableExplicitGC</code> option activated? </li>
   <li> Will the JVM simply ignore the call? </li>
   <li> ... </li>
 </ul>
-<p>An application relying on those unpredictable methods is also unpredictable and therefore broken.</p>
-<p>The task of running the garbage collector should be left exclusively to the JVM.</p>
+<p>An application relying on these unpredictable methods is also unpredictable and therefore broken. The task of running the garbage collector should
+be left exclusively to the JVM.</p>
 

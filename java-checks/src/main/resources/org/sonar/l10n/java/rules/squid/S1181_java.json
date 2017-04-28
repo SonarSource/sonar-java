@@ -1,6 +1,6 @@
 {
   "title": "Throwable and Error should not be caught",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,7 +9,7 @@
   "tags": [
     "cwe",
     "error-handling",
-    "bug",
+    "bad-practice",
     "cert"
   ],
   "standards": [

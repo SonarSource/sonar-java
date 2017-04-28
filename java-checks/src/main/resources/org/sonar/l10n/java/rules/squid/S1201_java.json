@@ -1,5 +1,5 @@
 {
-  "title": "Methods named \"equals\" should override Object.equals(Object)",
+  "title": "\"equals\" method overrides should accept \"Object\" parameters",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -7,7 +7,6 @@
     "constantCost": "10min"
   },
   "tags": [
-    "bug",
     "suspicious"
   ],
   "defaultSeverity": "Major"

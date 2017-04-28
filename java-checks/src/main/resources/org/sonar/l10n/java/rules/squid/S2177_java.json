@@ -7,7 +7,6 @@
     "constantCost": "30min"
   },
   "tags": [
-    "bug",
     "pitfall"
   ],
   "defaultSeverity": "Major"

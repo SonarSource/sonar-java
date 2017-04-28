@@ -7,8 +7,7 @@
     "constantCost": "30min"
   },
   "tags": [
-    "multi-threading",
-    "bug"
+    "multi-threading"
   ],
   "defaultSeverity": "Major"
 }

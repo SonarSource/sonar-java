@@ -1,14 +1,13 @@
 {
-  "title": "\"ConcurrentLinkedQueue.size()\" should not be used",
-  "type": "BUG",
+  "title": "Collection methods with O(n) performance should be used carefully",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
   "defaultSeverity": "Minor"
 }

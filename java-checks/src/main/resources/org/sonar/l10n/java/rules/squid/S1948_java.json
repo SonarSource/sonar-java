@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "serialization",
-    "bug"
+    "serialization"
   ],
   "standards": [
     "CWE"

@@ -1,19 +1,29 @@
 <p>"equals" as a method name should be used exclusively to override <code>Object.equals(Object)</code> to prevent any confusion.</p>
 <p>It is tempting to overload the method to take a specific class instead of <code>Object</code> as parameter, to save the class comparison check.
-However, this will not work as expected.</p>
+However, this will not work as expected when that is the only override.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class MyClass {
   private int foo = 1;
 
-  public boolean equals(MyClass o) {                    // Noncompliant - "equals" method which does not override Object.equals(Object)
+  public boolean equals(MyClass o) {  // Noncompliant; does not override Object.equals(Object)
     return o != null &amp;&amp; o.foo == this.foo;
   }
 
   public static void main(String[] args) {
     MyClass o1 = new MyClass();
     Object o2 = new MyClass();
-    System.out.println(o1.equals(o2));                  // Will display "false" because "o2" is of type "Object" and not "MyClass"
+    System.out.println(o1.equals(o2));  // Prints "false" because o2 an Object not a MyClass
+  }
+}
+
+class MyClass2 {
+  public boolean equals(MyClass2 o) {  // Ignored; `boolean equals(Object)` also present
+    //..
+  }
+
+  public boolean equals(Object o) {
+    //...
   }
 }
 </pre>
@@ -23,8 +33,11 @@ class MyClass {
   private int foo = 1;
 
   @Override
-  public boolean equals(Object o) {                     // Compliant - overrides Object.equals(Object)
-    if (o == null || !(o instanceof MyClass)) {
+  public boolean equals(Object o) {
+    if (this == o) {
+        return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
@@ -33,6 +46,16 @@ class MyClass {
   }
 
   /* ... */
+}
+
+class MyClass2 {
+  public boolean equals(MyClass2 o) {
+    //..
+  }
+
+  public boolean equals(Object o) {
+    //...
+  }
 }
 </pre>
 
