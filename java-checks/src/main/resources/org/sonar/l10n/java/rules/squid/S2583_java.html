@@ -1,42 +1,23 @@
-<p>Conditional statements using a condition which cannot be anything but <code>FALSE</code> have the effect of making blocks of code non-functional.
-If the condition cannot evaluate to anything but <code>TRUE</code>, the conditional statement is completely redundant, and makes the code less
-readable.</p>
-<p>It is quite likely that the code does not match the programmer's intent.</p>
-<p>Either the condition should be removed or it should be updated so that it does not always evaluate to <code>TRUE</code> or <code>FALSE</code>.</p>
+<p>Conditional expressions which are always <code>true</code> or <code>false</code> can lead to dead code. Such code is always buggy and should never
+be used in production.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-//foo can't be both equal and not equal to bar in the same expression
-if( foo == bar &amp;&amp; something &amp;&amp; foo != bar) {...}
-</pre>
-<pre>
-private void compute(int foo) {
-  int four = 4;
-  if (foo == four ) {
-    doSomething();
-    // We know foo is equal to the four variable at this point, so the next condition is always false
-    if (foo &gt; four) {...}
-    ...
-  }
-  ...
+a = false;
+if (a) { // Noncompliant
+  doSomething(); // never executed
 }
-</pre>
-<pre>
-private void compute(boolean foo) {
-  if (foo) {
-    return;
-  }
+
+if (!a || b) { // Noncompliant; "!a" is always "true", "b" is never evaluated
   doSomething();
-  // foo is always false here
-  if (foo){...}
-  ...
+} else {
+  doSomethingElse(); // never executed
 }
 </pre>
 <h2>See</h2>
 <ul>
   <li> MISRA C:2004, 13.7 - Boolean operations whose results are invariant shall not be permitted. </li>
   <li> MISRA C:2012, 14.3 - Controlling expressions shall not be invariant </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/489">MITRE, CWE-489</a> - Leftover Debug Code </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/570">MITRE, CWE-570</a> - Expression is Always False </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/570.html">MITRE, CWE-570</a> - Expression is Always False </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/571">MITRE, CWE-571</a> - Expression is Always True </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/NYA5">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never
   executed </li>

@@ -14,5 +14,5 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Minor"
 }

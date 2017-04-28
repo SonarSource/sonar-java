@@ -1,13 +1,12 @@
 {
   "title": "\"toString()\" should never be called on a String object",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
   "tags": [
-    "bug",
     "finding",
     "clumsy"
   ],

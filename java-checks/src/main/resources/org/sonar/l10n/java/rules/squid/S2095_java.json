@@ -10,7 +10,6 @@
     "cwe",
     "leak",
     "denial-of-service",
-    "bug",
     "cert"
   ],
   "standards": [

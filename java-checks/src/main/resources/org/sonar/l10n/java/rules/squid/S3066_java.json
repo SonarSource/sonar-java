@@ -7,7 +7,6 @@
     "constantCost": "20min"
   },
   "tags": [
-    "security",
     "bad-practice"
   ],
   "defaultSeverity": "Minor"

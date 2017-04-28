@@ -1,7 +1,7 @@
-<p>Utility classes, which are a collection of static members, are not meant to be instantiated.</p>
-<p>Even abstract utility classes, which can be extended, should not have public constructors.</p>
-<p>Java adds an implicit public constructor to every class which does not define at least one explicitly.</p>
-<p>Hence, at least one non-public constructor should be defined.</p>
+<p>Utility classes, which are collections of <code>static</code> members, are not meant to be instantiated. Even abstract utility classes, which can
+be extended, should not have public constructors.</p>
+<p>Java adds an implicit public constructor to every class which does not define at least one explicitly. Hence, at least one non-public constructor
+should be defined.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class StringUtils { // Noncompliant
@@ -17,7 +17,7 @@ class StringUtils { // Noncompliant
 class StringUtils { // Compliant
 
   private StringUtils() {
-    throw new IllegalAccessError("Utility class");
+    throw new IllegalStateException("Utility class");
   }
 
   public static String concatenate(String s1, String s2) {
@@ -26,4 +26,7 @@ class StringUtils { // Compliant
 
 }
 </pre>
+<h2>Exceptions</h2>
+<p>When class contains <code>public static void main(String[] args)</code> method it is not considered as utility class and will be ignored by this
+rule.</p>
 

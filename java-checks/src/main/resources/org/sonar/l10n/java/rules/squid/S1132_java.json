@@ -1,13 +1,12 @@
 {
   "title": "Strings literals should be placed on the left side when checking for equality",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
-    "bug",
     "bad-practice"
   ],
   "defaultSeverity": "Minor"

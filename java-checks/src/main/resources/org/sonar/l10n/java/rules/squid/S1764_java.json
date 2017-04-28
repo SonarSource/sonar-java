@@ -7,7 +7,6 @@
     "constantCost": "2min"
   },
   "tags": [
-    "bug",
     "cert"
   ],
   "defaultSeverity": "Major"

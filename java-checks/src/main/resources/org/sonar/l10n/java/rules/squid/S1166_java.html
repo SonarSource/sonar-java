@@ -1,29 +1,45 @@
 <p>When handling a caught exception, the original exception's message and stack trace should be logged or passed forward.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
- // Noncompliant - exception is lost
-try { /* ... */ } catch (Exception e) { LOGGER.info("context"); }
+try {
+  /* ... */
+} catch (Exception e) {   // Noncompliant - exception is lost
+  LOGGER.info("context");
+}
 
-// Noncompliant - exception is lost (only message is preserved)
-try { /* ... */ } catch (Exception e) { LOGGER.info(e.getMessage()); }
+try {
+  /* ... */
+} catch (Exception e) {  // Noncompliant - exception is lost (only message is preserved)
+  LOGGER.info(e.getMessage());
+}
 
-// Noncompliant - exception is lost
-try { /* ... */ } catch (Exception e) { throw new RuntimeException("context"); }
+try {
+  /* ... */
+} catch (Exception e) {  // Noncompliant - original exception is lost
+  throw new RuntimeException("context");
+}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-try { /* ... */ } catch (Exception e) { LOGGER.info(e); }
+try {
+  /* ... */
+} catch (Exception e) {
+  LOGGER.info(e);  // exception is logged
+}
 
-try { /* ... */ } catch (Exception e) { throw new RuntimeException(e); }
+try {
+  /* ... */
+} catch (Exception e) {
+  throw new RuntimeException(e);   // exception stack trace is propagated
+}
 
 try {
   /* ... */
 } catch (RuntimeException e) {
   doSomething();
-  throw e;
+  throw e;  // original exception passed forward
 } catch (Exception e) {
-  // Conversion into unchecked exception is also allowed
-  throw new RuntimeException(e);
+  throw new RuntimeException(e);  // Conversion into unchecked exception is also allowed
 }
 </pre>
 <h2>Exceptions</h2>

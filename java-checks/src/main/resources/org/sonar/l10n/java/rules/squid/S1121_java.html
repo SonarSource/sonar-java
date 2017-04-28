@@ -12,11 +12,17 @@ if (str.isEmpty()) {
   //...
 </pre>
 <h2>Exceptions</h2>
-<p>Assignments in <code>while</code> statement conditions, and assignments enclosed in relational expressions are allowed.</p>
+<p>Assignments in <code>while</code> statement conditions, and assignments enclosed in relational expressions are ignored.</p>
 <pre>
 BufferedReader br = new BufferedReader(/* ... */);
 String line;
 while ((line = br.readLine()) != null) {...}
+</pre>
+<p>Chained assignments, including compound assignments, are ignored.</p>
+<pre>
+int i = j = 0;
+int k = (j += 1);
+result = (bresult = new byte[len]);
 </pre>
 <h2>See</h2>
 <ul>

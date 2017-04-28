@@ -3,8 +3,7 @@
   "type": "BUG",
   "status": "ready",
   "tags": [
-    "denial-of-service",
-    "bug"
+    "denial-of-service"
   ],
   "defaultSeverity": "Blocker"
 }

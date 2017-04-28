@@ -1,6 +1,5 @@
 <p>Throwing an exception from within a finally block will mask any exception which was previously thrown in the <code>try</code> or <code>catch</code>
-block.</p>
-<p>The masked's exception message and stack trace will be lost.</p>
+block, and the masked's exception message and stack trace will be lost.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 try {
@@ -8,7 +7,7 @@ try {
   throw new IllegalArgumentException();
 } finally {
   /* clean up */
-  throw new RuntimeException();       // Noncompliant; will mask the IllegalArgumentException
+  throw new RuntimeException();       // Noncompliant; masks the IllegalArgumentException
 }
 </pre>
 <h2>Compliant Solution</h2>
@@ -17,7 +16,7 @@ try {
   /* some work which end up throwing an exception */
   throw new IllegalArgumentException();
 } finally {
-  /* clean up */                                         // Compliant
+  /* clean up */
 }
 </pre>
 <h2>See</h2>

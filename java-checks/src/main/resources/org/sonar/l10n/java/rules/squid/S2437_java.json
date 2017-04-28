@@ -1,14 +1,13 @@
 {
   "title": "Silly bit operations should not be performed",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
     "suspicious"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Blocker"
 }

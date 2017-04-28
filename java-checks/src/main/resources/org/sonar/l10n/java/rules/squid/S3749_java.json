@@ -1,5 +1,5 @@
 {
-  "title": "Members of Spring components should be \"@Autowired\"",
+  "title": "Members of Spring components should be injected",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

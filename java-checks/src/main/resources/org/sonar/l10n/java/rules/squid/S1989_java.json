@@ -9,7 +9,6 @@
   "tags": [
     "cwe",
     "error-handling",
-    "security",
     "cert",
     "owasp-a6"
   ],
