@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,10 +42,21 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
-    if (hasOnlyPrivateConstructors(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
+    if (hasOnlyPrivateConstructors(classTree) && !isExtended(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       reportIssue(classTree.simpleName(), "Make this class \"final\" or add a public constructor.");
     }
+  }
+
+  private static boolean isExtended(ClassTree classTree) {
+    List<IdentifierTree> usages = classTree.symbol().usages();
+    return usages.stream().anyMatch(usage -> {
+      Tree parent = usage.parent();
+      return parent != null && parent.is(Kind.CLASS);
+    });
   }
 
   private static boolean hasOnlyPrivateConstructors(ClassTree classTree) {

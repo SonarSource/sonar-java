@@ -49,3 +49,23 @@ public class ProtectedConstructorClass {  // Compliant, all constructors are not
 
 public class NoConstructorClass { // Compliant, implicit constructor has package visibility
 }
+
+public abstract class AbstractClass {  // Compliant, constructor is used in
+
+  private AbstractClass(String value) {
+
+  }
+
+  final class ConcreteNested extends AbstractClass {
+
+    private ConcreteNested() {
+      super("Concrete");
+    }
+  }
+
+}
+
+private class Test { // Noncompliant
+  Class c = Test.class;
+  private Test() {}
+}
