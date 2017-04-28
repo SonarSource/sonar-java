@@ -26,6 +26,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -35,9 +36,11 @@ import java.util.List;
 @Rule(key = "S3923")
 public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
 
+  private static final String IF_SWITCH_MSG = "Remove this conditional structure or edit its code blocks so that they're not all the same.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
@@ -46,7 +49,15 @@ public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
       SwitchStatementTree switchStatement = (SwitchStatementTree) tree;
       Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
       if (allBranchesSame(identicalBranches, switchStatement.cases().size())) {
-        reportIssue(((SwitchStatementTree) tree).switchKeyword(), "Remove this conditional structure or edit its code blocks so that they're not all the same.");
+        reportIssue(((SwitchStatementTree) tree).switchKeyword(), IF_SWITCH_MSG);
+      }
+    } else if (tree.is(Tree.Kind.IF_STATEMENT)) {
+      if (!tree.parent().is(Tree.Kind.IF_STATEMENT)) {
+        IfStatementTree ifStatementTree = (IfStatementTree) tree;
+        IfElseChain ifElseChain = checkIfStatement(ifStatementTree);
+        if (allBranchesSame(ifElseChain.branches, ifElseChain.totalBranchCount)) {
+          reportIssue(ifStatementTree.ifKeyword(), IF_SWITCH_MSG);
+        }
       }
     } else {
       checkConditionalExpression((ConditionalExpressionTree) tree);

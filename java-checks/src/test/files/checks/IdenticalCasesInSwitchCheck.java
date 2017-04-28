@@ -96,14 +96,40 @@ class A {
       // skip empty blocks
     } else if (true) {
       System.out.println("bar");
-    } else if (true) { // Noncompliant [[sc=22;el=+2;ec=6;secondary=91]] {{This branch's code block is the same as the block for the branch on line 91.}}
+    } else if (true) { // Compliant - trivial
       System.out.println("foo");
-    } else { // Noncompliant [[sc=12;el=+2;ec=6;secondary=99]] {{This branch's code block is the same as the block for the branch on line 99.}}
+    } else { // Compliant - trivial
+      System.out.println("foo");
+    }
+
+    if (true) {
+      System.out.println("foo");
+      System.out.println("foo");
+    } else if (true) {
+      // skip empty blocks
+    } else if (true) {
+      // skip empty blocks
+    } else if (true) {
+      System.out.println("bar");
+    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=105]] {{This branch's code block is the same as the block for the branch on line 105.}}
+      System.out.println("foo");
+      System.out.println("foo");
+    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=105]] {{This branch's code block is the same as the block for the branch on line 105.}}
+      System.out.println("foo");
       System.out.println("foo");
     }
     if (true) {
       1;
     }
+
+    if (true) f();
+    else f();
+
+    if (true) f();
+    else if (true) f(); // Noncompliant [[secondary=128]]
+    else if (true) g();
+    else if (true) g(); // Noncompliant [[secondary=130]]
+    else ;
   }
 
 }

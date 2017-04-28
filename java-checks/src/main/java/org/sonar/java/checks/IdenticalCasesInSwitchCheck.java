@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S1871")
@@ -57,8 +58,9 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
           }
         });
       }
-    } else if (node.is(Tree.Kind.IF_STATEMENT)) {
-      checkIfStatement((IfStatementTree) node);
+    } else if (node.is(Tree.Kind.IF_STATEMENT) && !node.parent().is(Tree.Kind.IF_STATEMENT)) {
+      IfElseChain ifElseChain = checkIfStatement((IfStatementTree) node);
+      reportIdenticalIfChainBranches(ifElseChain.branches, ifElseChain.totalBranchCount);
     }
   }
 
@@ -88,32 +90,60 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     return identicalBranches;
   }
 
-  private void checkIfStatement(IfStatementTree node) {
-    StatementTree thenStatement = node.thenStatement();
+  protected static class IfElseChain {
+    Multimap<StatementTree, StatementTree> branches = HashMultimap.create();
+    int totalBranchCount;
+  }
+
+  protected static IfElseChain checkIfStatement(IfStatementTree node) {
+    IfElseChain ifElseChain = new IfElseChain();
+    ifElseChain.totalBranchCount = 1;
+    List<StatementTree> allBranches = new ArrayList<>();
+    allBranches.add(node.thenStatement());
     StatementTree elseStatement = node.elseStatement();
     while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) elseStatement;
-      if (areIfBlocksSyntacticalEquivalent(thenStatement, ifStatement.thenStatement())) {
-        createIssue(ifStatement.thenStatement(), issueMessage("branch", thenStatement), thenStatement);
-        break;
-      }
+      allBranches.add(ifStatement.thenStatement());
       elseStatement = ifStatement.elseStatement();
     }
-    if (elseStatement != null && areIfBlocksSyntacticalEquivalent(thenStatement, elseStatement)) {
-      createIssue(elseStatement, issueMessage("branch", thenStatement), thenStatement);
+    if (elseStatement != null) {
+      allBranches.add(elseStatement);
     }
+    return collectIdenticalBranches(allBranches);
+  }
+
+  private static IfElseChain collectIdenticalBranches(List<StatementTree> allBranches) {
+    IfElseChain ifElseChain = new IfElseChain();
+    for (int i = 0; i <  allBranches.size(); i++) {
+      if (ifElseChain.branches.containsValue(allBranches.get(i))) {
+        continue;
+      }
+      for (int j = i + 1; j < allBranches.size(); j++) {
+        if (SyntacticEquivalence.areEquivalent(allBranches.get(i), allBranches.get(j))) {
+          ifElseChain.branches.put(allBranches.get(i), allBranches.get(j));
+        }
+      }
+    }
+    ifElseChain.totalBranchCount = allBranches.size();
+    return ifElseChain;
+  }
+
+  private void reportIdenticalIfChainBranches(Multimap<StatementTree, StatementTree> identicalBranches, int totalBranchCount) {
+    if (!allBranchesSame(identicalBranches, totalBranchCount)) {
+      identicalBranches.asMap().forEach((first, others) -> {
+        if (!isTrivialIfStatement(first)) {
+          others.forEach(other -> createIssue(other, issueMessage("branch", first), first));
+        }
+      });
+    }
+  }
+
+  private static boolean isTrivialIfStatement(StatementTree node) {
+    return node.is(Tree.Kind.BLOCK) && ((BlockTree) node).body().size() <= 1;
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {
     reportIssue(node, message, ImmutableList.of(new JavaFileScannerContext.Location("Original", secondary)), null);
-  }
-
-  private static boolean areIfBlocksSyntacticalEquivalent(StatementTree first, StatementTree second) {
-    return isNotEmptyBlock(first) && SyntacticEquivalence.areEquivalent(first, second);
-  }
-
-  private static boolean isNotEmptyBlock(StatementTree node) {
-    return !(node.is(Tree.Kind.BLOCK) && ((BlockTree) node).body().isEmpty());
   }
 
   private static String issueMessage(String type, Tree node) {

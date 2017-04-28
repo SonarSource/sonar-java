@@ -27,5 +27,24 @@ class A {
     }
   }
 
+  void ifStatement() {
+    if (b == 0) {  // Noncompliant [[sc=5;ec=7]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+      doOneMoreThing();
+    }
+    else {
+      doOneMoreThing();
+    }
+
+    if (true) { // Noncompliant
+
+    } else if (true) {
+
+    } else {
+
+    }
+
+
+  }
+
 
 }
