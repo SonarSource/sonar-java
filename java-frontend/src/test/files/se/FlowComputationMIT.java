@@ -16,7 +16,7 @@ class A {
 
   void exceptions2(Object o) {
     throwIfNull(o); // flow@ex2  {{Implies 'o' is non-null.}}
-    if (o != null) { // Noncompliant [[flows=ex2]] {{Change this condition so that it does not always evaluate to "true"}} flow@ex2 {{Condition is always true.}}
+    if (o != null) { // Noncompliant [[flows=ex2]] flow@ex2 {{Expression is always true.}}
 
     }
   }

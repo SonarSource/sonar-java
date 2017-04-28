@@ -15,7 +15,7 @@ class A {
       try {
         mi.bar();
       } catch (IOException x) {
-        if (x != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+        if (x != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
           lastException = x;
         }
       }

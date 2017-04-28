@@ -6,7 +6,7 @@ abstract class A {
     try {
       foo(o);
     } catch (MyException1 e) {
-      if (o == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (o == null) {}  // Noncompliant {{Remove this expression which always evaluates to "true"}}
     } catch (MyException2 e) {
       if (o == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     } finally {

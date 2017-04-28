@@ -175,7 +175,7 @@ class A {
 
   boolean foo(boolean foo) {
     boolean identifier = true;
-    return (boolean) !identifier && foo; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    return (boolean) !identifier && foo; // Noncompliant {{Remove this expression which always evaluates to "false"}}
   }
 }
 

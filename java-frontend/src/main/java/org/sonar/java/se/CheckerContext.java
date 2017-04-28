@@ -45,4 +45,6 @@ public interface CheckerContext {
   ExplodedGraph.Node getNode();
 
   ConstraintManager getConstraintManager();
+
+  AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions();
 }

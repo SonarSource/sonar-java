@@ -12,7 +12,7 @@ abstract class A {
 
   void test(boolean a) {
     one_yield_two_flows(a);  // flow@xproc1,xproc2 {{Implies 'a' is true.}}
-    if (a) { // Noncompliant [[flows=xproc1,xproc2]] flow@xproc1,xproc2 {{Condition is always true.}}
+    if (a) { // Noncompliant [[flows=xproc1,xproc2]] flow@xproc1,xproc2 {{Expression is always true.}}
 
     }
   }
@@ -32,11 +32,11 @@ abstract class A {
     try {
       two_yields_one_flow_each(a, cond); // flow@ex1,ex2 {{Implies 'a' is true.}} flow@normal1,normal2 {{Implies 'a' is false.}}
     } catch (MyEx e) {
-      if (a) { // Noncompliant [[flows=ex1,ex2]] flow@ex1,ex2 {{Condition is always true.}}
+      if (a) { // Noncompliant [[flows=ex1,ex2]] flow@ex1,ex2 {{Expression is always true.}}
         return;
       }
     }
-    if (a) { // Noncompliant [[flows=normal1,normal2]] flow@normal1,normal2 {{Condition is always false.}}
+    if (a) { // Noncompliant [[flows=normal1,normal2]] flow@normal1,normal2 {{Expression is always false.}}
 
     }
   }

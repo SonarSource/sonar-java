@@ -15,8 +15,8 @@ abstract class A {
     try {
       foo(b, o); // flow@npe,catof1 {{Implies 'o' is null.}}  flow@catof2 {{Implies 'b' is true.}}
     } catch (MyException1 e) {
-      if (b) { // Noncompliant [[flows=catof2]] {{Change this condition so that it does not always evaluate to "true"}} flow@catof2  {{Condition is always true.}}
-        if (o == null) {} // Noncompliant [[flows=catof1]] {{Change this condition so that it does not always evaluate to "true"}} flow@catof1 {{Condition is always true.}}
+      if (b) { // Noncompliant [[flows=catof2]] {{Remove this expression which always evaluates to "true"}} flow@catof2  {{Expression is always true.}}
+        if (o == null) {} // Noncompliant [[flows=catof1]] {{Remove this expression which always evaluates to "true"}} flow@catof1 {{Expression is always true.}}
       }
     } finally {
       o.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "o" is nullable here}}  flow@npe {{'o' is dereferenced.}}
