@@ -43,6 +43,9 @@ class A {
 
     }
 
+    if (true) f(); // Noncompliant
+    else f();
+
 
   }
 

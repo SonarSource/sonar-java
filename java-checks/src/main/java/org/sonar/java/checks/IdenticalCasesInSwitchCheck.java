@@ -139,7 +139,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isTrivialIfStatement(StatementTree node) {
-    return node.is(Tree.Kind.BLOCK) && ((BlockTree) node).body().size() <= 1;
+    return !node.is(Tree.Kind.BLOCK) || ((BlockTree) node).body().size() <= 1;
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {

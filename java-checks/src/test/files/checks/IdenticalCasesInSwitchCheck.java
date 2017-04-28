@@ -123,12 +123,28 @@ class A {
     }
 
     if (true) f();
-    else f();
+    else if (true) f();
+    else g();
 
     if (true) f();
-    else if (true) f(); // Noncompliant [[secondary=128]]
-    else if (true) g();
-    else if (true) g(); // Noncompliant [[secondary=130]]
+    else f();
+
+    if (true) {
+      f();
+      f();
+    }
+    else if (true) { // Noncompliant [[secondary=132]]
+      f();
+      f();
+    }
+    else if (true) {
+      g();
+      g();
+    }
+    else if (true) {  // Noncompliant [[secondary=140]]
+      g();
+      g();
+    }
     else ;
   }
 
