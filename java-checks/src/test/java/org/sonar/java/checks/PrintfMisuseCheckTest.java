@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class PrintfCheckTest {
+public class PrintfMisuseCheckTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PrintfCheck.java", new PrintfCheck());
+  public void PrintfMisuseCheckTest() {
+    JavaCheckVerifier.verify("src/test/files/checks/PrintfMisuseCheck.java", new PrintfMisuseCheck());
   }
 }

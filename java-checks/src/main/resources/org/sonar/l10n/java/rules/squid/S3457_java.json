@@ -1,0 +1,14 @@
+{
+  "title": "Printf-style format strings should be used correctly",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cert",
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}
