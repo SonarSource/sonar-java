@@ -19,36 +19,32 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import org.junit.Test;
 
-import java.io.File;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodJavaTypeTest {
 
+  private static final Symbols SYMBOLS = new Symbols(new BytecodeCompleter(Collections.emptyList(), new ParametrizedTypeCache()));
+
   @Test
   public void methodJavaType_return_type() {
-    JavaType intType = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType;
+    MethodJavaType methodJavaType = new MethodJavaType(Collections.emptyList(), SYMBOLS.intType, Collections.emptyList(), null);
+    assertThat(methodJavaType.resultType()).isSameAs(SYMBOLS.intType);
 
-    MethodJavaType methodJavaType = new MethodJavaType(ImmutableList.<JavaType>of(), intType, ImmutableList.<JavaType>of(), null);
-    assertThat(methodJavaType.resultType()).isSameAs(intType);
-
-    MethodJavaType constructor = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null);
+    MethodJavaType constructor = new MethodJavaType(Collections.emptyList(), null, Collections.emptyList(), null);
     assertThat(constructor.resultType()).isNull();
   }
 
   @Test
   public void to_string_on_type() throws Exception {
     assertThat(new JavaType(JavaType.VOID, null).toString()).isEmpty();
-    String methodToString = new MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
-      ImmutableList.<JavaType>of(), null).toString();
+    String methodToString = new MethodJavaType(Collections.emptyList(), SYMBOLS.intType, Collections.emptyList(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
 
-    String constructorToString = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null).toString();
+    String constructorToString = new MethodJavaType(Collections.emptyList(), null, Collections.emptyList(), null).toString();
     assertThat(constructorToString).isEqualTo("constructor");
   }
 
