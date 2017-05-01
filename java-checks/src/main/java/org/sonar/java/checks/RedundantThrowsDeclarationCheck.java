@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
@@ -68,10 +69,16 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     ListTree<TypeTree> thrownList = methodTree.throwsClauses();
 
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
+    boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
 
     Set<String> reported = new HashSet<>();
     for (TypeTree typeTree : thrownList) {
       Type exceptionType = typeTree.symbolType();
+      if (hasTryWithResourceInBody && (exceptionType.is("java.io.IOException") || exceptionType.is("java.lang.Exception"))) {
+        // method 'close()' from 'java.lang.AutoCloseable' interface throws 'java.lang.Exception'
+        // method 'close()' from 'java.io.Closeable' interface throws 'java.io.IOException"
+        continue;
+      }
       String fullyQualifiedName = exceptionType.fullyQualifiedName();
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(exceptionType, thrownList);
@@ -83,10 +90,46 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
           reportIssue(typeTree, String.format("Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
         } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions)) {
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
-            tree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method"));
+            methodTreeType(methodTree)));
         }
         reported.add(fullyQualifiedName);
       }
+    }
+  }
+
+  private static String methodTreeType(MethodTree tree) {
+    return tree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method";
+  }
+
+  private static boolean hasTryWithResourceInBody(MethodTree methodTree) {
+    BlockTree block = methodTree.block();
+    if (block == null) {
+      return false;
+    }
+    TryWithResourcesVisitor visitor = new TryWithResourcesVisitor();
+    block.accept(visitor);
+    return visitor.hasTryWithResource;
+  }
+
+  private static class TryWithResourcesVisitor extends BaseTreeVisitor {
+    private boolean hasTryWithResource = false;
+
+    @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      if (!tree.resources().isEmpty()) {
+        hasTryWithResource = true;
+      }
+      super.visitTryStatement(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip anonymous classes
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
     }
   }
 

@@ -148,6 +148,24 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     return;
   }
 
+  void foo14(java.io.File file) throws java.io.IOException { // Compliant - Closeable.close() throws IOException
+    try (java.io.FileInputStream fis = new java.io.FileInputStream(file)) {
+      // do something
+    }
+  }
+
+  void foo15(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
+    try (AutoCloseable ac = getMeAnAutoCloseableWithoutExceptionPlease(file)) {
+      // do something
+    }
+  }
+
+  void foo16(java.io.File file) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    try (MyAutoCloseable mac = getMeAnAutoCloseableWithoutExceptionPlease(file)) {
+      // do something
+    }
+  }
+
   abstract void bar();
   abstract void qix() throws UnknownException;
   abstract void gul(java.util.function.Function<Object, String> s);
@@ -158,6 +176,12 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   static class MyClass { }
   static class MyOtherClass<X> {
     public MyOtherClass(int i) throws MyException { }
+  }
+
+  abstract MyAutoCloseable getMeAnAutoCloseableWithoutExceptionPlease(java.io.File file);
+  interface MyAutoCloseable extends AutoCloseable {
+    @Override
+    void close(); // override which does not throw 'java.lang.Exception'
   }
 }
 
