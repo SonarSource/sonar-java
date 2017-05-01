@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,4 +49,19 @@ public class MethodJavaTypeTest {
     assertThat(constructorToString).isEqualTo("constructor");
   }
 
+  @Test
+  public void thrown_types() {
+    MethodJavaType m1 = new MethodJavaType(Collections.emptyList(), SYMBOLS.voidType, Collections.emptyList(), null);
+    assertThat(m1.thrownTypes()).isEmpty();
+
+    MethodJavaType m2 = new MethodJavaType(Collections.emptyList(), SYMBOLS.voidType, Collections.singletonList(Symbols.unknownType), null);
+    assertThat(m2.thrownTypes()).hasSize(1);
+    assertThat(m2.thrownTypes()).containsOnly(Symbols.unknownType);
+
+    JavaType t1 = new JavaType(JavaType.CLASS, Symbols.unknownSymbol);
+    JavaType t2 = new JavaType(JavaType.CLASS, Symbols.unknownSymbol);
+    MethodJavaType m3 = new MethodJavaType(Collections.emptyList(), SYMBOLS.voidType, Arrays.asList(t1, t2), null);
+    assertThat(m3.thrownTypes()).hasSize(2);
+    assertThat(m3.thrownTypes()).containsExactly(t1, t2);
+  }
 }
