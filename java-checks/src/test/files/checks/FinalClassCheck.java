@@ -1,3 +1,5 @@
+package org.test;
+
 public final class PrivateConstructorFinalClass {  // Compliant, declared final
 
   private PrivateConstructorFinalClass() {
@@ -49,3 +51,51 @@ public class ProtectedConstructorClass {  // Compliant, all constructors are not
 
 public class NoConstructorClass { // Compliant, implicit constructor has package visibility
 }
+
+public abstract class AbstractClass {  // Compliant, constructor is used in
+
+  private AbstractClass(String value) {
+
+  }
+
+  final class ConcreteNested extends AbstractClass {
+
+    private ConcreteNested() {
+      super("Concrete");
+    }
+  }
+
+}
+
+private class Test { // Noncompliant
+  Class c = Test.class;
+  Test instance = new Test();
+  private Test() {}
+}
+
+class FQNClass {  // Compliant
+  private FQNClass(String value) { }
+
+  final class ConcreteNested extends org.test.FQNClass {
+    private ConcreteNested() {
+      super("Concrete");
+    }
+  }
+
+  class Unrealted extends Coverage {}
+}
+
+class YAAC {  // Compliant
+  private YAAC(String s) {}
+
+  class TestYAAC {
+    void f() {
+      org.test.YAAC yaac = new YAAC("Hello") {
+      };
+      new Runnable() {
+
+      };
+    }
+  }
+}
+

@@ -20,14 +20,21 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -41,10 +48,19 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
-    if (hasOnlyPrivateConstructors(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
+    if (hasOnlyPrivateConstructors(classTree) && !isExtended(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       reportIssue(classTree.simpleName(), "Make this class \"final\" or add a public constructor.");
     }
+  }
+
+  private static boolean isExtended(ClassTree classTree) {
+    IsExtendedVisitor isExtendedVisitor = new IsExtendedVisitor(classTree.symbol().type());
+    classTree.accept(isExtendedVisitor);
+    return isExtendedVisitor.isExtended;
   }
 
   private static boolean hasOnlyPrivateConstructors(ClassTree classTree) {
@@ -59,5 +75,38 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
       }
     }
     return hasConstructor;
+  }
+
+  private static class IsExtendedVisitor extends BaseTreeVisitor {
+    private final Type type;
+    boolean isExtended;
+
+    IsExtendedVisitor(Type type) {
+      this.type = type;
+    }
+
+    @Override
+    protected void scan(@Nullable Tree tree) {
+      if (!isExtended) {
+        super.scan(tree);
+      }
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      TypeTree superClass = tree.superClass();
+      if (superClass != null && superClass.symbolType() == type) {
+        isExtended = true;
+      }
+      super.visitClass(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (tree.classBody() != null && tree.symbolType().isSubtypeOf(type)) {
+        isExtended = true;
+      }
+      super.visitNewClass(tree);
+    }
   }
 }
