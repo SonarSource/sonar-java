@@ -34,55 +34,14 @@ import java.util.List;
 @RspecKey("S1110")
 public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
-  private static final Kind[] PARENT_EXPRESSION =  {
-      Kind.ANNOTATION,
-      Kind.LIST,
-      Kind.ARRAY_ACCESS_EXPRESSION,
-      Kind.ARRAY_DIMENSION,
-      Kind.ASSERT_STATEMENT,
-      Kind.ASSIGNMENT,
-      Kind.CASE_LABEL,
-      Kind.CONDITIONAL_EXPRESSION,
-      Kind.DO_STATEMENT,
-      Kind.EXPRESSION_STATEMENT,
-      Kind.FOR_EACH_STATEMENT,
-      Kind.FOR_STATEMENT,
-      Kind.IF_STATEMENT,
-      Kind.LAMBDA_EXPRESSION,
-      Kind.ARGUMENTS,
-      Kind.METHOD,
-      Kind.NEW_ARRAY,
-      Kind.NEW_CLASS,
-      Kind.PARENTHESIZED_EXPRESSION,
-      Kind.RETURN_STATEMENT,
-      Kind.SWITCH_STATEMENT,
-      Kind.SYNCHRONIZED_STATEMENT,
-      Kind.THROW_STATEMENT,
-      Kind.VARIABLE,
-      Kind.WHILE_STATEMENT
-  };
-
-
   @Override
   public void visitNode(Tree tree) {
     ParenthesizedTree parenthesizedTree = (ParenthesizedTree) tree;
-    if (uselessParentheses(parenthesizedTree)) {
-      reportIssue(parenthesizedTree.openParenToken(),
+    if (parenthesizedTree.expression().is(Kind.PARENTHESIZED_EXPRESSION)) {
+      reportIssue(((ParenthesizedTree) parenthesizedTree.expression()).openParenToken(),
           "Remove these useless parentheses.",
           Collections.singletonList(new JavaFileScannerContext.Location("", parenthesizedTree.closeParenToken())), null);
     }
-  }
-
-  private static boolean uselessParentheses(ParenthesizedTree tree) {
-    Tree parentTree = tree.parent();
-    if (!parentTree.is(Kind.PARENTHESIZED_EXPRESSION)) {
-      return false;
-    }
-    Tree grandParentTree = parentTree.parent();
-    if (grandParentTree == null) {
-      return false;
-    }
-    return parentTree.is(PARENT_EXPRESSION);
   }
 
   @Override
