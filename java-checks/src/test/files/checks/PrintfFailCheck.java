@@ -111,5 +111,7 @@ class A {
     MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Not enough arguments.}}
     MessageFormat.format("{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
+    MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
+    MessageFormat.format("value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
   }
 }

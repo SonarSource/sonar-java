@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -82,7 +83,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   private static boolean isMessageFormatPattern(String formatString, int start) {
-    return start == 0 || formatString.charAt(start - 1) != '\'';
+    return start == 0 ||
+      formatString.charAt(start - 1) != '\'' || StringUtils.countMatches(formatString.substring(0, start), "\'")%2 == 0;
   }
 
   protected List<String> getParameters(String formatString, MethodInvocationTree mit) {
