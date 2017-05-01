@@ -74,17 +74,6 @@ public class JavaTypeTest {
   }
 
   @Test
-  public void to_string_on_type() throws Exception {
-    assertThat(new JavaType(JavaType.VOID, null).toString()).isEmpty();
-    String methodToString = new MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
-      ImmutableList.<JavaType>of(), null).toString();
-    assertThat(methodToString).isEqualTo("returns int");
-
-    String constructorToString = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null).toString();
-    assertThat(constructorToString).isEqualTo("constructor");
-  }
-
-  @Test
   public void type_is_fully_qualified_name() {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
@@ -243,17 +232,6 @@ public class JavaTypeTest {
     assertThat(ptt.isParameterized()).isTrue();
     assertThat(ptt.rawType.isClass()).isTrue();
     assertThat(ptt.rawType.isParameterized()).isFalse();
-  }
-
-  @Test
-  public void methodJavaType_return_type() {
-    JavaType intType = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType;
-
-    MethodJavaType methodJavaType = new MethodJavaType(ImmutableList.<JavaType>of(), intType, ImmutableList.<JavaType>of(), null);
-    assertThat(methodJavaType.resultType()).isSameAs(intType);
-
-    MethodJavaType constructor = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null);
-    assertThat(constructor.resultType()).isNull();
   }
 
   @Test
