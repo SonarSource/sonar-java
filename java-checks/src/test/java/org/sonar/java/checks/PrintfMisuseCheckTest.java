@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class PrintfMisuseCheckTest {
 
   @Test
-  public void PrintfMisuseCheckTest() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/PrintfMisuseCheck.java", new PrintfMisuseCheck());
   }
 }

@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class PrintfFailCheckTest {
 
   @Test
-  public void PrintfFailCheckTest() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/PrintfFailCheck.java", new PrintfFailCheck());
   }
 }

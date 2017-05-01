@@ -69,13 +69,6 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return formatString.replaceAll("\'\'", "");
   }
 
-  protected boolean checkAndReport(MethodInvocationTree mit, boolean shouldReport, String message) {
-    if (shouldReport) {
-      reportIssue(mit, message);
-    }
-    return shouldReport;
-  }
-
 
   protected static Set<Integer> getMessageFormatIndexes(String formatString) {
     Matcher matcher = MESSAGE_FORMAT_PATTERN.matcher(formatString);

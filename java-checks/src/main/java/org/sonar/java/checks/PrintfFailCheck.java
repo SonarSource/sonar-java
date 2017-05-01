@@ -107,7 +107,11 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkArgumentNumber(MethodInvocationTree mit, int nbReadParams, int nbArgs) {
-    return checkAndReport(mit, nbReadParams > nbArgs, "Not enough arguments.");
+    if (nbReadParams > nbArgs) {
+      reportIssue(mit, "Not enough arguments.");
+      return true;
+    }
+    return false;
   }
 
   private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {

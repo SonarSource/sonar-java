@@ -138,7 +138,11 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkEmptyParams(MethodInvocationTree mit, Collection<?> params) {
-    return checkAndReport(mit, params.isEmpty(), "String contains no format specifiers.");
+    if (params.isEmpty()) {
+      reportIssue(mit, "String contains no format specifiers.");
+      return true;
+    }
+    return false;
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {
