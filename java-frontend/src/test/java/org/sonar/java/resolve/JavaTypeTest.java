@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -183,6 +184,21 @@ public class JavaTypeTest {
     assertThat(Symbols.unknownType.is("java.lang.Object")).isFalse();
     assertThat(Symbols.unknownType.isSubtypeOf("java.lang.CharSequence")).isFalse();
     assertThat(Symbols.unknownType.isSubtypeOf(symbols.objectType)).isFalse();
+  }
+
+  @Test
+  public void direct_super_types() {
+    Set<ClassJavaType> objectDirectSuperTypes = symbols.objectType.directSuperTypes();
+    assertThat(objectDirectSuperTypes).isEmpty();
+
+    Set<ClassJavaType> integerDirectSuperTypes = symbols.intType.primitiveWrapperType.directSuperTypes();
+    assertThat(integerDirectSuperTypes).hasSize(2);
+    assertThat(integerDirectSuperTypes.stream().map(st -> st.fullyQualifiedName())).contains("java.lang.Number", "java.lang.Comparable");
+
+    ArrayJavaType arrayType = new ArrayJavaType(symbols.intType, symbols.arrayClass);
+    Set<ClassJavaType> arrayDirectSuperTypes = arrayType.directSuperTypes();
+    assertThat(arrayDirectSuperTypes).hasSize(3);
+    assertThat(arrayDirectSuperTypes.stream().map(st -> st.fullyQualifiedName())).contains("java.lang.Object", "java.lang.Cloneable", "java.io.Serializable");
   }
 
   @Test
