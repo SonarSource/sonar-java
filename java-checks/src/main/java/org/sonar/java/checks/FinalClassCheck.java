@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S2974")
@@ -81,6 +83,13 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
 
     IsExtendedVisitor(Type type) {
       this.type = type;
+    }
+
+    @Override
+    protected void scan(@Nullable Tree tree) {
+      if (!isExtended) {
+        super.scan(tree);
+      }
     }
 
     @Override
