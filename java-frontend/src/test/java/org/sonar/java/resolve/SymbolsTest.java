@@ -19,17 +19,17 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 
-import java.io.File;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymbolsTest {
 
-  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
+  private Symbols symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(Collections.emptyList()), new ParametrizedTypeCache()));
 
   @Test
   public void root_package() {

@@ -26,15 +26,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
-import org.sonar.java.bytecode.ClassLoaderBuilder;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -47,20 +43,18 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       Flags.ABSTRACT | Flags.STRICTFP | Flags.DEPRECATED;
 
   private Symbols symbols;
-  private final List<File> projectClasspath;
   private final ParametrizedTypeCache parametrizedTypeCache;
-
+  private final ClassLoader classLoader;
   /**
    * Indexed by flat name.
    */
   private final Map<String, JavaSymbol.TypeJavaSymbol> classes = new HashMap<>();
   private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<>();
 
-  private ClassLoader classLoader;
   private Set<String> classesNotFound = new TreeSet<>();
 
-  public BytecodeCompleter(List<File> projectClasspath, ParametrizedTypeCache parametrizedTypeCache) {
-    this.projectClasspath = projectClasspath;
+  public BytecodeCompleter(ClassLoader classLoader, ParametrizedTypeCache parametrizedTypeCache) {
+    this.classLoader = classLoader;
     this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
@@ -108,14 +102,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   @Nullable
   private InputStream inputStreamFor(String fullname) {
-    return getClassLoader().getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
-  }
-
-  private ClassLoader getClassLoader() {
-    if (classLoader == null) {
-      classLoader = ClassLoaderBuilder.create(projectClasspath);
-    }
-    return classLoader;
+    return classLoader.getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
   }
 
   private String formFullName(JavaSymbol symbol) {
@@ -170,7 +157,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       symbol.typeParameters = new Scope(symbol);
 
       // (Godin): IOException will happen without this condition in case of missing class:
-      if (getClassLoader().getResource(Convert.bytecodeName(flatName) + ".class") != null) {
+      if (classLoader.getResource(Convert.bytecodeName(flatName) + ".class") != null) {
         symbol.completer = this;
       } else {
         // Do not log missing annotation as they are not necessarily required in classpath for compiling
@@ -263,12 +250,6 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       packages.put(fullname, result);
     }
     return result;
-  }
-
-  public void done() {
-    if (classLoader != null && classLoader instanceof SquidClassLoader) {
-      ((SquidClassLoader) classLoader).close();
-    }
   }
 
   /**

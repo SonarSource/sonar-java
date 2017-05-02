@@ -26,6 +26,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -1046,7 +1047,7 @@ public class GenericsTest {
       builder.append(line).append(System.lineSeparator());
     }
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(builder.toString());
-    SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    SemanticModel.createFor(cut, new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
     return cut;
   }
 
@@ -1062,7 +1063,7 @@ public class GenericsTest {
 
   private static CompilationUnitTree treeOf(File file) {
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    SemanticModel.createFor(cut, new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
     return cut;
   }
 }

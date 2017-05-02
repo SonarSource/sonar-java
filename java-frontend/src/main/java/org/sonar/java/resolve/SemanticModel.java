@@ -33,10 +33,8 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,9 +50,9 @@ public class SemanticModel {
     this.bytecodeCompleter = bytecodeCompleter;
   }
 
-  public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
+  public static SemanticModel createFor(CompilationUnitTree tree, ClassLoader classLoader) {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
-    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(projectClasspath, parametrizedTypeCache);
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(classLoader, parametrizedTypeCache);
     Symbols symbols = new Symbols(bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel(bytecodeCompleter);
     try {
@@ -67,11 +65,6 @@ public class SemanticModel {
       handleMissingTypes(tree);
     }
     return semanticModel;
-  }
-
-  public void done(){
-    ParametrizedTypeJavaType.typeSubstitutionSolver = null;
-    bytecodeCompleter.done();
   }
 
   /**

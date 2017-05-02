@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,8 +40,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.reflect.Modifier.isFinal;
@@ -289,7 +289,7 @@ public class ReassignmentFinderTest {
 
   private ClassTree classTree(String classBody) {
     CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(classBody);
-    SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
+    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 

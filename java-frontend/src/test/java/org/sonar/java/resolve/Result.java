@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -54,7 +55,7 @@ class Result {
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
     CompilationUnitTree compilationUnitTree = (CompilationUnitTree) parser.parse(file);
-    SemanticModel semanticModel = SemanticModel.createFor(compilationUnitTree, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    SemanticModel semanticModel = SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
     UsageVisitor usageVisitor = new UsageVisitor();
     compilationUnitTree.accept(usageVisitor);
     return new Result(semanticModel, usageVisitor.symbolsUsed);

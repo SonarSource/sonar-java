@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodJavaTypeTest {
 
-  private static final Symbols SYMBOLS = new Symbols(new BytecodeCompleter(Collections.emptyList(), new ParametrizedTypeCache()));
+  private static final Symbols SYMBOLS = new Symbols(new BytecodeCompleter(new SquidClassLoader(Collections.emptyList()), new ParametrizedTypeCache()));
 
   @Test
   public void methodJavaType_return_type() {

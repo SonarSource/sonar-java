@@ -24,6 +24,7 @@ import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class SafetyNetTest {
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[] {"java"}, true)) {
         try {
-          SemanticModel.createFor((CompilationUnitTree) parser.parse(file), Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+          SemanticModel.createFor((CompilationUnitTree) parser.parse(file), new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
         } catch (Exception e) {
           throw new RuntimeException("Unable to process file " + file, e);
         }

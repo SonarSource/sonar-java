@@ -25,6 +25,7 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -41,6 +42,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +53,7 @@ import static org.mockito.Mockito.when;
 public class TypeAndReferenceSolverTest {
 
   private final ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
-  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), parametrizedTypeCache);
+  private final BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))), parametrizedTypeCache);
   private final Symbols symbols = new Symbols(bytecodeCompleter);
 
   private Resolve.Env env;
@@ -567,7 +569,7 @@ public class TypeAndReferenceSolverTest {
 
   private CompilationUnitTree treeOf(String input) {
     CompilationUnitTree tree = parse(input);
-    SemanticModel.createFor(tree, ImmutableList.<File>of());
+    SemanticModel.createFor(tree, new SquidClassLoader(Collections.emptyList()));
     return tree;
   }
 

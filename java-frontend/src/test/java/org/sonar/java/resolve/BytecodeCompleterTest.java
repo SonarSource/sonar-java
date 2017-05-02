@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.targets.Annotations;
 import org.sonar.java.resolve.targets.AnonymousClass;
@@ -62,7 +63,7 @@ public class BytecodeCompleterTest {
 
   @Before
   public void setUp() throws Exception {
-    bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), new ParametrizedTypeCache());
+    bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))), new ParametrizedTypeCache());
     new Symbols(bytecodeCompleter);
 
   }
