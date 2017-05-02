@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -46,6 +45,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -266,20 +266,11 @@ public class DivisionByZeroCheck extends SECheck {
     private void reportIssue(Tree tree, SymbolicValue denominator) {
       ExpressionTree expression = getDenominator(tree);
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
-      String expressionName;
-      String flowMessage;
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        String name = ((IdentifierTree) expression).name();
-        expressionName = "'" + name + "'";
-        flowMessage = expressionName + " is divided by zero";
-      } else {
-        expressionName = "this expression";
-        flowMessage = "this expression contains division by zero";
-      }
-      List<Class<? extends Constraint>> domains = Lists.newArrayList(ZeroConstraint.class);
+      String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("'" + ((IdentifierTree) expression).name() + "'") : "this expression";
+      List<Class<? extends Constraint>> domains = Collections.singletonList(ZeroConstraint.class);
       Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains).stream()
         .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
-          .add(new JavaFileScannerContext.Location(flowMessage, tree))
+          .add(new JavaFileScannerContext.Location("Division by zero.", tree))
           .addAll(f)
           .build())
         .collect(Collectors.toSet());
