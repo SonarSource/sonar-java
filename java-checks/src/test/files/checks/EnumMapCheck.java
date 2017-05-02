@@ -30,5 +30,11 @@ class MyClass {
     new HashMap<String, String>();
     int a = 5;
     a = 3;
+    Map<COLOR, String> moodMapWithNullKey = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
+    foo(moodMapWithNullKey);
+    moodMapWithNullKey.class;
+    moodMapWithNullKey.put(COLOR.BLUE, "blue");
+    moodMapWithNullKey.get(COLOR.BLUE);
+    moodMapWithNullKey.put(null, "null");
   }
 }
