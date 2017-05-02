@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
@@ -123,7 +124,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.NEW_ARRAY)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.push(0);
       level.push(0);
     } else {
@@ -136,7 +137,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.NEW_ARRAY)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.pop();
       level.pop();
     } else {
@@ -153,4 +154,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private static boolean isLambdaWithBlock(Tree tree) {
+    return tree.is(Tree.Kind.LAMBDA_EXPRESSION) && ((LambdaExpressionTree) tree).body().is(Tree.Kind.BLOCK);
+  }
 }

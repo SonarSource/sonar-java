@@ -44,4 +44,18 @@ class A {
   ObjectInstance meth(){
     return new ObjectInstance(true && false, true ? "":"plop", true ? "":"plop", true ? "":"plop"); // Noncompliant
   }
+
+  Runnable lambda() {
+    Supplier<Boolean> b1 = false ? () -> true && true : true || false;
+    Supplier<Boolean> b2 = false ? () -> true && true && false : true || false; // Noncompliant
+    return () -> {
+      boolean c = true || false || true;
+      c = true || false || true;
+      boolean a = true && true && true && false && false; // Noncompliant
+      new Foo() {
+        int a = true && true && true && false && false;  // Noncompliant
+        int a2 = true && true && true;
+      }.someThing();
+    };
+  }
 }
