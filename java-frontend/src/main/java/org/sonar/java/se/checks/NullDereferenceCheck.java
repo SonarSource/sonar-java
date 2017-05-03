@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 public class NullDereferenceCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
-    "NullPointerException will be thrown when invoking method %s().");
+    "\"NullPointerException\" will be thrown when invoking method \"%s()\".");
 
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
 

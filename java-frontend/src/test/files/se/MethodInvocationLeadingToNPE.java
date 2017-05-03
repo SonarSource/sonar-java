@@ -4,7 +4,7 @@ class A {
 
   void foo1(Object o) {
     if (o == null) {
-      npeIfNull(o); // Noncompliant [[sc=7;ec=16]] {{NullPointerException will be thrown when invoking method npeIfNull().}}
+      npeIfNull(o); // Noncompliant [[sc=7;ec=16]] {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}
     }
 
     o.toString(); // Compliant - can not be reached with 'o' being NULL, as the NPE is triggered insde bar()
@@ -12,7 +12,7 @@ class A {
 
   void foo2(Object o) {
     if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' is null.}}
-      A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{NullPointerException will be thrown when invoking method npeIfNull().}}  flow@foo2 [[order=2]] {{'npeIfNull()' is invoked.}}
+      A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}  flow@foo2 [[order=2]] {{'npeIfNull()' is invoked.}}
     }
 
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
@@ -35,7 +35,7 @@ class A {
 
   void foo5(Object o) {
     if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' is null.}}
-      nullable(o); // Noncompliant [[flows=foo5]] [[sc=7;ec=15]] {{NullPointerException will be thrown when invoking method nullable().}} flow@foo5 [[order=2]] {{'nullable()' is invoked.}}
+      nullable(o); // Noncompliant [[flows=foo5]] [[sc=7;ec=15]] {{"NullPointerException" will be thrown when invoking method "nullable()".}} flow@foo5 [[order=2]] {{'nullable()' is invoked.}}
     }
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde bar()
   }
@@ -45,7 +45,7 @@ class A {
       npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Compliant
     }
     if (o == null && b1) { // flow@foo6 [[order=2]] {{Implies 'o' is null.}}
-      npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Noncompliant [[flows=foo6]] [[sc=7;ec=35]] {{NullPointerException will be thrown when invoking method npeIfArg0IsTrueAndArg1IsNull().}}  flow@foo6 [[order=3]] {{'npeIfArg0IsTrueAndArg1IsNull()' is invoked.}}
+      npeIfArg0IsTrueAndArg1IsNull(b1, o, b2); // Noncompliant [[flows=foo6]] [[sc=7;ec=35]] {{"NullPointerException" will be thrown when invoking method "npeIfArg0IsTrueAndArg1IsNull()".}}  flow@foo6 [[order=3]] {{'npeIfArg0IsTrueAndArg1IsNull()' is invoked.}}
     }
   }
 
@@ -69,7 +69,7 @@ class A {
 
 class B {
   void bar1(@Nullable Object o) {
-    npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull().}}
+    npeIfNull(o); // Noncompliant {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}
   }
 
   static void npeIfNull(Object o) {
@@ -91,7 +91,7 @@ class C_varArgs {
 
   void coa2() {
     Object[] args = null;
-    format("helloworld", args); // Noncompliant {{NullPointerException will be thrown when invoking method format().}}
+    format("helloworld", args); // Noncompliant {{"NullPointerException" will be thrown when invoking method "format()".}}
   }
 
   void coa3() {
@@ -107,11 +107,11 @@ class C_varArgs {
   }
 
   void coa6(Object o) {
-    format("helloworld", null); // Noncompliant {{NullPointerException will be thrown when invoking method format().}}
+    format("helloworld", null); // Noncompliant {{"NullPointerException" will be thrown when invoking method "format()".}}
   }
 
   void coa7(Object o) {
-    format2(null, null); // Noncompliant {{NullPointerException will be thrown when invoking method format2().}}
+    format2(null, null); // Noncompliant {{"NullPointerException" will be thrown when invoking method "format2()".}}
   }
 
   static int format(String template, @Nullable Object ... args) {
@@ -157,7 +157,7 @@ class D {
   void catch_not_related(@Nullable Object o) {
     Object o2 = new Object();
     try {
-      npeIfNull(o); // Noncompliant {{NullPointerException will be thrown when invoking method npeIfNull().}}
+      npeIfNull(o); // Noncompliant {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}
     } catch (MyCheckedException e) {
       o2 = o;
     }
@@ -169,4 +169,65 @@ class D {
   }
 
   static class MyCheckedException extends Exception { }
+}
+
+abstract class E {
+  public Object myMethod(String line, String value) {
+    Object o = null; // flow@myMethod [[order=1]] {{'o' is assigned null.}}
+    String s = line.length() > 0 ? value : null;
+    if (s == null || s.startsWith("key")) { // flow@myMethod [[order=2]] {{Implies 's' is non-null.}}
+      o = new Object();
+    } else {
+      doSomething(o, s); // Noncompliant [[flows=myMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myMethod [[order=3]] {{'doSomething()' is invoked.}}
+    }
+    return o;
+  }
+
+  Object field;
+  public Object myOtherMethod(String line, String value) {
+    field = null; // flow@myOtherMethod [[order=1]] {{'field' is assigned null.}}
+    String s = line.length() > 0 ? value : null;
+    if (s == null || s.startsWith("key")) { // flow@myOtherMethod [[order=2]] {{Implies 's' is non-null.}}
+      this.field = new Object();
+    } else {
+      doSomething(this.field, s); // Noncompliant [[flows=myOtherMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myOtherMethod [[order=3]] {{'doSomething()' is invoked.}}
+    }
+    return field;
+  }
+
+  public void myAlternativeMethod(String line) {
+    String s = line.length() > 0 ? line : line; // flow@myAlternativeMethod [[order=1]] {{Implies 'line' is non-null.}} flow@myAlternativeMethod [[order=2]] {{'s' is assigned non-null.}}
+    doSomething(getObject(), s); // Noncompliant [[flows=myAlternativeMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myAlternativeMethod [[order=3]] {{'getObject()' returns null.}} flow@myAlternativeMethod [[order=4]] {{'doSomething()' is invoked.}}
+  }
+
+  private void doSomething(Object param, String text) {
+    if (text.startsWith("default")) {
+      param.toString(); // flow@myMethod [[order=4]] {{Implies 'param' is null.}} flow@myMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myOtherMethod [[order=4]] {{Implies 'param' is null.}} flow@myOtherMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myAlternativeMethod [[order=5]] {{Implies 'param' is null.}} flow@myAlternativeMethod [[order=6]] {{'NullPointerException' is thrown here.}}
+    }
+  }
+
+  @javax.annotation.CheckForNull
+  abstract Object getObject();
+}
+
+class F {
+  public Object myOtherOtherMethod(String line, String value) {
+    Object o = null;
+    String s = line.length() > 0 ? value : null;
+    if (s == null || s.startsWith("key")) {
+      o = new Object();
+    } else {
+      doSomething(o, s); // Compliant  - false negative, only reporting issue when one of the parameter is causing the execption
+    }
+    return o;
+  }
+
+  private void doSomething(Object param, String text) {
+    Object other = null;
+    if (text.startsWith("default")) {
+      if (param == null) {
+        other.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "other" is nullable here}}
+      }
+    }
+  }
 }
