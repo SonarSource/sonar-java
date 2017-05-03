@@ -206,4 +206,8 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   public boolean generatedByCheck(SECheck check) {
     return this.check == check.getClass();
   }
+
+  public int parameterCausingExceptionIndex() {
+    return behavior.parameters().indexOf(svCausingException);
+  }
 }

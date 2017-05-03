@@ -302,6 +302,7 @@ public class ExplodedGraphWalker {
   }
 
   public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
+    // in order to create such Exceptional Yield, a parameter of the method has to be the cause of the exception
     if (methodBehavior != null && methodBehavior.parameters().contains(target)) {
       Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
       ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));

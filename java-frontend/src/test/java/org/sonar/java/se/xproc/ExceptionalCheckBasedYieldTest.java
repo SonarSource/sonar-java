@@ -72,7 +72,8 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
     // new rule discard any call to plantFlowers(true) by creating a new yield
-    sev = createSymbolicExecutionVisitor(FILENAME, new TestSECheck());
+    SECheck check = new TestSECheck();
+    sev = createSymbolicExecutionVisitor(FILENAME, check);
     mb = getMethodBehavior(sev, methodName);
 
     assertThat(mb.yields()).hasSize(4);
@@ -97,6 +98,10 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(seCheckExceptionalYield.exceptionType()).isNotNull();
     assertThat(seCheckExceptionalYield.exceptionType().is("java.lang.UnsupportedOperationException")).isTrue();
     assertThat(seCheckExceptionalYield.exceptionType().isSubtypeOf("java.lang.RuntimeException")).isTrue();
+    assertThat(seCheckExceptionalYield.generatedByCheck(check)).isTrue();
+    assertThat(seCheckExceptionalYield.generatedByCheck(new SECheck() { })).isFalse();
+    assertThat(seCheckExceptionalYield.parameterCausingExceptionIndex()).isEqualTo(0);
+
   }
 
   private static class TestSECheck extends SECheck {

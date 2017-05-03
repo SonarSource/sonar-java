@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 public abstract class MethodYield {
   final ExplodedGraph.Node node;
   private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
-  private final MethodBehavior behavior;
+  final MethodBehavior behavior;
   List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 
   public MethodYield(MethodBehavior behavior) {
