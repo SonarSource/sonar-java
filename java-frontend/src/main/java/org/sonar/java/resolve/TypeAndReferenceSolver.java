@@ -713,6 +713,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
     JavaType identifierType = resolveIdentifierType(newClassEnv, enclosingExpression, typeTree, constructorIdentifier.name());
     JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) identifierType.symbol();
+    constructorIdentifierSymbol.addUsage(constructorIdentifier);
     parameterTypes = addImplicitOuterClassParameter(parameterTypes, constructorIdentifierSymbol);
     Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes, typeArgumentsTypes);
     ClassTree classBody = tree.classBody();

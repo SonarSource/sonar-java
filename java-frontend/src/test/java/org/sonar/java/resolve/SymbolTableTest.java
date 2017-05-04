@@ -213,6 +213,9 @@ public class SymbolTableTest {
     assertThat(metadata.isAnnotatedWith("java.lang.Override")).isFalse();
     assertThat(metadata.valuesForAnnotation("java.lang.SuppressWarnings")).hasSize(1);
     assertThat(metadata.isAnnotatedWith("java.lang.SuppressWarnings")).isTrue();
+
+    List<IdentifierTree> usages = result.symbol("Base").usages();
+    assertThat(usages).hasSize(2).extracting(i -> i.firstToken().line()).containsOnly(29, 35);
   }
 
   @Test
