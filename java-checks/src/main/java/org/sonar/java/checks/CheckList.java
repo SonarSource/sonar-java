@@ -479,6 +479,7 @@ public final class CheckList {
       .add(BooleanGratuitousExpressionsCheck.class)
       .add(AllBranchesAreIdenticalCheck.class)
       .add(ArrayForVarArgCheck.class)
+      .add(WrongAssignmentOperatorCheck.class)
       .build();
   }
 
