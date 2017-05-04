@@ -1,0 +1,13 @@
+{
+  "title": "Unused \"private\" classes should be removed",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

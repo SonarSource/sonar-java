@@ -1,0 +1,11 @@
+<p><code>private</code> classes that are never used are dead code: unnecessary, inoperative code that should be removed. Cleaning out dead code
+decreases the size of the maintained codebase, making it easier to understand the program and preventing bugs from being introduced.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo
+{
+  ...
+  private class MyUnusedPrivateClass {...} // Noncompliant
+}
+</pre>
+
