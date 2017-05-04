@@ -69,7 +69,7 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         if (newArrayTree.openBraceToken() == null) {
           ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
           Integer literalValue = LiteralUtils.intLiteralValue(expression);
-          if (literalValue != null && literalValue != 0) {
+          if (literalValue == null || literalValue != 0) {
             return;
           }
         } else if (!newArrayTree.initializers().isEmpty()) {

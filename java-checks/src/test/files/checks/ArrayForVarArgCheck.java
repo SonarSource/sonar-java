@@ -3,7 +3,7 @@ class Foo extends Bar {}
 class ArrayForVarArgCheck {
   ArrayForVarArgCheck(String ... params) {
   }
-  public void callTheThing() {
+  public void callTheThing(String s) {
     doTheThing(new String[] { "s1", "s2"});  // Noncompliant {{Remove this array creation and simply pass the elements.}} [[sc=16;ec=42]]
     doTheThing(new String[12]);
     doTheThing(new String[0]);  // Noncompliant {{Remove this array creation.}}
@@ -13,8 +13,11 @@ class ArrayForVarArgCheck {
     doTheThing2(new Foo[12]);  // Noncompliant {{Disambiguate this call by either casting as "Bar" or "Bar[]"}}
     doTheThing2(new Foo[0]);  // Noncompliant {{Disambiguate this call by either casting as "Bar" or "Bar[]"}}
     doTheThing2(new Foo(), new Bar());
+    unknown(new Foo[0]);
+    callTheThing("");
     new ArrayForVarArgCheck();
     new ArrayForVarArgCheck(new String[0]); // Noncompliant {{Remove this array creation.}}
+    new ArrayForVarArgCheck(new String[1 - 1]);
     new ArrayForVarArgCheck(new String[12]);
     new ArrayForVarArgCheck(new String[] { "s1", "s2"});  // Noncompliant {{Remove this array creation and simply pass the elements.}}
 
