@@ -44,7 +44,7 @@ import java.util.Set;
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
-    "NoSuchElementException will be thrown when invoking method %s() without verifying Optional parameter.");
+    "\"NoSuchElementException\" will be thrown when invoking method \"%s()\" without verifying Optional parameter.");
 
   private enum OptionalConstraint implements Constraint {
     PRESENT, NOT_PRESENT
