@@ -5,12 +5,12 @@ import javax.annotation.Nonnull;
 class A {
 
   void foo0() {
-    nseeIfCalled(getOptional()); // Noncompliant {{NoSuchElementException will be thrown when invoking method nseeIfCalled() without verifying Optional parameter.}}
+    nseeIfCalled(getOptional()); // Noncompliant {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalled()" without verifying Optional parameter.}}
   }
 
   void foo1() {
     Optional<String> o = getOptional();
-    nseeIfCalled(o); // Noncompliant {{NoSuchElementException will be thrown when invoking method nseeIfCalled() without verifying Optional parameter.}}
+    nseeIfCalled(o); // Noncompliant {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalled()" without verifying Optional parameter.}}
   }
 
   void foo2() {
@@ -29,7 +29,7 @@ class A {
     Optional<String> o = getOptional();
     Optional<String> o2 = o;
     try {
-      nseeIfCalled(o); // Noncompliant {{NoSuchElementException will be thrown when invoking method nseeIfCalled() without verifying Optional parameter.}}
+      nseeIfCalled(o); // Noncompliant {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalled()" without verifying Optional parameter.}}
     } catch (MyCheckedException e) {
       o2 = o;
     }
@@ -39,7 +39,7 @@ class A {
   void foo6(boolean b) {
     Optional<String> o = getOptional(); // flow@foo6 [[order=1]] {{'getOptional()' returns non-null.}} flow@foo6 [[order=2]] {{'o' is assigned non-null.}}
     if (b) { // flow@foo6 [[order=3]] {{Implies 'b' is true.}}
-      A.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{NoSuchElementException will be thrown when invoking method nseeIfCalledAndTrue() without verifying Optional parameter.}} flow@foo6 [[order=4]] {{'nseeIfCalledAndTrue()' is invoked.}}
+      A.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalledAndTrue()" without verifying Optional parameter.}} flow@foo6 [[order=4]] {{'nseeIfCalledAndTrue()' is invoked.}}
     } else {
       nseeIfCalledAndTrue(b, o); // Compliant
     }
