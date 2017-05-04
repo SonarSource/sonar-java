@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
@@ -285,8 +286,10 @@ public class FlowComputation {
         return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
       String name = SyntaxTreeNameFinder.getName(nodeTree);
-      String message = name == null ? constraint.valueAsString() : String.format(IMPLIES_MSG, name, constraint.valueAsString());
-      return ImmutableList.of(location(parent, message));
+      if (name == null) {
+        return ImmutableList.of();
+      }
+      return ImmutableList.of(location(parent, String.format(IMPLIES_MSG, name, constraint.valueAsString())));
     }
 
     private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
