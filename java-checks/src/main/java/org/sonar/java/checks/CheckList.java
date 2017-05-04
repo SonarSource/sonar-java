@@ -478,6 +478,7 @@ public final class CheckList {
       .add(RequestMappingMethodPublicCheck.class)
       .add(BooleanGratuitousExpressionsCheck.class)
       .add(AllBranchesAreIdenticalCheck.class)
+      .add(ArrayForVarArgCheck.class)
       .build();
   }
 
