@@ -20,15 +20,19 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -38,6 +42,8 @@ import java.util.List;
 @Rule(key = "S1640")
 public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   private JavaFileScannerContext context;
+  private static final String JAVA_UTIL_MAP = "java.util.Map";
+  private static final MethodMatcher mapPut = MethodMatcher.create().typeDefinition(JAVA_UTIL_MAP).name("put").withAnyParameters();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -47,9 +53,9 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    if (tree.type().symbolType().isSubtypeOf("java.util.Map")) {
+    if (tree.type().symbolType().isSubtypeOf(JAVA_UTIL_MAP)) {
       ExpressionTree initializer = tree.initializer();
-      if (initializer != null) {
+      if (initializer != null && !usesNullKey(tree.symbol())) {
         checkNewMap(initializer, hasEnumKey(tree.type().symbolType()));
       }
     } else {
@@ -57,9 +63,22 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     }
   }
 
+  private static boolean usesNullKey(Symbol symbol) {
+    List<IdentifierTree> usages = symbol.usages();
+    for (IdentifierTree usage : usages) {
+      if (usage.parent().is(Tree.Kind.MEMBER_SELECT) && usage.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) usage.parent().parent();
+        if (mapPut.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (tree.variable().symbolType().isSubtypeOf("java.util.Map")) {
+    if (tree.variable().symbolType().isSubtypeOf(JAVA_UTIL_MAP)) {
       checkNewMap(tree.expression(), hasEnumKey(tree.variable().symbolType()));
     } else {
       super.visitAssignmentExpression(tree);
