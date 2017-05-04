@@ -57,6 +57,7 @@ import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMetho
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
+import org.sonar.java.checks.unused.UnusedPrivateClassCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
@@ -232,6 +233,7 @@ public final class CheckList {
       .add(CallToDeprecatedMethodCheck.class)
       .add(CallToFileDeleteOnExitMethodCheck.class)
       .add(UnusedPrivateMethodCheck.class)
+      .add(UnusedPrivateClassCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
       .add(ThrowsSeveralCheckedExceptionCheck.class)
       .add(ThreadRunCheck.class)
