@@ -126,7 +126,9 @@ class Result {
         SyntaxToken token = usage.identifierToken();
         if (token.line() == line && token.column() == column) {
           if(searchSymbol) {
-            return symbol;
+            if (usage.parent() == null || !usage.parent().is(Tree.Kind.NEW_CLASS) || symbol.isMethodSymbol()) {
+              return symbol;
+            }
           } else {
             return usage;
           }
