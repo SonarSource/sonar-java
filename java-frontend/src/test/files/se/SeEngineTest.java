@@ -35,7 +35,7 @@ class A0 {
     Object b = new Object();
     b = a;
     if (b == null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
-      a.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "a" is nullable here}}
+      a.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "a" is nullable here.}}
     }
   }
 
@@ -69,7 +69,7 @@ class A0 {
 
   void test_npe_in_conditional_and(String str) {
     boolean b1 = str == null
-        && str.length() == 0; // Noncompliant {{A "NullPointerException" could be thrown; "str" is nullable here}}
+        && str.length() == 0; // Noncompliant {{A "NullPointerException" could be thrown; "str" is nullable here.}}
   }
 
   void instance_of_set_not_null_constraint(Object d) {

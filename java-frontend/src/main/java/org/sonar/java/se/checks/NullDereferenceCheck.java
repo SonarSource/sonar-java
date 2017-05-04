@@ -135,7 +135,7 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   private void reportIssue(SymbolicValue currentVal, Tree syntaxNode, ExplodedGraph.Node node) {
-    String message = "A \"NullPointerException\" could be thrown; \"" + SyntaxTreeNameFinder.getName(syntaxNode) + "\" is nullable here";
+    String message = "A \"NullPointerException\" could be thrown; \"" + SyntaxTreeNameFinder.getName(syntaxNode) + "\" is nullable here.";
     SymbolicValue val = null;
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;
