@@ -166,4 +166,12 @@ class G<T> {
     }
   }
 
+  void fun() {
+    Object test = new Object[]{"1"};
+    String[] test2 = new String[]{"1"};
+    Object[] test3 = new String[]{"1"};
+    System.out.println(((Object[])test)[0]); // compliant : target type is array access
+    System.out.println(((Object[])test2)[0]); // Noncompliant
+    System.out.println(((String[])test3)[0]); // compliant
+  }
 }
