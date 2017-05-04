@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 public class DivisionByZeroCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
-    "A division by zero will occur when invoking method %s().");
+    "A division by zero will occur when invoking method \"%s()\".");
 
   @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
@@ -266,7 +266,7 @@ public class DivisionByZeroCheck extends SECheck {
     private void reportIssue(Tree tree, SymbolicValue denominator) {
       ExpressionTree expression = getDenominator(tree);
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
-      String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("'" + ((IdentifierTree) expression).name() + "'") : "this expression";
+      String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("\"" + ((IdentifierTree) expression).name() + "\"") : "this expression";
       List<Class<? extends Constraint>> domains = Collections.singletonList(ZeroConstraint.class);
       Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains).stream()
         .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
