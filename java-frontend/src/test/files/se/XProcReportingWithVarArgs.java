@@ -6,7 +6,7 @@ public class OutOfBoundsTrigger {
     if (m1(t1, t2)) { // flow@flow1
       m1(t1, t2);
     } else if (m2(t1, t2)) { // flow ignored because of varargs.
-      t1.getTime(); // Noncompliant [[flows=flow1]] {{A "NullPointerException" could be thrown; "t1" is nullable here}} flow@flow1
+      t1.getTime(); // Noncompliant [[flows=flow1]] {{A "NullPointerException" could be thrown; "t1" is nullable here.}} flow@flow1
     }
   }
 

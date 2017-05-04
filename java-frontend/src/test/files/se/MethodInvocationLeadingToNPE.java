@@ -58,12 +58,12 @@ class A {
       return;
     }
     if (arg0) { // only b2 has consequences on NPE
-      arg1.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "arg1" is nullable here}} flow@foo6  [[order=5]] {{'NullPointerException' is thrown here.}}
+      arg1.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "arg1" is nullable here.}} flow@foo6  [[order=5]] {{'NullPointerException' is thrown here.}}
     }
   }
 
   static void nullable(@Nullable Object o) {
-    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown here.}}
   }
 }
 
@@ -115,11 +115,11 @@ class C_varArgs {
   }
 
   static int format(String template, @Nullable Object ... args) {
-    return args.length; // Noncompliant {{A "NullPointerException" could be thrown; "args" is nullable here}}
+    return args.length; // Noncompliant {{A "NullPointerException" could be thrown; "args" is nullable here.}}
   }
 
   static int format2(@Nullable String template, Object ... args) {
-    return template.length(); // Noncompliant {{A "NullPointerException" could be thrown; "template" is nullable here}}
+    return template.length(); // Noncompliant {{A "NullPointerException" could be thrown; "template" is nullable here.}}
   }
 }
 
@@ -226,7 +226,7 @@ class F {
     Object other = null;
     if (text.startsWith("default")) {
       if (param == null) {
-        other.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "other" is nullable here}}
+        other.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "other" is nullable here.}}
       }
     }
   }

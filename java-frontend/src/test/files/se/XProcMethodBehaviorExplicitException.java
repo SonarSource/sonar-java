@@ -11,7 +11,7 @@ abstract class A {
     } catch (MyException e) {
       if (o == null) {} // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
-    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here}}
+    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}}
   }
 
   void covered() {
