@@ -12,6 +12,9 @@
 'jdk6:java/awt/event/AWTEventListenerProxy.java':[
 28,
 ],
+'jdk6:java/awt/im/InputContext.java':[
+74,
+],
 'jdk6:java/beans/PropertyChangeSupport.java':[
 31,
 ],
@@ -30,6 +33,9 @@
 'jdk6:java/lang/reflect/AccessibleObject.java':[
 152,
 ],
+'jdk6:java/lang/reflect/Method.java':[
+757,
+],
 'jdk6:java/lang/reflect/Modifier.java':[
 42,
 43,
@@ -43,7 +49,10 @@
 1181,
 ],
 'jdk6:java/net/SocksSocketImpl.java':[
+66,
 118,
+133,
+146,
 328,
 640,
 1039,
@@ -57,6 +66,9 @@
 ],
 'jdk6:java/net/URLClassLoader.java':[
 476,
+],
+'jdk6:java/nio/channels/Channels.java':[
+108,
 ],
 'jdk6:java/nio/charset/Charset.java':[
 252,
@@ -129,6 +141,9 @@
 3835,
 3862,
 3889,
+],
+'jdk6:java/util/Calendar.java':[
+1004,
 ],
 'jdk6:java/util/Collections.java':[
 3258,
