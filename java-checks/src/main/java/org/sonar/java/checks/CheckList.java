@@ -62,6 +62,7 @@ import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
+import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
@@ -484,6 +485,7 @@ public final class CheckList {
       .add(ArrayForVarArgCheck.class)
       .add(WrongAssignmentOperatorCheck.class)
       .add(DateFormatWeekYearCheck.class)
+      .add(UnusedThrowableCheck.class)
       .build();
   }
 
