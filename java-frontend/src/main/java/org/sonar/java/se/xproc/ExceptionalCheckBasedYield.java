@@ -208,6 +208,6 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   public int parameterCausingExceptionIndex() {
-    return behavior.parameters().indexOf(svCausingException);
+    return methodBehavior().parameters().indexOf(svCausingException);
   }
 }

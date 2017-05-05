@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 public abstract class MethodYield {
   final ExplodedGraph.Node node;
   private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
-  final MethodBehavior behavior;
+  private final MethodBehavior behavior;
   List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 
   public MethodYield(MethodBehavior behavior) {
@@ -138,6 +138,10 @@ public abstract class MethodYield {
 
   public boolean generatedByCheck(SECheck check) {
     return false;
+  }
+
+  public MethodBehavior methodBehavior() {
+    return behavior;
   }
 
   @Override

@@ -90,4 +90,9 @@ public class FlowComputationTest {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java",  new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck());
     assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Flow was not able to complete");
   }
+
+  @Test
+  public void xproc_flow_messages() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessages.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck());
+  }
 }

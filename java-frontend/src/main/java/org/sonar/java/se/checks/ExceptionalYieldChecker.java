@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import org.sonar.java.collections.PMap;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -39,9 +38,10 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -72,9 +72,19 @@ public class ExceptionalYieldChecker {
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
     }
-    JavaFileScannerContext.Location methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
 
-    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, yield, mit);
+    Symbol symbolToTrack = null;
+    JavaFileScannerContext.Location methodInvocationMessage;
+    IdentifierTree identifierTree = FlowComputation.getArgumentIdentifier(mit, yield.parameterCausingExceptionIndex());
+    if (identifierTree != null) {
+      symbolToTrack = identifierTree.symbol();
+      methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s' is passed to '%s()'.", identifierTree.name(), methodName), identifierTree);
+    } else {
+      methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
+    }
+
+    List<JavaFileScannerContext.Location> argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
+    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, symbolToTrack, mit);
     Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
 
     ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
@@ -82,6 +92,7 @@ public class ExceptionalYieldChecker {
       for (List<JavaFileScannerContext.Location> exceptionFlow : exceptionFlows) {
         flows.add(ImmutableList.<JavaFileScannerContext.Location>builder()
           .addAll(exceptionFlow)
+          .addAll(argumentChangingNameFlows)
           .add(methodInvocationMessage)
           .addAll(argumentFlow)
           .build());
@@ -91,25 +102,11 @@ public class ExceptionalYieldChecker {
     check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {
+  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, @Nullable Symbol symbolToTrack, MethodInvocationTree mit) {
     ProgramState programState = node.programState;
     List<SymbolicValue> arguments = Lists.reverse(programState.peekValues(mit.arguments().size()));
     List<Class<? extends Constraint>> domains = domainsFromArguments(programState, arguments);
-    Symbol symbolToTrack = symbolToTrackFromArgument(mit, yield);
     return FlowComputation.flow(node, new LinkedHashSet<>(arguments), c -> true, c -> false, domains, symbolToTrack);
-  }
-
-  @CheckForNull
-  private static Symbol symbolToTrackFromArgument(MethodInvocationTree mit, ExceptionalCheckBasedYield yield) {
-    ExpressionTree argument = ExpressionUtils.skipParentheses(mit.arguments().get(yield.parameterCausingExceptionIndex()));
-    switch (argument.kind()) {
-      case MEMBER_SELECT:
-        return ((MemberSelectExpressionTree) argument).identifier().symbol();
-      case IDENTIFIER:
-        return ((IdentifierTree) argument).symbol();
-      default:
-        return null;
-    }
   }
 
   private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, List<SymbolicValue> arguments) {
@@ -126,5 +123,9 @@ public class ExceptionalYieldChecker {
     List<Class<? extends Constraint>> domains = new ArrayList<>();
     constraints.forEach((d, c) -> domains.add(d));
     return domains;
+  }
+
+  private static List<JavaFileScannerContext.Location> flowsForArgumentsChangingName(ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {
+    return FlowComputation.flowsForArgumentsChangingName(Collections.singletonList(yield.parameterCausingExceptionIndex()), mit);
   }
 }

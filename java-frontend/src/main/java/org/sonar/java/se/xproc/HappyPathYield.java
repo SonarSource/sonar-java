@@ -29,6 +29,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.List;
@@ -80,7 +81,7 @@ public class HappyPathYield extends MethodYield {
     this.resultConstraint = resultConstraint;
   }
 
-  @VisibleForTesting
+  @CheckForNull
   public PMap<Class<? extends Constraint>, Constraint> resultConstraint() {
     return resultConstraint;
   }
