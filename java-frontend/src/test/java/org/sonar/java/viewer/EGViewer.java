@@ -120,7 +120,7 @@ public class EGViewer {
       .append(",psStack=\"" + psProvider.stack() + "\"")
       .append(",psConstraints=\"" + psProvider.constraints() + "\"")
       .append(",psValues=\"" + psProvider.values() + "\"")
-      .append(",psLastEvaluatedSymbol=\"" + psProvider.lastEvaluatedSymbol() + "\"")
+      .append(",psLastEvaluatedSymbol=\"" + psProvider.lastAssociatedSymbols() + "\"")
       .append(specialHighlight(node, hasParents, firstBlockId))
       .append("]")
       .toString();

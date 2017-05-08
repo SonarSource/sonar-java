@@ -32,15 +32,14 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class SECheckTest {
   @Test(timeout = 3000)
   public void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
     CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
     ExplodedGraph eg = new ExplodedGraph();
-    ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), mock(ProgramState.class));
-    node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), mock(ProgramState.class)), null);
+    ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), ProgramState.EMPTY_STATE);
+    node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), ProgramState.EMPTY_STATE), null);
     Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, new SymbolicValue(), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flows.iterator().next()).isEmpty();
   }

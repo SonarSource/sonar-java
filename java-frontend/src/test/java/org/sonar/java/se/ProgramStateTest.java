@@ -179,4 +179,23 @@ public class ProgramStateTest {
       .isInstanceOf(IllegalStateException.class)
       .hasMessageStartingWith("Relations stored in PS should always use TRUE constraint");
   }
+
+  @Test
+  public void assignment_order_should_not_lead_to_different_state() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+    Symbol var1 = variable("var1");
+    Symbol var2 = variable("var2");
+    ProgramState ps1 = ProgramState.EMPTY_STATE;
+    ps1 = ps1.put(var1, sv);
+    ps1 = ps1.put(var2, sv);
+    ProgramState ps2 = ProgramState.EMPTY_STATE;
+    ps2 = ps2.put(var2, sv);
+    ps2 = ps2.put(var1, sv);
+    assertThat(ps1).isEqualTo(ps2);
+    assertThat(ps1.hashCode()).isEqualTo(ps2.hashCode());
+  }
+
+  private JavaSymbol.VariableJavaSymbol variable(String name) {
+    return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+  }
 }
