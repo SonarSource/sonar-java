@@ -482,6 +482,7 @@ public final class CheckList {
       .add(AllBranchesAreIdenticalCheck.class)
       .add(ArrayForVarArgCheck.class)
       .add(WrongAssignmentOperatorCheck.class)
+      .add(DateFormatWeekYearCheck.class)
       .build();
   }
 
