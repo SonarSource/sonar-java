@@ -117,7 +117,7 @@ class DefaultValues {
     if (a) {  // Noncompliant [[flows=vars]] flow@vars
 
     }
-    b = new Object();  // flow@vars2
+    b = new Object();  // flow@vars2 flow@vars2
     if (b != null) {  // Noncompliant [[flows=vars2]] flow@vars2
 
     }

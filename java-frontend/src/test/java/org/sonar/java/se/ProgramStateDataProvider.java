@@ -23,7 +23,6 @@ import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
@@ -63,9 +62,8 @@ public class ProgramStateDataProvider {
     }
   }
 
-  public String lastEvaluatedSymbol() {
-    Symbol lastEvaluatedSymbol = ps.getLastEvaluated();
-    return lastEvaluatedSymbol == null ? "none" : lastEvaluatedSymbol.toString();
+  public String lastAssociatedSymbols() {
+    return ps.lastAssociatedSymbols.toString();
   }
 
   private static Stream<Constraint> pmapToStream(@Nullable PMap<Class<? extends Constraint>, Constraint> pmap) {
