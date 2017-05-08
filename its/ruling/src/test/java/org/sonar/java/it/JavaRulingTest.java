@@ -104,6 +104,7 @@ public class JavaRulingTest {
     Set<String> activatedRuleKeys = new HashSet<>();
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
+    instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
     instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
     instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";", activatedRuleKeys);
