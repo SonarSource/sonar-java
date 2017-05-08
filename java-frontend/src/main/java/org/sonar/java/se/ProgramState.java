@@ -84,10 +84,6 @@ public class ProgramState {
     null, PCollections.emptyMap());
 
   private final PMap<ProgramPoint, Integer> visitedPoints;
-
-  @Nullable
-  Symbol lastEvaluated;
-
   private final PStack<SymbolicValue> stack;
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
@@ -107,12 +103,6 @@ public class ProgramState {
     this.exitSymbolicValue = exitSymbolicValue;
     this.lastAssociatedSymbols = lastAssociatedSymbols;
     constraintSize = 3;
-  }
-  private ProgramState(Symbol symbol, PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
-                       PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue, PMap<SymbolicValue, Symbol> lastAssociatedSymbol) {
-    this(values, references, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbol);
-    lastEvaluated = symbol;
   }
 
   private ProgramState(ProgramState ps, PStack<SymbolicValue> newStack) {
@@ -182,11 +172,6 @@ public class ProgramState {
   int numberOfTimeVisited(ProgramPoint programPoint) {
     Integer count = visitedPoints.get(programPoint);
     return count == null ? 0 : count;
-  }
-
-  @CheckForNull
-  public Symbol getLastEvaluated() {
-    return lastEvaluated;
   }
 
   @Override
@@ -260,9 +245,9 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(symbol, newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
     }
-    return new ProgramState(symbol, values, references, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
+    return new ProgramState(values, references, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
   }
 
   private static boolean isVolatileField(Symbol symbol) {
