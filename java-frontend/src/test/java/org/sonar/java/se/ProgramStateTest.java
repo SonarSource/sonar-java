@@ -90,9 +90,8 @@ public class ProgramStateTest {
     state = state.put(variable, sv4);
     SymbolicValue sv5 = new SymbolicValue();
     state = state.stackValue(sv5);
-    state.lastEvaluated = variable;
     // FIXME to string is not really nice by displaying classes and order is not guaranteed.
-    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE");
+    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE", "SV_4->A#x");
       //.isEqualTo("{ A#x->SV_4}  { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] } { A#x } ");
   }
 
