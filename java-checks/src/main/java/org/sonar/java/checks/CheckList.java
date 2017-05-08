@@ -291,6 +291,7 @@ public final class CheckList {
       .add(ThreadWaitCallCheck.class)
       .add(WaitOnConditionCheck.class)
       .add(DisallowedMethodCheck.class)
+      .add(DisallowedConstructorCheck.class)
       .add(ForLoopIncrementSignCheck.class)
       .add(ForLoopFalseConditionCheck.class)
       .add(DeprecatedHashAlgorithmCheck.class)

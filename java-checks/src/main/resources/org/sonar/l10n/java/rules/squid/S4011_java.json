@@ -1,0 +1,9 @@
+{
+  "title": "Track uses of disallowed constructors",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major"
+}

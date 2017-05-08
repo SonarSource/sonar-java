@@ -1,0 +1,13 @@
+<p>This rule allows banning usage of certain constructors.</p>
+<h2>Noncompliant Code Example</h2>
+<p>Given parameters:</p>
+<ul>
+  <li> className: java.util.Date </li>
+  <li> argumentTypes: java.lang.String </li>
+</ul>
+<pre>
+Date birthday;
+birthday = new Date("Sat Sep 27 05:42:21 EDT 1986");  // Noncompliant
+birthday = new Date(528176541000L); // Compliant
+</pre>
+
