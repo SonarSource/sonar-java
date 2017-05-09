@@ -6,7 +6,7 @@ class A {
     if (x < 0) {
       throw new IllegalArgumentException("x must be nonnegative");
     }
-
+    new A();
     Throwable t = new IllegalArgumentException("x must be nonnegative");
     if (x < 0) {
       throw t;
