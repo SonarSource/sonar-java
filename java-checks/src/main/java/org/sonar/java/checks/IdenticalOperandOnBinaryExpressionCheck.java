@@ -110,7 +110,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
         if(SyntacticEquivalence.areEquivalent(leftOp, rightOp)) {
           reportIssue(
             rightOp,
-            "Identical sub-expressions on both sides of equals.",
+            "Correct one of the identical sub-expressions on both sides of equals.",
             ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
             null);
         }
@@ -121,7 +121,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       if(SyntacticEquivalence.areEquivalent(leftOp, rightOp)) {
         reportIssue(
           rightOp,
-          "Both arguments are identical sub-expressions.",
+          "Correct one of the identical argument sub-expressions.",
           ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
           null);
       }

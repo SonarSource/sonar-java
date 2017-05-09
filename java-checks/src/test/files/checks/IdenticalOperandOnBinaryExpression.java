@@ -27,12 +27,12 @@ class A {
   }
 
   void fun(Object a, Object b) {
-    a.equals(a);  // Noncompliant {{Identical sub-expressions on both sides of equals.}}
+    a.equals(a);  // Noncompliant {{Correct one of the identical sub-expressions on both sides of equals.}}
     a.equals(b);
     equals(a);
-    java.util.Objects.equals(a, a); // Noncompliant {{Both arguments are identical sub-expressions.}}
+    java.util.Objects.equals(a, a); // Noncompliant {{Correct one of the identical argument sub-expressions.}}
     java.util.Objects.equals(a, b);
-    java.util.Objects.deepEquals(a, a); // Noncompliant {{Both arguments are identical sub-expressions.}}
+    java.util.Objects.deepEquals(a, a); // Noncompliant {{Correct one of the identical argument sub-expressions.}}
     java.util.Objects.deepEquals(a, b);
     java.util.Objects.isNull(a);
   }
