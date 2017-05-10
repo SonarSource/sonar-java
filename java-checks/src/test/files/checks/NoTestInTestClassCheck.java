@@ -2,6 +2,7 @@ import java.lang.Deprecated;
 import org.junit.experimental.runners.Enclosed;
 import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
+import org.junit.runner.Suite;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class A extends junit.framework.TestCase {
@@ -121,4 +122,26 @@ public class DTest { // Noncompliant {{Add some tests to this class.}}
   public void testFoo() {
     assertThat(new A().foo(null)).isEqualTo(0);
   }
+}
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses(value = { S2187Test.Test1.class, S2187Test.Test2.class })
+public class S2187Test {
+
+  public static class Test1 {
+
+    @Test
+    public void test() {
+      Assert.assertTrue(true);
+    }
+  }
+
+  public static class Test2 {
+
+    @Test
+    public void test() {
+      Assert.assertTrue(true);
+    }
+  }
+
 }

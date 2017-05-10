@@ -100,18 +100,18 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkJunit4AndAboveTestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
-    if (symbol.name().endsWith("Test") && !runWithEnclosedOrCucumberRunner(symbol)) {
+    if (symbol.name().endsWith("Test") && !runWithEnclosedOrCucumberOrSuiteRunner(symbol)) {
       checkMethods(className, members, true);
     }
   }
 
-  private static boolean runWithEnclosedOrCucumberRunner(JavaSymbol.TypeJavaSymbol symbol) {
+  private static boolean runWithEnclosedOrCucumberOrSuiteRunner(JavaSymbol.TypeJavaSymbol symbol) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if(annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
       if (value instanceof MemberSelectExpressionTree) {
         String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
-        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class");
+        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class") || runnerParam.endsWith("Suite.class");
       }
     }
     return false;
