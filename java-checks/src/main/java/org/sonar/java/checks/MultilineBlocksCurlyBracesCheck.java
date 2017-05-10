@@ -37,8 +37,9 @@ import java.util.Locale;
 @Rule(key = "S2681")
 public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String LOOP_MESSAGE = "Only the first line of this %d-line block will be executed in a loop. The rest will execute only once.";
-  private static final String IF_MESSAGE = "Only the first line of this %d-line block will be executed conditionally. The rest will execute unconditionally.";
+  private static final String LOOP_MESSAGE = "This line will not be executed in a loop; only the first line of this %d-line block will be. The rest will execute only once.";
+  private static final String IF_MESSAGE = "This line will not be executed conditionally; " +
+    "only the first line of this %d-line block will be. The rest will execute unconditionally.";
   private JavaFileScannerContext context;
 
   @Override
@@ -79,8 +80,11 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       SyntaxToken currentToken = current.firstToken();
       int currentColumn = currentToken.column();
       int currentLine = currentToken.line();
-      if (previousColumn == currentColumn) {
-        context.reportIssue(this, current, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, 1 + currentLine - previousLine));
+      if (previousColumn == currentColumn ||
+        (previousLine == previous.firstToken().line()
+          && previous.firstToken().column() != currentColumn)) {
+        int lines = 1 + currentLine - previousLine;
+        context.reportIssue(this, current, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, lines));
       }
     }
   }
