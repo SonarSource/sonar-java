@@ -28,6 +28,7 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -35,27 +36,35 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Rule(key = "S3516")
 public class InvariantReturnCheck extends SECheck {
 
   private static class MethodInvariantContext {
+    private final MethodTree methodTree;
     private final Set<SymbolicValue> symbolicValues = new HashSet<>();
     private final Multimap<Class<? extends Constraint>, Constraint> methodConstraints = ArrayListMultimap.create();
+    private final List<ReturnStatementTree> returnStatementTrees;
     private int endPaths = 0;
     private boolean methodToCheck = false;
     private boolean returnImmutableType = false;
     private boolean avoidRaisingConstraintIssue = false;
 
     public MethodInvariantContext(MethodTree methodTree) {
+      this.methodTree = methodTree;
       TypeTree returnType = methodTree.returnType();
-      methodToCheck = !isConstructorOrVoid(returnType) && hasAtLeastTwoReturn(methodTree);
+      this.returnStatementTrees = extractReturnStatements(methodTree);
+      methodToCheck = !isConstructorOrVoid(returnType) && returnStatementTrees.size() > 1;
       returnImmutableType = methodToCheck && (returnType.symbolType().isPrimitive() || returnType.symbolType().is("java.lang.String"));
     }
 
@@ -63,10 +72,10 @@ public class InvariantReturnCheck extends SECheck {
       return returnType == null || returnType.symbolType().isVoid();
     }
 
-    private static boolean hasAtLeastTwoReturn(MethodTree methodTree) {
-      ReturnCounter visitor = new ReturnCounter();
+    private static List<ReturnStatementTree> extractReturnStatements(MethodTree methodTree) {
+      ReturnExtractor visitor = new ReturnExtractor();
       methodTree.accept(visitor);
-      return visitor.returnCount > 1;
+      return visitor.returns;
     }
   }
 
@@ -100,46 +109,46 @@ public class InvariantReturnCheck extends SECheck {
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    reportIssues(context);
+    reportIssues();
   }
 
   @Override
   public void interruptedExecution(CheckerContext context) {
-    reportIssues(context);
+    reportIssues();
   }
 
-  private void reportIssues(CheckerContext context) {
+  private void reportIssues() {
     MethodInvariantContext methodInvariantContext = methodInvariantContexts.pop();
     if (!methodInvariantContext.methodToCheck) {
       return;
     }
     if (methodInvariantContext.returnImmutableType && methodInvariantContext.symbolicValues.size() == 1 && methodInvariantContext.endPaths > 1) {
-      context.getNode().edges().stream()
-        .findFirst()
-        .map(e -> e.parent().programPoint.syntaxTree())
-        .ifPresent(t -> reportIssue(t, "Refactor this method to not always return the same value.\n", Collections.emptySet()));
+      report(methodInvariantContext);
     }
     if(!methodInvariantContext.avoidRaisingConstraintIssue) {
       for (Class<? extends Constraint> aClass : methodInvariantContext.methodConstraints.keys()) {
         Collection<Constraint> constraints = methodInvariantContext.methodConstraints.get(aClass);
         if(constraints.size() == methodInvariantContext.endPaths
           && constraints.stream().allMatch(c -> constraints.iterator().next().hasPreciseValue() && constraints.iterator().next().equals(c))) {
-          context.getNode().edges().stream()
-            .findFirst()
-            .map(e -> e.parent().programPoint.syntaxTree())
-            .ifPresent(t -> reportIssue(t, "Refactor this method to not always return the same value.\n", Collections.emptySet()));
+          report(methodInvariantContext);
           return;
         }
       }
     }
   }
 
-  private static class ReturnCounter extends BaseTreeVisitor {
-    int returnCount = 0;
+  private void report(MethodInvariantContext methodInvariantContext) {
+    reportIssue(methodInvariantContext.methodTree.simpleName(), "Refactor this method to not always return the same value.",
+      Collections.singleton(methodInvariantContext.returnStatementTrees.stream().map(r -> new JavaFileScannerContext.Location("", r)).collect(Collectors.toList()))
+      );
+  }
+
+  private static class ReturnExtractor extends BaseTreeVisitor {
+    List<ReturnStatementTree> returns = new ArrayList<>();
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
-      returnCount++;
+      returns.add(tree);
     }
 
     @Override

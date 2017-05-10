@@ -1,10 +1,12 @@
 class A {
-  private int foo(boolean a) {
+  private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
     int b = 12;
     if(a) {
-      return b;
+      return b; // flow@issue1
+    } else if(polop()) {
+      return b;  // flow@issue1
     }
-    return b;  // Noncompliant
+    return b; // flow@issue1
   }
 
   private int foo2(boolean a) {
@@ -22,12 +24,12 @@ class A {
     return b;  // false negative : caching of program states because of liveness of params makes the second path unexplored.
   }
 
-  private String foo4(boolean a) {
+  private String foo4(boolean a) { // Noncompliant
     String b = "foo";
     if(a) {
       return b;
     }
-    return b; // Noncompliant
+    return b;
   }
 
   void plop() {
@@ -65,14 +67,14 @@ class A {
     return foo;
   }
 
-  private boolean fun(boolean a, boolean b) {
+  private boolean fun(boolean a, boolean b) { // Noncompliant
     if(a) {
       return a;
     }
     if(b) {
       return b;
     }
-    return true; // Noncompliant
+    return true;
   }
   private boolean fun2(boolean a, boolean b) {
     if(a) {
