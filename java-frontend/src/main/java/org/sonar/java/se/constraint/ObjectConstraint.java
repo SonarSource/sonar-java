@@ -30,8 +30,13 @@ public enum ObjectConstraint implements Constraint {
   }
 
   @Override
+  public boolean hasPreciseValue() {
+    return this == NULL;
+  }
+
+  @Override
   public String valueAsString() {
-    if (isNull()) {
+    if (this == NULL) {
       return "null";
     }
     return "non-null";

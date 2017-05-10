@@ -19,9 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -31,59 +35,102 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 @Rule(key = "S3516")
 public class InvariantReturnCheck extends SECheck {
 
-  private final Set<SymbolicValue> symbolicValues = new HashSet<>();
-  private int endPaths = 0;
-  private boolean methodToCheck = false;
-  private boolean returnImmutableType = false;
+  private static class MethodInvariantContext {
+    private final Set<SymbolicValue> symbolicValues = new HashSet<>();
+    private final Multimap<Class<? extends Constraint>, Constraint> methodConstraints = ArrayListMultimap.create();
+    private int endPaths = 0;
+    private boolean methodToCheck = false;
+    private boolean returnImmutableType = false;
+    private boolean avoidRaisingConstraintIssue = false;
+
+    public MethodInvariantContext(MethodTree methodTree) {
+      TypeTree returnType = methodTree.returnType();
+      methodToCheck = !isConstructorOrVoid(returnType) && hasAtLeastTwoReturn(methodTree);
+      returnImmutableType = methodToCheck && (returnType.symbolType().isPrimitive() || returnType.symbolType().is("java.lang.String"));
+    }
+
+    private static boolean isConstructorOrVoid(@Nullable TypeTree returnType) {
+      return returnType == null || returnType.symbolType().isVoid();
+    }
+
+    private static boolean hasAtLeastTwoReturn(MethodTree methodTree) {
+      ReturnCounter visitor = new ReturnCounter();
+      methodTree.accept(visitor);
+      return visitor.returnCount > 1;
+    }
+  }
+
+  private Deque<MethodInvariantContext> methodInvariantContexts = new LinkedList<>();
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    symbolicValues.clear();
-    endPaths = 0;
-    TypeTree returnType = methodTree.returnType();
-    methodToCheck = !isConstructorOrVoid(returnType) && hasAtLeastTwoReturn(methodTree);
-    returnImmutableType = methodToCheck && (returnType.symbolType().isPrimitive() || returnType.symbolType().is("java.lang.String"));
-  }
-
-  private static boolean isConstructorOrVoid(@Nullable TypeTree returnType) {
-    return returnType == null || returnType.symbolType().isVoid();
-  }
-
-  private static boolean hasAtLeastTwoReturn(MethodTree methodTree) {
-    ReturnCounter visitor = new ReturnCounter();
-    methodTree.accept(visitor);
-    return visitor.returnCount > 1;
+    methodInvariantContexts.push(new MethodInvariantContext(methodTree));
   }
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    if (!methodToCheck) {
+    MethodInvariantContext methodInvariantContext = methodInvariantContexts.peek();
+    if (!methodInvariantContext.methodToCheck) {
       return;
     }
     SymbolicValue exitValue = context.getState().exitValue();
+
     if (exitValue != null) {
-      endPaths++;
-      symbolicValues.add(exitValue);
+      methodInvariantContext.endPaths++;
+      methodInvariantContext.symbolicValues.add(exitValue);
+      PMap<Class<? extends Constraint>, Constraint> constraints = context.getState().getConstraints(exitValue);
+      if (constraints != null) {
+        constraints.forEach(methodInvariantContext.methodConstraints::put);
+      } else {
+        // Relational SV or NOT SV : we can't say anything.
+        methodInvariantContext.avoidRaisingConstraintIssue = true;
+      }
     }
   }
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    if (!methodToCheck) {
+    reportIssues(context);
+  }
+
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    reportIssues(context);
+  }
+
+  private void reportIssues(CheckerContext context) {
+    MethodInvariantContext methodInvariantContext = methodInvariantContexts.pop();
+    if (!methodInvariantContext.methodToCheck) {
       return;
     }
-    if (returnImmutableType && symbolicValues.size() == 1 && endPaths > 1) {
+    if (methodInvariantContext.returnImmutableType && methodInvariantContext.symbolicValues.size() == 1 && methodInvariantContext.endPaths > 1) {
       context.getNode().edges().stream()
         .findFirst()
         .map(e -> e.parent().programPoint.syntaxTree())
         .ifPresent(t -> reportIssue(t, "Refactor this method to not always return the same value.\n", Collections.emptySet()));
+    }
+    if(!methodInvariantContext.avoidRaisingConstraintIssue) {
+      for (Class<? extends Constraint> aClass : methodInvariantContext.methodConstraints.keys()) {
+        Collection<Constraint> constraints = methodInvariantContext.methodConstraints.get(aClass);
+        if(constraints.size() == methodInvariantContext.endPaths
+          && constraints.stream().allMatch(c -> constraints.iterator().next().hasPreciseValue() && constraints.iterator().next().equals(c))) {
+          context.getNode().edges().stream()
+            .findFirst()
+            .map(e -> e.parent().programPoint.syntaxTree())
+            .ifPresent(t -> reportIssue(t, "Refactor this method to not always return the same value.\n", Collections.emptySet()));
+          return;
+        }
+      }
     }
   }
 

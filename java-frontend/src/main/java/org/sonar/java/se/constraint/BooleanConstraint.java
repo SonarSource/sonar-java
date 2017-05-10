@@ -34,6 +34,11 @@ public enum BooleanConstraint implements Constraint {
   }
 
   @Override
+  public boolean hasPreciseValue() {
+    return true;
+  }
+
+  @Override
   public String valueAsString() {
     if (this == TRUE) {
       return "true";
