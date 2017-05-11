@@ -62,8 +62,13 @@ public class DivisionByZeroCheck extends SECheck {
     NON_ZERO;
 
     @Override
+    public boolean hasPreciseValue() {
+      return this == ZERO;
+    }
+
+    @Override
     public String valueAsString() {
-      if (this == ZeroConstraint.ZERO) {
+      if (this == ZERO) {
         return "zero";
       }
       return "non-zero";

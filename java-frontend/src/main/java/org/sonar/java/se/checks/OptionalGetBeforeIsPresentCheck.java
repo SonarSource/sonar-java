@@ -47,7 +47,12 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     "\"NoSuchElementException\" will be thrown when invoking method \"%s()\" without verifying Optional parameter.");
 
   private enum OptionalConstraint implements Constraint {
-    PRESENT, NOT_PRESENT
+    PRESENT, NOT_PRESENT;
+
+    @Override
+    public boolean hasPreciseValue() {
+      return this == NOT_PRESENT;
+    }
   }
 
   @Override

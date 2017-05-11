@@ -81,6 +81,7 @@ import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
@@ -368,6 +369,7 @@ public final class CheckList {
       .add(ThreadAsRunnableArgumentCheck.class)
       .add(SynchronizedFieldAssignmentCheck.class)
       .add(NullDereferenceCheck.class)
+      .add(InvariantReturnCheck.class)
       .add(ConditionalUnreachableCodeCheck.class)
       .add(UnclosedResourcesCheck.class)
       .add(CustomUnclosedResourcesCheck.class)

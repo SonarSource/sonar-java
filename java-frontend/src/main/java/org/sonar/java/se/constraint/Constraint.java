@@ -31,6 +31,13 @@ public interface Constraint {
     return "";
   }
 
+  /**
+   * @return true if value represented by this SV is precisely known.
+   */
+  default boolean hasPreciseValue() {
+    return false;
+  }
+
   @Nullable
   default Constraint inverse() {
     return null;

@@ -27,6 +27,7 @@ import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -394,7 +395,12 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void eg_walker_factory_default_checks() throws IOException {
-    Set<String> nonDefaultChecks = Stream.of(CustomUnclosedResourcesCheck.class, ConditionalUnreachableCodeCheck.class, BooleanGratuitousExpressionsCheck.class)
+    Set<String> nonDefaultChecks = Stream.of(
+      CustomUnclosedResourcesCheck.class,
+      ConditionalUnreachableCodeCheck.class,
+      BooleanGratuitousExpressionsCheck.class,
+      InvariantReturnCheck.class
+      )
       .map(Class::getSimpleName)
       .collect(Collectors.toSet());
     // Compute the list of SEChecks defined in package
@@ -403,7 +409,6 @@ public class ExplodedGraphWalkerTest {
       .stream()
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
-      // CustomUnclosedResource is a template rule and should not be activated by default
       .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
       .collect(Collectors.toList());

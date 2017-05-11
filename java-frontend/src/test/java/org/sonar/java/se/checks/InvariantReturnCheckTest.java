@@ -17,45 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.constraint;
+package org.sonar.java.se.checks;
 
-import javax.annotation.Nullable;
+import org.junit.Test;
+import org.sonar.java.se.JavaCheckVerifier;
 
-public enum BooleanConstraint implements Constraint {
-  TRUE,
-  FALSE;
+public class InvariantReturnCheckTest {
 
-  public boolean isTrue() {
-    return this == TRUE;
-  }
-
-  public boolean isFalse() {
-    return this == FALSE;
-  }
-
-  @Override
-  public boolean hasPreciseValue() {
-    return true;
-  }
-
-  @Override
-  public String valueAsString() {
-    if (this == TRUE) {
-      return "true";
-    }
-    return "false";
-  }
-
-  @Override
-  public boolean isValidWith(@Nullable Constraint constraint) {
-    return constraint == null || this == constraint;
-  }
-
-  @Override
-  public BooleanConstraint inverse() {
-    if (TRUE == this) {
-      return FALSE;
-    }
-    return TRUE;
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/InvariantReturnCheck.java", new InvariantReturnCheck());
   }
 }

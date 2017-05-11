@@ -34,7 +34,7 @@ import java.util.Set;
 
 public abstract class SECheck implements JavaFileScanner {
 
-  private Set<SEIssue> issues = new HashSet<>();
+  protected Set<SEIssue> issues = new HashSet<>();
 
   public void init(MethodTree methodTree, CFG cfg) {
 
@@ -79,7 +79,7 @@ public abstract class SECheck implements JavaFileScanner {
     // By default do nothing
   }
 
-  private static class SEIssue {
+  protected static class SEIssue {
     private final Tree tree;
     private final String message;
     private final Set<List<JavaFileScannerContext.Location>> flows;
