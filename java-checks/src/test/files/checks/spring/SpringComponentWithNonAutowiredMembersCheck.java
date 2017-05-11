@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import javax.inject.Inject;
 import javax.annotation.Resource;
 
