@@ -47,6 +47,7 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
@@ -56,10 +57,12 @@ import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMetho
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
+import org.sonar.java.checks.unused.UnusedPrivateClassCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
+import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
@@ -74,7 +77,8 @@ import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
 import org.sonar.java.checks.xml.web.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
-import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
+import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -230,6 +234,7 @@ public final class CheckList {
       .add(CallToDeprecatedMethodCheck.class)
       .add(CallToFileDeleteOnExitMethodCheck.class)
       .add(UnusedPrivateMethodCheck.class)
+      .add(UnusedPrivateClassCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
       .add(ThrowsSeveralCheckedExceptionCheck.class)
       .add(ThreadRunCheck.class)
@@ -287,12 +292,13 @@ public final class CheckList {
       .add(ThreadWaitCallCheck.class)
       .add(WaitOnConditionCheck.class)
       .add(DisallowedMethodCheck.class)
+      .add(DisallowedConstructorCheck.class)
       .add(ForLoopIncrementSignCheck.class)
       .add(ForLoopFalseConditionCheck.class)
       .add(DeprecatedHashAlgorithmCheck.class)
       .add(NullCipherCheck.class)
       .add(GetRequestedSessionIdCheck.class)
-      .add(ConcurrentLinkedQueueSizeCheck.class)
+      .add(CollectionMethodsWithLinearComplexityCheck.class)
       .add(ServletInstanceFieldCheck.class)
       .add(BigDecimalDoubleConstructorCheck.class)
       .add(ReflectionOnNonRuntimeAnnotationCheck.class)
@@ -310,7 +316,8 @@ public final class CheckList {
       .add(ArrayHashCodeAndToStringCheck.class)
       .add(DefaultEncodingUsageCheck.class)
       .add(CloneableImplementingCloneCheck.class)
-      .add(PrintfCheck.class)
+      .add(PrintfFailCheck.class)
+      .add(PrintfMisuseCheck.class)
       .add(ModulusEqualityCheck.class)
       .add(RunFinalizersCheck.class)
       .add(LongBitsToDoubleOnIntCheck.class)
@@ -355,12 +362,13 @@ public final class CheckList {
       .add(PrimitiveWrappersInTernaryOperatorCheck.class)
       .add(SynchronizedLockCheck.class)
       .add(SymmetricEqualsCheck.class)
+      .add(UnconditionalJumpStatementCheck.class)
       .add(CallSuperMethodFromInnerClassCheck.class)
       .add(SelectorMethodArgumentCheck.class)
       .add(ThreadAsRunnableArgumentCheck.class)
       .add(SynchronizedFieldAssignmentCheck.class)
       .add(NullDereferenceCheck.class)
-      .add(ConditionAlwaysTrueOrFalseCheck.class)
+      .add(ConditionalUnreachableCodeCheck.class)
       .add(UnclosedResourcesCheck.class)
       .add(CustomUnclosedResourcesCheck.class)
       .add(StaticFieldUpateCheck.class)
@@ -471,6 +479,13 @@ public final class CheckList {
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
+      .add(RequestMappingMethodPublicCheck.class)
+      .add(BooleanGratuitousExpressionsCheck.class)
+      .add(AllBranchesAreIdenticalCheck.class)
+      .add(ArrayForVarArgCheck.class)
+      .add(WrongAssignmentOperatorCheck.class)
+      .add(DateFormatWeekYearCheck.class)
+      .add(UnusedThrowableCheck.class)
       .build();
   }
 

@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,17 +72,6 @@ public class JavaTypeTest {
     assertThat(new JavaType(JavaType.BOOLEAN, null).isNumerical()).isFalse();
     assertThat(new JavaType(JavaType.VOID, null).isNumerical()).isFalse();
     assertThat(new JavaType(JavaType.CLASS, null).isNumerical()).isFalse();
-  }
-
-  @Test
-  public void to_string_on_type() throws Exception {
-    assertThat(new JavaType(JavaType.VOID, null).toString()).isEmpty();
-    String methodToString = new MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
-      ImmutableList.<JavaType>of(), null).toString();
-    assertThat(methodToString).isEqualTo("returns int");
-
-    String constructorToString = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null).toString();
-    assertThat(constructorToString).isEqualTo("constructor");
   }
 
   @Test
@@ -197,6 +187,21 @@ public class JavaTypeTest {
   }
 
   @Test
+  public void direct_super_types() {
+    Set<ClassJavaType> objectDirectSuperTypes = symbols.objectType.directSuperTypes();
+    assertThat(objectDirectSuperTypes).isEmpty();
+
+    Set<ClassJavaType> integerDirectSuperTypes = symbols.intType.primitiveWrapperType.directSuperTypes();
+    assertThat(integerDirectSuperTypes).hasSize(2);
+    assertThat(integerDirectSuperTypes.stream().map(st -> st.fullyQualifiedName())).contains("java.lang.Number", "java.lang.Comparable");
+
+    ArrayJavaType arrayType = new ArrayJavaType(symbols.intType, symbols.arrayClass);
+    Set<ClassJavaType> arrayDirectSuperTypes = arrayType.directSuperTypes();
+    assertThat(arrayDirectSuperTypes).hasSize(3);
+    assertThat(arrayDirectSuperTypes.stream().map(st -> st.fullyQualifiedName())).contains("java.lang.Object", "java.lang.Cloneable", "java.io.Serializable");
+  }
+
+  @Test
   public void is_primitive_wrapper() {
     for (JavaType wrapper : symbols.boxedTypes.values()) {
       assertThat(wrapper.isPrimitiveWrapper()).isTrue();
@@ -243,17 +248,6 @@ public class JavaTypeTest {
     assertThat(ptt.isParameterized()).isTrue();
     assertThat(ptt.rawType.isClass()).isTrue();
     assertThat(ptt.rawType.isParameterized()).isFalse();
-  }
-
-  @Test
-  public void methodJavaType_return_type() {
-    JavaType intType = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType;
-
-    MethodJavaType methodJavaType = new MethodJavaType(ImmutableList.<JavaType>of(), intType, ImmutableList.<JavaType>of(), null);
-    assertThat(methodJavaType.resultType()).isSameAs(intType);
-
-    MethodJavaType constructor = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null);
-    assertThat(constructor.resultType()).isNull();
   }
 
   @Test

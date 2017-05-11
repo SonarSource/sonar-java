@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SemanticModel {
 
@@ -146,4 +147,7 @@ public class SemanticModel {
     return Collections.unmodifiableMap(symbolsTree);
   }
 
+  public Set<String> classesNotFound() {
+    return bytecodeCompleter.classesNotFound();
+  }
 }

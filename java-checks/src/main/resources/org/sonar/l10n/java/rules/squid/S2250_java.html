@@ -1,12 +1,45 @@
-<p>For most collections the <code>size()</code> method requires constant time, but the time required to execute
-<code>ConcurrentLinkedQueue.size()</code> is directly proportional to the number of elements in the queue. When the queue is large, this could
-therefore be an expensive operation. Further, the results may be inaccurate if the queue is modified during execution.</p>
-<p>By the way, if the <code>size()</code> is used only to check that the collection is empty, then the <code>isEmpty()</code> method should be used.
-</p>
+<p>The time complexity of method calls on collections is not always obvious. For instance, for most collections the <code>size()</code> method takes
+constant time, but the time required to execute <code>ConcurrentLinkedQueue.size()</code> is O(n), i.e. directly proportional to the number of
+elements in the collection. When the collection is large, this could therefore be an expensive operation. </p>
+<p>This rule raises an issue when the following O(n) methods are called outside of constructors on class fields:</p>
+<ul>
+  <li> <code>ArrayList</code>
+    <ul>
+      <li> <code>contains</code> </li>
+      <li> <code>remove</code> </li>
+    </ul> </li>
+  <li> <code>LinkedList</code>
+    <ul>
+      <li> <code>get</code> </li>
+      <li> <code>contains</code> </li>
+    </ul> </li>
+  <li> <code>ConcurrentLinkedQueue</code>
+    <ul>
+      <li> <code>size</code> </li>
+      <li> <code>contains</code> </li>
+    </ul> </li>
+  <li> <code>ConcurrentLinkedDeque</code>
+    <ul>
+      <li> <code>size</code> </li>
+      <li> <code>contains</code> </li>
+    </ul> </li>
+  <li> <code>CopyOnWriteArrayList</code>
+    <ul>
+      <li> <code>add</code> </li>
+      <li> <code>contains</code> </li>
+      <li> <code>remove</code> </li>
+    </ul> </li>
+  <li> <code>CopyOnWriteArraySet</code>
+    <ul>
+      <li> <code>add</code> </li>
+      <li> <code>contains</code> </li>
+      <li> <code>remove</code> </li>
+    </ul> </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
 //...
-log.info("Queue contains " + queue.size() + " elements");
+log.info("Queue contains " + queue.size() + " elements");  // Noncompliant
 </pre>
 

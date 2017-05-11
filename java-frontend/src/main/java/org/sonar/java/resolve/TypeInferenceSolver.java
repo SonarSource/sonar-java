@@ -153,7 +153,7 @@ public class TypeInferenceSolver {
       TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
       result = mergeTypeSubstitutions(substitution, newSubstitution);
     } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
-      for (JavaType superType : ((ClassJavaType) argType).symbol.superTypes()) {
+      for (JavaType superType : ((ClassJavaType) argType).superTypes()) {
         if (sameErasure(formalType, superType)) {
           TypeSubstitution newSubstitution = inferTypeSubstitution(method, substitution, formalType, superType, variableArity, remainingArgTypes);
           result = mergeTypeSubstitutions(substitution, newSubstitution);

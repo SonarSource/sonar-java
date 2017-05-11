@@ -78,13 +78,13 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
     }
 
     function getProgramState(nodeId) {
-      var stackAsString, constraintsAsString, valuesAsString, lastEvaluatedSymbolAsString;
+      var stackAsString, constraintsAsString, valuesAsString, lastAssociatedSymbolsAsString;
       data.nodes.forEach(function(node) {
         if (nodeId == node.id) {
           valuesAsString = node.psValues;
           constraintsAsString = node.psConstraints;
           stackAsString = node.psStack;
-          lastEvaluatedSymbolAsString = node.psLastEvaluatedSymbol;
+          lastAssociatedSymbolsAsString = node.psLastAssociatedSymbols;
         }
       });
 
@@ -93,7 +93,7 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
       result += tableLine('values', valuesAsString);
       result += tableLine('constraints', constraintsAsString);
       result += tableLine('stack', stackAsString);
-      result += tableLine('lastEvaluatedSymbol', lastEvaluatedSymbolAsString);
+      result += tableLine('lastAssociatedSymbols', lastAssociatedSymbolsAsString);
       result += '</table>';
 
       return result;

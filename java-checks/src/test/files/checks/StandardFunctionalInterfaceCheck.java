@@ -288,4 +288,8 @@ public class StandardFunctionalInterfaceCheck {
     byte[] bar(int value);
   }
 
+  @FunctionalInterface
+  public interface InterfaceWithObjectMethodName { // Noncompliant {{Drop this interface in favor of "java.util.function.Consumer<String>".}}
+    void notify(String param);
+  }
 }

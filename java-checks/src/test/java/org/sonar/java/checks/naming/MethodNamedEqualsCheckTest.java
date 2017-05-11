@@ -27,6 +27,7 @@ public class MethodNamedEqualsCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/naming/MethodNamedEqualsCheck.java", new MethodNamedEqualsCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/MethodNamedEqualsCheck.java", new MethodNamedEqualsCheck());
   }
 
 }

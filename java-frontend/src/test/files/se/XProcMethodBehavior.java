@@ -18,7 +18,7 @@ class A {
 
   void qix() {
     boolean b = foo(true);
-    if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (b) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
     boolean c = foo(false);
     if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -29,7 +29,7 @@ class A {
     }
 
     boolean e = gul();
-    if (e) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (e) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
   }
 
@@ -42,7 +42,7 @@ final class B {
 
   private void qix() {
     boolean b = bar();
-    if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (b) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
   }
 }

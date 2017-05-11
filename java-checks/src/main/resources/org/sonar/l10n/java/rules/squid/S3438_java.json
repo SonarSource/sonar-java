@@ -7,8 +7,7 @@
     "constantCost": "2min"
   },
   "tags": [
-    "spring",
-    "bug"
+    "spring"
   ],
   "defaultSeverity": "Major"
 }

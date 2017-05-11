@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.mockito.InOrder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -48,12 +50,23 @@ public class JUnitListenerTest {
   @Before
   public void setUp() {
     jacoco = mock(JacocoController.class);
-    listener = new JUnitListener(jacoco);
+    JacocoController.singleton = jacoco;
+    listener = new JUnitListener();
+    listener.jacoco = jacoco;
   }
 
   @Test
   public void should_have_public_no_arg_constructor() throws Exception {
     JUnitListener.class.getConstructor();
+  }
+
+  @Test
+  public void lazy_initialization_of_controller() throws Exception {
+    JUnitListener jUnitListener = new JUnitListener();
+    assertNull(jUnitListener.jacoco);
+    assertEquals(jacoco, jUnitListener.getJacocoController());
+    jUnitListener.jacoco = jacoco;
+    assertEquals(jUnitListener.jacoco, jUnitListener.getJacocoController());
   }
 
   @Test

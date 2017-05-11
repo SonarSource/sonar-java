@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
@@ -32,6 +33,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -85,9 +87,22 @@ public class FlowComputation {
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
+    PSet<Symbol> trackedSymbols = PCollections.emptySet();
+    if (trackSymbol != null) {
+      trackedSymbols = trackedSymbols.add(trackSymbol);
+    }
+    ProgramState currentNodeProgramState = currentNode.programState;
+    if (currentNodeProgramState != null) {
+      for (SymbolicValue symbolicValue : allSymbolicValues) {
+        Symbol symbol = currentNodeProgramState.lastAssociatedSymbols.get(symbolicValue);
+        if (symbol != null) {
+          trackedSymbols = trackedSymbols.add(symbol);
+        }
+      }
+    }
+
     FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains);
-    // FIXME SONARJAVA-2049 getLastEvaluated doesn't work with relational SV
-    return flowComputation.run(currentNode, trackSymbol == null ? currentNode.programState.getLastEvaluated() : trackSymbol);
+    return flowComputation.run(currentNode, trackedSymbols);
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
@@ -109,10 +124,10 @@ public class FlowComputation {
     return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), addToFlow, terminateTraversal, domains, null);
   }
 
-  private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, @Nullable final Symbol trackSymbol) {
+  private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
     Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
-    node.edges().stream().flatMap(e -> startPath(e, trackSymbol)).forEach(workList::push);
+    node.edges().stream().flatMap(e -> startPath(e, trackedSymbols)).forEach(workList::push);
     int flowSteps = 0;
     Set<ExecutionPath> visited = new HashSet<>(workList);
     while (!workList.isEmpty()) {
@@ -138,21 +153,20 @@ public class FlowComputation {
     return flows;
   }
 
-  Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, @Nullable Symbol trackSymbol) {
-    return new ExecutionPath(null, PCollections.emptySet(), trackSymbol, ImmutableList.of(), false).addEdge(edge);
+  Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols) {
+    return new ExecutionPath(null, PCollections.emptySet(), trackedSymbols, ImmutableList.of(), false).addEdge(edge);
   }
 
   private class ExecutionPath {
-    @Nullable
-    final Symbol trackSymbol;
+    final PSet<Symbol> trackedSymbols;
     final ExplodedGraph.Edge lastEdge;
     final PSet<ExplodedGraph.Edge> visited;
     final List<JavaFileScannerContext.Location> flow;
     final boolean finished;
 
-    private ExecutionPath(@Nullable ExplodedGraph.Edge edge, PSet<ExplodedGraph.Edge> visited, @Nullable Symbol trackSymbol, List<JavaFileScannerContext.Location> flow,
+    private ExecutionPath(@Nullable ExplodedGraph.Edge edge, PSet<ExplodedGraph.Edge> visited, PSet<Symbol> trackedSymbols, List<JavaFileScannerContext.Location> flow,
                           boolean finished) {
-      this.trackSymbol = trackSymbol;
+      this.trackedSymbols = trackedSymbols;
       this.lastEdge = edge;
       this.visited = visited;
       this.flow = flow;
@@ -168,14 +182,14 @@ public class FlowComputation {
         return false;
       }
       ExecutionPath that = (ExecutionPath) o;
-      return Objects.equals(trackSymbol, that.trackSymbol) &&
+      return Objects.equals(trackedSymbols, that.trackedSymbols) &&
         Objects.equals(lastEdge.parent, that.lastEdge.parent) &&
         Objects.equals(flow, that.flow);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(trackSymbol, lastEdge.parent, flow);
+      return Objects.hash(trackedSymbols, lastEdge.parent, flow);
     }
 
     Stream<ExecutionPath> addEdge(ExplodedGraph.Edge edge) {
@@ -187,7 +201,7 @@ public class FlowComputation {
         .orElse(ImmutableList.of());
       flowBuilder.addAll(laFlow);
 
-      Symbol newTrackSymbol = newTrackedSymbol(edge);
+      PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, learnedConstraints);
@@ -199,7 +213,7 @@ public class FlowComputation {
       Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
-        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbol, f, endOfPath));
+        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, f, endOfPath));
     }
 
     private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
@@ -215,14 +229,11 @@ public class FlowComputation {
 
     Optional<LearnedAssociation> learnedAssociation(ExplodedGraph.Edge edge) {
       return edge.learnedAssociations().stream()
-        .filter(la -> la.symbol().equals(trackSymbol))
+        .filter(la -> trackedSymbols.contains(la.symbol))
         .findAny();
     }
 
     List<JavaFileScannerContext.Location> flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
-      if (trackSymbol == null) {
-        return ImmutableList.of();
-      }
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       for (Class<? extends Constraint> domain : domains) {
         Constraint constraint = node.programState.getConstraint(learnedAssociation.symbolicValue(), domain);
@@ -234,15 +245,33 @@ public class FlowComputation {
       return flowBuilder.build();
     }
 
-    @Nullable
-    private Symbol newTrackedSymbol(ExplodedGraph.Edge edge) {
-      if (trackSymbol == null) {
-        return null;
-      }
-      if (learnedAssociation(edge).isPresent()) {
-        return edge.parent.programState.getLastEvaluated();
-      }
-      return trackSymbol;
+    private PSet<Symbol> newTrackedSymbols(ExplodedGraph.Edge edge) {
+      Optional<LearnedAssociation> learnedAssociation = learnedAssociation(edge);
+      return learnedAssociation.map(la -> {
+        PSet<Symbol> newTrackedSymbols = trackedSymbols.remove(la.symbol);
+        // if assigning literal, stop tracking symbols, because same SV is reused see SONARJAVA-2164
+        if (isLiteralAssignment(edge.parent.programPoint.syntaxTree())) {
+          return newTrackedSymbols;
+        }
+        ProgramState programState = edge.parent.programState;
+        Symbol symbol = programState.lastAssociatedSymbols.get(la.symbolicValue());
+        if (symbol != null) {
+          newTrackedSymbols = newTrackedSymbols.add(symbol);
+        } else {
+          // take all symbolic values used in this assignment and retrieve corresponding symbols
+          for (SymbolicValue sv : computedFrom(la.symbolicValue())) {
+            Symbol newSymbol = programState.lastAssociatedSymbols.get(sv);
+            if (newSymbol != null) {
+              newTrackedSymbols = newTrackedSymbols.add(newSymbol);
+            }
+          }
+        }
+        return newTrackedSymbols;
+      }).orElse(trackedSymbols);
+    }
+
+    private boolean isLiteralAssignment(Tree tree) {
+      return tree.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) tree).expression().is(Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL);
     }
 
     private boolean visitedAllParents(ExplodedGraph.Edge edge) {
@@ -285,8 +314,10 @@ public class FlowComputation {
         return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
       String name = SyntaxTreeNameFinder.getName(nodeTree);
-      String message = name == null ? constraint.valueAsString() : String.format(IMPLIES_MSG, name, constraint.valueAsString());
-      return ImmutableList.of(location(parent, message));
+      if (name == null) {
+        return ImmutableList.of();
+      }
+      return ImmutableList.of(location(parent, String.format(IMPLIES_MSG, name, constraint.valueAsString())));
     }
 
     private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {

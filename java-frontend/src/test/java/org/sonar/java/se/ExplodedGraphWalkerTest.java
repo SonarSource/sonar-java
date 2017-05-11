@@ -23,7 +23,8 @@ import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
+import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -35,6 +36,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,8 +48,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 public class ExplodedGraphWalkerTest {
@@ -289,6 +293,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void xproc_reporting_with_var_args() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcReportingWithVarArgs.java", seChecks());
+  }
+
+  @Test
   public void xproc_keep_yield_for_reporting() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/YieldReporting.java", new SymbolicExecutionVisitor(Collections.emptyList()) {
       @Override
@@ -328,7 +337,66 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void compound_assignment_should_create_new_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/CompoundAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue rhsValue;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          rhsValue = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isNotEqualTo(rhsValue);
+          // there should be only one value after compound assignment, result of compound operator
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
+        }
+        return state;
+      }
+    });
+  }
+
+  @Test
+  public void simple_assignment_should_preserve_value_on_stack() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SimpleAssignmentExecution.java", new SECheck() {
+
+      private SymbolicValue rhsValue;
+
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          rhsValue = state.peekValue();
+        }
+        return state;
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof AssignmentExpressionTree) {
+          assertThat(state.peekValue()).isEqualTo(rhsValue);
+          // there should be only one value after simple assignment, which is symbolic value of RHS
+          assertThatThrownBy(() -> state.peekValue(1)).isInstanceOf(IllegalStateException.class);
+        }
+        return state;
+      }
+    });
+  }
+
+  @Test
   public void eg_walker_factory_default_checks() throws IOException {
+    Set<String> nonDefaultChecks = Stream.of(CustomUnclosedResourcesCheck.class, ConditionalUnreachableCodeCheck.class, BooleanGratuitousExpressionsCheck.class)
+      .map(Class::getSimpleName)
+      .collect(Collectors.toSet());
     // Compute the list of SEChecks defined in package
     List<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")
@@ -336,7 +404,7 @@ public class ExplodedGraphWalkerTest {
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
       // CustomUnclosedResource is a template rule and should not be activated by default
-      .filter(name -> !name.equals(CustomUnclosedResourcesCheck.class.getSimpleName()))
+      .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
       .collect(Collectors.toList());
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
@@ -347,7 +415,8 @@ public class ExplodedGraphWalkerTest {
     return new SECheck[]{
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
-      new ConditionAlwaysTrueOrFalseCheck(),
+      new ConditionalUnreachableCodeCheck(),
+      new BooleanGratuitousExpressionsCheck(),
       new UnclosedResourcesCheck(),
       new CustomUnclosedResourcesCheck(),
       new LocksNotUnlockedCheck(),

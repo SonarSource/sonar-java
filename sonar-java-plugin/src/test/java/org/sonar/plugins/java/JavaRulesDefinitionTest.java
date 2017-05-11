@@ -67,6 +67,11 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
+
+    // check if a rule using a legacy key is also enabled
+    RulesDefinition.Rule unusedPrivateMethodRule = repository.rule("UnusedPrivateMethod");
+    assertThat(unusedPrivateMethodRule.activatedByDefault()).isEqualTo(version.isGreaterThanOrEqual(Version.create(6, 0)));
+
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
   }

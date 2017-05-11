@@ -7,7 +7,7 @@
     "constantCost": "30min"
   },
   "tags": [
-    "bug"
+    
   ],
   "defaultSeverity": "Major"
 }

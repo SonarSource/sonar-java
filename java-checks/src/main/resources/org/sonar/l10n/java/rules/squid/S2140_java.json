@@ -1,13 +1,12 @@
 {
   "title": "Methods of \"Random\" that return floating point values should not be used in random integer generation",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

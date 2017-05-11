@@ -1,6 +1,6 @@
 {
   "title": "Exception handlers should preserve the original exceptions",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,7 +8,6 @@
   },
   "tags": [
     "error-handling",
-    "bug",
     "cert",
     "suspicious"
   ],

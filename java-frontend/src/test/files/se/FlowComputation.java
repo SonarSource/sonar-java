@@ -4,7 +4,7 @@ class A {
   void symbolSetToNull() {
     Object a = new Object();
     a = null; // flow@npe {{'a' is assigned null.}}
-    a.toString(); // Noncompliant [[flows=npe]] {{NullPointerException might be thrown as 'a' is nullable here}}  flow@npe {{'a' is dereferenced.}}
+    a.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "a" is nullable here.}}  flow@npe {{'a' is dereferenced.}}
   }
 
 
@@ -35,7 +35,7 @@ class A {
     try {
       Thread.sleep(0);
     } catch (Exception ex) { // flow@ex {{Implies 'ex' is non-null.}}
-      if (ex != null) { // Noncompliant [[flows=ex]] {{Change this condition so that it does not always evaluate to "true"}}   flow@ex {{Condition is always true.}}
+      if (ex != null) { // Noncompliant [[flows=ex]] {{Remove this expression which always evaluates to "true"}}   flow@ex {{Expression is always true.}}
         ex.getClause();
       }
     }
@@ -43,7 +43,7 @@ class A {
 
   void invocation_target(Object a) {
     a.toString(); // flow@target {{Implies 'a' is non-null.}}
-    if (a == null) { // Noncompliant [[flows=target]] flow@target {{Condition is always false.}}
+    if (a == null) { // Noncompliant [[flows=target]] flow@target {{Expression is always false.}}
 
     }
   }

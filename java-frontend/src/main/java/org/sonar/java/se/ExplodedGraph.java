@@ -68,11 +68,13 @@ public class ExplodedGraph {
     boolean isNew;
     boolean exitPath = false;
     boolean happyPath = true;
+    private final int hashcode;
 
     private Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       Objects.requireNonNull(programPoint);
       this.programPoint = programPoint;
       this.programState = programState;
+      hashcode = programPoint.hashCode() * 31 + (programState == null ? 0 : programState.hashCode());
     }
 
     public void addParent(@Nullable Node parent, @Nullable MethodYield methodYield) {
@@ -104,7 +106,7 @@ public class ExplodedGraph {
 
     @Override
     public int hashCode() {
-      return programPoint.hashCode() * 31 + (programState == null ? 0 : programState.hashCode());
+      return hashcode;
     }
 
     @Override
@@ -130,15 +132,17 @@ public class ExplodedGraph {
   public static final class Edge {
     final Node child;
     final Node parent;
+    final int hashcode;
 
     private Set<LearnedConstraint> lc;
     private Set<LearnedAssociation> la;
     private final Set<MethodYield> yields = new LinkedHashSet<>();
 
     private Edge(Node child, Node parent) {
-      Preconditions.checkState(!Objects.equals(child, parent));
+      Preconditions.checkState(!child.equals(parent));
       this.child = child;
       this.parent = parent;
+      hashcode = Objects.hash(child, parent);
     }
 
     public Node child() {
@@ -176,13 +180,13 @@ public class ExplodedGraph {
         return false;
       }
       Edge edge = (Edge) o;
-      return Objects.equals(child, edge.child) &&
-        Objects.equals(parent, edge.parent);
+      return child.equals(edge.child) &&
+        parent.equals(edge.parent);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(child, parent);
+      return hashcode;
     }
   }
 }

@@ -35,7 +35,7 @@ abstract class A {
 
   void test_constraint_on_multiple_args(boolean a, boolean b) {
     if (multipleArgs(a, a)) { // flow@args {{Implies 'a' is true.}} flow@args {{Implies 'a' is true.}}
-      if (a) { // Noncompliant [[flows=args]] flow@args {{Condition is always true.}}
+      if (a) { // Noncompliant [[flows=args]] flow@args {{Expression is always true.}}
 
       }
     }

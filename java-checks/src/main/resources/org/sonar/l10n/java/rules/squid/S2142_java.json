@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "multi-threading",
-    "bug"
+    "multi-threading"
   ],
   "standards": [
     "CWE"

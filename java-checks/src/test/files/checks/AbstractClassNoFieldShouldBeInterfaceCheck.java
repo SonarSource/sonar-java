@@ -40,3 +40,15 @@ public abstract class G {
     return ":";
   }
 }
+
+public abstract class Car { // Compliant - has private methods
+  public void start() {
+      turnOnLights();
+      startEngine();
+  }
+
+  public abstract void stop();
+
+  private void turnOnLights() {}
+  private void startEngine() {}
+}

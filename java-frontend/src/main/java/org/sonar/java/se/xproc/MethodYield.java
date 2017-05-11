@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 public abstract class MethodYield {
   final ExplodedGraph.Node node;
   private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
-  private final MethodBehavior behavior;
+  final MethodBehavior behavior;
   List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
 
   public MethodYield(MethodBehavior behavior) {
@@ -184,18 +184,21 @@ public abstract class MethodYield {
 
     Map<String, Set<List<JavaFileScannerContext.Location>>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
     return flowByDomain.computeIfAbsent(domainKey,
-      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, node.programState.getLastEvaluated()));
+      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, null));
   }
 
   private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {
     ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
-    for (Integer parameterIndex : parameterIndices) {
+    parameterIndices.stream()
+      // Ignore last parameter(s) of a variadic method
+      .filter(i -> !behavior.isMethodVarArgs() || i < behavior.methodArity() -1)
+      .forEach(parameterIndex ->  {
       if (parameterIndex == -1) {
         parameterSVs.add(node.programState.exitValue());
       } else {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
-    }
+    });
     return parameterSVs.build();
   }
 }

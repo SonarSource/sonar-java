@@ -69,10 +69,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     IdentifierTree idTree = getIdentifierTree(tree.variable());
     Tree envTree = semanticModel.getTree(semanticModel.getEnv(idTree.symbol()));
     Tree loopTree = loopLevel.peek();
-    if (envTree != null && (envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)))) {
-      return false;
-    }
-    return true;
+    return envTree == null || !(envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)));
   }
 
   private static boolean isNotArrayAccess(AssignmentExpressionTree tree) {

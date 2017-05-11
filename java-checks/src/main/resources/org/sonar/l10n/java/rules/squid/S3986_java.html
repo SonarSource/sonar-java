@@ -1,0 +1,29 @@
+<p>Few developers are aware of the difference between <code>Y</code> for "Week year" and <code>y</code> for Year when formatting and parsing a date
+with <code>SimpleDateFormat</code>. That's likely because for most dates, Week year and Year are the same, so testing at any time other than the first
+or last week of the year will yield the same value for both <code>y</code> and <code>Y</code>. But in the last week of December and the first week of
+January, you may get unexpected results.</p>
+<p>According to the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/GregorianCalendar.html#week_year">Javadoc</a>:</p>
+<blockquote>
+  <p>A week year is in sync with a WEEK_OF_YEAR cycle. All weeks between the first and last weeks (inclusive) have the same week year value.
+  Therefore, the first and last days of a week year may have different calendar year values.</p>
+  <p>For example, January 1, 1998 is a Thursday. If getFirstDayOfWeek() is MONDAY and getMinimalDaysInFirstWeek() is 4 (ISO 8601 standard compatible
+  setting), then week 1 of 1998 starts on December 29, 1997, and ends on January 4, 1998. The week year is 1998 for the last three days of calendar
+  year 1997. If, however, getFirstDayOfWeek() is SUNDAY, then week 1 of 1998 starts on January 4, 1998, and ends on January 10, 1998; the first three
+  days of 1998 then are part of week 53 of 1997 and their week year is 1997.</p>
+</blockquote>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
+String result = new SimpleDateFormat("YYYY/MM/dd").format(date);   //Noncompliant; yields '2016/12/31'
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
+String result = new SimpleDateFormat("yyyy/MM/dd").format(date);   //Yields '2015/12/31' as expected
+</pre>
+<h2>Exceptions</h2>
+<pre>
+Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
+String result = new SimpleDateFormat("YYYY-ww").format(date);  //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
+</pre>
+

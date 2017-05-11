@@ -32,7 +32,6 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.SuppressWarningsCheck;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -130,7 +130,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     List<String> rules = Lists.newArrayList();
     for (AnnotationTree annotationTree : annotationTrees) {
       if (isSuppressWarningsAnnotation(annotationTree)) {
-        startLine = ((JavaTree) annotationTree).getLine();
+        startLine = startLineIncludingTrivia(tree);
         rules.addAll(getRules(annotationTree));
         break;
       }
@@ -143,6 +143,15 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
         excludeLines(filteredlines, rule);
       }
     }
+  }
+
+  private static int startLineIncludingTrivia(Tree tree) {
+    SyntaxToken firstToken = tree.firstToken();
+    // first token can't be null, because tree has @SuppressWarnings annotation
+    if (!firstToken.trivias().isEmpty()) {
+      return firstToken.trivias().get(0).startLine();
+    }
+    return firstToken.line();
   }
 
   private static boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {

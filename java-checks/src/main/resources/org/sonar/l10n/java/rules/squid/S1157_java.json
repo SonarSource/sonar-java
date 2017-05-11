@@ -1,13 +1,12 @@
 {
   "title": "Case insensitive string comparisons should be made without intermediate upper or lower casing",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

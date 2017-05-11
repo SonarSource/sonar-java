@@ -4,7 +4,7 @@ instead. It will be clearer and more efficient.</p>
 <pre>
 String myNum = "12.2";
 
-float f = new Float(myNum).floatValue();  // Noncompliant; creates &amp; discards a Float
+float f = (new Float(myNum)).floatValue();  // Noncompliant; creates &amp; discards a Float
 </pre>
 <h2>Compliant Solution</h2>
 <pre>

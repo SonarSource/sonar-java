@@ -81,8 +81,8 @@ class A {
 
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
-    a2.hashCode(); // Noncompliant [[flows=a2]] {{NullPointerException might be thrown as 'a2' is nullable here}} flow@a2 {{'a2' is dereferenced.}}
-    a3.hashCode(); // Noncompliant [[flows=a3]] {{NullPointerException might be thrown as 'a3' is nullable here}} flow@a3 {{'a3' is dereferenced.}}
+    a2.hashCode(); // Noncompliant [[flows=a2]] {{A "NullPointerException" could be thrown; "a2" is nullable here.}} flow@a2 {{'a2' is dereferenced.}}
+    a3.hashCode(); // Noncompliant [[flows=a3]] {{A "NullPointerException" could be thrown; "a3" is nullable here.}} flow@a3 {{'a3' is dereferenced.}}
   }
 
   private String getFoo() {

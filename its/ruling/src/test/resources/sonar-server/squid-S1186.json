@@ -11,7 +11,4 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
 62,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/ui/Views.java':[
-43,
-],
 }

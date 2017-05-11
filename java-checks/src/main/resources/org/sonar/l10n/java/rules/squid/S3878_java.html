@@ -1,0 +1,27 @@
+<p>There's no point in creating an array solely for the purpose of passing it as a varargs (<code>...</code>) argument; varargs <em>is</em> an array.
+Simply pass the elements directly. They will be consolidated into an array automatically.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void callTheThing() {
+  //...
+  doTheThing(new String[] { "s1", "s2"});  // Noncompliant
+  // ...
+}
+
+public void doTheThing (Object ... args) {
+  // ...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public void callTheThing() {
+  //...
+  doTheThing("s1", "s2");
+  // ...
+}
+
+public void doTheThing (Object ... args) {
+  // ...
+}
+</pre>
+

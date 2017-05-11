@@ -1,6 +1,8 @@
-<p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> both make calls out to the Internet and are blocking
-operations. <code>URI</code> on the other hand makes no such calls and should be used instead unless the specific <code>URL</code> functionality is
-required.</p>
+<p>The <code>equals</code> and <code>hashCode</code> methods of <code>java.net.URL</code> both may trigger a name service (usually DNS) lookup to
+resolve the host name or IP address. Depending on the configuration, and network status, that can take a long time. <code>URI</code> on the other hand
+makes no such calls and should be used instead unless the specific <code>URL</code> functionality is required.</p>
+<p>In general it is better to use the <code>URI</code> class until access to the resource is actually needed, at which point you can just convert the
+<code>URI</code> to a <code>URL</code> using <code>URI.toURL()</code>.</p>
 <p>This rule checks for uses of <code>URL</code> 's in <code>Map</code> and <code>Set</code> , and for explicit calls to the <code>equals</code> and
 <code>hashCode</code> methods.</p>
 <h2>Noncompliant Code Example</h2>

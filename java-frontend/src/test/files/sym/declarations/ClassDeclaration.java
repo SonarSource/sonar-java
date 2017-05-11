@@ -32,6 +32,7 @@ class ClassDeclaration<T, S> {
         void method(){}
       }
     }
+    Object o = new Base();
   }
 
 }

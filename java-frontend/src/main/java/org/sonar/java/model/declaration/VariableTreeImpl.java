@@ -191,6 +191,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   public void setSymbol(JavaSymbol.VariableJavaSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
+    // also set the symbol to the variable identifier, or it would remain unknown
+    ((IdentifierTreeImpl) simpleName()).setSymbol(symbol);
   }
 
   @Override

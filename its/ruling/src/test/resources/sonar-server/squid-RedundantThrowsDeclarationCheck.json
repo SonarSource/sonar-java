@@ -1,5 +1,17 @@
 {
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/app/WebServer.java':[
+31,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/issue/IssueCache.java':[
+38,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DataChange.java':[
+47,
+],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/action/IndexAction.java':[
 57,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/ws/ListingWs.java':[
+105,
 ],
 }

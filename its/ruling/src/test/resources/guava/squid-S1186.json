@@ -1,7 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/base/VerifyException.java':[
-33,
-],
 'com.google.guava:guava:src/com/google/common/cache/AbstractCache.java':[
 215,
 ],
@@ -43,9 +40,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/GenericMapMaker.java':[
 56,
-],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java':[
-127,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java':[
 145,
@@ -95,8 +89,5 @@
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/ThreadFactoryBuilder.java':[
 56,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/UncheckedTimeoutException.java':[
-28,
 ],
 }

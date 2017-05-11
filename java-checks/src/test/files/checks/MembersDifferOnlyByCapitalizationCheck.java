@@ -82,3 +82,78 @@ public enum MyEnum {
   public void foo() {} // Compliant
   public static MyEnum valueof(int i) { return FOO; } // Noncompliant {{Rename method "valueof" to prevent any misunderstanding/clash with method "valueOf".}}
 }
+
+class ABuilder {
+  String name;
+  String wrong;
+
+  ABuilder name(String name) { // Compliant - exception for builder pattern
+    this.name = name;
+    return this;
+  }
+
+  ABuilder WRONG(String wrong) { // Noncompliant
+    this.wrong = value;
+    return this;
+  }
+}
+
+
+class SameName {
+  Object m;
+  Object f1;
+  Object flambda;
+  Object fAnon;
+
+  Object m() {  // Compliant
+    return m;
+  }
+
+  Object M() { // Noncompliant
+    return m;
+  }
+
+  Object f1() { // Noncompliant
+    return new Object();
+  }
+
+  Object f1() { // Noncompliant
+    return;  // just for coverage, doesn't compile
+  }
+
+  Object f1() { // Noncompliant
+    return new Object();
+  }
+
+  Object flambda() { // Compliant
+    call(f -> {
+      return new Object();
+    });
+    return flambda;
+  }
+
+  Object fAnon() { // Compliant
+    Object o = new Object() {
+      String toString() {
+        return "";
+      }
+    };
+    return fAnon;
+  }
+
+  Object foo;
+  void foo() { // Noncompliant
+    SameName sn = new SameName() {
+      Object bar() {
+        return foo;
+      }
+    };
+  }
+
+  Object f1() { // Noncompliant
+    if (cond) {
+      return new Object();
+    }
+    return f1;
+  }
+}

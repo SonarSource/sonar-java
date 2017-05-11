@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 public class NullDereferenceCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
-    "NullPointerException will be thrown when invoking method %s().");
+    "\"NullPointerException\" will be thrown when invoking method \"%s()\".");
 
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
 
@@ -135,7 +135,7 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   private void reportIssue(SymbolicValue currentVal, Tree syntaxNode, ExplodedGraph.Node node) {
-    String message = "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here";
+    String message = "A \"NullPointerException\" could be thrown; \"" + SyntaxTreeNameFinder.getName(syntaxNode) + "\" is nullable here.";
     SymbolicValue val = null;
     if (!SymbolicValue.NULL_LITERAL.equals(currentVal)) {
       val = currentVal;

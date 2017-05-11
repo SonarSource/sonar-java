@@ -19,10 +19,10 @@ class A {
     try {
       foo(o1, o2);
     } catch (MyException1 e) {
-      if (o1 == null) {} // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (o1 == null) {} // Noncompliant {{Remove this expression which always evaluates to "true"}}
     } catch (MyException3 e) {
-      if (o1 == null  // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-        || o2 == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (o1 == null  // Noncompliant {{Remove this expression which always evaluates to "false"}}
+        || o2 == null) {}  // Noncompliant {{Remove this expression which always evaluates to "false"}}
     } catch (MyException2 e) {
       if (o2 != null) {} // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       o1.toString(); // Compliant - can not be null

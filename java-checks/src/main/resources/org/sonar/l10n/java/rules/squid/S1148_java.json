@@ -7,8 +7,7 @@
     "constantCost": "10min"
   },
   "tags": [
-    "error-handling",
-    "security"
+    "error-handling"
   ],
   "defaultSeverity": "Minor"
 }

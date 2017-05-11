@@ -27,7 +27,7 @@ class A {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
+    i = array2.length; // Noncompliant {{A "NullPointerException" could be thrown; "array2" is nullable here.}}
   }
 
   void testArrayAccess() {
@@ -175,7 +175,7 @@ class A {
 
   boolean foo(boolean foo) {
     boolean identifier = true;
-    return (boolean) !identifier && foo; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    return (boolean) !identifier && foo; // Noncompliant {{Remove this expression which always evaluates to "false"}}
   }
 }
 

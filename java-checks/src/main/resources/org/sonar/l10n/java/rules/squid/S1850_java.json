@@ -7,12 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cwe",
-    "bug",
-    "suspicious"
-  ],
-  "standards": [
-    "CWE"
+    
   ],
   "defaultSeverity": "Major"
 }

@@ -1,91 +1,91 @@
 class Fields {
   @lombok.Getter
-  class Getter {
+  class Getter { // WithIssue
     private int foo; // NoIssue
   }
 
-  class Getter2 {
+  class Getter2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.Setter
-  class Setter {
+  class Setter { // WithIssue
     private int foo; // NoIssue
   }
 
-  class Setter2 {
+  class Setter2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.Data
-  class Data {
+  class Data { // WithIssue
     private int foo; // NoIssue
   }
 
-  class Data2 {
+  class Data2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.Value
-  class Value {
+  class Value { // WithIssue
     private int foo; // NoIssue
   }
 
-  class Value2 {
+  class Value2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.Builder
-  class Builder {
+  class Builder { // WithIssue
     private int foo; // NoIssue
   }
 
-  class Builder2 {
+  class Builder2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.ToString
-  class ToString {
+  class ToString { // WithIssue
     private int foo; // NoIssue
   }
 
-  class ToString2 {
+  class ToString2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.RequiredArgsConstructor
-  class RequiredArgsConstructor {
+  class RequiredArgsConstructor { // NoIssue
     private int foo; // NoIssue
   }
 
-  class RequiredArgsConstructor2 {
+  class RequiredArgsConstructor2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.AllArgsConstructor
-  class AllArgsConstructor {
+  class AllArgsConstructor { // NoIssue
     private int foo; // NoIssue
   }
 
-  class AllArgsConstructor2 {
+  class AllArgsConstructor2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.NoArgsConstructor
-  class NoArgsConstructor {
+  class NoArgsConstructor { // NoIssue
     private int foo; // NoIssue
   }
 
-  class NoArgsConstructor2 {
+  class NoArgsConstructor2 { // WithIssue
     private int foo; // WithIssue
   }
 
   @lombok.EqualsAndHashCode
-  class EqualsAndHashCode {
+  class EqualsAndHashCode { // WithIssue
     private int foo; // NoIssue
   }
 
-  class EqualsAndHashCode2 {
+  class EqualsAndHashCode2 { // WithIssue
     private int foo; // WithIssue
   }
 }

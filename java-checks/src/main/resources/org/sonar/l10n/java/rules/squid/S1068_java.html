@@ -1,5 +1,7 @@
 <p>If a <code>private</code> field is declared but not used in the program, it can be considered dead code and should therefore be removed. This will
 improve maintainability because developers will not wonder what the variable is used for.</p>
+<p>Note that this rule does not take reflection into account, which means that issues will be raised on <code>private</code> fields that are only
+accessed using the reflection API.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {

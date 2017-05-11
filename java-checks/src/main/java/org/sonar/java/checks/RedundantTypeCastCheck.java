@@ -28,6 +28,7 @@ import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -100,7 +102,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       }
     } else if(parent.is(Tree.Kind.MEMBER_SELECT, Tree.Kind.CONDITIONAL_EXPRESSION)) {
       target = tree.type().symbolType();
-    } else if(parent instanceof ExpressionTree) {
+    } else if (parent.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      target = ((ArrayAccessExpressionTree) parent).expression().symbolType();
+    } else if (parent instanceof ExpressionTree) {
       target = ((ExpressionTree) parent).symbolType();
     }
     return target;

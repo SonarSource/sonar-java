@@ -45,6 +45,7 @@ public class MethodBehavior {
   private final Set<MethodYield> yields;
   private final List<SymbolicValue> parameters;
   private boolean complete = false;
+  private boolean visited = false;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
@@ -140,9 +141,17 @@ public class MethodBehavior {
 
   public void completed() {
     this.complete = true;
+    this.visited = true;
   }
 
   public void addYield(MethodYield yield) {
     yields.add(yield);
+  }
+
+  public boolean isVisited() {
+    return visited;
+  }
+  public void visited() {
+    visited = true;
   }
 }

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -28,6 +29,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
@@ -35,6 +38,13 @@ import java.util.List;
 
 @Rule(key = "S1764")
 public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("equals").addParameter(JAVA_LANG_OBJECT);
+  private static final MethodMatcher DEEP_EQUALS_MATCHER = MethodMatcher.create().typeDefinition("java.util.Objects")
+    .name("equals").addParameter(JAVA_LANG_OBJECT).addParameter(JAVA_LANG_OBJECT);
+  private static final MethodMatcher OBJECTS_EQUALS_MATCHER = MethodMatcher.create().typeDefinition("java.util.Objects")
+    .name("deepEquals").addParameter(JAVA_LANG_OBJECT).addParameter(JAVA_LANG_OBJECT);
 
   /**
    * symetric operators : a OP b is equivalent to b OP a
@@ -69,20 +79,52 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       .add(Tree.Kind.OR)
       .add(Tree.Kind.CONDITIONAL_AND)
       .add(Tree.Kind.CONDITIONAL_OR)
+      .add(Tree.Kind.METHOD_INVOCATION)
       .build();
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      checkEqualsMethods(mit);
+      return;
+    }
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
     ExpressionTree rightOperand = binaryExpressionTree.rightOperand();
     ExpressionTree equivalentOperand = equivalentOperand(binaryExpressionTree, rightOperand);
     if (equivalentOperand != null) {
       reportIssue(
         rightOperand,
-        "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
+        "Correct one of the identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
         ImmutableList.of(new JavaFileScannerContext.Location("", equivalentOperand)),
         null);
+    }
+  }
+
+  private void checkEqualsMethods(MethodInvocationTree mit) {
+    if(EQUALS_MATCHER.matches(mit)) {
+      if(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        ExpressionTree leftOp = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+        ExpressionTree rightOp = mit.arguments().get(0);
+        if(SyntacticEquivalence.areEquivalent(leftOp, rightOp)) {
+          reportIssue(
+            rightOp,
+            "Correct one of the identical sub-expressions on both sides of equals.",
+            ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
+            null);
+        }
+      }
+    } else if (DEEP_EQUALS_MATCHER.matches(mit) || OBJECTS_EQUALS_MATCHER.matches(mit)) {
+      ExpressionTree leftOp = mit.arguments().get(0);
+      ExpressionTree rightOp = mit.arguments().get(1);
+      if(SyntacticEquivalence.areEquivalent(leftOp, rightOp)) {
+        reportIssue(
+          rightOp,
+          "Correct one of the identical argument sub-expressions.",
+          ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
+          null);
+      }
     }
   }
 
@@ -111,10 +153,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
 
   private static boolean isNanTest(BinaryExpressionTree tree) {
     Type leftOperandType = tree.leftOperand().symbolType();
-    if (tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE))) {
-      return true;
-    }
-    return false;
+    return tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE));
   }
 
   private static boolean isLeftShiftOnOne(BinaryExpressionTree tree) {

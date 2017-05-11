@@ -39,12 +39,12 @@ public class SystemExitCalledCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!((MethodTreeImpl) tree).isMainMethod()) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR) || !((MethodTreeImpl) tree).isMainMethod()) {
       tree.accept(new InvocationVisitor());
     }
   }

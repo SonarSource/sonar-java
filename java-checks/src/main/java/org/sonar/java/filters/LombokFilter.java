@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
@@ -39,13 +40,20 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     UnusedPrivateFieldCheck.class,
     EqualsNotOverriddenInSubclassCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
-    UtilityClassWithPublicConstructorCheck.class);
+    UtilityClassWithPublicConstructorCheck.class,
+    AtLeastOneConstructorCheck.class);
 
   private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
     .add("lombok.Getter")
     .add("lombok.Setter")
     .add("lombok.Builder")
     .add("lombok.ToString")
+    .add("lombok.AllArgsConstructor")
+    .add("lombok.NoArgsConstructor")
+    .add("lombok.RequiredArgsConstructor")
+    .build();
+
+  private static final List<String> GENERATE_CONSTRUCTOR = ImmutableList.<String>builder()
     .add("lombok.AllArgsConstructor")
     .add("lombok.NoArgsConstructor")
     .add("lombok.RequiredArgsConstructor")
@@ -74,6 +82,12 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       excludeLines(tree, UnusedPrivateFieldCheck.class);
     } else {
       acceptLines(tree, UnusedPrivateFieldCheck.class);
+    }
+
+    if (usesAnnotation(tree, GENERATE_CONSTRUCTOR)) {
+      excludeLines(tree, AtLeastOneConstructorCheck.class);
+    } else {
+      acceptLines(tree, AtLeastOneConstructorCheck.class);
     }
 
     if (generatesEquals) {

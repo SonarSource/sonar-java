@@ -43,7 +43,7 @@ public class DoubleBraceInitializationCheck extends IssuableSubscriptionVisitor 
     if (classBody != null) {
       List<Tree> members = classBody.members();
       if (members.size() == 1 && members.get(0).is(Tree.Kind.INITIALIZER)) {
-        reportIssue(classBody, "Replace this syntax with a different type initialization.");
+        reportIssue(classBody, "Use another way to initialize this instance.");
       }
     }
   }

@@ -54,11 +54,14 @@ class Foo {
     while (null != (foo = bar())) { // Compliant
     }
   }
+
+  boolean field;
+
   @MyAnnotation(name="toto", type=Type.SubType) // Compliant
   void bar(){
-    eventBus.register((NextPlayer) event -> isPlaying = !isPlaying);
-    eventBus.register((NextPlayer) event -> {isPlaying = !isPlaying;});
-    eventBus.register((NextPlayer) event -> {if(isPlaying = !isPlaying) return false;}); // Noncompliant
+    eventBus.register((NextPlayer) event -> field = !field);
+    eventBus.register((NextPlayer) event -> {field = !field;});
+    eventBus.register((NextPlayer) event -> {if(field = !field) return false;}); // Noncompliant
   }
 
   void sonarJava1516() {
@@ -73,6 +76,16 @@ class Foo {
     while (!ids.isEmpty()) {
       int x = (a = ids.remove(0)) + 5; // Noncompliant
     }
+  }
+
+  void sonarJava2193() {
+    int i = j = 0; // Compliant
+    int l = i;
+    int k = (l += 1); // Compliant
+    double a = b = c = defaultValue();
+    Object[] result;
+    result = (bresult = new byte[len]);
+    char[] buf = lineBuffer = new char[128];
   }
 
 }

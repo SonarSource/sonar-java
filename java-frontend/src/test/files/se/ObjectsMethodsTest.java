@@ -21,7 +21,7 @@ public class ObjectsNullCheck {
     if (Objects.nonNull(x)) {
       x.toString(); // Compliant: x was checked for non null
     } else {
-      x.logNull(); // Noncompliant {{NullPointerException might be thrown as 'x' is nullable here}}
+      x.logNull(); // Noncompliant {{A "NullPointerException" could be thrown; "x" is nullable here.}}
     }
   }
 

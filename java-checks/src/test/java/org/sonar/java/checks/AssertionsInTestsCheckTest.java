@@ -61,4 +61,9 @@ public class AssertionsInTestsCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/AssertionsInTestsCheckTruth.java", check);
   }
 
+  @Test
+  public void restAssured() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/AssertionsInTestsCheckRestAssured.java", check);
+  }
+
 }

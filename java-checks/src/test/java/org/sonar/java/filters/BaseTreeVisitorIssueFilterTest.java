@@ -20,7 +20,6 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.assertj.core.api.AbstractBooleanAssert;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -180,8 +180,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   private static void scanFile(JavaIssueFilter filter) {
-    List<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter);
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.<File>newLinkedList(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null);
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filters/BaseTreeVisitorIssueFilter.java"), visitorsBridge);
   }
 }

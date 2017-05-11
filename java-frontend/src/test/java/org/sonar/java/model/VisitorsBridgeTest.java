@@ -22,9 +22,13 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -33,13 +37,21 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VisitorsBridgeTest {
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   @Test
   public void test_semantic_exclusions() {
@@ -81,6 +93,24 @@ public class VisitorsBridgeTest {
       }), Lists.newArrayList(), null);
     checkFile("Foo.java", "class Foo {}", visitorsBridge);
     assertThat(ParametrizedTypeJavaType.typeSubstitutionSolver).isNull();
+  }
+
+  @Test
+  public void log_only_50_elements() throws Exception {
+    DecimalFormat formatter = new DecimalFormat("00");
+    IntFunction<String> classNotFoundName = i -> "NotFound" + formatter.format(i);
+    VisitorsBridge visitorsBridge =
+      new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
+        assertThat(context.getSemanticModel()).isNotNull();
+        ((SemanticModel) context.getSemanticModel()).classesNotFound().addAll(IntStream.range(0, 60).mapToObj(classNotFoundName).collect(Collectors.toList()));
+      }), Lists.newArrayList(), null);
+    checkFile("Foo.java", "class Foo {}", visitorsBridge);
+    visitorsBridge.endOfAnalysis();
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsOnly(
+      "Classes not found during the analysis : ["+
+      IntStream.range(0, 50 /*only first 50 missing classes are displayed in the log*/).mapToObj(classNotFoundName).sorted().collect(Collectors.joining(", "))
+      +", ...]"
+    );
   }
 
   private static String contstructFileName(String... path) {

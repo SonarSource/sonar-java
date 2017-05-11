@@ -4,11 +4,6 @@
 227,
 249,
 ],
-'com.google.guava:guava:src/com/google/common/cache/CacheBuilderSpec.java':[
-292,
-308,
-416,
-],
 'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultiset.java':[
 277,
 287,
@@ -17,14 +12,8 @@
 30,
 32,
 ],
-'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
-480,
-],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java':[
 215,
-],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
-308,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ObjectArrays.java':[
 239,
@@ -37,10 +26,6 @@
 157,
 ],
 'com.google.guava:guava:src/com/google/common/collect/StandardTable.java':[
-181,
-292,
-299,
-544,
 589,
 711,
 ],

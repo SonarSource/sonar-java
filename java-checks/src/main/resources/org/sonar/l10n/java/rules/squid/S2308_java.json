@@ -1,14 +1,13 @@
 {
   "title": "\"deleteOnExit\" should not be used",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
   "tags": [
-    "performance",
-    "bug"
+    "performance"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Major"
 }

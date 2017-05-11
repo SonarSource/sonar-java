@@ -12,9 +12,6 @@
 'jdk6:java/awt/Window.java':[
 2572,
 ],
-'jdk6:java/awt/color/ICC_Profile.java':[
-905,
-],
 'jdk6:java/awt/event/KeyEvent.java':[
 936,
 ],
@@ -51,9 +48,6 @@
 'jdk6:java/net/NetworkInterface.java':[
 419,
 420,
-],
-'jdk6:java/net/PlainDatagramSocketImpl.java':[
-364,
 ],
 'jdk6:java/net/PlainSocketImpl.java':[
 707,

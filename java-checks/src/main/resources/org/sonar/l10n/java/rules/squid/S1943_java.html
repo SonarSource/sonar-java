@@ -41,8 +41,28 @@ reproduce when it's time to fix them.</p>
       <li> <code>PrintWriter(OutputStream out, boolean autoFlush)</code> </li>
       <li> <code>PrintWriter(String fileName)</code> </li>
     </ul> </li>
-  <li> <code>IOUtils</code> methods which accept an encoding argument when that argument is null, and overloads of those methods that omit the
-  encoding argument </li>
+  <li> methods from Apache commons-io library which accept an encoding argument when that argument is null, and overloads of those methods that omit
+  the encoding argument
+    <ul>
+      <li> <code>IOUtils.copy(InputStream, Writer)</code> </li>
+      <li> <code>IOUtils.copy(Reader, OutputStream)</code> </li>
+      <li> <code>IOUtils.readLines(InputStream)</code> </li>
+      <li> <code>IOUtils.toByteArray(Reader)</code> </li>
+      <li> <code>IOUtils.toByteArray(String)</code> </li>
+      <li> <code>IOUtils.toCharArray(InputStream)</code> </li>
+      <li> <code>IOUtils.toInputStream(TypeCriteria.subtypeOf(CharSequence))</code> </li>
+      <li> <code>IOUtils.toString(byte[])</code> </li>
+      <li> <code>IOUtils.toString(URI)</code> </li>
+      <li> <code>IOUtils.toString(URL)</code> </li>
+      <li> <code>IOUtils.write(char[], OutputStream)</code> </li>
+      <li> <code>IOUtils.write(CharSequence, OutputStream)</code> </li>
+      <li> <code>IOUtils.writeLines(Collection, String, OutputStream)</code> </li>
+      <li> <code>FileUtils.readFileToString(File)</code> </li>
+      <li> <code>FileUtils.readLines(File)</code> </li>
+      <li> <code>FileUtils.write(File, CharSequence)</code> </li>
+      <li> <code>FileUtils.write(File, CharSequence, boolean)</code> </li>
+      <li> <code>FileUtils.writeStringToFile(File, String)</code> </li>
+    </ul> </li>
 </ul>
 <h2>See</h2>
 <ul>

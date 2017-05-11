@@ -6,17 +6,17 @@ abstract class A {
     try {
       foo(o);
     } catch (MyException1 e) {
-      if (o == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (o == null) {}  // Noncompliant {{Remove this expression which always evaluates to "true"}}
     } catch (MyException2 e) {
       if (o == null) {}  // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     } finally {
-      o.toString(); // Noncompliant  {{NullPointerException might be thrown as 'o' is nullable here}}
+      o.toString(); // Noncompliant  {{A "NullPointerException" could be thrown; "o" is nullable here.}}
     }
   }
 
   void tst2(Object o) {
     Object o1 = gul(o);
-    o1.toString(); // Noncompliant  {{NullPointerException might be thrown as 'o1' is nullable here}}
+    o1.toString(); // Noncompliant  {{A "NullPointerException" could be thrown; "o1" is nullable here.}}
   }
 
   void tst3(Object o) {

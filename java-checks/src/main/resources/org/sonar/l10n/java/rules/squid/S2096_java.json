@@ -1,14 +1,13 @@
 {
   "title": "\"main\" should not \"throw\" anything",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
   "tags": [
-    "error-handling",
-    "bug"
+    "error-handling"
   ],
   "defaultSeverity": "Blocker"
 }

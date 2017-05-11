@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -212,6 +213,9 @@ public class SymbolTableTest {
     assertThat(metadata.isAnnotatedWith("java.lang.Override")).isFalse();
     assertThat(metadata.valuesForAnnotation("java.lang.SuppressWarnings")).hasSize(1);
     assertThat(metadata.isAnnotatedWith("java.lang.SuppressWarnings")).isTrue();
+
+    List<IdentifierTree> usages = result.symbol("Base").usages();
+    assertThat(usages).hasSize(2).extracting(i -> i.firstToken().line()).containsOnly(29, 35);
   }
 
   @Test
@@ -339,6 +343,9 @@ public class SymbolTableTest {
     assertThat(enumSymbol.members.lookup("super")).hasSize(1);
     JavaSymbol.VariableJavaSymbol superSymbol = (JavaSymbol.VariableJavaSymbol) enumSymbol.members.lookup("super").get(0);
     assertThat(superSymbol.type).isSameAs(superType);
+
+    // check default constructor is registered.
+    assertThat(enumSymbol.members.lookup("<init>")).hasSize(1);
 
     assertThat(enumSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
@@ -536,6 +543,23 @@ public class SymbolTableTest {
     assertThat(fooA).isSameAs(result.reference(9, 5));
     assertThat(fooA.usages()).hasSize(1);
     assertThat(fooC.usages()).hasSize(0);
+  }
+
+  @Test
+  public void AutoboxingAndLooseInvocation() throws Exception {
+    Result result = Result.createFor("AutoboxingAndLooseInvocation");
+    JavaSymbol fooVariadicInteger = result.symbol("foo", 2);
+    JavaSymbol fooStrictInt = result.symbol("foo", 9);
+
+    JavaSymbol barVariadicObject = result.symbol("bar", 14);
+    JavaSymbol barStrictString = result.symbol("bar", 21);
+
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(fooVariadicInteger.usages()).isEmpty();
+    softly.assertThat(fooStrictInt.usages()).hasSize(1);
+    softly.assertThat(barVariadicObject.usages()).isEmpty();
+    softly.assertThat(barStrictString.usages()).hasSize(1);
+    softly.assertAll();
   }
 
   @Test
@@ -1160,8 +1184,7 @@ public class SymbolTableTest {
     JavaSymbol reverse = result.symbol("reverse");
     //lookup on defered type allow method resolution
     assertThat(sortKeysByValue.usages()).hasSize(1);
-    //Lack of resolution when target type is deduced, we should be able to redo the lookup
-    assertThat(reverse.usages()).isEmpty();
+    assertThat(reverse.usages()).hasSize(1);
   }
 
   @Test
@@ -1201,9 +1224,12 @@ public class SymbolTableTest {
     assertThat(result.reference(67, 17)).isEqualTo(stringToBoolean);
 
     IdentifierTree map = result.referenceTree(63, 8);
-    MethodJavaType methodJavaType = (MethodJavaType) map.symbolType();
-    // expression type is correctly infered but method type is not recomputed and thus is still defered
-    assertThat(methodJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    JavaType mapResultType = ((MethodJavaType) map.symbolType()).resultType;
+    assertThat(mapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(mapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(mapResultType.isParameterized()).isTrue();
+    JavaType substitutionType = ((ParametrizedTypeJavaType) mapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitutionType.is("java.lang.Boolean")).isTrue();
 
      JavaSymbol booleanToInt = result.symbol("booleanToInt");
      assertThat(booleanToInt.usages()).hasSize(1);
@@ -1295,9 +1321,12 @@ public class SymbolTableTest {
     assertThat(foo.usages()).hasSize(1);
 
     IdentifierTree map = result.referenceTree(8, 8);
-    MethodJavaType mapJavaType = (MethodJavaType) map.symbolType();
-    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
-    assertThat(mapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    JavaType mapResultType = ((MethodJavaType) map.symbolType()).resultType;
+    assertThat(mapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(mapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(mapResultType.isParameterized()).isTrue();
+    JavaType substitutionType = ((ParametrizedTypeJavaType) mapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitutionType.is("java.lang.Comparable")).isTrue();
 
     JavaType lambdaType = (JavaType) ((MethodInvocationTree) map.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
@@ -1311,9 +1340,12 @@ public class SymbolTableTest {
     assertThat(bar.usages()).hasSize(1);
 
     IdentifierTree flatMap = result.referenceTree(13, 8);
-    MethodJavaType flatMapJavaType = (MethodJavaType) flatMap.symbolType();
-    // expression type is correctly inferred but method type is not recomputed and thus is still deferred
-    assertThat(flatMapJavaType.resultType.isTagged(JavaType.DEFERRED)).isTrue();
+    JavaType flatMapResultType = ((MethodJavaType) flatMap.symbolType()).resultType;
+    assertThat(flatMapResultType.isTagged(JavaType.DEFERRED)).isFalse();
+    assertThat(flatMapResultType.is("java.util.stream.Stream")).isTrue();
+    assertThat(flatMapResultType.isParameterized()).isTrue();
+    JavaType flatMapSubstitutionType = ((ParametrizedTypeJavaType) flatMapResultType).typeSubstitution.substitutedTypes().get(0);
+    assertThat(flatMapSubstitutionType.is("java.lang.Integer")).isTrue();
 
     lambdaType = (JavaType) ((MethodInvocationTree) flatMap.parent().parent()).arguments().get(0).symbolType();
     assertThat(lambdaType.isParameterized()).isTrue();
@@ -1369,5 +1401,34 @@ public class SymbolTableTest {
     assertThat(constructorRef.name()).isEqualTo("<init>");
     assertThat(constructorRef.owner().type().is("java.lang.Enum")).overridingErrorMessage("Wrongly resolving unaccessible protected enum constructor").isFalse();
     assertThat(constructorRef.owner().type().is("EnumConstructor")).isTrue();
+  }
+
+  @Test
+  public void defered_type_wrongly_resolve_methods() {
+    Result res = Result.createFor("DeferedLambdaShouldOnlyBeAppliedToInterface");
+    assertThat(res.symbol("foo", 2).usages()).isEmpty();
+    assertThat(res.symbol("foo", 6).usages()).hasSize(1);
+    assertThat(res.symbol("foo", 9).usages()).isEmpty();
+  }
+
+  @Test
+  public void return_type_inference() {
+    Result res = Result.createFor("ReturnTypeInference");
+    assertThat(res.symbol("mapToString").usages()).hasSize(1);
+
+  }
+
+  @Test
+  public void resolve_return_type_after_inference() throws Exception {
+    Result res = Result.createFor("VarInitializerInference");
+    VariableTree mySet = (VariableTree) res.symbol("mySet").declaration();
+    assertThat(mySet.initializer().symbolType().is("VarInitializer$ImmutableSet")).isTrue();
+  }
+
+  @Test
+  public void resolution_of_method_ref() throws Exception {
+    Result res = Result.createFor("InferedCalls");
+    assertThat(res.symbol("combine1").usages()).hasSize(1);
+    assertThat(res.symbol("combine2").usages()).hasSize(1);
   }
 }

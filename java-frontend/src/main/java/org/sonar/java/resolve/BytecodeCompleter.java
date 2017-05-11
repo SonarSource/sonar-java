@@ -26,23 +26,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
-
-  private static final Logger LOG = Loggers.get(BytecodeCompleter.class);
 
   private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
       Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
@@ -60,6 +57,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<>();
 
   private ClassLoader classLoader;
+  private Set<String> classesNotFound = new TreeSet<>();
 
   public BytecodeCompleter(List<File> projectClasspath, ParametrizedTypeCache parametrizedTypeCache) {
     this.projectClasspath = projectClasspath;
@@ -159,12 +157,9 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       String packageName = Convert.packagePart(flatName);
       JavaSymbol.TypeJavaSymbol owner = classSymbolOwner;
       if(owner == null) {
-        String enclosingClassName = Convert.enclosingClassName(shortName);
-        if(StringUtils.isNotEmpty(enclosingClassName)) {
-          owner = getClassSymbol(Convert.fullName(packageName, enclosingClassName));
-        }
+        owner = getEnclosingClass(shortName, packageName);
       }
-      if ( owner != null) {
+      if (owner != null) {
         //handle innerClasses
         String name = Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName);
         symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), name, owner, bytecodeName);
@@ -178,8 +173,9 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       if (getClassLoader().getResource(Convert.bytecodeName(flatName) + ".class") != null) {
         symbol.completer = this;
       } else {
-        if (!bytecodeName.endsWith("package-info")) {
-          LOG.warn("Class not found: " + bytecodeName);
+        // Do not log missing annotation as they are not necessarily required in classpath for compiling
+        if (!bytecodeName.endsWith("package-info") && isNotAnnotation(flags)) {
+          classesNotFound.add(bytecodeName);
         }
         ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
         ((ClassJavaType) symbol.type).supertype = Symbols.unknownType;
@@ -188,6 +184,31 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       classes.put(flatName, symbol);
     }
     return symbol;
+  }
+
+  private static boolean isNotAnnotation(int flags) {
+    return (flags & Flags.ANNOTATION) == 0;
+  }
+
+  @Nullable
+  private JavaSymbol.TypeJavaSymbol getEnclosingClass(String shortName, String packageName) {
+    JavaSymbol.TypeJavaSymbol owner = null;
+    String enclosingClassName = Convert.enclosingClassName(shortName);
+    if (StringUtils.isNotEmpty(enclosingClassName)) {
+      enclosingClassName = Convert.fullName(packageName, enclosingClassName);
+      InputStream inputStream = null;
+      try {
+        inputStream = inputStreamFor(enclosingClassName);
+        while (inputStream == null && enclosingClassName.endsWith("$")) {
+          enclosingClassName = enclosingClassName.substring(0, enclosingClassName.length() - 1);
+          inputStream = inputStreamFor(enclosingClassName);
+        }
+      } finally {
+        Closeables.closeQuietly(inputStream);
+      }
+      owner = getClassSymbol(enclosingClassName);
+    }
+    return owner;
   }
 
   public int filterBytecodeFlags(int flags) {
@@ -257,4 +278,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return (flags & Flags.SYNTHETIC) != 0;
   }
 
+  public Set<String> classesNotFound() {
+    return classesNotFound;
+  }
 }

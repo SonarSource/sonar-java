@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 class A implements Iterator<String> {
   
@@ -116,5 +117,16 @@ class K implements Iterator<String> {
   J a;
   public String next() {
     return a.next(); // Compliant
+  }
+}
+
+abstract class L implements Iterator<String> {
+  @Override
+  public String next() { // Compliant
+    return getOptional().orElseThrow(NoSuchElementException::new);
+  }
+
+  Optional<String> getOptional() {
+    return Optional.empty();
   }
 }

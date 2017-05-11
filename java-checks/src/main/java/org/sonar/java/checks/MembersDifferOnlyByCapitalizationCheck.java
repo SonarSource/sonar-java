@@ -30,14 +30,18 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
-import java.util.Optional;
 
 @Rule(key = "S1845")
 public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscriptionVisitor {
@@ -70,18 +74,16 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     String name = symbol.name();
     for (String knownMemberName : membersByName.keySet()) {
       if (name.equalsIgnoreCase(knownMemberName)) {
-        Optional<Symbol> conflictingMember = membersByName.get(knownMemberName).stream()
+        membersByName.get(knownMemberName).stream()
           .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
-          .findFirst();
-        if (conflictingMember.isPresent()) {
-          Symbol conflictingSymbol = conflictingMember.get();
-          reportIssue(reportTree,
-            "Rename "
-              + getSymbolTypeName(symbol) + " \"" + name + "\" "
-              + "to prevent any misunderstanding/clash with "
-              + getSymbolTypeName(conflictingSymbol) + " \"" + knownMemberName + "\""
-              + getDefinitionPlace(symbol, conflictingSymbol) + ".");
-        }
+          .findFirst()
+          .ifPresent(conflictingSymbol ->
+            reportIssue(reportTree,
+              "Rename "
+                + getSymbolKindName(symbol) + " \"" + name + "\" "
+                + "to prevent any misunderstanding/clash with "
+                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName + "\""
+                + getDefinitionPlace(symbol, conflictingSymbol) + "."));
       }
     }
   }
@@ -96,7 +98,34 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static boolean isInvalidMember(Symbol currentMember, Symbol knownMember) {
     if (!isOverriding(currentMember)) {
-      return differentTypes(currentMember, knownMember) ? sameVisibilityNotPrivate(currentMember, knownMember) : !sameName(currentMember, knownMember);
+      return differentSymbolKinds(currentMember, knownMember) ? invalidMethodAndVariable(currentMember, knownMember) : !sameName(currentMember, knownMember);
+    }
+    return false;
+  }
+
+  private static boolean invalidMethodAndVariable(Symbol currentMember, Symbol knownMember) {
+    if (!sameVisibilityNotPrivate(currentMember, knownMember)) {
+      return false;
+    }
+    Symbol methodSymbol = currentMember.isMethodSymbol() ? currentMember : knownMember;
+    Symbol variableSymbol = methodSymbol == currentMember ? knownMember : currentMember;
+    return !methodReturningVariableWithSameName(methodSymbol, variableSymbol)
+      && !isBuilderPattern(methodSymbol, variableSymbol);
+  }
+
+  private static boolean isBuilderPattern(Symbol methodSymbol, Symbol variableSymbol) {
+    return methodSymbol.owner().name().endsWith("Builder") && sameName(methodSymbol, variableSymbol);
+  }
+
+  private static boolean methodReturningVariableWithSameName(Symbol methodSymbol, Symbol variableSymbol) {
+    if (!sameName(variableSymbol, methodSymbol)) {
+      return false;
+    }
+    Tree declaration = methodSymbol.declaration();
+    if (declaration != null) {
+      ReturnVisitor returnVisitor = new ReturnVisitor(variableSymbol);
+      declaration.accept(returnVisitor);
+      return returnVisitor.singleReturnWithVariableSymbol();
     }
     return false;
   }
@@ -129,7 +158,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     return currentMember.name().equals(knownMember.name());
   }
 
-  private static boolean differentTypes(Symbol s1, Symbol s2) {
+  private static boolean differentSymbolKinds(Symbol s1, Symbol s2) {
     return variableAndMethod(s1, s2) || variableAndMethod(s2, s1);
   }
 
@@ -158,7 +187,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().line();
   }
 
-  private static String getSymbolTypeName(Symbol symbol) {
+  private static String getSymbolKindName(Symbol symbol) {
     return symbol.isMethodSymbol() ? "method" : "field";
   }
 
@@ -202,5 +231,39 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static boolean isMethodToExtract(Symbol symbol) {
     return symbol.isMethodSymbol() && !"<init>".equals(symbol.name());
+  }
+
+  private static class ReturnVisitor extends BaseTreeVisitor {
+
+    private final Symbol variableSymbol;
+    private boolean returnsVariable;
+    private int returnCount;
+
+    ReturnVisitor(Symbol variableSymbol) {
+      this.variableSymbol = variableSymbol;
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      returnCount++;
+      ExpressionTree returnExpression = tree.expression();
+      if (returnExpression != null && returnExpression.is(Tree.Kind.IDENTIFIER)) {
+        returnsVariable = ((IdentifierTree) returnExpression).symbol().equals(variableSymbol);
+      }
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // not interested in returns in lambda bodies
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // not interested in anonymous class bodies
+    }
+
+    boolean singleReturnWithVariableSymbol() {
+      return returnCount == 1 && returnsVariable;
+    }
   }
 }

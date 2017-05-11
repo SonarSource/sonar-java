@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -326,5 +327,21 @@ public class TypeSubstitutionSolverTest {
 
     ParametrizedTypeJavaType emptySubstitution = (ParametrizedTypeJavaType) parametrizedTypeCache.getParametrizedTypeType(ref.symbol, new TypeSubstitution());
     assertThat(typeSubstitutionSolver.functionType(emptySubstitution)).isEqualTo(emptySubstitution);
+  }
+
+  @Test
+  public void substitute_thrown_types() throws Exception {
+    Result result = Result.createForJavaFile("src/test/files/sym/ThrownTypeVariables");
+    IdentifierTree fooInvocation = result.referenceTree(6, 34);
+    assertThat(((MethodJavaType) fooInvocation.symbolType()).thrown).hasSize(1);
+    assertThat(((MethodJavaType) fooInvocation.symbolType()).thrown.get(0).is("java.io.IOException")).isTrue();
+
+    IdentifierTree barInvocation1 = result.referenceTree(23, 21);
+    assertThat(((MethodJavaType) barInvocation1.symbolType()).thrown).hasSize(1);
+    assertThat(((MethodJavaType) barInvocation1.symbolType()).thrown.get(0).is("java.util.NoSuchElementException")).isTrue();
+
+    IdentifierTree barInvocation2 = result.referenceTree(24, 21);
+    assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown).hasSize(1);
+    assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown.get(0).is("java.io.IOException")).isTrue();
   }
 }

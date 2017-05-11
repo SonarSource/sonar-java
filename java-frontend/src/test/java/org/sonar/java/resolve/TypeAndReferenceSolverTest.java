@@ -126,15 +126,27 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void SOE_on_binary_expression() throws Exception {
     String code = "class A { String foo() { return ";
-    for (int i = 0; i < 2300; i++) {
+    for (int i = 0; i < 1800; i++) {
       code += "\"i\"+";
     }
     code+="i; }}";
     try {
       treeOf(code);
     } catch (StackOverflowError soe) {
+      soe.printStackTrace();
       throw new AssertionError("Stackoverflow error was thrown !");
     }
+  }
+
+  @Test
+  public void identifier_of_variable_symbol() {
+    CompilationUnitTree compilationUnit = treeOf("class A { Object field; }");
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+    VariableTree variable = (VariableTree) clazz.members().get(0);
+    assertThat(variable.symbol().isUnknown()).isFalse();
+    assertThat(variable.symbol().usages()).isEmpty();
+    assertThat(variable.simpleName().symbol().isUnknown()).isFalse();
+    assertThat(variable.simpleName().symbol()).isEqualTo(variable.symbol());
   }
 
   @Test

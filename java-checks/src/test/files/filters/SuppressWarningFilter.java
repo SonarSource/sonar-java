@@ -1,5 +1,6 @@
 /**
- * Extra rules running: 
+ * Extra rules running:
+ * - TodoTagPresenceCheck (S1135)
  * - UnusedPrivateFieldCheck (S1068)
  * - BadConstantNameCheck (S00115)
  * - SuppressWarningCheck (S1309) - Raise an issue on all the @SuppressWarning annotation, can not be suppressed
@@ -70,5 +71,33 @@ class A {
     int foo() {
       return bad_constant_name;
     }
+  }
+}
+
+/**
+ * This is trivia with issue
+ * TODO  NoIssue
+ */
+// TODO another one NoIssue
+@SuppressWarnings("repo:S1135") // WithIssue
+class JavadocSuppressed {
+
+
+}
+
+/**
+ * This is trivia with issue
+ * TODO  WithIssue
+ */
+// TODO another one WithIssue
+class Javadoc {
+
+  /**
+   * Works on method too
+   * TODO  NoIssue
+   */
+  @SuppressWarnings("repo:S1135") // WithIssue
+  void m() {
+
   }
 }

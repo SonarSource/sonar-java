@@ -16,6 +16,6 @@ class PackageAnnotations {
     if (singleObject != null) {} // Compliant
 
     bar(objects);
-    if (objects != null) {} // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (objects != null) {} // Noncompliant {{Remove this expression which always evaluates to "true"}}
   }
 }

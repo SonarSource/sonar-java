@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -44,7 +45,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!hasSemantic() || anonymousClass(classTree) || extendsAnotherClassOrImplementsSerializable(classTree) || !hasOnlyStaticMembers(classTree)) {
+    if (!hasSemantic() || !isUtilityClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;
@@ -59,6 +60,17 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     }
   }
 
+  private static boolean isUtilityClass(ClassTree classTree) {
+    return hasOnlyStaticMembers(classTree) && !anonymousClass(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
+      && !containsMainMethod(classTree);
+  }
+
+  private static boolean containsMainMethod(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .anyMatch(method -> ((MethodTreeImpl) method).isMainMethod());
+  }
+
   private static boolean anonymousClass(ClassTree classTree) {
     return classTree.simpleName() == null;
   }
@@ -68,15 +80,15 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {
-    if (classTree.members().isEmpty()) {
+    List<Tree> members = classTree.members();
+    if (noStaticMember(members)) {
       return false;
     }
-    for (Tree member : classTree.members()) {
-      if (!isConstructor(member) && !isStatic(member) && !member.is(Tree.Kind.EMPTY_STATEMENT)) {
-        return false;
-      }
-    }
-    return true;
+    return members.stream().allMatch(member -> isConstructor(member) || isStatic(member) || member.is(Tree.Kind.EMPTY_STATEMENT));
+  }
+
+  private static boolean noStaticMember(List<Tree> members) {
+    return members.stream().noneMatch(UtilityClassWithPublicConstructorCheck::isStatic);
   }
 
   private static boolean isStatic(Tree member) {

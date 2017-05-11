@@ -13,10 +13,18 @@ public void foo(String bar) {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>Generic exceptions in the signatures of overriding methods are ignored.</p>
+<p>Generic exceptions in the signatures of overriding methods are ignored, because overriding method has to follow signature of the throw declaration
+in the superclass. The issue will be raised on superclass declaration of the method (or won't be raised at all if superclass is not part of the
+analysis).</p>
 <pre>
 @Override
 public void myMethod() throws Exception {...}
+</pre>
+<p>Generic exceptions are also ignored in the signatures of methods that make calls to methods that throw generic exceptions.</p>
+<pre>
+public void myOtherMethod throws Exception {
+  doTheThing();  // this method throws Exception
+}
 </pre>
 <h2>See</h2>
 <ul>

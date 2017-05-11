@@ -1,13 +1,12 @@
 {
   "title": "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "bug",
     "clumsy"
   ],
   "defaultSeverity": "Minor"

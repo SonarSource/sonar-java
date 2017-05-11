@@ -1,5 +1,5 @@
 class A {
-  // Noncompliant@+1 [[sc=10;ec=11]]
+  // Compliant - there is other constructors
   public A() {
   }
 
@@ -128,4 +128,28 @@ enum Foo {
   public void foo() {
   }
 
+}
+
+class Constructors {
+  class C {
+    // Noncompliant@+1
+    public C() { }
+  }
+
+  class D {
+    // Compliant
+    public D() {
+      // usefull comment
+    }
+  }
+
+  class E {
+    // Compliant - not public
+    E() { }
+  }
+
+  class F {
+    // Compliant - not a no-arg constructor
+    public F(int i) { }
+  }
 }

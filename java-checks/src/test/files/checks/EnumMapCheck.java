@@ -7,7 +7,7 @@ class MyClass {
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
   }
-
+  Map<COLOR, String> moodMapWithNullKey = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
   public void noncompliant() {
     Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant [[sc=34;ec=62]]
     new HashMap<COLOR, String>(); // Noncompliant
@@ -30,5 +30,10 @@ class MyClass {
     new HashMap<String, String>();
     int a = 5;
     a = 3;
+    foo(moodMapWithNullKey);
+    Object o = this.moodMapWithNullKey;
+    moodMapWithNullKey.put(COLOR.BLUE, "blue");
+    moodMapWithNullKey.get(COLOR.BLUE);
+    moodMapWithNullKey.put(null, "null");
   }
 }

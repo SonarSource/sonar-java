@@ -58,7 +58,11 @@ public final class ReassignmentFinder {
       }
     }
 
-    return getInitializerOrExpression(result);
+    ExpressionTree initializerOrExpression = getInitializerOrExpression(result);
+    if (initializerOrExpression == startingPoint) {
+      return getClosestReassignmentOrDeclarationExpression(result, referenceSymbol);
+    }
+    return initializerOrExpression;
   }
 
   @CheckForNull

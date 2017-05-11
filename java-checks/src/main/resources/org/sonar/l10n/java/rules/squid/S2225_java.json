@@ -7,8 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cwe",
-    "bug"
+    "cwe"
   ],
   "standards": [
     "CWE"

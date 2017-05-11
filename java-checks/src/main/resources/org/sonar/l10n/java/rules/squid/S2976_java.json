@@ -7,7 +7,6 @@
     "constantCost": "5min"
   },
   "tags": [
-    "security",
     "owasp-a9"
   ],
   "defaultSeverity": "Critical"

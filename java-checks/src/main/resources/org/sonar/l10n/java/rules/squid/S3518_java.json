@@ -9,7 +9,6 @@
   "tags": [
     "cwe",
     "denial-of-service",
-    "bug",
     "cert"
   ],
   "standards": [

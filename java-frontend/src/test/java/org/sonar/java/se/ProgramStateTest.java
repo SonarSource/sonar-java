@@ -90,9 +90,8 @@ public class ProgramStateTest {
     state = state.put(variable, sv4);
     SymbolicValue sv5 = new SymbolicValue();
     state = state.stackValue(sv5);
-    state.lastEvaluated = variable;
     // FIXME to string is not really nice by displaying classes and order is not guaranteed.
-    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE");
+    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE", "SV_4->A#x");
       //.isEqualTo("{ A#x->SV_4}  { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] } { A#x } ");
   }
 
@@ -178,5 +177,24 @@ public class ProgramStateTest {
     assertThatThrownBy(() -> ProgramState.EMPTY_STATE.addConstraint(rel, BooleanConstraint.FALSE))
       .isInstanceOf(IllegalStateException.class)
       .hasMessageStartingWith("Relations stored in PS should always use TRUE constraint");
+  }
+
+  @Test
+  public void assignment_order_should_not_lead_to_different_state() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+    Symbol var1 = variable("var1");
+    Symbol var2 = variable("var2");
+    ProgramState ps1 = ProgramState.EMPTY_STATE;
+    ps1 = ps1.put(var1, sv);
+    ps1 = ps1.put(var2, sv);
+    ProgramState ps2 = ProgramState.EMPTY_STATE;
+    ps2 = ps2.put(var2, sv);
+    ps2 = ps2.put(var1, sv);
+    assertThat(ps1).isEqualTo(ps2);
+    assertThat(ps1.hashCode()).isEqualTo(ps2.hashCode());
+  }
+
+  private JavaSymbol.VariableJavaSymbol variable(String name) {
+    return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
   }
 }

@@ -34,8 +34,8 @@ class A0 {
     Object a = null;
     Object b = new Object();
     b = a;
-    if (b == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
-      a.toString(); // Noncompliant {{NullPointerException might be thrown as 'a' is nullable here}}
+    if (b == null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      a.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "a" is nullable here.}}
     }
   }
 
@@ -69,7 +69,7 @@ class A0 {
 
   void test_npe_in_conditional_and(String str) {
     boolean b1 = str == null
-        && str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
+        && str.length() == 0; // Noncompliant {{A "NullPointerException" could be thrown; "str" is nullable here.}}
   }
 
   void instance_of_set_not_null_constraint(Object d) {
@@ -117,14 +117,14 @@ class DefaultValues {
     if (a) {  // Noncompliant [[flows=vars]] flow@vars
 
     }
-    b = new Object();  // flow@vars2
+    b = new Object();  // flow@vars2 flow@vars2
     if (b != null) {  // Noncompliant [[flows=vars2]] flow@vars2
 
     }
     try {
       Thread.sleep(10);
     } catch (Exception ex) {
-      if (ex != null) {  // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (ex != null) {  // Noncompliant {{Remove this expression which always evaluates to "true"}}
 
       }
     }

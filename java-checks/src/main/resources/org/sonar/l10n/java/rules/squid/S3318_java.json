@@ -7,8 +7,7 @@
     "constantCost": "20min"
   },
   "tags": [
-    "cwe",
-    "security"
+    "cwe"
   ],
   "standards": [
     "CWE"

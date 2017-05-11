@@ -1,5 +1,7 @@
 <p><code>private</code> methods that are never executed are dead code: unnecessary, inoperative code that should be removed. Cleaning out dead code
 decreases the size of the maintained codebase, making it easier to understand the program and preventing bugs from being introduced.</p>
+<p>Note that this rule does not take reflection into account, which means that issues will be raised on <code>private</code> methods that are only
+accessed using the reflection API.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Foo implements Serializable

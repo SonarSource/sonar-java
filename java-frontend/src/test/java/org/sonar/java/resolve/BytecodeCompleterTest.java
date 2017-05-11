@@ -94,6 +94,7 @@ public class BytecodeCompleterTest {
   @Test
   public void annotations() throws Exception {
     bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
+    assertThat(bytecodeCompleter.classesNotFound()).isEmpty();
   }
 
   @Test
@@ -367,7 +368,20 @@ public class BytecodeCompleterTest {
       assertThat(arg.metadata().annotations()).hasSize(1);
       assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable")).isTrue();
     }
+    assertThat(bytecodeCompleter.classesNotFound()).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Class not found: java.lang.Synthetic");
+  }
+
+  @Test
+  public void owning_class_name() throws Exception {
+    TypeJavaSymbol classSymbolCase1 = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DistinguishNames$Case1$OWNER$$Child");
+    TypeJavaSymbol classSymbolCase2 = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DistinguishNames$Case2$OWNER$$Child");
+    assertThat(classSymbolCase1.owner().name).isEqualTo("OWNER");
+    assertThat(classSymbolCase1.name).isEqualTo("$Child");
+    assertThat(classSymbolCase2.owner().name).isEqualTo("OWNER$");
+    assertThat(classSymbolCase2.name).isEqualTo("Child");
+    // No warning about a class not found
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
   }
 
   @Test
@@ -477,6 +491,7 @@ public class BytecodeCompleterTest {
     List<Type> interfaces = clazz.interfaces();
     assertThat(interfaces).isNotNull();
     assertThat(interfaces).isEmpty();
+    assertThat(bytecodeCompleter.classesNotFound()).containsOnly("org.sonar.java.resolve.targets.UnknownClass");
   }
 
   @Test

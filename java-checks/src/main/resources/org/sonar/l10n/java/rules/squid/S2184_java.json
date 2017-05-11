@@ -8,7 +8,7 @@
   },
   "tags": [
     "cwe",
-    "bug",
+    "overflow",
     "sans-top25-risky",
     "misra",
     "cert"

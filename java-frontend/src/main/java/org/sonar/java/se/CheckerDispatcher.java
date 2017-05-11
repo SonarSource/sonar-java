@@ -153,4 +153,9 @@ public class CheckerDispatcher implements CheckerContext {
   public void interruptedExecution() {
     checks.forEach(c -> c.interruptedExecution(this));
   }
+
+  @Override
+  public AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions() {
+    return explodedGraphWalker.alwaysTrueOrFalseExpressionCollector();
+  }
 }

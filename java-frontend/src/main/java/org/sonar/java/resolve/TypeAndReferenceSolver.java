@@ -219,7 +219,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
       );
       List<JavaType> typeParamTypes = getParameterTypes(tree.typeArguments());
-      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, (JavaType) mit.symbolType(), typeSubstitution);
+      JavaType resultType = ((MethodJavaType) mit.symbol().type()).resultType;
+      // if result type is a type var defined by the method we are solving, use the target type.
+      if(resultType.symbol.owner == mit.symbol()) {
+        resultType = (JavaType) mit.symbolType();
+      }
+      inferReturnTypeFromInferedArgs(tree, methodEnv, argTypes, typeParamTypes, resultType, typeSubstitution);
       return;
     }
     scan(tree.arguments());
@@ -254,10 +259,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private void inferReturnTypeFromInferedArgs(MethodInvocationTree tree, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeParamTypes,
                                               JavaType returnType, TypeSubstitution typeSubstitution) {
     List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
-    Resolution resolution = null;
-    Tree methodSelect = tree.methodSelect();
     if(!parameterTypes.equals(argTypes)) {
-      IdentifierTree identifier;
+      IdentifierTree identifier = null;
+      Resolution resolution = null;
+      Tree methodSelect = tree.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
         JavaType type = getType(mset.expression());
@@ -274,6 +279,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         MethodJavaType methodType = (MethodJavaType) resolution.type();
         if(!methodType.resultType.isTagged(JavaType.DEFERRED)) {
           registerType(tree, resolve.applySubstitution(methodType.resultType, typeSubstitution));
+          // update type associated to identifier as it may have been inferred deeper when re-resolving method with new parameter types
+          registerType(identifier, methodType);
         }
       }
     } else {
@@ -706,6 +713,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
     JavaType identifierType = resolveIdentifierType(newClassEnv, enclosingExpression, typeTree, constructorIdentifier.name());
     JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) identifierType.symbol();
+    constructorIdentifierSymbol.addUsage(constructorIdentifier);
     parameterTypes = addImplicitOuterClassParameter(parameterTypes, constructorIdentifierSymbol);
     Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes, typeArgumentsTypes);
     ClassTree classBody = tree.classBody();
