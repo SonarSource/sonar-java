@@ -31,8 +31,10 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
@@ -55,21 +57,21 @@ public class InvariantReturnCheck extends SECheck {
     private final Set<SymbolicValue> symbolicValues = new HashSet<>();
     private final Multimap<Class<? extends Constraint>, Constraint> methodConstraints = ArrayListMultimap.create();
     private final List<ReturnStatementTree> returnStatementTrees;
+    private final boolean methodToCheck;
+    private final boolean returnImmutableType;
     private int endPaths = 0;
-    private boolean methodToCheck = false;
-    private boolean returnImmutableType = false;
-    private boolean avoidRaisingConstraintIssue = false;
+    private boolean avoidRaisingConstraintIssue;
 
-    public MethodInvariantContext(MethodTree methodTree) {
+    MethodInvariantContext(MethodTree methodTree) {
       this.methodTree = methodTree;
       TypeTree returnType = methodTree.returnType();
       this.returnStatementTrees = extractReturnStatements(methodTree);
-      methodToCheck = !isConstructorOrVoid(returnType) && returnStatementTrees.size() > 1;
+      methodToCheck = !isConstructorOrVoid(methodTree, returnType) && returnStatementTrees.size() > 1;
       returnImmutableType = methodToCheck && (returnType.symbolType().isPrimitive() || returnType.symbolType().is("java.lang.String"));
     }
 
-    private static boolean isConstructorOrVoid(@Nullable TypeTree returnType) {
-      return returnType == null || returnType.symbolType().isVoid();
+    private static boolean isConstructorOrVoid(MethodTree methodTree, @Nullable TypeTree returnType) {
+      return methodTree.is(Tree.Kind.CONSTRUCTOR) || returnType.symbolType().isVoid();
     }
 
     private static List<ReturnStatementTree> extractReturnStatements(MethodTree methodTree) {
@@ -84,6 +86,14 @@ public class InvariantReturnCheck extends SECheck {
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
     methodInvariantContexts.push(new MethodInvariantContext(methodTree));
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    for (SEIssue seIssue : issues) {
+      context.reportIssueWithFlow(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getFlows(), seIssue.getFlows().iterator().next().size());
+    }
+    issues.clear();
   }
 
   @Override
@@ -114,7 +124,8 @@ public class InvariantReturnCheck extends SECheck {
 
   @Override
   public void interruptedExecution(CheckerContext context) {
-    reportIssues();
+    // pop but do nothing with it : can't report on incomplete execution
+    methodInvariantContexts.pop();
   }
 
   private void reportIssues() {
@@ -124,12 +135,11 @@ public class InvariantReturnCheck extends SECheck {
     }
     if (methodInvariantContext.returnImmutableType && methodInvariantContext.symbolicValues.size() == 1 && methodInvariantContext.endPaths > 1) {
       report(methodInvariantContext);
-    }
-    if(!methodInvariantContext.avoidRaisingConstraintIssue) {
-      for (Class<? extends Constraint> aClass : methodInvariantContext.methodConstraints.keys()) {
-        Collection<Constraint> constraints = methodInvariantContext.methodConstraints.get(aClass);
-        if(constraints.size() == methodInvariantContext.endPaths
-          && constraints.stream().allMatch(c -> constraints.iterator().next().hasPreciseValue() && constraints.iterator().next().equals(c))) {
+    } else if (!methodInvariantContext.avoidRaisingConstraintIssue) {
+      for (Class<? extends Constraint> constraintClass : methodInvariantContext.methodConstraints.keys()) {
+        Collection<Constraint> constraints = methodInvariantContext.methodConstraints.get(constraintClass);
+        Constraint firstConstraint = constraints.iterator().next();
+        if (constraints.size() == methodInvariantContext.endPaths && firstConstraint.hasPreciseValue() && constraints.stream().allMatch(firstConstraint::equals)) {
           report(methodInvariantContext);
           return;
         }
@@ -154,6 +164,11 @@ public class InvariantReturnCheck extends SECheck {
     @Override
     public void visitClass(ClassTree tree) {
       // cut visit of inner class to not count returns
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // cut visit of lambdas to not count returns
     }
   }
 }

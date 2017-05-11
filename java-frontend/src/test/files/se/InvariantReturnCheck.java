@@ -43,7 +43,12 @@ class A {
   private int getConstant2() {
     return 42;
   }
-
+  private int getConstant3() {
+    myList.stream().filter(item -> {
+      return 0;
+    }).collect(Collectors.toList());
+    return 0;
+ }
   private A() {}
 
   String constructComponentName() {
@@ -76,7 +81,7 @@ class A {
     }
     return true;
   }
-  private boolean fun2(boolean a, boolean b) {
+  private boolean fun2(boolean a, boolean b) { // False negative because of constraints on relationship
     if(a) {
       return a;
     }
@@ -137,6 +142,15 @@ class A {
       return (null);
     }
 
+  }
+  // Example of a method that could raise issue based on returning the same SV AND same constraints on all the returned value.
+  int plop(int a, boolean foo) { // Noncompliant
+    int b = 0;
+    if(a == b) {
+      return b;
+    }
+    int c = b;
+    return c;
   }
 
 }
