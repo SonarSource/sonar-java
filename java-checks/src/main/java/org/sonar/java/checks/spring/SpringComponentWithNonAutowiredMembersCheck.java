@@ -61,7 +61,6 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   private static boolean isSpringComponent(SymbolMetadata clazzMeta) {
     return clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Component");
+      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
   }
 }
