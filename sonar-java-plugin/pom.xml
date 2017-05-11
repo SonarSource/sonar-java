@@ -89,6 +89,7 @@
         <version>1.17</version>
         <configuration>
           <pluginName>SonarJava</pluginName>
+          <skipDependenciesPackaging>true</skipDependenciesPackaging>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
           <sonarQubeMinVersion>5.6</sonarQubeMinVersion> <!-- allow to depend on API 6.1 but run on LTS -->
@@ -107,13 +108,55 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>6200000</maxsize>
-                  <minsize>5000000</minsize>
+                  <maxsize>5000000</maxsize>
+                  <minsize>4500000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
                 </requireFilesSize>
               </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <minimizeJar>true</minimizeJar>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/LICENSE*</exclude>
+                    <exclude>META-INF/NOTICE*</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>LICENSE*</exclude>
+                    <exclude>NOTICE*</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>cglib:cglib-nodep</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.sonarsource.java:java-frontend</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>
