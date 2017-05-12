@@ -1,42 +1,44 @@
 abstract class A {
 
   // yield [arg -> true] has two flows
-  private void one_yield_two_flows(boolean arg) {
+  private void one_yield_two_flows(boolean arg) {  // flow@xproc1 [[order=2]] {{Implies 'arg' has the same value as 'a'.}} flow@xproc2 [[order=2]] {{Implies 'arg' has the same value as 'a'.}}
     if (cond) {
-      if (arg) return; // flow@xproc1 {{Implies 'arg' is true.}}
+      if (arg) return;  // flow@xproc1 [[order=3]] {{Implies 'arg' is true.}}
     } else {
-      if (arg) return; // flow@xproc2 {{Implies 'arg' is true.}}
+      if (arg) return;  // flow@xproc2 [[order=3]] {{Implies 'arg' is true.}}
     }
     throw new RuntimeException();
   }
 
   void test(boolean a) {
-    one_yield_two_flows(a);  // flow@xproc1,xproc2 {{Implies 'a' is true.}}
-    if (a) { // Noncompliant [[flows=xproc1,xproc2]] flow@xproc1,xproc2 {{Expression is always true.}}
-
+    one_yield_two_flows(a); // flow@xproc1 [[order=1]] {{'a' is passed to 'one_yield_two_flows()'.}} flow@xproc1 [[order=4]] {{Implies 'a' is true.}} flow@xproc2 [[order=1]] {{'a' is passed to 'one_yield_two_flows()'.}} flow@xproc2 [[order=4]] {{Implies 'a' is true.}}
+    // Noncompliant@+1 [[flows=xproc1,xproc2]]
+    if (a) { // flow@xproc1 [[order=5]] {{Expression is always true.}} flow@xproc2 [[order=5]] {{Expression is always true.}}
     }
   }
 
   // two exceptional yields [arg -> true, cond -> true] [arg -> true, cond -> false]
   // two normal yields [arg -> false, cond -> true] [arg -> false, cond -> false]
-  private void two_yields_one_flow_each(boolean arg, boolean cond) throws MyEx {
+  private void two_yields_one_flow_each(boolean arg, boolean cond) throws MyEx { // flow@normal1 [[order=2]] {{Implies 'arg' has the same value as 'a'.}} flow@normal2 [[order=2]] {{Implies 'arg' has the same value as 'a'.}}  flow@ex1 [[order=2]] {{Implies 'arg' has the same value as 'a'.}} flow@ex2 [[order=2]] {{Implies 'arg' has the same value as 'a'.}}
     if (cond) {
-      if (arg) throw new MyEx(); // flow@ex1 {{Implies 'arg' is true.}} flow@normal1 {{Implies 'arg' is false.}}
+      if (arg) throw new MyEx();  // flow@normal1 [[order=3]] {{Implies 'arg' is false.}} flow@ex1 [[order=3]] {{Implies 'arg' is true.}}
     } else {
-      if (arg) throw new MyEx(); // flow@ex2 {{Implies 'arg' is true.}} flow@normal2 {{Implies 'arg' is false.}}
+      if (arg) throw new MyEx();  // flow@normal2 [[order=3]] {{Implies 'arg' is false.}} flow@ex2 [[order=3]] {{Implies 'arg' is true.}}
     }
     return;
   }
 
   void test_two_yields(boolean a, boolean cond) {
     try {
-      two_yields_one_flow_each(a, cond); // flow@ex1,ex2 {{Implies 'a' is true.}} flow@normal1,normal2 {{Implies 'a' is false.}}
+      two_yields_one_flow_each(a, cond); // flow@normal1 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@normal1 [[order=4]] {{Implies 'a' is false.}} flow@normal2 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@normal2 [[order=4]] {{Implies 'a' is false.}} flow@ex1 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@ex1 [[order=4]] {{Implies 'a' is true.}} flow@ex2 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@ex2 [[order=4]] {{Implies 'a' is true.}}
     } catch (MyEx e) {
-      if (a) { // Noncompliant [[flows=ex1,ex2]] flow@ex1,ex2 {{Expression is always true.}}
+      // Noncompliant@+1 [[flows=ex1,ex2]]
+      if (a) { // flow@ex1 [[order=5]] {{Expression is always true.}} flow@ex2 [[order=5]] {{Expression is always true.}}
         return;
       }
     }
-    if (a) { // Noncompliant [[flows=normal1,normal2]] flow@normal1,normal2 {{Expression is always false.}}
+    // Noncompliant@+1 [[flows=normal1,normal2]]
+    if (a) { // flow@normal1 [[order=5]] {{Expression is always false.}} flow@normal2 [[order=5]] {{Expression is always false.}}
 
     }
   }

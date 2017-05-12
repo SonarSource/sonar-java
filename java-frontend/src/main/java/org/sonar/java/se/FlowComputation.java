@@ -27,19 +27,31 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.HappyPathYield;
+import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
@@ -238,8 +250,7 @@ public class FlowComputation {
       for (Class<? extends Constraint> domain : domains) {
         Constraint constraint = node.programState.getConstraint(learnedAssociation.symbolicValue(), domain);
         if (constraint != null) {
-          String message = String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString());
-          flowBuilder.add(new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree()));
+          flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
         }
       }
       return flowBuilder.build();
@@ -326,7 +337,7 @@ public class FlowComputation {
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       SymbolicValue returnSV = edge.child.programState.peekValue();
       if (symbolicValues.contains(returnSV)) {
-        flowBuilder.add(location(parent, String.format("'%s()' returns %s.", mit.symbol().name(), learnedConstraint.valueAsString())));
+        flowBuilder.add(methodInvocationReturnMessage(learnedConstraint, edge, mit.symbol().name()));
       }
       SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
       if (symbolicValues.contains(invocationTarget)) {
@@ -346,6 +357,28 @@ public class FlowComputation {
       return flowBuilder.build();
     }
 
+    private JavaFileScannerContext.Location methodInvocationReturnMessage(Constraint constraint, ExplodedGraph.Edge edge, String methodName) {
+      String msg;
+      if (isConstraintOnlyPossibleResult(constraint, edge)) {
+        msg = String.format("'%s()' returns %s.", methodName, constraint.valueAsString());
+      } else {
+        msg = String.format("'%s()' can return %s.", methodName, constraint.valueAsString());
+      }
+      return location(edge.parent, msg);
+    }
+
+    private boolean isConstraintOnlyPossibleResult(Constraint constraint, ExplodedGraph.Edge edge) {
+      Set<MethodYield> selectedYields = edge.yields();
+      if (selectedYields.isEmpty()) {
+        // not based on x-procedural analysis, so certainty of constraint is not be guaranteed
+        return false;
+      }
+      MethodBehavior methodBehavior = selectedYields.iterator().next().methodBehavior();
+      return methodBehavior.happyPathYields()
+        .map(HappyPathYield::resultConstraint)
+        .allMatch(resultConstraint -> resultConstraint != null && constraint.equals(resultConstraint.get(constraint.getClass())));
+    }
+
     private Set<List<JavaFileScannerContext.Location>> flowFromYields(ExplodedGraph.Edge edge) {
       Set<MethodYield> methodYields = edge.yields();
       if (methodYields.isEmpty()) {
@@ -355,6 +388,13 @@ public class FlowComputation {
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, edge.parent);
+
+      MethodInvocationTree mit = (MethodInvocationTree) edge.parent.programPoint.syntaxTree();
+      // computes flow messages for arguments being passed to the called method
+      List<JavaFileScannerContext.Location> passedArgumentsMessages = flowsForPassedArguments(argumentIndices, mit);
+      // computes flow messages for arguments changing name within called method
+      List<JavaFileScannerContext.Location> changingNameArgumentsMessages = flowsForArgumentsChangingName(argumentIndices, mit);
+
       SymbolicValue returnSV = edge.child.programState.peekValue();
       if (symbolicValues.contains(returnSV)) {
         // to retrieve flow for return value
@@ -367,6 +407,11 @@ public class FlowComputation {
       return methodYields.stream()
         .map(y -> y.flow(argumentIndices, domains))
         .flatMap(Set::stream)
+        .map(flowFromYield -> ImmutableList.<JavaFileScannerContext.Location>builder()
+          .addAll(flowFromYield)
+          .addAll(changingNameArgumentsMessages)
+          .addAll(passedArgumentsMessages)
+          .build())
         .collect(Collectors.toSet());
     }
 
@@ -400,5 +445,58 @@ public class FlowComputation {
 
   public static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
     return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
+  }
+
+  public static List<JavaFileScannerContext.Location> flowsForPassedArguments(List<Integer> argumentIndices, MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return Lists.reverse(argumentIndices.stream()
+      .map(index -> getArgumentIdentifier(mit, index))
+      .filter(Objects::nonNull)
+      .map(identifierTree -> new JavaFileScannerContext.Location(String.format("'%s' is passed to '%s()'.", identifierTree.name(), methodName), identifierTree))
+      .collect(Collectors.toList()));
+  }
+
+  public static List<JavaFileScannerContext.Location> flowsForArgumentsChangingName(List<Integer> argumentIndices, MethodInvocationTree mit) {
+    List<JavaFileScannerContext.Location> result = new ArrayList<>();
+
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
+    MethodTree declaration = methodSymbol.declaration();
+    if (declaration == null) {
+      return Collections.emptyList();
+    }
+    List<VariableTree> methodParameters = declaration.parameters();
+
+    for (Integer argumentIndex : argumentIndices) {
+      // do not consider varargs part
+      if (methodSymbol.isVarArgs() && argumentIndex >= methodParameters.size() - 1) {
+        break;
+      }
+      IdentifierTree argumentName = getArgumentIdentifier(mit, argumentIndex);
+      if (argumentName != null) {
+        IdentifierTree parameterIdentifier = methodParameters.get(argumentIndex).simpleName();
+        String identifierName = parameterIdentifier.name();
+        if (!argumentName.name().equals(identifierName)) {
+          result.add(new JavaFileScannerContext.Location(String.format("Implies '%s' has the same value as '%s'.", identifierName, argumentName.name()), parameterIdentifier));
+        }
+      }
+    }
+    return Lists.reverse(result);
+  }
+
+  @CheckForNull
+  public static IdentifierTree getArgumentIdentifier(MethodInvocationTree mit, int index) {
+    Arguments arguments = mit.arguments();
+    if (index < 0 || index > arguments.size()) {
+      throw new IllegalArgumentException("index must be within arguments range.");
+    }
+    ExpressionTree expr = ExpressionUtils.skipParentheses(arguments.get(index));
+    switch (expr.kind()) {
+      case MEMBER_SELECT:
+        return ((MemberSelectExpressionTree) expr).identifier();
+      case IDENTIFIER:
+        return ((IdentifierTree) expr);
+      default:
+        return null;
+    }
   }
 }
