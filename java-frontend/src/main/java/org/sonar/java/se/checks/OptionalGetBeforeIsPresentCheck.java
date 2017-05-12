@@ -74,9 +74,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   }
 
   private static List<ProgramState> setNotPresentConstraint(CheckerContext context, Tree syntaxNode) {
-    SymbolicValue val = context.getState().peekValue();
     if(syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && OPTIONAL_EMPTY.matches(((MethodInvocationTree) syntaxNode))) {
-      return val.setConstraint(context.getState(), OptionalConstraint.NOT_PRESENT);
+      return context.getState().peekValue().setConstraint(context.getState(), OptionalConstraint.NOT_PRESENT);
     }
     return Lists.newArrayList(context.getState());
   }

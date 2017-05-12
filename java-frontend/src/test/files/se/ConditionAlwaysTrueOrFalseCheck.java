@@ -2127,7 +2127,7 @@ class ResetFieldWhenThisUsedAsParameter {
 class OptionalEmptyNotPresent {
   private Optional fun() {
     java.util.Optional<String> op = java.util.Optional.empty();
-    if (op.isPresent()) { // Noncompliant
+    if (op.isPresent()) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       // unreachable by definition of Optional.empty()
     }
     return op;

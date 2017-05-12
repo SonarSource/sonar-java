@@ -52,4 +52,9 @@ class A {
   String mug(Optional<String> s) {
     return s.isPresent() ? null : s.get(); // Noncompliant [[flows=mug]] flow@mug
   }
+
+  private void fun() {
+    java.util.Optional<String> op = java.util.Optional.empty();
+    op.get(); // Noncompliant
+  }
 }
