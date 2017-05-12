@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-class Result {
+public class Result {
 
   private static final ActionParser parser = JavaParser.createParser();
   private final SemanticModel semanticModel;

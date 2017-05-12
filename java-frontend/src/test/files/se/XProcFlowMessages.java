@@ -108,3 +108,39 @@ abstract class D {
 
   abstract void doSomething();
 }
+
+class ZeroConstraint {
+
+  private int maybeZero() {
+    if (b) {
+      return 0;
+    }
+    return 1;
+  }
+
+  private int zero() {
+    return 0;
+  }
+
+  void t1() {
+    int i = maybeZero(); // flow@zero1 {{'maybeZero()' can return zero.}} flow@zero1 {{'i' is assigned zero.}}
+    1 / i; // Noncompliant [[flows=zero1]] flow@zero1
+  }
+
+  void t() {
+    int i = zero(); // flow@zero2 {{'zero()' returns zero.}} flow@zero2 {{'i' is assigned zero.}}
+    1 / i; // Noncompliant [[flows=zero2]] flow@zero2
+  }
+}
+
+class BooleanConstraint {
+
+  private boolean sure() {
+    return false;
+  }
+
+  void f() {
+    boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{'sure()' returns non-null.}} flow@bool {{'b' is assigned false.}} flow@bool {{'b' is assigned non-null.}}
+    if (b); // Noncompliant [[flows=bool]] flow@bool
+  }
+}

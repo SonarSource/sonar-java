@@ -487,7 +487,7 @@ public class FlowComputation {
   public static IdentifierTree getArgumentIdentifier(MethodInvocationTree mit, int index) {
     Arguments arguments = mit.arguments();
     if (index < 0 || index > arguments.size()) {
-      return null;
+      throw new IllegalArgumentException("index must be within arguments range.");
     }
     ExpressionTree expr = ExpressionUtils.skipParentheses(arguments.get(index));
     switch (expr.kind()) {

@@ -24,14 +24,17 @@ import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.resolve.Result;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 public class FlowComputationTest {
@@ -65,6 +68,17 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void test_getArgumentIdentifier() throws Exception {
+    MethodInvocationTree mit = (MethodInvocationTree) Result.createForJavaFile("src/test/files/se/FlowComputationGetArgumentIdentifier").referenceTree(6, 5).parent();
+
+    assertThatThrownBy(() -> FlowComputation.getArgumentIdentifier(mit, -1)).isInstanceOf(IllegalArgumentException.class).hasMessage("index must be within arguments range.");
+    assertThat(FlowComputation.getArgumentIdentifier(mit, 0).name()).isEqualTo("localVariable");
+    assertThat(FlowComputation.getArgumentIdentifier(mit, 1).name()).isEqualTo("field");
+    assertThat(FlowComputation.getArgumentIdentifier(mit, 2)).isNull();
+    assertThatThrownBy(() -> FlowComputation.getArgumentIdentifier(mit, 4)).isInstanceOf(IllegalArgumentException.class).hasMessage("index must be within arguments range.");
+  }
+
+  @Test
   public void test_relational_sv_operands() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationRelSV.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
   }
@@ -93,6 +107,6 @@ public class FlowComputationTest {
 
   @Test
   public void xproc_flow_messages() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessages.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck());
+    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessages.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
   }
 }
