@@ -93,7 +93,6 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
       result += tableLine('values', valuesAsString);
       result += tableLine('constraints', constraintsAsString);
       result += tableLine('stack', stackAsString);
-      result += tableLine('lastAssociatedSymbols', lastAssociatedSymbolsAsString);
       result += '</table>';
 
       return result;

@@ -124,7 +124,7 @@ public class ProgramState {
           .put(BooleanConstraint.class, BooleanConstraint.FALSE).put(ObjectConstraint.class, ObjectConstraint.NOT_NULL)),
     PCollections.emptyMap(),
     PCollections.emptyStack(),
-    null, PCollections.emptyMap());
+    null);
 
   private final PMap<ProgramPoint, Integer> visitedPoints;
   private final PStack<SymbolicValueSymbol> stack;
@@ -132,19 +132,16 @@ public class ProgramState {
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
   final PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints;
-  final PMap<SymbolicValue, Symbol> lastAssociatedSymbols;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
-                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue,
-                       PMap<SymbolicValue, Symbol> lastAssociatedSymbols) {
+                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     this.exitSymbolicValue = exitSymbolicValue;
-    this.lastAssociatedSymbols = lastAssociatedSymbols;
     constraintSize = 3;
   }
 
@@ -155,7 +152,6 @@ public class ProgramState {
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
-    lastAssociatedSymbols = ps.lastAssociatedSymbols;
     stack = newStack;
   }
 
@@ -166,7 +162,6 @@ public class ProgramState {
     constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
     exitSymbolicValue = ps.exitSymbolicValue;
-    lastAssociatedSymbols = ps.lastAssociatedSymbols;
     this.stack = ps.stack;
   }
 
@@ -254,7 +249,7 @@ public class ProgramState {
 
   @Override
   public String toString() {
-    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }" + " { " + lastAssociatedSymbols.toString() + " } ";
+    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
@@ -300,9 +295,9 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
     }
-    return new ProgramState(values, references, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols.put(value, symbol));
+    return this;
   }
 
   private static boolean isVolatileField(Symbol symbol) {
@@ -353,7 +348,6 @@ public class ProgramState {
     class CleanAction implements BiConsumer<Symbol, SymbolicValue> {
       boolean newProgramState = false;
       PMap<Symbol, SymbolicValue> newValues = values;
-      PMap<SymbolicValue, Symbol> newLastAssociatedSymbol = lastAssociatedSymbols;
       PMap<SymbolicValue, Integer> newReferences = references;
       PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints;
 
@@ -362,7 +356,6 @@ public class ProgramState {
         if (isLocalVariable(symbol) && !liveVariables.contains(symbol) && !protectedSymbolicValues.contains(symbolicValue)) {
           newProgramState = true;
           newValues = newValues.remove(symbol);
-          newLastAssociatedSymbol = lastAssociatedSymbols.remove(symbolicValue);
           newReferences = decreaseReference(newReferences, symbolicValue);
           if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, newConstraints.get(symbolicValue)) && !inStack(stack, symbolicValue)) {
             newConstraints = newConstraints.remove(symbolicValue);
@@ -373,8 +366,8 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue,
-      cleanAction.newLastAssociatedSymbol)
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue
+    )
       : this;
   }
 
@@ -405,8 +398,8 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     constraints.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue,
-      lastAssociatedSymbols) : this;
+    return cleanAction.newProgramState ? new ProgramState(values, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue
+    ) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -434,7 +427,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue, lastAssociatedSymbols);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -451,7 +444,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue, lastAssociatedSymbols);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 
   @Nullable

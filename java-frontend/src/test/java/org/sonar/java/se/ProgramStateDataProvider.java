@@ -62,10 +62,6 @@ public class ProgramStateDataProvider {
     }
   }
 
-  public String lastAssociatedSymbols() {
-    return ps.lastAssociatedSymbols.toString();
-  }
-
   private static Stream<Constraint> pmapToStream(@Nullable PMap<Class<? extends Constraint>, Constraint> pmap) {
     if (pmap == null) {
       return Stream.empty();
