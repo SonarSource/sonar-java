@@ -27,8 +27,10 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -440,7 +442,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public String toString() {
-    return leftOp.toString() + kind.operand + rightOp.toString();
+    return leftOp.toString() + symbolToString(leftSymbol) + kind.operand + rightOp.toString() + symbolToString(rightSymbol);
+  }
+
+  private static String symbolToString(@Nullable Symbol symbol) {
+    return symbol != null ? ("(" + symbol.toString() + ")") : "";
   }
 
   public static class TransitiveRelationExceededException extends RuntimeException {

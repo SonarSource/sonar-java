@@ -6,7 +6,7 @@ class A {
     int c = 0; // flow@unary_rel,rel {{'c' is assigned non-null.}}
     int a = c;  // flow@unary_rel,rel {{'a' is assigned non-null.}}
     int b = 0;  // flow@unary_rel,rel {{'b' is assigned non-null.}}
-    boolean cond = (b == a) == true;
+    boolean cond = (b == a) == true; // see SONARJAVA-1911
     if (cond) { // Noncompliant [[flows=rel]] flow@rel {{Expression is always true.}} flow@unary_rel {{Implies 'cond' is true.}} flow@unary_rel {{Implies 'cond' is non-null.}}
 
     }
@@ -41,7 +41,9 @@ class A {
   void catof3b() {
     Object a = new Object(); // flow@catof3b {{Constructor implies 'non-null'.}} flow@catof3b {{'a' is assigned non-null.}}
     Object b = null; // flow@catof3b {{'b' is assigned null.}}
-    boolean cond = a == b;  // no message here, because no constraint on 'a==b', it is not yet evaluated
+    boolean cond = a == b;  // no message here, because no constraint on 'a==b', it is not yet evaluated se SONARJAVA-1911
+    b = new Object(); // no message here, b is not tracked yet
+    a = null; // no message here, a is not tracked yet
     if (cond == true) { // Noncompliant [[flows=catof3b]] {{Change this condition so that it does not always evaluate to "false"}} flow@catof3b {{Expression is always false.}}
       System.out.println();
     }
@@ -66,9 +68,26 @@ class A {
 
   void same_symbolic_value_referenced_with_different_symbols() {
     Object o = null; // flow@samesv {{'o' is assigned null.}}
-    Object a = o; // FIXME SONARJAVA-2280 a is not tracked
+    Object a = o; // flow@samesv {{'a' is assigned null.}}
     Object b = o; // flow@samesv {{'b' is assigned null.}}
     if (a == b) { // Noncompliant [[flows=samesv]] flow@samesv {{Expression is always true.}}
+
+    }
+  }
+
+  void equalsSV() {
+    Object o = true; // flow@equals {{'o' is assigned true.}} flow@equals {{'o' is assigned non-null.}}
+    Object a = o; // flow@equals {{'a' is assigned true.}} flow@equals {{'a' is assigned non-null.}}
+    Object b = o; // flow@equals {{'b' is assigned true.}} flow@equals {{'b' is assigned non-null.}}
+    if (a.equals(b)) { // Noncompliant [[flows=equals]] flow@equals {{Expression is always true.}}
+
+    }
+  }
+
+  void f() {
+    boolean a = true;  // flow@nested {{'a' is assigned true.}} flow@nested {{'a' is assigned non-null.}}
+    boolean b = true;  // flow@nested {{'b' is assigned true.}} flow@nested {{'b' is assigned non-null.}}
+    if (a == b == true) { // Noncompliant [[flows=nested]] flow@nested {{Expression is always true.}}
 
     }
   }

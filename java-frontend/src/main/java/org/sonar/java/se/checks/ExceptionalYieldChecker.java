@@ -38,8 +38,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -73,18 +71,16 @@ public class ExceptionalYieldChecker {
       reportTree = ((MemberSelectExpressionTree) methodSelect).identifier();
     }
 
-    Symbol symbolToTrack = null;
     JavaFileScannerContext.Location methodInvocationMessage;
     IdentifierTree identifierTree = FlowComputation.getArgumentIdentifier(mit, yield.parameterCausingExceptionIndex());
     if (identifierTree != null) {
-      symbolToTrack = identifierTree.symbol();
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s' is passed to '%s()'.", identifierTree.name(), methodName), identifierTree);
     } else {
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
     }
 
     List<JavaFileScannerContext.Location> argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
-    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, symbolToTrack, mit);
+    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit);
     Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
 
     ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
@@ -102,15 +98,18 @@ public class ExceptionalYieldChecker {
     check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, @Nullable Symbol symbolToTrack, MethodInvocationTree mit) {
+  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit) {
     ProgramState programState = node.programState;
-    List<SymbolicValue> arguments = Lists.reverse(programState.peekValues(mit.arguments().size()));
+    List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
     List<Class<? extends Constraint>> domains = domainsFromArguments(programState, arguments);
-    return FlowComputation.flow(node, new LinkedHashSet<>(arguments), c -> true, c -> false, domains, symbolToTrack);
+    Set<SymbolicValue> argSymbolicValues = arguments.stream().map(ProgramState.SymbolicValueSymbol::symbolicValue).collect(Collectors.toCollection(LinkedHashSet::new));
+    Set<Symbol> argSymbols = arguments.stream().map(ProgramState.SymbolicValueSymbol::symbol).filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new));
+    return FlowComputation.flow(node, argSymbolicValues, c -> true, c -> false, domains, argSymbols);
   }
 
-  private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, List<SymbolicValue> arguments) {
+  private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, List<ProgramState.SymbolicValueSymbol> arguments) {
     return arguments.stream()
+      .map(ProgramState.SymbolicValueSymbol::symbolicValue)
       .map(programState::getConstraints)
       .filter(Objects::nonNull)
       .map(ExceptionalYieldChecker::domainsFromConstraints)

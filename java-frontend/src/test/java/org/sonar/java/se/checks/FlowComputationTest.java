@@ -84,6 +84,11 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void test_unary_sv_operands() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowComputationUnarySV.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
   public void test_multiple_paths() {
     JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePath.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
   }

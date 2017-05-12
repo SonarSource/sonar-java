@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
@@ -100,8 +101,12 @@ public class SymbolicValue {
     return "SV_" + hashCode() % 100;
   }
 
-  public void computedFrom(List<SymbolicValue> symbolicValues) {
+  public void computedFrom(List<ProgramState.SymbolicValueSymbol> symbolicValues) {
     // no op in general case
+  }
+
+  public List<Symbol> computedFromSymbols() {
+    return Collections.emptyList();
   }
 
   public List<SymbolicValue> computedFrom() {
@@ -160,6 +165,7 @@ public class SymbolicValue {
 
   public abstract static class UnarySymbolicValue extends SymbolicValue {
     protected SymbolicValue operand;
+    private Symbol operandSymbol;
 
 
     @Override
@@ -168,14 +174,20 @@ public class SymbolicValue {
     }
 
     @Override
-    public void computedFrom(List<SymbolicValue> symbolicValues) {
+    public void computedFrom(List<ProgramState.SymbolicValueSymbol> symbolicValues) {
       Preconditions.checkArgument(symbolicValues.size() == 1);
-      this.operand = symbolicValues.get(0);
+      this.operand = symbolicValues.get(0).symbolicValue();
+      this.operandSymbol = symbolicValues.get(0).symbol();
     }
 
     @Override
     public List<SymbolicValue> computedFrom() {
       return ImmutableList.of(operand);
+    }
+
+    @Override
+    public List<Symbol> computedFromSymbols() {
+      return operandSymbol == null ? operand.computedFromSymbols() : ImmutableList.of(operandSymbol);
     }
   }
 

@@ -188,7 +188,7 @@ public abstract class MethodYield {
 
     Map<String, Set<List<JavaFileScannerContext.Location>>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
     return flowByDomain.computeIfAbsent(domainKey,
-      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, null));
+      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, Collections.emptySet()));
   }
 
   private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {

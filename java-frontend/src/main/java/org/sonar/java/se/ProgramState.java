@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class ProgramState {
 
@@ -57,12 +58,54 @@ public class ProgramState {
 
     public final ProgramState state;
     public final List<SymbolicValue> values;
+    public final List<SymbolicValueSymbol> valuesAndSymbols;
 
-    public Pop(ProgramState programState, List<SymbolicValue> result) {
+    public Pop(ProgramState programState, List<SymbolicValueSymbol> result) {
       state = programState;
-      values = result;
+      values = result.stream().map(SymbolicValueSymbol::symbolicValue).collect(Collectors.toList());
+      valuesAndSymbols = result;
     }
 
+  }
+
+  public static class SymbolicValueSymbol {
+    final SymbolicValue sv;
+    final Symbol symbol;
+
+    public SymbolicValueSymbol(SymbolicValue sv, @Nullable Symbol symbol) {
+      this.sv = sv;
+      this.symbol = symbol;
+    }
+
+    public SymbolicValue symbolicValue() {
+      return sv;
+    }
+
+    public Symbol symbol() {
+      return symbol;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      SymbolicValueSymbol that = (SymbolicValueSymbol) o;
+      return Objects.equals(sv, that.sv);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(sv);
+    }
+
+    @Override
+    public String toString() {
+      return symbol == null ? sv.toString() : (symbol.toString() + "->" + sv.toString());
+    }
   }
 
   private int hashCode;
@@ -84,7 +127,7 @@ public class ProgramState {
     null, PCollections.emptyMap());
 
   private final PMap<ProgramPoint, Integer> visitedPoints;
-  private final PStack<SymbolicValue> stack;
+  private final PStack<SymbolicValueSymbol> stack;
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
@@ -93,7 +136,7 @@ public class ProgramState {
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
-                       PStack<SymbolicValue> stack, SymbolicValue exitSymbolicValue,
+                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue,
                        PMap<SymbolicValue, Symbol> lastAssociatedSymbols) {
     this.values = values;
     this.references = references;
@@ -105,7 +148,7 @@ public class ProgramState {
     constraintSize = 3;
   }
 
-  private ProgramState(ProgramState ps, PStack<SymbolicValue> newStack) {
+  private ProgramState(ProgramState ps, PStack<SymbolicValueSymbol> newStack) {
     values = ps.values;
     references = ps.references;
     constraints = ps.constraints;
@@ -128,7 +171,11 @@ public class ProgramState {
   }
 
   public ProgramState stackValue(SymbolicValue sv) {
-    return new ProgramState(this, stack.push(sv));
+    return new ProgramState(this, stack.push(new SymbolicValueSymbol(sv, null)));
+  }
+
+  public ProgramState stackValue(SymbolicValue sv, @Nullable Symbol symbol) {
+    return new ProgramState(this, stack.push(new SymbolicValueSymbol(sv, symbol)));
   }
 
   ProgramState clearStack() {
@@ -141,8 +188,8 @@ public class ProgramState {
     }
 
     // FIXME can be made more efficient by reusing sub collection of PStack instead of copying to the new list
-    PStack<SymbolicValue> newStack = stack;
-    List<SymbolicValue> result = Lists.newArrayList();
+    PStack<SymbolicValueSymbol> newStack = stack;
+    List<SymbolicValueSymbol> result = Lists.newArrayList();
     for (int i = 0; i < nbElements && !newStack.isEmpty(); i++) {
       result.add(newStack.peek());
       newStack = newStack.pop();
@@ -152,16 +199,24 @@ public class ProgramState {
 
   @CheckForNull
   public SymbolicValue peekValue() {
-    return stack.isEmpty() ? null : stack.peek();
+    return stack.isEmpty() ? null : stack.peek().sv;
+  }
+
+  public SymbolicValueSymbol peekValueSymbol() {
+    return stack.peek();
   }
 
   public SymbolicValue peekValue(int i) {
-    return stack.peek(i);
+    return stack.peek(i).sv;
   }
 
   public List<SymbolicValue> peekValues(int n) {
-    ImmutableList.Builder<SymbolicValue> result = ImmutableList.builder();
-    PStack<SymbolicValue> tmpStack = this.stack;
+    return peekValuesAndSymbols(n).stream().map(SymbolicValueSymbol::symbolicValue).collect(Collectors.toList());
+  }
+
+  public List<SymbolicValueSymbol> peekValuesAndSymbols(int n) {
+    ImmutableList.Builder<SymbolicValueSymbol> result = ImmutableList.builder();
+    PStack<SymbolicValueSymbol> tmpStack = this.stack;
     for (int i = 0; i < n; i++) {
       result.add(tmpStack.peek());
       tmpStack = tmpStack.pop();
@@ -286,8 +341,8 @@ public class ProgramState {
         && constraints.get(LocksNotUnlockedCheck.LockConstraint.class) == null));
   }
 
-  private static boolean inStack(PStack<SymbolicValue> stack, SymbolicValue symbolicValue) {
-    return stack.anyMatch(sv -> sv.equals(symbolicValue) || sv.references(symbolicValue));
+  private static boolean inStack(PStack<SymbolicValueSymbol> stack, SymbolicValue symbolicValue) {
+    return stack.anyMatch(valueSymbol -> valueSymbol.sv.equals(symbolicValue) || valueSymbol.sv.references(symbolicValue));
   }
 
   private static boolean isLocalVariable(Symbol symbol) {

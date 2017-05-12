@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -31,6 +32,8 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.symbolicvalues.SymbolicValueTest;
+import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.Arrays;
@@ -125,7 +128,7 @@ public class ProgramStateTest {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     RelationalSymbolicValue relation = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
-    relation.computedFrom(ImmutableList.of(sv1, sv2));
+    SymbolicValueTestUtil.computedFrom(relation, sv1, sv2);
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE.addConstraint(relation, BooleanConstraint.TRUE);
     Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
@@ -173,7 +176,7 @@ public class ProgramStateTest {
   @Test
   public void test_setting_constraint_on_relational_sv() throws Exception {
     RelationalSymbolicValue rel = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
-    rel.computedFrom(Arrays.asList(new SymbolicValue(), new SymbolicValue()));
+    SymbolicValueTestUtil.computedFrom(rel, new SymbolicValue(), new SymbolicValue());
     assertThatThrownBy(() -> ProgramState.EMPTY_STATE.addConstraint(rel, BooleanConstraint.FALSE))
       .isInstanceOf(IllegalStateException.class)
       .hasMessageStartingWith("Relations stored in PS should always use TRUE constraint");
@@ -196,5 +199,30 @@ public class ProgramStateTest {
 
   private JavaSymbol.VariableJavaSymbol variable(String name) {
     return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+  }
+
+  @Test
+  public void test_symbols_on_stack() {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue sv = new SymbolicValue();
+    JavaSymbol.VariableJavaSymbol symbol = variable("a");
+    ps = ps.stackValue(sv, symbol);
+    Pop pop = ps.unstackValue(1);
+    assertThat(ps.peekValue()).isEqualTo(sv);
+    assertThat(ps.peekValueSymbol().symbol()).isEqualTo(symbol);
+    assertThat(pop.valuesAndSymbols.get(0).symbol()).isEqualTo(symbol);
+    assertThat(pop.valuesAndSymbols.get(0).symbolicValue()).isEqualTo(sv);
+  }
+
+  @Test
+  public void test_symbol_should_not_change_equals() throws Exception {
+    ProgramState ps1 = ProgramState.EMPTY_STATE;
+    ProgramState ps2 = ProgramState.EMPTY_STATE;
+    SymbolicValue sv = new SymbolicValue();
+    JavaSymbol.VariableJavaSymbol symbol = variable("a");
+    ps1 = ps1.stackValue(sv);
+    ps2 = ps2.stackValue(sv, symbol);
+    assertThat(ps1).isEqualTo(ps2);
+    assertThat(ImmutableSet.of(ps1, ps2)).hasSize(1);
   }
 }
