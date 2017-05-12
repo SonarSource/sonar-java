@@ -1,8 +1,9 @@
 package org.sonar.java.resolve.targets.nullableparameters;
 
 class PackageAnnotations {
-  void foo(Object input) {
-    input.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "input" is nullable here.}}
+  void foo(Object input) { // flow@npe [[sc=19;ec=24]] {{Implies 'input' can be null.}}
+    // Noncompliant@+1 [[flows=npe]] {{A "NullPointerException" could be thrown; "input" is nullable here.}}
+    input.toString(); // flow@npe {{'input' is dereferenced.}}
   }
 
   private Integer bar1(int i) { return i; }
