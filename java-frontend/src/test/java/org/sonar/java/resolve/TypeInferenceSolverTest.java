@@ -21,14 +21,15 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.WildCardType.BoundType;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +45,7 @@ public class TypeInferenceSolverTest {
   @Before
   public void setUp() {
     parametrizedTypeCache = new ParametrizedTypeCache();
-    symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
+    symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(Collections.emptyList()), parametrizedTypeCache));
     TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     LeastUpperBound lub = new LeastUpperBound(typeSubstitutionSolver, parametrizedTypeCache, symbols);
     typeInferenceSolver = new TypeInferenceSolver(lub, symbols, typeSubstitutionSolver);

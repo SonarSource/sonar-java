@@ -19,17 +19,17 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
-import java.io.File;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -191,7 +191,7 @@ public class MethodTreeImplTest {
 
   private CompilationUnitTree createTree(String code) {
     CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
-    SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
+    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
     return compilationUnitTree;
   }
 

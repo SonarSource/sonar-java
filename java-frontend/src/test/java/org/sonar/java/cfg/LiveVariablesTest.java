@@ -22,6 +22,7 @@ package org.sonar.java.cfg;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -29,7 +30,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ public class LiveVariablesTest {
 
   private static CFG buildCFG(String methodCode) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
-    SemanticModel.createFor(cut, Collections.<File>emptyList());
+    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(3));
     return CFG.build(tree);
   }

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -398,7 +398,7 @@ public class CFGTest {
   }
 
   private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
-    SemanticModel.createFor(cut, Lists.newArrayList());
+    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return CFG.build(tree);
   }

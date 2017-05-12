@@ -27,6 +27,9 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -54,10 +57,10 @@ public class VisitorsBridge {
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
   private SemanticModel semanticModel;
-  private List<File> projectClasspath;
   protected File currentFile;
   protected JavaVersion javaVersion;
   private Set<String> classesNotFound = new TreeSet<>();
+  private final SquidClassLoader classLoader;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -79,7 +82,7 @@ public class VisitorsBridge {
     this.scanners = scannersBuilder.build();
     this.executableScanners = scanners;
     this.sonarComponents = sonarComponents;
-    this.projectClasspath = projectClasspath;
+    this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
   }
 
@@ -96,7 +99,7 @@ public class VisitorsBridge {
       tree = (CompilationUnitTree) parsedTree;
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
-          semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
+          semanticModel = SemanticModel.createFor(tree, classLoader);
         } catch (Exception e) {
           LOG.error("Unable to create symbol table for : " + currentFile.getAbsolutePath(), e);
           return;
@@ -115,8 +118,7 @@ public class VisitorsBridge {
       scanner.scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
-      // Close class loader after all the checks.
-      semanticModel.done();
+      ParametrizedTypeJavaType.typeSubstitutionSolver = null;
       classesNotFound.addAll(semanticModel.classesNotFound());
     }
   }
@@ -159,10 +161,6 @@ public class VisitorsBridge {
     return "java/lang".equals(packageName);
   }
 
-  private List<File> getProjectClasspath() {
-    return projectClasspath;
-  }
-
   private void createSonarSymbolTable(CompilationUnitTree tree) {
     if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
       SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile), semanticModel);
@@ -192,5 +190,6 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
+    classLoader.close();
   }
 }

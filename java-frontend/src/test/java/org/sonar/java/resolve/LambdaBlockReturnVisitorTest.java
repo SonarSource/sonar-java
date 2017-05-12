@@ -22,13 +22,14 @@ package org.sonar.java.resolve;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class LambdaBlockReturnVisitorTest {
       "          return unknownSymbol;\n" +
       "        };\n" +
       "      }");
-    SemanticModel.createFor(cut, new ArrayList<>());
+    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     List<VariableTree> vars = ((ClassTree) cut.types().get(0)).members().stream().map(m -> (VariableTree) m).collect(Collectors.toList());
     LambdaBlockReturnVisitor visitor = new LambdaBlockReturnVisitor();
     ((LambdaExpressionTree) vars.get(0).initializer()).body().accept(visitor);

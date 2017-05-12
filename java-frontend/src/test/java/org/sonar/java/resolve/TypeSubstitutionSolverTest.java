@@ -21,13 +21,14 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,7 @@ public class TypeSubstitutionSolverTest {
   @Before
   public void setUp() {
     parametrizedTypeCache = new ParametrizedTypeCache();
-    symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
+    symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(Collections.emptyList()), parametrizedTypeCache));
     typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     T = getTypeVariable("T");
   }

@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import javafx.scene.web.WebEngine;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
@@ -42,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,7 +73,7 @@ public class EGViewer {
 
   private static ExplodedGraph buildEG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
-    SemanticModel semanticModel = SemanticModel.createFor(cut, Lists.newArrayList());
+    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return getEg(cut, semanticModel, firstMethod);
   }

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.viewer;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import javafx.scene.web.WebEngine;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.resolve.SemanticModel;
@@ -30,6 +30,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Collections;
 
 public class CFGViewer {
 
@@ -50,7 +52,7 @@ public class CFGViewer {
 
   static CFG buildCFG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
-    SemanticModel.createFor(cut, Lists.newArrayList());
+    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return CFG.build(firstMethod);
   }

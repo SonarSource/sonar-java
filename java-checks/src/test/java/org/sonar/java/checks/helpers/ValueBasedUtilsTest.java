@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ public class ValueBasedUtilsTest {
   public void testIsValueBased() throws Exception {
     File file = new File("src/test/files/checks/helpers/ValueBasedUtilsTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, ImmutableList.<File>of());
+    SemanticModel.createFor(tree, new SquidClassLoader(Collections.emptyList()));
 
     List<Tree> members = ((ClassTree) tree.types().get(0)).members();
     members.stream()

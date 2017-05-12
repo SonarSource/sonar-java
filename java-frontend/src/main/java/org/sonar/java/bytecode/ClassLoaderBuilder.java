@@ -25,7 +25,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public final class ClassLoaderBuilder {
     // only static methods
   }
 
-  public static ClassLoader create(Collection<File> bytecodeFilesOrDirectories) {
+  public static SquidClassLoader create(Collection<File> bytecodeFilesOrDirectories) {
     List<File> files = Lists.newArrayList();
     for (File file : bytecodeFilesOrDirectories) {
       if (file.isFile() && file.getPath().endsWith(".class")) {
@@ -61,12 +60,4 @@ public final class ClassLoaderBuilder {
       throw new IllegalStateException("Can not create ClassLoader", e);
     }
   }
-
-  /**
-   * For tests.
-   */
-  public static ClassLoader create(File bytecodeFileOrDirectory) {
-    return create(Arrays.asList(bytecodeFileOrDirectory));
-  }
-
 }

@@ -25,6 +25,7 @@ import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -48,7 +49,7 @@ public class LeastUpperBoundTest {
   @Before
   public void setUp() {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
-    Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), parametrizedTypeCache));
+    Symbols symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(Lists.<File>newArrayList()), parametrizedTypeCache));
     TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     intType = symbols.intType;
     longType = symbols.longType;
@@ -467,7 +468,7 @@ public class LeastUpperBoundTest {
       builder.append(line).append(System.lineSeparator());
     }
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(builder.toString());
-    SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    SemanticModel.createFor(cut, new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
     return cut;
   }
 }

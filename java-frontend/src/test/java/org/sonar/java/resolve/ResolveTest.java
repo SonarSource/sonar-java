@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.io.File;
 
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public class ResolveTest {
 
   private ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
-  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")), parametrizedTypeCache);
+  private BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))), parametrizedTypeCache);
   private Resolve resolve = new Resolve(new Symbols(bytecodeCompleter), bytecodeCompleter, parametrizedTypeCache);
 
   private Resolve.Env env = mock(Resolve.Env.class);
