@@ -19,8 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
+import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -45,7 +46,10 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "\"NoSuchElementException\" will be thrown when invoking method \"%s()\" without verifying Optional parameter.");
-
+  private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
+  private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withoutParameter();
+  private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withoutParameter();
+  private static final MethodMatcher OPTIONAL_EMPTY = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("empty").withoutParameter();
   private enum OptionalConstraint implements Constraint {
     PRESENT, NOT_PRESENT;
 
@@ -62,6 +66,21 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     return visitor.programState;
   }
 
+  @Override
+  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    List<ProgramState> programStates = setNotPresentConstraint(context, syntaxNode);
+    Preconditions.checkState(programStates.size() == 1);
+    return programStates.get(0);
+  }
+
+  private static List<ProgramState> setNotPresentConstraint(CheckerContext context, Tree syntaxNode) {
+    SymbolicValue val = context.getState().peekValue();
+    if(syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && OPTIONAL_EMPTY.matches(((MethodInvocationTree) syntaxNode))) {
+      return val.setConstraint(context.getState(), OptionalConstraint.NOT_PRESENT);
+    }
+    return Lists.newArrayList(context.getState());
+  }
+
   private static class OptionalSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue optionalSV;
@@ -71,7 +90,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     }
 
     /**
-     * Will be called only after calling optional.isPresent()
+     * Will be called only after calling Optional.isPresent()
      */
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -93,10 +112,6 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   }
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
-
-    private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
-    private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withoutParameter();
-    private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withoutParameter();
 
     private final CheckerContext context;
     private final ConstraintManager constraintManager;

@@ -2123,3 +2123,14 @@ class ResetFieldWhenThisUsedAsParameter {
     }
   }
 }
+
+class OptionalEmptyNotPresent {
+  private Optional fun() {
+    java.util.Optional<String> op = java.util.Optional.empty();
+    if (op.isPresent()) { // Noncompliant
+      // unreachable by definition of Optional.empty()
+    }
+    return op;
+  }
+
+}
