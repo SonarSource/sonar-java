@@ -27,6 +27,9 @@ public class NoSonarCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/NoSonar.java", new NoSonarCheck());
+    NoSonarCheck checkOnlyNoDetails = new NoSonarCheck();
+    checkOnlyNoDetails.onlyWhenNoDetailsProvided = true;
+    JavaCheckVerifier.verify("src/test/files/checks/NoSonarNoDetails.java", checkOnlyNoDetails);
   }
 
 }
