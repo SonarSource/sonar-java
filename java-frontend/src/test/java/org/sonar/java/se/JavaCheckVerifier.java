@@ -22,8 +22,11 @@ package org.sonar.java.se;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
@@ -36,6 +39,11 @@ import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +58,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -189,7 +199,60 @@ public class JavaCheckVerifier {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), null);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
-    checkIssues(testJavaFileScannerContext.getIssues());
+    Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();
+    if (isDumpingEnabled() && !issues.isEmpty()) {
+      Path source = Paths.get(filename);
+      dumpIssues(source, Paths.get("target", "actual", source.getFileName().toString()), issues);
+    }
+    checkIssues(issues);
+  }
+
+  private boolean isDumpingEnabled() {
+    return System.getProperty("dump.unittests") != null;
+  }
+
+  private static void dumpIssues(Path source, Path target, Set<AnalyzerMessage> issues) {
+    class Line {
+      int idx;
+      String s;
+
+      Line(int idx, String s) {
+        this.idx = idx;
+        this.s = s;
+      }
+    }
+
+    try {
+      ListMultimap<Integer, String> comments = computeComments(issues);
+      List<String> lines = Files.readAllLines(source).stream()
+        .map(line -> line.replaceAll("// (Noncompliant|flow).*$", ""))
+        .collect(Collectors.toList());
+
+      List<String> dump = IntStream.range(0, lines.size())
+        .mapToObj(idx -> new Line(idx, lines.get(idx)))
+        .map(l ->  l.s + comments.get(l.idx + 1).stream().collect(joining(",")))
+        .collect(Collectors.toList());
+
+      Files.createDirectories(target.getParent());
+      Files.write(target, dump, StandardOpenOption.CREATE);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static ListMultimap<Integer, String> computeComments(Set<AnalyzerMessage> issues) {
+    ImmutableListMultimap.Builder<Integer, String> result = ImmutableListMultimap.builder();
+    issues.stream()
+      .filter(m -> Objects.nonNull(m.getLine()))
+      .flatMap(m -> Stream.concat(
+        Stream.of(Maps.immutableEntry(m.getLine(), String.format("// Noncompliant {{%s}}", m.getMessage()))),
+        flowComments(m)))
+      .forEach(result::put);
+    return result.build();
+  }
+
+  private static Stream<Map.Entry<Integer, String>> flowComments(AnalyzerMessage m) {
+    return m.flows.stream().flatMap(f -> f.stream().map(fm -> Maps.immutableEntry(fm.getLine(), String.format("// flow@id {{%s}}", fm.getMessage()))));
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues) {
