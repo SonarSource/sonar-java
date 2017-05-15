@@ -140,7 +140,7 @@ class BooleanConstraint {
   }
 
   void f() {
-    boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{'sure()' returns non-null.}} flow@bool {{'b' is assigned false.}} flow@bool {{'b' is assigned non-null.}}
+    boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{'b' is assigned false.}}
     if (b); // Noncompliant [[flows=bool]] flow@bool
   }
 }
