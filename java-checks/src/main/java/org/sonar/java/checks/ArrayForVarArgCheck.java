@@ -28,12 +28,15 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Rule(key = "S3878")
 public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
@@ -69,7 +72,7 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         if (newArrayTree.openBraceToken() == null) {
           ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
           Integer literalValue = LiteralUtils.intLiteralValue(expression);
-          if (literalValue == null || literalValue != 0) {
+          if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, lastArg)) {
             return;
           }
         } else if (!newArrayTree.initializers().isEmpty()) {
@@ -81,6 +84,25 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         reportIssue(lastArg, "Disambiguate this call by either casting as \""+type+"\" or \""+type+"[]\"");
       }
     }
+  }
+
+  private static boolean isCallingOverload(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
+    MethodTree enclosing = getEnclosingMethod(lastArg);
+    return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
+  }
+
+  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, JavaSymbol.MethodJavaSymbol methodSymbol) {
+    return enclosing.name().equals(methodSymbol.name())
+      && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
+  }
+
+  @CheckForNull
+  private static MethodTree getEnclosingMethod(ExpressionTree lastArg) {
+    Tree result = lastArg.parent();
+    while (result != null && !result.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+      result = result.parent();
+    }
+    return (MethodTree) result;
   }
 
   private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {

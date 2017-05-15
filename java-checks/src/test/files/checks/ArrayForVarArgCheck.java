@@ -28,3 +28,19 @@ class ArrayForVarArgCheck {
   public void doTheThing2 (Bar ... args) {
   }
 }
+
+class Overload{
+  Object o = fun(12, new String[0]); // Noncompliant
+  Overload(int i) {
+    this(i, new String[0]);
+  }
+  Overload(int i, String ... params) {
+  }
+
+
+  void fun(int i) {
+    fun(i, new String[0]);
+  }
+  void fun(int i, String ... params) {
+  }
+}
