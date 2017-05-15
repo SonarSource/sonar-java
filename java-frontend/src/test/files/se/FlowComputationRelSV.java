@@ -4,7 +4,7 @@ class A {
   // test that we compute flow not only on relational SV both also on SVs from which relational SV was computed (recursively)
   void rel() {
     int c = 0; // flow@unary_rel,rel {{'c' is assigned non-null.}}
-    int a = c;  // flow@unary_rel,rel {{'a' is assigned non-null.}}
+    int a = c;  // flow@unary_rel,rel {{Implies 'a' has the same value as 'c'.}}
     int b = 0;  // flow@unary_rel,rel {{'b' is assigned non-null.}}
     boolean cond = (b == a) == true; // see SONARJAVA-1911
     if (cond) { // Noncompliant [[flows=rel]] flow@rel {{Expression is always true.}} flow@unary_rel {{Implies 'cond' is true.}}
@@ -68,8 +68,8 @@ class A {
 
   void same_symbolic_value_referenced_with_different_symbols() {
     Object o = null; // flow@samesv {{'o' is assigned null.}}
-    Object a = o; // flow@samesv {{'a' is assigned null.}}
-    Object b = o; // flow@samesv {{'b' is assigned null.}}
+    Object a = o; // flow@samesv {{Implies 'a' has the same value as 'o'.}}
+    Object b = o; // flow@samesv {{Implies 'b' has the same value as 'o'.}}
     if (a == b) { // Noncompliant [[flows=samesv]] flow@samesv {{Expression is always true.}}
 
     }
@@ -77,8 +77,8 @@ class A {
 
   void equalsSV() {
     Object o = true; // flow@equals {{'o' is assigned true.}}
-    Object a = o; // flow@equals {{'a' is assigned true.}}
-    Object b = o; // flow@equals {{'b' is assigned true.}}
+    Object a = o; // flow@equals {{Implies 'a' has the same value as 'o'.}}
+    Object b = o; // flow@equals {{Implies 'b' has the same value as 'o'.}}
     if (a.equals(b)) { // Noncompliant [[flows=equals]] flow@equals {{Expression is always true.}}
 
     }

@@ -27,7 +27,7 @@ class A {
   void reassignement() {
     Object a = null; // flow@reass {{'a' is assigned null.}}
     Object b = new Object();
-    b = a; // flow@reass {{'b' is assigned null.}}
+    b = a; // flow@reass {{Implies 'b' has the same value as 'a'.}}
     b.toString(); // Noncompliant [[flows=reass]] flow@reass {{'b' is dereferenced.}}
   }
 
@@ -40,7 +40,7 @@ class A {
   void combined(Object a) {
     Object b = new Object();
     if (a == null) { // flow@comb {{Implies 'a' can be null.}}
-      b = a; // flow@comb {{'b' is assigned null.}}
+      b = a; // flow@comb {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }
   }
@@ -57,7 +57,7 @@ class A {
 
   void recursiveRelation(Object a, Object b) {
     if ((a == null) == true) { // flow@rec {{Implies 'a' is null.}}
-      b = a; // flow@rec {{'b' is assigned null.}}
+      b = a; // flow@rec {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=rec]] flow@rec {{'b' is dereferenced.}}
     }
   }
@@ -91,7 +91,7 @@ class A {
 
   public void order() {
     String foo = getFoo();  // flow@ord [[order=2]] {{'foo' is assigned null.}} flow@ord [[order=1]] {{'getFoo()' returns null.}}
-    String bar = foo; // flow@ord [[order=3]] {{'bar' is assigned null.}}
+    String bar = foo; // flow@ord [[order=3]] {{Implies 'bar' has the same value as 'foo'.}}
     boolean cond = (bar == null);
 
     if (cond) {

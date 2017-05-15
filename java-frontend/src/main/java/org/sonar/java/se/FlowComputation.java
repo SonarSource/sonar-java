@@ -76,6 +76,8 @@ public class FlowComputation {
 
   private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
   private static final String IMPLIES_CAN_BE_NULL_MSG = "Implies '%s' can be null.";
+  private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
+
   private static final int MAX_FLOW_STEPS = 3_000_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private final Predicate<Constraint> addToFlow;
@@ -304,19 +306,25 @@ public class FlowComputation {
 
     List<JavaFileScannerContext.Location> flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
-      PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
-      Collection<Constraint> constraints = filterByDomains(allConstraints);
-      for (Constraint constraint: constraints) {
-        String symbolName = learnedAssociation.symbol().name();
-        String msg;
-        if (ObjectConstraint.NULL == constraint && assigningNullFromTernary(node)) {
-          msg = String.format(IMPLIES_CAN_BE_NULL_MSG, symbolName);
-        } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
-          msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
-        } else {
-          msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
+      ProgramState programState = node.programState;
+      Symbol rhsSymbol = symbolFromStack(learnedAssociation.symbolicValue(), programState);
+      if (rhsSymbol != null) {
+        flowBuilder.add(location(node, String.format(IMPLIES_SAME_VALUE, learnedAssociation.symbol().name(), rhsSymbol.name())));
+      } else {
+        PMap<Class<? extends Constraint>, Constraint> allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
+        Collection<Constraint> constraints = filterByDomains(allConstraints);
+        for (Constraint constraint : constraints) {
+          String symbolName = learnedAssociation.symbol().name();
+          String msg;
+          if (ObjectConstraint.NULL == constraint && assigningNullFromTernary(node)) {
+            msg = String.format(IMPLIES_CAN_BE_NULL_MSG, symbolName);
+          } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
+            msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
+          } else {
+            msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
+          }
+          flowBuilder.add(location(node, msg));
         }
-        flowBuilder.add(location(node, msg));
       }
       return flowBuilder.build();
     }
