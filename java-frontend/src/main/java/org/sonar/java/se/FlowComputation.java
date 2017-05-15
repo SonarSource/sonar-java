@@ -244,7 +244,7 @@ public class FlowComputation {
     }
 
     private boolean isConstraintFromObjectDomain(@Nullable Constraint constraint) {
-      return constraint != null && constraint.getClass().isAssignableFrom(ObjectConstraint.class);
+      return constraint instanceof ObjectConstraint;
     }
 
     private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
