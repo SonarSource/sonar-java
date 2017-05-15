@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
@@ -33,6 +32,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -400,7 +400,11 @@ public class UnclosedResourcesCheck extends SECheck {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
-          programState = programState.addConstraint(programState.peekValue(), OPEN);
+          SymbolicValue peekedValue = programState.peekValue();
+          programState = programState.addConstraint(peekedValue, OPEN);
+          if(isJdbcResourceCreation(targetExpression)) {
+            programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
+          }
         }
       }
     }

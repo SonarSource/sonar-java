@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 public class JdbcSample {
   
@@ -82,3 +83,28 @@ public class JdbcSample {
     processConnection(DriverManager.getConnection(url));
   }
 }
+
+public class A {
+  void foo() {
+    PreparedStatement var1 = null;
+    PreparedStatement var2 = null;
+
+    Connection conn = getConnection();
+    try {
+
+      var1 = conn.prepareStatement("UPDATE ");
+      var2 = conn.prepareStatement("UPDATE ");// Noncompliant can be open if var1.close throws an exception
+
+    }finally {
+      if(var1 != null) {
+        var1.close();
+      }
+      if(var2 != null) {
+        var2.close();
+      }
+    }
+  }
+
+  abstract Connection getConnection();
+}
+
