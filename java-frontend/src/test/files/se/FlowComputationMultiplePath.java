@@ -6,7 +6,7 @@ abstract class A {
     if (cond) {
       a = null; // flow@path1 {{'a' is assigned null.}}
     } else {
-      a = b; // flow@path2 {{'a' is assigned null.}}
+      a = b; // flow@path2 {{Implies 'a' has the same value as 'b'.}}
     }
     a.toString(); // Noncompliant [[flows=path1,path2]] flow@path1,path2 {{'a' is dereferenced.}}
   }
@@ -17,13 +17,13 @@ abstract class A {
     if (cond) {
       a = null; // flow@p2 {{'a' is assigned null.}}
     } else {
-      a = b; // flow@p1 {{'a' is assigned null.}}
+      a = b; // flow@p1 {{Implies 'a' has the same value as 'b'.}}
     }
     Object c;
     if (cond) {
       c = null;  // flow@p3 {{'c' is assigned null.}}
     } else {
-      c = a; // flow@p1,p2 {{'c' is assigned null.}}
+      c = a; // flow@p1,p2 {{Implies 'c' has the same value as 'a'.}}
     }
     c.toString(); // Noncompliant [[flows=p1,p2,p3]] flow@p1,p2,p3 {{'c' is dereferenced.}}
   }

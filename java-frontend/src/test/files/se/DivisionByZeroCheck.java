@@ -1,7 +1,7 @@
 class A {
   void foo(int r) {
     int z1 = 0; // flow@foo {{'z1' is assigned zero.}}
-    int z2 = z1; // flow@foo {{'z2' is assigned zero.}}
+    int z2 = z1; // flow@foo {{Implies 'z2' has the same value as 'z1'.}}
     r = 1 / z2; // Noncompliant [[flows=foo]] {{Make sure "z2" can't be zero before doing this division.}} flow@foo {{Division by zero.}}
   }
 

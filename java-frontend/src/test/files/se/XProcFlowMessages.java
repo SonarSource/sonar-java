@@ -32,7 +32,7 @@ class B {
   void bar() {
     B b, c;
     b = foo();                                   // flow@flow_b {{'foo()' can return null.}} flow@flow_b {{Implies 'b' can be null.}}
-    c = b;                                       // flow@flow_b {{'c' is assigned null.}}
+    c = b;                                       // flow@flow_b {{Implies 'c' has the same value as 'b'.}}
     // Noncompliant@+1  [[flows=flow_b]]
     c.bar();                                     // flow@flow_b {{'c' is dereferenced.}}
   }

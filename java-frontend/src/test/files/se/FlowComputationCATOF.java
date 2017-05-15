@@ -39,7 +39,7 @@ class A {
   public void catof3() {
     Object c = null;
     Object foo = null; // flow@catof3 {{'foo' is assigned null.}}
-    Object b = foo;   // flow@catof3 {{'b' is assigned null.}}
+    Object b = foo;   // flow@catof3 {{Implies 'b' has the same value as 'foo'.}}
     if (b == null) { // Noncompliant [[flows=catof3]] flow@catof3 {{Expression is always true.}}
       log(foo.toString()); // Noncompliant NPE
     } else {
