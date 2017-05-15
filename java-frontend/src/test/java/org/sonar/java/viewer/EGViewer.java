@@ -84,9 +84,9 @@ public class EGViewer {
     when(mockContext.getSemanticModel()).thenReturn(semanticModel);
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList()) {
       @Override
-      public MethodBehavior execute(MethodTree methodTree) {
+      public void execute(MethodTree methodTree) {
         this.context = mockContext;
-        return super.execute(methodTree);
+        super.execute(methodTree);
       }
     };
     ExplodedGraphWalker walker = new ExplodedGraphWalker(sev.behaviorCache, semanticModel);

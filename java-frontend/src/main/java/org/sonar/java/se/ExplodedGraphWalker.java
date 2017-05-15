@@ -419,7 +419,6 @@ public class ExplodedGraphWalker {
     } else {
       for (CFG.Block successor : block.successors()) {
         if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
-          node.happyPath = terminator == null || !terminator.is(Tree.Kind.THROW_STATEMENT);
           enqueue(new ProgramPoint(successor), programState, successor == block.exitBlock());
         }
       }
@@ -1067,9 +1066,6 @@ public class ExplodedGraphWalker {
       return;
     }
     cachedNode.exitPath = exitPath;
-    if(node != null) {
-      cachedNode.happyPath = node.happyPath;
-    }
     cachedNode.addParent(node, methodYield);
     workList.addFirst(cachedNode);
   }

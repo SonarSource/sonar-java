@@ -88,10 +88,6 @@ public class ExplodedGraph {
       }
     }
 
-    public boolean onHappyPath() {
-      return happyPath;
-    }
-
     @Nullable
     public Node parent() {
       return parents().stream().findFirst().orElse(null);

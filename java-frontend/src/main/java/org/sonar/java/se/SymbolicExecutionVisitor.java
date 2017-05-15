@@ -35,8 +35,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
@@ -61,8 +59,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
     execute((MethodTree) tree);
   }
 
-  @CheckForNull
-  public MethodBehavior execute(MethodTree methodTree) {
+  public void execute(MethodTree methodTree) {
     ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
@@ -72,9 +69,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
           methodBehavior = walker.visitMethod(methodTree, methodBehavior);
           methodBehavior.completed();
         }
-        return methodBehavior;
       } else {
-        return walker.visitMethod(methodTree);
+        walker.visitMethod(methodTree);
       }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
       | ExplodedGraphWalker.ExplodedGraphTooBigException
@@ -84,7 +80,6 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         walker.methodBehavior.visited();
       }
     }
-    return null;
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
