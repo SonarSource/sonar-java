@@ -68,8 +68,15 @@ public class ProgramState {
 
   }
 
+  /**
+   * This class is used to keep on stack symbolic value together with symbol which was used to evaluate this value.
+   * This is later used to store symbols of operands in {@link BinarySymbolicValue} and {@link org.sonar.java.se.symbolicvalues.SymbolicValue.UnarySymbolicValue}
+   * so we are able to include references to symbols in reporting {@link FlowComputation}.
+   * equals/hashCode is considering only stored symbolic value, so caching of ProgramState doesn't depend on symbols.
+   */
   public static class SymbolicValueSymbol {
     final SymbolicValue sv;
+    @Nullable
     final Symbol symbol;
 
     public SymbolicValueSymbol(SymbolicValue sv, @Nullable Symbol symbol) {

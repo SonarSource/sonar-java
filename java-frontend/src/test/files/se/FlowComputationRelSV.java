@@ -41,9 +41,9 @@ class A {
   void catof3b() {
     Object a = new Object(); // flow@catof3b {{Constructor implies 'non-null'.}} flow@catof3b {{'a' is assigned non-null.}}
     Object b = null; // flow@catof3b {{'b' is assigned null.}}
-    boolean cond = a == b;  // no message here, because no constraint on 'a==b', it is not yet evaluated se SONARJAVA-1911
-    b = new Object(); // no message here, b is not tracked yet
-    a = null; // no message here, a is not tracked yet
+    boolean cond = a == b;  // no message here, because no constraint on 'a==b', it is not yet evaluated see SONARJAVA-1911
+    b = new Object(); // b is not relevant here
+    a = null; // a is not relevant here
     if (cond == true) { // Noncompliant [[flows=catof3b]] {{Change this condition so that it does not always evaluate to "false"}} flow@catof3b {{Expression is always false.}}
       System.out.println();
     }
