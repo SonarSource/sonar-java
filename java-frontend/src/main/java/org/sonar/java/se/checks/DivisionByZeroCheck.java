@@ -33,6 +33,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -137,19 +138,21 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      List<SymbolicValue> symbolicValues;
       SymbolicValue var;
       SymbolicValue expr;
+      Symbol symbol;
       if (ExpressionUtils.isSimpleAssignment(tree)) {
-        var = programState.getValue(ExpressionUtils.extractIdentifier(tree).symbol());
+        symbol = ExpressionUtils.extractIdentifier(tree).symbol();
+        var = programState.getValue(symbol);
         expr = programState.peekValue();
       } else {
-        symbolicValues = programState.peekValues(2);
-        var = symbolicValues.get(1);
-        expr = symbolicValues.get(0);
+        ProgramState.Pop unstackValue = programState.unstackValue(2);
+        var = unstackValue.values.get(1);
+        expr = unstackValue.values.get(0);
+        symbol = unstackValue.valuesAndSymbols.get(0).symbol();
       }
 
-      checkExpression(tree, var, expr);
+      checkExpression(tree, var, expr, symbol);
     }
 
     @Override
@@ -161,8 +164,8 @@ public class DivisionByZeroCheck extends SECheck {
         case MINUS:
         case DIVIDE:
         case REMAINDER:
-          symbolicValues = programState.peekValues(2);
-          checkExpression(tree, symbolicValues.get(1), symbolicValues.get(0));
+          ProgramState.Pop unstackValue = programState.unstackValue(2);
+          checkExpression(tree, unstackValue.values.get(1), unstackValue.values.get(0), unstackValue.valuesAndSymbols.get(0).symbol());
           break;
         case GREATER_THAN:
         case GREATER_THAN_OR_EQUAL_TO:
@@ -181,7 +184,7 @@ public class DivisionByZeroCheck extends SECheck {
       programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
     }
 
-    private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
+    private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {
       switch (tree.kind()) {
         case MULTIPLY:
         case MULTIPLY_ASSIGNMENT:
@@ -197,7 +200,7 @@ public class DivisionByZeroCheck extends SECheck {
         case DIVIDE_ASSIGNMENT:
         case REMAINDER:
         case REMAINDER_ASSIGNMENT:
-          handleDivide(tree, leftOp, rightOp);
+          handleDivide(tree, leftOp, rightOp, rightOpSymbol);
           break;
         default:
           // can not be reached
@@ -236,10 +239,10 @@ public class DivisionByZeroCheck extends SECheck {
       }
     }
 
-    private void handleDivide(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp) {
+    private void handleDivide(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {
       if (isZero(rightOp)) {
         context.addExceptionalYield(rightOp, programState, "java.lang.ArithmeticException", DivisionByZeroCheck.this);
-        reportIssue(tree, rightOp);
+        reportIssue(tree, rightOp, rightOpSymbol);
         // interrupt exploration
         programState = null;
       } else if (isZero(leftOp)) {
@@ -268,12 +271,12 @@ public class DivisionByZeroCheck extends SECheck {
       });
     }
 
-    private void reportIssue(Tree tree, SymbolicValue denominator) {
+    private void reportIssue(Tree tree, SymbolicValue denominator, Symbol denominatorSymbol) {
       ExpressionTree expression = getDenominator(tree);
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
       String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("\"" + ((IdentifierTree) expression).name() + "\"") : "this expression";
       List<Class<? extends Constraint>> domains = Collections.singletonList(ZeroConstraint.class);
-      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains).stream()
+      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains, denominatorSymbol).stream()
         .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
           .add(new JavaFileScannerContext.Location("Division by zero.", tree))
           .addAll(f)

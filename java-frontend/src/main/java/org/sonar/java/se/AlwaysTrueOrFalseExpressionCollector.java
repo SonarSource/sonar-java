@@ -81,7 +81,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
 
   private static Set<List<JavaFileScannerContext.Location>> flowFromNode(ExplodedGraph.Node node) {
     List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
-    return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains);
+    return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains, node.programState.peekValueSymbol().symbol);
   }
 
   public static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {

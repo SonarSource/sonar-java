@@ -38,7 +38,6 @@ import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -93,26 +92,24 @@ public class FlowComputation {
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol) {
+                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
     PSet<Symbol> trackedSymbols = PCollections.emptySet();
-    if (trackSymbol != null) {
-      trackedSymbols = trackedSymbols.add(trackSymbol);
+    for (Symbol symbol: symbols) {
+      trackedSymbols = trackedSymbols.add(symbol);
     }
-    ProgramState currentNodeProgramState = currentNode.programState;
-    if (currentNodeProgramState != null) {
-      for (SymbolicValue symbolicValue : allSymbolicValues) {
-        Symbol symbol = currentNodeProgramState.lastAssociatedSymbols.get(symbolicValue);
-        if (symbol != null) {
+
+    if (symbols.isEmpty()) {
+      for (SymbolicValue symbolicValue : symbolicValues) {
+        for (Symbol symbol : symbolicValue.computedFromSymbols()) {
           trackedSymbols = trackedSymbols.add(symbol);
         }
       }
     }
-
     FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains);
     return flowComputation.run(currentNode, trackedSymbols);
   }
@@ -123,7 +120,7 @@ public class FlowComputation {
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains,
                                                                 @Nullable Symbol trackSymbol) {
-    return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), c -> true, c -> false, domains, trackSymbol);
+    return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol));
   }
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
@@ -133,7 +130,11 @@ public class FlowComputation {
 
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                                 Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, currentVal == null ? ImmutableSet.of() : ImmutableSet.of(currentVal), addToFlow, terminateTraversal, domains, null);
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet());
+  }
+
+  private static <T> Set<T> setFromNullable(@Nullable T val) {
+    return val == null ? ImmutableSet.of() : ImmutableSet.of(val);
   }
 
   private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
@@ -260,29 +261,25 @@ public class FlowComputation {
       Optional<LearnedAssociation> learnedAssociation = learnedAssociation(edge);
       return learnedAssociation.map(la -> {
         PSet<Symbol> newTrackedSymbols = trackedSymbols.remove(la.symbol);
-        // if assigning literal, stop tracking symbols, because same SV is reused see SONARJAVA-2164
-        if (isLiteralAssignment(edge.parent.programPoint.syntaxTree())) {
-          return newTrackedSymbols;
-        }
         ProgramState programState = edge.parent.programState;
-        Symbol symbol = programState.lastAssociatedSymbols.get(la.symbolicValue());
+        Symbol symbol = symbolFromStack(la.symbolicValue(), programState);
         if (symbol != null) {
           newTrackedSymbols = newTrackedSymbols.add(symbol);
         } else {
-          // take all symbolic values used in this assignment and retrieve corresponding symbols
-          for (SymbolicValue sv : computedFrom(la.symbolicValue())) {
-            Symbol newSymbol = programState.lastAssociatedSymbols.get(sv);
-            if (newSymbol != null) {
-              newTrackedSymbols = newTrackedSymbols.add(newSymbol);
-            }
+          for (Symbol s : la.symbolicValue().computedFromSymbols()) {
+            newTrackedSymbols = newTrackedSymbols.add(s);
           }
         }
         return newTrackedSymbols;
       }).orElse(trackedSymbols);
     }
 
-    private boolean isLiteralAssignment(Tree tree) {
-      return tree.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) tree).expression().is(Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL);
+    @CheckForNull
+    private Symbol symbolFromStack(SymbolicValue symbolicValue, @Nullable ProgramState programState) {
+      if (programState != null && programState.peekValue() == symbolicValue) {
+        return programState.peekValueSymbol().symbol;
+      }
+      return null;
     }
 
     private boolean visitedAllParents(ExplodedGraph.Edge edge) {

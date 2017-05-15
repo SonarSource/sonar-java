@@ -71,7 +71,7 @@ public class ConstraintManager {
     return result;
   }
 
-  public SymbolicValue createBinarySymbolicValue(Tree syntaxNode, List<SymbolicValue> computedFrom) {
+  public SymbolicValue createBinarySymbolicValue(Tree syntaxNode, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
@@ -114,7 +114,7 @@ public class ConstraintManager {
     return result;
   }
 
-  private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
+  private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     RelationalSymbolicValue result = new RelationalSymbolicValue(kind);
     result.computedFrom(computedFrom);
     return result;
@@ -124,12 +124,12 @@ public class ConstraintManager {
     return new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
   }
 
-  public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
+  public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<ProgramState.SymbolicValueSymbol> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
       result = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
-      SymbolicValue leftOp = values.get(1);
-      SymbolicValue rightOp = values.get(0);
+      ProgramState.SymbolicValueSymbol leftOp = values.get(1);
+      ProgramState.SymbolicValueSymbol rightOp = values.get(0);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
     } else {
       result = createDefaultSymbolicValue();

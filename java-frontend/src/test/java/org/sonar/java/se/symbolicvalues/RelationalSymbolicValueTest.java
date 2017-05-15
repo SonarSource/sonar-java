@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,9 +98,11 @@ public class RelationalSymbolicValueTest {
   }
 
   private RelationalSymbolicValue relationalSV(Tree.Kind kind, SymbolicValue... computedFrom) {
+    List<ProgramState.SymbolicValueSymbol> computedFromSymbols = Arrays.stream(computedFrom).map(sv -> new ProgramState.SymbolicValueSymbol(sv, null))
+      .collect(Collectors.toList());
     return (RelationalSymbolicValue) constraintManager
       .createBinarySymbolicValue(new BinaryExpressionTreeImpl(kind, mock(ExpressionTree.class), mock(InternalSyntaxToken.class), mock(ExpressionTree.class)),
-        Arrays.asList(computedFrom));
+        computedFromSymbols);
   }
 
   @Test
@@ -292,11 +295,11 @@ public class RelationalSymbolicValueTest {
   @Test
   public void test_setting_operands() throws Exception {
     RelationalSymbolicValue relSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL, a, b);
-    assertThatThrownBy(() -> relSV.computedFrom(Arrays.asList(b, a)))
+    assertThatThrownBy(() -> SymbolicValueTestUtil.computedFrom(relSV, b, a))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Operands already set!");
 
-    assertThatThrownBy(() -> relSV.computedFrom(Arrays.asList(a, b, a)))
+    assertThatThrownBy(() -> SymbolicValueTestUtil.computedFrom(relSV, a, b, a))
       .isInstanceOf(IllegalArgumentException.class);
   }
 

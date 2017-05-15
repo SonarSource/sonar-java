@@ -10,8 +10,6 @@ class A {
     return null;
   }
 
-  // note that 'a' is not tracked properly from binarySV in the if condition
-  // that's why we are missing the assignment flow message
   public void catof1() {
     Object a = new Object(); // flow@catof1 {{Constructor implies 'non-null'.}} flow@catof1 {{'a' is assigned non-null.}}
     if (a == null) { // Noncompliant [[flows=catof1]] {{Change this condition so that it does not always evaluate to "false"}} flow@catof1 {{Expression is always false.}}
@@ -39,13 +37,21 @@ class A {
   }
 
   public void catof3() {
-    Object c = null; // flow@catof3 {{'c' is assigned null.}}
+    Object c = null;
     Object foo = null; // flow@catof3 {{'foo' is assigned null.}}
     Object b = foo;   // flow@catof3 {{'b' is assigned null.}}
     if (b == null) { // Noncompliant [[flows=catof3]] flow@catof3 {{Expression is always true.}}
       log(foo.toString()); // Noncompliant NPE
     } else {
       log(foo.getClass());
+    }
+  }
+
+  void catof4() {
+    Object a = getNull(); // flow@catof4 {{'getNull()' returns null.}} flow@catof4 {{'a' is assigned null.}}
+    Object b = getNull(); // flow@catof4 {{'getNull()' returns null.}} flow@catof4 {{'b' is assigned null.}}
+    if (a == b == true) { // Noncompliant [[flows=catof4]] flow@catof4 {{Expression is always true.}}
+
     }
   }
 

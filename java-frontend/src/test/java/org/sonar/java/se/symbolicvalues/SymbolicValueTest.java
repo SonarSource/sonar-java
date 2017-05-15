@@ -19,15 +19,16 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,11 +73,11 @@ public class SymbolicValueTest {
     assertThat(symbolicValue.computedFrom()).isEmpty();
 
     SymbolicValue.NotSymbolicValue notSymbolicValue = new SymbolicValue.NotSymbolicValue();
-    notSymbolicValue.computedFrom(ImmutableList.of(symbolicValue));
+    SymbolicValueTestUtil.computedFrom(notSymbolicValue, symbolicValue);
     assertThat(notSymbolicValue.computedFrom()).contains(symbolicValue);
 
     RelationalSymbolicValue relationalSymbolicValue = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
-    relationalSymbolicValue.computedFrom(ImmutableList.of(symbolicValue, notSymbolicValue));
+    SymbolicValueTestUtil.computedFrom(relationalSymbolicValue, symbolicValue, notSymbolicValue);
     assertThat(relationalSymbolicValue.computedFrom()).contains(symbolicValue, notSymbolicValue);
   }
 
@@ -85,19 +86,19 @@ public class SymbolicValueTest {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue.NotSymbolicValue notSV = new SymbolicValue.NotSymbolicValue();
-    notSV.computedFrom(Collections.singletonList(sv1));
+    SymbolicValueTestUtil.computedFrom(notSV, sv1);
     assertThat(notSV).hasToString("!("+sv1.toString()+")");
 
     SymbolicValue.AndSymbolicValue andSV = new SymbolicValue.AndSymbolicValue();
-    andSV.computedFrom(Arrays.asList(sv1, sv2));
+    SymbolicValueTestUtil.computedFrom(andSV, sv1, sv2);
     assertThat(andSV).hasToString(sv2 + " & " + sv1);
 
     SymbolicValue.OrSymbolicValue orSV = new SymbolicValue.OrSymbolicValue();
-    orSV.computedFrom(Arrays.asList(sv1, sv2));
+    SymbolicValueTestUtil.computedFrom(orSV, sv1, sv2);
     assertThat(orSV).hasToString(sv2 + " | " + sv1);
 
     SymbolicValue.XorSymbolicValue xorSV = new SymbolicValue.XorSymbolicValue();
-    xorSV.computedFrom(Arrays.asList(sv1, sv2));
+    SymbolicValueTestUtil.computedFrom(xorSV, sv1, sv2);
     assertThat(xorSV).hasToString(sv2 + " ^ " + sv1);
   }
 }

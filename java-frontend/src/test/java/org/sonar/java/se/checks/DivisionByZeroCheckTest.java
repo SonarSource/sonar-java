@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.junit.Test;
 
@@ -28,6 +27,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 
 import javax.annotation.Nullable;
 
@@ -70,7 +70,7 @@ public class DivisionByZeroCheckTest {
   private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation, @Nullable DivisionByZeroCheck.ZeroConstraint expected) {
     ProgramState ps = Iterables.getOnlyElement(a.setConstraint(ProgramState.EMPTY_STATE, ZERO));
     RelationalSymbolicValue rel = new RelationalSymbolicValue(relation);
-    rel.computedFrom(ImmutableList.of(b, a));
+    SymbolicValueTestUtil.computedFrom(rel, b, a);
     ps = Iterables.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
     return ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class);
   }
