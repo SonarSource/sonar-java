@@ -26,11 +26,13 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -51,10 +53,13 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -217,7 +222,7 @@ public class FlowComputation {
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
-      List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, learnedConstraints);
+      List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
       flowBuilder.addAll(lcFlow);
 
       boolean endOfPath = visitedAllParents(edge) || shouldTerminate(learnedConstraints);
@@ -227,6 +232,19 @@ public class FlowComputation {
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
         .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, f, endOfPath));
+    }
+
+    private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
+      Map<SymbolicValue, Long> constraintsBySV = learnedConstraints.stream()
+        .filter(lc -> lc.constraint() != null)
+        .collect(Collectors.groupingBy(LearnedConstraint::symbolicValue, Collectors.counting()));
+      return learnedConstraints.stream()
+        .flatMap(lc -> isConstraintFromObjectDomain(lc.constraint()) && constraintsBySV.get(lc.symbolicValue()) > 1 ? Stream.empty() : Stream.of(lc))
+        .collect(Collectors.toSet());
+    }
+
+    private boolean isConstraintFromObjectDomain(@Nullable Constraint constraint) {
+      return constraint instanceof ObjectConstraint;
     }
 
     private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
@@ -248,13 +266,29 @@ public class FlowComputation {
 
     List<JavaFileScannerContext.Location> flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
-      for (Class<? extends Constraint> domain : domains) {
-        Constraint constraint = node.programState.getConstraint(learnedAssociation.symbolicValue(), domain);
-        if (constraint != null) {
-          flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
-        }
+      PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
+      Collection<Constraint> constraints = filterByDomains(allConstraints);
+      for (Constraint constraint: constraints) {
+        flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
       }
       return flowBuilder.build();
+    }
+
+    private Collection<Constraint> filterByDomains(@Nullable PMap<Class<? extends Constraint>, Constraint> allConstraints) {
+      if (allConstraints == null) {
+        return Collections.emptySet();
+      }
+      Map<Class<? extends  Constraint>, Constraint> constraints = new LinkedHashMap<>();
+      for (Class<? extends Constraint> domain : domains) {
+        Constraint constraint = allConstraints.get(domain);
+        if (constraint != null) {
+          constraints.put(domain, constraint);
+        }
+      }
+      if (constraints.size() > 1) {
+        constraints.remove(ObjectConstraint.class);
+      }
+      return constraints.values();
     }
 
     private PSet<Symbol> newTrackedSymbols(ExplodedGraph.Edge edge) {

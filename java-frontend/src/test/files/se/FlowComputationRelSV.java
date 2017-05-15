@@ -7,7 +7,7 @@ class A {
     int a = c;  // flow@unary_rel,rel {{'a' is assigned non-null.}}
     int b = 0;  // flow@unary_rel,rel {{'b' is assigned non-null.}}
     boolean cond = (b == a) == true; // see SONARJAVA-1911
-    if (cond) { // Noncompliant [[flows=rel]] flow@rel {{Expression is always true.}} flow@unary_rel {{Implies 'cond' is true.}} flow@unary_rel {{Implies 'cond' is non-null.}}
+    if (cond) { // Noncompliant [[flows=rel]] flow@rel {{Expression is always true.}} flow@unary_rel {{Implies 'cond' is true.}}
 
     }
 
@@ -76,17 +76,17 @@ class A {
   }
 
   void equalsSV() {
-    Object o = true; // flow@equals {{'o' is assigned true.}} flow@equals {{'o' is assigned non-null.}}
-    Object a = o; // flow@equals {{'a' is assigned true.}} flow@equals {{'a' is assigned non-null.}}
-    Object b = o; // flow@equals {{'b' is assigned true.}} flow@equals {{'b' is assigned non-null.}}
+    Object o = true; // flow@equals {{'o' is assigned true.}}
+    Object a = o; // flow@equals {{'a' is assigned true.}}
+    Object b = o; // flow@equals {{'b' is assigned true.}}
     if (a.equals(b)) { // Noncompliant [[flows=equals]] flow@equals {{Expression is always true.}}
 
     }
   }
 
   void f() {
-    boolean a = true;  // flow@nested {{'a' is assigned true.}} flow@nested {{'a' is assigned non-null.}}
-    boolean b = true;  // flow@nested {{'b' is assigned true.}} flow@nested {{'b' is assigned non-null.}}
+    boolean a = true;  // flow@nested {{'a' is assigned true.}}
+    boolean b = true;  // flow@nested {{'b' is assigned true.}}
     if (a == b == true) { // Noncompliant [[flows=nested]] flow@nested {{Expression is always true.}}
 
     }
