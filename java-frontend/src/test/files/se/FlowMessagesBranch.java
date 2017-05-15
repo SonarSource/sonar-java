@@ -11,10 +11,16 @@ abstract class A {
   }
 
   void bar(boolean a) {
-    if (a == true) { // flow@cot {{Implies 'a' is true.}} flow@cot {{Implies 'a' is true.}} flow@cot {{Implies 'a' is non-null.}}
+    if (a == true) { // flow@cot {{Implies 'a' is true.}} flow@cot {{Implies 'a' is true.}}
       // Noncompliant@+1 [[flows=cot]] {{Remove this expression which always evaluates to "true"}}
       if (a == true) { }  // flow@cot {{Expression is always true.}}
     }
+  }
+
+  void qix(Object a) {
+    Object o = a != null ? a.toString() : null; // flow@npe3 {{Implies 'o' can be null.}}
+    // Noncompliant@+1 [[flows=npe3]] {{A "NullPointerException" could be thrown; "o" is nullable here.}}
+    o.toString(); // flow@npe3 {{'o' is dereferenced.}}
   }
 
 }

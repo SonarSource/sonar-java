@@ -30,6 +30,7 @@ import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -42,7 +43,9 @@ import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -311,7 +314,11 @@ public class FlowComputation {
       PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
       Collection<Constraint> constraints = filterByDomains(allConstraints);
       for (Constraint constraint: constraints) {
-        flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
+        if (assignedNullFromTernary(constraint, node)) {
+          flowBuilder.add(location(node, String.format(IMPLIES_CAN_BE_NULL_MSG, learnedAssociation.symbol().name())));
+        } else {
+          flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
+        }
       }
       return flowBuilder.build();
     }
@@ -331,6 +338,31 @@ public class FlowComputation {
         constraints.remove(ObjectConstraint.class);
       }
       return constraints.values();
+    }
+
+    private boolean assignedNullFromTernary(Constraint constraint, Node node) {
+      if (ObjectConstraint.NULL == constraint) {
+        Tree tree = node.programPoint.syntaxTree();
+        switch (tree.kind()) {
+          case VARIABLE:
+            return nullFromTernary(((VariableTree) tree).initializer());
+          case ASSIGNMENT:
+            return nullFromTernary(((AssignmentExpressionTree) tree).expression());
+          default:
+            return false;
+        }
+      }
+      return false;
+    }
+
+    private boolean nullFromTernary(ExpressionTree expressionTree) {
+      ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
+      if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
+        ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
+        return ExpressionUtils.skipParentheses(cet.trueExpression()).is(Tree.Kind.NULL_LITERAL)
+          || ExpressionUtils.skipParentheses(cet.falseExpression()).is(Tree.Kind.NULL_LITERAL);
+      }
+      return false;
     }
 
     private PSet<Symbol> newTrackedSymbols(ExplodedGraph.Edge edge) {
@@ -413,7 +445,8 @@ public class FlowComputation {
     private boolean isNullCheck(Tree tree) {
       if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
         BinaryExpressionTree bet = (BinaryExpressionTree) tree;
-        return bet.leftOperand().is(Tree.Kind.NULL_LITERAL) || bet.rightOperand().is(Tree.Kind.NULL_LITERAL);
+        return ExpressionUtils.skipParentheses(bet.leftOperand()).is(Tree.Kind.NULL_LITERAL)
+          || ExpressionUtils.skipParentheses(bet.rightOperand()).is(Tree.Kind.NULL_LITERAL);
       }
       return false;
     }
