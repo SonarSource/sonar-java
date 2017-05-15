@@ -10,7 +10,7 @@ class A {
 
   void combined(Object a) {
     Object b = new Object();
-    if (a == null) { // flow@comb {{Implies 'a' is null.}}
+    if (a == null) { // flow@comb {{Implies 'a' can be null.}}
       b = a; // flow@comb {{'b' is assigned null.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }
@@ -22,7 +22,7 @@ class A {
     List<String> strings = Collections.emptyList();
     for (String gss : strings) {
       String edge = gss; // missing flow message - see SONARJAVA-2049
-      while (edge != null) { // flow@loop {{Implies 'edge' is null.}}
+      while (edge != null) { // flow@loop {{Implies 'edge' can be null.}}
         totalGSSEdges++;
         edge = edge.substring(1);
       }

@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -72,7 +73,8 @@ import java.util.stream.Stream;
 
 public class FlowComputation {
 
-  public static final String IMPLIES_MSG = "Implies '%s' is %s.";
+  private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
+  private static final String IMPLIES_CAN_BE_NULL_MSG = "Implies '%s' can be null.";
   private static final int MAX_FLOW_STEPS = 3_000_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private final Predicate<Constraint> addToFlow;
@@ -265,10 +267,8 @@ public class FlowComputation {
         }
         ObjectConstraint startConstraint = node.programState.getConstraint(sv, ObjectConstraint.class);
         if (startConstraint != null && !isAnnotatedNullable(symbol) && isMethodParameter(symbol)) {
-          String msg;
-          if (ObjectConstraint.NULL == startConstraint) {
-            msg = "Implies '%s' can be null.";
-          } else {
+          String msg = IMPLIES_CAN_BE_NULL_MSG;
+          if (ObjectConstraint.NOT_NULL == startConstraint) {
             msg = "Implies '%s' can not be null.";
           }
           flowBuilder.add(new JavaFileScannerContext.Location(String.format(msg, symbol.name()), ((VariableTree) symbol.declaration()).simpleName()));
@@ -401,7 +401,21 @@ public class FlowComputation {
       if (name == null) {
         return ImmutableList.of();
       }
-      return ImmutableList.of(location(parent, String.format(IMPLIES_MSG, name, constraint.valueAsString())));
+      String msg;
+      if (ObjectConstraint.NULL == constraint && isNullCheck(nodeTree)) {
+        msg = String.format(IMPLIES_CAN_BE_NULL_MSG, name);
+      } else {
+        msg = String.format(IMPLIES_IS_MSG, name, constraint.valueAsString());
+      }
+      return ImmutableList.of(location(parent, msg));
+    }
+
+    private boolean isNullCheck(Tree tree) {
+      if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+        BinaryExpressionTree bet = (BinaryExpressionTree) tree;
+        return bet.leftOperand().is(Tree.Kind.NULL_LITERAL) || bet.rightOperand().is(Tree.Kind.NULL_LITERAL);
+      }
+      return false;
     }
 
     private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
@@ -415,14 +429,14 @@ public class FlowComputation {
       SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
       if (symbolicValues.contains(invocationTarget)) {
         String invocationTargetName = SyntaxTreeNameFinder.getName(mit.methodSelect());
-        flowBuilder.add(location(parent, String.format(IMPLIES_MSG, invocationTargetName, learnedConstraint.valueAsString())));
+        flowBuilder.add(location(parent, String.format(IMPLIES_IS_MSG, invocationTargetName, learnedConstraint.valueAsString())));
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, parent);
       argumentIndices.stream()
         .map(mit.arguments()::get)
         .map(argTree -> {
-          String message = String.format(IMPLIES_MSG, SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
+          String message = String.format(IMPLIES_IS_MSG, SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
           return new JavaFileScannerContext.Location(message, argTree);
         })
         .forEach(flowBuilder::add);

@@ -32,14 +32,14 @@ class A {
   }
 
   void relationshipLearning(Object a) {
-    if (a == null) { //  flow@rela {{Implies 'a' is null.}}
+    if (a == null) { //  flow@rela {{Implies 'a' can be null.}}
       a.toString(); // Noncompliant [[flows=rela]] flow@rela {{'a' is dereferenced.}}
     }
   }
 
   void combined(Object a) {
     Object b = new Object();
-    if (a == null) { // flow@comb {{Implies 'a' is null.}}
+    if (a == null) { // flow@comb {{Implies 'a' can be null.}}
       b = a; // flow@comb {{'b' is assigned null.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }

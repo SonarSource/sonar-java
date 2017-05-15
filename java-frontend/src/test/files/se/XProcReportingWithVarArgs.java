@@ -11,7 +11,7 @@ public class OutOfBoundsTrigger {
   }
 
   private static boolean m1(Date t1, Date t2) {
-    if (t1 == null || t2 == null) { // flow@flow1 [[order=2]] {{Implies 't1' is null.}}
+    if (t1 == null || t2 == null) { // flow@flow1 [[order=2]] {{Implies 't1' can be null.}}
       return false;
     }
     return true;

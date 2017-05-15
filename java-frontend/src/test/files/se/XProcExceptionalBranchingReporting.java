@@ -6,7 +6,7 @@ abstract class A {
 
   private void foo(boolean b, Object o) throws MyException1 {
     if (b // flow@catof2 [[order=2]] {{Implies 'b' is true.}}
-      && o == null) { // flow@catof1 [[order=2]] {{Implies 'o' is null.}} flow@npe [[order=2]] {{Implies 'o' is null.}}
+      && o == null) { // flow@catof1 [[order=2]] {{Implies 'o' can be null.}} flow@npe [[order=2]] {{Implies 'o' can be null.}}
       throw new MyException1();
     }
   }
@@ -36,7 +36,7 @@ abstract class A {
   }
 
   void tst2(Object o) {
-    if (o == null) { // flow@npe2 {{Implies 'o' is null.}}
+    if (o == null) { // flow@npe2 {{Implies 'o' can be null.}}
       Object o2 = returnParam(o); // flow@npe2 {{'o' is passed to 'returnParam()'.}} flow@npe2 {{'o2' is assigned null.}}
       o2.toString(); // Noncompliant [[flows=npe2]] {{A "NullPointerException" could be thrown; "o2" is nullable here.}} flow@npe2 {{'o2' is dereferenced.}}
     }

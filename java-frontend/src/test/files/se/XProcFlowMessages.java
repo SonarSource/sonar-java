@@ -97,7 +97,7 @@ abstract class D {
   }
 
   private void tst(D d) {                        // flow@flow_d2 [[order=2]] {{Implies 'd' has the same value as 'param'.}}
-    if (d == null) {                             // flow@flow_d2 [[order=3]] {{Implies 'd' is null.}}
+    if (d == null) {                             // flow@flow_d2 [[order=3]] {{Implies 'd' can be null.}}
       doSomething();
     }
   }

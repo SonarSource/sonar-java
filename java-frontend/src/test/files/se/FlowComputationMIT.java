@@ -3,14 +3,14 @@ import java.util.*;
 class A {
 
   private boolean trueIfNull(Object a) {
-    if (a == null) { // flow@arg [[order=2]] {{Implies 'a' is null.}} flow@nested [[order=3]] {{Implies 'a' is null.}}
+    if (a == null) { // flow@arg [[order=2]] {{Implies 'a' can be null.}} flow@nested [[order=3]] {{Implies 'a' can be null.}}
       return true;
     }
     return false;
   }
 
   private Object throwIfNull(Object a) { // flow@ex [[order=2]] {{Implies 'a' has the same value as 'o'.}} flow@ex2 [[order=2]] {{Implies 'a' has the same value as 'o'.}}
-    if (a == null) throw new IllegalStateException(); // flow@ex [[order=3]] {{Implies 'a' is null.}}  flow@ex2 [[order=3]] {{Implies 'a' is non-null.}}
+    if (a == null) throw new IllegalStateException(); // flow@ex [[order=3]] {{Implies 'a' can be null.}}  flow@ex2 [[order=3]] {{Implies 'a' is non-null.}}
     return a;
   }
 
