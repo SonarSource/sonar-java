@@ -106,3 +106,14 @@ class InferedTypeFromLambda {
     });
   }
 }
+class InvokeStringBufferMethod {
+  public String toString() {
+    StringBuffer buf = new StringBuffer(); // Noncompliant
+
+    for (int i = 0; i < fComponents.length; i++) {
+      buf.append(fComponents[i]);
+    }
+
+    return buf.toString();
+  }
+}
