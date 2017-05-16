@@ -763,7 +763,7 @@ class ResetFieldWhenThisUsedAsParameter {
 }
 
 class finalFieldSetToNull {
-  final Object field = (null); // _flow@fieldNull {{Implies 'field' is null.}} 
+  final Object field = (null); // flow@fieldNull {{Implies 'field' is null.}}
 
   void foo() {
     // Noncompliant@+1 [[flows=fieldNull]] {{A "NullPointerException" could be thrown; "field" is nullable here.}}
