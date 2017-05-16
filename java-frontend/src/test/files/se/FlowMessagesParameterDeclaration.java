@@ -20,7 +20,7 @@ abstract class A {
   }
 
   /**
-   * no explicit annotation, exta flow message on parameter
+   * no explicit annotation
    */
   @Override
   public boolean equals(Object obj) { // flow@param [[sc=32;ec=35]] {{Implies 'obj' can be null.}}
@@ -30,9 +30,9 @@ abstract class A {
   }
 
   /**
-   * explicit annotation, no flow message on parameter
+   * explicit annotation
    */
-  public void foo(@Nullable Object obj) {
+  public void foo(@Nullable Object obj) { // flow@paramWithNullableAnnotation {{Implies 'obj' can be null.}}
     // Noncompliant@+1 [[flows=paramWithNullableAnnotation]] {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
     obj.toString(); // flow@paramWithNullableAnnotation {{'obj' is dereferenced.}}
   }
@@ -40,10 +40,20 @@ abstract class A {
   /**
    * no nullness annotation, constraint learn on path
    */
-  public void foo(@MyAnnotation Object obj) {
+  public void bar(@MyAnnotation Object obj) {
     if (obj == null) { // flow@paramWithAnnotation {{Implies 'obj' can be null.}}
       // Noncompliant@+1 [[flows=paramWithAnnotation]] {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
       obj.toString(); // flow@paramWithAnnotation {{'obj' is dereferenced.}}
+    }
+  }
+
+  /**
+   * explicit annotation, constraint valided on path
+   */
+  public void qix(@MyAnnotation @Nullable Object obj) { // flow@paramWithAnnotation2 {{Implies 'obj' can be null.}}
+    if (obj == null) {
+      // Noncompliant@+1 [[flows=paramWithAnnotation2]] {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
+      obj.toString(); // flow@paramWithAnnotation2 {{'obj' is dereferenced.}}
     }
   }
 

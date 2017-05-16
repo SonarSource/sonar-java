@@ -39,9 +39,7 @@ import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -258,8 +256,8 @@ public class FlowComputation {
       return constraint instanceof ObjectConstraint;
     }
 
-    private List<Location> flowForNullableMethodParameters(ExplodedGraph.Node node) {
-      if (node.parent() != null || !domains.contains(ObjectConstraint.class)) {
+    private List<JavaFileScannerContext.Location> flowForNullableMethodParameters(ExplodedGraph.Node node) {
+      if (!node.edges().isEmpty() || !domains.contains(ObjectConstraint.class)) {
         return ImmutableList.of();
       }
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
@@ -269,7 +267,7 @@ public class FlowComputation {
           return;
         }
         ObjectConstraint startConstraint = node.programState.getConstraint(sv, ObjectConstraint.class);
-        if (startConstraint != null && !isAnnotatedNullable(symbol) && isMethodParameter(symbol)) {
+        if (startConstraint != null && isMethodParameter(symbol)) {
           String msg = IMPLIES_CAN_BE_NULL_MSG;
           if (ObjectConstraint.NOT_NULL == startConstraint) {
             msg = "Implies '%s' can not be null.";
@@ -278,13 +276,6 @@ public class FlowComputation {
         }
       });
       return flowBuilder.build();
-    }
-
-    private boolean isAnnotatedNullable(Symbol symbol) {
-      SymbolMetadata metadata = symbol.metadata();
-      return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
-        || metadata.isAnnotatedWith("javax.annotation.Nullable")
-        || metadata.isAnnotatedWith("javax.annotation.Nonnull");
     }
 
     private boolean isMethodParameter(Symbol symbol) {
