@@ -314,11 +314,14 @@ public class FlowComputation {
       PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
       Collection<Constraint> constraints = filterByDomains(allConstraints);
       for (Constraint constraint: constraints) {
+        String symbolName = learnedAssociation.symbol().name();
         String msg;
-        if (assigningNullFromTernary(constraint, node)) {
-          msg = String.format(IMPLIES_CAN_BE_NULL_MSG, learnedAssociation.symbol().name());
+        if (ObjectConstraint.NULL == constraint && assigningNullFromTernary(node)) {
+          msg = String.format(IMPLIES_CAN_BE_NULL_MSG, symbolName);
+        } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
+          msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
         } else {
-          msg = String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString());
+          msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
         }
         flowBuilder.add(location(node, msg));
       }
@@ -342,28 +345,51 @@ public class FlowComputation {
       return constraints.values();
     }
 
-    private boolean assigningNullFromTernary(Constraint constraint, Node node) {
-      if (ObjectConstraint.NULL == constraint) {
-        Tree tree = node.programPoint.syntaxTree();
-        switch (tree.kind()) {
-          case VARIABLE:
-            return isTernaryWithNullBranch(((VariableTree) tree).initializer());
-          case ASSIGNMENT:
-            return isTernaryWithNullBranch(((AssignmentExpressionTree) tree).expression());
-          default:
-            return false;
-        }
-      }
-      return false;
+    private boolean assigningNullFromTernary(Node node) {
+      ExpressionTree expr = getInitializer(node);
+      return isTernaryWithNullBranch(expr);
     }
 
-    private boolean isTernaryWithNullBranch(ExpressionTree expressionTree) {
+    @CheckForNull
+    private ExpressionTree getInitializer(Node node) {
+      Tree tree = node.programPoint.syntaxTree();
+      ExpressionTree expr;
+      switch (tree.kind()) {
+        case VARIABLE:
+          expr = ((VariableTree) tree).initializer();
+          break;
+        case ASSIGNMENT:
+          expr = ((AssignmentExpressionTree) tree).expression();
+          break;
+        default:
+          expr = null;
+      }
+      return expr;
+    }
+
+    private boolean isTernaryWithNullBranch(@Nullable ExpressionTree expressionTree) {
+      if (expressionTree == null) {
+        return false;
+      }
       ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
       if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
         ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
         return ExpressionUtils.isNullLiteral(cet.trueExpression()) || ExpressionUtils.isNullLiteral(cet.falseExpression());
       }
       return false;
+    }
+
+    private boolean assigningFromMethodInvocation(Node node) {
+      ExpressionTree expr = getInitializer(node);
+      return isMethodInvocation(expr);
+    }
+
+    private boolean isMethodInvocation(@Nullable ExpressionTree expressionTree) {
+      return expressionTree != null && ExpressionUtils.skipParentheses(expressionTree).is(Tree.Kind.METHOD_INVOCATION);
+    }
+
+    private boolean assignedFromYieldWithUncertainResult(Constraint constraint, Node node) {
+      return node.edges().stream().noneMatch(edge -> isConstraintOnlyPossibleResult(constraint, edge));
     }
 
     private PSet<Symbol> newTrackedSymbols(ExplodedGraph.Edge edge) {

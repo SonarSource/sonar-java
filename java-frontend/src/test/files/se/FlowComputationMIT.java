@@ -58,7 +58,7 @@ class A {
   }
 
   void returnValue() {
-    Object o = sundayIsAGoodDay(); // flow@return {{'sundayIsAGoodDay()' can return null.}} flow@return {{'o' is assigned null.}}
+    Object o = sundayIsAGoodDay(); // flow@return {{'sundayIsAGoodDay()' can return null.}} flow@return {{Implies 'o' can be null.}}
     o.toString(); // Noncompliant [[flows=return]] flow@return
   }
 

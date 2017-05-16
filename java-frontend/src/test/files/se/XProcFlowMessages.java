@@ -31,7 +31,7 @@ class B {
 
   void bar() {
     B b, c;
-    b = foo();                                   // flow@flow_b {{'foo()' can return null.}} flow@flow_b {{'b' is assigned null.}} 
+    b = foo();                                   // flow@flow_b {{'foo()' can return null.}} flow@flow_b {{Implies 'b' can be null.}}
     c = b;                                       // flow@flow_b {{'c' is assigned null.}}
     // Noncompliant@+1  [[flows=flow_b]]
     c.bar();                                     // flow@flow_b {{'c' is dereferenced.}}
@@ -123,7 +123,7 @@ class ZeroConstraint {
   }
 
   void t1() {
-    int i = maybeZero(); // flow@zero1 {{'maybeZero()' can return zero.}} flow@zero1 {{'i' is assigned zero.}}
+    int i = maybeZero(); // flow@zero1 {{'maybeZero()' can return zero.}} flow@zero1 {{Implies 'i' can be zero.}}
     1 / i; // Noncompliant [[flows=zero1]] flow@zero1
   }
 

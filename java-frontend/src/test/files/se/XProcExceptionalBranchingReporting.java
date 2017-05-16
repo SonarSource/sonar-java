@@ -27,7 +27,7 @@ abstract class A {
   abstract void bar(Object o);
 
   void tst1(Object o) {
-    Object o2 = bar(o); // flow@npe1 {{'bar()' can return null.}} flow@npe1 {{'o2' is assigned null.}}
+    Object o2 = bar(o); // flow@npe1 {{'bar()' can return null.}} flow@npe1 {{Implies 'o2' can be null.}}
     o2.toString(); // Noncompliant [[flows=npe1]] {{A "NullPointerException" could be thrown; "o2" is nullable here.}} flow@npe1 {{'o2' is dereferenced.}}
   }
 
@@ -37,7 +37,7 @@ abstract class A {
 
   void tst2(Object o) {
     if (o == null) { // flow@npe2 {{Implies 'o' can be null.}}
-      Object o2 = returnParam(o); // flow@npe2 {{'o' is passed to 'returnParam()'.}} flow@npe2 {{'o2' is assigned null.}}
+      Object o2 = returnParam(o); // flow@npe2 {{'o' is passed to 'returnParam()'.}} flow@npe2 {{Implies 'o2' can be null.}}
       o2.toString(); // Noncompliant [[flows=npe2]] {{A "NullPointerException" could be thrown; "o2" is nullable here.}} flow@npe2 {{'o2' is dereferenced.}}
     }
   }
