@@ -94,7 +94,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (tree.symbol().isMethodSymbol() && tree.symbol().declaration() == null) {
         String fqn = tree.symbol().owner().type().fullyQualifiedName();
-        if (fqn.startsWith("java") && !REPLACEMENTS.keySet().contains(fqn)) {
+        if (isMethodFromJavaPackage(fqn)) {
           Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) tree.symbol();
           List<Type> types = new ArrayList<>(methodSymbol.parameterTypes());
           Symbol.TypeSymbol returnType = methodSymbol.returnType();
@@ -105,6 +105,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    private static boolean isMethodFromJavaPackage(String fqn) {
+      return fqn.startsWith("java") && !REPLACEMENTS.keySet().contains(fqn);
     }
   }
 

@@ -34,7 +34,7 @@ class Foo {
 
 class Request {
   void foo(javax.servlet.http.HttpServletRequest request) {
-    StringBuffer requestURLBuffer = request.getRequestURL(); // complinant because of return type of getRequestURL
+    StringBuffer requestURLBuffer = request.getRequestURL(); // compliant because of return type of getRequestURL
   }
 }
 

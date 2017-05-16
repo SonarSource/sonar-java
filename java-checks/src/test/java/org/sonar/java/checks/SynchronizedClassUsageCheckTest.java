@@ -26,6 +26,7 @@ public class SynchronizedClassUsageCheckTest {
 
   @Test
   public void detected() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizedClassUsageCheck.java", new SynchronizedClassUsageCheck());
     JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageCheck.java", new SynchronizedClassUsageCheck());
     JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageByAPICheck.java", new SynchronizedClassUsageCheck());
   }
