@@ -101,4 +101,8 @@ public final class ExpressionUtils {
     }
     return result;
   }
+
+  public static boolean isNullLiteral(ExpressionTree tree) {
+    return skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
+  }
 }

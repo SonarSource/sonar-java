@@ -314,11 +314,13 @@ public class FlowComputation {
       PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
       Collection<Constraint> constraints = filterByDomains(allConstraints);
       for (Constraint constraint: constraints) {
-        if (assignedNullFromTernary(constraint, node)) {
-          flowBuilder.add(location(node, String.format(IMPLIES_CAN_BE_NULL_MSG, learnedAssociation.symbol().name())));
+        String msg;
+        if (assigningNullFromTernary(constraint, node)) {
+          msg = String.format(IMPLIES_CAN_BE_NULL_MSG, learnedAssociation.symbol().name());
         } else {
-          flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
+          msg = String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString());
         }
+        flowBuilder.add(location(node, msg));
       }
       return flowBuilder.build();
     }
@@ -340,14 +342,14 @@ public class FlowComputation {
       return constraints.values();
     }
 
-    private boolean assignedNullFromTernary(Constraint constraint, Node node) {
+    private boolean assigningNullFromTernary(Constraint constraint, Node node) {
       if (ObjectConstraint.NULL == constraint) {
         Tree tree = node.programPoint.syntaxTree();
         switch (tree.kind()) {
           case VARIABLE:
-            return nullFromTernary(((VariableTree) tree).initializer());
+            return isTernaryWithNullBranch(((VariableTree) tree).initializer());
           case ASSIGNMENT:
-            return nullFromTernary(((AssignmentExpressionTree) tree).expression());
+            return isTernaryWithNullBranch(((AssignmentExpressionTree) tree).expression());
           default:
             return false;
         }
@@ -355,12 +357,11 @@ public class FlowComputation {
       return false;
     }
 
-    private boolean nullFromTernary(ExpressionTree expressionTree) {
+    private boolean isTernaryWithNullBranch(ExpressionTree expressionTree) {
       ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
       if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
         ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
-        return ExpressionUtils.skipParentheses(cet.trueExpression()).is(Tree.Kind.NULL_LITERAL)
-          || ExpressionUtils.skipParentheses(cet.falseExpression()).is(Tree.Kind.NULL_LITERAL);
+        return ExpressionUtils.isNullLiteral(cet.trueExpression()) || ExpressionUtils.isNullLiteral(cet.falseExpression());
       }
       return false;
     }
@@ -445,8 +446,7 @@ public class FlowComputation {
     private boolean isNullCheck(Tree tree) {
       if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
         BinaryExpressionTree bet = (BinaryExpressionTree) tree;
-        return ExpressionUtils.skipParentheses(bet.leftOperand()).is(Tree.Kind.NULL_LITERAL)
-          || ExpressionUtils.skipParentheses(bet.rightOperand()).is(Tree.Kind.NULL_LITERAL);
+        return ExpressionUtils.isNullLiteral(bet.leftOperand()) || ExpressionUtils.isNullLiteral(bet.rightOperand());
       }
       return false;
     }
