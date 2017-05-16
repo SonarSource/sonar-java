@@ -93,7 +93,7 @@ public class JavaCheckVerifier {
   private final String testJarsDirectory;
   private final Expectations expectations;
 
-  private JavaCheckVerifier() {
+  public JavaCheckVerifier() {
     this.testJarsDirectory = DEFAULT_TEST_JARS_DIRECTORY;
     this.expectations = new Expectations();
   }
@@ -171,7 +171,7 @@ public class JavaCheckVerifier {
     javaCheckVerifier.scanFile(filename, new JavaFileScanner[] {check});
   }
 
-  private void scanFile(String filename, JavaFileScanner[] checks) {
+  public void scanFile(String filename, JavaFileScanner[] checks) {
     Collection<File> classpath = Lists.newLinkedList();
     File testJars = new File(testJarsDirectory);
     if (testJars.exists()) {
@@ -192,7 +192,7 @@ public class JavaCheckVerifier {
     checkIssues(testJavaFileScannerContext.getIssues());
   }
 
-  private void checkIssues(Set<AnalyzerMessage> issues) {
+  protected void checkIssues(Set<AnalyzerMessage> issues) {
     if (expectations.expectNoIssues) {
       assertNoIssues(expectations.issues, issues);
     } else if (StringUtils.isNotEmpty(expectations.expectFileIssue)) {
