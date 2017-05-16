@@ -610,6 +610,10 @@ class NullPointerTest {
     return getValue() == ((MyClass) obj).getValue(); // Noncompliant {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
   }
 
+  public boolean equals(MyClass obj) {
+    return getValue() == ((MyClass) obj).getValue(); // Compliant : not the equals method
+  }
+
   private void equalsToCheckForNull(Integer a) {
     Objeect b = checkForNullMethod();
     if (a.equals(b)) {
