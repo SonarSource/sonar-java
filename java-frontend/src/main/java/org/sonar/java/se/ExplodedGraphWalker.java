@@ -314,7 +314,9 @@ public class ExplodedGraphWalker {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
-    boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name()) && tree.parameters().size() == 1;
+    boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name())
+      && tree.parameters().size() == 1
+      && tree.parameters().get(0).symbol().type().is("java.lang.Object");
     SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
     boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
     boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
