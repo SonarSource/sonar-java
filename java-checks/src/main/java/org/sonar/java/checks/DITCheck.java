@@ -73,9 +73,10 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       int dit = 0;
       while (superClass != null) {
         String fullyQualifiedName = superClass.fullyQualifiedName();
-        if (getPatterns().stream().noneMatch(wp -> wp.match(fullyQualifiedName))) {
-          dit++;
+        if (getPatterns().stream().anyMatch(wp -> wp.match(fullyQualifiedName))) {
+          break;
         }
+        dit++;
         superClass = superClass.symbol().superClass();
       }
       if (dit > max) {
