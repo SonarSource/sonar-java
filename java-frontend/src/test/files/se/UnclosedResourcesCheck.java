@@ -37,7 +37,7 @@ public class A {
   }
 
   public void wrongHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=wrongHandling]] {{Close this "FileInputStream".}} flow@wrongHandling {{FileInputStream is never closed.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     stream.read();
   }
 
@@ -54,7 +54,7 @@ public class A {
   private static class FastByteArrayOutputStream extends ByteArrayOutputStream { }
 
   public void whileLoopHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=while]] {{Close this "FileInputStream".}} flow@while {{FileInputStream is never closed.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     while(needsMore()) {
       stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read(); // can fail
@@ -65,10 +65,10 @@ public class A {
 
   public void wrongLoopHandling() {
     int i = 0;
-    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant [[flows=loop1]] {{Close this "FileInputStream".}} flow@loop1 {{FileInputStream is never closed.}}
+    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant {{Close this "FileInputStream".}}
     while(needsMore()) {
       i += 1;
-      stream = new FileInputStream("WhileFile"+i); // Noncompliant [[flows=loop2]] {{Close this "FileInputStream".}} flow@loop2 {{FileInputStream is never closed.}}
+      stream = new FileInputStream("WhileFile"+i); // Noncompliant {{Close this "FileInputStream".}}
     }
     stream.close();
   }
@@ -91,12 +91,12 @@ public class A {
   }
   
   public void openedRussianDolls() {
-    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant [[flows=dolls]] {{Close this "FileInputStream".}} flow@dolls {{FileInputStream is never closed.}}
+    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Close this "FileInputStream".}}
     in.read();
   }
   
   public void overwrite() {
-    InputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=overwrite]] {{Close this "FileInputStream".}} flow@overwrite {{FileInputStream is never closed.}}
+    InputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     stream = new FileInputStream("otherFile");
     stream.close();
   }
@@ -111,16 +111,16 @@ public class A {
   }
   
   public void creationWithinIFs(boolean test) {
-    Reader reader3 = new FileReader(""); // Noncompliant [[flows=creation1]] {{Close this "FileReader".}} flow@creation1 {{FileReader is never closed.}}
+    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     if (test) {
-      reader3 = new FileReader(""); // Noncompliant [[flows=creation2]] {{Close this "FileReader".}} flow@creation2 {{FileReader is never closed.}}
+      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     } else {
-      reader3 = new FileReader(""); // Noncompliant [[flows=creation3]] {{Close this "FileReader".}} flow@creation3 {{FileReader is never closed.}}
+      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     }
   }
   
   public void closeWithinIFs(boolean test) {
-    Reader reader = new FileReader(""); // Noncompliant [[flows=ifs]] {{Close this "FileReader".}} flow@ifs {{FileReader is never closed.}}
+    Reader reader = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     if (test) {
       reader.close();
     }
@@ -129,9 +129,9 @@ public class A {
   public void conditionalCreation(boolean test) {
     BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter("")); // Noncompliant [[flows=cc1]] {{Close this "FileWriter".}} flow@cc1 {{FileWriter is never closed.}}
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "FileWriter".}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));// Noncompliant [[flows=cc2]] {{Close this "FileWriter".}} flow@cc2 {{FileWriter is never closed.}}
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "FileWriter".}}
     }
     return;
   }
@@ -142,7 +142,7 @@ public class A {
       fis = new FileInputStream("");
       fis.close();
     } else {
-      fis = new FileInputStream(""); // Noncompliant [[flows=conClose]] {{Close this "FileInputStream".}} flow@conClose {{FileInputStream is never closed.}}
+      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
     }
   }
   
@@ -177,7 +177,7 @@ public class A {
   }
 
   public void forLoopHandling(int maxLoop) {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=for]] {{Close this "FileInputStream".}} flow@for {{FileInputStream is never closed.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     for(int i = 0; i < maxLoop; i++) {
       stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read();  // can fail
@@ -187,7 +187,7 @@ public class A {
   }
 
   public void forEachLoopHandling(List<Object> objects) {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant [[flows=for2]] {{Close this "FileInputStream".}} flow@for2 {{FileInputStream is never closed.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     for(Object object : objects) {
       stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
       stream.read(); // can fail

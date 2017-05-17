@@ -25,13 +25,11 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -39,7 +37,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
@@ -137,17 +134,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
     private void reportIssue(MethodInvocationTree mit) {
       String identifier = getIdentifierPart(mit.methodSelect());
-      String issueMsg;
-      String flowMsg;
-      if (identifier.isEmpty()) {
-        issueMsg = "Optional#";
-        flowMsg = "";
-      } else {
-        issueMsg = identifier + ".";
-        flowMsg = identifier + " ";
-      }
-      Set<List<JavaFileScannerContext.Location>> flow = FlowComputation.singleton("Optional " + flowMsg + "is accessed", mit.methodSelect());
-      context.reportIssue(mit, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.", flow);
+      String issueMsg = identifier.isEmpty() ? "Optional#" : (identifier + ".");
+      context.reportIssue(mit, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.");
     }
 
     private boolean presenceHasNotBeenChecked(SymbolicValue sv) {

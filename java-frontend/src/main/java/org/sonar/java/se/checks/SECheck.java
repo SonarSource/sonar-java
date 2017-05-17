@@ -64,6 +64,10 @@ public abstract class SECheck implements JavaFileScanner {
     issues.clear();
   }
 
+  public void reportIssue(Tree tree, String message) {
+    reportIssue(tree, message, new HashSet<>());
+  }
+
   public void reportIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> flows) {
     issues.add(issues.stream()
       .filter(seIssue -> seIssue.tree.equals(tree))

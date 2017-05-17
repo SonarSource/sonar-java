@@ -142,6 +142,7 @@ public class NullDereferenceCheck extends SECheck {
     }
     Symbol dereferencedSymbol = dereferencedSymbol(syntaxNode);
     Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol).stream()
+      .filter(f -> !f.isEmpty())
       .map(f -> addDereferenceMessage(f, syntaxNode))
       .collect(Collectors.toSet());
     reportIssue(syntaxNode, message, flows);
