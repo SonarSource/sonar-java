@@ -449,6 +449,12 @@ public class FlowComputation {
       if (nodeTree.is(Tree.Kind.NEW_CLASS)) {
         return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
+      Symbol finalField = learnedConstraintOnFinalField(nodeTree);
+      if (finalField != null) {
+        // constraints on final fields are set on the fly by the EGW when encountering them for the first time
+        String msg = String.format(IMPLIES_IS_MSG, finalField.name(), constraint.valueAsString());
+        return ImmutableList.of(new JavaFileScannerContext.Location(msg, ((VariableTree) finalField.declaration()).initializer()));
+      }
       String name = SyntaxTreeNameFinder.getName(nodeTree);
       if (name == null) {
         return ImmutableList.of();
@@ -460,6 +466,31 @@ public class FlowComputation {
         msg = String.format(IMPLIES_IS_MSG, name, constraint.valueAsString());
       }
       return ImmutableList.of(location(parent, msg));
+    }
+
+    @CheckForNull
+    private Symbol learnedConstraintOnFinalField(Tree syntaxTree) {
+      Symbol result = null;
+      if (syntaxTree.is(Tree.Kind.IDENTIFIER)) {
+        result = ((IdentifierTree) syntaxTree).symbol();
+      } else if (syntaxTree.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) syntaxTree;
+        if (ExpressionUtils.isSelectOnThisOrSuper(mset)) {
+          result = mset.identifier().symbol();
+        }
+      }
+      if (isFinalFieldWithDeclaration(result)) {
+        return result;
+      }
+      return null;
+    }
+
+    private boolean isFinalFieldWithDeclaration(@Nullable Symbol symbol) {
+      return symbol != null
+        && symbol.isVariableSymbol()
+        && symbol.owner().isTypeSymbol()
+        && symbol.isFinal()
+        && symbol.declaration() != null;
     }
 
     private boolean isNullCheck(Tree tree) {
