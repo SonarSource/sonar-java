@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
@@ -151,9 +152,12 @@ public class NullDereferenceCheck extends SECheck {
   @Nullable
   private static Symbol dereferencedSymbol(Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree memberSelectExpr = ((MemberSelectExpressionTree) syntaxNode).expression();
+      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) syntaxNode;
+      ExpressionTree memberSelectExpr = mset.expression();
       if (memberSelectExpr.is(Tree.Kind.IDENTIFIER)) {
         return ((IdentifierTree) memberSelectExpr).symbol();
+      } else if (memberSelectExpr.is(Tree.Kind.MEMBER_SELECT) && ExpressionUtils.isSelectOnThisOrSuper((MemberSelectExpressionTree) memberSelectExpr)) {
+        return ((MemberSelectExpressionTree) memberSelectExpr).identifier().symbol();
       }
     }
     return null;

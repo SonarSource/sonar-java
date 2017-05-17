@@ -235,7 +235,7 @@ public class FlowComputation {
       boolean endOfPath = visitedAllParents(edge) || shouldTerminate(learnedConstraints);
 
       if (endOfPath) {
-        flowBuilder.addAll(flowForNullableMethodParameters(edge.parent));
+        flowBuilder.addAll(flowForNullableMethodParametersOrFinalField(edge.parent));
       }
 
       List<JavaFileScannerContext.Location> currentFlow = flowBuilder.build();
@@ -258,7 +258,7 @@ public class FlowComputation {
       return constraint instanceof ObjectConstraint;
     }
 
-    private List<JavaFileScannerContext.Location> flowForNullableMethodParameters(ExplodedGraph.Node node) {
+    private List<JavaFileScannerContext.Location> flowForNullableMethodParametersOrFinalField(ExplodedGraph.Node node) {
       if (!node.edges().isEmpty() || !domains.contains(ObjectConstraint.class)) {
         return ImmutableList.of();
       }
@@ -269,15 +269,22 @@ public class FlowComputation {
           return;
         }
         ObjectConstraint startConstraint = node.programState.getConstraint(sv, ObjectConstraint.class);
-        if (startConstraint != null && isMethodParameter(symbol)) {
-          String msg = IMPLIES_CAN_BE_NULL_MSG;
-          if (ObjectConstraint.NOT_NULL == startConstraint) {
-            msg = "Implies '%s' can not be null.";
-          }
+        if (startConstraint == null) {
+          return;
+        }
+        if (isMethodParameter(symbol)) {
+          String msg = ObjectConstraint.NULL == startConstraint ? IMPLIES_CAN_BE_NULL_MSG : "Implies '%s' can not be null.";
           flowBuilder.add(new JavaFileScannerContext.Location(String.format(msg, symbol.name()), ((VariableTree) symbol.declaration()).simpleName()));
+        } else if (isFinalFieldWithDeclaration(symbol)) {
+          String msg = String.format(IMPLIES_IS_MSG, symbol.name(), startConstraint.valueAsString());
+          flowBuilder.add(new JavaFileScannerContext.Location(msg, ((VariableTree) symbol.declaration()).initializer()));
         }
       });
       return flowBuilder.build();
+    }
+
+    private boolean isFinalFieldWithDeclaration(Symbol symbol) {
+      return symbol.owner().isTypeSymbol() && symbol.isVariableSymbol() && symbol.isFinal() && symbol.declaration() != null;
     }
 
     private boolean isMethodParameter(Symbol symbol) {

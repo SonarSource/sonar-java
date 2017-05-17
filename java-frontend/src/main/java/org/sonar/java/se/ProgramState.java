@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
@@ -373,8 +374,7 @@ public class ProgramState {
     }
     CleanAction cleanAction = new CleanAction();
     values.forEach(cleanAction);
-    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue
-    )
+    return cleanAction.newProgramState ? new ProgramState(cleanAction.newValues, cleanAction.newReferences, cleanAction.newConstraints, visitedPoints, stack, exitSymbolicValue)
       : this;
   }
 
@@ -412,7 +412,7 @@ public class ProgramState {
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
     final List<VariableTree> variableTrees = new ArrayList<>();
     values.forEach((symbol, symbolicValue) -> {
-      if (isField(symbol)) {
+      if (isField(symbol) && !symbol.isFinal()) {
         VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
         if (variable != null) {
           variableTrees.add(variable);

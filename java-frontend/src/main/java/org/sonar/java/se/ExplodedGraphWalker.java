@@ -59,14 +59,17 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -85,10 +88,10 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -314,6 +317,15 @@ public class ExplodedGraphWalker {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
+
+    stateStream = setupMethodParameters(tree, stateStream);
+    stateStream = setupUsedFinalFields(tree, stateStream);
+
+    return stateStream.collect(Collectors.toList());
+  }
+
+  private Stream<ProgramState> setupMethodParameters(MethodTree tree, Stream<ProgramState> stateStream) {
+    Stream<ProgramState> result = stateStream;
     boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name())
       && tree.parameters().size() == 1
       && tree.parameters().get(0).symbol().type().is("java.lang.Object");
@@ -328,18 +340,75 @@ public class ExplodedGraphWalker {
       if (hasMethodBehavior) {
         methodBehavior.addParameter(sv);
       }
-      stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
+      result = result.map(ps -> ps.put(variableSymbol, sv));
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
-        stateStream = stateStream.flatMap((ProgramState ps) ->
-          Stream.concat(
-            sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
-            sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
-            ));
-      } else if(nonNullParams) {
-        stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
+        result = result.flatMap((ProgramState ps) -> Stream.concat(
+          sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
+          sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()));
+      } else if (nonNullParams) {
+        result = result.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
-    return stateStream.collect(Collectors.toList());
+    return result;
+  }
+
+  private Stream<ProgramState> setupUsedFinalFields(MethodTree tree, Stream<ProgramState> stateStream) {
+    Stream<ProgramState> result = stateStream;
+
+    FinalFieldVisitor visitor = new FinalFieldVisitor();
+    tree.accept(visitor);
+    for (Map.Entry<Symbol, IdentifierTree> field : visitor.finalFields.entrySet()) {
+      Symbol symbol = field.getKey();
+      if (THIS_SUPER.contains(symbol.name())) {
+        SymbolicValue sv = constraintManager.createSymbolicValue(field.getValue());
+        result = result.map(ps -> ps.put(symbol, sv)).flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
+        continue;
+      }
+
+      // only check final field with an initializer
+      VariableTree declaration = (VariableTree) symbol.declaration();
+      if (declaration != null) {
+        ExpressionTree initializer = declaration.initializer();
+        if (initializer != null) {
+          SymbolicValue sv = constraintManager.createSymbolicValue(declaration);
+          ExpressionTree expr = ExpressionUtils.skipParentheses(initializer);
+          if (ExpressionUtils.isNullLiteral(expr)) {
+            result = result.map(ps -> ps.put(symbol, sv)).flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NULL).stream());
+          } else if (expr.is(Tree.Kind.NEW_CLASS) || expr.is(Tree.Kind.NEW_ARRAY)) {
+            result = result.map(ps -> ps.put(symbol, sv)).flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private static class FinalFieldVisitor extends BaseTreeVisitor {
+    private Map<Symbol, IdentifierTree> finalFields = new LinkedHashMap<>();
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      Symbol symbol = tree.symbol();
+      if (isFinalField(symbol)) {
+        finalFields.putIfAbsent(symbol, tree);
+      }
+    }
+
+    private static boolean isFinalField(Symbol symbol) {
+      return symbol.isVariableSymbol()
+        && symbol.isFinal()
+        && symbol.owner().isTypeSymbol();
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambda
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip inner classes
+    }
   }
 
   private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParams) {
@@ -351,7 +420,10 @@ public class ExplodedGraphWalker {
 
   private void cleanUpProgramState(CFG.Block block) {
     if (cleanup) {
-      Collection<SymbolicValue> protectedSVs = methodBehavior == null ? Collections.emptyList() : methodBehavior.parameters();
+      Collection<SymbolicValue> protectedSVs = new ArrayList<>();
+      if (methodBehavior != null) {
+        protectedSVs.addAll(methodBehavior.parameters());
+      }
       programState = programState.cleanupDeadSymbols(liveVariables.getOut(block), protectedSVs);
       programState = programState.cleanupConstraints(protectedSVs);
     }
@@ -940,38 +1012,10 @@ public class ExplodedGraphWalker {
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
       programState = programState.stackValue(value, symbol);
-      learnIdentifierNullConstraints(tree, value);
     } else {
       programState = programState.stackValue(value, symbol);
     }
     programState = programState.put(symbol, value);
-  }
-
-  private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {
-    if (THIS_SUPER.contains(tree.name())) {
-      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
-      return;
-    }
-    Tree declaration = tree.symbol().declaration();
-    if (!isFinalField(tree.symbol()) || declaration == null) {
-      return;
-    }
-    ExpressionTree initializer = ((VariableTree) declaration).initializer();
-    if (initializer == null) {
-      return;
-    }
-    // only check final field with an initializer
-    if (ExpressionUtils.isNullLiteral(initializer)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.NULL);
-    } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
-      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
-    }
-  }
-
-  private static boolean isFinalField(Symbol symbol) {
-    return symbol.isVariableSymbol()
-      && symbol.isFinal()
-      && symbol.owner().isTypeSymbol();
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {

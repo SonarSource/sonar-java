@@ -2,21 +2,21 @@ import javax.annotation.Nullable;
 
 abstract class A {
 
-  private final Object finalFieldNonNull = new Object();
-  private final Object finalFieldNull = null;
+  private final Object finalFieldNonNull = new Object(); // flow@cof [[sc=44;ec=56]] {{Implies 'finalFieldNonNull' is non-null.}}
+  private final Object finalFieldNull = null; // flow@cot [[sc=41;ec=45]] {{Implies 'finalFieldNull' is null.}}
+  private final Object otherFinalFieldNull = null; // flow@npe [[sc=46;ec=50]] {{Implies 'otherFinalFieldNull' is null.}}
 
-  /**
-   * fields not yield handled. see SONARJAVA-2179
-   */
   void bar() {
     // Noncompliant@+1 [[flows=cof]] {{Change this condition so that it does not always evaluate to "false"}}
-    if (finalFieldNonNull == null) { // flow@cof {{Implies 'finalFieldNonNull' is non-null.}} // flow@cof {{Expression is always false.}}
+    if (finalFieldNonNull == null) { // flow@cof {{Expression is always false.}}
       doSomething();
     }
     // Noncompliant@+1 [[flows=cot]] {{Remove this expression which always evaluates to "true"}}
-    if (finalFieldNull == null) { // flow@cot {{Implies 'finalFieldNull' is null.}} // flow@cot {{Expression is always true.}}
+    if (finalFieldNull == null) { // flow@cot {{Expression is always true.}}
       doSomething();
     }
+    // Noncompliant@+1 [[flows=npe]] {{A "NullPointerException" could be thrown; "otherFinalFieldNull" is nullable here.}}
+    this.otherFinalFieldNull.toString(); // flow@npe {{'otherFinalFieldNull' is dereferenced.}}
   }
 
   /**
