@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -38,7 +39,8 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.symbol().metadata().isAnnotatedWith("org.junit.Ignore")) {
+    List<SymbolMetadata.AnnotationValue> ignoreAnnotationValues = methodTree.symbol().metadata().valuesForAnnotation("org.junit.Ignore");
+    if (ignoreAnnotationValues != null && ignoreAnnotationValues.isEmpty()) {
       reportIssue(methodTree.simpleName(), "Fix or remove this skipped unit test");
     }
   }
