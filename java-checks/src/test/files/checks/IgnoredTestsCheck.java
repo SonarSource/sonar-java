@@ -9,4 +9,7 @@ class MyTest {
   void bar() {} // Noncompliant
 
   void qix() {}
+
+  @org.junit.Ignore("withComment") // compliant : explicit comment about why this test is ignored.
+  void foo2() {}
 }
