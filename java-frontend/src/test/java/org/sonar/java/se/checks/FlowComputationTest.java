@@ -58,6 +58,18 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void test_flow_messages_on_parameter_declaration() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowMessagesParameterDeclaration.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
+      new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
+  public void test_flow_messages_on_branch() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/FlowMessagesBranch.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
+      new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
   public void test_singleton() throws Exception {
     MethodInvocationTreeImpl mockTree = mock(MethodInvocationTreeImpl.class);
     Set<List<JavaFileScannerContext.Location>> singleton = FlowComputation.singleton("singleton msg", mockTree);

@@ -30,6 +30,7 @@ import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -40,6 +41,9 @@ import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -70,7 +74,8 @@ import java.util.stream.Stream;
 
 public class FlowComputation {
 
-  public static final String IMPLIES_MSG = "Implies '%s' is %s.";
+  private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
+  private static final String IMPLIES_CAN_BE_NULL_MSG = "Implies '%s' can be null.";
   private static final int MAX_FLOW_STEPS = 3_000_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private final Predicate<Constraint> addToFlow;
@@ -227,6 +232,10 @@ public class FlowComputation {
 
       boolean endOfPath = visitedAllParents(edge) || shouldTerminate(learnedConstraints);
 
+      if (endOfPath) {
+        flowBuilder.addAll(flowForNullableMethodParameters(edge.parent));
+      }
+
       List<JavaFileScannerContext.Location> currentFlow = flowBuilder.build();
       Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
       return yieldsFlows.stream()
@@ -245,6 +254,33 @@ public class FlowComputation {
 
     private boolean isConstraintFromObjectDomain(@Nullable Constraint constraint) {
       return constraint instanceof ObjectConstraint;
+    }
+
+    private List<JavaFileScannerContext.Location> flowForNullableMethodParameters(ExplodedGraph.Node node) {
+      if (!node.edges().isEmpty() || !domains.contains(ObjectConstraint.class)) {
+        return ImmutableList.of();
+      }
+      ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
+      trackedSymbols.forEach(symbol -> {
+        SymbolicValue sv = node.programState.getValue(symbol);
+        if (sv == null) {
+          return;
+        }
+        ObjectConstraint startConstraint = node.programState.getConstraint(sv, ObjectConstraint.class);
+        if (startConstraint != null && isMethodParameter(symbol)) {
+          String msg = IMPLIES_CAN_BE_NULL_MSG;
+          if (ObjectConstraint.NOT_NULL == startConstraint) {
+            msg = "Implies '%s' can not be null.";
+          }
+          flowBuilder.add(new JavaFileScannerContext.Location(String.format(msg, symbol.name()), ((VariableTree) symbol.declaration()).simpleName()));
+        }
+      });
+      return flowBuilder.build();
+    }
+
+    private boolean isMethodParameter(Symbol symbol) {
+      Symbol owner = symbol.owner();
+      return owner.isMethodSymbol() && ((Symbol.MethodSymbol) owner).declaration().parameters().contains(symbol.declaration());
     }
 
     private List<JavaFileScannerContext.Location> flowFromLearnedConstraints(ExplodedGraph.Edge edge, Set<LearnedConstraint> learnedConstraints) {
@@ -269,7 +305,16 @@ public class FlowComputation {
       PMap<Class<? extends Constraint>, Constraint> allConstraints = node.programState.getConstraints(learnedAssociation.symbolicValue());
       Collection<Constraint> constraints = filterByDomains(allConstraints);
       for (Constraint constraint: constraints) {
-        flowBuilder.add(location(node, String.format("'%s' is assigned %s.", learnedAssociation.symbol().name(), constraint.valueAsString())));
+        String symbolName = learnedAssociation.symbol().name();
+        String msg;
+        if (ObjectConstraint.NULL == constraint && assigningNullFromTernary(node)) {
+          msg = String.format(IMPLIES_CAN_BE_NULL_MSG, symbolName);
+        } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
+          msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
+        } else {
+          msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
+        }
+        flowBuilder.add(location(node, msg));
       }
       return flowBuilder.build();
     }
@@ -289,6 +334,53 @@ public class FlowComputation {
         constraints.remove(ObjectConstraint.class);
       }
       return constraints.values();
+    }
+
+    private boolean assigningNullFromTernary(Node node) {
+      ExpressionTree expr = getInitializer(node);
+      return isTernaryWithNullBranch(expr);
+    }
+
+    @CheckForNull
+    private ExpressionTree getInitializer(Node node) {
+      Tree tree = node.programPoint.syntaxTree();
+      ExpressionTree expr;
+      switch (tree.kind()) {
+        case VARIABLE:
+          expr = ((VariableTree) tree).initializer();
+          break;
+        case ASSIGNMENT:
+          expr = ((AssignmentExpressionTree) tree).expression();
+          break;
+        default:
+          expr = null;
+      }
+      return expr;
+    }
+
+    private boolean isTernaryWithNullBranch(@Nullable ExpressionTree expressionTree) {
+      if (expressionTree == null) {
+        return false;
+      }
+      ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
+      if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
+        ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
+        return ExpressionUtils.isNullLiteral(cet.trueExpression()) || ExpressionUtils.isNullLiteral(cet.falseExpression());
+      }
+      return false;
+    }
+
+    private boolean assigningFromMethodInvocation(Node node) {
+      ExpressionTree expr = getInitializer(node);
+      return isMethodInvocation(expr);
+    }
+
+    private boolean isMethodInvocation(@Nullable ExpressionTree expressionTree) {
+      return expressionTree != null && ExpressionUtils.skipParentheses(expressionTree).is(Tree.Kind.METHOD_INVOCATION);
+    }
+
+    private boolean assignedFromYieldWithUncertainResult(Constraint constraint, Node node) {
+      return node.edges().stream().noneMatch(edge -> isConstraintOnlyPossibleResult(constraint, edge));
     }
 
     private PSet<Symbol> newTrackedSymbols(ExplodedGraph.Edge edge) {
@@ -359,7 +451,21 @@ public class FlowComputation {
       if (name == null) {
         return ImmutableList.of();
       }
-      return ImmutableList.of(location(parent, String.format(IMPLIES_MSG, name, constraint.valueAsString())));
+      String msg;
+      if (ObjectConstraint.NULL == constraint && isNullCheck(nodeTree)) {
+        msg = String.format(IMPLIES_CAN_BE_NULL_MSG, name);
+      } else {
+        msg = String.format(IMPLIES_IS_MSG, name, constraint.valueAsString());
+      }
+      return ImmutableList.of(location(parent, msg));
+    }
+
+    private boolean isNullCheck(Tree tree) {
+      if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+        BinaryExpressionTree bet = (BinaryExpressionTree) tree;
+        return ExpressionUtils.isNullLiteral(bet.leftOperand()) || ExpressionUtils.isNullLiteral(bet.rightOperand());
+      }
+      return false;
     }
 
     private List<JavaFileScannerContext.Location> methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
@@ -373,14 +479,14 @@ public class FlowComputation {
       SymbolicValue invocationTarget = parent.programState.peekValue(mit.arguments().size());
       if (symbolicValues.contains(invocationTarget)) {
         String invocationTargetName = SyntaxTreeNameFinder.getName(mit.methodSelect());
-        flowBuilder.add(location(parent, String.format(IMPLIES_MSG, invocationTargetName, learnedConstraint.valueAsString())));
+        flowBuilder.add(location(parent, String.format(IMPLIES_IS_MSG, invocationTargetName, learnedConstraint.valueAsString())));
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, parent);
       argumentIndices.stream()
         .map(mit.arguments()::get)
         .map(argTree -> {
-          String message = String.format(IMPLIES_MSG, SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
+          String message = String.format(IMPLIES_IS_MSG, SyntaxTreeNameFinder.getName(argTree), learnedConstraint.valueAsString());
           return new JavaFileScannerContext.Location(message, argTree);
         })
         .forEach(flowBuilder::add);

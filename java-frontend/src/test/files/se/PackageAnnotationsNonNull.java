@@ -3,8 +3,9 @@ package org.sonar.java.resolve.targets;
 import javax.annotation.Nullable;
 
 class PackageAnnotations {
-  void foo(Object input) {
-    if (input == null) {} // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+  void foo(Object input) { // flow@cof [[sc=19;ec=24]] {{Implies 'input' can not be null.}}
+    // Noncompliant@+1 [[flows=cof]] {{Change this condition so that it does not always evaluate to "false"}}
+    if (input == null) {} // flow@cof {{Expression is always false.}}
   }
 
   private void bar(Object... objects) {

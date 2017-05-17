@@ -961,7 +961,7 @@ public class ExplodedGraphWalker {
       return;
     }
     // only check final field with an initializer
-    if (initializer.is(Tree.Kind.NULL_LITERAL)) {
+    if (ExpressionUtils.isNullLiteral(initializer)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NULL);
     } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);

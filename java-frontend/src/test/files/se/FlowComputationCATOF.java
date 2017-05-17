@@ -18,7 +18,7 @@ class A {
   }
 
   public void catof2a() {
-    Object foo = maybeNull(); // flow@catof2a {{'maybeNull()' can return non-null.}} flow@catof2a {{'foo' is assigned non-null.}}
+    Object foo = maybeNull(); // flow@catof2a {{'maybeNull()' can return non-null.}} flow@catof2a {{Implies 'foo' can be non-null.}}
     foo.getClass();  // Noncompliant
     if (foo == null) {  // Noncompliant [[flows=catof2a]] {{Change this condition so that it does not always evaluate to "false"}} flow@catof2a {{Expression is always false.}}
       log(foo.toString());
