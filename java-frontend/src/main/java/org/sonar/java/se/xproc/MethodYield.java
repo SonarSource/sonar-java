@@ -22,6 +22,7 @@ package org.sonar.java.se.xproc;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
@@ -32,10 +33,12 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -188,7 +191,21 @@ public abstract class MethodYield {
 
     Map<String, Set<List<JavaFileScannerContext.Location>>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
     return flowByDomain.computeIfAbsent(domainKey,
-      k -> FlowComputation.flow(node, getSymbolicValues(parameterIndices), c -> true, c -> false, domains, Collections.emptySet()));
+      k -> {
+        Set<SymbolicValue> symbolicValues = getSymbolicValues(parameterIndices);
+        Set<Symbol> trackedSymbols = getReturnSymbolAsTrackedSymbols(parameterIndices);
+        return FlowComputation.flow(node, symbolicValues, c -> true, c -> false, domains, trackedSymbols);
+      });
+  }
+
+  private Set<Symbol> getReturnSymbolAsTrackedSymbols(List<Integer> parameterIndices) {
+    if (parameterIndices.contains(-1) && node.programState.peekValue() == node.programState.exitValue()) {
+      Symbol symbol = node.programState.peekValueSymbol().symbol();
+      if (symbol != null) {
+        return Collections.singleton(symbol);
+      }
+    }
+    return Collections.emptySet();
   }
 
   private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {

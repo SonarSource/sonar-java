@@ -29,23 +29,23 @@ abstract class A {
 class B {
   Object field;
 
+  /**
+   * method which have multiple yields having return SV with different constraints (NULL and NOT_NULL).
+   */
+  private B foo() {
+    B result = null; // flow@flow_b {{'result' is assigned null.}}
+    if (field != null) {
+      result = new B();
+    }
+    return result;
+  }
+
   void bar() {
     B b, c;
     b = foo();                                   // flow@flow_b {{'foo()' can return null.}} flow@flow_b {{Implies 'b' can be null.}}
     c = b;                                       // flow@flow_b {{Implies 'c' has the same value as 'b'.}}
     // Noncompliant@+1  [[flows=flow_b]]
     c.bar();                                     // flow@flow_b {{'c' is dereferenced.}}
-  }
-
-  /**
-   * method which have multiple yields having return SV with different constraints (NULL and NOT_NULL).
-   */
-  private B foo() {
-    B result = null;
-    if (field != null) {
-      result = new B();
-    }
-    return result;
   }
 }
 
@@ -54,26 +54,27 @@ class B {
  */
 class C {
 
-  void bar(Object o) {
-    C c = foo(o);                                // flow@flow_c {{'foo()' returns null.}} flow@flow_c {{'c' is assigned null.}}
-    // Noncompliant@+1 [[flows=flow_c]]
-    if (c != null) {                             // flow@flow_c {{Expression is always false.}}
-      c = new C();
-    }
-  }
-
   /**
    * method which have multiple yields but all of them having the same constraint for the returned SV.
    */
   private C foo(Object o) {
     C result;
     if (o == null) {
-      result = null;
+      result = null; // flow@flow_c1 {{'result' is assigned null.}}
     } else {
-      result = null;
+      result = null; // flow@flow_c2 {{'result' is assigned null.}}
     }
     return result;
   }
+
+  void bar(Object o) {
+    C c = foo(o);                                // flow@flow_c1 {{'foo()' returns null.}} flow@flow_c1 {{'c' is assigned null.}} flow@flow_c2 flow@flow_c2
+    // Noncompliant@+1 [[flows=flow_c1,flow_c2]]
+    if (c != null) {                             // flow@flow_c1 {{Expression is always false.}} flow@flow_c2
+      c = new C();
+    }
+  }
+
 }
 
 /**
@@ -142,5 +143,21 @@ class BooleanConstraint {
   void f() {
     boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{'b' is assigned false.}}
     if (b); // Noncompliant [[flows=bool]] flow@bool
+  }
+}
+
+class FollowingReturnValue {
+  private Object f() {
+    Object a = new Object(); // flow@caf {{Constructor implies 'non-null'.}} flow@caf {{'a' is assigned non-null.}}
+    Object o = a; // flow@caf {{Implies 'o' has the same value as 'a'.}}
+    return o;
+  }
+
+  void cat() {
+    Object o = f(); // flow@caf {{'f()' returns non-null.}} flow@caf {{'o' is assigned non-null.}}
+    // Noncompliant@+1 [[flows=caf]]
+    if (o == null) { // flow@caf {{Expression is always false.}}
+      o.toString();
+    }
   }
 }
