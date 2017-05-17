@@ -412,7 +412,7 @@ public class ProgramState {
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
     final List<VariableTree> variableTrees = new ArrayList<>();
     values.forEach((symbol, symbolicValue) -> {
-      if (isField(symbol)) {
+      if (isField(symbol) && !symbol.isFinal()) {
         VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
         if (variable != null) {
           variableTrees.add(variable);
