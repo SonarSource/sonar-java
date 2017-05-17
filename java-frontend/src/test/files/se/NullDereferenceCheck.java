@@ -761,3 +761,12 @@ class ResetFieldWhenThisUsedAsParameter {
     }
   }
 }
+
+class finalFieldSetToNull {
+  final Object field = null;
+
+  void foo() {
+    // Noncompliant@+1 [[flows=fieldNull]] {{A "NullPointerException" could be thrown; "field" is nullable here.}}
+    this.field.toString(); // flow@fieldNull {{Implies 'field' is null.}} flow@fieldNull {{'field' is dereferenced.}}
+  }
+}

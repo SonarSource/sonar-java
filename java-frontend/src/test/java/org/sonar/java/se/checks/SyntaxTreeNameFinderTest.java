@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -93,5 +94,28 @@ public class SyntaxTreeNameFinderTest {
   public void testVariableWithInitializer() {
     MethodTree tree = buildSyntaxTree("public void test() {int i = length;}");
     assertThat(SyntaxTreeNameFinder.getName(tree)).isEqualTo("length");
+  }
+
+  @Test
+  public void testFieldAccess() {
+    MethodTree tree = buildSyntaxTree("public void test() {this.field = value;} Object field;");
+    BlockTree block = tree.block();
+    AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) ((ExpressionStatementTree) block.body().get(0)).expression();
+    assertThat(SyntaxTreeNameFinder.getName(assignmentTree.variable())).isEqualTo("field");
+
+    tree = buildSyntaxTree("public void test() {super.field = value;}");
+    block = tree.block();
+    assignmentTree = (AssignmentExpressionTree) ((ExpressionStatementTree) block.body().get(0)).expression();
+    assertThat(SyntaxTreeNameFinder.getName(assignmentTree.variable())).isEqualTo("field");
+
+    tree = buildSyntaxTree("public void test() {A.field = value;}");
+    block = tree.block();
+    assignmentTree = (AssignmentExpressionTree) ((ExpressionStatementTree) block.body().get(0)).expression();
+    assertThat(SyntaxTreeNameFinder.getName(assignmentTree.variable())).isEqualTo("A");
+
+    tree = buildSyntaxTree("public void test() {foo().field = value;}");
+    block = tree.block();
+    assignmentTree = (AssignmentExpressionTree) ((ExpressionStatementTree) block.body().get(0)).expression();
+    assertThat(SyntaxTreeNameFinder.getName(assignmentTree.variable())).isEqualTo("foo");
   }
 }
