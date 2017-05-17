@@ -21,13 +21,13 @@ package org.sonar.java.se.checks;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.resolve.Result;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import java.util.List;
@@ -35,7 +35,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 
 public class FlowComputationTest {
 
@@ -67,16 +66,6 @@ public class FlowComputationTest {
   public void test_flow_messages_on_branch() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/FlowMessagesBranch.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
       new BooleanGratuitousExpressionsCheck());
-  }
-
-  @Test
-  public void test_singleton() throws Exception {
-    MethodInvocationTreeImpl mockTree = mock(MethodInvocationTreeImpl.class);
-    Set<List<JavaFileScannerContext.Location>> singleton = FlowComputation.singleton("singleton msg", mockTree);
-    assertThat(singleton).hasSize(1);
-    List<JavaFileScannerContext.Location> flow = singleton.iterator().next();
-    assertThat(flow).hasSize(1);
-    assertThat(flow.get(0).msg).isEqualTo("singleton msg");
   }
 
   @Test
@@ -126,4 +115,21 @@ public class FlowComputationTest {
   public void xproc_flow_messages() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessages.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
   }
+
+  @Test
+  public void test_flows_with_single_msg_not_reported() throws Exception {
+    JavaCheckVerifier noFlowsVerifier = new JavaCheckVerifier() {
+      @Override
+      protected void checkIssues(Set<AnalyzerMessage> issues) {
+        assertThat(issues).hasSize(4);
+        issues.forEach(issue -> assertThat(issue.flows.stream().allMatch(List::isEmpty))
+          .as("No flows expected, but %s was reported.", issue.flows)
+          .isTrue());
+      }
+    };
+
+    noFlowsVerifier.scanFile("src/test/files/se/FlowsWithSingleMsg.java",new SECheck[] { new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
+      new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck()});
+  }
+
 }

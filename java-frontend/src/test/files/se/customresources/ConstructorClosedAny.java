@@ -26,12 +26,12 @@ public class GenericResource {
   }
   
   public static void wrong(String name) {
-    GenericResource resource = new GenericResource(name);  // Noncompliant [[flows=wrong]] {{Close this "GenericResource".}} flow@wrong {{GenericResource is never closed.}}
+    GenericResource resource = new GenericResource(name);  // Noncompliant {{Close this "GenericResource".}}
     resource.use();
   }
   
   public static void wrong(int channel) {
-    GenericResource resource = new GenericResource(channel);  // Noncompliant [[flows=wrong2]] {{Close this "GenericResource".}} flow@wrong2 {{GenericResource is never closed.}}
+    GenericResource resource = new GenericResource(channel);  // Noncompliant {{Close this "GenericResource".}}
     resource.use();
   }
   

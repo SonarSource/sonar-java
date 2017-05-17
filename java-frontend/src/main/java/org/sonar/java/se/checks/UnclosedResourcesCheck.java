@@ -56,7 +56,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.CLOSED;
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.OPEN;
@@ -132,9 +131,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   private void reportIssue(JavaFileScannerContext.Location location) {
     String message = "Close this \"" + name(location.syntaxNode) + "\".";
-    String flowMessage = name(location.syntaxNode) +  " is never closed.";
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.singleton(flowMessage, location.syntaxNode);
-    reportIssue(location.syntaxNode, message, flows);
+    reportIssue(location.syntaxNode, message);
   }
 
   private static String name(Tree tree) {

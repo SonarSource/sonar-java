@@ -17,7 +17,7 @@ public class GenericResource {
   }
   
   public static void wrong(String name) {
-    GenericResource resource = new GenericResource(name);  // Noncompliant [[flows=wrong]] {{Close this "GenericResource".}} flow@wrong {{GenericResource is never closed.}}
+    GenericResource resource = new GenericResource(name);  // Noncompliant {{Close this "GenericResource".}}
     resource.use();
   }
   

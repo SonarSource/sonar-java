@@ -9,14 +9,14 @@ class A {
   }
 
   A(Optional<String> s) {
-    s.get();  // Noncompliant [[flows=A]] {{Call "s.isPresent()" before accessing the value.}} flow@A {{Optional s is accessed}}
+    s.get();  // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
     if (s.isPresent()) {
       s.get(); // Compliant
     }
   }
 
   void foo() {
-    getOptional().get(); // Noncompliant [[flows=foo]] {{Call "Optional#isPresent()" before accessing the value.}} flow@foo {{Optional is accessed}}
+    getOptional().get(); // Noncompliant {{Call "Optional#isPresent()" before accessing the value.}}
   }
 
   void bar() {
@@ -36,7 +36,7 @@ class A {
       if (s.isPresent()) { // condition always false
         s.get(); // Compliant - dead code
       }
-      s.get(); // Noncompliant [[flows=dul]] flow@dul
+      s.get(); // Noncompliant
     }
     s.get(); // Compliant
   }
@@ -46,11 +46,11 @@ class A {
     if (s.isPresent()) {
       s.get(); // Compliant
     }
-    s.get(); // Noncompliant [[flows=qix]] flow@qix
+    s.get(); // Noncompliant
   }
 
   String mug(Optional<String> s) {
-    return s.isPresent() ? null : s.get(); // Noncompliant [[flows=mug]] flow@mug
+    return s.isPresent() ? null : s.get(); // Noncompliant
   }
 
   private void fun() {

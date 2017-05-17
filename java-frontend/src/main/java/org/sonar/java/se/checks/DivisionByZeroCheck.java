@@ -277,6 +277,7 @@ public class DivisionByZeroCheck extends SECheck {
       String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("\"" + ((IdentifierTree) expression).name() + "\"") : "this expression";
       List<Class<? extends Constraint>> domains = Collections.singletonList(ZeroConstraint.class);
       Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains, denominatorSymbol).stream()
+        .filter(f -> !f.isEmpty())
         .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
           .add(new JavaFileScannerContext.Location("Division by zero.", tree))
           .addAll(f)

@@ -12,7 +12,7 @@ class A {
   }
 
   void boo(int r) {
-    r = 1 / '\0'; // Noncompliant [[sc=13;ec=17;flows=boo]] {{Make sure this expression can't be zero before doing this division.}} flow@boo {{Division by zero.}}
+    r = 1 / '\0'; // Noncompliant [[sc=13;ec=17]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
   void choo(int r) {
@@ -27,7 +27,7 @@ class A {
   }
 
   void goo(int r) {
-    r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27;flows=goo]] {{Make sure this expression can't be zero before doing this division.}}  flow@goo {{Division by zero.}}
+    r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
   void moo(int r) {

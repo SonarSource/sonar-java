@@ -27,12 +27,12 @@ public class GenericResource implements OpenedResource {
   }
   
   public static void wrong(String name) {
-    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant [[flows=wrong]] {{Close this "GenericResource".}} flow@wrong {{GenericResource is never closed.}}
+    GenericResource resource = new ResourceFactory().createResource(name);  // Noncompliant {{Close this "GenericResource".}}
     resource.use();
   }
   
   public static void wrong(int channel) {
-    GenericResource resource = new ResourceFactory().createResource(channel);  // Noncompliant [[flows=wrong2]] {{Close this "OpenedResource".}} flow@wrong2 {{OpenedResource is never closed.}}
+    GenericResource resource = new ResourceFactory().createResource(channel);  // Noncompliant {{Close this "OpenedResource".}}
     resource.use();
   }
 

@@ -29,7 +29,7 @@ public class Class {
 
   void unarySymbolicvalue(boolean a, boolean b) {
     if(! (a ==b )) // FIXME missing flow message unary SV
-      if (a == b); // Noncompliant [[flows=unarySv]] flow@unarySv {{Expression is always false.}}
+      if (a == b); // Noncompliant FIXME@unarySv Expression is always false.
   }
   void unary(boolean a) {
     if(!a) // flow@unary {{Implies 'a' is false.}}

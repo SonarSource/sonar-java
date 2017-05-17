@@ -127,8 +127,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   private void reportIssue(JavaFileScannerContext.Location location) {
     String message = "Close this \"" + name(location.syntaxNode) + "\".";
-    String flowMessage = name(location.syntaxNode) +  " is never closed.";
-    reportIssue(location.syntaxNode, message, FlowComputation.singleton(flowMessage, location.syntaxNode));
+    reportIssue(location.syntaxNode, message);
   }
 
   private static String name(Tree tree) {

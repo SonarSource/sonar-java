@@ -101,6 +101,8 @@ public class FlowComputation {
     return result;
   }
 
+  // FIXME It is assumed that this will always return set with at least one element, which could be empty, because result is consumed in other places and messages are
+  // added to returned flows. This design should be improved.
   public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
                                                                 Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
@@ -579,11 +581,7 @@ public class FlowComputation {
       return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
     }
   }
-
-  public static Set<List<JavaFileScannerContext.Location>> singleton(String msg, Tree tree) {
-    return ImmutableSet.of(ImmutableList.of(new JavaFileScannerContext.Location(msg, tree)));
-  }
-
+  
   public static List<JavaFileScannerContext.Location> flowsForPassedArguments(List<Integer> argumentIndices, MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
     return Lists.reverse(argumentIndices.stream()
