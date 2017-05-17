@@ -23,6 +23,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
@@ -31,6 +32,7 @@ import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
 import no.finn.lambdacompanion.Try;
+import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.junit.BeforeClass;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,9 +54,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JavaRulingTest {
@@ -80,6 +82,7 @@ public class JavaRulingTest {
   .setOrchestratorProperty("litsVersion", "0.6")
   .addPlugin("lits")
   .build();
+  private static final Gson GSON = new Gson();
 
   @BeforeClass
   public static void prepare_quality_profiles() {
@@ -302,17 +305,23 @@ public class JavaRulingTest {
       .put("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
       .build());
     String post = sonarClient.get("api/rules/app");
-    Pattern pattern = Pattern.compile("java-rules-\\d+");
-    Matcher matcher = pattern.matcher(post);
-    if (matcher.find()) {
-      String profilekey = matcher.group();
-      sonarClient.post("api/qualityprofiles/activate_rule", ImmutableMap.<String, Object>of(
-        "profile_key", profilekey,
+    String profileKey = null;
+    Map map = GSON.fromJson(post, Map.class);
+    for (Map qp : ((List<Map>) map.get("qualityprofiles"))) {
+      if ("rules".equals(qp.get("name"))) {
+        profileKey = (String) qp.get("key");
+        break;
+      }
+    }
+    if (StringUtils.isEmpty(profileKey)) {
+      LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
+    } else {
+      String activateRuleResponse = sonarClient.post("api/qualityprofiles/activate_rule", ImmutableMap.of(
+        "profile_key", profileKey,
         "rule_key", "squid:" + instantiationKey,
         "severity", "INFO",
         "params", ""));
-    } else {
-      LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
+      LOG.warn(activateRuleResponse);
     }
   }
 
