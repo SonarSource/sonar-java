@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -307,6 +308,7 @@ public class FlowComputation {
     List<JavaFileScannerContext.Location> flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
       ImmutableList.Builder<JavaFileScannerContext.Location> flowBuilder = ImmutableList.builder();
       ProgramState programState = node.programState;
+      Preconditions.checkState(programState != null, "Learned association with null state in parent node of the edge.");
       Symbol rhsSymbol = symbolFromStack(learnedAssociation.symbolicValue(), programState);
       if (rhsSymbol != null) {
         flowBuilder.add(location(node, String.format(IMPLIES_SAME_VALUE, learnedAssociation.symbol().name(), rhsSymbol.name())));
