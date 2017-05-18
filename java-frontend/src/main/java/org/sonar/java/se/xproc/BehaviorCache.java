@@ -51,7 +51,7 @@ public class BehaviorCache {
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(symbol)) {
-      if (isObjectsRequireNonNullMethod(symbol)) {
+      if (isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
       } else if (isObjectsNullMethod(symbol)) {
         behaviors.put(symbol, createIsNullBehavior(symbol));
@@ -72,6 +72,13 @@ public class BehaviorCache {
       }
     }
     return behaviors.get(symbol);
+  }
+
+  private static boolean isValidateMethod(Symbol.MethodSymbol symbol) {
+    Type type = symbol.owner().type();
+    String name = symbol.name();
+    return (type.is("org.apache.commons.lang3.Validate") || type.is("org.apache.commons.lang.Validate"))
+      && ("notEmpty".equals(name) || "notNull".equals(name));
   }
 
   private static boolean isCollectionUtilsIsEmpty(Symbol.MethodSymbol symbol) {

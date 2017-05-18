@@ -158,4 +158,14 @@ public class SymbolicExecutionVisitorTest {
     verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
   }
 
+  @Test
+  public void apache_lang_validate() throws Exception {
+    NullDereferenceCheck seCheck = new NullDereferenceCheck();
+    createSymbolicExecutionVisitor("src/test/files/se/CommonsLangValidate.java", seCheck);
+    // verify we did not raise any issue, if we did, the context will get them reported.
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    seCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
+  }
+
 }
