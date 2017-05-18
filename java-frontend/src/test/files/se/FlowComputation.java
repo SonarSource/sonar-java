@@ -34,7 +34,7 @@ class A {
   void exceptions() {
     try {
       Thread.sleep(0);
-    } catch (Exception ex) { // flow@ex {{Implies 'ex' is non-null.}}
+    } catch (Exception ex) { // flow@ex {{Implies 'ex' is not null.}}
       if (ex != null) { // Noncompliant [[flows=ex]] {{Remove this expression which always evaluates to "true"}}   flow@ex {{Expression is always true.}}
         ex.getClause();
       }
@@ -42,7 +42,7 @@ class A {
   }
 
   void invocation_target(Object a) {
-    a.toString(); // flow@target {{Implies 'a' is non-null.}}
+    a.toString(); // flow@target {{Implies 'a' is not null.}}
     if (a == null) { // Noncompliant [[flows=target]] flow@target {{Expression is always false.}}
 
     }

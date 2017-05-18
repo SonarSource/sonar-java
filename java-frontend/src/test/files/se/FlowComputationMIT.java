@@ -10,12 +10,12 @@ class A {
   }
 
   private Object throwIfNull(Object a) { // flow@ex [[order=2]] {{Implies 'a' has the same value as 'o'.}} flow@ex2 [[order=2]] {{Implies 'a' has the same value as 'o'.}}
-    if (a == null) throw new IllegalStateException(); // flow@ex [[order=3]] {{Implies 'a' can be null.}}  flow@ex2 [[order=3]] {{Implies 'a' is non-null.}}
+    if (a == null) throw new IllegalStateException(); // flow@ex [[order=3]] {{Implies 'a' can be null.}}  flow@ex2 [[order=3]] {{Implies 'a' is not null.}}
     return a;
   }
 
   void exceptions2(Object o) {
-    throwIfNull(o); // flow@ex2 [[order=1]] {{'o' is passed to 'throwIfNull()'.}} flow@ex2 [[order=4]] {{Implies 'o' is non-null.}}
+    throwIfNull(o); // flow@ex2 [[order=1]] {{'o' is passed to 'throwIfNull()'.}} flow@ex2 [[order=4]] {{Implies 'o' is not null.}}
     if (o != null) { // Noncompliant [[flows=ex2]] flow@ex2 [[order=5]] {{Expression is always true.}}
 
     }

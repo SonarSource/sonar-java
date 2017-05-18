@@ -39,7 +39,7 @@ public enum ObjectConstraint implements Constraint {
     if (this == NULL) {
       return "null";
     }
-    return "non-null";
+    return "not null";
   }
 
   @Override

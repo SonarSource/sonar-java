@@ -148,13 +148,13 @@ class BooleanConstraint {
 
 class FollowingReturnValue {
   private Object f() {
-    Object a = new Object(); // flow@caf {{Constructor implies 'non-null'.}} flow@caf {{'a' is assigned non-null.}}
+    Object a = new Object(); // flow@caf {{Constructor implies 'not null'.}} flow@caf {{'a' is assigned not null.}}
     Object o = a; // flow@caf {{Implies 'o' has the same value as 'a'.}}
     return o;
   }
 
   void cat() {
-    Object o = f(); // flow@caf {{'f()' returns non-null.}} flow@caf {{'o' is assigned non-null.}}
+    Object o = f(); // flow@caf {{'f()' returns not null.}} flow@caf {{'o' is assigned not null.}}
     // Noncompliant@+1 [[flows=caf]]
     if (o == null) { // flow@caf {{Expression is always false.}}
       o.toString();

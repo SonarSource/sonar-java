@@ -2,7 +2,7 @@ import javax.annotation.Nullable;
 
 abstract class A {
 
-  private final Object finalFieldNonNull = new Object(); // flow@cof1 [[sc=44;ec=56]] {{Implies 'finalFieldNonNull' is non-null.}} flow@cof2 {{Implies 'finalFieldNonNull' is non-null.}}
+  private final Object finalFieldNonNull = new Object(); // flow@cof1 [[sc=44;ec=56]] {{Implies 'finalFieldNonNull' is not null.}} flow@cof2 {{Implies 'finalFieldNonNull' is not null.}}
   private final Object finalFieldNull = null; // flow@cot [[sc=41;ec=45]] {{Implies 'finalFieldNull' is null.}}
   private final Object otherFinalFieldNull = null; // flow@npe [[sc=46;ec=50]] {{Implies 'otherFinalFieldNull' is null.}}
 
