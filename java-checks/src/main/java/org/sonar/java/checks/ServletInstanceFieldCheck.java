@@ -25,6 +25,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -71,7 +72,8 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(VariableTree variable) {
-    return isStaticOrFinal(variable) || variable.symbol().metadata().isAnnotatedWith("javax.inject.Inject");
+    SymbolMetadata varMetadata = variable.symbol().metadata();
+    return isStaticOrFinal(variable) || varMetadata.isAnnotatedWith("javax.inject.Inject") || varMetadata.isAnnotatedWith("javax.ejb.EJB");
   }
 
   private static boolean isServletInit(MethodTree tree) {
