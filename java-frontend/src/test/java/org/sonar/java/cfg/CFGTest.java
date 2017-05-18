@@ -1001,7 +1001,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 3),
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(INT_LITERAL, 10),

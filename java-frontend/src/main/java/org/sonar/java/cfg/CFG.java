@@ -741,8 +741,8 @@ public class CFG {
     currentBlock = createBranch(doWhileStatementTree, loopback, falseBranch);
     buildCondition(doWhileStatementTree.condition(), loopback, falseBranch);
     // process body
+    addContinueTarget(currentBlock);
     currentBlock = createBlock(currentBlock);
-    addContinueTarget(loopback);
     breakTargets.addLast(falseBranch);
     build(doWhileStatementTree.statement());
     breakTargets.removeLast();
