@@ -4,6 +4,8 @@ import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
 import org.junit.runner.Suite;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
 
 class A extends junit.framework.TestCase {
   void testFoo() {
@@ -144,4 +146,12 @@ public class S2187Test {
     }
   }
 
+}
+
+@RunWith(Theories.class)
+public class MyTheorieClassTest {
+  @Theory
+  public void test_method() {
+
+  }
 }
