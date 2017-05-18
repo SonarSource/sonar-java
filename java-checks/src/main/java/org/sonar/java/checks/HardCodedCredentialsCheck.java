@@ -44,8 +44,13 @@ import java.util.regex.Pattern;
 @Rule(key = "S2068")
 public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("(password|passwd|pwd)=\\S.", Pattern.CASE_INSENSITIVE);
-  private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("(password|passwd|pwd)", Pattern.CASE_INSENSITIVE);
+  private static final String PWD_TRANSLATION = "password|passwd|pwd|achinsinsi|adgangskode|codice|contrasena|contrasenya|contrasinal|cynfrinair|facal-faire|facalfaire|" +
+    "fjaleklaim|focalfaire|geslo|haslo|heslo|iphasiwedi|jelszo|kalmarsirri|katalaluan|katasandi|kennwort|kode|kupuhipa|loluszais|losen|losenord|lozinka|" +
+    "lykilorth|mathkau|modpas|motdepasse|olelohuna|oroigbaniwole|parol|parola|parole|parool|pasahitza|pasiwedhi|passe|passord|passwort|" +
+    "passwuert|paswoodu|phasewete|salasana|sandi|senha|sifre|sifreya|slaptazois|tenimiafina|upufaalilolilo|wachtwoord|wachtwurd|wagwoord";
+
+  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("("+PWD_TRANSLATION+")=\\S.", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("("+PWD_TRANSLATION+")", Pattern.CASE_INSENSITIVE);
 
   private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
     .typeDefinition("java.net.PasswordAuthentication")
