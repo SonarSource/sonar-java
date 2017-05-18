@@ -10,7 +10,7 @@ class A {
   void null_assigned(Object b, Object c) {
     if(b == null);
     if(c == null);
-    Object a = null; // flow@fl1 {{'a' is assigned null.}}
+    Object a = null; // flow@fl1 {{Implies 'a' is null.}}
     a.toString(); // Noncompliant [[flows=fl1]] flow@fl1 {{'a' is dereferenced.}}
   }
 
@@ -25,7 +25,7 @@ class A {
   }
 
   void reassignement() {
-    Object a = null; // flow@reass {{'a' is assigned null.}}
+    Object a = null; // flow@reass {{Implies 'a' is null.}}
     Object b = new Object();
     b = a; // flow@reass {{Implies 'b' has the same value as 'a'.}}
     b.toString(); // Noncompliant [[flows=reass]] flow@reass {{'b' is dereferenced.}}
@@ -47,7 +47,7 @@ class A {
 
   void complexRelation(int a, int b, Object c) {
     if (a < b) { // This should be reported as well to highlight context
-      c = null; // flow@cplx {{'c' is assigned null.}}
+      c = null; // flow@cplx {{Implies 'c' is null.}}
     }
     System.out.println("");
     if (b > a) { // This should be reported as well to highlight context
@@ -90,7 +90,7 @@ class A {
   }
 
   public void order() {
-    String foo = getFoo();  // flow@ord [[order=2]] {{'foo' is assigned null.}} flow@ord [[order=1]] {{'getFoo()' returns null.}}
+    String foo = getFoo();  // flow@ord [[order=2]] {{Implies 'foo' is null.}} flow@ord [[order=1]] {{'getFoo()' returns null.}}
     String bar = foo; // flow@ord [[order=3]] {{Implies 'bar' has the same value as 'foo'.}}
     boolean cond = (bar == null);
 
@@ -102,14 +102,14 @@ class A {
 
 class SONARJAVA_2047 {
   void f() {
-    String s = null; // flow@2047 {{'s' is assigned null.}}
+    String s = null; // flow@2047 {{Implies 's' is null.}}
     s.charAt(0); // Noncompliant [[flows=2047]] flow@2047 {{'s' is dereferenced.}}
   }
 
 
   void g() {
     Object arg = "";
-    Object nullable = null; // flow@2047g {{'nullable' is assigned null.}}
+    Object nullable = null; // flow@2047g {{Implies 'nullable' is null.}}
     nullable.equals(arg); // Noncompliant [[flows=2047g]] flow@2047g {{'nullable' is dereferenced.}}
   }
 }

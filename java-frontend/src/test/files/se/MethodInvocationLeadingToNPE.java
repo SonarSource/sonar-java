@@ -173,7 +173,7 @@ class D {
 
 abstract class E {
   public Object myMethod(String line, String value) {
-    Object o = null; // flow@myMethod [[order=1]] {{'o' is assigned null.}}
+    Object o = null; // flow@myMethod [[order=1]] {{Implies 'o' is null.}}
     String s = line.length() > 0 ? value : null; // flow@myMethod [[order=2]] {{Implies 's' has the same value as 'value'.}}
     if (s == null || s.startsWith("key")) { // flow@myMethod [[order=3]] {{Implies 's' is not null.}}
       o = new Object();
@@ -185,7 +185,7 @@ abstract class E {
 
   Object field;
   public Object myOtherMethod(String line, String value) {
-    field = null; // flow@myOtherMethod [[order=1]] {{'field' is assigned null.}}
+    field = null; // flow@myOtherMethod [[order=1]] {{Implies 'field' is null.}}
     String s = line.length() > 0 ? value : null; // flow@myOtherMethod [[order=2]] {{Implies 's' has the same value as 'value'.}}
     if (s == null || s.startsWith("key")) { // flow@myOtherMethod [[order=3]] {{Implies 's' is not null.}}
       this.field = new Object();

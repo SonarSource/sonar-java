@@ -3,7 +3,7 @@ class A {
 
   void symbolSetToNull() {
     Object a = new Object();
-    a = null; // flow@npe {{'a' is assigned null.}}
+    a = null; // flow@npe {{Implies 'a' is null.}}
     a.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "a" is nullable here.}}  flow@npe {{'a' is dereferenced.}}
   }
 

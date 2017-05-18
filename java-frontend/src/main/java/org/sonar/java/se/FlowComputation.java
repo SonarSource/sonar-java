@@ -323,7 +323,7 @@ public class FlowComputation {
           } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
             msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
           } else {
-            msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
+            msg = String.format(IMPLIES_IS_MSG, symbolName, constraint.valueAsString());
           }
           flowBuilder.add(location(node, msg));
         }
