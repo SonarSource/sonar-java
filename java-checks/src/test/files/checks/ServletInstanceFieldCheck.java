@@ -41,3 +41,8 @@ class D extends HttpServlet {
   @Inject private String userName; // compliant annotated with inject;
   private static String staticVar;
 }
+
+public class MyServlet extends HttpServlet {
+  @javax.ejb.EJB
+  private MyObject myObject;
+}
