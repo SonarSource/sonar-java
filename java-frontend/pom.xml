@@ -182,6 +182,16 @@
                   <version>10.0.1</version>
                   <type>jar</type>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>commons-collections</groupId>
+                  <artifactId>commons-collections</artifactId>
+                  <version>3.2.1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.commons</groupId>
+                  <artifactId>commons-collections4</artifactId>
+                  <version>4.1</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>

@@ -62,6 +62,8 @@ public class BehaviorCache {
         }
       } else if (isGuavaPrecondition(symbol)) {
         behaviors.put(symbol, createGuavaPreconditionsBehavior(symbol, "checkNotNull".equals(symbol.name())));
+      } else if (isCollectionUtilsIsEmpty(symbol)) {
+        behaviors.put(symbol, createCollectionUtilsBehavior(symbol));
       } else {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
@@ -70,6 +72,12 @@ public class BehaviorCache {
       }
     }
     return behaviors.get(symbol);
+  }
+
+  private static boolean isCollectionUtilsIsEmpty(Symbol.MethodSymbol symbol) {
+    Type type = symbol.owner().type();
+    return (type.is("org.apache.commons.collections4.CollectionUtils") || type.is("org.apache.commons.collections.CollectionUtils"))
+      && "isEmpty".equals(symbol.name());
   }
 
   private static boolean isGuavaPrecondition(Symbol.MethodSymbol symbol) {
@@ -193,4 +201,22 @@ public class BehaviorCache {
     behavior.completed();
     return behavior;
   }
+
+  private static MethodBehavior createCollectionUtilsBehavior(Symbol.MethodSymbol symbol) {
+    MethodBehavior behavior = new MethodBehavior(symbol);
+
+    HappyPathYield happyPathYield = new HappyPathYield(behavior);
+    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
+    happyPathYield.setResult(-1, pmapForConstraint(BooleanConstraint.TRUE));
+    behavior.addYield(happyPathYield);
+
+    happyPathYield = new HappyPathYield(behavior);
+    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
+    happyPathYield.setResult(-1, PCollections.emptyMap());
+    behavior.addYield(happyPathYield);
+
+    behavior.completed();
+    return behavior;
+  }
+
 }

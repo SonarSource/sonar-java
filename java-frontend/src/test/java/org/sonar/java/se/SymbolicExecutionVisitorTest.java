@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -125,7 +125,7 @@ public class SymbolicExecutionVisitorTest {
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     seCheck.scanFile(context);
-    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
   }
 
   @Test
@@ -135,7 +135,7 @@ public class SymbolicExecutionVisitorTest {
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     seCheck.scanFile(context);
-    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
   }
 
   @Test
@@ -145,7 +145,17 @@ public class SymbolicExecutionVisitorTest {
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     seCheck.scanFile(context);
-    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), anyInt());
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
+  }
+
+  @Test
+  public void collections_utils_is_empty_method() throws Exception {
+    NullDereferenceCheck seCheck = new NullDereferenceCheck();
+    createSymbolicExecutionVisitor("src/test/files/se/CollectionUtilsIsEmpty.java", seCheck);
+    // verify we did not raise any issue, if we did, the context will get them reported.
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    seCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
   }
 
 }
