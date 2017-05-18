@@ -11,10 +11,12 @@ class A {
     String variable4 = "login=a&pwd=xxx"; // Noncompliant
     String variable5 = "login=a&password=";
     String variable6 = "login=a&password= ";
+    String variable7 = "login=a&losenord=xxx"; // Noncompliant
 
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswdInIt = "xxx"; // Noncompliant [[sc=12;ec=38]]
     String variableNameWithPwdInIt = "xxx"; // Noncompliant [[sc=12;ec=35]]
+    String VarSifreya = "xxx"; // Noncompliant [[sc=12;ec=22]]
     String otherVariableNameWithPasswordInIt;
     fieldNameWithPasswordInIt = "xx"; // Noncompliant
     fieldNameWithPasswordInIt = retrievePassword();
