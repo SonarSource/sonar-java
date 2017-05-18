@@ -111,7 +111,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       Object value = annotationValues.get(0).value();
       if (value instanceof MemberSelectExpressionTree) {
         String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
-        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class") || runnerParam.endsWith("Suite.class");
+        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class") || runnerParam.endsWith("Suite.class") || runnerParam.endsWith("Theories.class");
       }
     }
     return false;
