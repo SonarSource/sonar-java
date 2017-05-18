@@ -45,4 +45,12 @@ public class DITCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/DitFiltered.java", check);
   }
 
+  @Test
+  public void intermediate_match() {
+    DITCheck check = new DITCheck();
+    check.setMax(2);
+    check.setFilteredClasses("my.testpackage.C");
+    JavaCheckVerifier.verify("src/test/files/checks/DitIntermediateMatching.java", check);
+  }
+
 }
