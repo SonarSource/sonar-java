@@ -114,7 +114,7 @@ public class JaCoCoSensor implements Sensor {
       }
     }
     if (settings.hasKey(REPORT_PATH_PROPERTY)) {
-      LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", REPORT_PATH_PROPERTY, REPORT_PATHS_PROPERTY);
+      warnUsageOfDeprecatedProperty(settings, REPORT_PATH_PROPERTY);
       File report = fs.resolvePath(settings.getString(REPORT_PATH_PROPERTY));
       if (!report.isFile()) {
         LOG.info("JaCoCo UT report not found: '{}'", settings.getString(REPORT_PATH_PROPERTY));
@@ -123,7 +123,7 @@ public class JaCoCoSensor implements Sensor {
       }
     }
     if (settings.hasKey(IT_REPORT_PATH_PROPERTY)) {
-      LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", IT_REPORT_PATH_PROPERTY, REPORT_PATHS_PROPERTY);
+      warnUsageOfDeprecatedProperty(settings, IT_REPORT_PATH_PROPERTY);
       File report = fs.resolvePath(settings.getString(IT_REPORT_PATH_PROPERTY));
       if (!report.isFile()) {
         LOG.info("JaCoCo IT report not found: '{}'", settings.getString(IT_REPORT_PATH_PROPERTY));
@@ -132,6 +132,12 @@ public class JaCoCoSensor implements Sensor {
       }
     }
     return reportPaths;
+  }
+
+  private static void warnUsageOfDeprecatedProperty(Settings settings, String reportPathProperty) {
+    if (!settings.hasKey(REPORT_PATHS_PROPERTY)) {
+      LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", reportPathProperty, REPORT_PATHS_PROPERTY);
+    }
   }
 
 

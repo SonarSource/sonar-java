@@ -143,6 +143,17 @@ public class JaCoCoSensorTest {
   }
 
   @Test
+  public void no_warning_with_both_prop_set() throws Exception {
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
+    runAnalysis();
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
+  }
+
+  @Test
   public void test_read_execution_data_after_6_2_using_deprecated_it_prop() throws Exception {
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
