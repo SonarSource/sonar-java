@@ -51,7 +51,7 @@ public class BehaviorCache {
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(symbol)) {
-      if (isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol)) {
+      if (isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol) || isLog4jOrSpringAssertNotNull(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
       } else if (isObjectsNullMethod(symbol)) {
         behaviors.put(symbol, createIsNullBehavior(symbol));
@@ -104,6 +104,12 @@ public class BehaviorCache {
 
   private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
     return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+  }
+
+  private static boolean isLog4jOrSpringAssertNotNull(Symbol symbol) {
+    Type ownerType = symbol.owner().type();
+    return (ownerType.is("org.apache.logging.log4j.core.util.Assert") && "requireNonNull".equals(symbol.name()))
+      || (ownerType.is("org.springframework.util.Assert") && "notNull".equals(symbol.name()));
   }
 
   @CheckForNull
