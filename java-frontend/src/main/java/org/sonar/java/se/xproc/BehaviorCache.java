@@ -36,6 +36,7 @@ import java.util.Map;
 
 public class BehaviorCache {
 
+  private static final String IS_NULL = "isNull";
   private final SymbolicExecutionVisitor sev;
   @VisibleForTesting
   public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
@@ -51,7 +52,7 @@ public class BehaviorCache {
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(symbol)) {
-      if (isObjectsRequireNonNullMethod(symbol)) {
+      if (isRequireNonNullMethod(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
       } else if (isObjectsNullMethod(symbol)) {
         behaviors.put(symbol, createIsNullBehavior(symbol));
@@ -62,6 +63,10 @@ public class BehaviorCache {
         }
       } else if (isGuavaPrecondition(symbol)) {
         behaviors.put(symbol, createGuavaPreconditionsBehavior(symbol, "checkNotNull".equals(symbol.name())));
+      } else if (isCollectionUtilsIsEmpty(symbol)) {
+        behaviors.put(symbol, createCollectionUtilsBehavior(symbol));
+      } else if (isSpringIsNull(symbol)) {
+        behaviors.put(symbol, createRequireNullBehavior(symbol));
       } else {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
@@ -70,6 +75,27 @@ public class BehaviorCache {
       }
     }
     return behaviors.get(symbol);
+  }
+
+  private static boolean isSpringIsNull(Symbol.MethodSymbol symbol) {
+    return symbol.owner().type().is("org.springframework.util.Assert") && IS_NULL.equals(symbol.name());
+  }
+
+  private static boolean isRequireNonNullMethod(Symbol.MethodSymbol symbol) {
+    return isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol) || isLog4jOrSpringAssertNotNull(symbol);
+  }
+
+  private static boolean isValidateMethod(Symbol.MethodSymbol symbol) {
+    Type type = symbol.owner().type();
+    String name = symbol.name();
+    return (type.is("org.apache.commons.lang3.Validate") || type.is("org.apache.commons.lang.Validate"))
+      && ("notEmpty".equals(name) || "notNull".equals(name));
+  }
+
+  private static boolean isCollectionUtilsIsEmpty(Symbol.MethodSymbol symbol) {
+    Type type = symbol.owner().type();
+    return (type.is("org.apache.commons.collections4.CollectionUtils") || type.is("org.apache.commons.collections.CollectionUtils"))
+      && ("isEmpty".equals(symbol.name()) || "isNotEmpty".equals(symbol.name()));
   }
 
   private static boolean isGuavaPrecondition(Symbol.MethodSymbol symbol) {
@@ -84,11 +110,17 @@ public class BehaviorCache {
   }
 
   private static boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {
-    return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || "isNull".equals(symbol.name()));
+    return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || IS_NULL.equals(symbol.name()));
   }
 
   private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
     return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+  }
+
+  private static boolean isLog4jOrSpringAssertNotNull(Symbol symbol) {
+    Type ownerType = symbol.owner().type();
+    return (ownerType.is("org.apache.logging.log4j.core.util.Assert") && "requireNonNull".equals(symbol.name()))
+      || (ownerType.is("org.springframework.util.Assert") && ("notNull".equals(symbol.name()) || "notEmpty".equals(symbol.name())));
   }
 
   @CheckForNull
@@ -132,9 +164,17 @@ public class BehaviorCache {
    * @return the behavior corresponding to that symbol.
    */
   private static MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
+    return createRequireNullnessBehavior(symbol, false);
+  }
+
+  private static MethodBehavior createRequireNullBehavior(Symbol.MethodSymbol symbol) {
+    return createRequireNullnessBehavior(symbol, true);
+  }
+
+  private static MethodBehavior createRequireNullnessBehavior(Symbol.MethodSymbol symbol, boolean mustBeNull) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield happyYield = new HappyPathYield(behavior);
-    happyYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
+    happyYield.parametersConstraints.add(pmapForConstraint(mustBeNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL));
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
       happyYield.parametersConstraints.add(PCollections.emptyMap());
     }
@@ -142,7 +182,7 @@ public class BehaviorCache {
     behavior.addYield(happyYield);
 
     ExceptionalYield exceptionalYield = new ExceptionalYield(behavior);
-    exceptionalYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
+    exceptionalYield.parametersConstraints.add(pmapForConstraint(mustBeNull ? ObjectConstraint.NOT_NULL : ObjectConstraint.NULL));
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
       exceptionalYield.parametersConstraints.add(PCollections.emptyMap());
     }
@@ -158,7 +198,7 @@ public class BehaviorCache {
    * @return the behavior corresponding to the symbol passed as parameter.
    */
   private static MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
-    boolean isNull = "isNull".equals(symbol.name());
+    boolean isNull = IS_NULL.equals(symbol.name());
 
     ObjectConstraint trueConstraint = isNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL;
     ObjectConstraint falseConstraint = isNull ? ObjectConstraint.NOT_NULL : ObjectConstraint.NULL;
@@ -193,4 +233,22 @@ public class BehaviorCache {
     behavior.completed();
     return behavior;
   }
+
+  private static MethodBehavior createCollectionUtilsBehavior(Symbol.MethodSymbol symbol) {
+    MethodBehavior behavior = new MethodBehavior(symbol);
+
+    HappyPathYield happyPathYield = new HappyPathYield(behavior);
+    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
+    happyPathYield.setResult(-1, pmapForConstraint(symbol.name().contains("Not") ? BooleanConstraint.FALSE : BooleanConstraint.TRUE));
+    behavior.addYield(happyPathYield);
+
+    happyPathYield = new HappyPathYield(behavior);
+    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
+    happyPathYield.setResult(-1, PCollections.emptyMap());
+    behavior.addYield(happyPathYield);
+
+    behavior.completed();
+    return behavior;
+  }
+
 }
