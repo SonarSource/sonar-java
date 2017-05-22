@@ -77,9 +77,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, LockConstraint.LOCKED));
+        return ImmutableList.of(programState.addConstraintTransitively(operand, LockConstraint.LOCKED));
       } else {
-        return ImmutableList.of(programState.addConstraint(operand, LockConstraint.UNLOCKED));
+        return ImmutableList.of(programState.addConstraintTransitively(operand, LockConstraint.UNLOCKED));
       }
     }
 
@@ -152,9 +152,9 @@ public class LocksNotUnlockedCheck extends SECheck {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
         if (LOCK_METHOD_NAME.equals(methodName) || TRY_LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, LockConstraint.LOCKED);
+          programState = programState.addConstraintTransitively(symbolicValue, LockConstraint.LOCKED);
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, LockConstraint.UNLOCKED);
+          programState = programState.addConstraintTransitively(symbolicValue, LockConstraint.UNLOCKED);
         }
       }
     }
