@@ -55,5 +55,13 @@ class A {
     }
   }
 
+  private final boolean foo;
+
+  void catof5() {
+    if (foo) { // flow@catof5 {{Implies 'foo' is true.}}
+      if (foo) { } // Noncompliant [[flows=catof5]] flow@catof5 {{Expression is always true.}}
+    }
+  }
+
 }
 

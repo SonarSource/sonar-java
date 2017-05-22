@@ -459,7 +459,7 @@ public class FlowComputation {
       if (nodeTree.is(Tree.Kind.NEW_CLASS)) {
         return ImmutableList.of(location(parent, String.format("Constructor implies '%s'.", constraint.valueAsString())));
       }
-      Symbol finalField = learnedConstraintOnFinalField(nodeTree);
+      Symbol finalField = learnedConstraintOnInitializedFinalField(nodeTree);
       if (finalField != null) {
         // constraints on final fields are set on the fly by the EGW when encountering them for the first time
         String msg = String.format(IMPLIES_IS_MSG, finalField.name(), constraint.valueAsString());
@@ -479,7 +479,7 @@ public class FlowComputation {
     }
 
     @CheckForNull
-    private Symbol learnedConstraintOnFinalField(Tree syntaxTree) {
+    private Symbol learnedConstraintOnInitializedFinalField(Tree syntaxTree) {
       Symbol result = null;
       if (syntaxTree.is(Tree.Kind.IDENTIFIER)) {
         result = ((IdentifierTree) syntaxTree).symbol();
@@ -489,18 +489,18 @@ public class FlowComputation {
           result = mset.identifier().symbol();
         }
       }
-      if (isFinalFieldWithDeclaration(result)) {
+      if (isFinalFieldWithInitializer(result)) {
         return result;
       }
       return null;
     }
 
-    private boolean isFinalFieldWithDeclaration(@Nullable Symbol symbol) {
-      return symbol != null
-        && symbol.isVariableSymbol()
-        && symbol.owner().isTypeSymbol()
-        && symbol.isFinal()
-        && symbol.declaration() != null;
+    private boolean isFinalFieldWithInitializer(@Nullable Symbol symbol) {
+      if (symbol != null && symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && symbol.isFinal()) {
+        VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+        return declaration != null && declaration.initializer() != null;
+      }
+      return false;
     }
 
     private boolean isNullCheck(Tree tree) {
