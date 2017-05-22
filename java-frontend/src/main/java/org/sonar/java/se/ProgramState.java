@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProgramState {
 
@@ -257,6 +258,22 @@ public class ProgramState {
   @Override
   public String toString() {
     return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
+  }
+
+  public ProgramState addConstraintTransitively(SymbolicValue symbolicValue, Constraint constraint) {
+    final ProgramState[] ps = {addConstraint(symbolicValue, constraint)};
+    knownRelations()
+      .filter(rsv -> rsv.isEquality() && (rsv.getLeftOp() == symbolicValue || rsv.getRightOp() == symbolicValue))
+      .map(rsv -> rsv.getLeftOp() == symbolicValue ? rsv.getRightOp() : rsv.getLeftOp())
+      .forEach(sv -> ps[0] = ps[0].addConstraint(sv, constraint));
+    return ps[0];
+  }
+
+  private Stream<RelationalSymbolicValue> knownRelations() {
+    return getValuesWithConstraints(BooleanConstraint.TRUE)
+      .stream()
+      .filter(RelationalSymbolicValue.class::isInstance)
+      .map(RelationalSymbolicValue.class::cast);
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {

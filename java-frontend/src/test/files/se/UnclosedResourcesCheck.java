@@ -440,3 +440,17 @@ class B {
     return unknownMethod();
   }
 }
+
+
+class Trans {
+  void transitive(FileInputStream param) {
+    FileInputStream local = new FileInputStream("foo");
+    try {
+      if (param == local) {
+
+      }
+    } finally {
+      local.close();
+    }
+  }
+}
