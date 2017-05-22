@@ -126,3 +126,6 @@ class IncompleteSerializableMethods2 implements Serializable {
   private void writeObject(java.io.ObjectOutputStream out) throws java.lang.ClassCastException {} // wrong thrown type
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {}
 }
+public class MyServlet extends javax.servlet.http.HttpServlet {
+  private Map<String, String> nok1 = new MyNonSerializableMap<>();
+}
