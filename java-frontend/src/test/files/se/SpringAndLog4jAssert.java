@@ -20,4 +20,15 @@ class SpringAndLog4jAssert {
     Assert.notNull(o, "");
     o.toString();
   }
+  void fun4() {
+    List<String> o = null;
+    Assert.notEmpty(o);
+    o.toString();
+  }
+  void fun4() {
+    Object o = null;
+    Object b = new Object();
+    Assert.isNull(b);
+    o.toString();
+  }
 }
