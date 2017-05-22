@@ -130,7 +130,7 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void reportIssue(JavaFileScannerContext.Location location) {
-    String message = "Close this \"" + name(location.syntaxNode) + "\".";
+    String message = "Close this \"" + name(location.syntaxNode) + "\" in a \"finally\" clause.";
     reportIssue(location.syntaxNode, message);
   }
 
