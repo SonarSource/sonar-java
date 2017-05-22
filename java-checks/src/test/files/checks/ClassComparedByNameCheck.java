@@ -10,6 +10,8 @@ class A {
 
       StackTraceElement element = getElement();
       A.class.getSimpleName().equals(element.getClassName()); // Compliant
+      Class valueClass;
+      if (List.class.getName().equals(valueClass.getName())); // Noncompliant {{Use "isAssignableFrom" instead.}}
     }
 
     StackTraceElement getElement() {

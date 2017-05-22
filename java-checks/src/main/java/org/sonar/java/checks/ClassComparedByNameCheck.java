@@ -49,12 +49,22 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     }
     expressionsToCheck.add(mit.arguments().get(0));
 
-    ClassGetNameDetector visitor = new ClassGetNameDetector();
+    boolean useAssignableMessage = expressionsToCheck.size() > 1;
+    boolean useClassGetName = false;
+    boolean useStackTraceElementGetClassName = false;
     for (ExpressionTree expression : expressionsToCheck) {
+      ClassGetNameDetector visitor = new ClassGetNameDetector();
       expression.accept(visitor);
+      useAssignableMessage &= visitor.useClassGetName;
+      useClassGetName |= visitor.useClassGetName;
+      useStackTraceElementGetClassName |= visitor.useStackTraceElementGetClassName;
     }
-    if (visitor.useClassGetName && !visitor.useStackTraceElementGetClassName) {
-      reportIssue(mit, "Use an \"instanceof\" comparison instead.");
+    if (useClassGetName && !useStackTraceElementGetClassName) {
+      String message = "Use an \"instanceof\" comparison instead.";
+      if(useAssignableMessage) {
+        message = "Use \"isAssignableFrom\" instead.";
+      }
+      reportIssue(mit, message);
     }
   }
 
