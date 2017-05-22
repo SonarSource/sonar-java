@@ -20,8 +20,6 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
@@ -39,6 +37,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 @Rule(key = "S1948")
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
@@ -53,7 +54,9 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return;
     }
     ClassTree classTree = (ClassTree) tree;
-    if (isSerializable(classTree) && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)) {
+    if (isSerializable(classTree)
+      && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)
+      && !classTree.symbol().type().isSubtypeOf("javax.servlet.http.HttpServlet")) {
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
           checkVariableMember((VariableTree) member);
