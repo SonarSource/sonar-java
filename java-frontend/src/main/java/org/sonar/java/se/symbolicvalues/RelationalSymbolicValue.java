@@ -430,7 +430,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     }
   }
 
-  private boolean isEquality() {
+  public boolean isEquality() {
     return kind == Kind.EQUAL || kind == Kind.METHOD_EQUALS;
   }
 

@@ -159,13 +159,13 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       if (target != null) {
         CustomResourceConstraint oConstraint = programState.getConstraint(target, CustomResourceConstraint.class);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), CLOSED);
+          programState = programState.addConstraintTransitively(target.wrappedValue(), CLOSED);
         }
       }
     }
 
     protected void openResource(SymbolicValue sv) {
-      programState = programState.addConstraint(sv, OPENED);
+      programState = programState.addConstraintTransitively(sv, OPENED);
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {
