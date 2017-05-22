@@ -51,7 +51,7 @@ public class BehaviorCache {
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(symbol)) {
-      if (isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol) || isLog4jOrSpringAssertNotNull(symbol)) {
+      if (isRequireNonNullMethod(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
       } else if (isObjectsNullMethod(symbol)) {
         behaviors.put(symbol, createIsNullBehavior(symbol));
@@ -72,6 +72,10 @@ public class BehaviorCache {
       }
     }
     return behaviors.get(symbol);
+  }
+
+  private static boolean isRequireNonNullMethod(Symbol.MethodSymbol symbol) {
+    return isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol) || isLog4jOrSpringAssertNotNull(symbol);
   }
 
   private static boolean isValidateMethod(Symbol.MethodSymbol symbol) {
