@@ -12,14 +12,14 @@ public class JdbcSample {
   }
   
   public void unclosedConnection(String url) {
-    Connection connection = DriverManager.getConnection(url); // Noncompliant {{Close this "Connection".}}
-    Statement statement = connection.createStatement(); // Noncompliant {{Close this "Statement".}}
+    Connection connection = DriverManager.getConnection(url); // Noncompliant {{Close this "Connection" in a "finally" clause.}}
+    Statement statement = connection.createStatement(); // Noncompliant {{Close this "Statement" in a "finally" clause.}}
   }
   
   public void unclosedResultSet(String url, String query) {
     try (Connection connection = DriverManager.getConnection(url);) {
-      Statement statement = connection.createStatement(); // Noncompliant {{Close this "Statement".}}
-      ResultSet result = statement.executeQuery(query); // Noncompliant {{Close this "ResultSet".}}
+      Statement statement = connection.createStatement(); // Noncompliant {{Close this "Statement" in a "finally" clause.}}
+      ResultSet result = statement.executeQuery(query); // Noncompliant {{Close this "ResultSet" in a "finally" clause.}}
       String name = result.getString(0);
     }
   }
@@ -55,7 +55,7 @@ public class JdbcSample {
       try (Statement statement = connection.createStatement();) {
         boolean hasResultSets = statement.execute(query);
         while (hasResultSets) {
-          ResultSet result = statement.getResultSet(); // Noncompliant {{Close this "ResultSet".}}
+          ResultSet result = statement.getResultSet(); // Noncompliant {{Close this "ResultSet" in a "finally" clause.}}
           String name = result.getString(0);
           hasResultSets = statement.getMoreResults();
         }
