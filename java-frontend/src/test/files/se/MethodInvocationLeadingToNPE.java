@@ -11,7 +11,7 @@ class A {
   }
 
   void foo2(Object o) {
-    if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' can be null.}}
+    if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' is null.}}
       A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}  flow@foo2 [[order=2]] {{'o' is passed to 'npeIfNull()'.}}
     }
 
@@ -34,7 +34,7 @@ class A {
   }
 
   void foo5(Object o) {
-    if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' can be null.}}
+    if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' is null.}}
       nullable(o); // Noncompliant [[flows=foo5]] [[sc=7;ec=15]] {{"NullPointerException" will be thrown when invoking method "nullable()".}} flow@foo5 [[order=2]] {{'o' is passed to 'nullable()'.}}
     }
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde nullable()

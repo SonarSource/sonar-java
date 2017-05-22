@@ -10,7 +10,7 @@ class A {
 
   void combined(Object a) {
     Object b = new Object();
-    if (a == null) { // flow@comb {{Implies 'a' can be null.}}
+    if (a == null) { // flow@comb {{Implies 'a' is null.}}
       b = a; // flow@comb {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }

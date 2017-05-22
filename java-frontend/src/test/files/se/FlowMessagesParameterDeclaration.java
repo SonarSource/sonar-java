@@ -45,7 +45,7 @@ abstract class A {
    * no nullness annotation, constraint learn on path
    */
   public void bar(@MyAnnotation Object obj) {
-    if (obj == null) { // flow@paramWithAnnotation {{Implies 'obj' can be null.}}
+    if (obj == null) { // flow@paramWithAnnotation {{Implies 'obj' is null.}}
       // Noncompliant@+1 [[flows=paramWithAnnotation]] {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
       obj.toString(); // flow@paramWithAnnotation {{'obj' is dereferenced.}}
     }

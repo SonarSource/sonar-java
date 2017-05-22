@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -68,6 +69,16 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
       result.add(rightSymbol);
     }
     return result;
+  }
+
+  @CheckForNull
+  public Symbol leftSymbol() {
+    return leftSymbol;
+  }
+
+  @CheckForNull
+  public Symbol rightSymbol() {
+    return rightSymbol;
   }
 
   @Override

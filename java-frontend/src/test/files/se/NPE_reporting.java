@@ -32,14 +32,14 @@ class A {
   }
 
   void relationshipLearning(Object a) {
-    if (a == null) { //  flow@rela {{Implies 'a' can be null.}}
+    if (a == null) { //  flow@rela {{Implies 'a' is null.}}
       a.toString(); // Noncompliant [[flows=rela]] flow@rela {{'a' is dereferenced.}}
     }
   }
 
   void combined(Object a) {
     Object b = new Object();
-    if (a == null) { // flow@comb {{Implies 'a' can be null.}}
+    if (a == null) { // flow@comb {{Implies 'a' is null.}}
       b = a; // flow@comb {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }
@@ -56,7 +56,7 @@ class A {
   }
 
   void recursiveRelation(Object a, Object b) {
-    if ((a == null) == true) { // flow@rec {{Implies 'a' is null.}}
+    if ((a == null) == true) { // flow@rec {{Implies 'a' can be null.}}
       b = a; // flow@rec {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=rec]] flow@rec {{'b' is dereferenced.}}
     }

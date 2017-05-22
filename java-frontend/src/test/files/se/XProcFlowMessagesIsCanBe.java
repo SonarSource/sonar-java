@@ -1,5 +1,3 @@
-import javax.annotation.CheckForNull;
-
 abstract class A {
 
   void foo(A a) {
@@ -37,6 +35,5 @@ abstract class A {
   }
 
   int b;
-
   abstract void doSomething();
 }
