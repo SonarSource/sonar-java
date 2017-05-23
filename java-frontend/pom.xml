@@ -202,6 +202,11 @@
                   <artifactId>spring-core</artifactId>
                   <version>4.3.8.RELEASE</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.junit.jupiter</groupId>
+                  <artifactId>junit-jupiter-api</artifactId>
+                  <version>5.0.0-M4</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
