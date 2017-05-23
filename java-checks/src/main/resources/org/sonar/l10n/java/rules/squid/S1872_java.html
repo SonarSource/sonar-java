@@ -1,7 +1,8 @@
 <p>There is no requirement that class names be unique, only that they be unique within a package. Therefore trying to determine an object's type based
 on its class name is an exercise fraught with danger. One of those dangers is that a malicious user will send objects of the same name as the trusted
-class and thereby gain trusted access. </p>
-<p>Instead, the <code>instanceof</code> operator should be used to check the object's underlying type.</p>
+class and thereby gain trusted access.</p>
+<p>Instead, the <code>instanceof</code> operator or the <code>Class.isAssignableFrom()</code> method should be used to check the object's underlying
+type.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 package computer;
@@ -16,6 +17,14 @@ class Store {
     if ("Pear".equals(item.getClass().getSimpleName())) {  // Noncompliant
       return true;  // Results in throwing away week-old computers
     }
+    return false;
+  }
+
+  public boolean isList(Class&lt;T&gt; valueClass) {
+    if (List.class.getName().equals(valueClass.getName())) {  // Noncompliant
+      return true;
+    }
+    return false;
   }
 }
 </pre>
@@ -27,6 +36,14 @@ class Store {
     if (item instanceof food.Pear) {
       return true;
     }
+    return false;
+  }
+
+  public boolean isList(Class&lt;T&gt; valueClass) {
+    if (valueClass.isAssignableFrom(List.class)) {
+      return true;
+    }
+    return false;
   }
 }
 </pre>

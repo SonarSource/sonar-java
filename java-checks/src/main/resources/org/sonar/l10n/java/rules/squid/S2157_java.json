@@ -1,13 +1,14 @@
 {
   "title": "\"Cloneables\" should implement \"clone\"",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
   "tags": [
-    
+    "convention",
+    "api-design"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

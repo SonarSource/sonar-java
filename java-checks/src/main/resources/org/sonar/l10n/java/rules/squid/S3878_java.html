@@ -1,14 +1,21 @@
 <p>There's no point in creating an array solely for the purpose of passing it as a varargs (<code>...</code>) argument; varargs <em>is</em> an array.
-Simply pass the elements directly. They will be consolidated into an array automatically.</p>
+Simply pass the elements directly. They will be consolidated into an array automatically. Incidentally passing an array where <code>Object ...</code>
+is expected makes the intent ambiguous: Is the array supposed to be one object ora collection of objects?</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void callTheThing() {
   //...
-  doTheThing(new String[] { "s1", "s2"});  // Noncompliant
+  doTheThing(new String[] { "s1", "s2"});  // Noncompliant: unnecessary
+  doTheThing(new String[12]);  // Compliant
+  doTheOtherThing(new String[8]);  // Noncompliant: ambiguous
   // ...
 }
 
-public void doTheThing (Object ... args) {
+public void doTheThing (String ... args) {
+  // ...
+}
+
+public void doTheOtherThing(Object ... args) {
   // ...
 }
 </pre>
@@ -17,10 +24,16 @@ public void doTheThing (Object ... args) {
 public void callTheThing() {
   //...
   doTheThing("s1", "s2");
+  doTheThing(new String[12]);
+  doTheOtherThing((Object[]) new String[8]);
+   // ...
+}
+
+public void doTheThing (String ... args) {
   // ...
 }
 
-public void doTheThing (Object ... args) {
+public void doTheOtherThing(Object ... args) {
   // ...
 }
 </pre>
