@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
@@ -188,19 +187,36 @@ public class FlowComputation {
   }
 
   private static class SameConstraints {
-    private final Map<Symbol, Boolean> sameConstraintsBySymbol;
+    private final List<Class<? extends Constraint>> domains;
     private final Node node;
+    private PSet<Symbol> symbolsHavingAlwaysSameConstraints;
 
     SameConstraints(ExplodedGraph.Node startNode, PSet<Symbol> trackedSymbols, List<Class<? extends Constraint>> domains) {
+      this.domains = domains;
       this.node = startNode;
-      this.sameConstraintsBySymbol = new LinkedHashMap<>();
-      trackedSymbols.forEach(symbol -> sameConstraintsBySymbol.put(symbol, domains.stream().allMatch(domain -> sameConstraintWhenSameProgramPoint(node, symbol, domain))));
+      this.symbolsHavingAlwaysSameConstraints = PCollections.emptySet();
+
+      findSymbolsHavingAlwaysSameConstraints(trackedSymbols);
     }
 
-    SameConstraints(SameConstraints knownSameConstraints, PSet<Symbol> trackedSymbols, List<Class<? extends Constraint>> domains) {
+    SameConstraints(SameConstraints knownSameConstraints, PSet<Symbol> newTrackedSymbols) {
+      this.domains = knownSameConstraints.domains;
       this.node = knownSameConstraints.node;
-      this.sameConstraintsBySymbol = new LinkedHashMap<>(knownSameConstraints.sameConstraintsBySymbol);
-      trackedSymbols.forEach(symbol -> sameConstraintsBySymbol.putIfAbsent(symbol, domains.stream().allMatch(domain -> sameConstraintWhenSameProgramPoint(node, symbol, domain))));
+      this.symbolsHavingAlwaysSameConstraints = knownSameConstraints.symbolsHavingAlwaysSameConstraints;
+
+      findSymbolsHavingAlwaysSameConstraints(newTrackedSymbols);
+    }
+
+    private void findSymbolsHavingAlwaysSameConstraints(PSet<Symbol> trackedSymbols) {
+      trackedSymbols.forEach(symbol -> {
+        if (!symbolsHavingAlwaysSameConstraints.contains(symbol) && hasAlwaysSameConstraints(symbol)) {
+          symbolsHavingAlwaysSameConstraints = symbolsHavingAlwaysSameConstraints.add(symbol);
+        }
+      });
+    }
+
+    private boolean hasAlwaysSameConstraints(Symbol symbol) {
+      return domains.stream().allMatch(domain -> sameConstraintWhenSameProgramPoint(node, symbol, domain));
     }
 
     private static boolean sameConstraintWhenSameProgramPoint(ExplodedGraph.Node currentNode, Symbol symbol, Class<? extends Constraint> domain) {
@@ -214,7 +230,7 @@ public class FlowComputation {
         return false;
       }
       Collection<Node> siblingNodes = currentNode.siblings();
-      return siblingNodes.isEmpty() || siblingNodes.stream()
+      return siblingNodes.stream()
         .map(node -> node.programState)
         .allMatch(ps -> {
           SymbolicValue siblingSV = ps.getValue(symbol);
@@ -226,8 +242,8 @@ public class FlowComputation {
         });
     }
 
-    public Boolean hasAlwaysSameConstraint(Symbol symbol) {
-      return BooleanUtils.isTrue(sameConstraintsBySymbol.get(symbol));
+    public boolean hasAlwaysSameConstraint(@Nullable Symbol symbol) {
+      return symbol != null && symbolsHavingAlwaysSameConstraints.contains(symbol);
     }
   }
 
@@ -278,7 +294,7 @@ public class FlowComputation {
       flowBuilder.addAll(laFlow);
 
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
-      SameConstraints newSameConstaints = new SameConstraints(sameConstraints, newTrackSymbols, domains);
+      SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
@@ -294,7 +310,7 @@ public class FlowComputation {
       Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
-        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstaints, f, endOfPath));
+        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, f, endOfPath));
     }
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
