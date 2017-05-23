@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -31,17 +31,19 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
 @Rule(key = "S2184")
-public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
+public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
     .put(Tree.Kind.PLUS, "addition")
@@ -49,45 +51,55 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     .put(Tree.Kind.MULTIPLY, "multiplication")
     .put(Tree.Kind.DIVIDE, "division")
     .build();
+  private JavaFileScannerContext context;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD, Tree.Kind.DIVIDE);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    if(context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      Type varType;
-      ExpressionTree expr;
-      switch (tree.kind()) {
-        case ASSIGNMENT:
-          AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-          varType = aet.symbolType();
-          expr = aet.expression();
-          checkExpression(varType, expr);
-          break;
-        case VARIABLE:
-          VariableTree variableTree = (VariableTree) tree;
-          varType = variableTree.type().symbolType();
-          expr = variableTree.initializer();
-          checkExpression(varType, expr);
-          break;
-        case METHOD_INVOCATION:
-          checkMethodInvocationArgument((MethodInvocationTree) tree);
-          break;
-        case METHOD:
-          checkMethodTree((MethodTreeImpl) tree);
-          break;
-        case DIVIDE:
-          BinaryExpressionTree binaryExpr = (BinaryExpressionTree) tree;
-          if (isIntOrLong(binaryExpr.symbolType())) {
-            checkIntegerDivisionInsideFloatingPointExpression(binaryExpr);
-          }
-          break;
-        default:
-          throw new IllegalArgumentException("Tree " + tree.kind() + " not handled.");
-      }
+  public void visitAssignmentExpression(AssignmentExpressionTree aet) {
+    if(aet.is(Tree.Kind.ASSIGNMENT)) {
+      Type varType = aet.symbolType();
+      ExpressionTree expr = aet.expression();
+      checkExpression(varType, expr);
+    }
+    super.visitAssignmentExpression(aet);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    Type varType = tree.type().symbolType();
+    checkExpression(varType, tree.initializer());
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    checkMethodInvocationArgument(tree);
+    super.visitMethodInvocation(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      checkMethodTree((MethodTreeImpl) tree);
+    }
+    super.visitMethod(tree);
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    boolean continueVisit = true;
+    if (tree.is(Tree.Kind.DIVIDE) && isIntOrLong(tree.symbolType())) {
+      continueVisit = checkIntegerDivisionInsideFloatingPointExpression(tree);
+    }
+    if (continueVisit) {
+      super.visitBinaryExpression(tree);
     }
   }
 
@@ -123,7 +135,8 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
       if (varType.isPrimitive(Type.Primitives.LONG) && expr.symbolType().isPrimitive(Type.Primitives.LONG)) {
         return;
       }
-      reportIssue(binaryExpressionTree.operatorToken(), "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
+      context.reportIssue(this,
+        binaryExpressionTree.operatorToken(), "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
     }
   }
 
@@ -152,16 +165,17 @@ public class CastArithmeticOperandCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkIntegerDivisionInsideFloatingPointExpression(BinaryExpressionTree integerDivision) {
+  private boolean checkIntegerDivisionInsideFloatingPointExpression(BinaryExpressionTree integerDivision) {
     Tree parent = integerDivision.parent();
     while (parent instanceof ExpressionTree) {
       ExpressionTree expressionTree = (ExpressionTree) parent;
       if (isFloatingPoint(expressionTree.symbolType())) {
-        reportIssue(integerDivision, "Cast one of the operands of this integer division to a \"double\".");
-        break;
+        context.reportIssue(this, integerDivision, "Cast one of the operands of this integer division to a \"double\".");
+        return false;
       }
       parent = expressionTree.parent();
     }
+    return true;
   }
 
   private static boolean isFloatingPoint(Type exprType) {
