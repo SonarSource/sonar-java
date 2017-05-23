@@ -7,6 +7,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.junit.jupiter.api.Test;
+
 class A extends junit.framework.TestCase {
   void testFoo() {
   }
@@ -154,4 +160,20 @@ public class MyTheorieClassTest {
   public void test_method() {
 
   }
+}
+
+public class Junit5MetaAnnotationTest {
+
+  @Test
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.RUNTIME)
+  public static @interface Bar {
+
+  }
+
+  @Bar
+  public void test() {
+
+  }
+
 }

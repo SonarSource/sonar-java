@@ -52,7 +52,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   };
 
   private static boolean isTestAnnotation(Type type) {
-    return type.is("org.junit.Test") || type.is("org.testng.annotations.Test") || type.is("org.junit.jupiter.api.Test");
+    return type.is("org.junit.Test") || type.is("org.testng.annotations.Test") || type.is("org.junit.jupiter.api.Test")
+      || type.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.Test");
   }
 
   @Override
