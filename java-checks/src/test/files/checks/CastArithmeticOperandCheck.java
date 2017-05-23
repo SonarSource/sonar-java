@@ -20,6 +20,7 @@ class A {
     double tst = 1 | 2; // Compliant
     unknownMethod(1 + 2); // Compliant
     longMethod(12 / 7, 12 / 7);   // Compliant dividing two ints into and widening into a long can't cause any harm
+    double d2  = 1 / 2 / 2 * 0.5; // Noncompliant
   }
 
 
