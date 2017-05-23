@@ -51,7 +51,11 @@ class A {
     } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       throw new IllegalStateException("foo", e);
-    }
+    } catch (ThreadDeath threadDeath) {
+      throw threadDeath;
+    } catch (ThreadDeath threadDeath) { // Noncompliant {{Either re-interrupt this method or rethrow the "ThreadDeath".}}
+      throw new java.io.IOException();
+  }
 }
 
   public void run () {

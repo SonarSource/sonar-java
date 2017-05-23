@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -63,11 +64,12 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     withinInterruptingFinally.addFirst(isFinallyInterrupting(tryStatementTree.finallyBlock()));
     for (CatchTree catchTree : tryStatementTree.catches()) {
-      if(catchTree.parameter().symbol().type().is("java.lang.InterruptedException")) {
+      Type catchType = catchTree.parameter().symbol().type();
+      if(catchType.is("java.lang.InterruptedException") || catchType.is("java.lang.ThreadDeath")) {
         BlockVisitor blockVisitor = new BlockVisitor(catchTree.parameter().symbol());
         catchTree.block().accept(blockVisitor);
         if(!blockVisitor.threadInterrupted && !isWithinInterruptingFinally()) {
-          reportIssue(catchTree.parameter(), "Either re-interrupt this method or rethrow the \"InterruptedException\".");
+          reportIssue(catchTree.parameter(), "Either re-interrupt this method or rethrow the \""+catchType.name()+"\".");
         }
       }
     }
