@@ -261,12 +261,15 @@ public class ProgramState {
   }
 
   public ProgramState addConstraintTransitively(SymbolicValue symbolicValue, Constraint constraint) {
-    final ProgramState[] ps = {addConstraint(symbolicValue, constraint)};
-    knownRelations()
+    List<SymbolicValue> transitiveSymbolicValues = knownRelations()
       .filter(rsv -> rsv.isEquality() && (rsv.getLeftOp() == symbolicValue || rsv.getRightOp() == symbolicValue))
       .map(rsv -> rsv.getLeftOp() == symbolicValue ? rsv.getRightOp() : rsv.getLeftOp())
-      .forEach(sv -> ps[0] = ps[0].addConstraint(sv, constraint));
-    return ps[0];
+      .collect(Collectors.toList());
+    ProgramState ps = addConstraint(symbolicValue, constraint);
+    for (SymbolicValue sv : transitiveSymbolicValues) {
+      ps = ps.addConstraint(sv, constraint);
+    }
+    return ps;
   }
 
   private Stream<RelationalSymbolicValue> knownRelations() {
