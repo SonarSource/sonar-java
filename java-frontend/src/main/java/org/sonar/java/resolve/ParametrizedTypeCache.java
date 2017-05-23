@@ -31,6 +31,7 @@ public class ParametrizedTypeCache {
 
   private Map<JavaSymbol, Map<TypeSubstitution, ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
   private Map<JavaType, Map<WildCardType.BoundType, WildCardType>> wildcardCache = Maps.newHashMap();
+  private TypeSubstitutionSolver typeSubstitutionSolver;
 
   public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
     if (symbol.getType().isUnknown()) {
@@ -45,7 +46,7 @@ public class ParametrizedTypeCache {
       newSubstitution = identitySubstitution(symbol.typeVariableTypes);
     }
     if (typeCache.get(symbol).get(newSubstitution) == null) {
-      typeCache.get(symbol).put(newSubstitution, new ParametrizedTypeJavaType(symbol, newSubstitution));
+      typeCache.get(symbol).put(newSubstitution, new ParametrizedTypeJavaType(symbol, newSubstitution, typeSubstitutionSolver));
     }
     return typeCache.get(symbol).get(newSubstitution);
   }
@@ -72,4 +73,7 @@ public class ParametrizedTypeCache {
     return wildcardType;
   }
 
+  public void setTypeSubstitutionSolver(TypeSubstitutionSolver typeSubstitutionSolver) {
+    this.typeSubstitutionSolver = typeSubstitutionSolver;
+  }
 }

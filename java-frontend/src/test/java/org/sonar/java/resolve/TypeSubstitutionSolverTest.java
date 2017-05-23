@@ -117,7 +117,7 @@ public class TypeSubstitutionSolverTest {
     aSubs.add(k, T);
     JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", Symbols.rootPackage);
     // A<{K=T}>
-    ParametrizedTypeJavaType aRoot = new ParametrizedTypeJavaType(aSymbol, aSubs);
+    ParametrizedTypeJavaType aRoot = new ParametrizedTypeJavaType(aSymbol, aSubs, typeSubstitutionSolver);
 
     // A<...n-1...<A<T>>...>
     JavaType last = aRoot;
@@ -125,7 +125,7 @@ public class TypeSubstitutionSolverTest {
     for (int i = 0; i < n; i++) {
       TypeSubstitution newSubs = new TypeSubstitution();
       newSubs.add(k, last);
-      last = new ParametrizedTypeJavaType(aSymbol, newSubs);
+      last = new ParametrizedTypeJavaType(aSymbol, newSubs, typeSubstitutionSolver);
     }
 
     List<JavaType> formals = Lists.newArrayList(last);

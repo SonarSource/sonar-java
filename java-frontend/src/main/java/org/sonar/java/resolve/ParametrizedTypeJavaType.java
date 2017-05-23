@@ -28,14 +28,15 @@ import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
 
-  public static TypeSubstitutionSolver typeSubstitutionSolver;
+  private final TypeSubstitutionSolver typeSubstitutionSolver;
   final TypeSubstitution typeSubstitution;
   final JavaType rawType;
 
-  ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
+  public ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution, TypeSubstitutionSolver typeSubstitutionSolver) {
     super(PARAMETERIZED, symbol);
     this.rawType = symbol.getType();
     this.typeSubstitution = typeSubstitution;
+    this.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 
   @Override

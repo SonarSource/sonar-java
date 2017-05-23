@@ -121,7 +121,7 @@ public class JavaTypeTest {
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", new JavaSymbol.PackageJavaSymbol("org.foo.bar", null));
     TypeSubstitution typeSubstitution = new TypeSubstitution();
     typeSubstitution.add((TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol).type, typeSymbol.type);
-    ParametrizedTypeJavaType parametrizedType = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
+    ParametrizedTypeJavaType parametrizedType = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution, null);
 
     TypeVariableJavaType typeVariableType = (TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("X", typeSymbol).type;
     typeVariableType.bounds = ImmutableList.<JavaType>of(parametrizedType);
@@ -234,13 +234,13 @@ public class JavaTypeTest {
     TypeSubstitution typeSubstitution = new TypeSubstitution();
     typeSubstitution.add(typeVariableType, classType);
 
-    ParametrizedTypeJavaType ptt = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
+    ParametrizedTypeJavaType ptt = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution, null);
     assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);
     assertThat(ptt.substitution(new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("F", typeSymbol)))).isNull();
     assertThat(ptt.typeParameters()).hasSize(1);
     assertThat(ptt.typeParameters()).contains(typeVariableType);
 
-    ptt = new ParametrizedTypeJavaType(typeSymbol, null);
+    ptt = new ParametrizedTypeJavaType(typeSymbol, null, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
 

@@ -198,7 +198,7 @@ public class TypeSubstitutionTest {
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(0, name, packageJavaSymbol);
     symbol.addTypeParameter(k);
     TypeSubstitution newSubstitution = new TypeSubstitution().add(k, substitutedType);
-    return new ParametrizedTypeJavaType(symbol, newSubstitution);
+    return new ParametrizedTypeJavaType(symbol, newSubstitution, null);
   }
 
 }

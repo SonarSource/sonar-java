@@ -71,7 +71,6 @@ public class Resolve {
     this.symbols = symbols;
     this.bytecodeCompleter = bytecodeCompleter;
     this.typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
-    ParametrizedTypeJavaType.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 
   @Nullable
