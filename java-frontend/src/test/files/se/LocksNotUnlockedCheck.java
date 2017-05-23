@@ -311,9 +311,9 @@ public class MyClass {
     }
   };
 
-  
+
   private static class MyLock extends ReentrantLock {
-    
+
     @Override
     public void lock() {
       try {
@@ -332,6 +332,17 @@ public class MyClass {
       try {
         if (l1 == local) {
           return null;
+        }
+      } finally {
+        local.unlock();
+      }
+    }
+
+    void t2(Lock local) {
+      Lock l1 = list.get(0);
+      try {
+        if (l1 == local) {
+          l1.lock();
         }
       } finally {
         local.unlock();

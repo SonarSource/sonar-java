@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ProgramState.Pop;
+import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -224,5 +225,18 @@ public class ProgramStateTest {
     ps2 = ps2.stackValue(sv, symbol);
     assertThat(ps1).isEqualTo(ps2);
     assertThat(ImmutableSet.of(ps1, ps2)).hasSize(1);
+  }
+
+  @Test
+  public void test_adding_constraint_transitively() throws Exception {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    RelationalSymbolicValue relSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
+    SymbolicValueTestUtil.computedFrom(relSV, sv1, sv2);
+    ps = ps.addConstraint(relSV, BooleanConstraint.TRUE);
+    UnclosedResourcesCheck.ResourceConstraint constraint = UnclosedResourcesCheck.ResourceConstraint.OPEN;
+    ps = ps.addConstraintTransitively(sv1, constraint);
+    assertThat(ps.getConstraint(sv2, constraint.getClass())).isEqualTo(constraint);
   }
 }

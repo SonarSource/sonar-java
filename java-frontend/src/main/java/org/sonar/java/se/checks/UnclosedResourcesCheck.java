@@ -346,7 +346,7 @@ public class UnclosedResourcesCheck extends SECheck {
         if (constrainedValue instanceof ResourceWrapperSymbolicValue) {
           ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue;
           if (value.equals(rValue.dependent)) {
-            programState = programState.addConstraint(rValue, CLOSED);
+            programState = programState.addConstraintTransitively(rValue, CLOSED);
           }
         }
       }
@@ -364,7 +364,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (toClose != null) {
         ResourceConstraint oConstraint = programState.getConstraint(toClose, ResourceConstraint.class);
         if (oConstraint != null) {
-          programState = programState.addConstraint(toClose, CLOSED);
+          programState = programState.addConstraintTransitively(toClose, CLOSED);
         }
       }
     }
@@ -381,7 +381,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
         if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraint(instanceValue, OPEN);
+          programState = programState.addConstraintTransitively(instanceValue, OPEN);
         }
       }
     }
@@ -398,7 +398,7 @@ public class UnclosedResourcesCheck extends SECheck {
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
           SymbolicValue peekedValue = programState.peekValue();
-          programState = programState.addConstraint(peekedValue, OPEN);
+          programState = programState.addConstraintTransitively(peekedValue, OPEN);
           if(isJdbcResourceCreation(targetExpression)) {
             programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
           }

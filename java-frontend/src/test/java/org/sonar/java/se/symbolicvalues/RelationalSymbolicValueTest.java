@@ -417,4 +417,15 @@ public class RelationalSymbolicValueTest {
         throw new IllegalStateException();
     }
   }
+
+  @Test
+  public void test_equality() throws Exception {
+    RelationalSymbolicValue equalRSV = relationalSV(Tree.Kind.EQUAL_TO, a, b);
+    assertThat(equalRSV.isEquality()).isTrue();
+    RelationalSymbolicValue methodEqualsRSV = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
+    assertThat(methodEqualsRSV.isEquality()).isTrue();
+    Stream.of(Tree.Kind.NOT_EQUAL_TO, Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
+      .map(k -> relationalSV(k, a, b))
+      .forEach(sv -> assertThat(sv.isEquality()).isFalse());
+  }
 }

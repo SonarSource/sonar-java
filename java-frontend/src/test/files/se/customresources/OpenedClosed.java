@@ -41,5 +41,16 @@ public class GenericResource {
   public void closeResource(String name) {}
   
   public void closeResource(int id) {}
-  
+
+  void transitive(String name, GenericResource param) {
+    GenericResource local = new GenericResource();
+    try {
+      if (local == param) {
+        param.open(name);
+      }
+    } finally {
+      local.closeResource(name);
+    }
+  }
+
 }
