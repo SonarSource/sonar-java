@@ -117,6 +117,11 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void xproc_flow_messages_constraint_is_VS_can_be() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessagesIsCanBe.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
+  }
+
+  @Test
   public void test_flows_with_single_msg_not_reported() throws Exception {
     JavaCheckVerifier noFlowsVerifier = new JavaCheckVerifier() {
       @Override

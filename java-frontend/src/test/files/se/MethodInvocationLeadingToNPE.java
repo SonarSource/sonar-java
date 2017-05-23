@@ -11,7 +11,7 @@ class A {
   }
 
   void foo2(Object o) {
-    if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' can be null.}}
+    if (o == null) { // flow@foo2 [[order=1]] {{Implies 'o' is null.}}
       A.npeIfNull(o); // Noncompliant [[flows=foo2]] [[sc=9;ec=18]] {{"NullPointerException" will be thrown when invoking method "npeIfNull()".}}  flow@foo2 [[order=2]] {{'o' is passed to 'npeIfNull()'.}}
     }
 
@@ -34,7 +34,7 @@ class A {
   }
 
   void foo5(Object o) {
-    if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' can be null.}}
+    if (o == null) { // flow@foo5 [[order=1]] {{Implies 'o' is null.}}
       nullable(o); // Noncompliant [[flows=foo5]] [[sc=7;ec=15]] {{"NullPointerException" will be thrown when invoking method "nullable()".}} flow@foo5 [[order=2]] {{'o' is passed to 'nullable()'.}}
     }
     o.toString(); // Compliant - can not be reached with 'o 'being NULL, as the NPE is triggered insde nullable()
@@ -173,9 +173,9 @@ class D {
 
 abstract class E {
   public Object myMethod(String line, String value) {
-    Object o = null; // flow@myMethod [[order=1]] {{'o' is assigned null.}}
+    Object o = null; // flow@myMethod [[order=1]] {{Implies 'o' is null.}}
     String s = line.length() > 0 ? value : null; // flow@myMethod [[order=2]] {{Implies 's' has the same value as 'value'.}}
-    if (s == null || s.startsWith("key")) { // flow@myMethod [[order=3]] {{Implies 's' is non-null.}}
+    if (s == null || s.startsWith("key")) { // flow@myMethod [[order=3]] {{Implies 's' is not null.}}
       o = new Object();
     } else {
       doSomething(o, s); // Noncompliant [[flows=myMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myMethod [[order=4]] {{'o' is passed to 'doSomething()'.}}
@@ -185,9 +185,9 @@ abstract class E {
 
   Object field;
   public Object myOtherMethod(String line, String value) {
-    field = null; // flow@myOtherMethod [[order=1]] {{'field' is assigned null.}}
+    field = null; // flow@myOtherMethod [[order=1]] {{Implies 'field' is null.}}
     String s = line.length() > 0 ? value : null; // flow@myOtherMethod [[order=2]] {{Implies 's' has the same value as 'value'.}}
-    if (s == null || s.startsWith("key")) { // flow@myOtherMethod [[order=3]] {{Implies 's' is non-null.}}
+    if (s == null || s.startsWith("key")) { // flow@myOtherMethod [[order=3]] {{Implies 's' is not null.}}
       this.field = new Object();
     } else {
       doSomething(this.field, s); // Noncompliant [[flows=myOtherMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myOtherMethod [[order=4;sc=24;ec=29]] {{'field' is passed to 'doSomething()'.}}
@@ -196,7 +196,7 @@ abstract class E {
   }
 
   public void myAlternativeMethod(String line) {
-    String s = line.length() > 0 ? line : line; // flow@myAlternativeMethod [[order=1]] {{Implies 'line' is non-null.}} flow@myAlternativeMethod [[order=2]] {{Implies 's' has the same value as 'line'.}}
+    String s = line.length() > 0 ? line : line; // flow@myAlternativeMethod [[order=1]] {{Implies 'line' is not null.}} flow@myAlternativeMethod [[order=2]] {{Implies 's' has the same value as 'line'.}}
     doSomething(getObject(), s); // Noncompliant [[flows=myAlternativeMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myAlternativeMethod [[order=3]] {{'getObject()' can return null.}} flow@myAlternativeMethod [[order=4]] {{'doSomething()' is invoked.}}
   }
 

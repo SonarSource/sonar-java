@@ -3,14 +3,14 @@ class A {
 
   void symbolSetToNull() {
     Object a = new Object();
-    a = null; // flow@npe {{'a' is assigned null.}}
+    a = null; // flow@npe {{Implies 'a' is null.}}
     a.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "a" is nullable here.}}  flow@npe {{'a' is dereferenced.}}
   }
 
 
   void combined(Object a) {
     Object b = new Object();
-    if (a == null) { // flow@comb {{Implies 'a' can be null.}}
+    if (a == null) { // flow@comb {{Implies 'a' is null.}}
       b = a; // flow@comb {{Implies 'b' has the same value as 'a'.}}
       b.toString(); // Noncompliant [[flows=comb]] flow@comb {{'b' is dereferenced.}}
     }
@@ -34,7 +34,7 @@ class A {
   void exceptions() {
     try {
       Thread.sleep(0);
-    } catch (Exception ex) { // flow@ex {{Implies 'ex' is non-null.}}
+    } catch (Exception ex) { // flow@ex {{Implies 'ex' is not null.}}
       if (ex != null) { // Noncompliant [[flows=ex]] {{Remove this expression which always evaluates to "true"}}   flow@ex {{Expression is always true.}}
         ex.getClause();
       }
@@ -42,7 +42,7 @@ class A {
   }
 
   void invocation_target(Object a) {
-    a.toString(); // flow@target {{Implies 'a' is non-null.}}
+    a.toString(); // flow@target {{Implies 'a' is not null.}}
     if (a == null) { // Noncompliant [[flows=target]] flow@target {{Expression is always false.}}
 
     }

@@ -2,9 +2,9 @@ abstract class A {
 
   void f() {
     Object a;
-    Object b = null; // flow@path2 {{'b' is assigned null.}}
+    Object b = null; // flow@path2 {{Implies 'b' is null.}}
     if (cond) {
-      a = null; // flow@path1 {{'a' is assigned null.}}
+      a = null; // flow@path1 {{Implies 'a' is null.}}
     } else {
       a = b; // flow@path2 {{Implies 'a' has the same value as 'b'.}}
     }
@@ -13,15 +13,15 @@ abstract class A {
 
   void g() {
     Object a;
-    Object b = null; // flow@p1 {{'b' is assigned null.}}
+    Object b = null; // flow@p1 {{Implies 'b' is null.}}
     if (cond) {
-      a = null; // flow@p2 {{'a' is assigned null.}}
+      a = null; // flow@p2 {{Implies 'a' is null.}}
     } else {
       a = b; // flow@p1 {{Implies 'a' has the same value as 'b'.}}
     }
     Object c;
     if (cond) {
-      c = null;  // flow@p3 {{'c' is assigned null.}}
+      c = null;  // flow@p3 {{Implies 'c' is null.}}
     } else {
       c = a; // flow@p1,p2 {{Implies 'c' has the same value as 'a'.}}
     }
@@ -44,7 +44,7 @@ abstract class A {
   void loop() {
     Object a;
     while (true) {
-      a = null; // flow@loop {{'a' is assigned null.}}
+      a = null; // flow@loop {{Implies 'a' is null.}}
       if (cond) a.toString(); // Noncompliant [[flows=loop]] flow@loop {{'a' is dereferenced.}}
     }
   }

@@ -20,7 +20,9 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,13 +38,14 @@ import java.util.Set;
 
 public class ExplodedGraph {
 
-  private Map<Node, Node> nodes = Maps.newHashMap();
+  private final Map<Node, Node> nodes = Maps.newHashMap();
+  private final Multimap<ProgramPoint, Node> nodesByProgramPoint = LinkedListMultimap.create();
 
   /**
    * Returns node associated with given (programPoint,programState) pair. If no node for this pair exists, it is created.
    */
   public Node node(ProgramPoint programPoint, @Nullable ProgramState programState) {
-    Node result = new Node(programPoint, programState);
+    Node result = new Node(programPoint, programState, this);
     Node cached = nodes.get(result);
     if (cached != null) {
       cached.isNew = false;
@@ -50,6 +53,7 @@ public class ExplodedGraph {
     }
     result.isNew = true;
     nodes.put(result, result);
+    nodesByProgramPoint.put(programPoint, result);
     return result;
   }
 
@@ -69,11 +73,13 @@ public class ExplodedGraph {
     boolean exitPath = false;
     boolean happyPath = true;
     private final int hashcode;
+    private final ExplodedGraph explodedGraph;
 
-    private Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
+    private Node(ProgramPoint programPoint, @Nullable ProgramState programState, ExplodedGraph explodedGraph) {
       Objects.requireNonNull(programPoint);
       this.programPoint = programPoint;
       this.programState = programState;
+      this.explodedGraph = explodedGraph;
       hashcode = programPoint.hashCode() * 31 + (programState == null ? 0 : programState.hashCode());
     }
 
@@ -86,6 +92,12 @@ public class ExplodedGraph {
         Preconditions.checkState(parent.programPoint.syntaxTree().is(Tree.Kind.METHOD_INVOCATION), "Yield on edge where parent is not MIT");
         edge.yields.add(methodYield);
       }
+    }
+
+    public Collection<Node> siblings() {
+      Collection<Node> collection = explodedGraph.nodesByProgramPoint.get(programPoint);
+      collection.remove(this);
+      return collection;
     }
 
     @Nullable

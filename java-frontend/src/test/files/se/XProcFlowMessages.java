@@ -5,7 +5,7 @@ import javax.annotation.CheckForNull;
  */
 abstract class A {
   void bar() {
-    A a = null;                                  // flow@flow_a1 {{'a' is assigned null.}}
+    A a = null;                                  // flow@flow_a1 {{Implies 'a' is null.}}
     // Noncompliant@+1  [[flows=flow_a1]]
     foo(a);                                      // flow@flow_a1 [[sc=9;ec=10]] {{'a' is passed to 'foo()'.}}
   }
@@ -33,7 +33,7 @@ class B {
    * method which have multiple yields having return SV with different constraints (NULL and NOT_NULL).
    */
   private B foo() {
-    B result = null; // flow@flow_b {{'result' is assigned null.}}
+    B result = null; // flow@flow_b {{Implies 'result' is null.}}
     if (field != null) {
       result = new B();
     }
@@ -60,15 +60,15 @@ class C {
   private C foo(Object o) {
     C result;
     if (o == null) {
-      result = null; // flow@flow_c1 {{'result' is assigned null.}}
+      result = null; // flow@flow_c1 {{Implies 'result' is null.}}
     } else {
-      result = null; // flow@flow_c2 {{'result' is assigned null.}}
+      result = null; // flow@flow_c2 {{Implies 'result' is null.}}
     }
     return result;
   }
 
   void bar(Object o) {
-    C c = foo(o);                                // flow@flow_c1 {{'foo()' returns null.}} flow@flow_c1 {{'c' is assigned null.}} flow@flow_c2 flow@flow_c2
+    C c = foo(o);                                // flow@flow_c1 {{'foo()' returns null.}} flow@flow_c1 {{Implies 'c' is null.}} flow@flow_c2 flow@flow_c2
     // Noncompliant@+1 [[flows=flow_c1,flow_c2]]
     if (c != null) {                             // flow@flow_c1 {{Expression is always false.}} flow@flow_c2
       c = new C();
@@ -82,7 +82,7 @@ class C {
  */
 abstract class D {
   void bar() {
-    D param = null;                              // flow@flow_d1 {{'param' is assigned null.}}
+    D param = null;                              // flow@flow_d1 {{Implies 'param' is null.}}
     // Noncompliant@+1  [[flows=flow_d1]]
     foo(param);                                  // flow@flow_d1 {{'param' is passed to 'foo()'.}}
   }
@@ -129,7 +129,7 @@ class ZeroConstraint {
   }
 
   void t() {
-    int i = zero(); // flow@zero2 {{'zero()' returns zero.}} flow@zero2 {{'i' is assigned zero.}}
+    int i = zero(); // flow@zero2 {{'zero()' returns zero.}} flow@zero2 {{Implies 'i' is zero.}}
     1 / i; // Noncompliant [[flows=zero2]] flow@zero2
   }
 }
@@ -141,20 +141,20 @@ class BooleanConstraint {
   }
 
   void f() {
-    boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{'b' is assigned false.}}
+    boolean b = sure(); // flow@bool {{'sure()' returns false.}} flow@bool {{Implies 'b' is false.}}
     if (b); // Noncompliant [[flows=bool]] flow@bool
   }
 }
 
 class FollowingReturnValue {
   private Object f() {
-    Object a = new Object(); // flow@caf {{Constructor implies 'non-null'.}} flow@caf {{'a' is assigned non-null.}}
+    Object a = new Object(); // flow@caf {{Constructor implies 'not null'.}} flow@caf {{Implies 'a' is not null.}}
     Object o = a; // flow@caf {{Implies 'o' has the same value as 'a'.}}
     return o;
   }
 
   void cat() {
-    Object o = f(); // flow@caf {{'f()' returns non-null.}} flow@caf {{'o' is assigned non-null.}}
+    Object o = f(); // flow@caf {{'f()' returns not null.}} flow@caf {{Implies 'o' is not null.}}
     // Noncompliant@+1 [[flows=caf]]
     if (o == null) { // flow@caf {{Expression is always false.}}
       o.toString();

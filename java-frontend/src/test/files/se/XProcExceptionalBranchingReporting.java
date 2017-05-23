@@ -51,7 +51,7 @@ abstract class A {
 
   void tst3(Object o) {
     if (o != null) {
-      Object o2 = returnNullIfParamNotNull(o); // flow@npe3 {{'returnNullIfParamNotNull()' returns null.}} flow@npe3 {{'o2' is assigned null.}}
+      Object o2 = returnNullIfParamNotNull(o); // flow@npe3 {{'returnNullIfParamNotNull()' returns null.}} flow@npe3 {{Implies 'o2' is null.}}
       o2.toString(); // Noncompliant [[flows=npe3]] {{A "NullPointerException" could be thrown; "o2" is nullable here.}} flow@npe3 {{'o2' is dereferenced.}}
     }
   }

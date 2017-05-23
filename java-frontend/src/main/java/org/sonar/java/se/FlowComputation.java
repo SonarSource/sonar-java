@@ -35,6 +35,7 @@ import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -43,7 +44,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -76,7 +76,7 @@ import java.util.stream.Stream;
 public class FlowComputation {
 
   private static final String IMPLIES_IS_MSG = "Implies '%s' is %s.";
-  private static final String IMPLIES_CAN_BE_NULL_MSG = "Implies '%s' can be null.";
+  private static final String IMPLIES_CAN_BE_MSG = "Implies '%s' can be %s.";
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
 
   private static final int MAX_FLOW_STEPS = 3_000_000;
@@ -155,7 +155,8 @@ public class FlowComputation {
   private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
     Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
-    node.edges().stream().flatMap(e -> startPath(e, trackedSymbols)).forEach(workList::push);
+    SameConstraints sameConstraints = new SameConstraints(node, trackedSymbols, domains);
+    node.edges().stream().flatMap(e -> startPath(e, trackedSymbols, sameConstraints)).forEach(workList::push);
     int flowSteps = 0;
     Set<ExecutionPath> visited = new HashSet<>(workList);
     while (!workList.isEmpty()) {
@@ -181,20 +182,83 @@ public class FlowComputation {
     return flows;
   }
 
-  Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols) {
-    return new ExecutionPath(null, PCollections.emptySet(), trackedSymbols, ImmutableList.of(), false).addEdge(edge);
+  Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints) {
+    return new ExecutionPath(null, PCollections.emptySet(), trackedSymbols, sameConstraints, ImmutableList.of(), false).addEdge(edge);
+  }
+
+  private static class SameConstraints {
+    private final List<Class<? extends Constraint>> domains;
+    private final Node node;
+    private PSet<Symbol> symbolsHavingAlwaysSameConstraints;
+
+    SameConstraints(ExplodedGraph.Node startNode, PSet<Symbol> trackedSymbols, List<Class<? extends Constraint>> domains) {
+      this.domains = domains;
+      this.node = startNode;
+      this.symbolsHavingAlwaysSameConstraints = PCollections.emptySet();
+
+      findSymbolsHavingAlwaysSameConstraints(trackedSymbols);
+    }
+
+    SameConstraints(SameConstraints knownSameConstraints, PSet<Symbol> newTrackedSymbols) {
+      this.domains = knownSameConstraints.domains;
+      this.node = knownSameConstraints.node;
+      this.symbolsHavingAlwaysSameConstraints = knownSameConstraints.symbolsHavingAlwaysSameConstraints;
+
+      findSymbolsHavingAlwaysSameConstraints(newTrackedSymbols);
+    }
+
+    private void findSymbolsHavingAlwaysSameConstraints(PSet<Symbol> trackedSymbols) {
+      trackedSymbols.forEach(symbol -> {
+        if (!symbolsHavingAlwaysSameConstraints.contains(symbol) && hasAlwaysSameConstraints(symbol)) {
+          symbolsHavingAlwaysSameConstraints = symbolsHavingAlwaysSameConstraints.add(symbol);
+        }
+      });
+    }
+
+    private boolean hasAlwaysSameConstraints(Symbol symbol) {
+      return domains.stream().allMatch(domain -> sameConstraintWhenSameProgramPoint(node, symbol, domain));
+    }
+
+    private static boolean sameConstraintWhenSameProgramPoint(ExplodedGraph.Node currentNode, Symbol symbol, Class<? extends Constraint> domain) {
+      ProgramState programState = currentNode.programState;
+      SymbolicValue sv = programState.getValue(symbol);
+      if (sv == null) {
+        return false;
+      }
+      Constraint constraint = programState.getConstraint(sv, domain);
+      if (constraint == null) {
+        return false;
+      }
+      Collection<Node> siblingNodes = currentNode.siblings();
+      return siblingNodes.stream()
+        .map(node -> node.programState)
+        .allMatch(ps -> {
+          SymbolicValue siblingSV = ps.getValue(symbol);
+          if (siblingSV == null) {
+            return false;
+          }
+          Constraint siblingConstraint = ps.getConstraint(siblingSV, domain);
+          return constraint.equals(siblingConstraint);
+        });
+    }
+
+    public boolean hasAlwaysSameConstraint(@Nullable Symbol symbol) {
+      return symbol != null && symbolsHavingAlwaysSameConstraints.contains(symbol);
+    }
   }
 
   private class ExecutionPath {
     final PSet<Symbol> trackedSymbols;
+    final SameConstraints sameConstraints;
     final ExplodedGraph.Edge lastEdge;
     final PSet<ExplodedGraph.Edge> visited;
     final List<JavaFileScannerContext.Location> flow;
     final boolean finished;
 
-    private ExecutionPath(@Nullable ExplodedGraph.Edge edge, PSet<ExplodedGraph.Edge> visited, PSet<Symbol> trackedSymbols, List<JavaFileScannerContext.Location> flow,
-                          boolean finished) {
+    private ExecutionPath(@Nullable ExplodedGraph.Edge edge, PSet<ExplodedGraph.Edge> visited, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints,
+                          List<JavaFileScannerContext.Location> flow, boolean finished) {
       this.trackedSymbols = trackedSymbols;
+      this.sameConstraints = sameConstraints;
       this.lastEdge = edge;
       this.visited = visited;
       this.flow = flow;
@@ -230,6 +294,7 @@ public class FlowComputation {
       flowBuilder.addAll(laFlow);
 
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
+      SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
@@ -245,7 +310,7 @@ public class FlowComputation {
       Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
-        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, f, endOfPath));
+        .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, f, endOfPath));
     }
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
@@ -273,11 +338,11 @@ public class FlowComputation {
         }
         ObjectConstraint startConstraint = node.programState.getConstraint(sv, ObjectConstraint.class);
         if (startConstraint != null && isMethodParameter(symbol)) {
-          String msg = IMPLIES_CAN_BE_NULL_MSG;
+          String msg = IMPLIES_CAN_BE_MSG;
           if (ObjectConstraint.NOT_NULL == startConstraint) {
-            msg = "Implies '%s' can not be null.";
+            msg = "Implies '%s' can not be %s.";
           }
-          flowBuilder.add(new JavaFileScannerContext.Location(String.format(msg, symbol.name()), ((VariableTree) symbol.declaration()).simpleName()));
+          flowBuilder.add(new JavaFileScannerContext.Location(String.format(msg, symbol.name(), "null"), ((VariableTree) symbol.declaration()).simpleName()));
         }
       });
       return flowBuilder.build();
@@ -318,14 +383,13 @@ public class FlowComputation {
         for (Constraint constraint : constraints) {
           String symbolName = learnedAssociation.symbol().name();
           String msg;
-          if (ObjectConstraint.NULL == constraint && assigningNullFromTernary(node)) {
-            msg = String.format(IMPLIES_CAN_BE_NULL_MSG, symbolName);
-          } else if (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node)) {
-            msg = String.format("Implies '%s' can be %s.", symbolName, constraint.valueAsString());
+          if ((ObjectConstraint.NULL == constraint && assigningNullFromTernary(node))
+            || (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node))) {
+            msg = IMPLIES_CAN_BE_MSG;
           } else {
-            msg = String.format("'%s' is assigned %s.", symbolName, constraint.valueAsString());
+            msg = IMPLIES_IS_MSG;
           }
-          flowBuilder.add(location(node, msg));
+          flowBuilder.add(location(node, String.format(msg, symbolName, constraint.valueAsString())));
         }
       }
       return flowBuilder.build();
@@ -465,17 +529,36 @@ public class FlowComputation {
         String msg = String.format(IMPLIES_IS_MSG, finalField.name(), constraint.valueAsString());
         return ImmutableList.of(new JavaFileScannerContext.Location(msg, ((VariableTree) finalField.declaration()).initializer()));
       }
-      String name = SyntaxTreeNameFinder.getName(nodeTree);
+
+      Symbol trackedSymbol = getSymbol(parent.programState, learnedConstraint.sv);
+      String name = trackedSymbol != null ? trackedSymbol.name() : SyntaxTreeNameFinder.getName(nodeTree);
       if (name == null) {
+        // unable to deduce name of element on which we learn a constraint. Nothing is reported
         return ImmutableList.of();
       }
       String msg;
-      if (ObjectConstraint.NULL == constraint && isNullCheck(nodeTree)) {
-        msg = String.format(IMPLIES_CAN_BE_NULL_MSG, name);
+      if (ObjectConstraint.NULL == constraint && !sameConstraints.hasAlwaysSameConstraint(trackedSymbol)) {
+        msg = IMPLIES_CAN_BE_MSG;
       } else {
-        msg = String.format(IMPLIES_IS_MSG, name, constraint.valueAsString());
+        msg = IMPLIES_IS_MSG;
       }
-      return ImmutableList.of(location(parent, msg));
+      return ImmutableList.of(location(parent, String.format(msg, name, constraint.valueAsString())));
+    }
+
+    @CheckForNull
+    private Symbol getSymbol(ProgramState programState, SymbolicValue sv) {
+      SymbolicValue peekValue = programState.peekValue();
+      if (sv.equals(peekValue)) {
+        return programState.peekValueSymbol().symbol;
+      }
+      if (peekValue instanceof BinarySymbolicValue) {
+        BinarySymbolicValue bsv = (BinarySymbolicValue) peekValue;
+        if (sv.equals(bsv.getRightOp())) {
+          return bsv.rightSymbol();
+        }
+        return bsv.leftSymbol();
+      }
+      return null;
     }
 
     @CheckForNull
@@ -499,14 +582,6 @@ public class FlowComputation {
       if (symbol != null && symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && symbol.isFinal()) {
         VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
         return declaration != null && declaration.initializer() != null;
-      }
-      return false;
-    }
-
-    private boolean isNullCheck(Tree tree) {
-      if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-        BinaryExpressionTree bet = (BinaryExpressionTree) tree;
-        return ExpressionUtils.isNullLiteral(bet.leftOperand()) || ExpressionUtils.isNullLiteral(bet.rightOperand());
       }
       return false;
     }
