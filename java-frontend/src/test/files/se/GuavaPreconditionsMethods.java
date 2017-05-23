@@ -14,6 +14,7 @@ class GuavaPreconditionsMethods {
     param.toString();
   }
   void checkState(@javax.annotation.Nullable Object param) {
+    Preconditions.checkPositionIndex(2, 12);
     Preconditions.checkState(param != null);
     param.toString();
   }

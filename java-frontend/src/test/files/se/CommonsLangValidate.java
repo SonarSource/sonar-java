@@ -26,4 +26,7 @@ class CommonsLangValidate {
     org.apache.commons.lang3.Validate.notNull(param, "some message %s", "format");
     param.toString();
   }
+  void fun() {
+    Validate.validState(1<2);
+  }
 }

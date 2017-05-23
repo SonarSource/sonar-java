@@ -31,4 +31,7 @@ class SpringAndLog4jAssert {
     Assert.isNull(b);
     o.toString();
   }
+  void foo() {
+    Assert.state( 1 < 2, "foo");
+  }
 }

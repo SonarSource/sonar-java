@@ -35,4 +35,12 @@ public class ConstraintTest {
     assertThat(ObjectConstraint.NULL.isValidWith(ObjectConstraint.NOT_NULL)).isFalse();
     assertThat(ObjectConstraint.NULL.isValidWith(BooleanConstraint.TRUE)).isFalse();
   }
+
+  @Test
+  public void default_methods_result() {
+    Constraint c = new Constraint() {};
+    assertThat(c.hasPreciseValue()).isFalse();
+    assertThat(c.valueAsString()).isEmpty();
+    assertThat(c.inverse()).isNull();
+  }
 }

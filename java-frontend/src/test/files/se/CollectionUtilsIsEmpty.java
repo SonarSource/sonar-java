@@ -27,6 +27,7 @@ class CollectionUtilsIsEmpty {
     }
   }
   void fun4() {
+    CollectionUtils.emptyCollection();
     List<Object> objects = null;
     if (CollectionUtils.isNotEmpty(objects)) { // returns false if objects is null
       objects.size();

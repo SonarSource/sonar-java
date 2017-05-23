@@ -153,5 +153,18 @@ class A {
     return c;
   }
 
+  java.util.Optional returnEmptyOptional(boolean p1) { // Noncompliant
+    if (p1) {
+      return java.util.Optional.empty();
+    }
+    return java.util.Optional.empty();
+  }
+
+  private Object fun(Object o) { // Noncompliant
+    if(o == null) {
+      return o;
+    }
+    return null;
+  }
 }
 
