@@ -4,24 +4,15 @@ polluting their projects.</p>
 <p>This rule raises an issue for each ignored test that does not have a notation about why it is being skipped.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-[TestMethod]
-[Ignore]  // Noncompliant
-public void Test_DoTheThing() {
+@Ignore  // Noncompliant
+@Test
+public void testDoTheThing() {
   // ...
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-[TestMethod]
-[Ignore]  // renable when TCKT-1234 is fixed
-public void Test_DoTheThing() {
-  // ...
-</pre>
-<p>or</p>
-<pre>
-[TestMethod]
-[Ignore]
-[WorkItem(1234)]
-public void Test_DoTheThing() {
+@Test
+public void testDoTheThing() {
   // ...
 </pre>
 

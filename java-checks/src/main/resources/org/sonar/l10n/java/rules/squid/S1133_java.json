@@ -1,5 +1,5 @@
 {
-  "title": "Deprecated code should be removed ",
+  "title": "Deprecated code should be removed",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
