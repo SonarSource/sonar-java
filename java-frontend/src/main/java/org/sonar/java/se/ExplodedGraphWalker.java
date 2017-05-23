@@ -460,7 +460,7 @@ public class ExplodedGraphWalker {
       // enqueue false-branch, if feasible
       enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseExpressionCollector.evaluatedToFalse(condition, node);
+        alwaysTrueOrFalseExpressionCollector.evaluatedToFalse(cleanupCondition((ExpressionTree) condition), node);
       }
     }
     ProgramPoint trueBlockProgramPoint = new ProgramPoint(programPosition.trueBlock());
@@ -474,7 +474,7 @@ public class ExplodedGraphWalker {
       // enqueue true-branch, if feasible
       enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
-        alwaysTrueOrFalseExpressionCollector.evaluatedToTrue(condition, node);
+        alwaysTrueOrFalseExpressionCollector.evaluatedToTrue(cleanupCondition((ExpressionTree) condition), node);
       }
     }
   }

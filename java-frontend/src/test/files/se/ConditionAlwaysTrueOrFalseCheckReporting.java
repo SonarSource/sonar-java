@@ -35,6 +35,15 @@ public class Class {
     if(!a) // flow@unary {{Implies 'a' is false.}}
       if (a); // Noncompliant [[flows=unary]] flow@unary {{Expression is always false.}}
   }
+  void reporting() {
+    boolean a = true;
+    boolean b = true;
+    if (unknown() && a // Noncompliant [[sc=22;ec=23]]
+      && b) { // Noncompliant [[sc=10;ec=11]]
+    }
 
+    if (unknown() && a) { // Noncompliant [[sc=22;ec=23]]
+    }
+  }
 
 }
