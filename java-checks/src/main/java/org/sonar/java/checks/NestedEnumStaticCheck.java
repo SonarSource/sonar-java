@@ -23,10 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2786")
@@ -40,13 +43,10 @@ public class NestedEnumStaticCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (isStatic(classTree)) {
-      reportIssue(classTree.declarationKeyword(), "Remove this redundant \"static\" qualifier.");
+    ModifierKeywordTree staticKeyword = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.STATIC);
+    if (staticKeyword != null) {
+      List<JavaFileScannerContext.Location> secondary = Collections.singletonList(new JavaFileScannerContext.Location("", classTree.declarationKeyword()));
+      reportIssue(staticKeyword, "Remove this redundant \"static\" qualifier.", secondary, null);
     }
   }
-
-  private static boolean isStatic(ClassTree classTree) {
-    return ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.STATIC);
-  }
-
 }
