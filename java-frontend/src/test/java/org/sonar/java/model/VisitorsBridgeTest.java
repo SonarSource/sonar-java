@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -37,7 +36,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -82,17 +80,6 @@ public class VisitorsBridgeTest {
   private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(new File(filename));
     visitorsBridge.visitFile(parse(code));
-  }
-
-  @Test
-  public void parameterized_type_should_not_hold_reference() throws Exception {
-    VisitorsBridge visitorsBridge =
-      new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
-        assertThat(context.getSemanticModel()).isNotNull();
-        assertThat(ParametrizedTypeJavaType.typeSubstitutionSolver).isNotNull();
-      }), Lists.newArrayList(), null);
-    checkFile("Foo.java", "class Foo {}", visitorsBridge);
-    assertThat(ParametrizedTypeJavaType.typeSubstitutionSolver).isNull();
   }
 
   @Test

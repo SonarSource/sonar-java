@@ -29,7 +29,6 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -118,7 +117,6 @@ public class VisitorsBridge {
       scanner.scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
-      ParametrizedTypeJavaType.typeSubstitutionSolver = null;
       classesNotFound.addAll(semanticModel.classesNotFound());
     }
   }
