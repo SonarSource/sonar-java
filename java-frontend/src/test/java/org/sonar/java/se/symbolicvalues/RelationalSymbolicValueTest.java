@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
@@ -27,6 +28,8 @@ import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -35,6 +38,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -427,5 +431,26 @@ public class RelationalSymbolicValueTest {
     Stream.of(Tree.Kind.NOT_EQUAL_TO, Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
       .map(k -> relationalSV(k, a, b))
       .forEach(sv -> assertThat(sv.isEquality()).isFalse());
+  }
+
+  @Test
+  public void test_to_string() throws Exception {
+    RelationalSymbolicValue rsv = new RelationalSymbolicValue(EQUAL);
+    Symbol var = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+    SymbolicValue left = new SymbolicValue() {
+      @Override
+      public String toString() {
+        return "left";
+      }
+    };
+    SymbolicValue right = new SymbolicValue() {
+      @Override
+      public String toString() {
+        return "right";
+      }
+    };
+
+    rsv.computedFrom(ImmutableList.of(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, var)));
+    assertThat(rsv).hasToString("left(A#x)==right");
   }
 }
