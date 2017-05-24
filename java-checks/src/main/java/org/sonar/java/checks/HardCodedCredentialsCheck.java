@@ -46,7 +46,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private static final String PWD_TRANSLATION = "password|passwd|pwd|achinsinsi|adgangskode|codice|contrasena|contrasenya|contrasinal|cynfrinair|facal-faire|facalfaire|" +
     "fjaleklaim|focalfaire|geslo|haslo|heslo|iphasiwedi|jelszo|kalmarsirri|katalaluan|katasandi|kennwort|kode|kupuhipa|loluszais|losen|losenord|lozinka|" +
-    "lykilorth|mathkau|modpas|motdepasse|olelohuna|oroigbaniwole|parol|parola|parole|parool|pasahitza|pasiwedhi|passe|passord|passwort|" +
+    "lykilorth|mathkau|modpas|motdepasse|olelohuna|oroigbaniwole|parol|parola|parole|parool|pasahitza|pasiwedhi|passord|passwort|" +
     "passwuert|paswoodu|phasewete|salasana|sandi|senha|sifre|sifreya|slaptazois|tenimiafina|upufaalilolilo|wachtwoord|wachtwurd|wagwoord";
 
   private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("("+PWD_TRANSLATION+")=\\S.", Pattern.CASE_INSENSITIVE);
