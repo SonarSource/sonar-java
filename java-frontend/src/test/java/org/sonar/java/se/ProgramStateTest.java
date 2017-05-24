@@ -82,7 +82,12 @@ public class ProgramStateTest {
 
   @Test
   public void testToString() {
-    SymbolicValue sv3 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue() {
+      @Override
+      public String toString() {
+        return "SV_3";
+      }
+    };
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv3);
     Symbol variable = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
     SymbolicValue sv4 = new SymbolicValue() {
@@ -92,10 +97,15 @@ public class ProgramStateTest {
       }
     };
     state = state.put(variable, sv4);
-    SymbolicValue sv5 = new SymbolicValue();
-    state = state.stackValue(sv5);
+    SymbolicValue sv5 = new SymbolicValue() {
+      @Override
+      public String toString() {
+        return "SV_5";
+      }
+    };
+    state = state.stackValue(sv5, variable);
     // FIXME to string is not really nice by displaying classes and order is not guaranteed.
-    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE");
+    assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE", "A#x->SV_5", "SV_3");
       //.isEqualTo("{ A#x->SV_4}  { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] } { A#x } ");
   }
 
