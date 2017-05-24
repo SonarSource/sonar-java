@@ -1,5 +1,6 @@
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -451,6 +452,26 @@ class Trans {
       }
     } finally {
       local.close();
+    }
+  }
+  void empty_catch_block() {
+    FileInputStream fis = null;
+    FileOutputStream fos = null;
+
+    try {
+      fis = new FileInputStream();
+      fos = new FileOutputStream();
+    } catch (IOException e) {
+      // empty catch block
+    } finally {
+      if (fis != null) {
+        try {
+          fis.close();
+        } catch (IOException e){
+          
+        }
+      }
+      fos.close();
     }
   }
 }

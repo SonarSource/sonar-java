@@ -51,6 +51,9 @@
 129,
 131,
 ],
+'jdk6:java/beans/DefaultPersistenceDelegate.java':[
+220,
+],
 'jdk6:java/beans/Introspector.java':[
 1350,
 ],
@@ -105,9 +108,6 @@
 ],
 'jdk6:java/text/RBTableBuilder.java':[
 428,
-],
-'jdk6:java/util/Calendar.java':[
-1866,
 ],
 'jdk6:java/util/Formatter.java':[
 3190,

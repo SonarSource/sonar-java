@@ -22,7 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -825,13 +824,11 @@ public class CFG {
     enclosedByCatch.push(false);
     for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
-      if (!catchTree.block().body().isEmpty()) {
-        enclosedByCatch.push(true);
-        build(catchTree.block());
-        buildVariable(catchTree.parameter());
-        currentBlock.isCatchBlock = true;
-        enclosedByCatch.pop();
-      }
+      enclosedByCatch.push(true);
+      build(catchTree.block());
+      buildVariable(catchTree.parameter());
+      currentBlock.isCatchBlock = true;
+      enclosedByCatch.pop();
       tryStatement.addCatch(catchTree.parameter().type().symbolType(), currentBlock);
     }
     currentBlock = beforeFinally;
