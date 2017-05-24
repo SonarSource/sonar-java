@@ -11,7 +11,7 @@ abstract class A {
   }
 
   void bar(boolean a) {
-    if (a == true) { // flow@cot {{Implies 'a' is true.}} flow@cot {{Implies 'a' is true.}}
+    if (a == true) { // flow@cot {{Implies 'a' is true.}}
       // Noncompliant@+1 [[flows=cot]] {{Remove this expression which always evaluates to "true"}}
       if (a == true) { }  // flow@cot {{Expression is always true.}}
     }
