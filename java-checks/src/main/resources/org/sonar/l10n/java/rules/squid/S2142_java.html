@@ -1,7 +1,8 @@
-<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring".
-Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up the method's state - or the method should be
-reinterrupted. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted - probably without
-finishing its task.</p>
+<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". The
+throwing of the <code>InterruptedException</code> clears the interrupted state of the Thread, so if not handled properly that information will be
+lost. Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up the method's state - or the thread
+should be re-interrupted by calling <code>Thread.interrupt()</code> even if this is supposed to be a single threaded application. Any other course of
+action risks delaying thread shutdown and loses the information that the thread was interrupted - probably without finishing its task.</p>
 <p>Similarly, the <code>ThreadDeath</code> exception should also be propagated. According to its JavaDoc:</p>
 <blockquote>
   <p>If <code>ThreadDeath</code> is caught by a method, it is important that it be rethrown so that the thread actually dies.</p>
@@ -27,7 +28,7 @@ public void run () {
     }
   }catch (InterruptedException e) {
     LOGGER.log(Level.WARN, "Interrupted!", e);
-    // clean up state...
+    // Restore interrupted state...
     Thread.currentThread().interrupt();
   }
 }
@@ -35,5 +36,6 @@ public void run () {
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/391.html">MITRE, CWE-391</a> - Unchecked Error Condition </li>
+  <li> <a href="https://www.ibm.com/developerworks/java/library/j-jtp05236/index.html?ca=drs-#2.1">Dealing with InterruptedException</a> </li>
 </ul>
 
