@@ -1237,23 +1237,26 @@ public class CFGTest {
     CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.TRY_STATEMENT)
-      ).successors(4),
+      ).successors(5),
       block(
         element(Tree.Kind.IDENTIFIER, "fileName"),
         element(Kind.NEW_CLASS)
-      ).successors(3).exceptions(0),
+      ).successors(4).exceptions(0,1),
       block(
         element(Kind.VARIABLE, "file"),
         element(Kind.TRY_STATEMENT)
-      ).successors(2),
+      ).successors(3),
       block(
         element(Tree.Kind.IDENTIFIER, "file"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(1).exceptions(1),
+      ).successors(2).exceptions(2),
       block(
         element(Tree.Kind.IDENTIFIER, "file"),
         element(Tree.Kind.METHOD_INVOCATION)
-      ).successors(0).exceptions(0)
+      ).successors(0).exceptions(0,1),
+      block(
+        element(Kind.VARIABLE, "e")
+      )
       );
     cfgChecker.check(cfg);
 
@@ -1686,14 +1689,17 @@ public class CFGTest {
 
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(6),
+        element(Tree.Kind.TRY_STATEMENT)).successors(7),
       block(
-        element(Kind.NEW_CLASS)).successors(1).exceptions(0, 5),
+        element(Kind.NEW_CLASS)).successors(1).exceptions(0, 6),
       block(
         element(Kind.VARIABLE, "iae"),
-        element(Tree.Kind.TRY_STATEMENT)).successors(4).isCatchBlock(),
+        element(Tree.Kind.TRY_STATEMENT)).successors(5).isCatchBlock(),
       block(
-        element(Kind.NEW_CLASS)).successors(3).exceptions(0, 2),
+        element(Kind.NEW_CLASS)).successors(3).exceptions(0, 4),
+      block(
+        element(Kind.VARIABLE, "iae")
+      ).successors(2),
       block(
         element(Kind.ASSIGNMENT)
       ).successors(2),
