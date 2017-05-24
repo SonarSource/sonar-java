@@ -385,8 +385,7 @@ public class FlowComputation {
         for (Constraint constraint : constraints) {
           String symbolName = learnedAssociation.symbol().name();
           String msg;
-          if ((ObjectConstraint.NULL == constraint && assigningNullFromTernary(node))
-            || (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node))) {
+          if (assigningNullFromTernary(node) || (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node))) {
             msg = IMPLIES_CAN_BE_MSG;
           } else {
             msg = IMPLIES_IS_MSG;
@@ -443,7 +442,7 @@ public class FlowComputation {
       ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
       if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
         ConditionalExpressionTree cet = (ConditionalExpressionTree) expr;
-        return ExpressionUtils.isNullLiteral(cet.trueExpression()) || ExpressionUtils.isNullLiteral(cet.falseExpression());
+        return ExpressionUtils.isNullLiteral(cet.trueExpression()) ^ ExpressionUtils.isNullLiteral(cet.falseExpression());
       }
       return false;
     }
