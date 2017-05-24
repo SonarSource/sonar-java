@@ -4,6 +4,8 @@ class A {
 
   String fieldNameWithPasswordInIt = retrievePassword();
 
+  private static final String PASSED = "passed"; // compliant nothing to do with passwords
+
   private void a(char[] pwd, String var) {
     String variable1 = "blabla";
     String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{Remove this hard-coded password.}}
