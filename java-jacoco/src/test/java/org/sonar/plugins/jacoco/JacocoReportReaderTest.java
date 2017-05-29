@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.util.Collection;
