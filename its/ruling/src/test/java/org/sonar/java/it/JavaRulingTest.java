@@ -304,10 +304,10 @@ public class JavaRulingTest {
       .put("prevent_reactivation", "true")
       .put("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
       .build());
-    String post = sonarClient.get("api/rules/app");
+    String post = sonarClient.get("api/qualityprofiles/search");
     String profileKey = null;
     Map map = GSON.fromJson(post, Map.class);
-    for (Map qp : ((List<Map>) map.get("qualityprofiles"))) {
+    for (Map qp : ((List<Map>) map.get("profiles"))) {
       if ("rules".equals(qp.get("name"))) {
         profileKey = (String) qp.get("key");
         break;
