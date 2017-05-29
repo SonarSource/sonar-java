@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -123,8 +125,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
-    // FIXME SONARJAVA-2111 all flows should be reported for SE checks
-    Iterable<List<Location>> reportedFlows = javaCheck instanceof SECheck ? Iterables.limit(flows, 1) : flows;
+    Iterable<List<Location>> reportedFlows;
+    // Report only 1 flow for SQ < 6.4, because UI doesn't support multiple flows properly
+    if (sonarComponents.isSQGreaterThan64()) {
+      reportedFlows = flows;
+    } else {
+      reportedFlows = javaCheck instanceof SECheck ? Iterables.limit(flows, 1) : flows;
+    }
     sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, reportedFlows, cost));
   }
 
