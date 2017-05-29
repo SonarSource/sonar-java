@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -554,6 +555,17 @@ public class TypeAndReferenceSolverTest {
     MethodTree testMethod = (MethodTree) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(1);
     ExpressionTree methodInvocation = ((ExpressionStatementTree) testMethod.block().body().get(0)).expression();
     return methodInvocation.symbolType();
+  }
+
+  @Test
+  public void parametrized_constructor() {
+    CompilationUnitTree compilationUnit = treeOf("class A { <T> A(T t) {} void test() { new A(\"hello\"); } }");
+    MethodTree testMethod = (MethodTree) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(1);
+    NewClassTree newClassTree = (NewClassTree) ((ExpressionStatementTree) testMethod.block().body().get(0)).expression();
+    Type identifierType = newClassTree.identifier().symbolType();
+
+    assertThat(identifierType).isInstanceOf(MethodJavaType.class);
+    assertThat(((MethodJavaType) identifierType).argTypes.get(0).is("java.lang.String")).isTrue();
   }
 
   private static final String CHAR = "(char) 42";

@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -72,7 +74,11 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
       TypeTree exception = ((NewClassTree) tree.expression()).identifier();
-      if (isRawException(exception.symbolType())) {
+      Type symbolType = exception.symbolType();
+      if (symbolType instanceof MethodJavaType) {
+        symbolType = ((MethodJavaType) exception.symbolType()).resultType();
+      }
+      if (isRawException(symbolType)) {
         reportIssue(exception);
       }
     }

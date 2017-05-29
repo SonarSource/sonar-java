@@ -546,6 +546,26 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void constructor_resolution() {
+    Result result = Result.createFor("ConstructorResolution");
+    JavaSymbol.TypeJavaSymbol parentClassSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("ParentClass");
+    List<JavaSymbol> parentClassConstructors = parentClassSymbol.members.lookup("<init>");
+    JavaSymbol stringConstructor = parentClassConstructors.get(0);
+
+    JavaSymbol.TypeJavaSymbol childClassSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("ChildClass");
+    List<JavaSymbol> childClassConstructors = childClassSymbol.members.lookup("<init>");
+    JavaSymbol objectConstructor = childClassConstructors.get(0);
+
+    // constructor can not be inherited
+    JavaSymbol.MethodJavaSymbol constructorReference = (JavaSymbol.MethodJavaSymbol) result.reference(9, 9);
+    assertThat(constructorReference.owner()).isSameAs(childClassSymbol);
+    assertThat(constructorReference).isEqualTo(objectConstructor);
+
+    assertThat(stringConstructor.usages()).isEmpty();
+    assertThat(objectConstructor.usages()).hasSize(1);
+  }
+
+  @Test
   public void StrictThenLooseInvocationContext() {
     Result result = Result.createFor("StrictThenLooseInvocationContext");
     JavaSymbol fooA = result.symbol("foo", 2);

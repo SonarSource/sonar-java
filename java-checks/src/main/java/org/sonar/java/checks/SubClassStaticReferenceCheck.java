@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -99,6 +100,9 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Type type = tree.symbolType();
+      if (type instanceof MethodJavaType) {
+        type = ((MethodJavaType) type).resultType();
+      }
       if (!classType.equals(type) && type.isSubtypeOf(classType)) {
         reportIssue(tree, String.format("Remove this reference to \"%s\".", type.symbol().name()));
       }

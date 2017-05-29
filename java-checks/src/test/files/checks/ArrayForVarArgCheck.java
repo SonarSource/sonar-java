@@ -24,7 +24,7 @@ class ArrayForVarArgCheck {
     java.util.List<String> items = java.util.Arrays.asList(new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
     foo(new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
 
-    new ArrayForVarArgCheck(14, new String[]{"hello", "world"}); // Noncompliant {{Disambiguate this call by either casting as "X" or "X[]".}}
+    new ArrayForVarArgCheck(14, new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
   }
 
   public void doTheThing (String ... args) {
