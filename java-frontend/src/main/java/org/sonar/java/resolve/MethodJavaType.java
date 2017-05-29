@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class MethodJavaType extends JavaType {
@@ -49,5 +50,9 @@ public class MethodJavaType extends JavaType {
 
   public List<JavaType> thrownTypes() {
     return thrown;
+  }
+
+  public List<JavaType> argTypes() {
+    return argTypes;
   }
 }

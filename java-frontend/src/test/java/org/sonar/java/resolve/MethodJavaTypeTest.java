@@ -65,4 +65,20 @@ public class MethodJavaTypeTest {
     assertThat(m3.thrownTypes()).hasSize(2);
     assertThat(m3.thrownTypes()).containsExactly(t1, t2);
   }
+
+  @Test
+  public void methodJavaType_arg_types() {
+    MethodJavaType m1 = new MethodJavaType(Collections.emptyList(), SYMBOLS.voidType, Collections.emptyList(), null);
+    assertThat(m1.argTypes()).isEmpty();
+
+    MethodJavaType m2 = new MethodJavaType(Collections.singletonList(Symbols.unknownType), SYMBOLS.voidType, Collections.emptyList(), null);
+    assertThat(m2.argTypes()).hasSize(1);
+    assertThat(m2.argTypes()).containsOnly(Symbols.unknownType);
+
+    JavaType t1 = new JavaType(JavaType.CLASS, Symbols.unknownSymbol);
+    JavaType t2 = new JavaType(JavaType.CLASS, Symbols.unknownSymbol);
+    MethodJavaType m3 = new MethodJavaType(Arrays.asList(t1, t2), SYMBOLS.voidType, Collections.emptyList(), null);
+    assertThat(m3.argTypes()).hasSize(2);
+    assertThat(m3.argTypes()).containsExactly(t1, t2);
+  }
 }
