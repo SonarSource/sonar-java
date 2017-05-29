@@ -740,6 +740,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           // will be resolved by type inference
           ((DeferredType) constructedType).setTree(newClassTreeImpl);
         }
+      } else {
+        registerType(typeTree, resolution.type());
       }
     }
     registerType(tree, constructedType);

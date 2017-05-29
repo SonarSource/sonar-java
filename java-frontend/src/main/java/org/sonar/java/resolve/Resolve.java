@@ -476,13 +476,14 @@ public class Resolve {
     Resolution bestSoFar = unresolved();
 
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);
+    if (name.equals(CONSTRUCTOR_NAME) && !site.symbol.isInterface()) {
+      // Interfaces do not have constructors, but for anonymous classes of interfaces, the Object constructor should be resolved
+      return bestSoFar;
+    }
+
     // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
-      // sole constructor of java.lang.Enum is inaccessible by programmers.
-      if (name.equals(CONSTRUCTOR_NAME) && superclass.is("java.lang.Enum")) {
-        return bestSoFar;
-      }
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
       Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
