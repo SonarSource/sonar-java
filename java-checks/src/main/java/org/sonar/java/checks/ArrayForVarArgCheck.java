@@ -22,11 +22,14 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -34,6 +37,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -50,23 +55,48 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     Symbol sym;
     Arguments args;
+    Tree methodName;
     if (tree.is(Tree.Kind.NEW_CLASS)) {
-      sym = ((NewClassTree) tree).constructorSymbol();
-      args = ((NewClassTree) tree).arguments();
+      NewClassTree nct = (NewClassTree) tree;
+      sym = nct.constructorSymbol();
+      args = nct.arguments();
+      methodName = nct.identifier();
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       sym = mit.symbol();
       args = mit.arguments();
+      methodName = mit.methodSelect();
     }
+
     if (sym.isMethodSymbol() && !args.isEmpty()) {
       ExpressionTree lastArg = args.get(args.size() - 1);
-      checkInvokedMethod((JavaSymbol.MethodJavaSymbol) sym, lastArg);
+      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) sym;
+      MethodJavaType methodType = getMethodType(methodSymbol, methodName);
+      checkInvokedMethod(methodSymbol, methodType, lastArg);
     }
   }
 
-  private void checkInvokedMethod(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
+  @CheckForNull
+  private static MethodJavaType getMethodType(JavaSymbol.MethodJavaSymbol methodSymbol, Tree methodName) {
+    if (!methodSymbol.isParametrized()) {
+      return null;
+    }
+    IdentifierTree id = null;
+    if (methodName.is(Tree.Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) methodName).identifier();
+    } else {
+      id = (IdentifierTree) methodName;
+    }
+    Type identifierType = id.symbolType();
+    if (identifierType instanceof MethodJavaType) {
+      return (MethodJavaType) identifierType;
+    }
+    return null;
+  }
+
+  private void checkInvokedMethod(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, ExpressionTree lastArg) {
     if (methodSymbol.isVarArgs() && lastArg.is(Tree.Kind.NEW_ARRAY)) {
-      if (lastParamHasSameType(methodSymbol, lastArg)) {
+      if (lastParamHasSameType(methodSymbol, methodType, lastArg.symbolType())) {
         String message = "Remove this array creation";
         NewArrayTree newArrayTree = (NewArrayTree) lastArg;
         if (newArrayTree.openBraceToken() == null) {
@@ -80,8 +110,8 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         }
         reportIssue(lastArg, message + ".");
       } else {
-        String type = ((Type.ArrayType) getLastParameterType(methodSymbol)).elementType().name();
-        reportIssue(lastArg, "Disambiguate this call by either casting as \""+type+"\" or \""+type+"[]\"");
+        String type = ((Type.ArrayType) getLastParameterType(methodSymbol.parameterTypes())).elementType().name();
+        reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
       }
     }
   }
@@ -105,11 +135,13 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     return (MethodTree) result;
   }
 
-  private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
-    return lastArg.symbolType().equals(getLastParameterType(methodSymbol));
+  private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
+    Type lastParamType = methodType != null ? getLastParameterType(methodType.argTypes()) : getLastParameterType(methodSymbol.parameterTypes());
+    return lastArgType.equals(lastParamType);
   }
 
-  private static Type getLastParameterType(JavaSymbol.MethodJavaSymbol methodSymbol) {
-    return methodSymbol.parameterTypes().get(methodSymbol.parameterTypes().size() - 1);
+  private static Type getLastParameterType(List<? extends Type> list) {
+    return list.get(list.size() - 1);
   }
+
 }
