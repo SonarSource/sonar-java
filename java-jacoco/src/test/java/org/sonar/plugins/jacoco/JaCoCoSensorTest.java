@@ -45,7 +45,6 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;

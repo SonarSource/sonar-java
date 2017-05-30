@@ -34,7 +34,6 @@ import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;

@@ -21,12 +21,13 @@ package org.sonar.plugins.surefire.data;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.sonar.plugins.surefire.StaxParser;
-import org.sonar.test.TestUtils;
 
 import javax.xml.stream.XMLStreamException;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.startsWith;
@@ -125,8 +126,13 @@ public class SurefireStaxHandlerTest {
   }
 
   private void parse(String path) throws XMLStreamException {
-    File xml = TestUtils.getResource(getClass(), path);
     StaxParser parser = new StaxParser(index);
-    parser.parse(xml);
+    File xmlFile;
+    try {
+      xmlFile = new File(getClass().getResource(getClass().getSimpleName() + "/" + path).toURI());
+    } catch (URISyntaxException e) {
+      throw new IllegalStateException(e);
+    }
+    parser.parse(xmlFile);
   }
 }

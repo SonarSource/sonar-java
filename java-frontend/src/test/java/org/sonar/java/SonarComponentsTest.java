@@ -65,6 +65,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -355,6 +356,9 @@ public class SonarComponentsTest {
     assertThat(fileLines).hasSize(5);
     assertThat(fileLines.get(0)).hasSize(11);
 
+    verify(inputFile, times(1)).contents();
+    reset(inputFile);
+
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
     sonarComponents.setSensorContext(context);
 
@@ -362,6 +366,9 @@ public class SonarComponentsTest {
     fileLines = sonarComponents.fileLines(file);
     assertThat(fileLines).hasSize(5);
     assertThat(fileLines.get(0)).hasSize(11);
+
+    verify(inputFile, never()).contents();
+    reset(inputFile);
 
     // rely on default filesystem charset for version prior to 6.0
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(5, 6)));
@@ -372,9 +379,8 @@ public class SonarComponentsTest {
     assertThat(fileLines).hasSize(5);
     assertThat(fileLines.get(0)).hasSize(15);
 
-    // One, and only one call made to inputFile contents for SQ>=6.2
-    verify(inputFile, times(1)).contents();
-    verify(inputFile, times(1)).inputStream();
+    verify(inputFile, never()).contents();
+    reset(inputFile);
   }
 
   @Test

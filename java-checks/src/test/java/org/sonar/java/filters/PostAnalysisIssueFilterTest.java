@@ -20,11 +20,11 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -49,14 +49,15 @@ public class PostAnalysisIssueFilterTest {
   public ExpectedException thrown = ExpectedException.none();
 
   private static final String FILE_KEY = "PostAnalysisIssueFilter.java";
+  private static final String MODULE_BASE_DIR = "src/test/files/filters";
   private static JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
-  private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.<FakeJavaIssueFilter>newArrayList(new FakeJavaIssueFilter(true), new FakeJavaIssueFilter(false));
+  private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(new FakeJavaIssueFilter(true), new FakeJavaIssueFilter(false));
 
   @Before
   public void setUp() {
-    DefaultFileSystem fileSystem = new DefaultFileSystem(new File("src/test/files/filters"));
-    DefaultInputFile inputFile = new TestInputFileBuilder("", FILE_KEY)
+    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(MODULE_BASE_DIR));
+    DefaultInputFile inputFile = new TestInputFileBuilder("", new File(MODULE_BASE_DIR), new File(MODULE_BASE_DIR, FILE_KEY))
     .setLanguage("java")
     .setType(InputFile.Type.MAIN).build();
     fileSystem.add(inputFile);
