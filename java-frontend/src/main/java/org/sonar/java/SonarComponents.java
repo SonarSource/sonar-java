@@ -61,6 +61,7 @@ public class SonarComponents {
 
   private static final Version SQ_6_0 = Version.create(6, 0);
   private static final Version SQ_6_2 = Version.create(6, 2);
+  private static final Version SQ_6_4 = Version.create(6, 4);
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
@@ -240,6 +241,10 @@ public class SonarComponents {
 
   public boolean isSQGreaterThan62() {
     return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2);
+  }
+
+  public boolean isSQGreaterThan64() {
+    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_4);
   }
 
   public boolean isSonarLintContext() {
