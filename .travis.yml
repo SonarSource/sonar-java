@@ -4,11 +4,11 @@ git:
   submodules: false
 install: true
 script: "./travis.sh"
-env:
-- TEST=CI
 matrix:
   fast_finish: true
   include:
+    # CI trigger analysis
+  - env: TEST=CI
     # OS X 10.11 - default with jdk 8
   - env: TEST=CI_MACOSX
     os: osx
