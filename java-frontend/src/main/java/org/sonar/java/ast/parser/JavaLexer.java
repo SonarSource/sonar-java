@@ -22,6 +22,7 @@ package org.sonar.java.ast.parser;
 import com.sonar.sslr.api.GenericTokenType;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.ast.api.JavaRestrictedKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -252,6 +253,7 @@ public enum JavaLexer implements GrammarRuleKey {
 
   LETTER_OR_DIGIT,
   KEYWORD,
+  RESTRICTED_KEYWORD,
   SPACING,
 
   METHOD_REFERENCE,
@@ -375,6 +377,20 @@ public enum JavaLexer implements GrammarRuleKey {
         keywords[0],
         keywords[1],
         ArrayUtils.subarray(keywords, 2, keywords.length)),
+      b.nextNot(LETTER_OR_DIGIT));
+
+    // restricted keywords introduced with java 9 (JLS9 - §3.9)
+    for (JavaRestrictedKeyword tokenType : JavaRestrictedKeyword.values()) {
+      b.rule(tokenType).is(tokenType.getValue(), b.nextNot(LETTER_OR_DIGIT), SPACING);
+    }
+    String[] restrictedKeywords = JavaRestrictedKeyword.restrictedKeywordValues();
+    Arrays.sort(restrictedKeywords);
+    ArrayUtils.reverse(restrictedKeywords);
+    b.rule(RESTRICTED_KEYWORD).is(
+      b.firstOf(
+        restrictedKeywords[0],
+        restrictedKeywords[1],
+        ArrayUtils.subarray(restrictedKeywords, 2, restrictedKeywords.length)),
       b.nextNot(LETTER_OR_DIGIT));
   }
 
