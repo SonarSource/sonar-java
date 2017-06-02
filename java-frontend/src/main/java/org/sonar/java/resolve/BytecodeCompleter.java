@@ -23,11 +23,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
 
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -81,22 +83,32 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
     Preconditions.checkState(symbol.isPackageSymbol() || classSymbol == symbol);
 
-    InputStream inputStream = null;
-    ClassReader classReader = null;
+    byte[] bytes = bytesForClass(bytecodeName);
+    if (bytes != null) {
+      ClassReader classReader = new ClassReader(bytes);
+      classReader.accept(
+        new BytecodeVisitor(this, symbols, classSymbol, parametrizedTypeCache),
+        ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+    }
+  }
+
+  @Nullable
+  private byte[] bytesForClass(String fullname) {
+    InputStream is = inputStreamFor(fullname);
+    if (is == null) {
+      return null;
+    }
     try {
-      inputStream = inputStreamFor(bytecodeName);
-      if(inputStream != null) {
-        classReader = new ClassReader(inputStream);
+      byte[] bytes = ByteStreams.toByteArray(is);
+      // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
+      if (Java9Support.isJava9Class(bytes)) {
+        Java9Support.setJava8MajorVersion(bytes);
       }
+      return bytes;
     } catch (IOException e) {
       throw Throwables.propagate(e);
     } finally {
-      Closeables.closeQuietly(inputStream);
-    }
-    if (classReader != null) {
-      classReader.accept(
-          new BytecodeVisitor(this, symbols, classSymbol, parametrizedTypeCache),
-          ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+      Closeables.closeQuietly(is);
     }
   }
 
@@ -216,26 +228,16 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       return symbol;
     }
 
-    // TODO(Godin): pull out conversion of name from the next method to avoid unnecessary conversion afterwards:
-    InputStream inputStream = inputStreamFor(fullname);
-    String bytecodeName = Convert.bytecodeName(fullname);
-
-    if (inputStream == null) {
+    byte[] bytesForClass = bytesForClass(fullname);
+    if (bytesForClass == null) {
       return new Resolve.JavaSymbolNotFound();
     }
 
-    try {
-      ClassReader classReader = new ClassReader(inputStream);
-      String className = classReader.getClassName();
-      if (!className.equals(bytecodeName)) {
-        return new Resolve.JavaSymbolNotFound();
-      }
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
+    ClassReader classReader = new ClassReader(bytesForClass);
+    String className = classReader.getClassName();
+    if (!className.equals(Convert.bytecodeName(fullname))) {
+      return new Resolve.JavaSymbolNotFound();
     }
-
     return getClassSymbol(fullname);
   }
 

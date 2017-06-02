@@ -39,7 +39,9 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -615,5 +617,17 @@ public class BytecodeCompleterTest {
     prezModel42.complete();
     assertThat(prezModel42.members().lookup("setSliderMinValue")).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("bridge method setSliderMinValue not marked as synthetic in class model42/PresentationModel42");
+  }
+
+  @Test
+  public void test_loading_java9_class() throws Exception {
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(
+      new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java9/bin"))),
+      new ParametrizedTypeCache());
+    new Symbols(bytecodeCompleter);
+    TypeJavaSymbol classSymbol = (TypeJavaSymbol) bytecodeCompleter.loadClass("org.test.Hello9");
+    classSymbol.complete();
+    assertThat(classSymbol.getFullyQualifiedName()).isEqualTo("org.test.Hello9");
+    assertThat(classSymbol.memberSymbols()).hasSize(2);
   }
 }
