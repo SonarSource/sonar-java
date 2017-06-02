@@ -53,6 +53,7 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.packageDeclaration());
     scan(tree.imports());
     scan(tree.types());
+    scan(tree.moduleDeclaration());
   }
 
   @Override
@@ -375,6 +376,13 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitPackage(PackageDeclarationTree tree) {
     scan(tree.annotations());
     scan(tree.packageName());
+  }
+
+  @Override
+  public void visitModule(ModuleDeclarationTree module) {
+    scan(module.annotations());
+    scan(module.moduleName());
+    scan(module.moduleDirectives());
   }
 
   @Override

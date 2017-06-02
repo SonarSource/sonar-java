@@ -621,6 +621,13 @@ public interface Tree {
     PACKAGE(PackageDeclarationTree.class),
 
     /**
+     * {@link ModuleDeclarationTree}
+     *
+     * @since Java 9
+     */
+    MODULE(ModuleDeclarationTree.class),
+
+    /**
      * {@link ArrayDimensionTree}
      */
     ARRAY_DIMENSION(ArrayDimensionTree.class),

@@ -45,6 +45,7 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.ModuleDeclarationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
@@ -92,6 +93,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -139,6 +141,7 @@ public class TreeFactory {
     JavaTree spacing,
     Optional<PackageDeclarationTree> packageDeclaration,
     Optional<List<ImportClauseTree>> importDeclarations,
+    Optional<ModuleDeclarationTree> moduleDeclaration,
     Optional<List<Tree>> typeDeclarations,
     InternalSyntaxToken eof) {
 
@@ -160,6 +163,7 @@ public class TreeFactory {
       packageDeclaration.orNull(),
       imports.build(),
       types.build(),
+      moduleDeclaration.orNull(),
       eof);
   }
 
@@ -167,9 +171,18 @@ public class TreeFactory {
     InternalSyntaxToken semicolonToken) {
     List<AnnotationTree> annotationList = Collections.emptyList();
     if (annotations.isPresent()) {
-      annotationList = ImmutableList.<AnnotationTree>builder().addAll(annotations.get()).build();
+      annotationList = Collections.unmodifiableList(annotations.get());
     }
     return new PackageDeclarationTreeImpl(annotationList, packageToken, qualifiedIdentifier, semicolonToken);
+  }
+
+  public ModuleDeclarationTree newModuleDeclaration(Optional<List<AnnotationTreeImpl>> annotations, Optional<InternalSyntaxToken> openToken, InternalSyntaxToken moduleToken,
+    ExpressionTree qualifiedIdentifier, InternalSyntaxToken openBraceToken, InternalSyntaxToken closeBraceToken) {
+    List<AnnotationTree> annotationList = Collections.emptyList();
+    if (annotations.isPresent()) {
+      annotationList = Collections.unmodifiableList(annotations.get());
+    }
+    return new ModuleDeclarationTreeImpl(annotationList, openToken.orNull(), moduleToken, qualifiedIdentifier, openBraceToken, Collections.emptyList(), closeBraceToken);
   }
 
   public ImportClauseTree newEmptyImport(InternalSyntaxToken semicolonToken) {

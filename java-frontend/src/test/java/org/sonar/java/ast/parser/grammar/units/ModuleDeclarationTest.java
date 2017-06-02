@@ -19,37 +19,17 @@
  */
 package org.sonar.java.ast.parser.grammar.units;
 
-import com.google.common.base.Joiner;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaLexer;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class CompilationUnitTest {
-
+public class ModuleDeclarationTest {
   @Test
-  public void realLife() {
-    assertThat(JavaLexer.COMPILATION_UNIT)
-      // Ordinary Compilation Unit
-      .matches(lines(
-        "package org.example;",
-        "",
-        "public class HelloWorld {",
-        "  public static void main(String[] args) {",
-        "    System.out.println(\"Hello World!\");",
-        "  }",
-        "}"))
-      // Modular Compilation Unit
-      .matches(lines(
-        "import com.google.common.annotations.Beta;",
-        "",
-        "@Beta",
-        "open module com.greetings {",
-        "}"));
-  }
-
-  private static String lines(String... lines) {
-    return Joiner.on("\n").join(lines);
+  public void simple() {
+    assertThat(JavaLexer.MODULE_DECLARATION)
+      .matches("module greetings { }")
+      .matches("@com.google.common.annotations.Beta open module com.greetings { }");
   }
 
 }

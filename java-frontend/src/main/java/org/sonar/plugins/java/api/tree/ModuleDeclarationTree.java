@@ -26,35 +26,32 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Compilation unit.
+ * Module declaration.
  *
- * JLS 7.3 and 7.4
+ * JLS9 - §7.7
  *
- * @since Java 1.3
+ * <pre>
+ *   {@link #annotations()} module {@link #moduleName()} { {@link #moduleDirectives() } }
+ *   {@link #annotations()} open module {@link #moduleName()} { {@link #moduleDirectives() } }
+ * </pre>
+ * 
+ * @since Java 9
  */
 @Beta
-public interface CompilationUnitTree extends Tree {
+public interface ModuleDeclarationTree extends Tree {
+
+  List<AnnotationTree> annotations();
 
   @Nullable
-  PackageDeclarationTree packageDeclaration();
+  SyntaxToken openKeyword();
 
-  List<ImportClauseTree> imports();
+  SyntaxToken moduleKeyword();
 
-  List<Tree> types();
+  ExpressionTree moduleName();
 
-  /**
-   * Experimental feature allowing retrieval of java 9 module declaration from 'module-info.java' files.
-   *
-   * In java 9, a new compilation unit level has been introduced, splitting current compilation units between 
-   * 'Modular' and 'Ordinary' Compilation Units. In order to not introduce breaking change in API too early, and as long as java 9 
-   * is not officially released, the 'Module Declaration' part of the Java 9 'Modular Compilation Unit' will be part of the
-   * current Compilation Unit interface.
-   *
-   * @since Java 9
-   */
-  @Nullable
-  ModuleDeclarationTree moduleDeclaration();
+  SyntaxToken openBraceToken();
 
-  SyntaxToken eofToken();
+  List<Tree> moduleDirectives();
 
+  SyntaxToken closeBraceToken();
 }

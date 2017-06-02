@@ -136,5 +136,7 @@ public interface TreeVisitor {
 
   void visitPackage(PackageDeclarationTree tree);
 
+  void visitModule(ModuleDeclarationTree module);
+
   void visitArrayDimension(ArrayDimensionTree tree);
 }
