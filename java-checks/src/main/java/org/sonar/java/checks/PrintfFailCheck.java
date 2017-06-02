@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -165,7 +164,6 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
-    List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (String rawParam : params) {
       String param = rawParam;
       int argIndex = index;
@@ -183,7 +181,6 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
         index++;
       }
       ExpressionTree argExpressionTree = args.get(argIndex);
-      unusedArgs.remove(argExpressionTree);
       Type argType = argExpressionTree.symbolType();
       checkNumerical(mit, param, argType);
       checkTimeConversion(mit, param, argType);
