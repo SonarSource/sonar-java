@@ -21,6 +21,7 @@ package org.sonar.java.ast.parser;
 
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.api.JavaRestrictedKeyword;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -66,6 +67,7 @@ import com.sonar.sslr.api.typed.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -143,8 +145,22 @@ public class JavaGrammar {
           b.token(JavaLexer.SPACING),
           b.optional(PACKAGE_DECLARATION()),
           b.zeroOrMore(IMPORT_DECLARATION()),
+          b.optional(MODULE_DECLARATION()),
           b.zeroOrMore(TYPE_DECLARATION()),
           b.token(JavaLexer.EOF)));
+  }
+
+  public ModuleDeclarationTree MODULE_DECLARATION() {
+    return b.<ModuleDeclarationTree>nonterminal(JavaLexer.MODULE_DECLARATION)
+      .is(
+        f.newModuleDeclaration(
+          b.zeroOrMore(ANNOTATION()),
+          b.optional(b.token(JavaRestrictedKeyword.OPEN)),
+          b.token(JavaRestrictedKeyword.MODULE),
+          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          b.token(JavaPunctuator.LWING),
+          // TODO add module directives
+          b.token(JavaPunctuator.RWING)));
   }
 
   public PackageDeclarationTree PACKAGE_DECLARATION() {

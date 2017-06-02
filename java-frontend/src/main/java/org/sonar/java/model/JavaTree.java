@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -150,17 +151,21 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
+    @Nullable
     private final PackageDeclarationTree packageDeclaration;
     private final List<ImportClauseTree> imports;
     private final List<Tree> types;
+    @Nullable
+    private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
 
-    public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports,
-      List<Tree> types, SyntaxToken eofToken) {
+    public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
+      @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
       super(Kind.COMPILATION_UNIT);
       this.packageDeclaration = packageDeclaration;
       this.imports = imports;
       this.types = types;
+      this.moduleDeclaration = moduleDeclaration;
       this.eofToken = eofToken;
     }
 
@@ -186,20 +191,26 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      Iterable<Tree> packageIterator = packageDeclaration == null ?
-        Collections.<Tree>emptyList() :
-        Collections.<Tree>singletonList(packageDeclaration);
+      Iterable<Tree> packageIterator = packageDeclaration == null ? Collections.emptyList() : Collections.singletonList(packageDeclaration);
+      Iterable<Tree> moduleIterator = moduleDeclaration == null ? Collections.emptyList() : Collections.singletonList(moduleDeclaration);
       return Iterables.concat(
         packageIterator,
         imports,
         types,
-        Collections.<Tree>singletonList(eofToken));
+        moduleIterator,
+        Collections.singletonList(eofToken));
     }
 
     @Nullable
     @Override
     public PackageDeclarationTree packageDeclaration() {
       return packageDeclaration;
+    }
+
+    @Nullable
+    @Override
+    public ModuleDeclarationTree moduleDeclaration() {
+      return moduleDeclaration;
     }
 
     @Override

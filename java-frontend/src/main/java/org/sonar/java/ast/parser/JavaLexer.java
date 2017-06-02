@@ -90,6 +90,8 @@ import static org.sonar.java.ast.api.JavaTokenType.LONG_LITERAL;
 public enum JavaLexer implements GrammarRuleKey {
 
   COMPILATION_UNIT,
+
+  MODULE_DECLARATION,
   PACKAGE_DECLARATION,
   IMPORT_DECLARATION,
   TYPE_DECLARATION,
