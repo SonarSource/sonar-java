@@ -1,7 +1,7 @@
 SonarJava [![Build Status](https://travis-ci.org/SonarSource/sonar-java.svg?branch=master)](https://travis-ci.org/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/badges/gate?key=org.sonarsource.java%3Ajava)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/badges/measure?key=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
 ==========
 
-SonarJava is a code analyzer for Java projects. Information about the SonarJava features is available [here](https://www.sonarsource.com/why-us/products/languages/java.html).
+SonarJava is a code analyzer for Java projects. Information about the SonarJava features is available [here](https://redirect.sonarsource.com/plugins/java.html).
 
 **Build status (all branches)**
 
@@ -18,7 +18,7 @@ Features
 Useful links
 ------------
 
-* [Project homepage](https://docs.sonarqube.org/display/PLUG/SonarJava)
+* [Project homepage](https://redirect.sonarsource.com/plugins/java.html)
 * [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
 * [Available rules](https://nemo.sonarqube.org/coding_rules#languages=java|repositories=squid)
 * [Google Group for feedback](https://groups.google.com/forum/#!forum/sonarqube)
