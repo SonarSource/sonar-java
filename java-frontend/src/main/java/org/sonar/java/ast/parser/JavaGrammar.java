@@ -35,6 +35,7 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.ModuleNameListTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
@@ -68,6 +69,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
+import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
+import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -157,10 +160,113 @@ public class JavaGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.optional(b.token(JavaRestrictedKeyword.OPEN)),
           b.token(JavaRestrictedKeyword.MODULE),
-          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          MODULE_NAME(),
           b.token(JavaPunctuator.LWING),
-          // TODO add module directives
+          b.zeroOrMore(MODULE_DIRECTIVE()),
           b.token(JavaPunctuator.RWING)));
+  }
+
+  public ModuleNameTree MODULE_NAME() {
+    return b.<ModuleNameTree>nonterminal(JavaLexer.MODULE_NAME)
+      .is(
+        f.newModuleName(
+          b.token(JavaTokenType.IDENTIFIER),
+          b.zeroOrMore(f.moduleNameRest(b.token(JavaPunctuator.DOT), b.token(JavaTokenType.IDENTIFIER)))));
+  }
+
+  public ModuleNameListTreeImpl MODULE_NAME_LIST() {
+    return b.<ModuleNameListTreeImpl>nonterminal(JavaLexer.MODULE_NAME_LIST)
+      .is(
+        f.newModuleNameListTreeImpl(
+          MODULE_NAME(),
+          b.zeroOrMore(f
+            .moduleNamesRest(
+              b.token(JavaPunctuator.COMMA),
+              MODULE_NAME()))));
+  }
+
+  public ModuleDirectiveTree MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.MODULE_DIRECTIVE)
+      .is(b.firstOf(
+        REQUIRES_MODULE_DIRECTIVE(),
+        EXPORTS_MODULE_DIRECTIVE(),
+        OPENS_MODULE_DIRECTIVE(),
+        USES_MODULE_DIRECTIVE(),
+        PROVIDES_MODULE_DIRECTIVE()));
+  }
+
+  public ModuleDirectiveTree REQUIRES_MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.REQUIRES_DIRECTIVE)
+      .is(b.firstOf(
+        // JLS9 - §3.9 : 'transitive' restricted keyword can be used as module name instead of modifier
+        f.newRequiresModuleDirective(
+          b.token(JavaRestrictedKeyword.REQUIRES),
+          b.token(JavaRestrictedKeyword.TRANSITIVE),
+          b.token(JavaPunctuator.SEMI)),
+        f.newRequiresModuleDirective(
+          b.token(JavaRestrictedKeyword.REQUIRES),
+          b.token(JavaKeyword.STATIC),
+          b.token(JavaRestrictedKeyword.TRANSITIVE),
+          b.token(JavaPunctuator.SEMI)),
+        // ordinary requires directives
+        f.newRequiresModuleDirective(
+          b.token(JavaRestrictedKeyword.REQUIRES),
+          b.zeroOrMore(REQUIRES_MODIFIER()),
+          MODULE_NAME(),
+          b.token(JavaPunctuator.SEMI))));
+  }
+
+  public InternalSyntaxToken REQUIRES_MODIFIER() {
+    return b.<InternalSyntaxToken>nonterminal(JavaLexer.REQUIRES_MODIFIER)
+      .is(b.firstOf(
+        b.token(JavaKeyword.STATIC),
+        b.token(JavaRestrictedKeyword.TRANSITIVE)));
+  }
+
+  public ModuleDirectiveTree EXPORTS_MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.EXPORTS_DIRECTIVE)
+      .is(
+        f.newExportsModuleDirective(
+          b.token(JavaRestrictedKeyword.EXPORTS),
+          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          b.optional(
+            f.toModuleNames(
+              b.token(JavaRestrictedKeyword.TO),
+              MODULE_NAME_LIST())),
+          b.token(JavaPunctuator.SEMI)));
+  }
+
+  public ModuleDirectiveTree OPENS_MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.OPENS_DIRECTIVE)
+      .is(
+        f.newOpensModuleDirective(
+          b.token(JavaRestrictedKeyword.OPENS),
+          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          b.optional(
+            f.toModuleNames2(
+              b.token(JavaRestrictedKeyword.TO),
+              MODULE_NAME_LIST())),
+          b.token(JavaPunctuator.SEMI)));
+  }
+
+  public ModuleDirectiveTree USES_MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.USES_DIRECTIVE)
+      .is(
+        f.newUsesModuleDirective(
+          b.token(JavaRestrictedKeyword.USES),
+          TYPE_QUALIFIED_IDENTIFIER(),
+          b.token(JavaPunctuator.SEMI)));
+  }
+
+  public ModuleDirectiveTree PROVIDES_MODULE_DIRECTIVE() {
+    return b.<ModuleDirectiveTree>nonterminal(JavaLexer.PROVIDES_DIRECTIVE)
+      .is(
+        f.newProvidesModuleDirective(
+          b.token(JavaRestrictedKeyword.PROVIDES),
+          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          b.token(JavaRestrictedKeyword.WITH),
+          QUALIFIED_IDENTIFIER_LIST(),
+          b.token(JavaPunctuator.SEMI)));
   }
 
   public PackageDeclarationTree PACKAGE_DECLARATION() {

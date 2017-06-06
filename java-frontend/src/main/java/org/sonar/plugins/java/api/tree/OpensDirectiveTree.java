@@ -19,15 +19,30 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.annotation.Nullable;
 
-public class TreeTest {
+/**
+ * The 'opens' directive from java 9 module directives
+ *
+ * JLS9 - §7.7.2
+ *
+ * <pre>
+ *   opens {@link #packageName()} ;
+ *   opens {@link #packageName()} to {@link #moduleNames()} ;
+ * </pre>
+ *
+ * @since Java 9
+ */
+@Beta
+public interface OpensDirectiveTree extends ModuleDirectiveTree {
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
-  }
+  ExpressionTree packageName();
+
+  @Nullable
+  SyntaxToken toKeyword();
+
+  ListTree<ModuleNameTree> moduleNames();
 
 }

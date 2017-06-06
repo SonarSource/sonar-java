@@ -35,6 +35,8 @@ public enum Modifier {
   SYNCHRONIZED,
   NATIVE,
   DEFAULT,
-  STRICTFP;
+  STRICTFP,
+  // since java 9, only used by Requires Module Directive (JLS9 - §7.7)
+  TRANSITIVE;
 
 }

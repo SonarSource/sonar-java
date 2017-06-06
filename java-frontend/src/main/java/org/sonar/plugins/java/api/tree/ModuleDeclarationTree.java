@@ -47,11 +47,11 @@ public interface ModuleDeclarationTree extends Tree {
 
   SyntaxToken moduleKeyword();
 
-  ExpressionTree moduleName();
+  ModuleNameTree moduleName();
 
   SyntaxToken openBraceToken();
 
-  List<Tree> moduleDirectives();
+  List<ModuleDirectiveTree> moduleDirectives();
 
   SyntaxToken closeBraceToken();
 }

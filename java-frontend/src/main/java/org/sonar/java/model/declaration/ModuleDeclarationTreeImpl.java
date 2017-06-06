@@ -24,8 +24,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
+import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
+import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -39,18 +40,18 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
   private final List<AnnotationTree> annotations;
   private final InternalSyntaxToken openKeyword;
   private final InternalSyntaxToken moduleKeyword;
-  private final ExpressionTree qualifiedIdentifier;
+  private final ModuleNameTree moduleName;
   private final InternalSyntaxToken openBraceToken;
-  private final List<Tree> moduleDirectives;
+  private final List<ModuleDirectiveTree> moduleDirectives;
   private final InternalSyntaxToken closeBraceToken;
 
-  public ModuleDeclarationTreeImpl(List<AnnotationTree> annotations, InternalSyntaxToken openKeyword, InternalSyntaxToken moduleKeyword, ExpressionTree qualifiedIdentifier,
-    InternalSyntaxToken openBraceToken, List<Tree> moduleDirectives, InternalSyntaxToken closeBraceToken) {
+  public ModuleDeclarationTreeImpl(List<AnnotationTree> annotations, InternalSyntaxToken openKeyword, InternalSyntaxToken moduleKeyword, ModuleNameTree moduleName,
+    InternalSyntaxToken openBraceToken, List<ModuleDirectiveTree> moduleDirectives, InternalSyntaxToken closeBraceToken) {
     super(Tree.Kind.MODULE);
     this.annotations = annotations;
     this.openKeyword = openKeyword;
     this.moduleKeyword = moduleKeyword;
-    this.qualifiedIdentifier = qualifiedIdentifier;
+    this.moduleName = moduleName;
     this.openBraceToken = openBraceToken;
     this.moduleDirectives = moduleDirectives;
     this.closeBraceToken = closeBraceToken;
@@ -83,8 +84,8 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
   }
 
   @Override
-  public ExpressionTree moduleName() {
-    return qualifiedIdentifier;
+  public ModuleNameTree moduleName() {
+    return moduleName;
   }
 
   @Override
@@ -93,7 +94,7 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
   }
 
   @Override
-  public List<Tree> moduleDirectives() {
+  public List<ModuleDirectiveTree> moduleDirectives() {
     return moduleDirectives;
   }
 
@@ -109,7 +110,7 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
     if (openKeyword != null) {
       iteratorBuilder.add(openKeyword);
     }
-    iteratorBuilder.add(moduleKeyword, qualifiedIdentifier, openBraceToken);
+    iteratorBuilder.add(moduleKeyword, moduleName, openBraceToken);
     iteratorBuilder.addAll(moduleDirectives);
     iteratorBuilder.add(closeBraceToken);
     return iteratorBuilder.build();

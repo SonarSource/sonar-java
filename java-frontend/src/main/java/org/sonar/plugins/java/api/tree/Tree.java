@@ -628,6 +628,41 @@ public interface Tree {
     MODULE(ModuleDeclarationTree.class),
 
     /**
+     * {@link RequiresDirectiveTree}
+     *
+     * @since Java 9
+     */
+    REQUIRES_DIRECTIVE(RequiresDirectiveTree.class),
+
+    /**
+     * {@link ExportsDirectiveTree}
+     *
+     * @since Java 9
+     */
+    EXPORTS_DIRECTIVE(ExportsDirectiveTree.class),
+
+    /**
+     * {@link OpensDirectiveTree}
+     *
+     * @since Java 9
+     */
+    OPENS_DIRECTIVE(OpensDirectiveTree.class),
+
+    /**
+     * {@link UsesDirectiveTree}
+     *
+     * @since Java 9
+     */
+    USES_DIRECTIVE(UsesDirectiveTree.class),
+
+    /**
+     * {@link ProvidesDirectiveTree}
+     *
+     * @since Java 9
+     */
+    PROVIDES_DIRECTIVE(ProvidesDirectiveTree.class),
+
+    /**
      * {@link ArrayDimensionTree}
      */
     ARRAY_DIMENSION(ArrayDimensionTree.class),
