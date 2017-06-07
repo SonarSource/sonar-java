@@ -170,27 +170,25 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
     } else if (expression.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (isStringConstant(identifierTree)) {
-        String stringConstantValue = getValueFromStringConstant(identifierTree);
-        if (stringConstantValue != null) {
-          args.add(stringConstantValue);
-        }
-      }
+      addValueIfStringConstant(args, (IdentifierTree) expression);
     } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
-      if (isStringConstant(memberSelectExpressionTree.identifier())) {
-        String stringConstantValue = getValueFromStringConstant(memberSelectExpressionTree.identifier());
-        if (stringConstantValue != null) {
-          args.add(stringConstantValue);
-        }
-      }
+      addValueIfStringConstant(args, memberSelectExpressionTree.identifier());
     } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getRulesFromExpression(initializer));
       }
     }
     return args;
+  }
+
+  private static void addValueIfStringConstant(List<String> args, IdentifierTree identifierTree) {
+    if (isStringConstant(identifierTree)) {
+      String stringConstantValue = getValueFromStringConstant(identifierTree);
+      if (stringConstantValue != null) {
+        args.add(stringConstantValue);
+      }
+    }
   }
 
   private static boolean isStringConstant(IdentifierTree identifierTree) {

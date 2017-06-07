@@ -499,8 +499,6 @@ public class JavaSymbol implements Symbol {
    */
   public static class FinalStaticVariableJavaSymbol extends VariableJavaSymbol implements FinalStaticVariableSymbol {
 
-    VariableTree declaration;
-
     Object value;
 
     public FinalStaticVariableJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner, @Nullable Object value) {
@@ -509,18 +507,8 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public VariableTree declaration() {
-      return declaration;
-    }
-
-    @Override
     public Object value() {
       return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.format("%s#%s", owner().name(), name());
     }
   }
 
