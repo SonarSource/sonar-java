@@ -46,7 +46,19 @@ public class TryStatementTest {
     // Java 7: try-with-resources
     assertThat(JavaLexer.STATEMENT)
       .matches("try (Resource resource = new Resource()) {}")
-      .matches("try (Resource resource = new Resource()) {} catch (Expception e) {} finally {}");
+      .matches("try (final Resource resource = new Resource()) {}")
+      .matches("try (@Nonnull Resource resource[] = new Resource()) {}")
+      .matches("try (Resource resource = new Resource()) {} catch (Exception e) {} finally {}");
   }
 
+  @Test
+  public void java9() {
+    assertThat(JavaLexer.STATEMENT)
+      .matches("try (resource) {}")
+      .matches("try (new A().field) {}")
+      .matches("try (super.resource;) {}")
+      .matches("try (super.resource; Resource resource = new Resource()) {}")
+      .matches("try (super.resource; Resource resource = new Resource();) {}")
+    ;
+  }
 }

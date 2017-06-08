@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +44,8 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
   @Nullable
   private InternalSyntaxToken openParenToken;
-  private ListTree<VariableTree> resources;
+  private ListTree<Tree> resources;
+  private ListTree variableTreeResources;
   @Nullable
   private InternalSyntaxToken closeParenToken;
 
@@ -59,6 +62,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
     this.openParenToken = null;
     this.resources = ResourceListTreeImpl.emptyList();
+    this.variableTreeResources = ResourceListTreeImpl.emptyList();
     this.closeParenToken = null;
 
     this.catches = getCatches(catches);
@@ -81,11 +85,31 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     this.tryToken = tryToken;
     this.openParenToken = openParenToken;
     this.resources = resources;
+    this.variableTreeResources = filterVariableTreeResources(resources);
     this.closeParenToken = closeParenToken;
     this.block = block;
     this.catches = getCatches(catches);
     this.finallyKeyword = null;
     this.finallyBlock = null;
+  }
+
+  private static ListTree filterVariableTreeResources(ResourceListTreeImpl resources) {
+    ImmutableList.Builder<Tree> filteredResources = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> filteredSeparators = ImmutableList.builder();
+    Iterator<SyntaxToken> separators = resources.separators().iterator();
+    for (Tree resource : resources) {
+      SyntaxToken separator = null;
+      if (separators.hasNext()) {
+        separator = separators.next();
+      }
+      if (resource.is(Kind.VARIABLE)) {
+        filteredResources.add(resource);
+        if (separator != null) {
+          filteredSeparators.add(separator);
+        }
+      }
+    }
+    return new ResourceListTreeImpl(filteredResources.build(), filteredSeparators.build());
   }
 
   public TryStatementTreeImpl completeWithCatches(List<CatchTreeImpl> catches) {
@@ -106,6 +130,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     this.tryToken = tryToken;
     this.openParenToken = openParenToken;
     this.resources = resources;
+    this.variableTreeResources = filterVariableTreeResources(resources);
     this.closeParenToken = closeParenToken;
     this.block = block;
     this.catches = getCatches(catches);
@@ -131,6 +156,12 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
   @Override
   public ListTree<VariableTree> resources() {
+    // raw type is used to avoid yet another implementation of ListTree for resources
+    return variableTreeResources;
+  }
+
+  @Override
+  public ListTree<Tree> resourceList() {
     return resources;
   }
 

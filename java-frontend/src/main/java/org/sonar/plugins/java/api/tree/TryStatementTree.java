@@ -31,7 +31,7 @@ import java.util.List;
  *
  * <pre>
  *   try {@link #block()} {@link #catches()} finally {@link #finallyBlock()}
- *   try ({@link #resources()}) {@link #block()} {@link #catches()} finally {@link #finallyBlock()}
+ *   try ({@link #resourceList()}) {@link #block()} {@link #catches()} finally {@link #finallyBlock()}
  * </pre>
  *
  * @since Java 1.3
@@ -45,9 +45,20 @@ public interface TryStatementTree extends StatementTree {
   SyntaxToken openParenToken();
 
   /**
+   * Java 9 allows resources to be declared by existing effectively final variables.
+   * This method will not return trees of resources declared by such variables, only resources declared with new variables will be returned (as it was until Java 9).
+   *
+   * @deprecated since 4.11. Use {@link #resourceList()} to get all declared resources.
+   *
    * @since Java 1.7
    */
+  @Deprecated
   ListTree<VariableTree> resources();
+
+  /**
+   * @since Java 1.7, changed in Java 9 to allow also effectively final variables
+   */
+  ListTree<Tree> resourceList();
 
   @Nullable
   SyntaxToken closeParenToken();

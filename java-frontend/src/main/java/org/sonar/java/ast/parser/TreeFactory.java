@@ -1083,11 +1083,11 @@ public class TreeFactory {
     }
   }
 
-  public ResourceListTreeImpl newResources(List<Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>>> rests) {
-    ImmutableList.Builder<VariableTree> resources = ImmutableList.builder();
+  public ResourceListTreeImpl newResources(List<Tuple<Tree, Optional<InternalSyntaxToken>>> rests) {
+    ImmutableList.Builder<Tree> resources = ImmutableList.builder();
     ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
 
-    for (Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>> rest : rests) {
+    for (Tuple<Tree, Optional<InternalSyntaxToken>> rest : rests) {
       if (rest.second().isPresent()) {
         separators.add(rest.second().get());
       }
@@ -1097,7 +1097,7 @@ public class TreeFactory {
     return new ResourceListTreeImpl(resources.build(), separators.build());
   }
 
-  public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, InternalSyntaxToken equalToken, ExpressionTree expression) {
+  public Tree newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, InternalSyntaxToken equalToken, ExpressionTree expression) {
     if (!modifiers.isEmpty()) {
       partial.completeModifiers(modifiers);
     }

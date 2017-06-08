@@ -1561,6 +1561,38 @@ public class JavaTreeModelTest {
     assertThat(type.typeAlternatives()).hasSize(2);
     assertThat(type.typeAlternatives().separators()).hasSize(1);
     assertThatChildrenIteratorHasSize(tree, 3);
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (r1) { } } }");
+    assertThat(tree.resources()).isEmpty();
+    assertThat(tree.resources().separators()).isEmpty();
+    assertThat(tree.resourceList()).hasSize(1);
+    assertThat(tree.resourceList().separators()).isEmpty();
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (r1; super.field; new A().f) { } } }");
+    assertThat(tree.resources()).isEmpty();
+    assertThat(tree.resources().separators()).isEmpty();
+    assertThat(tree.resourceList()).hasSize(3);
+    assertThat(tree.resourceList().separators()).hasSize(2);
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (r1; Resource r2 = open();) { } } }");
+    assertThat(tree.resources()).hasSize(1);
+    assertThat(tree.resources().separators()).hasSize(1);
+    assertThat(tree.resources().separators().get(0).column()).isEqualTo(50);
+    assertThat(tree.resourceList()).hasSize(2);
+    assertThat(tree.resourceList().separators()).hasSize(2);
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (r1; Resource r2 = open()) { } } }");
+    assertThat(tree.resources()).hasSize(1);
+    assertThat(tree.resources().separators()).isEmpty();
+    assertThat(tree.resourceList()).hasSize(2);
+    assertThat(tree.resourceList().separators()).hasSize(1);
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (Resource r2 = open(); r1;) { } } }");
+    assertThat(tree.resources()).hasSize(1);
+    assertThat(tree.resources().separators()).hasSize(1);
+    assertThat(tree.resources().separators().get(0).column()).isEqualTo(46);
+    assertThat(tree.resourceList()).hasSize(2);
+    assertThat(tree.resourceList().separators()).hasSize(2);
   }
 
   /*
