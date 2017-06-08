@@ -884,10 +884,11 @@ public class JavaGrammar {
         f.newResources(b.oneOrMore(f.newTuple27(RESOURCE(), b.optional(b.token(JavaPunctuator.SEMI))))));
   }
 
-  public VariableTreeImpl RESOURCE() {
-    return b.<VariableTreeImpl>nonterminal(JavaLexer.RESOURCE)
-      .is(
-        f.newResource(MODIFIERS(), TYPE_QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.token(JavaPunctuator.EQU), EXPRESSION()));
+  public Tree RESOURCE() {
+    return b.<Tree>nonterminal(JavaLexer.RESOURCE)
+      .is(b.firstOf(
+        f.newResource(MODIFIERS(), TYPE_QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.token(JavaPunctuator.EQU), EXPRESSION()),
+        PRIMARY_WITH_SELECTOR()));
   }
 
   public SwitchStatementTreeImpl SWITCH_STATEMENT() {
