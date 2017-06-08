@@ -59,6 +59,13 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     CompilationUnitTree cut = context.getTree();
+
+    if (cut.moduleDeclaration() != null) {
+      // skip module declarations as long as semantic is not resolved correctly.
+      // imports can be used for types used in module directive or annotations
+      return;
+    }
+
     ExpressionTree packageName = getPackageName(cut);
 
     pendingReferences.clear();
@@ -74,30 +81,35 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       }
 
       if (importTree == null || importTree.isStatic()) {
+        // discard empty statements, which can be part of imports
         continue;
       }
 
-      String importName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-      if ("java.lang.*".equals(importName)) {
-        context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
-      } else if (isImportFromSamePackage(importName)) {
-        context.reportIssue(this, importTree, "Remove this unnecessary import: same package classes are always implicitly imported.");
-      } else if (!isImportOnDemand(importName)) {
-        if (isJavaLangImport(importName)) {
-          context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
-        } else if (isDuplicatedImport(importName)) {
-          context.reportIssue(this, importTree, "Remove this duplicated import.");
-        } else {
-          lineByImportReference.put(importName, importTree);
-          pendingImports.add(importName);
-        }
-      }
+      reportIssue(importTree);
     }
     //check references
     scan(cut);
     //check references from comments.
     new CommentVisitor().checkImportsFromComments(cut, pendingImports);
     leaveFile();
+  }
+
+  private void reportIssue(ImportTree importTree) {
+    String importName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+    if ("java.lang.*".equals(importName)) {
+      context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+    } else if (isImportFromSamePackage(importName)) {
+      context.reportIssue(this, importTree, "Remove this unnecessary import: same package classes are always implicitly imported.");
+    } else if (!isImportOnDemand(importName)) {
+      if (isJavaLangImport(importName)) {
+        context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+      } else if (isDuplicatedImport(importName)) {
+        context.reportIssue(this, importTree, "Remove this duplicated import.");
+      } else {
+        lineByImportReference.put(importName, importTree);
+        pendingImports.add(importName);
+      }
+    }
   }
 
   private static ExpressionTree getPackageName(CompilationUnitTree cut) {

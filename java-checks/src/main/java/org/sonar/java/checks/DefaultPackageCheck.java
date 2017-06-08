@@ -22,14 +22,18 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 @Rule(key = "S1220")
 public class DefaultPackageCheck implements JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    if (context.fileParsed() && context.getTree().packageDeclaration() == null) {
-      context.addIssueOnFile(this, "Move this file to a named package.");
+    if (context.fileParsed()) {
+      CompilationUnitTree cut = context.getTree();
+      if (cut.moduleDeclaration() == null && cut.packageDeclaration() == null) {
+        context.addIssueOnFile(this, "Move this file to a named package.");
+      }
     }
   }
 

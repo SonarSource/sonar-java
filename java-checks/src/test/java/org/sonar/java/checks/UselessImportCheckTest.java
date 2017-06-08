@@ -34,4 +34,9 @@ public class UselessImportCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
   }
 
+  @Test
+  public void with_module() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new UselessImportCheck());
+  }
+
 }
