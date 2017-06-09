@@ -121,7 +121,7 @@ public class SyntaxHighlighterVisitorTest {
     String componentKey = ":" + file.getName();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
-    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.STRUCTURED_COMMENT);
     assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.ANNOTATION); // @Beta
     assertThatHasBeenHighlighted(componentKey, 10, 1, 10, 5, TypeOfText.KEYWORD); // open
     assertThatHasBeenHighlighted(componentKey, 10, 6, 10, 12, TypeOfText.KEYWORD); // module
@@ -151,7 +151,7 @@ public class SyntaxHighlighterVisitorTest {
     String componentKey = ":" + file.getName();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
-    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.STRUCTURED_COMMENT);
     assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.ANNOTATION); // @Beta
     assertThatHasBeenHighlighted(componentKey, 10, 1, 10, 9, TypeOfText.KEYWORD); // abstract
     assertThatHasBeenHighlighted(componentKey, 10, 10, 10, 15, TypeOfText.KEYWORD); // class
@@ -194,7 +194,7 @@ public class SyntaxHighlighterVisitorTest {
   private void verifyHighlighting(File file) throws IOException {
     String componentKey = ":" + file.getName();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
-    assertThatHasBeenHighlighted(componentKey, 5, 1, 7, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 5, 1, 7, 4, TypeOfText.STRUCTURED_COMMENT);
     assertThatHasBeenHighlighted(componentKey, 8, 1, 8, 18, TypeOfText.ANNOTATION);
     assertThatHasBeenHighlighted(componentKey, 8, 19, 8, 27, TypeOfText.STRING);
     assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.KEYWORD);
