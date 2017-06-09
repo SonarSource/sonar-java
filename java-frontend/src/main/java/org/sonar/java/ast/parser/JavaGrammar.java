@@ -263,7 +263,7 @@ public class JavaGrammar {
       .is(
         f.newProvidesModuleDirective(
           b.token(JavaRestrictedKeyword.PROVIDES),
-          EXPRESSION_QUALIFIED_IDENTIFIER(),
+          TYPE_QUALIFIED_IDENTIFIER(),
           b.token(JavaRestrictedKeyword.WITH),
           QUALIFIED_IDENTIFIER_LIST(),
           b.token(JavaPunctuator.SEMI)));

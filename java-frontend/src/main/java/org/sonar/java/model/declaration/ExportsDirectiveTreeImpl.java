@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,9 +37,9 @@ public class ExportsDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements
   private final ExpressionTree packageName;
   @Nullable
   private final InternalSyntaxToken toKeyword;
-  private final ListTreeImpl<ModuleNameTree> moduleNames;
+  private final ListTree<ModuleNameTree> moduleNames;
 
-  public ExportsDirectiveTreeImpl(InternalSyntaxToken exportsKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTreeImpl<ModuleNameTree> moduleNames,
+  public ExportsDirectiveTreeImpl(InternalSyntaxToken exportsKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
     InternalSyntaxToken semicolonToken) {
     super(Tree.Kind.EXPORTS_DIRECTIVE, exportsKeyword, semicolonToken);
     this.packageName = packageName;
@@ -76,11 +75,10 @@ public class ExportsDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements
 
   @Override
   protected Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.add(directiveKeyword(), packageName);
     if (toKeyword != null) {
-      iteratorBuilder.add(toKeyword);
-      iteratorBuilder.addAll(moduleNames.children());
+      iteratorBuilder.add(toKeyword, moduleNames);
     }
     iteratorBuilder.add(semicolonToken());
     return iteratorBuilder.build();

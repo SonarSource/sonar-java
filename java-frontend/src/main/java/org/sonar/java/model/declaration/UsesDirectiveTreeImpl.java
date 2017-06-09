@@ -54,7 +54,10 @@ public class UsesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements Us
 
   @Override
   protected Iterable<Tree> children() {
-    return Collections.unmodifiableList(Arrays.asList(directiveKeyword(), typeName, semicolonToken()));
+    return Collections.unmodifiableList(Arrays.asList(
+      directiveKeyword(),
+      typeName,
+      semicolonToken()));
   }
 
 }

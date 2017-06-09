@@ -35,7 +35,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface ProvidesDirectiveTree extends ModuleDirectiveTree {
 
-  ExpressionTree typeName();
+  TypeTree typeName();
 
   SyntaxToken withKeyword();
 

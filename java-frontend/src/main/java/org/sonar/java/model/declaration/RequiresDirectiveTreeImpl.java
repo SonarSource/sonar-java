@@ -19,14 +19,15 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.RequiresDirectiveTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class RequiresDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements RequiresDirectiveTree {
 
@@ -61,11 +62,11 @@ public class RequiresDirectiveTreeImpl extends ModuleDirectiveTreeImpl implement
 
   @Override
   protected Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
-    iteratorBuilder.add(directiveKeyword());
-    iteratorBuilder.addAll(modifiers);
-    iteratorBuilder.add(moduleName, semicolonToken());
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(Arrays.asList(
+      directiveKeyword(),
+      modifiers,
+      moduleName,
+      semicolonToken()));
   }
 
 }

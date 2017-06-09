@@ -19,11 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
-
-import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ProvidesDirectiveTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -31,14 +27,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class ProvidesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements ProvidesDirectiveTree {
 
-  private final ExpressionTree typeName;
+  private final TypeTree typeName;
   private final InternalSyntaxToken withKeyword;
-  private final ListTreeImpl<TypeTree> typeNames;
+  private final ListTree<TypeTree> typeNames;
 
-  public ProvidesDirectiveTreeImpl(InternalSyntaxToken providesKeyword, ExpressionTree typeName, InternalSyntaxToken withKeyword,
-    ListTreeImpl<TypeTree> typeNames, InternalSyntaxToken semicolonToken) {
+  public ProvidesDirectiveTreeImpl(InternalSyntaxToken providesKeyword, TypeTree typeName, InternalSyntaxToken withKeyword,
+    ListTree<TypeTree> typeNames, InternalSyntaxToken semicolonToken) {
     super(Tree.Kind.PROVIDES_DIRECTIVE, providesKeyword, semicolonToken);
     this.typeName =typeName;
     this.withKeyword = withKeyword;
@@ -56,7 +55,7 @@ public class ProvidesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implement
   }
 
   @Override
-  public ExpressionTree typeName() {
+  public TypeTree typeName() {
     return typeName;
   }
 
@@ -72,11 +71,12 @@ public class ProvidesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implement
 
   @Override
   protected Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
-    iteratorBuilder.add(directiveKeyword(), typeName, withKeyword);
-    iteratorBuilder.addAll(typeNames.children());
-    iteratorBuilder.add(semicolonToken());
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(Arrays.asList(
+      directiveKeyword(),
+      typeName,
+      withKeyword,
+      typeNames,
+      semicolonToken()));
   }
 
 }

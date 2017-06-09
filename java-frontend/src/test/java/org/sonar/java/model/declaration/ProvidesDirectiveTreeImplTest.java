@@ -28,7 +28,6 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -66,7 +65,7 @@ public class ProvidesDirectiveTreeImplTest {
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.PROVIDES_DIRECTIVE);
     assertThat(exports.directiveKeyword().text()).isEqualTo("provides");
-    ExpressionTree typeName = exports.typeName();
+    TypeTree typeName = exports.typeName();
     assertThat(typeName.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) typeName;
     assertThat(((IdentifierTree) mset.expression()).name()).isEqualTo("org");
