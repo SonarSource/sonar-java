@@ -88,7 +88,7 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_LF() throws Exception {
     this.eol = "\n";
-    File file = generateTestFile();
+    File file = generateDefaultTestFile();
     scan(file);
     verifyHighlighting(file);
   }
@@ -96,7 +96,7 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_CR_LF() throws Exception {
     this.eol = "\r\n";
-    File file = generateTestFile();
+    File file = generateDefaultTestFile();
     scan(file);
     verifyHighlighting(file);
   }
@@ -104,9 +104,73 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_CR() throws Exception {
     this.eol = "\r";
-    File file = generateTestFile();
+    File file = generateDefaultTestFile();
     scan(file);
     verifyHighlighting(file);
+  }
+
+  /**
+   * Java 9 modules introduces restricted keywords only used in their context
+   */
+  @Test
+  public void test_restricted_keywords_within_module() throws Exception {
+    this.eol = "\n";
+    File file = generateTestFile("src/test/files/highlighter/ModuleExample.java");
+    scan(file);
+
+    String componentKey = ":" + file.getName();
+    assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
+    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.ANNOTATION); // @Beta
+    assertThatHasBeenHighlighted(componentKey, 10, 1, 10, 5, TypeOfText.KEYWORD); // open
+    assertThatHasBeenHighlighted(componentKey, 10, 6, 10, 12, TypeOfText.KEYWORD); // module
+    assertThatHasBeenHighlighted(componentKey, 11, 3, 11, 11, TypeOfText.KEYWORD); // requires
+    assertThatHasNotBeenHighlighted(componentKey, 11, 12, 11, 22); // transitive as identifier
+    assertThatHasBeenHighlighted(componentKey, 12, 3, 12, 11, TypeOfText.KEYWORD); // requires
+    assertThatHasBeenHighlighted(componentKey, 12, 12, 12, 18, TypeOfText.KEYWORD); // static
+    assertThatHasNotBeenHighlighted(componentKey, 12, 19, 12, 29); // transitive as identifier
+    assertThatHasBeenHighlighted(componentKey, 13, 3, 13, 11, TypeOfText.KEYWORD); // requires
+    assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 18, TypeOfText.KEYWORD); // static
+    assertThatHasBeenHighlighted(componentKey, 13, 19, 13, 29, TypeOfText.KEYWORD); // transitive as keyword
+    assertThatHasBeenHighlighted(componentKey, 14, 3, 14, 10, TypeOfText.KEYWORD); // exports
+    assertThatHasBeenHighlighted(componentKey, 14, 19, 14, 21, TypeOfText.KEYWORD); // to
+    assertThatHasBeenHighlighted(componentKey, 15, 3, 15, 8, TypeOfText.KEYWORD); // opens
+    assertThatHasBeenHighlighted(componentKey, 15, 17, 15, 19, TypeOfText.KEYWORD); // to
+    assertThatHasBeenHighlighted(componentKey, 16, 3, 16, 7, TypeOfText.KEYWORD); // uses
+    assertThatHasBeenHighlighted(componentKey, 17, 3, 17, 11, TypeOfText.KEYWORD); // provides
+    assertThatHasBeenHighlighted(componentKey, 17, 26, 17, 30, TypeOfText.KEYWORD); // with
+  }
+
+  @Test
+  public void test_restricted_keywords_outside_module() throws Exception {
+    this.eol = "\n";
+    File file = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
+    scan(file);
+
+    String componentKey = ":" + file.getName();
+    assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
+    assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 9, 1, 9, 6, TypeOfText.ANNOTATION); // @Beta
+    assertThatHasBeenHighlighted(componentKey, 10, 1, 10, 9, TypeOfText.KEYWORD); // abstract
+    assertThatHasBeenHighlighted(componentKey, 10, 10, 10, 15, TypeOfText.KEYWORD); // class
+    assertThatHasNotBeenHighlighted(componentKey, 10, 16, 10, 22); // module
+    assertThatHasNotBeenHighlighted(componentKey, 11, 10, 11, 14); // open
+    assertThatHasNotBeenHighlighted(componentKey, 11, 16, 11, 26); // transitive
+    assertThatHasBeenHighlighted(componentKey, 13, 3, 13, 7, TypeOfText.KEYWORD); // void
+    assertThatHasNotBeenHighlighted(componentKey, 13, 8, 13, 16); // requires
+    assertThatHasNotBeenHighlighted(componentKey, 13, 24, 13, 31); // exports
+    assertThatHasNotBeenHighlighted(componentKey, 13, 40, 13, 45); // opens
+    assertThatHasBeenHighlighted(componentKey, 14, 5, 14, 8, TypeOfText.KEYWORD); // int
+    assertThatHasNotBeenHighlighted(componentKey, 14, 9, 14, 11); // to
+    assertThatHasBeenHighlighted(componentKey, 15, 5, 15, 11, TypeOfText.KEYWORD); // double
+    assertThatHasNotBeenHighlighted(componentKey, 15, 12, 15, 16); // with
+    assertThatHasNotBeenHighlighted(componentKey, 16, 12, 16, 16); // uses
+    assertThatHasNotBeenHighlighted(componentKey, 17, 5, 17, 13); // provides
+    assertThatHasBeenHighlighted(componentKey, 20, 3, 20, 11, TypeOfText.KEYWORD); // abstract
+    assertThatHasBeenHighlighted(componentKey, 20, 12, 20, 16, TypeOfText.KEYWORD); // void
+    assertThatHasNotBeenHighlighted(componentKey, 20, 17, 20, 25); // provides
   }
 
   private void scan(File file) {
@@ -114,9 +178,13 @@ public class SyntaxHighlighterVisitorTest {
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 
-  private File generateTestFile() throws IOException {
+  private File generateDefaultTestFile() throws IOException {
+    return generateTestFile("src/test/files/highlighter/Example.java");
+  }
+
+  private File generateTestFile(String filename) throws IOException {
     File file = temp.newFile().getAbsoluteFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
+    Files.write(Files.toString(new File(filename), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(eol).join(lines);
     fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
@@ -146,6 +214,12 @@ public class SyntaxHighlighterVisitorTest {
     assertThat(context.highlightingTypeAt(componentKey, startLine, startColumn - 1)).hasSize(1).contains(expected);
     // -1 because of offset (column start at 0) and -1 to be within the range.
     assertThat(context.highlightingTypeAt(componentKey, endLine, endColumn - 1 - 1)).hasSize(1).contains(expected);
+  }
+
+  private void assertThatHasNotBeenHighlighted(String componentKey, int startLine, int startColumn, int endLine, int endColumn) {
+    assertThat(context.highlightingTypeAt(componentKey, startLine, startColumn - 1)).isEmpty();
+    // -1 because of offset (column start at 0) and -1 to be within the range.
+    assertThat(context.highlightingTypeAt(componentKey, endLine, endColumn - 1 - 1)).isEmpty();
   }
 
 }
