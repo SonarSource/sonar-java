@@ -106,7 +106,7 @@ public class JavaSquidTest {
     } else {
       assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).hasSize(1);
       verify(fileLinesContext, times(1)).save();
-      assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).hasSize(1).contains(TypeOfText.COMMENT);
+      assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).hasSize(1).contains(TypeOfText.STRUCTURED_COMMENT);
       // No measures
       assertThat(context.measures(defaultFile.key())).isNotEmpty();
     }
