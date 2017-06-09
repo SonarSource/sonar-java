@@ -116,7 +116,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      if (!tree.resources().isEmpty()) {
+      if (!tree.resourceList().isEmpty()) {
         hasTryWithResource = true;
       }
       super.visitTryStatement(tree);

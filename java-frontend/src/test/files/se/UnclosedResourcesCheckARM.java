@@ -59,4 +59,13 @@ public class A {
       System.out.println("inside try");
     }
   }
+
+  void java9() {
+    final FileWriter fw = new FileWriter("");
+    try (fw) {
+      fw.write("hello");
+    } catch (Exception e) {
+      // ...
+    }
+  }
 }

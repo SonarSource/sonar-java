@@ -193,7 +193,7 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    scan(tree.resources());
+    scan(tree.resourceList());
     scan(tree.block());
     tree.catches().forEach(c -> increaseComplexityByNesting(c.catchKeyword()));
     nesting++;

@@ -206,7 +206,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitTryStatement(TryStatementTree tree) {
       // do not scan resources
-      if (tree.resources().isEmpty()) {
+      if (tree.resourceList().isEmpty()) {
         addLine(tree.tryKeyword());
       } else {
         addLines(tree.tryKeyword(), tree.closeParenToken());

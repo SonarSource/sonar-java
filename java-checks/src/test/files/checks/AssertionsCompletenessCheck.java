@@ -127,4 +127,12 @@ public class AssertionsCompletenessCheck {
     junit_soft_assertions.assertThat(1).isLessThan(2);
   } // Compliant, no need to call "assertAll()", it will be called by the @Rule of junit_soft_assertions
 
+  @Test
+  public void assertj_soft_assertions_try_with_resource_java9() {
+    final org.assertj.core.api.AutoCloseableSoftAssertions softly = new org.assertj.core.api.AutoCloseableSoftAssertions();
+    try(softly) {
+      softly.assertThat(1).isLessThan(2);
+    } // Compliant, no need to call "assertAll()", it will be called by AutoCloseableSoftAssertions
+  }
+
 }

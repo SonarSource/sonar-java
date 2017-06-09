@@ -43,7 +43,7 @@ public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    scan(tree.resources());
+    scan(tree.resourceList());
     scan(tree.block());
     scan(tree.catches());
     finallyLevel++;

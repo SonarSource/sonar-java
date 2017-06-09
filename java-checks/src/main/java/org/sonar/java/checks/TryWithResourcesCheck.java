@@ -78,7 +78,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
   }
 
   private boolean withinStandardTryWithFinally() {
-    return !withinTry.isEmpty() && withinTry.peek().resources().isEmpty() && withinTry.peek().finallyBlock() != null;
+    return !withinTry.isEmpty() && withinTry.peek().resourceList().isEmpty() && withinTry.peek().finallyBlock() != null;
   }
 
   @Override

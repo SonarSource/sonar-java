@@ -1523,6 +1523,20 @@ public class CFGTest {
   }
 
   @Test
+  public void try_with_resource_java9() throws Exception {
+    final CFG cfg = buildCFG("void fun() { final Resource r = new Resource(); try (r) {} }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Kind.NEW_CLASS),
+        element(Kind.VARIABLE, "r"),
+        element(Kind.TRY_STATEMENT)).successors(1),
+      block(
+        element(Kind.IDENTIFIER, "r")).successors(0))
+      ;
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   public void returnCascadedAnd() throws Exception {
     final CFG cfg = buildCFG(
       "void andAll(boolean a, boolean b, boolean c) { return a && b && c;}");

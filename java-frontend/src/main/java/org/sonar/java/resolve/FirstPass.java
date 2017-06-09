@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -417,17 +418,21 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    if (tree.resources().isEmpty()) {
+    if (!declaresResourceAsVariable(tree.resourceList())) {
       super.visitTryStatement(tree);
     } else {
       //Declare scope for resources
-      createNewEnvironment(tree.resources());
-      scan(tree.resources());
+      createNewEnvironment(tree.resourceList());
+      scan(tree.resourceList());
       scan(tree.block());
-      restoreEnvironment(tree.resources());
+      restoreEnvironment(tree.resourceList());
       scan(tree.catches());
       scan(tree.finallyBlock());
     }
+  }
+
+  private static boolean declaresResourceAsVariable(ListTree<Tree> resources) {
+    return resources.stream().anyMatch(r -> r.is(Tree.Kind.VARIABLE));
   }
 
   @Override
