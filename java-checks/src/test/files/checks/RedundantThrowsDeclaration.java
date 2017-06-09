@@ -160,6 +160,14 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
+  void foo15_java9(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
+    final AutoCloseable ac = getMeAnAutoCloseableWithoutExceptionPlease(file);
+    try (ac) {
+      // do something
+    }
+
+  }
+
   void foo16(java.io.File file) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
     try (MyAutoCloseable mac = getMeAnAutoCloseableWithoutExceptionPlease(file)) {
       // do something

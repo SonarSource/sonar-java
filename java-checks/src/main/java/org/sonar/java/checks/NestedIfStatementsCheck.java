@@ -121,7 +121,7 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
     nestingLevel.push(tryKeyword);
     scan(tree.block());
     nestingLevel.pop();
-    scan(tree.resources());
+    scan(tree.resourceList());
     scan(tree.catches());
     scan(tree.finallyBlock());
   }

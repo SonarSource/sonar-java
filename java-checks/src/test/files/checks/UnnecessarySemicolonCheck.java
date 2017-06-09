@@ -23,6 +23,21 @@ public class UnnecessarySemicolonCheck {
     try(InputStream i1 = input("i1"); InputStream i2 = input("i2")) { // Compliant
     }
 
+    final InputStream fi1 = input("fi1");
+    final InputStream fi2 = input("fi1");
+    try (fi1;) { // Noncompliant
+
+    }
+
+    try (fi1;fi2) { // Compliant
+
+    }
+
+    try (fi1;fi2;) { // Noncompliant
+
+    }
+
+
   }
 
 }

@@ -56,7 +56,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    scan(tree.resources());
+    scan(tree.resourceList());
     scan(tree.block());
     scan(tree.catches());
     BlockTree finallyBlock = tree.finallyBlock();

@@ -187,7 +187,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    scan(tree.resources());
+    scan(tree.resourceList());
     scan(tree.block());
     scan(tree.catches());
     scan(tree.finallyBlock());

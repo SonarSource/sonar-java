@@ -1,6 +1,7 @@
 import com.google.common.collect.Lists;
 
 import java.lang.Exception;
+import java.io.*;
 
 class A {
 
@@ -195,6 +196,13 @@ class A {
       in.read();
     }
 
+  }
+
+  void try_with_resource_java9() {
+    final FileInputStream fis = new FileInputStream("..."); // compliant
+    try (fis) {
+
+    }
   }
 
   public class MyClass {

@@ -833,7 +833,7 @@ public class CFG {
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
-    build((List<? extends Tree>) tryStatementTree.resources());
+    build((List<? extends Tree>) tryStatementTree.resourceList());
     enclosingTry.pop();
     enclosedByCatch.pop();
     currentBlock = createBlock(currentBlock);

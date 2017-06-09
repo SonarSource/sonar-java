@@ -54,7 +54,7 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    scan(tree.resources());
+    scan(tree.resourceList());
     Deque<Tree> currentNestingLevel = nestingLevel.peek();
 
     if (!tree.catches().isEmpty()) {

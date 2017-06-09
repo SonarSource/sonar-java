@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
@@ -47,7 +48,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
@@ -184,14 +184,14 @@ public class UnclosedResourcesCheck extends SECheck {
       parent = parent.parent();
     }
     if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
-      return isTryStatementResource((VariableTree) parent);
+      return isTryStatementResource(parent);
     }
     return false;
   }
 
-  private static boolean isTryStatementResource(VariableTree variable) {
-    final TryStatementTree tryStatement = getEnclosingTryStatement(variable);
-    return tryStatement != null && tryStatement.resources().contains(variable);
+  private static boolean isTryStatementResource(Tree tree) {
+    final TryStatementTree tryStatement = getEnclosingTryStatement(tree);
+    return tryStatement != null && tryStatement.resourceList().contains(tree);
   }
 
   private static TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
@@ -366,6 +366,15 @@ public class UnclosedResourcesCheck extends SECheck {
         if (oConstraint != null) {
           programState = programState.addConstraintTransitively(toClose, CLOSED);
         }
+      }
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      // close resource as soon as it is encountered in the resource declaration
+      if (isTryStatementResource(tree)) {
+        Symbol symbol = tree.symbol();
+        closeResource(programState.getValue(symbol));
       }
     }
   }

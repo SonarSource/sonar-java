@@ -150,7 +150,7 @@ public class StatementVisitor extends BaseTreeVisitor {
   @Override
   public void visitTryStatement(TryStatementTree tree) {
     statements++;
-    statements -= tree.resources().size();
+    statements -= tree.resourceList().size();
     statements -= tree.catches().size();
     super.visitTryStatement(tree);
   }

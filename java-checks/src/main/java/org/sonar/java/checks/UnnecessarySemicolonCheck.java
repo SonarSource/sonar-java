@@ -21,13 +21,14 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import java.util.List;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.List;
 
 @Rule(key = "S2959")
 public class UnnecessarySemicolonCheck extends IssuableSubscriptionVisitor {
@@ -39,7 +40,7 @@ public class UnnecessarySemicolonCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ListTree<VariableTree> resources = ((TryStatementTree) tree).resources();
+    ListTree<Tree> resources = ((TryStatementTree) tree).resourceList();
     // need only (resources.size - 1) separators
     if (!resources.isEmpty() && resources.separators().size() == resources.size()) {
       reportIssue(Iterables.getLast(resources.separators()), "Remove this extraneous semicolon.");

@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -144,8 +145,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    boolean hasAutoCloseableSoftAssertion = tree.resources().stream()
-      .map(VariableTree::symbol)
+    boolean hasAutoCloseableSoftAssertion = tree.resourceList().stream()
+      .map(AssertionsCompletenessCheck::resourceSymbol)
       .map(Symbol::type)
       .filter(Objects::nonNull)
       .filter(type -> type.isSubtypeOf("org.assertj.core.api.AutoCloseableSoftAssertions"))
@@ -154,6 +155,19 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     super.visitTryStatement(tree);
     if (hasAutoCloseableSoftAssertion) {
       checkAssertJAssertAll(tree.block().closeBraceToken(), "Add one or more 'assertThat' before the end of this try block.");
+    }
+  }
+
+  private static Symbol resourceSymbol(Tree tree) {
+    switch (tree.kind()) {
+      case VARIABLE:
+        return ((VariableTree) tree).symbol();
+      case IDENTIFIER:
+        return ((IdentifierTree) tree).symbol();
+      case MEMBER_SELECT:
+        return ((MemberSelectExpressionTree) tree).identifier().symbol();
+      default:
+        throw new IllegalArgumentException("Tree is not try-with-resources resource");
     }
   }
 
