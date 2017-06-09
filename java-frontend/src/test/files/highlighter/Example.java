@@ -19,3 +19,7 @@ class Example {
 @interface Example2 {
   Example3 method() default 0;
 }
+
+interface Example3 {
+  void foo();
+}

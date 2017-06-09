@@ -189,6 +189,14 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return declarationKeyword;
   }
 
+  /**
+   * Only used for annotation types, not part of API
+   */
+  @Nullable
+  public SyntaxToken atToken() {
+    return atToken;
+  }
+
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitClass(this);
