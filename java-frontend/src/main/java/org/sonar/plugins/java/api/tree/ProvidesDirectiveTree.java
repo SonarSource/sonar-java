@@ -19,15 +19,25 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.assertj.core.api.Assertions.assertThat;
+/**
+ * The 'provides' directive from java 9 module directives
+ * 
+ * JLS9 - §7.7.4
+ * 
+ * <pre>
+ *   provides {@link #typeName()} with {@link #typeNames()} ;
+ * </pre>
+ * 
+ * @since Java 9
+ */
+@Beta
+public interface ProvidesDirectiveTree extends ModuleDirectiveTree {
 
-public class TreeTest {
+  TypeTree typeName();
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
-  }
+  SyntaxToken withKeyword();
 
+  ListTree<TypeTree> typeNames();
 }

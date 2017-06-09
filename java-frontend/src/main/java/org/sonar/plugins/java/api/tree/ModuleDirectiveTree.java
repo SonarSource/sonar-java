@@ -19,15 +19,20 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.assertj.core.api.Assertions.assertThat;
+/**
+ * Common interface for all the module directives
+ * 
+ * JLS9 - §7.7
+ *
+ * @since Java 9
+ */
+@Beta
+public interface ModuleDirectiveTree extends Tree {
 
-public class TreeTest {
+  SyntaxToken directiveKeyword();
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
-  }
+  SyntaxToken semicolonToken();
 
 }

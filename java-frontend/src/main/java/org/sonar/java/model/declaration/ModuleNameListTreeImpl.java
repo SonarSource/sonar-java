@@ -17,17 +17,24 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model.declaration;
 
-import org.junit.Test;
+import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.java.ast.parser.ListTreeImpl;
+import org.sonar.plugins.java.api.tree.ModuleNameTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Collections;
+import java.util.List;
 
-public class TreeTest {
+public class ModuleNameListTreeImpl extends ListTreeImpl<ModuleNameTree> {
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
+  public ModuleNameListTreeImpl(List<ModuleNameTree> moduleNames, List<SyntaxToken> separators) {
+    super(JavaLexer.MODULE_NAME_LIST, moduleNames, separators);
+  }
+
+  public static ModuleNameListTreeImpl emptyList() {
+    return new ModuleNameListTreeImpl(Collections.emptyList(), Collections.emptyList());
   }
 
 }

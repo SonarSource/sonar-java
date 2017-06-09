@@ -138,5 +138,15 @@ public interface TreeVisitor {
 
   void visitModule(ModuleDeclarationTree module);
 
+  void visitRequiresDirectiveTree(RequiresDirectiveTree tree);
+
+  void visitExportsDirectiveTree(ExportsDirectiveTree tree);
+
+  void visitOpensDirective(OpensDirectiveTree tree);
+
+  void visitUsesDirective(UsesDirectiveTree tree);
+
+  void visitProvidesDirective(ProvidesDirectiveTree tree);
+
   void visitArrayDimension(ArrayDimensionTree tree);
 }

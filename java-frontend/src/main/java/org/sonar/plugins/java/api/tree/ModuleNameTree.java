@@ -19,15 +19,16 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class TreeTest {
-
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
-  }
+/**
+ * Module Name.
+ *
+ * JLS 9 - §6.5
+ *
+ * @since Java 9
+ */
+@Beta
+public interface ModuleNameTree extends ListTree<IdentifierTree> {
 
 }

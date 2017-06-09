@@ -17,17 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.ast.parser.grammar.moduledirectives;
 
 import org.junit.Test;
+import org.sonar.java.ast.parser.JavaLexer;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.sslr.tests.Assertions.assertThat;
 
-public class TreeTest {
+public class UsesDirectiveTest {
 
   @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(117);
+  public void simple() {
+    assertThat(JavaLexer.USES_DIRECTIVE)
+      .matches("uses Greetings ;")
+      .matches("uses com.Greetings;");
   }
 
 }

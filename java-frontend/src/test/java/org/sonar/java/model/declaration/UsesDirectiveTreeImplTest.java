@@ -25,14 +25,15 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
-import org.sonar.plugins.java.api.tree.ModuleNameTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UsesDirectiveTree;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,8 +41,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModuleDeclarationTreeImplTest {
-
+public class UsesDirectiveTreeImplTest {
+  
   private final ActionParser<Tree> p = JavaParser.createParser();
 
   private CompilationUnitTree createTree(String... lines) {
@@ -50,57 +51,61 @@ public class ModuleDeclarationTreeImplTest {
     return compilationUnitTree;
   }
 
-  @Test
-  public void no_module() {
-    CompilationUnitTree cut = createTree("package org.foo;");
-    assertThat(cut.moduleDeclaration()).isNull();
+  private UsesDirectiveTree moduleDirective(String exportsDirective) {
+    CompilationUnitTree compilationUnitTree = createTree("module org.foo {\n  " + exportsDirective + "\n}");
+    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+    return (UsesDirectiveTree) compilationUnitTree.moduleDeclaration().moduleDirectives().get(0);
   }
 
   @Test
-  public void with_module() {
-    CompilationUnitTree cut = createTree("module org.foo { }");
-    ModuleDeclarationTree moduleDeclaration = cut.moduleDeclaration();
-    assertThat(moduleDeclaration).isNotNull();
-    assertThat(moduleDeclaration.is(Tree.Kind.MODULE)).isTrue();
+  public void simple_uses() {
+    UsesDirectiveTree exports = moduleDirective("uses foo.MyInterface;");
 
-    assertThat(moduleDeclaration.openKeyword()).isNull();
-    assertThat(moduleDeclaration.moduleKeyword().text()).isEqualTo("module");
-    assertThat(moduleDeclaration.moduleDirectives()).isEmpty();
-
-    ModuleNameTree moduleName = moduleDeclaration.moduleName();
-    assertThat(moduleName).hasSize(2);
-    assertThat(moduleName.stream().map(IdentifierTree::name)).containsExactly("org", "foo");
-
-    assertThat(moduleDeclaration.openBraceToken().text()).isEqualTo("{");
-    assertThat(moduleDeclaration.closeBraceToken().text()).isEqualTo("}");
+    assertThat(exports.kind()).isEqualTo(Tree.Kind.USES_DIRECTIVE);
+    assertThat(exports.directiveKeyword().text()).isEqualTo("uses");
+    TypeTree typeName = exports.typeName();
+    assertThat(typeName.is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(((MemberSelectExpressionTree) typeName).identifier().name()).isEqualTo("MyInterface");
+    assertThat(exports.semicolonToken().text()).isEqualTo(";");
   }
 
   @Test
   public void test_BaseTreeVisitor() {
     CompilationUnitTree cut = createTree(
-      "import org.foo.Bar;",
-      "",
-      "@Bar",
       "open module com.greetings {",
+      "  uses org.bar.MyInterface;",
+      "  uses org.gul.MyOtherInterface;",
       "}");
-    ModuleDeclarationVisitor moduleDeclarationVisitor = new ModuleDeclarationVisitor();
+    UsesDirectiveVisitor moduleDeclarationVisitor = new UsesDirectiveVisitor();
     cut.accept(moduleDeclarationVisitor);
     assertThat(moduleDeclarationVisitor.visited).isTrue();
-    assertThat(moduleDeclarationVisitor.annotations).hasSize(1);
-    AnnotationTree annotation = moduleDeclarationVisitor.annotations.iterator().next();
-    assertThat(((IdentifierTree) annotation.annotationType()).name()).isEqualTo("Bar");
+    assertThat(moduleDeclarationVisitor.directives).hasSize(2);
+    assertThat(moduleDeclarationVisitor.identifiers).containsExactly("com", "greetings", "MyInterface", "MyOtherInterface");
   }
 
-  private static class ModuleDeclarationVisitor extends BaseTreeVisitor {
+  private static class UsesDirectiveVisitor extends BaseTreeVisitor {
 
-    private boolean visited = false;
-    private List<AnnotationTree> annotations = null;
+    boolean visited = false;
+    List<UsesDirectiveTree> directives = new ArrayList<>();
+    List<String> identifiers = new ArrayList<>();
 
     @Override
-    public void visitModule(ModuleDeclarationTree module) {
+    public void visitUsesDirective(UsesDirectiveTree tree) {
       visited = true;
-      annotations = module.annotations();
-      super.visitModule(module);
+      directives.add(tree);
+      super.visitUsesDirective(tree);
+    }
+
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      // skip all the rest
+      scan(tree.identifier());
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      identifiers.add(tree.name());
     }
   }
 

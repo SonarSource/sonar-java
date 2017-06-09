@@ -45,6 +45,11 @@ public class CompilationUnitTest {
         "",
         "@Beta",
         "open module com.greetings {",
+        "  requires transitive org.foo.bar;",
+        "  exports foo.bar to com.module1, gul.bar.qix;",
+        "  opens gul.lom to moc.loe.module2, ahah.bro.force;",
+        "  uses bar.foo.MyInterface;",
+        "  provides com.Greetings with org.foo.Greetings, foo.bar.Salutations;",
         "}"));
   }
 
