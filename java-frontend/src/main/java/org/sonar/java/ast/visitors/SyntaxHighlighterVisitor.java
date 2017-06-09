@@ -27,6 +27,7 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -105,9 +106,19 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    if (keywords.contains(syntaxToken.text())) {
-      highlight(syntaxToken, TypeOfText.KEYWORD);
+    String text = syntaxToken.text();
+    if (keywords.contains(text)) {
+      if (isInterfaceOfAnnotationType(syntaxToken)) {
+        ClassTreeImpl annotationType = (ClassTreeImpl) syntaxToken.parent();
+        highlight(annotationType.atToken(), annotationType.declarationKeyword(), TypeOfText.KEYWORD);
+      } else {
+        highlight(syntaxToken, TypeOfText.KEYWORD);
+      }
     }
+  }
+
+  private static boolean isInterfaceOfAnnotationType(SyntaxToken syntaxToken) {
+    return JavaKeyword.INTERFACE.getValue().equals(syntaxToken.text()) && syntaxToken.parent().is(Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override

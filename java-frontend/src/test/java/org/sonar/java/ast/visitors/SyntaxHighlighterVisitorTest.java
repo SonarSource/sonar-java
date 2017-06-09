@@ -135,9 +135,11 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 13, 5, 13, 11, TypeOfText.KEYWORD);
     assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 14, TypeOfText.CONSTANT);
     assertThatHasBeenHighlighted(componentKey, 18, 1, 18, 18, TypeOfText.COMMENT);
-    assertThatHasBeenHighlighted(componentKey, 19, 2, 19, 11, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 19, 1, 19, 11, TypeOfText.KEYWORD);
     assertThatHasBeenHighlighted(componentKey, 20, 21, 20, 28, TypeOfText.KEYWORD);
     assertThatHasBeenHighlighted(componentKey, 20, 29, 20, 30, TypeOfText.CONSTANT);
+    assertThatHasBeenHighlighted(componentKey, 23, 1, 23, 10, TypeOfText.KEYWORD);
+    assertThatHasBeenHighlighted(componentKey, 24, 3, 24, 7, TypeOfText.KEYWORD);
   }
 
   private void assertThatHasBeenHighlighted(String componentKey, int startLine, int startColumn, int endLine, int endColumn, TypeOfText expected) {

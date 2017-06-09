@@ -28,9 +28,11 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,5 +55,14 @@ public class ClassTreeImplTest {
     //get line of anonymous class
     NewClassTree newClassTree = (NewClassTree) ((VariableTree) classTree.members().get(0)).initializer();
     assertThat(((JavaTree)newClassTree.classBody()).getLine()).isEqualTo(2);
+  }
+
+  @Test
+  public void at_token() {
+    List<Tree> types = createTree("interface A {}\n @interface B {}").types();
+    ClassTreeImpl interfaceType = (ClassTreeImpl) types.get(0);
+    assertThat(interfaceType.atToken()).isNull();
+    ClassTreeImpl annotationType = (ClassTreeImpl) types.get(1);
+    assertThat(annotationType.atToken()).isNotNull();
   }
 }
