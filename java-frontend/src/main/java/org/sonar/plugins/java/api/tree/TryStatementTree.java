@@ -56,7 +56,10 @@ public interface TryStatementTree extends StatementTree {
   ListTree<VariableTree> resources();
 
   /**
-   * @since Java 1.7, changed in Java 9 to allow also effectively final variables
+   * Until Java 9, resource could only be instance of {@link VariableTree}. Since Java 9 it is possible to refer to resources by existing effectively final variables,
+   * so list can also contain {@link IdentifierTree} or {@link MemberSelectExpressionTree}.
+   *
+   * @since Java 9
    */
   ListTree<Tree> resourceList();
 
