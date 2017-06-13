@@ -140,6 +140,17 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 16, 3, 16, 7, TypeOfText.KEYWORD); // uses
     assertThatHasBeenHighlighted(componentKey, 17, 3, 17, 11, TypeOfText.KEYWORD); // provides
     assertThatHasBeenHighlighted(componentKey, 17, 26, 17, 30, TypeOfText.KEYWORD); // with
+
+    // usages of restricted keywords in module name and package names
+    assertThatHasBeenHighlighted(componentKey, 18, 3, 18, 60, TypeOfText.COMMENT);
+    assertThatHasBeenHighlighted(componentKey, 19, 3, 19, 10, TypeOfText.KEYWORD); // exports
+    assertThatHasNotBeenHighlighted(componentKey, 19, 28, 19, 34); // 'module' used in package name
+    assertThatHasBeenHighlighted(componentKey, 20, 3, 20, 11, TypeOfText.KEYWORD); // provides
+    assertThatHasBeenHighlighted(componentKey, 20, 34, 20, 38, TypeOfText.KEYWORD); // with
+    assertThatHasNotBeenHighlighted(componentKey, 20, 45, 20, 49); // 'with' used in package name
+    assertThatHasNotBeenHighlighted(componentKey, 20, 50, 20, 52); // 'to' used in package name
+    assertThatHasNotBeenHighlighted(componentKey, 20, 53, 20, 60); // 'exports' used in package name
+    assertThatHasNotBeenHighlighted(componentKey, 20, 61, 20, 67); // 'module' used in package name
   }
 
   @Test

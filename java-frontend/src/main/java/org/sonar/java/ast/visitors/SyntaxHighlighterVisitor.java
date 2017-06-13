@@ -136,14 +136,11 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   private static boolean isInterfaceOfAnnotationType(SyntaxToken syntaxToken) {
     return JavaKeyword.INTERFACE.getValue().equals(syntaxToken.text()) && syntaxToken.parent().is(Tree.Kind.ANNOTATION_TYPE);
   }
-  
+
   private boolean isRestrictedKeyword(SyntaxToken syntaxToken) {
-    if (withinModule) {
-      String text = syntaxToken.text();
-      return restrictedKeywords.contains(text)
-        && (!JavaRestrictedKeyword.TRANSITIVE.getValue().equals(text) || syntaxToken.parent().is(Tree.Kind.MODIFIERS));
-    }
-    return false;
+    return withinModule
+      && restrictedKeywords.contains(syntaxToken.text())
+      && !syntaxToken.parent().is(Tree.Kind.IDENTIFIER);
   }
 
   @Override
@@ -157,7 +154,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
     int endLine = startLine + numberLines - 1;
     int endColumn = numberLines == 1 ? (startColumn + comment.length()) : lines[numberLines - 1].length();
-    boolean isJavadoc = lines[0].trim().startsWith("/**") && lines[numberLines - 1].trim().endsWith("*/");
+    boolean isJavadoc = lines[0].trim().startsWith("/**");
     highlighting.highlight(startLine, startColumn, endLine, endColumn, isJavadoc ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT);
   }
 }
