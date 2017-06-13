@@ -24,8 +24,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -173,7 +171,7 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     return interfaceTree.symbol().memberSymbols().stream()
         .filter(Symbol::isMethodSymbol)
         .map(MethodSymbol.class::cast)
-        .filter(StandardFunctionalInterfaceCheck::isNonStaticNonDefaultMethod)
+        .filter(MethodSymbol::isAbstract)
         .filter(StandardFunctionalInterfaceCheck::isNotObjectMethod)
         .findFirst();
   }
@@ -198,17 +196,9 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private static boolean isNonStaticNonDefaultMethod(MethodSymbol methodSymbol) {
-    return !methodSymbol.isStatic() && !isDefault(methodSymbol);
-  }
-
   private static boolean isNotObjectMethod(MethodSymbol method) {
     MethodTree declaration = method.declaration();
     return declaration == null || !OBJECT_METHODS.anyMatch(declaration);
-  }
-
-  private static boolean isDefault(MethodSymbol methodSymbol) {
-    return (((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.DEFAULT) != 0;
   }
 
   private static class FunctionalInterface {

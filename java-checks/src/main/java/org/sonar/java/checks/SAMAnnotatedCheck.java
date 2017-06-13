@@ -26,8 +26,6 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -102,7 +100,7 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
       .filter(Symbol::isMethodSymbol)
       .filter(member -> {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) member;
-        return isNotObjectMethod(methodSymbol) && isNonStaticNonDefaultMethod(methodSymbol);
+        return isNotObjectMethod(methodSymbol) && methodSymbol.isAbstract();
       }).count();
   }
 
@@ -110,14 +108,6 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
   private static boolean isNotObjectMethod(Symbol.MethodSymbol method) {
     MethodTree declaration = method.declaration();
     return declaration == null || !OBJECT_METHODS.anyMatch(declaration);
-  }
-
-  private static boolean isNonStaticNonDefaultMethod(Symbol.MethodSymbol methodSymbol) {
-    return !methodSymbol.isStatic() && !isDefault(methodSymbol);
-  }
-
-  private static boolean isDefault(Symbol.MethodSymbol methodSymbol) {
-    return (((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.DEFAULT) != 0;
   }
 
   private static MethodMatcher methodMatcherWithName(String name, String... parameters) {
