@@ -716,21 +716,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     constructorIdentifierSymbol.addUsage(constructorIdentifier);
     parameterTypes = addImplicitOuterClassParameter(parameterTypes, constructorIdentifierSymbol);
     Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes, typeArgumentsTypes);
-    ClassTree classBody = tree.classBody();
     JavaType constructedType = identifierType;
-    if (classBody != null) {
-      ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
-      if (identifierType.getSymbol().isInterface()) {
-        anonymousClassType.interfaces = ImmutableList.of(identifierType);
-        anonymousClassType.supertype = symbols.objectType;
-      } else {
-        anonymousClassType.supertype = identifierType;
-        anonymousClassType.interfaces = ImmutableList.of();
-      }
-      anonymousClassType.symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", anonymousClassType.supertype, anonymousClassType.symbol));
-      scan(classBody);
-      constructedType = anonymousClassType;
-    } else if (resolution.symbol().isMethodSymbol()) {
+    if (resolution.symbol().isMethodSymbol()) {
       constructedType = ((MethodJavaType) resolution.type()).resultType;
       if (constructedType.isTagged(JavaType.DEFERRED)) {
         Tree parent = newClassTreeImpl.parent();
@@ -740,11 +727,33 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           // will be resolved by type inference
           ((DeferredType) constructedType).setTree(newClassTreeImpl);
         }
+      } else if (identifierType.symbol().isInterface()) {
+        // constructor of interface always resolve to 'Object' no-arg constructor
+        registerType(typeTree, identifierType);
       } else {
         registerType(typeTree, resolution.type());
       }
     }
+    ClassTree classBody = tree.classBody();
+    if (classBody != null) {
+      constructedType = getAnonymousClassType(identifierType, constructedType, classBody);
+    }
     registerType(tree, constructedType);
+  }
+
+  private JavaType getAnonymousClassType(JavaType identifierType, JavaType constructedType, ClassTree classBody) {
+    JavaType parentType = (constructedType.isTagged(JavaType.DEFERRED) || identifierType.symbol().isInterface()) ? identifierType : constructedType;
+    ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
+    if (parentType.getSymbol().isInterface()) {
+      anonymousClassType.interfaces = ImmutableList.of(parentType);
+      anonymousClassType.supertype = symbols.objectType;
+    } else {
+      anonymousClassType.supertype = parentType;
+      anonymousClassType.interfaces = ImmutableList.of();
+    }
+    anonymousClassType.symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", anonymousClassType.supertype, anonymousClassType.symbol));
+    scan(classBody);
+    return anonymousClassType;
   }
 
   private JavaType resolveIdentifierType(Resolve.Env newClassEnv, @Nullable ExpressionTree enclosingExpression, TypeTree typeTree, String typeName) {

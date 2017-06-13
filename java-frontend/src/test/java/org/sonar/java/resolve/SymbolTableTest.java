@@ -257,6 +257,103 @@ public class SymbolTableTest {
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
   }
 
+  /**
+   * JLS9 - §15.9.3
+   * @since Java 9
+   */
+  @Test
+  public void anonymousClassWithDiamondOperator() {
+    Result result = Result.createForJavaFile("src/test/files/resolve/Java9DiamondOperatorAnonymousClass");
+
+    NewClassTree nct;
+    ClassJavaType symbolType;
+    ClassJavaType superType;
+    ParametrizedTypeJavaType ptjt;
+
+    // ArrayList<>(), not anonymous but with diamond
+    nct = parentNewClassTree(result.referenceTree(7, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.is("java.util.ArrayList")).isTrue();
+    assertThat(symbolType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) symbolType;
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isTrue();
+
+    // B<Integer>(), no diamond
+    nct = parentNewClassTree(result.referenceTree(11, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("B")).isTrue();
+    superType = symbolType.getSuperType();
+    assertThat(superType.is("B")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isTrue();
+
+    // B<>(Integer), diamond with inference from B<U> to B<Integer>
+    nct = parentNewClassTree(result.referenceTree(15, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("B")).isTrue();
+    superType = symbolType.getSuperType();
+    assertThat(superType.is("B")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isTrue();
+
+    // B<>(T), diamond with inference from B<U> to B<T>
+    nct = parentNewClassTree(result.referenceTree(19, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("B")).isTrue();
+    superType = symbolType.getSuperType();
+    assertThat(superType.is("B")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).symbol().name()).isEqualTo("T");
+
+    // C<>(Integer, String[]), diamond with inference from C<U,V> to C<Integer, String>
+    nct = parentNewClassTree(result.referenceTree(23, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("C")).isTrue();
+    superType = symbolType.getSuperType();
+    assertThat(superType.is("C")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isTrue();
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(1).is("java.lang.String")).isTrue();
+
+    // D<>(), diamond with inference on interface from D<X> to D<Integer>
+    nct = parentNewClassTree(result.referenceTree(27, 16));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("D")).isTrue();
+    superType = (ClassJavaType) symbolType.interfaces.get(0);
+    assertThat(superType.is("D")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    // FIXME SONARJAVA-1706 : requires inference from target type
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).symbol().name()).isEqualTo("X");
+    // should be true
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isFalse();
+
+    // B<>(), diamond with inference on class from B<U> to B<Integer>
+    nct = parentNewClassTree(result.referenceTree(34, 13));
+    symbolType = (ClassJavaType) nct.symbolType();
+    assertThat(symbolType.isSubtypeOf("B")).isTrue();
+    superType = symbolType.getSuperType();
+    assertThat(superType.is("B")).isTrue();
+    assertThat(superType.isParameterized()).isTrue();
+    ptjt = (ParametrizedTypeJavaType) superType;
+    // FIXME SONARJAVA-1706 : requires inference from target type
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).symbol().name()).isEqualTo("U");
+    // should be true
+    assertThat(ptjt.typeSubstitution.substitutedTypes().get(0).is("java.lang.Integer")).isFalse();
+  }
+
+  private static NewClassTree parentNewClassTree(IdentifierTree referenceTree) {
+    Tree parent = referenceTree.parent();
+    while (!parent.is(Tree.Kind.NEW_CLASS)) {
+      parent = parent.parent();
+    }
+    return (NewClassTree) parent;
+  }
+
   @Test
   public void LocalClassDeclaration() {
     Result result = Result.createFor("declarations/LocalClassDeclaration");
