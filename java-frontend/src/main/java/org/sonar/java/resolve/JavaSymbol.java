@@ -495,6 +495,24 @@ public class JavaSymbol implements Symbol {
   }
 
   /**
+   * Represents a final static field/variable.
+   */
+  public static class FinalStaticVariableJavaSymbol extends VariableJavaSymbol implements FinalStaticVariableSymbol {
+
+    Object value;
+
+    public FinalStaticVariableJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner, @Nullable Object value) {
+      super(flags, name, type, owner);
+      this.value = value;
+    }
+
+    @Override
+    public Object value() {
+      return value;
+    }
+  }
+
+  /**
    * Represents a method, constructor or initializer (static or instance).
    */
   public static class MethodJavaSymbol extends JavaSymbol implements MethodSymbol {

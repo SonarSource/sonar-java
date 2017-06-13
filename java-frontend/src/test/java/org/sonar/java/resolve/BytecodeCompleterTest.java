@@ -630,4 +630,20 @@ public class BytecodeCompleterTest {
     assertThat(classSymbol.getFullyQualifiedName()).isEqualTo("org.test.Hello9");
     assertThat(classSymbol.memberSymbols()).hasSize(2);
   }
+
+  @Test
+  public void final_static_variable_exposes_value() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Constants");
+    assertThat(clazz.type()).isNotNull();
+
+    Collection<Symbol> symbols = clazz.lookupSymbols("FOO");
+    assertThat(symbols).hasSize(1);
+
+    Symbol symbol = symbols.iterator().next();
+    assertThat(symbol).isInstanceOf(Symbol.FinalStaticVariableSymbol.class);
+
+    Symbol.FinalStaticVariableSymbol finalStaticVariableSymbol = (Symbol.FinalStaticVariableSymbol) symbol;
+    assertThat(finalStaticVariableSymbol.type().is("java.lang.String")).isTrue();
+    assertThat(finalStaticVariableSymbol.value()).isEqualTo("bar");
+  }
 }

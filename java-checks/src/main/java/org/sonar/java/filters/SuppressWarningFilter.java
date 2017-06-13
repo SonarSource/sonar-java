@@ -35,10 +35,13 @@ import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -166,11 +169,49 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     List<String> args = Lists.newArrayList();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      addValueIfStringConstant(args, (IdentifierTree) expression);
+    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
+      addValueIfStringConstant(args, memberSelectExpressionTree.identifier());
     } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getRulesFromExpression(initializer));
       }
     }
     return args;
+  }
+
+  private static void addValueIfStringConstant(List<String> args, IdentifierTree identifierTree) {
+    if (isStringConstant(identifierTree)) {
+      String stringConstantValue = getValueFromStringConstant(identifierTree);
+      if (stringConstantValue != null) {
+        args.add(stringConstantValue);
+      }
+    }
+  }
+
+  private static boolean isStringConstant(IdentifierTree identifierTree) {
+    Symbol symbol = identifierTree.symbol();
+    return symbol.isVariableSymbol() && symbol.isStatic() && symbol.isFinal() && symbol.type().is("java.lang.String");
+  }
+
+  private static String getValueFromStringConstant(IdentifierTree identifierTree) {
+    if (identifierTree.symbol() instanceof Symbol.FinalStaticVariableSymbol) {
+      Symbol.FinalStaticVariableSymbol constantSymbol = (Symbol.FinalStaticVariableSymbol) identifierTree.symbol();
+      if (constantSymbol.type().is("java.lang.String")) {
+        return (String) constantSymbol.value();
+      }
+    } else {
+      Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) identifierTree.symbol();
+      VariableTree declaration = variableSymbol.declaration();
+      if (declaration != null) {
+        ExpressionTree expression = declaration.initializer();
+        if (expression != null && expression.is(Tree.Kind.STRING_LITERAL)) {
+          return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
+        }
+      }
+    }
+    return null;
   }
 }

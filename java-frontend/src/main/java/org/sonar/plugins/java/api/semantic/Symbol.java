@@ -165,6 +165,13 @@ public interface Symbol {
   }
 
   /**
+   * Symbol for static final variables/fields.
+   */
+  interface FinalStaticVariableSymbol extends VariableSymbol {
+    Object value();
+  }
+
+  /**
    * Symbol for methods.
    */
   interface MethodSymbol extends Symbol {

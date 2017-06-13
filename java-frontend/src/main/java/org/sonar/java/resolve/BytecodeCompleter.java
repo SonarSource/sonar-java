@@ -261,6 +261,10 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return (flags & Flags.SYNTHETIC) != 0;
   }
 
+  static boolean isStaticFinal(int flags) {
+    return (flags & Flags.STATIC) != 0 && (flags & Flags.FINAL) != 0;
+  }
+
   public Set<String> classesNotFound() {
     return classesNotFound;
   }

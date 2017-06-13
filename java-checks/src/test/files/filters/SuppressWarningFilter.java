@@ -1,3 +1,4 @@
+import org.sonar.java.filters.SuppressWarningConstants;
 /**
  * Extra rules running:
  * - TodoTagPresenceCheck (S1135)
@@ -67,6 +68,37 @@ class A {
 
     @SuppressWarnings("repo:S1068") // WithIssue
     private String s; // NoIssue
+
+    int foo() {
+      return bad_constant_name;
+    }
+  }
+
+  class G {
+    private static final String BAD_CONSTANT = "repo:S00115";
+
+    @SuppressWarnings(BAD_CONSTANT) // WithIssue
+    private static final int bad_constant_name = 42; // NoIssue
+
+    int foo() {
+      return bad_constant_name;
+    }
+  }
+
+  class H {
+    private static final String BAD_CONSTANT = "repo:S00115";
+
+    @SuppressWarnings(H.BAD_CONSTANT) // WithIssue
+    private static final int bad_constant_name = 42; // NoIssue
+
+    int foo() {
+      return bad_constant_name;
+    }
+  }
+
+  class I {
+    @SuppressWarnings(SuppressWarningConstants.BAD_CONSTANT) // WithIssue
+    private static final int bad_constant_name = 42; // NoIssue
 
     int foo() {
       return bad_constant_name;
