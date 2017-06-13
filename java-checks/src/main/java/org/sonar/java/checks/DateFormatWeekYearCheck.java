@@ -54,7 +54,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       int start = datePattern.indexOf('Y');
       if (start > -1) {
         int end = start;
-        while (datePattern.charAt(end) == 'Y') {
+        while (end < datePattern.length() && datePattern.charAt(end) == 'Y') {
           end++;
         }
         String firstYseq = datePattern.substring(start, end);
