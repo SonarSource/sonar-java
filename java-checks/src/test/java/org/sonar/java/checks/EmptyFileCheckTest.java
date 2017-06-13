@@ -35,6 +35,16 @@ public class EmptyFileCheckTest {
   }
 
   @Test
+  public void with_package() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithPackage.java", new EmptyFileCheck());
+  }
+
+  @Test
+  public void with_module() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new EmptyFileCheck());
+  }
+
+  @Test
   public void test_parsing_error_file() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ParsingError.java", new EmptyFileCheck());
   }
