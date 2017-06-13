@@ -59,3 +59,7 @@ interface InterfaceWithoutField extends InterfaceWithField { // Noncompliant
 interface InterfaceWithUnknownParent extends UnknownInterface { // Compliant
   void m1();
 }
+
+interface InterfaceWithPrivate {
+  private int transform(int a) {};
+}
