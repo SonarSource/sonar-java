@@ -93,8 +93,13 @@ public class ExpressionTest {
       .matches("(Callable[] & Serializable) foo")
       .matches("(Callable<Integer[]>[] & Serializable) foo")
       .matches("(Comparator<Map.Entry<K, V>>[] & Serializable) foo")
-      .matches("(a & b) - c");
+      .matches("(a & b) - c")
 
+      // Java 9 - §15.9 : Diamond operator on anonymous classes
+      .matches("new MyClass<>() {}")
+      .matches("new MyClass<>(param1, param2) {}")
+      .matches("new @Foo MyClass<>(\"literal\")")
+      .matches("outerClass.new innerClass<>(42)");
   }
 
   @Test
