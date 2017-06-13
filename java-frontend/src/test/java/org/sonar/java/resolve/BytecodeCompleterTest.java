@@ -608,6 +608,11 @@ public class BytecodeCompleterTest {
     JavaSymbol.MethodJavaSymbol defaultMethod = (JavaSymbol.MethodJavaSymbol) ((TypeJavaSymbol) clazz).members().lookup("defaultMethod").get(0);
     assertThat(defaultMethod.flags() & Flags.ABSTRACT).isZero();
     assertThat(defaultMethod.flags() & Flags.DEFAULT).isNotZero();
+
+    JavaSymbol.MethodJavaSymbol staticMethod = (JavaSymbol.MethodJavaSymbol) ((TypeJavaSymbol) clazz).members().lookup("staticMethod").get(0);
+    assertThat(staticMethod.flags() & Flags.ABSTRACT).isZero();
+    assertThat(staticMethod.flags() & Flags.DEFAULT).isZero();
+    assertThat(staticMethod.flags() & Flags.STATIC).isNotZero();
   }
 
 
@@ -629,5 +634,27 @@ public class BytecodeCompleterTest {
     classSymbol.complete();
     assertThat(classSymbol.getFullyQualifiedName()).isEqualTo("org.test.Hello9");
     assertThat(classSymbol.memberSymbols()).hasSize(2);
+  }
+
+  @Test
+  public void test_loading_java9_iface() throws Exception {
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(
+      new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java9/bin"))),
+      new ParametrizedTypeCache());
+    new Symbols(bytecodeCompleter);
+    TypeJavaSymbol iface = (TypeJavaSymbol) bytecodeCompleter.loadClass("org.test.IfaceTest");
+    iface.complete();
+    assertThat(iface.getFullyQualifiedName()).isEqualTo("org.test.IfaceTest");
+    assertThat(iface.memberSymbols()).hasSize(3);
+    assertThat(iface.isInterface()).isTrue();
+
+    JavaSymbol.MethodJavaSymbol privateMethod = (JavaSymbol.MethodJavaSymbol) Iterables.getOnlyElement(iface.lookupSymbols("privateMethod"));
+    assertThat(privateMethod.flags()).isEqualTo(Flags.PRIVATE);
+
+    JavaSymbol.MethodJavaSymbol defaultMethod = (JavaSymbol.MethodJavaSymbol) Iterables.getOnlyElement(iface.lookupSymbols("defaultMethod"));
+    assertThat(defaultMethod.flags()).isEqualTo(Flags.DEFAULT | Flags.PUBLIC);
+
+    JavaSymbol.MethodJavaSymbol staticMethod = (JavaSymbol.MethodJavaSymbol) Iterables.getOnlyElement(iface.lookupSymbols("staticMethod"));
+    assertThat(staticMethod.flags()).isEqualTo(Flags.STATIC | Flags.PUBLIC);
   }
 }

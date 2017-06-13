@@ -6,7 +6,7 @@ package declarations;
 @SuppressWarnings("all")
 class InterfaceDeclaration {
 
-  // JLS7 6.6.1: All members of interfaces are implicitly public.
+  // JLS7 6.6.1: All members of interfaces lacking access modifiers are implicitly public.
   private interface Declaration extends FirstInterface, SecondInterface {
     int FIRST_CONSTANT = 1,
         SECOND_CONSTANT = 2;
@@ -36,6 +36,16 @@ class InterfaceDeclaration {
   }
 
   private interface SecondInterface {
+  }
+
+  interface IfaceWithPrivateMethods {
+    private void thisIsPrivate() {
+
+    }
+
+    private static void staticPrivate() {
+
+    }
   }
 
 }
