@@ -22,6 +22,8 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
+
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
@@ -414,6 +416,18 @@ public class ExplodedGraphWalkerTest {
       .collect(Collectors.toList());
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
     assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toList())).isEqualTo(seChecks);
+  }
+
+  @Test
+  public void private_method_should_be_visited() {
+    List<String> visitedMethods = new ArrayList<>();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/XprocIfaceWithPrivateMethod.java", new SECheck() {
+      @Override
+      public void init(MethodTree methodTree, CFG cfg) {
+        visitedMethods.add(methodTree.symbol().name());
+      }
+    });
+    assertThat(visitedMethods).containsExactly("test", "privateMethod");
   }
 
   private static SECheck[] seChecks() {

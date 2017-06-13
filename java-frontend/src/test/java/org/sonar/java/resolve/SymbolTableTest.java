@@ -319,6 +319,17 @@ public class SymbolTableTest {
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedEnum");
     assertThat(typeSymbol.owner()).isSameAs(interfaceSymbol);
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM | Flags.STATIC);
+
+    typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("IfaceWithPrivateMethods");
+    assertThat(typeSymbol.owner()).isSameAs(result.symbol("InterfaceDeclaration"));
+
+    JavaSymbol.MethodJavaSymbol privateMethod = (JavaSymbol.MethodJavaSymbol) result.symbol("thisIsPrivate");
+    assertThat(privateMethod.owner()).isSameAs(typeSymbol);
+    assertThat(privateMethod.flags()).isEqualTo(Flags.PRIVATE);
+
+    JavaSymbol.MethodJavaSymbol staticPrivateMethod = (JavaSymbol.MethodJavaSymbol) result.symbol("staticPrivate");
+    assertThat(staticPrivateMethod.owner()).isSameAs(typeSymbol);
+    assertThat(staticPrivateMethod.flags()).isEqualTo(Flags.PRIVATE | Flags.STATIC);
   }
 
   @Test

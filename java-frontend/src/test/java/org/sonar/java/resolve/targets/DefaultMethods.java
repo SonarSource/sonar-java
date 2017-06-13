@@ -26,4 +26,8 @@ public interface DefaultMethods {
 
   Object abstractMethod();
 
+  static void staticMethod() {
+    
+  }
+
 }

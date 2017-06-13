@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -43,6 +44,7 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
@@ -363,16 +365,21 @@ public class FirstPass extends BaseTreeVisitor {
 
   private static int computeFlagsForInterfaceMember(Tree tree) {
     int result;
-    // JLS7 6.6.1: All members of interfaces are implicitly public.
-    result = Flags.PUBLIC;
     if (tree.is(Tree.Kind.METHOD)) {
-      if (((MethodTree) tree).block() == null) {
+      MethodTree methodTree = (MethodTree) tree;
+      // JLS9 9.4 A method in the body of an interface may be declared public or private
+      if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE)) {
+        result = Flags.PRIVATE;
+      } else {
+        result = Flags.PUBLIC;
+      }
+      if (methodTree.block() == null) {
         // JLS8 9.4: methods lacking a block are implicitly abstract
         result |= Flags.ABSTRACT;
       }
     } else {
       // JLS7 9.5: member type declarations are implicitly static and public
-      result |= Flags.STATIC;
+      result = Flags.PUBLIC | Flags.STATIC;
       if (tree.is(Tree.Kind.VARIABLE)) {
         // JLS7 9.3: fields are implicitly public, static and final
         result |= Flags.FINAL;

@@ -223,8 +223,8 @@ public class BytecodeVisitor extends ClassVisitor {
           classSymbol
       );
       int methodFlags = bytecodeCompleter.filterBytecodeFlags(flags);
-      if(classSymbol.isInterface() && (methodFlags & Flags.ABSTRACT) == 0) {
-        // non abstract method of interface is a default method
+      if(classSymbol.isInterface() && (methodFlags & (Flags.ABSTRACT | Flags.PRIVATE | Flags.STATIC)) == 0) {
+        // abstract, static nor private method of interface is a default method
         methodFlags |= Flags.DEFAULT;
       }
       final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(methodFlags, name, type, classSymbol);
