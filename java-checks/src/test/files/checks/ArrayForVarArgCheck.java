@@ -51,3 +51,11 @@ class Overload{
   void fun(int i, String ... params) {
   }
 }
+
+class ParametrizedType<U> {
+  public <T> ParametrizedType(U u, T ... t) { }
+
+  static void foo(Object o) {
+    new ParametrizedType<>(o, new String[] {"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
+  }
+}

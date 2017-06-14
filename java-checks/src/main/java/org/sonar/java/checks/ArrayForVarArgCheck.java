@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
@@ -81,15 +82,16 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     if (!methodSymbol.isParametrized()) {
       return null;
     }
-    IdentifierTree id = null;
+    Type type = null;
     if (methodName.is(Tree.Kind.MEMBER_SELECT)) {
-      id = ((MemberSelectExpressionTree) methodName).identifier();
-    } else {
-      id = (IdentifierTree) methodName;
+      type = ((MemberSelectExpressionTree) methodName).identifier().symbolType();
+    } else if (methodName.is(Tree.Kind.IDENTIFIER)) {
+      type = ((IdentifierTree) methodName).symbolType();
+    } else if (methodName.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      type = ((ParameterizedTypeTree) methodName).symbolType();
     }
-    Type identifierType = id.symbolType();
-    if (identifierType instanceof MethodJavaType) {
-      return (MethodJavaType) identifierType;
+    if (type instanceof MethodJavaType) {
+      return (MethodJavaType) type;
     }
     return null;
   }
