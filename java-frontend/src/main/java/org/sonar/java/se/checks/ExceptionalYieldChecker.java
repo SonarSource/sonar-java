@@ -28,6 +28,7 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.ExceptionalCheckBasedYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,6 +40,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -72,7 +74,8 @@ public class ExceptionalYieldChecker {
     }
 
     JavaFileScannerContext.Location methodInvocationMessage;
-    IdentifierTree identifierTree = FlowComputation.getArgumentIdentifier(mit, yield.parameterCausingExceptionIndex());
+    int parameterCausingExceptionIndex = yield.parameterCausingExceptionIndex();
+    IdentifierTree identifierTree = FlowComputation.getArgumentIdentifier(mit, parameterCausingExceptionIndex);
     if (identifierTree != null) {
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s' is passed to '%s()'.", identifierTree.name(), methodName), identifierTree);
     } else {
@@ -80,7 +83,7 @@ public class ExceptionalYieldChecker {
     }
 
     List<JavaFileScannerContext.Location> argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
-    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit);
+    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex);
     Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
 
     ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
@@ -98,18 +101,39 @@ public class ExceptionalYieldChecker {
     check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit) {
+  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex) {
     ProgramState programState = node.programState;
     List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
-    List<Class<? extends Constraint>> domains = domainsFromArguments(programState, arguments);
-    Set<SymbolicValue> argSymbolicValues = arguments.stream().map(ProgramState.SymbolicValueSymbol::symbolicValue).collect(Collectors.toCollection(LinkedHashSet::new));
-    Set<Symbol> argSymbols = arguments.stream().map(ProgramState.SymbolicValueSymbol::symbol).filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new));
+    SymbolicValue parameterCausingExceptionSV = arguments.get(parameterCausingExceptionIndex).symbolicValue();
+
+    Set<SymbolicValue> argSymbolicValues = new LinkedHashSet<>();
+    Set<Symbol> argSymbols = new LinkedHashSet<>();
+    arguments.stream()
+      .filter(svs -> parameterCausingExceptionSV == svs.symbolicValue() || hasConstraintOtherThanNonNull(svs, programState))
+      .forEach(svs -> {
+        argSymbolicValues.add(svs.symbolicValue());
+        Symbol symbol = svs.symbol();
+        if (symbol != null) {
+          argSymbols.add(symbol);
+        }
+      });
+
+    List<Class<? extends Constraint>> domains = domainsFromArguments(programState, argSymbolicValues);
     return FlowComputation.flow(node, argSymbolicValues, c -> true, c -> false, domains, argSymbols);
   }
 
-  private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, List<ProgramState.SymbolicValueSymbol> arguments) {
+  private static boolean hasConstraintOtherThanNonNull(ProgramState.SymbolicValueSymbol svs, ProgramState ps) {
+    SymbolicValue sv = svs.symbolicValue();
+    PMap<Class<? extends Constraint>, Constraint> constraints = ps.getConstraints(sv);
+    return constraints != null && !hasOnlyNonNullConstraint(constraints);
+  }
+
+  private static boolean hasOnlyNonNullConstraint(PMap<Class<? extends Constraint>, Constraint> constraints) {
+    return domainsFromConstraints(constraints).size() == 1 && constraints.get(ObjectConstraint.class) == ObjectConstraint.NOT_NULL;
+  }
+
+  private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, Collection<SymbolicValue> arguments) {
     return arguments.stream()
-      .map(ProgramState.SymbolicValueSymbol::symbolicValue)
       .map(programState::getConstraints)
       .filter(Objects::nonNull)
       .map(ExceptionalYieldChecker::domainsFromConstraints)
