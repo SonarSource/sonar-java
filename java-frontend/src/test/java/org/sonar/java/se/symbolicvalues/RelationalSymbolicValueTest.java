@@ -470,4 +470,30 @@ public class RelationalSymbolicValueTest {
     psWithNeq = setTrue(ps, neq);
     assertThat(psWithNeq.getConstraint(svZero, ZERO.getClass())).isEqualTo(ZERO);
   }
+
+  @Test
+  public void test_constraint_copy_of_not_null_constraint() throws Exception {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue svNotNull = new SymbolicValue();
+    ps = Iterables.getOnlyElement(svNotNull.setConstraint(ps, ObjectConstraint.NOT_NULL));
+    SymbolicValue sv = new SymbolicValue();
+    // sv != NOT_NULL
+    RelationalSymbolicValue neq = new RelationalSymbolicValue(NOT_EQUAL, svNotNull, sv);
+    ProgramState result = setTrue(ps , neq);
+    assertNoConstraints(result, sv);
+
+    // sv != NULL
+    neq = new RelationalSymbolicValue(NOT_EQUAL, SymbolicValue.NULL_LITERAL, sv);
+    result = setTrue(ps, neq);
+    assertThat(result.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+
+    // sv == NULL
+    RelationalSymbolicValue eq = new RelationalSymbolicValue(EQUAL, SymbolicValue.NULL_LITERAL, sv);
+    result = setTrue(ps, eq);
+    assertNullConstraint(result, sv);
+    // sv == NOT_NULL
+    eq = new RelationalSymbolicValue(METHOD_EQUALS, sv, svNotNull);
+    result = setTrue(ps, eq);
+    assertThat(result.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+  }
 }
