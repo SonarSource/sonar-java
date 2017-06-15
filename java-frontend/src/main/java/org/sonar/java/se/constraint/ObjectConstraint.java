@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se.constraint;
 
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
+
 import javax.annotation.Nullable;
 
 public enum ObjectConstraint implements Constraint {
@@ -45,6 +47,19 @@ public enum ObjectConstraint implements Constraint {
   @Override
   public boolean isValidWith(@Nullable Constraint constraint) {
     return constraint == null || this == constraint;
+  }
+
+  @Nullable
+  @Override
+  public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
+    switch (kind) {
+      case EQUAL:
+      case METHOD_EQUALS:
+        return this;
+      default:
+        // x != NULL -> x is NOT_NULL , but if x != NOT_NULL we learn nothing about x
+        return this == NULL ? NOT_NULL : null;
+    }
   }
 
   @Override

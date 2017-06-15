@@ -187,19 +187,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
         Constraint constraint = c.copyOver(kind);
         states.forEach(state -> {
           if (constraint == null) {
-            PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
-            if (constraints != null) {
-              newStates.add(state);
-            } else {
-              newStates.add(state);
-            }
+            newStates.add(state);
           } else {
-            // special handling of copying inversed non-null constraint
-            if (ObjectConstraint.NULL == constraint && c != constraint) {
-              newStates.add(state);
-            } else {
-              newStates.addAll(to.setConstraint(state, constraint));
-            }
+            newStates.addAll(to.setConstraint(state, constraint));
           }
         });
         states.clear();
