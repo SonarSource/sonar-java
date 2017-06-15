@@ -57,10 +57,12 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
 import static org.sonar.java.se.symbolicvalues.RelationState.FULFILLED;
 import static org.sonar.java.se.symbolicvalues.RelationState.UNFULFILLED;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
 
 public class RelationalSymbolicValueTest {
 
@@ -284,7 +286,7 @@ public class RelationalSymbolicValueTest {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue a = new SymbolicValue();
     SymbolicValue b = new SymbolicValue();
-    List<ProgramState> newProgramStates = a.setConstraint(ps, DivisionByZeroCheck.ZeroConstraint.ZERO);
+    List<ProgramState> newProgramStates = a.setConstraint(ps, ZERO);
     ps = Iterables.getOnlyElement(newProgramStates);
     // 0 >= b
     SymbolicValue aGEb = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a);
@@ -292,7 +294,7 @@ public class RelationalSymbolicValueTest {
     ps = Iterables.getOnlyElement(newProgramStates);
 
     // Zero constraint should stay when Zero is >= to SV without any constraint
-    assertThat(ps.getConstraint(a, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(DivisionByZeroCheck.ZeroConstraint.ZERO);
+    assertThat(ps.getConstraint(a, DivisionByZeroCheck.ZeroConstraint.class)).isEqualTo(ZERO);
     assertThat(ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
   }
 
@@ -452,5 +454,20 @@ public class RelationalSymbolicValueTest {
 
     rsv.computedFrom(ImmutableList.of(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, var)));
     assertThat(rsv).hasToString("left(A#x)==right");
+  }
+
+  @Test
+  public void test_constraint_copy_of_sv_with_no_constraints_is_symmetric() throws Exception {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue svZero = new SymbolicValue();
+    ps = Iterables.getOnlyElement(svZero.setConstraint(ps, ZERO));
+    SymbolicValue sv = new SymbolicValue();
+    RelationalSymbolicValue neq = new RelationalSymbolicValue(NOT_EQUAL, svZero, sv);
+    ProgramState psWithNeq = setTrue(ps, neq);
+    assertThat(psWithNeq.getConstraint(svZero, ZERO.getClass())).isEqualTo(ZERO);
+
+    neq = new RelationalSymbolicValue(NOT_EQUAL, sv, svZero);
+    psWithNeq = setTrue(ps, neq);
+    assertThat(psWithNeq.getConstraint(svZero, ZERO.getClass())).isEqualTo(ZERO);
   }
 }

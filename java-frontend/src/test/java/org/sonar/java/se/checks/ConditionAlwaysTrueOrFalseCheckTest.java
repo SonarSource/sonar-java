@@ -78,4 +78,10 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
       assertThat(atof.alwaysTrue()).isEmpty();
     }
   }
+
+  @Test
+  public void test_constraint_is_not_lost_after_copying() throws Exception {
+    // see also SONARJAVA-2351
+    JavaCheckVerifier.verify("src/test/files/se/ConstraintCopy.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
 }

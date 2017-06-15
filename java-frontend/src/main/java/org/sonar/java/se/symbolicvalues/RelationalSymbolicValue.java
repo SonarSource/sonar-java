@@ -189,7 +189,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
           if (constraint == null) {
             PMap<Class<? extends Constraint>, Constraint> constraints = state.getConstraints(to);
             if (constraints != null) {
-              newStates.add(state.removeConstraintsOnDomain(to, c.getClass()));
+              newStates.add(state);
             } else {
               newStates.add(state);
             }
