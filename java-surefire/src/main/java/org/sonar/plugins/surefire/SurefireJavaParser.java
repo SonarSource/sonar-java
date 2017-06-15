@@ -36,11 +36,13 @@ import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
-import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @since 2.4
@@ -57,17 +59,22 @@ public class SurefireJavaParser {
     this.javaResourceLocator = javaResourceLocator;
   }
 
-  public void collect(SensorContext context, File reportsDir, boolean reportDirSetByUser) {
-    File[] xmlFiles = getReports(reportsDir, reportDirSetByUser);
-    if (xmlFiles.length > 0) {
+  public void collect(SensorContext context, List<File> reportsDirs, boolean reportDirSetByUser) {
+    List<File> xmlFiles = getReports(reportsDirs, reportDirSetByUser);
+    if (!xmlFiles.isEmpty()) {
       parseFiles(context, xmlFiles);
     }
   }
 
-  private static File[] getReports(@Nullable File dir, boolean reportDirSetByUser) {
-    if (dir == null) {
-      return new File[0];
-    } else if (!dir.isDirectory()) {
+  private static List<File> getReports(List<File> dirs, boolean reportDirSetByUser) {
+    return dirs.stream()
+      .map(dir -> getReports(dir, reportDirSetByUser))
+      .flatMap(Arrays::stream)
+      .collect(Collectors.toList());
+  }
+
+  private static File[] getReports(File dir, boolean reportDirSetByUser) {
+    if (!dir.isDirectory()) {
       if(reportDirSetByUser) {
         LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
       }
@@ -88,14 +95,14 @@ public class SurefireJavaParser {
     return dir.listFiles((parentDir, name) -> name.startsWith(fileNameStart) && name.endsWith(".xml"));
   }
 
-  private void parseFiles(SensorContext context, File[] reports) {
+  private void parseFiles(SensorContext context, List<File> reports) {
     UnitTestIndex index = new UnitTestIndex();
     parseFiles(reports, index);
     sanitize(index);
     save(index, context);
   }
 
-  private static void parseFiles(File[] reports, UnitTestIndex index) {
+  private static void parseFiles(List<File> reports, UnitTestIndex index) {
     StaxParser parser = new StaxParser(index);
     for (File report : reports) {
       try {

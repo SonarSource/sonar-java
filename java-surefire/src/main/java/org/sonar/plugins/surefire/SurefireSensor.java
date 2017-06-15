@@ -31,6 +31,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
+import java.util.List;
 
 @DependedUpon("surefire-java")
 public class SurefireSensor implements Sensor {
@@ -56,13 +57,14 @@ public class SurefireSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    File dir = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
-    collect(context, dir);
+    List<File> dirs = SurefireUtils.getReportsDirectories(settings, fs, pathResolver);
+    collect(context, dirs);
   }
 
-  protected void collect(SensorContext context, File reportsDir) {
-    LOGGER.info("parsing {}", reportsDir);
-    surefireJavaParser.collect(context, reportsDir, settings.hasKey(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY));
+  protected void collect(SensorContext context, List<File> reportsDirs) {
+    LOGGER.info("parsing {}", reportsDirs);
+    surefireJavaParser.collect(context, reportsDirs,
+      settings.hasKey(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY) || settings.hasKey(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY));
   }
 
   @Override

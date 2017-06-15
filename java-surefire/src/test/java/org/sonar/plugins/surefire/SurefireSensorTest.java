@@ -37,6 +37,7 @@ import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -92,8 +93,8 @@ public class SurefireSensorTest {
       .add(resource("org.sonar.core.ExtensionsFinderTest"))
       .add(resource("org.sonar.core.ExtensionsFinderTest2"))
       .add(resource("org.sonar.core.ExtensionsFinderTest3"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/shouldHandleTestSuiteDetails/");
 
     assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(5);
     assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest2")).hasSize(5);
@@ -126,8 +127,8 @@ public class SurefireSensorTest {
       .add(resource("org.sonar.core.ExtensionsFinderTest"))
       .add(resource("org.sonar.core.ExtensionsFinderTest2"))
       .add(resource("org.sonar.core.ExtensionsFinderTest3"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/shouldSaveErrorsAndFailuresInXML/");
 
     // 1 classes, 5 measures by class
     assertThat(context.measures(":org.sonar.core.ExtensionsFinderTest")).hasSize(5);
@@ -140,8 +141,9 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("NoPackagesTest"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/shouldManageClassesWithDefaultPackage/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/shouldManageClassesWithDefaultPackage/");
+
     assertThat(context.measure(":NoPackagesTest", CoreMetrics.TESTS).value()).isEqualTo(2);
   }
 
@@ -150,8 +152,9 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/successRatioIsZeroWhenAllTestsFail/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/successRatioIsZeroWhenAllTestsFail/");
+
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(1);
@@ -162,8 +165,8 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/measuresShouldNotIncludeSkippedTests/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/measuresShouldNotIncludeSkippedTests/");
 
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
@@ -176,8 +179,8 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/");
 
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(0);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
@@ -190,8 +193,8 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.apache.shindig.protocol.TestHandler"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/");
 
     // ignore TestHandler$Input.xml
     assertThat(context.measure(":org.apache.shindig.protocol.TestHandler", CoreMetrics.TESTS).value()).isEqualTo(0);
@@ -203,8 +206,8 @@ public class SurefireSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
-    surefireSensor.collect(context, new File(getClass().getResource(
-        "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_reportNameSuffix/").toURI()));
+
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_reportNameSuffix/");
 
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(4);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(2);
@@ -212,4 +215,8 @@ public class SurefireSensorTest {
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(2);
   }
 
+  private void collect(SensorContextTester context, String path) throws URISyntaxException {
+    File file = new File(getClass().getResource(path).toURI());
+    surefireSensor.collect(context, Collections.singletonList(file));
+  }
 }
