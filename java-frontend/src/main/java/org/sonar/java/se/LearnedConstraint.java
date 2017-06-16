@@ -19,6 +19,8 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
+
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
@@ -27,6 +29,7 @@ public class LearnedConstraint {
   final Constraint constraint;
 
   public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
+    Preconditions.checkNotNull(constraint);
     this.sv = sv;
     this.constraint = constraint;
   }
