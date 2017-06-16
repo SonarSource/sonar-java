@@ -19,8 +19,8 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -33,11 +33,9 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.symbolicvalues.SymbolicValueTest;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -143,13 +141,9 @@ public class ProgramStateTest {
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE.addConstraint(relation, BooleanConstraint.TRUE);
     Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
-    assertThat(learnedConstraints).hasSize(3);
-    Constraint relationConstraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == relation).findFirst().get().constraint();
+    assertThat(learnedConstraints).hasSize(1);
+    Constraint relationConstraint = Iterables.getOnlyElement(learnedConstraints).constraint();
     assertThat(relationConstraint).isEqualTo(BooleanConstraint.TRUE);
-    Constraint sv1Constraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == sv1).findFirst().get().constraint();
-    assertThat(sv1Constraint).isNull();
-    Constraint sv2Constraint = learnedConstraints.stream().filter(lc -> lc.symbolicValue() == sv2).findFirst().get().constraint();
-    assertThat(sv2Constraint).isNull();
   }
 
   @Test

@@ -22,16 +22,11 @@ package org.sonar.java.se;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
 public class LearnedConstraint {
   final SymbolicValue sv;
-
-  @Nullable
   final Constraint constraint;
 
-  public LearnedConstraint(SymbolicValue sv, @Nullable Constraint constraint) {
+  public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
     this.sv = sv;
     this.constraint = constraint;
   }
@@ -40,7 +35,6 @@ public class LearnedConstraint {
     return sv;
   }
 
-  @CheckForNull
   public Constraint constraint() {
     return constraint;
   }
