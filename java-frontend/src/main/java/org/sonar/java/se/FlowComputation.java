@@ -315,7 +315,6 @@ public class FlowComputation {
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
       Map<SymbolicValue, Long> constraintsBySV = learnedConstraints.stream()
-        .filter(lc -> lc.constraint() != null)
         .collect(Collectors.groupingBy(LearnedConstraint::symbolicValue, Collectors.counting()));
       return learnedConstraints.stream()
         .flatMap(lc -> isConstraintFromObjectDomain(lc.constraint()) && constraintsBySV.get(lc.symbolicValue()) > 1 ? Stream.empty() : Stream.of(lc))
@@ -507,13 +506,12 @@ public class FlowComputation {
     }
 
     private boolean hasConstraintForDomain(LearnedConstraint lc, Class<? extends Constraint> domain) {
-      Constraint constraint = lc.constraint;
-      return constraint == null || domain.isAssignableFrom(constraint.getClass());
+      return domain.isAssignableFrom(lc.constraint.getClass());
     }
 
     private List<JavaFileScannerContext.Location> learnedConstraintFlow(LearnedConstraint learnedConstraint, ExplodedGraph.Edge edge) {
       Constraint constraint = learnedConstraint.constraint();
-      if (constraint == null || !addToFlow.test(constraint)) {
+      if (!addToFlow.test(constraint)) {
         return ImmutableList.of();
       }
       ExplodedGraph.Node parent = edge.parent;

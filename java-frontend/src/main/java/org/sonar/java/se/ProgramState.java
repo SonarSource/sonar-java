@@ -525,20 +525,10 @@ public class ProgramState {
     ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
     constraints.forEach((sv, pmap) -> pmap.forEach((domain, c) -> {
       if (!c.equals(parent.getConstraint(sv, domain))) {
-        addLearnedConstraint(result, sv, c);
+        result.add(new LearnedConstraint(sv, c));
       }
     }));
     return result.build();
-  }
-
-  private static void addLearnedConstraint(ImmutableSet.Builder<LearnedConstraint> result, SymbolicValue sv, Constraint c) {
-    result.add(new LearnedConstraint(sv, c));
-    // FIXME this might end up adding twice the same SV in learned constraints. Safe because null constraints are filtered anyway
-    if (sv instanceof BinarySymbolicValue) {
-      BinarySymbolicValue binarySymbolicValue = (BinarySymbolicValue) sv;
-      addLearnedConstraint(result, binarySymbolicValue.getLeftOp(), null);
-      addLearnedConstraint(result, binarySymbolicValue.getRightOp(), null);
-    }
   }
 
   Set<LearnedAssociation> learnedAssociations(ProgramState parent) {
