@@ -56,6 +56,7 @@ import static java.util.Collections.singletonList;
   JavaClasspathTest.class,
   JaCoCoControllerTest.class,
   SuppressWarningTest.class,
+  SemanticTest.class,
   SonarLintTest.class
 })
 public class JavaTestSuite {

@@ -25,6 +25,11 @@ case "$TEST" in
     git submodule update --init --recursive
   ;;
   plugin)
+    #fetch submodule containing sources of projects used for semantic ITs
+    git submodule update --init --recursive
+    #Semantic IT projects requires java 8
+    export JAVA_HOME=/opt/sonarsource/jvm/java-1.8.0-sun-x64
+    export PATH=$JAVA_HOME/bin:$PATH
   ;;
   *)
     echo "Unexpected TEST mode: $TEST"
