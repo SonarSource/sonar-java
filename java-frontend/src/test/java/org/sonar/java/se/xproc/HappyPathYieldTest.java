@@ -20,10 +20,9 @@
 package org.sonar.java.se.xproc;
 
 import org.junit.Test;
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import java.util.Set;
@@ -36,8 +35,7 @@ import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class HappyPathYieldTest {
 
-  PMap<Class<? extends Constraint>, Constraint> NOT_NULL_CONSTRAINT = PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
-    .put(ObjectConstraint.class, ObjectConstraint.NOT_NULL);
+  ConstraintsByDomain NOT_NULL_CONSTRAINT = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   @Test
   public void test_equals() {

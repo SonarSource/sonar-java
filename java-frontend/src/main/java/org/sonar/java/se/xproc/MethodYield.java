@@ -31,6 +31,7 @@ import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -55,7 +56,7 @@ public abstract class MethodYield {
   final ExplodedGraph.Node node;
   private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
   private final MethodBehavior behavior;
-  List<PMap<Class<? extends Constraint>, Constraint>> parametersConstraints;
+  List<ConstraintsByDomain> parametersConstraints;
 
   public MethodYield(MethodBehavior behavior) {
     this.parametersConstraints = new ArrayList<>();
@@ -75,7 +76,7 @@ public abstract class MethodYield {
   public Stream<ProgramState> parametersAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState) {
     Set<ProgramState> results = new LinkedHashSet<>();
     for (int index = 0; index < invocationArguments.size(); index++) {
-      PMap<Class<? extends Constraint>, Constraint> constraints = getConstraint(index, invocationTypes);
+      ConstraintsByDomain constraints = getConstraint(index, invocationTypes);
       if (constraints == null) {
         // no constraints on this parameter, let's try next one.
         continue;
@@ -100,7 +101,7 @@ public abstract class MethodYield {
   }
 
   @CheckForNull
-  private PMap<Class<? extends Constraint>, Constraint> getConstraint(int index, List<Type> invocationTypes) {
+  private ConstraintsByDomain getConstraint(int index, List<Type> invocationTypes) {
     if (!behavior.isMethodVarArgs() || applicableOnVarArgs(index, invocationTypes)) {
       return parametersConstraints.get(index);
     }
@@ -124,8 +125,7 @@ public abstract class MethodYield {
     return argumentType.isArray() || argumentType.is("<nulltype>");
   }
 
-  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg,
-                                                              PMap<Class<? extends Constraint>, Constraint> constraints) {
+  private static Set<ProgramState> programStatesForConstraint(Collection<ProgramState> states, SymbolicValue invokedArg, ConstraintsByDomain constraints) {
     Set<ProgramState> programStates = new LinkedHashSet<>(states);
 
     constraints.forEach((d, c) ->  {

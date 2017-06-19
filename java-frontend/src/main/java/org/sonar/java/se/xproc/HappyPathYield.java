@@ -22,10 +22,11 @@ package org.sonar.java.se.xproc;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -41,7 +42,7 @@ public class HappyPathYield extends MethodYield {
 
   private int resultIndex;
   @Nullable
-  private PMap<Class<? extends Constraint>, Constraint> resultConstraint;
+  private ConstraintsByDomain resultConstraint;
 
   public HappyPathYield(MethodBehavior behavior) {
     super(behavior);
@@ -76,13 +77,13 @@ public class HappyPathYield extends MethodYield {
     return results.distinct();
   }
 
-  public void setResult(int resultIndex, @Nullable PMap<Class<? extends Constraint>, Constraint> resultConstraint) {
+  public void setResult(int resultIndex, @Nullable ConstraintsByDomain resultConstraint) {
     this.resultIndex = resultIndex;
     this.resultConstraint = resultConstraint;
   }
 
   @CheckForNull
-  public PMap<Class<? extends Constraint>, Constraint> resultConstraint() {
+  public ConstraintsByDomain resultConstraint() {
     return resultConstraint;
   }
 
@@ -94,7 +95,7 @@ public class HappyPathYield extends MethodYield {
   @Override
   public String toString() {
     return String.format("{params: %s, result: %s (%d)}",
-      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
       resultConstraint, resultIndex);
   }
 

@@ -21,12 +21,10 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -80,9 +78,9 @@ public class MethodBehavior {
   private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
     // add the constraints on all the parameters
     for (int i = 0; i < parameters.size(); i++) {
-      PMap<Class<? extends Constraint>, Constraint> constraints = node.programState.getConstraints(parameters.get(i));
+      ConstraintsByDomain constraints = node.programState.getConstraints(parameters.get(i));
       if (constraints == null) {
-        constraints = PCollections.emptyMap();
+        constraints = ConstraintsByDomain.empty();
       }
       yield.parametersConstraints.add(constraints);
     }

@@ -69,7 +69,7 @@ public class ExceptionalYield extends MethodYield {
   @Override
   public String toString() {
     return String.format("{params: %s, exceptional%s}",
-      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
       exceptionType == null ? "" : (" (" + exceptionType.fullyQualifiedName() + ")"));
   }
 

@@ -22,12 +22,11 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -118,8 +117,7 @@ public class SymbolicValue {
     if (constraint == null) {
       if(nullConstraint.isNull()) {
         // null constraints get rid of all other constraints
-        PMap<Class<? extends Constraint>, Constraint> onlyNullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
-          .put(ObjectConstraint.class, ObjectConstraint.NULL);
+        ConstraintsByDomain onlyNullConstraint = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
         return ImmutableList.of(programState.addConstraints(this, onlyNullConstraint));
       } else {
         return ImmutableList.of(programState.addConstraint(this, nullConstraint));

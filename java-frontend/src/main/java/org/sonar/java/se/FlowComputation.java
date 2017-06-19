@@ -27,13 +27,13 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -379,7 +379,7 @@ public class FlowComputation {
       if (rhsSymbol != null) {
         flowBuilder.add(location(node, String.format(IMPLIES_SAME_VALUE, learnedAssociation.symbol().name(), rhsSymbol.name())));
       } else {
-        PMap<Class<? extends Constraint>, Constraint> allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
+        ConstraintsByDomain allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
         Collection<Constraint> constraints = filterByDomains(allConstraints);
         for (Constraint constraint : constraints) {
           String symbolName = learnedAssociation.symbol().name();
@@ -395,7 +395,7 @@ public class FlowComputation {
       return flowBuilder.build();
     }
 
-    private Collection<Constraint> filterByDomains(@Nullable PMap<Class<? extends Constraint>, Constraint> allConstraints) {
+    private Collection<Constraint> filterByDomains(@Nullable ConstraintsByDomain allConstraints) {
       if (allConstraints == null) {
         return Collections.emptySet();
       }

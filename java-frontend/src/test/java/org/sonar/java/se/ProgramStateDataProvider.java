@@ -46,7 +46,7 @@ public class ProgramStateDataProvider {
 
   public String constraints() {
     List<String> result = new ArrayList<>();
-    ps.constraints.forEach((sv, pmap) -> result.add(sv.toString() + "=" + pmapToStream(pmap).map(Constraint::toString).collect(Collectors.toList()).toString()));
+    ps.constraints.forEach((sv, constraints) -> result.add(sv.toString() + "=" + constraints.stream().map(Constraint::toString).collect(Collectors.toList()).toString()));
     return result.stream().sorted().collect(Collectors.toList()).toString();
   }
 
