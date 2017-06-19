@@ -128,8 +128,7 @@ public class ExceptionalYieldChecker {
   }
 
   private static boolean hasOnlyNonNullConstraint(ConstraintsByDomain constraints) {
-    List<Class<? extends Constraint>> domains = constraints.domains().collect(Collectors.toList());
-    return domains.size() == 1 && constraints.get(ObjectConstraint.class) == ObjectConstraint.NOT_NULL;
+    return constraints.domains().count() == 1 && constraints.get(ObjectConstraint.class) == ObjectConstraint.NOT_NULL;
   }
 
   private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, Collection<SymbolicValue> arguments) {

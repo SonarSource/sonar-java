@@ -28,14 +28,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConstraintsByDomainTest {
 
   @Test
-  public void test() throws Exception {
+  public void test_isEmpty() throws Exception {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.isEmpty()).isTrue();
     constraints = constraints.put(ObjectConstraint.NULL);
     assertThat(constraints.isEmpty()).isFalse();
+  }
+
+  @Test
+  public void test_remove() throws Exception {
+    ConstraintsByDomain constraints = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
     assertThat(constraints.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
     constraints = constraints.remove(ObjectConstraint.class);
-    assertThat(constraints).isEqualTo(ConstraintsByDomain.empty());
+    assertThat(constraints).isSameAs(ConstraintsByDomain.empty());
+
+    ConstraintsByDomain c1 = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
+    ConstraintsByDomain c2 = c1.remove(BooleanConstraint.class);
+    assertThat(c1).isSameAs(c2);
   }
 
   @Test

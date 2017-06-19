@@ -43,6 +43,9 @@ public class ConstraintsByDomain {
 
   public ConstraintsByDomain remove(Class<? extends Constraint> domain) {
     PMap<Class<? extends Constraint>, Constraint> remove = constraintPMap.remove(domain);
+    if (remove == constraintPMap) {
+      return this;
+    }
     return remove.isEmpty() ? EMPTY : new ConstraintsByDomain(remove);
   }
 
