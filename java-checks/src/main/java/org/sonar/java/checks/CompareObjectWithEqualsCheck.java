@@ -28,10 +28,14 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S1698")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -64,9 +68,39 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       Type leftOpType = tree.leftOperand().symbolType();
       Type rightOpType = tree.rightOperand().symbolType();
-      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType) && bothImplementsEqualsMethod(leftOpType, rightOpType)) {
+      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)
+        && bothImplementsEqualsMethod(leftOpType, rightOpType)
+        && neitherIsPublicStaticFinal(tree.leftOperand(), tree.rightOperand())) {
         context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
       }
+    }
+  }
+
+  private static boolean neitherIsPublicStaticFinal(ExpressionTree leftOperand, ExpressionTree rightOperand) {
+    if (compatibleTypes(leftOperand, rightOperand)) {
+      return !isPublicStaticFinal(leftOperand) && !isPublicStaticFinal(rightOperand);
+    }
+    return true;
+  }
+
+  private static boolean compatibleTypes(ExpressionTree leftOperand, ExpressionTree rightOperand) {
+    return leftOperand.symbolType().equals(rightOperand.symbolType());
+  }
+
+  private static boolean isPublicStaticFinal(ExpressionTree tree) {
+    return symbol(tree)
+      .map(s -> s.isPublic() && s.isStatic() && s.isFinal())
+      .orElse(false);
+  }
+
+  private static Optional<Symbol> symbol(ExpressionTree tree) {
+    switch (tree.kind()) {
+      case IDENTIFIER:
+        return Optional.of(((IdentifierTree) tree).symbol());
+      case MEMBER_SELECT:
+        return Optional.of(((MemberSelectExpressionTree) tree).identifier().symbol());
+      default:
+        return Optional.empty();
     }
   }
 
