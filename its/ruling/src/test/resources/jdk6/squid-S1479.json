@@ -1,11 +1,6 @@
 {
 'jdk6:java/awt/event/KeyEvent.java':[
 1115,
-1341,
-],
-'jdk6:java/awt/geom/AffineTransform.java':[
-2214,
-2422,
 ],
 'jdk6:java/lang/CharacterData00.java':[
 150,
@@ -13,10 +8,6 @@
 ],
 'jdk6:java/lang/CharacterData01.java':[
 224,
-],
-'jdk6:java/util/Formatter.java':[
-3788,
-4344,
 ],
 'jdk6:java/util/regex/Pattern.java':[
 2052,
