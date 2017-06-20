@@ -10,9 +10,9 @@ matrix:
     # CI trigger analysis
   - env: TEST=CI
     # OS X 10.11 - default with jdk 8
-  - env: TEST=CI_MACOSX
-    os: osx
-    osx_image: xcode7.3
+#  - env: TEST=CI_MACOSX
+#    os: osx
+#    osx_image: xcode7.3
     # ruling projects
   - env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE

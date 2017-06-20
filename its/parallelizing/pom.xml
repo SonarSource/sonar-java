@@ -1,38 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.sonarsource.java</groupId>
-    <artifactId>java</artifactId>
+    <artifactId>java-its</artifactId>
     <version>4.11.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-its</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>it-java-parallelizing</artifactId>
 
-  <name>SonarQube Java :: ITs</name>
-
-  <modules>
-    <module>performancing</module>
-    <module>parallelizing</module>
-    <module>plugin</module>
-    <module>ruling</module>
-  </modules>
+  <name>SonarQube Java :: ITs :: Parallelizing</name>
+  <inceptionYear>2013</inceptionYear>
 
   <properties>
-    <skipTests>true</skipTests>
-    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+    <version.toCopy>${project.version}</version.toCopy>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.sonarsource.orchestrator</groupId>
+      <artifactId>sonar-orchestrator</artifactId>
+      <version>${orchestrator.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc6</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
-      <id>qa</id>
-      <activation>
-        <property>
-          <name>env.SONARSOURCE_QA</name>
-          <value>true</value>
-        </property>
-      </activation>
+      <id>it-parallelizing</id>
+      <properties>
+        <skipTests>false</skipTests>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -51,7 +68,7 @@
                     <artifactItem>
                       <groupId>${project.groupId}</groupId>
                       <artifactId>sonar-java-plugin</artifactId>
-                      <version>${project.version}</version>
+                      <version>${version.toCopy}</version>
                       <type>sonar-plugin</type>
                       <overWrite>true</overWrite>
                     </artifactItem>
