@@ -29,18 +29,13 @@ public class ValidationFiltersCheckTest {
 
   @Test
   public void web_xml_without_filter() {
-    XmlCheckVerifier.verifyIssueOnFile(
-      "src/test/files/checks/xml/web/ValidationFiltersCheck/withoutFilters/web.xml",
-      "Add a validation filter to this \"web.xml\".",
-      CHECK);
+    XmlCheckVerifier.verifyNoIssue(
+      "src/test/files/checks/xml/web/ValidationFiltersCheck/withoutFilters/web.xml", CHECK);
   }
 
   @Test
   public void web_xml_incomplete_filter() {
-    XmlCheckVerifier.verifyIssueOnFile(
-      "src/test/files/checks/xml/web/ValidationFiltersCheck/incompleteFilters/web.xml",
-      "Add a validation filter to this \"web.xml\".",
-      CHECK);
+    XmlCheckVerifier.verify("src/test/files/checks/xml/web/ValidationFiltersCheck/incompleteFilters/web.xml", CHECK);
   }
 
   @Test

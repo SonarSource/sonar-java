@@ -19,12 +19,13 @@
  */
 package org.sonar.java.checks.xml.web;
 
-import com.google.common.collect.Iterables;
-import org.sonar.check.Rule;
-import org.sonar.java.xml.XmlCheckContext;
 import org.w3c.dom.Node;
 
+import org.sonar.check.Rule;
+import org.sonar.java.xml.XmlCheckContext;
+
 import javax.xml.xpath.XPathExpression;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,15 +44,11 @@ public class ValidationFiltersCheck extends WebXmlCheckTemplate {
   public void scanWebXml(XmlCheckContext context) {
     Iterable<Node> filtersDefinedInFilters = context.evaluateOnDocument(filterNamesFromFilterExpression);
     Iterable<Node> filtersUsedInMapping = context.evaluateOnDocument(filterNamesFromFilterMappingExpression);
-    if (Iterables.isEmpty(filtersDefinedInFilters) || Iterables.isEmpty(filtersUsedInMapping)) {
-      reportIssueOnFile("Add a validation filter to this \"web.xml\".");
-    } else {
-      Set<String> filterNamesFromFilters = getFilterNames(filtersDefinedInFilters);
-      for (Node node : filtersUsedInMapping) {
-        String filterName = getStringValue(node);
-        if (!filterNamesFromFilters.contains(filterName)) {
-          reportIssue(node, "\"" + filterName + "\" is not defined in this file.");
-        }
+    Set<String> filtersInMapping = getFilterNames(filtersUsedInMapping);
+    for (Node node : filtersDefinedInFilters) {
+      String filterName = getStringValue(node);
+      if (!filtersInMapping.contains(filterName)) {
+        reportIssue(node, "\"" + filterName + "\" should have a mapping.");
       }
     }
   }
