@@ -197,3 +197,26 @@ class FieldWithInitializer {
     return 42;
   }
 }
+
+class CallingOtherConstructor {
+  @Nonnull
+  private final Integer value;
+
+  CallingOtherConstructor(String s) { // Compliant - calls other constructor
+    this(Integer.valueOf(s));
+  }
+
+  CallingOtherConstructor(Object o) { // Noncompliant - calls super constructor but do not initialize value
+    super();
+  }
+
+  CallingOtherConstructor(String s, Object o) { // Noncompliant - calls other method
+    this.foo(o);
+  }
+
+  CallingOtherConstructor(Integer i) {
+    this.value = i;
+  }
+
+  void foo(Object o) {}
+}

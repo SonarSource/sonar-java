@@ -36,12 +36,14 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -87,7 +89,9 @@ public class NonNullSetToNullCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !isDefaultConstructorForJpa(methodTree)) {
+    if (methodTree.is(Tree.Kind.CONSTRUCTOR)
+      && !isDefaultConstructorForJpa(methodTree)
+      && !callsThisConstructor(methodTree)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       classTree.members().stream()
         .filter(m -> m.is(Tree.Kind.VARIABLE))
@@ -105,6 +109,23 @@ public class NonNullSetToNullCheck extends SECheck {
 
     SymbolMetadata symbolMetadata = ((ClassTree) methodTree.parent()).symbol().metadata();
     return Stream.of(JPA_ANNOTATIONS).anyMatch(symbolMetadata::isAnnotatedWith);
+  }
+
+  private static boolean callsThisConstructor(MethodTree constructor) {
+    List<StatementTree> body = constructor.block().body();
+    if (body.isEmpty()) {
+      return false;
+    }
+    StatementTree firstStatement = body.get(0);
+    if (!firstStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      return false;
+    }
+    ExpressionTree expression = ((ExpressionStatementTree) firstStatement).expression();
+    if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
+    }
+    ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+    return methodSelect.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) methodSelect).name());
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
