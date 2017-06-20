@@ -7,14 +7,14 @@
     <version>4.11.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-extension-plugin</artifactId>
+  <artifactId>java-debugging-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
 
-  <name>SonarQube Java :: ITS :: Plugin :: Java Extension Plugin</name>
-  <description>Java Extension</description>
+  <name>SonarQube Java :: ITS :: Plugin :: Java Debugging Plugin</name>
+  <description>Java Debugging plugin used to declare helper rules</description>
 
   <properties>
-    <sonar.pluginClass>org.sonar.samples.java.JavaExtensionPlugin</sonar.pluginClass>
+    <sonar.pluginClass>org.sonar.samples.java.JavaDebuggingPlugin</sonar.pluginClass>
     <sonar.skip>true</sonar.skip>
   </properties>
 

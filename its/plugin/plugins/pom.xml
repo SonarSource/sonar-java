@@ -15,6 +15,7 @@
 
   <modules>
     <module>java-extension-plugin</module>
+    <module>java-debugging-plugin</module>
   </modules>
 
 </project>
