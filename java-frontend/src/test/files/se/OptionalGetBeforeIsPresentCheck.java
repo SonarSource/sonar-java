@@ -1,3 +1,5 @@
+import javax.annotation.Nullable;
+
 import java.util.Optional;
 
 class A {
@@ -53,8 +55,29 @@ class A {
     return s.isPresent() ? null : s.get(); // Noncompliant
   }
 
-  private void fun() {
-    java.util.Optional<String> op = java.util.Optional.empty();
+  private void usingEmpty() {
+    Optional<String> op = Optional.empty();
     op.get(); // Noncompliant
+  }
+
+  private void usingOf() {
+    String s = "helloWorld";
+    Optional<String> op = Optional.of(s);
+    op.get(); // Compliant - will always be present
+  }
+
+  private void usingOfNullable(@Nullable Object o1, Object o2) {
+    Optional<Object> op1 = Optional.ofNullable(o1);
+    op1.get(); // Noncompliant
+
+    Optional<Object> op2 = Optional.ofNullable(o2);
+    op2.get(); // Noncompliant
+  }
+
+  private void usingOfNullableWithTest(@Nullable Object o) {
+    Optional<Object> op = Optional.ofNullable(o);
+    if (o != null) {
+      op.get(); // Compliant - if o is not null, then the optional is necessarily present
+    }
   }
 }
