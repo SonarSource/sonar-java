@@ -23,11 +23,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.ExceptionalCheckBasedYield;
@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -124,28 +123,21 @@ public class ExceptionalYieldChecker {
 
   private static boolean hasConstraintOtherThanNonNull(ProgramState.SymbolicValueSymbol svs, ProgramState ps) {
     SymbolicValue sv = svs.symbolicValue();
-    PMap<Class<? extends Constraint>, Constraint> constraints = ps.getConstraints(sv);
+    ConstraintsByDomain constraints = ps.getConstraints(sv);
     return constraints != null && !hasOnlyNonNullConstraint(constraints);
   }
 
-  private static boolean hasOnlyNonNullConstraint(PMap<Class<? extends Constraint>, Constraint> constraints) {
-    return domainsFromConstraints(constraints).size() == 1 && constraints.get(ObjectConstraint.class) == ObjectConstraint.NOT_NULL;
+  private static boolean hasOnlyNonNullConstraint(ConstraintsByDomain constraints) {
+    return constraints.domains().count() == 1 && constraints.get(ObjectConstraint.class) == ObjectConstraint.NOT_NULL;
   }
 
   private static List<Class<? extends Constraint>> domainsFromArguments(ProgramState programState, Collection<SymbolicValue> arguments) {
     return arguments.stream()
       .map(programState::getConstraints)
       .filter(Objects::nonNull)
-      .map(ExceptionalYieldChecker::domainsFromConstraints)
-      .flatMap(List::stream)
+      .flatMap(ConstraintsByDomain::domains)
       .distinct()
       .collect(Collectors.toList());
-  }
-
-  private static List<Class<? extends Constraint>> domainsFromConstraints(PMap<Class<? extends Constraint>, Constraint> constraints) {
-    List<Class<? extends Constraint>> domains = new ArrayList<>();
-    constraints.forEach((d, c) -> domains.add(d));
-    return domains;
   }
 
   private static List<JavaFileScannerContext.Location> flowsForArgumentsChangingName(ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {

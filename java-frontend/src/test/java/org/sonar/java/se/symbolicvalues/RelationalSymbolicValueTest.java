@@ -24,8 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
@@ -35,8 +34,8 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -391,9 +390,9 @@ public class RelationalSymbolicValueTest {
   }
 
   private void assertNoConstraints(ProgramState ps, SymbolicValue sv) {
-    PMap<Class<? extends Constraint>, Constraint> constraints = ps.getConstraints(sv);
+    ConstraintsByDomain constraints = ps.getConstraints(sv);
     if (constraints != null) {
-      assertThat(constraints).isEqualTo(PCollections.emptyMap());
+      assertThat(constraints).isEqualTo(ConstraintsByDomain.empty());
     }
   }
 

@@ -33,6 +33,7 @@ import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
@@ -122,15 +123,11 @@ public class ProgramState {
   public static final ProgramState EMPTY_STATE = new ProgramState(
     PCollections.emptyMap(),
     PCollections.emptyMap(),
-    PCollections.<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>>emptyMap()
-      .put(SymbolicValue.NULL_LITERAL, PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL))
-      .put(SymbolicValue.TRUE_LITERAL,
-        PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
-          .put(BooleanConstraint.class, BooleanConstraint.TRUE).put(ObjectConstraint.class, ObjectConstraint.NOT_NULL))
-      .put(SymbolicValue.FALSE_LITERAL,
-        PCollections.<Class<? extends Constraint>, Constraint>emptyMap()
-          .put(BooleanConstraint.class, BooleanConstraint.FALSE).put(ObjectConstraint.class, ObjectConstraint.NOT_NULL)),
-    PCollections.emptyMap(),
+    PCollections.<SymbolicValue, ConstraintsByDomain>emptyMap()
+      .put(SymbolicValue.NULL_LITERAL, ConstraintsByDomain.empty().put(ObjectConstraint.NULL))
+      .put(SymbolicValue.TRUE_LITERAL, ConstraintsByDomain.empty().put(BooleanConstraint.TRUE).put(ObjectConstraint.NOT_NULL))
+      .put(SymbolicValue.FALSE_LITERAL, ConstraintsByDomain.empty().put(BooleanConstraint.FALSE).put(ObjectConstraint.NOT_NULL)),
+        PCollections.emptyMap(),
     PCollections.emptyStack(),
     null);
 
@@ -139,10 +136,10 @@ public class ProgramState {
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
-  final PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints;
+  final PMap<SymbolicValue, ConstraintsByDomain> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> constraints, PMap<ProgramPoint, Integer> visitedPoints,
+                       PMap<SymbolicValue, ConstraintsByDomain> constraints, PMap<ProgramPoint, Integer> visitedPoints,
                        PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
     this.references = references;
@@ -163,7 +160,7 @@ public class ProgramState {
     stack = newStack;
   }
 
-  private ProgramState(ProgramState ps, PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints) {
+  private ProgramState(ProgramState ps, PMap<SymbolicValue, ConstraintsByDomain> newConstraints) {
     values = ps.values;
     references = ps.references;
     constraints = newConstraints;
@@ -282,15 +279,15 @@ public class ProgramState {
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
     Preconditions.checkState(!(symbolicValue instanceof RelationalSymbolicValue && constraint == BooleanConstraint.FALSE),
       "Relations stored in PS should always use TRUE constraint. SV: %s", symbolicValue);
-    PMap<Class<? extends Constraint>, Constraint> constraintsForSV = constraints.get(symbolicValue);
+    ConstraintsByDomain constraintsForSV = constraints.get(symbolicValue);
     if(constraintsForSV == null) {
-      constraintsForSV = PCollections.emptyMap();
+      constraintsForSV = ConstraintsByDomain.empty();
     }
-    return addConstraints(symbolicValue, constraintsForSV.put(constraint.getClass(), constraint));
+    return addConstraints(symbolicValue, constraintsForSV.put(constraint));
   }
 
-  public ProgramState addConstraints(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintsForSV) {
-    PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints.put(symbolicValue, constraintsForSV);
+  public ProgramState addConstraints(SymbolicValue symbolicValue, ConstraintsByDomain constraintsForSV) {
+    PMap<SymbolicValue, ConstraintsByDomain> newConstraints = constraints.put(symbolicValue, constraintsForSV);
     if (newConstraints != constraints) {
       return new ProgramState(this, newConstraints);
     }
@@ -298,11 +295,11 @@ public class ProgramState {
   }
 
   public ProgramState removeConstraintsOnDomain(SymbolicValue sv, Class<? extends Constraint> domain) {
-    PMap<Class<? extends Constraint>, Constraint> svConstraint = constraints.get(sv);
+    ConstraintsByDomain svConstraint = constraints.get(sv);
     if(svConstraint == null) {
       return this;
     }
-    PMap<Class<? extends Constraint>, Constraint> newConstraintForSv = svConstraint.remove(domain);
+    ConstraintsByDomain newConstraintForSv = svConstraint.remove(domain);
     if(newConstraintForSv.isEmpty()) {
       return new ProgramState(this, constraints.remove(sv));
     }
@@ -355,7 +352,7 @@ public class ProgramState {
           || constraint instanceof LocksNotUnlockedCheck.LockConstraint));
   }
 
-  private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable PMap<Class<? extends Constraint>, Constraint> constraints) {
+  private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable ConstraintsByDomain constraints) {
     //FIXME this should be handle with callbacks rather than keeping those value in programstate
     return SymbolicValue.isDisposable(symbolicValue) &&
       (constraints == null || (constraints.get(UnclosedResourcesCheck.ResourceConstraint.class) == null
@@ -376,7 +373,7 @@ public class ProgramState {
       boolean newProgramState = false;
       PMap<Symbol, SymbolicValue> newValues = values;
       PMap<SymbolicValue, Integer> newReferences = references;
-      PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints;
+      PMap<SymbolicValue, ConstraintsByDomain> newConstraints = constraints;
 
       @Override
       public void accept(Symbol symbol, SymbolicValue symbolicValue) {
@@ -399,20 +396,20 @@ public class ProgramState {
   }
 
   public ProgramState cleanupConstraints(Collection<SymbolicValue> protectedSymbolicValues) {
-    class CleanAction implements BiConsumer<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> {
+    class CleanAction implements BiConsumer<SymbolicValue, ConstraintsByDomain> {
       boolean newProgramState = false;
-      PMap<SymbolicValue, PMap<Class<? extends Constraint>, Constraint>> newConstraints = constraints;
+      PMap<SymbolicValue, ConstraintsByDomain> newConstraints = constraints;
       PMap<SymbolicValue, Integer> newReferences = references;
 
       @Override
-      public void accept(SymbolicValue symbolicValue, PMap<Class<? extends Constraint>, Constraint> constraintPMap) {
+      public void accept(SymbolicValue symbolicValue, ConstraintsByDomain constraintPMap) {
         constraintPMap.forEach((domain, constraint) -> {
           if (!protectedSymbolicValues.contains(symbolicValue)
             && !isReachable(symbolicValue, newReferences)
             && isDisposable(symbolicValue, constraint)
             && !inStack(stack, symbolicValue)) {
             newProgramState = true;
-            PMap<Class<? extends Constraint>, Constraint> removed = newConstraints.get(symbolicValue).remove(domain);
+            ConstraintsByDomain removed = newConstraints.get(symbolicValue).remove(domain);
             if (removed.isEmpty()) {
               newConstraints = newConstraints.remove(symbolicValue);
             } else {
@@ -475,13 +472,13 @@ public class ProgramState {
   }
 
   @Nullable
-  public PMap<Class<? extends Constraint>, Constraint> getConstraints(SymbolicValue sv) {
+  public ConstraintsByDomain getConstraints(SymbolicValue sv) {
     return constraints.get(sv);
   }
 
   @CheckForNull
   public <T extends Constraint> T getConstraint(SymbolicValue sv, Class<T> domain) {
-    PMap<Class<? extends Constraint>, Constraint> classConstraintPMap = constraints.get(sv);
+    ConstraintsByDomain classConstraintPMap = constraints.get(sv);
     if(classConstraintPMap == null) {
       return null;
     }

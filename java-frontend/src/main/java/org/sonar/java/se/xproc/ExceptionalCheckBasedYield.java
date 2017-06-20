@@ -22,15 +22,15 @@ package org.sonar.java.se.xproc;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -40,7 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -83,8 +82,8 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     }
 
     for (int index = 0; index < parametersConstraints.size(); index++) {
-      PMap<Class<? extends Constraint>, Constraint> yieldConstraint = parametersConstraints.get(index);
-      PMap<Class<? extends Constraint>, Constraint> stateConstraint = argumentConstraint(invocationArguments, programState, index);
+      ConstraintsByDomain yieldConstraint = parametersConstraints.get(index);
+      ConstraintsByDomain stateConstraint = argumentConstraint(invocationArguments, programState, index);
       if (!yieldConstraint.isEmpty() && !yieldConstraint.equals(stateConstraint)) {
         // If there is a constraint on a parameter, we need to have the same constraint in the current program state,
         // in order to avoid wrongly learning from this yield and thus raising FPs.
@@ -103,7 +102,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
       // VarArgs method called without variadic parameter
       return true;
     }
-    PMap<Class<? extends Constraint>, Constraint> lastParamConstraint = parametersConstraints.get(numberParametersYield - 1);
+    ConstraintsByDomain lastParamConstraint = parametersConstraints.get(numberParametersYield - 1);
     if (lastParamConstraint.isEmpty()) {
       // no constraint on the last parameter on yield side
       return true;
@@ -118,7 +117,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @CheckForNull
-  private static PMap<Class<? extends Constraint>, Constraint> argumentConstraint(List<SymbolicValue> invocationArguments, ProgramState programState, int index) {
+  private static ConstraintsByDomain argumentConstraint(List<SymbolicValue> invocationArguments, ProgramState programState, int index) {
     if (index < invocationArguments.size()) {
       return programState.getConstraints(invocationArguments.get(index));
     }
@@ -147,7 +146,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     Type exceptionType = exceptionType();
     Preconditions.checkState(exceptionType != null);
     return String.format("{params: %s, exceptional (%s), check: %s}",
-      parametersConstraints.stream().map(pMap -> MethodYield.pmapToStream(pMap).map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
+      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
       exceptionType.fullyQualifiedName(), check.getSimpleName());
   }
 
@@ -165,7 +164,8 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, svCausingException, domains(node.programState.getConstraints(svCausingException)));
+    List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().collect(Collectors.toList());
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, svCausingException, domains);
     Tree syntaxTree = node.programPoint.syntaxTree();
     ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flowBuilder = ImmutableSet.builder();
 
@@ -180,11 +180,6 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     return flowBuilder.build();
   }
 
-  private static List<Class<? extends Constraint>> domains(PMap<Class<? extends Constraint>, Constraint> constraints) {
-    List<Class<? extends Constraint>> domains = new ArrayList<>();
-    constraints.forEach((d, c) -> domains.add(d));
-    return domains;
-  }
 
   @Override
   public boolean equals(Object obj) {

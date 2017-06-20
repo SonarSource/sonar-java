@@ -20,11 +20,11 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,6 +40,8 @@ public class BehaviorCache {
   private final SymbolicExecutionVisitor sev;
   @VisibleForTesting
   public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
+  private static final ConstraintsByDomain NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
+  private static final ConstraintsByDomain NOT_NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   public BehaviorCache(SymbolicExecutionVisitor sev) {
     this.sev = sev;
@@ -144,18 +146,14 @@ public class BehaviorCache {
   private static MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield nullYield = new HappyPathYield(behavior);
-    nullYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
-    nullYield.setResult(-1, pmapForConstraint(constraint));
+    nullYield.parametersConstraints.add(NULL_CONSTRAINTS);
+    nullYield.setResult(-1, ConstraintsByDomain.empty().put(constraint));
     behavior.addYield(nullYield);
     MethodYield notNullYield = new HappyPathYield(behavior);
-    notNullYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
+    notNullYield.parametersConstraints.add(NOT_NULL_CONSTRAINTS);
     behavior.addYield(notNullYield);
     behavior.completed();
     return behavior;
-  }
-
-  private static PMap<Class<? extends Constraint>, Constraint> pmapForConstraint(Constraint constraint) {
-    return PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(constraint.getClass(), constraint);
   }
 
   /**
@@ -174,17 +172,17 @@ public class BehaviorCache {
   private static MethodBehavior createRequireNullnessBehavior(Symbol.MethodSymbol symbol, boolean mustBeNull) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield happyYield = new HappyPathYield(behavior);
-    happyYield.parametersConstraints.add(pmapForConstraint(mustBeNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL));
+    happyYield.parametersConstraints.add(mustBeNull ? NULL_CONSTRAINTS : NOT_NULL_CONSTRAINTS);
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      happyYield.parametersConstraints.add(PCollections.emptyMap());
+      happyYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
     happyYield.setResult(0, happyYield.parametersConstraints.get(0));
     behavior.addYield(happyYield);
 
     ExceptionalYield exceptionalYield = new ExceptionalYield(behavior);
-    exceptionalYield.parametersConstraints.add(pmapForConstraint(mustBeNull ? ObjectConstraint.NOT_NULL : ObjectConstraint.NULL));
+    exceptionalYield.parametersConstraints.add(mustBeNull ? NOT_NULL_CONSTRAINTS : NULL_CONSTRAINTS);
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      exceptionalYield.parametersConstraints.add(PCollections.emptyMap());
+      exceptionalYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
     behavior.addYield(exceptionalYield);
 
@@ -200,19 +198,19 @@ public class BehaviorCache {
   private static MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
     boolean isNull = IS_NULL.equals(symbol.name());
 
-    ObjectConstraint trueConstraint = isNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL;
-    ObjectConstraint falseConstraint = isNull ? ObjectConstraint.NOT_NULL : ObjectConstraint.NULL;
+    ConstraintsByDomain trueConstraint = isNull ? NULL_CONSTRAINTS : NOT_NULL_CONSTRAINTS;
+    ConstraintsByDomain falseConstraint = isNull ? NOT_NULL_CONSTRAINTS : NULL_CONSTRAINTS;
 
     MethodBehavior behavior = new MethodBehavior(symbol);
 
     HappyPathYield trueYield = new HappyPathYield(behavior);
-    trueYield.parametersConstraints.add(pmapForConstraint(trueConstraint));
-    trueYield.setResult(-1, pmapForConstraint(BooleanConstraint.TRUE));
+    trueYield.parametersConstraints.add(trueConstraint);
+    trueYield.setResult(-1, ConstraintsByDomain.empty().put(BooleanConstraint.TRUE));
     behavior.addYield(trueYield);
 
     HappyPathYield falseYield = new HappyPathYield(behavior);
-    falseYield.parametersConstraints.add(pmapForConstraint(falseConstraint));
-    falseYield.setResult(-1, pmapForConstraint(BooleanConstraint.FALSE));
+    falseYield.parametersConstraints.add(falseConstraint);
+    falseYield.setResult(-1, ConstraintsByDomain.empty().put(BooleanConstraint.FALSE));
     behavior.addYield(falseYield);
 
     behavior.completed();
@@ -222,11 +220,12 @@ public class BehaviorCache {
   private static MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
     MethodBehavior behavior = new MethodBehavior(symbol);
     HappyPathYield happyPathYield = new HappyPathYield(behavior);
-    happyPathYield.parametersConstraints.add(pmapForConstraint(isCheckNotNull ? ObjectConstraint.NOT_NULL : BooleanConstraint.TRUE));
+    Constraint constraint = isCheckNotNull ? ObjectConstraint.NOT_NULL : BooleanConstraint.TRUE;
+    happyPathYield.parametersConstraints.add(ConstraintsByDomain.empty().put(constraint));
     for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      happyPathYield.parametersConstraints.add(PCollections.emptyMap());
+      happyPathYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
-    PMap<Class<? extends Constraint>, Constraint> constraints = isCheckNotNull ? happyPathYield.parametersConstraints.get(0) : null;
+    ConstraintsByDomain constraints = isCheckNotNull ? happyPathYield.parametersConstraints.get(0) : null;
     happyPathYield.setResult(isCheckNotNull ? 0 : -1, constraints);
     behavior.addYield(happyPathYield);
 
@@ -238,13 +237,14 @@ public class BehaviorCache {
     MethodBehavior behavior = new MethodBehavior(symbol);
 
     HappyPathYield happyPathYield = new HappyPathYield(behavior);
-    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NULL));
-    happyPathYield.setResult(-1, pmapForConstraint(symbol.name().contains("Not") ? BooleanConstraint.FALSE : BooleanConstraint.TRUE));
+    happyPathYield.parametersConstraints.add(NULL_CONSTRAINTS);
+    BooleanConstraint constraint = symbol.name().contains("Not") ? BooleanConstraint.FALSE : BooleanConstraint.TRUE;
+    happyPathYield.setResult(-1, ConstraintsByDomain.empty().put(constraint));
     behavior.addYield(happyPathYield);
 
     happyPathYield = new HappyPathYield(behavior);
-    happyPathYield.parametersConstraints.add(pmapForConstraint(ObjectConstraint.NOT_NULL));
-    happyPathYield.setResult(-1, PCollections.emptyMap());
+    happyPathYield.parametersConstraints.add(NOT_NULL_CONSTRAINTS);
+    happyPathYield.setResult(-1, ConstraintsByDomain.empty());
     behavior.addYield(happyPathYield);
 
     behavior.completed();

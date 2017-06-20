@@ -32,6 +32,7 @@ import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -163,15 +164,15 @@ public class MethodYieldTest {
     otherYield = new HappyPathYield(methodBehavior);
     assertThat(yield).isNotEqualTo(otherYield);
 
-    PMap<Class<? extends Constraint>, Constraint> nullConstraint = PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL);
+    ConstraintsByDomain nullConstraint = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
     MethodYield yield1 = newMethodYield(methodBehavior);
     yield1.parametersConstraints.add(nullConstraint);
-    yield1.parametersConstraints.add(PCollections.emptyMap());
+    yield1.parametersConstraints.add(ConstraintsByDomain.empty());
     yield1.parametersConstraints.add(nullConstraint);
     MethodYield yield2 = newMethodYield(methodBehavior);
     yield2.parametersConstraints.add(nullConstraint);
     yield2.parametersConstraints.add(nullConstraint);
-    yield2.parametersConstraints.add(PCollections.emptyMap());
+    yield2.parametersConstraints.add(ConstraintsByDomain.empty());
 
     assertThat(yield1).isNotEqualTo(yield2);
   }
@@ -310,14 +311,14 @@ public class MethodYieldTest {
     assertThat(methodBehavior.yields()).hasSize(2);
     MethodYield[] expected = new MethodYield[] {
       buildMethodYield(0, null),
-      buildMethodYield(-1, PCollections.<Class<? extends Constraint>, Constraint>emptyMap().put(ObjectConstraint.class, ObjectConstraint.NULL))};
+      buildMethodYield(-1, ConstraintsByDomain.empty().put(ObjectConstraint.NULL))};
     assertThat(methodBehavior.yields()).contains(expected);
   }
 
-  private static MethodYield buildMethodYield(int resultIndex, @Nullable PMap<Class<? extends Constraint>, Constraint> resultConstraint) {
+  private static MethodYield buildMethodYield(int resultIndex, @Nullable ConstraintsByDomain resultConstraint) {
     HappyPathYield methodYield = new HappyPathYield(mockMethodBehavior(1, false));
     methodYield.parametersConstraints = new ArrayList<>();
-    methodYield.parametersConstraints.add(PCollections.emptyMap());
+    methodYield.parametersConstraints.add(ConstraintsByDomain.empty());
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }

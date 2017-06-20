@@ -22,10 +22,11 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.collections.PMap;
+
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -180,7 +181,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState) {
     List<ProgramState> states = new ArrayList<>();
     states.add(programState);
-    PMap<Class<? extends Constraint>, Constraint> leftConstraints = programState.getConstraints(from);
+    ConstraintsByDomain leftConstraints = programState.getConstraints(from);
     if (leftConstraints != null) {
       leftConstraints.forEach((d, c) -> {
         List<ProgramState> newStates = new ArrayList<>();
