@@ -20,19 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1479")
 public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
@@ -54,17 +53,23 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    Set<CaseLabelTree> cases = new HashSet<>();
-    for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
-      cases.addAll(caseGroupTree.labels());
+    if (isSwitchOverEnum(switchStatementTree)) {
+      return;
     }
+
+    List<CaseGroupTree> cases = switchStatementTree.cases();
     int size = cases.size();
     if (size > maximumCases) {
       List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
-      for (Tree element : cases) {
-        secondary.add(new JavaFileScannerContext.Location("Case + 1", element));
+      for (CaseGroupTree element : cases) {
+        secondary.add(new JavaFileScannerContext.Location("+1", element.labels().get(0)));
       }
-      reportIssue(switchStatementTree.switchKeyword(), "Reduce the number of switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
+      reportIssue(switchStatementTree.switchKeyword(), "Reduce the number of non-empty switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
     }
+  }
+
+  private static boolean isSwitchOverEnum(SwitchStatementTree switchStatementTree) {
+    Type type = switchStatementTree.expression().symbolType();
+    return type.symbol().isEnum();
   }
 }
