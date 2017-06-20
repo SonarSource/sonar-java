@@ -6,7 +6,7 @@
   version="3.0" metadata-complete="true">
 
   <filter>
-    <filter-name>myFilter</filter-name>
+    <filter-name>myFilter</filter-name>  <!-- Noncompliant {{"myFilter" should have a mapping.}} -->
   </filter>
 
 </web-app>
