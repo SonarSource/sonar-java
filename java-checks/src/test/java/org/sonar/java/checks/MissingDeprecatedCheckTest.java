@@ -29,4 +29,9 @@ public class MissingDeprecatedCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/MissingDeprecatedCheck.java", new MissingDeprecatedCheck());
   }
 
+  @Test
+  public void test_java9() {
+    JavaCheckVerifier.verify("src/test/files/checks/MissingDeprecatedCheckJava9.java", new MissingDeprecatedCheck(), 9);
+  }
+
 }
