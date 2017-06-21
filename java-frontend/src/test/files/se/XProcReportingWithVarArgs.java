@@ -5,8 +5,8 @@ public class OutOfBoundsTrigger {
   private static void m0(Date t1, Date t2, Date t3) {
     if (m1(t1, t2)) { // flow@flow1 [[order=1]] {{'t1' is passed to 'm1()'.}} flow@flow1 [[order=3]] {{Implies 't1' is null.}}
       m1(t1, t2);
-    } else if (m2(t1, t2)) { // flow@flow1 [[order=4]] {{'t1' is passed to 'm2()'.}}
-      t1.getTime(); // Noncompliant [[flows=flow1]] {{A "NullPointerException" could be thrown; "t1" is nullable here.}} flow@flow1 [[order=5]] {{'t1' is dereferenced.}}
+    } else if (m2(t1, t2)) {
+      t1.getTime(); // Noncompliant [[flows=flow1]] {{A "NullPointerException" could be thrown; "t1" is nullable here.}} flow@flow1 [[order=4]] {{'t1' is dereferenced.}}
     }
   }
 

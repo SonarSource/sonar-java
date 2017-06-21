@@ -661,11 +661,16 @@ public class FlowComputation {
       return methodYields.stream()
         .map(y -> y.flow(argumentIndices, domains))
         .flatMap(Set::stream)
-        .map(flowFromYield -> ImmutableList.<JavaFileScannerContext.Location>builder()
-          .addAll(flowFromYield)
-          .addAll(changingNameArgumentsMessages)
-          .addAll(passedArgumentsMessages)
-          .build())
+        .map(flowFromYield -> {
+          ImmutableList.Builder<JavaFileScannerContext.Location> result = ImmutableList.builder();
+          result.addAll(flowFromYield);
+          if (!flowFromYield.isEmpty()) {
+            result
+              .addAll(changingNameArgumentsMessages)
+              .addAll(passedArgumentsMessages);
+          }
+          return result.build();
+        })
         .collect(Collectors.toSet());
     }
 

@@ -14,8 +14,9 @@ class A {
 
   void foo3(int j) {
     int i = 42; // flow@foo3 [[order=1]] {{Implies 'i' is non-zero.}}
-    divByZeroIfArg1Zero(i, j); // flow@foo3 [[order=2]] {{'i' is passed to 'divByZeroIfArg1Zero()'.}} flow@foo3 [[order=3]] {{'j' is passed to 'divByZeroIfArg1Zero()'.}}
+    divByZeroIfArg1Zero(i, j); // FIXME there is no yield produced due to SONARJAVA-2153
     if (j == 0) { // flow@foo3 [[order=6]] {{Implies 'j' is zero.}}
+      // FIXME this issue is actually not possible, because j != 0 , see SONARJAVA-2153
       divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method "divByZeroIfArg1Zero()".}} flow@foo3 [[order=7;sc=30;ec=31]] {{'j' is passed to 'divByZeroIfArg1Zero()'.}}
     }
   }

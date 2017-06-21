@@ -37,7 +37,8 @@ abstract class A {
 
   void tst2(Object o) {
     if (o == null) { // flow@npe2 {{Implies 'o' can be null.}}
-      Object o2 = returnParam(o); // flow@npe2 {{'o' is passed to 'returnParam()'.}} flow@npe2 {{Implies 'o2' can be null.}}
+      // FIXME "'o' is passed to 'returnParam'" message is missing because there is no flow produced in returnParam method
+      Object o2 = returnParam(o); // flow@npe2 {{Implies 'o2' can be null.}}
       o2.toString(); // Noncompliant [[flows=npe2]] {{A "NullPointerException" could be thrown; "o2" is nullable here.}} flow@npe2 {{'o2' is dereferenced.}}
     }
   }
