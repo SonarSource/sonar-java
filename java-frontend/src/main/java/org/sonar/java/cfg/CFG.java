@@ -105,8 +105,9 @@ public class CFG {
     public void addCatch(Type type, Block catchBlock) {
       if (type.is("java.lang.Exception")
         || type.is("java.lang.Throwable")
-        || type.is("java.lang.Error")
-        || type.isSubtypeOf("java.lang.RuntimeException")) {
+        || type.isSubtypeOf("java.lang.Error")
+        || type.isSubtypeOf("java.lang.RuntimeException")
+        || !type.isSubtypeOf("java.lang.Exception")) {
         runtimeCatches.add(catchBlock);
       }
       catches.put(type, catchBlock);

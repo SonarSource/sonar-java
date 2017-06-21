@@ -2134,3 +2134,23 @@ class OptionalEmptyNotPresent {
   }
 
 }
+
+abstract class SubtypeOfErrorCaught {
+
+  public void foo() {
+    boolean fail;
+    try {
+      doSomething();
+      fail = true;
+    } catch (java.lang.AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) { // Compliant
+      doSomethingElse();
+    }
+  }
+
+  abstract void doSomething();
+  abstract void doSomethingElse();
+}
