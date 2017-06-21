@@ -69,21 +69,17 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    List<ProgramState> programStates = setNotPresentConstraint(context, syntaxNode);
+    List<ProgramState> programStates = setOptionalConstraint(context, syntaxNode);
     Preconditions.checkState(programStates.size() == 1);
     return programStates.get(0);
   }
 
-  private static List<ProgramState> setNotPresentConstraint(CheckerContext context, Tree syntaxNode) {
+  private static List<ProgramState> setOptionalConstraint(CheckerContext context, Tree syntaxNode) {
     ProgramState programState = context.getState();
-    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      return handleMethodInvocation(context, (MethodInvocationTree) syntaxNode);
+    if (!syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      return Collections.singletonList(programState);
     }
-    return Collections.singletonList(programState);
-  }
-
-  private static List<ProgramState> handleMethodInvocation(CheckerContext context, MethodInvocationTree mit) {
-    ProgramState programState = context.getState();
+    MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
     SymbolicValue peekValue = programState.peekValue();
     Preconditions.checkNotNull(peekValue);
     if (OPTIONAL_EMPTY.matches(mit)) {
