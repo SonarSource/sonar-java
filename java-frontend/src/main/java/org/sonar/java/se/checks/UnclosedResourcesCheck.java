@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -86,7 +87,19 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
-  private static final String[] JDBC_RESOURCE_CREATIONS = {"java.sql.Connection", JAVA_SQL_STATEMENT};
+  private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
+
+  private static final MethodMatcherCollection JDBC_RESOURCE_CREATIONS = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(JAVA_SQL_CONNECTION).name("createStatement").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_SQL_CONNECTION).name("prepareStatement").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_SQL_CONNECTION).name("prepareCall").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("executeQuery").addParameter("java.lang.String"),
+    MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getResultSet").withoutParameter(),
+    MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getGeneratedKeys").withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name("executeQuery").withoutParameter(),
+    MethodMatcher.create().typeDefinition("javax.sql.DataSource").name("getConnection").withAnyParameters()
+  );
+
   private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
@@ -404,25 +417,18 @@ public class UnclosedResourcesCheck extends SECheck {
       }
       if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && needsClosing(syntaxNode.symbolType())) {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
+        boolean jdbcResourceCreation = JDBC_RESOURCE_CREATIONS.anyMatch(syntaxNode);
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
-          && (syntaxNode.symbol().isStatic() || isJdbcResourceCreation(targetExpression))) {
+          && (syntaxNode.symbol().isStatic() || jdbcResourceCreation)) {
           SymbolicValue peekedValue = programState.peekValue();
           programState = programState.addConstraintTransitively(peekedValue, OPEN);
-          if(isJdbcResourceCreation(targetExpression)) {
+          if (jdbcResourceCreation) {
             programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
           }
         }
       }
     }
 
-    private boolean isJdbcResourceCreation(ExpressionTree targetExpression) {
-      for (String creator : JDBC_RESOURCE_CREATIONS) {
-        if (targetExpression.symbolType().is(creator)) {
-          return true;
-        }
-      }
-      return false;
-    }
   }
 
 }

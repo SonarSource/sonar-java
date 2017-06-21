@@ -4,6 +4,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 public class JdbcSample {
   
@@ -19,7 +21,9 @@ public class JdbcSample {
   public void unclosedResultSet(String url, String query) {
     try (Connection connection = DriverManager.getConnection(url);) {
       Statement statement = connection.createStatement(); // Noncompliant {{Close this "Statement" in a "finally" clause.}}
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT"); // Noncompliant {{Close this "PreparedStatement" in a "finally" clause.}}
       ResultSet result = statement.executeQuery(query); // Noncompliant {{Close this "ResultSet" in a "finally" clause.}}
+      ResultSet result2 = preparedStatement.executeQuery(); // Noncompliant {{Close this "ResultSet" in a "finally" clause.}}
       String name = result.getString(0);
     }
   }
@@ -108,3 +112,34 @@ public class A {
   abstract Connection getConnection();
 }
 
+class DataSourceTest {
+
+  void test(DataSource dataSource) throws SQLException {
+    Connection connection = null;
+    try {
+      connection = dataSource.getConnection(); // Noncompliant
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  void compliant(DataSource dataSource) throws SQLException {
+    Connection connection = null;
+    try {
+      connection = dataSource.getConnection();
+    } finally {
+      if (connection != null) {
+        connection.close();
+      }
+    }
+  }
+}
+
+class JdbcNotCreatingResource {
+
+  Statement test(Statement statement) throws SQLException {
+    Statement local = statement.unwrap(Statement.class); // Compliant
+    local.setCursorName("bla");
+    return local;
+  }
+}
