@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 public class JdbcSample {
   
@@ -117,6 +118,8 @@ class DataSourceTest {
     Connection connection = null;
     try {
       connection = dataSource.getConnection(); // Noncompliant
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -132,7 +135,7 @@ class DataSourceTest {
   }
 }
 
-class S2095FP {
+class JdbcNotCreatingResource {
 
   Statement test(Statement statement) throws SQLException {
     Statement local = statement.unwrap(Statement.class); // Compliant

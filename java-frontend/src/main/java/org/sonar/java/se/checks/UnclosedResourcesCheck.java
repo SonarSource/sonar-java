@@ -88,8 +88,6 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
-  private static final String JAVAX_SQL_DATA_SOURCE = "javax.sql.DataSource";
-  private static final String JAVA_SQL_PREPARED_STATEMENT = "java.sql.PreparedStatement";
 
   private static final MethodMatcherCollection JDBC_RESOURCE_CREATIONS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(JAVA_SQL_CONNECTION).name("createStatement").withAnyParameters(),
@@ -98,8 +96,8 @@ public class UnclosedResourcesCheck extends SECheck {
     MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("executeQuery").addParameter("java.lang.String"),
     MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getResultSet").withoutParameter(),
     MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getGeneratedKeys").withoutParameter(),
-    MethodMatcher.create().typeDefinition(JAVA_SQL_PREPARED_STATEMENT).name("executeQuery").withoutParameter(),
-    MethodMatcher.create().typeDefinition(JAVAX_SQL_DATA_SOURCE).name("getConnection").withAnyParameters()
+    MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name("executeQuery").withoutParameter(),
+    MethodMatcher.create().typeDefinition("javax.sql.DataSource").name("getConnection").withAnyParameters()
   );
 
   private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
@@ -419,7 +417,7 @@ public class UnclosedResourcesCheck extends SECheck {
       }
       if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && needsClosing(syntaxNode.symbolType())) {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
-        boolean jdbcResourceCreation = isJdbcResourceCreation(syntaxNode);
+        boolean jdbcResourceCreation = JDBC_RESOURCE_CREATIONS.anyMatch(syntaxNode);
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
           && (syntaxNode.symbol().isStatic() || jdbcResourceCreation)) {
           SymbolicValue peekedValue = programState.peekValue();
@@ -431,9 +429,6 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private boolean isJdbcResourceCreation(MethodInvocationTree mit) {
-      return JDBC_RESOURCE_CREATIONS.anyMatch(mit);
-    }
   }
 
 }
