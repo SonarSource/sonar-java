@@ -1,5 +1,7 @@
 package org.sonar.java.resolve.targets.nullableparameters;
 
+import javax.annotation.Nonnull;
+
 class PackageAnnotations {
   void foo(Object input) { // flow@npe [[sc=19;ec=24]] {{Implies 'input' can be null.}}
     // Noncompliant@+1 [[flows=npe]] {{A "NullPointerException" could be thrown; "input" is nullable here.}}
@@ -14,5 +16,9 @@ class PackageAnnotations {
   private Integer bar2(Integer i) { return i; }
   private void qix2(Integer i) {
     bar2(i).intValue(); // Noncompliant {{A "NullPointerException" could be thrown; "bar2" is nullable here.}}
+  }
+
+  private void gul(@Nonnull Object o) {
+    o.toString(); // Compliant -  @Nonnull annotation discard package @ParametersAreNullableByDefault annotation
   }
 }

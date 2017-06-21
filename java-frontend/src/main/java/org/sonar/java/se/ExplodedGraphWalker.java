@@ -335,7 +335,7 @@ public class ExplodedGraphWalker {
             sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
             sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
-      } else if(nonNullParams) {
+      } else if (nonNullParams || isAnnotatedNonNull(variableSymbol)) {
         stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
@@ -346,7 +346,9 @@ public class ExplodedGraphWalker {
     SymbolMetadata metadata = variableSymbol.metadata();
     return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
       || metadata.isAnnotatedWith("javax.annotation.Nullable")
-      || (nullableParams && !variableSymbol.type().isPrimitive());
+      || (nullableParams
+        && !variableSymbol.type().isPrimitive()
+        && !metadata.isAnnotatedWith("javax.annotation.Nonnull"));
   }
 
   private void cleanUpProgramState(CFG.Block block) {
@@ -768,7 +770,11 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isNonNullMethod(Symbol symbol) {
-    return !symbol.isUnknown() && symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull");
+    return !symbol.isUnknown() && isAnnotatedNonNull(symbol);
+  }
+
+  private static boolean isAnnotatedNonNull(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull");
   }
 
   /**
