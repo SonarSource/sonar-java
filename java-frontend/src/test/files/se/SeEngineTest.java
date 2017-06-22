@@ -137,5 +137,17 @@ class DefaultValues {
       }
     }
   }
+}
 
+class OptionalWithNullDereference {
+  private void usingOfNullable(@javax.annotation.Nullable Object o) {
+    // null value used with 'ofNullable' creates an empty optional
+    java.util.Optional<Object> op = java.util.Optional.ofNullable(o);
+    if (op.isPresent()) {
+      o.toString(); // Compliant - 'o' is necessary not null here
+    } else {
+      o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} - 'o' is necessary null if not 'op' is empty
+    }
+    op.get(); // Compliant - empty case triggered a NPE
+  }
 }
