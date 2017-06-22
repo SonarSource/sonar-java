@@ -158,7 +158,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     private void reportIssue(MethodInvocationTree mit) {
       String identifier = getIdentifierPart(mit.methodSelect());
       String issueMsg = identifier.isEmpty() ? "Optional#" : (identifier + ".");
-      context.reportIssue(mit, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.");
+      Tree reportTree = mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) mit.methodSelect()).expression() : mit;
+      context.reportIssue(reportTree, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.");
     }
 
     private boolean presenceHasNotBeenChecked(SymbolicValue sv) {

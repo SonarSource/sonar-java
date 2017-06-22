@@ -1,6 +1,7 @@
 import javax.annotation.Nullable;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 class A {
   Optional<String> getOptional() { return Optional.of(""); }
@@ -81,3 +82,17 @@ class A {
     }
   }
 }
+
+class Location {
+
+  void test() {
+    Stream.of(1,2,3).findFirst().get(); // Noncompliant [[sc=5;ec=33]]
+  }
+
+  void test2() {
+    Optional<String> op = Optional.empty();
+    op.get(); // Noncompliant [[sc=5;ec=7]]
+  }
+
+}
+
