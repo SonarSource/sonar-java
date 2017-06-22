@@ -255,6 +255,7 @@ public class DivisionByZeroCheck extends SECheck {
           // FIXME SONARJAVA-2125 - we should not have to add the NOT_NULL constraint for primitive types
           .addConstraint(rightOp, ObjectConstraint.NOT_NULL);
         context.addExceptionalYield(rightOp, exceptionalState, "java.lang.ArithmeticException", DivisionByZeroCheck.this);
+        programState = programState.addConstraintTransitively(rightOp, ZeroConstraint.NON_ZERO);
       }
     }
 

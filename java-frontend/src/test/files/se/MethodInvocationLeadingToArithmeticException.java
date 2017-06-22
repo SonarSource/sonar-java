@@ -14,10 +14,15 @@ class A {
 
   void foo3(int j) {
     int i = 42; // flow@foo3 [[order=1]] {{Implies 'i' is non-zero.}}
-    divByZeroIfArg1Zero(i, j); // FIXME there is no yield produced due to SONARJAVA-2153
-    if (j == 0) { // flow@foo3 [[order=6]] {{Implies 'j' is zero.}}
-      // FIXME this issue is actually not possible, because j != 0 , see SONARJAVA-2153
-      divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method "divByZeroIfArg1Zero()".}} flow@foo3 [[order=7;sc=30;ec=31]] {{'j' is passed to 'divByZeroIfArg1Zero()'.}}
+    if (j == 0) { // flow@foo3 [[order=2]] {{Implies 'j' is zero.}}
+      divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method "divByZeroIfArg1Zero()".}} flow@foo3 [[order=3;sc=30;ec=31]] {{'j' is passed to 'divByZeroIfArg1Zero()'.}}
+    }
+  }
+
+  void yield(int j) {
+    divByZeroIfArg1Zero(42, j);
+    if (j == 0) { // we know from yield that j!=0
+      divByZeroIfArg1Zero(42, j); // unreachable
     }
   }
 
@@ -67,7 +72,7 @@ class A {
   }
 
   static int divByZeroIfArg1Zero(int i, int j) {
-    return i / j; // flow@foo2 [[order=2]] {{Implies 'j' is zero.}} flow@foo2 [[order=4]] {{'ArithmeticException' is thrown here.}} flow@foo3 [[order=8]] {{Implies 'j' is zero.}} flow@foo3 [[order=10]] {{'ArithmeticException' is thrown here.}}
+    return i / j; // flow@foo2 [[order=2]] {{Implies 'j' is zero.}} flow@foo2 [[order=4]] {{'ArithmeticException' is thrown here.}} flow@foo3 [[order=4]] {{Implies 'j' is zero.}} flow@foo3 [[order=5]] {{'ArithmeticException' is thrown here.}}
   }
 
   static int throwsExceptionIfArg1Zero(int i, int j) {
