@@ -427,3 +427,23 @@ public class TwoCompoundAssignments {
     this.mSum += sSumAdd;
   }
 }
+
+class NonZeroAfterDiv {
+
+  void test(int i, int j) {
+    int x = i / j;
+    if (j == 0) { // j can't be zero, because previous division was succesfull
+      x = i / j; // unreachable
+    }
+  }
+
+  void transitive(int i, int j, int k) {
+    if (j == k) {
+      int x = i / j;
+      if (k == 0) { // j != 0, k == j
+        x = i / k; // unreachable
+      }
+    }
+  }
+
+}
