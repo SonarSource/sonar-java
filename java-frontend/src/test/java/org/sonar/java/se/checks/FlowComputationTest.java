@@ -137,4 +137,9 @@ public class FlowComputationTest {
       new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck()});
   }
 
+  @Test
+  public void test_method_invocations_without_flows() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationWithoutFlows.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
+  }
+
 }
