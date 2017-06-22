@@ -308,6 +308,9 @@ public class FlowComputation {
 
       List<JavaFileScannerContext.Location> currentFlow = flowBuilder.build();
       Set<List<JavaFileScannerContext.Location>> yieldsFlows = flowFromYields(edge);
+      if (yieldsFlows.isEmpty()) {
+        return Stream.of(new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, ImmutableList.copyOf(currentFlow), endOfPath));
+      }
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
         .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, f, endOfPath));
@@ -636,9 +639,7 @@ public class FlowComputation {
     private Set<List<JavaFileScannerContext.Location>> flowFromYields(ExplodedGraph.Edge edge) {
       Set<MethodYield> methodYields = edge.yields();
       if (methodYields.isEmpty()) {
-        // return one flow with no elements, nothing will be added to the flow of the current path
-        // but this is necessary so path is returned in #addEdge and stays in the worklist in #run
-        return ImmutableSet.of(ImmutableList.of());
+        return ImmutableSet.of();
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, edge.parent);
@@ -656,21 +657,17 @@ public class FlowComputation {
       }
       if (argumentIndices.isEmpty()) {
         // no need to compute any flow on yields : no arg nor return value are corresponding to tracked SVs
-        return ImmutableSet.of(ImmutableList.of());
+        return ImmutableSet.of();
       }
       return methodYields.stream()
         .map(y -> y.flow(argumentIndices, domains))
         .flatMap(Set::stream)
-        .map(flowFromYield -> {
-          ImmutableList.Builder<JavaFileScannerContext.Location> result = ImmutableList.builder();
-          result.addAll(flowFromYield);
-          if (!flowFromYield.isEmpty()) {
-            result
-              .addAll(changingNameArgumentsMessages)
-              .addAll(passedArgumentsMessages);
-          }
-          return result.build();
-        })
+        .filter(f -> !f.isEmpty())
+        .map(flowFromYield -> ImmutableList.<JavaFileScannerContext.Location>builder()
+          .addAll(flowFromYield)
+          .addAll(changingNameArgumentsMessages)
+          .addAll(passedArgumentsMessages)
+          .build())
         .collect(Collectors.toSet());
     }
 
