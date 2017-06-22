@@ -1729,6 +1729,59 @@ public class CFGTest {
   }
 
   @Test
+  public void try_statement_with_runtime_exceptions() {
+    CFG cfg = buildCFG(new File("src/test/files/cfg/CFGRuntimeExceptions.java"));
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(9),
+      block(
+        element(Tree.Kind.IDENTIFIER, "doSomething"),
+        // trigger runtime exception -> branch to:
+        // B8 : RuntimeException
+        // B7 : Subtype of RuntimeException
+        // B6 : Error
+        // B5 : Subtype of Error
+        // B4 : Throwable
+        // B3 : Subtype of Throwable but not subtype of Exception
+        // B2 : Exception
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(8, 7, 6, 5, 4, 3, 2, 0),
+      block(
+        element(Tree.Kind.VARIABLE, "re"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "mre"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "er"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "mer"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "t"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "mt"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        element(Tree.Kind.VARIABLE, "ex"),
+        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+      block(
+        // no way to enter the block (checked Exception)
+        element(Tree.Kind.VARIABLE, "mex"),
+        element(Tree.Kind.IDENTIFIER, "doNothing"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock());
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   public void catch_block_correctly_flagged_in_CFG() {
     CFG cfg = buildCFG(new File("src/test/files/cfg/CFGCatchBlocks.java"));
 
