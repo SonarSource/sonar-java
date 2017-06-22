@@ -44,10 +44,17 @@ public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     AssignmentExpressionTree aeTree = (AssignmentExpressionTree) tree;
     SyntaxToken operatorToken = aeTree.operatorToken();
-    SyntaxToken firstToken = aeTree.expression().firstToken();
-    if (isSuspiciousToken(firstToken) && operatorToken.column() + 1 == firstToken.column()) {
-      reportIssue(operatorToken, firstToken, "Was \"" + firstToken.text() + "=\" meant instead?");
+    SyntaxToken expressionFirstToken = aeTree.expression().firstToken();
+    SyntaxToken variableLastToken = aeTree.variable().lastToken();
+    if (isSuspiciousToken(expressionFirstToken)
+      && noSpacingBetween(operatorToken, expressionFirstToken)
+      && !noSpacingBetween(variableLastToken, operatorToken)) {
+      reportIssue(operatorToken, expressionFirstToken, "Was \"" + expressionFirstToken.text() + "=\" meant instead?");
     }
+  }
+
+  private static boolean noSpacingBetween(SyntaxToken firstToken, SyntaxToken secondToken) {
+    return firstToken.column() + firstToken.text().length() == secondToken.column();
   }
 
   private static boolean isSuspiciousToken(SyntaxToken firstToken) {
