@@ -19,6 +19,13 @@ class A {
     }
   }
 
+  void yield(int j) {
+    divByZeroIfArg1Zero(42, j);
+    if (j == 0) { // we know from yield that j!=0
+      divByZeroIfArg1Zero(42, j); // unreachable
+    }
+  }
+
   void foo4() {
     int i = 42;
     int j = 0;
