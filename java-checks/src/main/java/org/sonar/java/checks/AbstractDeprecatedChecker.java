@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.List;
@@ -55,35 +57,44 @@ public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
   }
 
   public static boolean hasDeprecatedAnnotation(Tree tree) {
+    return deprecatedAnnotation(tree) != null;
+  }
+
+  @CheckForNull
+  public static AnnotationTree deprecatedAnnotation(Tree tree) {
     if (tree.is(CLASS_KINDS)) {
-      return hasDeprecatedAnnotation((ClassTree) tree);
+      return deprecatedAnnotation((ClassTree) tree);
     } else if (tree.is(METHOD_KINDS)) {
-      return hasDeprecatedAnnotation((MethodTree) tree);
+      return deprecatedAnnotation((MethodTree) tree);
     } else if (tree.is(Kind.VARIABLE)) {
-      return hasDeprecatedAnnotation((VariableTree) tree);
+      return deprecatedAnnotation((VariableTree) tree);
     }
-    return false;
+    return null;
   }
 
-  private static boolean hasDeprecatedAnnotation(ClassTree classTree) {
-    return hasDeprecatedAnnotation(classTree.modifiers().annotations());
+  @CheckForNull
+  private static AnnotationTree deprecatedAnnotation(ClassTree classTree) {
+    return deprecatedAnnotation(classTree.modifiers().annotations());
   }
 
-  private static boolean hasDeprecatedAnnotation(VariableTree variableTree) {
-    return hasDeprecatedAnnotation(variableTree.modifiers().annotations());
+  @CheckForNull
+  private static AnnotationTree deprecatedAnnotation(VariableTree variableTree) {
+    return deprecatedAnnotation(variableTree.modifiers().annotations());
   }
 
-  private static boolean hasDeprecatedAnnotation(MethodTree methodTree) {
-    return hasDeprecatedAnnotation(methodTree.modifiers().annotations());
+  @CheckForNull
+  private static AnnotationTree deprecatedAnnotation(MethodTree methodTree) {
+    return deprecatedAnnotation(methodTree.modifiers().annotations());
   }
 
-  private static boolean hasDeprecatedAnnotation(Iterable<AnnotationTree> annotations) {
+  @CheckForNull
+  private static AnnotationTree deprecatedAnnotation(Iterable<AnnotationTree> annotations) {
     for (AnnotationTree annotationTree : annotations) {
       if (isDeprecated(annotationTree)) {
-        return true;
+        return annotationTree;
       }
     }
-    return false;
+    return null;
   }
 
   protected static Tree getReportTree(Tree tree) {

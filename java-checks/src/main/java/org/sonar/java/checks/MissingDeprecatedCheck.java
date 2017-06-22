@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -37,6 +39,13 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private final Deque<Tree> currentParent = new LinkedList<>();
   private final Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<>();
+  private boolean isJava9 = false;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    isJava9 = context.getJavaVersion().asInt() >= 9;
+    super.scanFile(context);
+  }
 
   @Override
   public void visitNode(Tree tree) {
@@ -47,12 +56,17 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
       currentParent.push(tree);
     }
 
-    boolean hasDeprecatedAnnotation = hasDeprecatedAnnotation(tree);
+    AnnotationTree deprecatedAnnotation = deprecatedAnnotation(tree);
+    boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(tree);
     if (currentClassNotDeprecated() && !isLocalVar) {
-      if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
-        reportIssue(getReportTree(tree), "Add the missing @deprecated Javadoc tag.");
-      } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
+      if (hasDeprecatedAnnotation) {
+        if (!hasJavadocDeprecatedTag) {
+          reportIssue(getReportTree(tree), "Add the missing @deprecated Javadoc tag.");
+        } else if (isJava9 && deprecatedAnnotation.arguments().isEmpty()) {
+          reportIssue(getReportTree(deprecatedAnnotation), "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.");
+        }
+      } else if (hasJavadocDeprecatedTag) {
         reportIssue(getReportTree(tree), "Add the missing @Deprecated annotation.");
       }
     }
@@ -74,5 +88,4 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
       classOrInterfaceIsDeprecated.pop();
     }
   }
-
 }
