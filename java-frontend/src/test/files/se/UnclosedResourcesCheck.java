@@ -92,7 +92,7 @@ public class A {
   }
   
   public void openedRussianDolls() {
-    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Close this "BufferedInputStream" in a "finally" clause.}}
     in.read();
   }
   
@@ -130,9 +130,9 @@ public class A {
   public void conditionalCreation(boolean test) {
     BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "FileWriter" in a "finally" clause.}}
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "BufferedWriter" in a "finally" clause.}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "FileWriter" in a "finally" clause.}}
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "BufferedWriter" in a "finally" clause.}}
     }
     return;
   }
@@ -152,7 +152,17 @@ public class A {
     streams[0] = new FileInputStream("MyFile");
     streams[0].close();
   }
-  
+
+  public void param(InputStream fileIn) throws IOException {
+    BufferedInputStream bufferIn = new BufferedInputStream(fileIn); // Compliant
+    bufferIn.read();
+  }
+
+  public void nestedParam(InputStream fileIn) throws IOException {
+    Reader reader = new InputStreamReader(new BufferedInputStream(fileIn)); // Compliant
+    reader.read();
+  }
+
   public void closePrimary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
@@ -261,7 +271,7 @@ public class A {
   public void getDirectivesFromFile(File aFile) {
     BufferedReader reader = null;
     try {
-      reader = new BufferedReader(new FileReader(aFile)); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+      reader = new BufferedReader(new FileReader(aFile)); // Compliant
       reader.read();
     } finally {
       IOUtils.closeQuietly(reader);

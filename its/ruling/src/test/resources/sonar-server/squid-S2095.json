@@ -16,8 +16,6 @@
 110,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/util/cache/DiskCache.java':[
-45,
 63,
-74,
 ],
 }
