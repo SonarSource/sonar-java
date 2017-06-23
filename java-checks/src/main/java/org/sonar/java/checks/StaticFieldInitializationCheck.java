@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Deque;
@@ -36,6 +38,11 @@ import java.util.List;
 public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker {
 
   private Deque<Boolean> withinStaticInitializer = new LinkedList<>();
+  private Deque<Boolean> methodUsesLocks = new LinkedList<>();
+  private MethodMatcherCollection locks = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Lock").name("lock").withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Lock").name("tryLock").withoutParameter()
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -45,15 +52,26 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   @Override
   public void scanFile(JavaFileScannerContext context) {
     withinStaticInitializer.push(false);
+    methodUsesLocks.push(false);
     super.scanFile(context);
     withinStaticInitializer.clear();
+    methodUsesLocks.clear();
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      methodUsesLocks.push(false);
+    }
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)
+      && (locks.anyMatch((MethodInvocationTree) tree))
+      && methodUsesLocks.size() != 1) {
+      methodUsesLocks.pop();
+      methodUsesLocks.push(true);
+    }
     if (hasSemantic() && tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-      if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock() && !withinStaticInitializer.peek()) {
+      if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock() && !withinStaticInitializer.peek() && !isUsingLock()) {
         IdentifierTree variable = (IdentifierTree) aet.variable();
         if (isStaticNotVolatileObject(variable)) {
           reportIssue(variable, "Synchronize this lazy initialization of '" + variable.name() + "'");
@@ -66,10 +84,17 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
     super.visitNode(tree);
   }
 
+  private boolean isUsingLock() {
+    return methodUsesLocks.peek();
+  }
+
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.STATIC_INITIALIZER)) {
       withinStaticInitializer.pop();
+    }
+    if(tree.is(Tree.Kind.METHOD)) {
+      methodUsesLocks.pop();
     }
     super.leaveNode(tree);
   }
