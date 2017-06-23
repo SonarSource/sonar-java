@@ -5,9 +5,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/properties/ProjectSettings.java':[
 30,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-71,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/view/index/ViewIndexer.java':[
 41,
 ],
