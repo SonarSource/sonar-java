@@ -5,12 +5,6 @@
 'jdk6:java/awt/Frame.java':[
 330,
 ],
-'jdk6:java/awt/SentEvent.java':[
-30,
-],
-'jdk6:java/awt/SequencedEvent.java':[
-34,
-],
 'jdk6:java/awt/image/ComponentSampleModel.java':[
 70,
 ],
@@ -68,9 +62,6 @@
 ],
 'jdk6:java/security/IdentityScope.java':[
 54,
-],
-'jdk6:java/text/DecimalFormat.java':[
-3186,
 ],
 'jdk6:java/util/Collections.java':[
 3161,

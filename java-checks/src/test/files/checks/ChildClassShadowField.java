@@ -3,6 +3,8 @@ package test;
 class Base {
   static final long serialVersionUID = 1L;
 
+  static String myStaticField;
+
   String baseField; // Compliant
 
   private String privateBaseField; // Compliant
@@ -15,7 +17,9 @@ class Base {
 class Derived11 extends Base {
   boolean baseField; // Noncompliant [[sc=11;ec=20]] {{"baseField" is the name of a field in "Base".}}
 
-  int BaseField; // Noncompliant {{"BaseField" differs only by case from "baseField" in "Base".}}
+  String myStaticField; // Compliant - ignore static fields in parent class
+
+  int BaseField; // Compliant - same name but different case handled by S4025
 
   String privateBaseField; // Compliant, exception
 
@@ -36,7 +40,7 @@ class Derived12 extends Base {
 class Derived22 extends Derived12 {
   boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
 
-  int BaseField; // Noncompliant {{"BaseField" differs only by case from "baseField" in "Base".}}
+  int BaseField; // Compliant - same name but different case handled by S4025
 
   boolean derived22Field; // Compliant
 
