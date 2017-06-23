@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
@@ -180,6 +180,10 @@ public class UnclosedResourcesCheck extends SECheck {
     return excludedTypesList;
   }
 
+  private static boolean isCloseable(ExpressionTree expr) {
+    return isCloseable(expr.symbolType());
+  }
+
   private static boolean isCloseable(Type type) {
     return type.isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE) || type.isSubtypeOf(JAVA_IO_CLOSEABLE);
   }
@@ -272,16 +276,26 @@ public class UnclosedResourcesCheck extends SECheck {
           if (!iterator.hasNext()) {
             throw new IllegalStateException("Mismatch between declared constructor arguments and argument values!");
           }
-          final Type type = argument.symbolType();
           final SymbolicValue value = iterator.next();
-          if (isCloseable(type)) {
+          if (isCloseable(argument) && !isNestedNewResourceCreation(argument)) {
             constraintManager.setValueFactory(new WrappedValueFactory(value));
             break;
+          } else {
+            closeResource(value);
           }
         }
       } else {
         closeArguments(syntaxNode.arguments());
       }
+    }
+
+    private boolean isNestedNewResourceCreation(ExpressionTree expr) {
+      if (expr.is(Tree.Kind.NEW_CLASS)) {
+        return ((NewClassTree) expr).arguments().stream()
+          .filter(UnclosedResourcesCheck::isCloseable)
+          .allMatch(this::isNestedNewResourceCreation);
+      }
+      return false;
     }
 
     @Override
