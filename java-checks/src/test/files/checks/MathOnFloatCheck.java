@@ -16,6 +16,9 @@ class A {
     int i = 16777216;
     int j = 1;
     int k = i + j;
+    System.out.println("[Max time to retrieve connection:"+(a/1000f/1000f)+" ms.");
+    System.out.println("[Max time to retrieve connection:"+a/1000f/1000f);
+    float foo = 12 + a/1000f/1000f; // Noncompliant
   }
-  
+
 }
