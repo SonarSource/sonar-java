@@ -74,6 +74,38 @@ class A {
       throw new IllegalStateException(e);
     }
   }
+  class B {
+    static Config CONFIG = null;
+    private static java.util.concurrent.locks.Lock LOCK = new java.util.concurrent.locks.ReentrantLock();
 
+    public static void resetConfiguration() {
+      try {
+        LOCK.lock();
+        CONFIG = null; // Compliant
+      } finally {
+        LOCK.unlock();
+      }
+    }
+  }
+  class C {
+    static Config CONFIG = null;
+    private static java.util.concurrent.locks.Lock LOCK = new java.util.concurrent.locks.ReentrantLock();
 
+    {
+     CONFIG = null; // Noncompliant
+    }
+
+    {
+      LOCK.lock();
+    }
+
+    public static void resetConfiguration2() {
+      try {
+        CONFIG = null; // Noncompliant : before the lock
+        LOCK.tryLock();
+      } finally {
+        LOCK.unlock();
+      }
+    }
+  }
 }
