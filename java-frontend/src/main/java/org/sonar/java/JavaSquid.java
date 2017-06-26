@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
@@ -115,15 +114,15 @@ public class JavaSquid {
   }
 
   private void scanSources(Iterable<File> sourceFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
+//    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
-    profiler.stopInfo();
+//    profiler.stopInfo();
   }
 
   private void scanTests(Iterable<File> testFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
+//    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
-    profiler.stopInfo();
+//    profiler.stopInfo();
   }
 
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -41,6 +42,12 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -79,9 +86,45 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
+
+    ExecutorService executorService = createExecutor();
+    CompletionService cs =  new ExecutorCompletionService(executorService);
+    int fileSize = 0;
+    for (File sourceFile : getSourceFiles()) {
+      cs.submit(() -> scan(context, sourceFile, false), null);
+      fileSize++;
+    }
+    for (File testFile : getTestFiles()) {
+      cs.submit(() -> scan(context, testFile, true), null);
+      fileSize++;
+    }
+    executorService.shutdown();
+    for (int i = 0; i < fileSize; i++) {
+      try {
+        cs.take().get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else if (cause instanceof Error) {
+          throw ((Error) cause);
+        }
+      }
+    }
+
+  }
+
+  private void scan(SensorContext context, File file, boolean scanTests) {
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
-    squid.scan(getSourceFiles(), getTestFiles());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checksForParallel());
+    Iterable<File> files = Collections.singleton(file);
+    if(scanTests) {
+      squid.scan(Collections.emptyList(), files);
+    } else {
+      squid.scan(files, Collections.emptyList());
+    }
   }
 
   private Iterable<File> getSourceFiles() {
@@ -94,6 +137,11 @@ public class JavaSquidSensor implements Sensor {
 
   private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
     return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
+  }
+
+  private ExecutorService createExecutor() {
+    int numThreads = Runtime.getRuntime().availableProcessors() + 1;
+    return Executors.newFixedThreadPool(numThreads, new ThreadFactoryBuilder().setNameFormat("SonarJava-parallel-analysis-%d").build());
   }
 
   private JavaVersion getJavaVersion() {

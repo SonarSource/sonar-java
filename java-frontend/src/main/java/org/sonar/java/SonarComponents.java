@@ -45,6 +45,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,7 +53,9 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 @BatchSide
@@ -70,6 +73,7 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
+  private final Map<String, Iterable<Class<? extends JavaCheck>>> classByrepoKey = new HashMap<>();
   private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
@@ -147,12 +151,17 @@ public class SonarComponents {
 
   public void registerCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
     Checks<JavaCheck> createdChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses);
+    classByrepoKey.put(repositoryKey, checkClasses);
     checks.add(createdChecks);
     allChecks.add(createdChecks);
   }
 
   public CodeVisitor[] checkClasses() {
     return checks.stream().flatMap(ce -> ce.all().stream()).toArray(CodeVisitor[]::new);
+  }
+
+  public CodeVisitor[] checksForParallel() {
+    return classByrepoKey.entrySet().stream().flatMap(e -> checkFactory.create(e.getKey()).addAnnotatedChecks(e.getValue()).all().stream()).toArray(CodeVisitor[]::new);
   }
 
   public Iterable<Checks<JavaCheck>> checks() {
