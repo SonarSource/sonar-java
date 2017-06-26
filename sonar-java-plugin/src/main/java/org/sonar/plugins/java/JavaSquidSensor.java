@@ -102,6 +102,9 @@ public class JavaSquidSensor implements Sensor {
     for (int i = 0; i < fileSize; i++) {
       try {
         cs.take().get();
+        if (i % 10 == 0) {
+          LOG.info("analyzed " + i + "/" + fileSize + " files");
+        }
       } catch (InterruptedException e) {
         e.printStackTrace();
       } catch (ExecutionException e) {

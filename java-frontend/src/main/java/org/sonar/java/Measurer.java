@@ -165,7 +165,7 @@ public class Measurer extends SubscriptionVisitor {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
-  private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
+  private synchronized <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
     sensorContext.<T>newMeasure().forMetric(metric).on(sonarFile).withValue(value).save();
   }
 }
