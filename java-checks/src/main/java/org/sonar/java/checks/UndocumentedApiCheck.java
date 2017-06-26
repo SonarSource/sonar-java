@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableSet;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,17 +37,29 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.Nullable;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Rule(key = "UndocumentedApi")
 @RspecKey("S1176")
@@ -76,10 +86,9 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private WildcardPattern[] inclusionPatterns;
   private WildcardPattern[] exclusionPatterns;
 
-  private final Deque<ClassTree> classTrees = Lists.newLinkedList();
-  private final Deque<Tree> currentParents = Lists.newLinkedList();
+  private final Deque<ClassTree> classTrees = new LinkedList<>();
+  private final Deque<Tree> currentParents = new LinkedList<>();
 
-  private PublicApiChecker publicApiChecker;
   private String packageName;
   private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
   private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
@@ -93,7 +102,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     this.context = context;
     classTrees.clear();
     currentParents.clear();
-    publicApiChecker = new PublicApiChecker();
     packageName = "";
     this.context = context;
     scan(context.getTree());
@@ -134,45 +142,44 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private void visitNode(Tree tree, Tree reportTree, SymbolMetadata symbolMetadata) {
     if (!isExcluded(tree, symbolMetadata)) {
-      String javadoc = PublicApiChecker.getApiJavadoc(tree);
-      if (javadoc == null || isEmptyJavadoc(javadoc)) {
+      Javadoc javadoc = new Javadoc(tree);
+      if (javadoc.noMainDescription()) {
         context.reportIssue(this, reportTree, "Document this public " + getType(tree) + ".");
-      } else if (!javadoc.contains("{@inheritDoc}")) {
-        List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
+      } else {
+        List<String> undocumentedParameters = javadoc.undocumentedParameters(tree);
         if (!undocumentedParameters.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
+          context.reportIssue(this, reportTree, "Document the parameter(s): " + undocumentedParameters.stream().collect(Collectors.joining(", ")));
         }
-        if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
+        if (hasNonVoidReturnType(tree) && javadoc.noReturnDescription()) {
           context.reportIssue(this, reportTree, "Document this method return value.");
+        }
+        List<String> undocumentedExceptions = javadoc.undocumentedThrownExceptions(tree);
+        if (!undocumentedExceptions.isEmpty()) {
+          context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + undocumentedExceptions.stream().collect(Collectors.joining(", ")));
         }
       }
     }
   }
 
-  private static boolean isEmptyJavadoc(String javadoc) {
-    //remove start and end of doc as well as stars.
-    String cleanedupJavadoc = javadoc.trim().substring(3).replace("*/", "").replace("*", "").trim();
-    return StringUtils.isBlank(cleanedupJavadoc);
-  }
-
   private static String getType(Tree tree) {
-    String result = "";
-    if (tree.is(Tree.Kind.CLASS)) {
-      result = "class";
-    } else if (tree.is(Tree.Kind.INTERFACE)) {
-      result = "interface";
-    } else if (tree.is(Tree.Kind.ENUM)) {
-      result = "enum";
-    } else if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
-      result = "annotation";
-    } else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
-      result = "constructor";
-    } else if (tree.is(Tree.Kind.METHOD)) {
-      result = "method";
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
-      result = "field";
+    switch (tree.kind()) {
+      case CONSTRUCTOR:
+        return "constructor";
+      case METHOD:
+        return "method";
+      case VARIABLE:
+        return "field";
+      case CLASS:
+        return "class";
+      case INTERFACE:
+        return "interface";
+      case ENUM:
+        return "enum";
+      case ANNOTATION_TYPE:
+        return "annotation";
+      default:
+        return "";
     }
-    return result;
   }
 
   private boolean isExcluded(Tree tree, SymbolMetadata symbolMetadata) {
@@ -204,7 +211,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       currentParents.push(tree);
     }
 
-    return publicApiChecker.isPublicApi(currentParent, tree);
+    return PublicApiChecker.isPublicApi(currentParent, tree);
   }
 
   private boolean isMatchingInclusionPattern() {
@@ -259,36 +266,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return exclusionPatterns;
   }
 
-  private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
-    for (String parameter : parameters) {
-      if (!hasParamJavadoc(javadoc, parameter)) {
-        builder.add(parameter);
-      }
-    }
-    return builder.build();
-  }
-
-  private static List<String> getParameters(Tree tree) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
-    if (tree.is(METHOD_KINDS)) {
-      MethodTree methodTree = (MethodTree) tree;
-      for (VariableTree variableTree : methodTree.parameters()) {
-        builder.add(variableTree.simpleName().name());
-      }
-      // don't check type paramters documentation for methods
-    } else if (tree.is(CLASS_KINDS)) {
-      for (TypeParameterTree typeParam : ((ClassTree) tree).typeParameters()) {
-        builder.add("<" + typeParam.identifier().name() + ">");
-      }
-    }
-    return builder.build();
-  }
-
-  private static boolean hasParamJavadoc(String comment, String parameter) {
-    return comment.matches("(?s).*@param\\s++" + parameter + ".*");
-  }
-
   private boolean hasNonVoidReturnType(Tree tree) {
     // Backward compatibility : ignore methods from annotations.
     if (tree.is(Tree.Kind.METHOD) && !classTrees.peek().is(Tree.Kind.ANNOTATION_TYPE)) {
@@ -298,8 +275,142 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return false;
   }
 
-  private static boolean hasReturnJavadoc(String comment) {
-    return comment.contains("@return");
+  private static class Javadoc {
+    private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)\\s++(?<descr>.+)");
+    private static final Pattern EXCEPTION_JAVADOC_PATTERN = Pattern.compile(".*@throws\\s++(?<name>\\S*)\\s++(?<descr>.+)");
+    private static final Pattern RETURN_JAVADOC_PATTERN = Pattern.compile(".*@return\\s++(?<descr>.+)");
+    private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
+
+    private final String mainDescription;
+    private final Map<String, String> parameters;
+    private final Map<String, String> thrownExceptions;
+    private final String returnDescription;
+
+    Javadoc(Tree tree) {
+      String javadoc = PublicApiChecker.getApiJavadoc(tree);
+      List<String> lines = cleanedlines(javadoc);
+
+      mainDescription = extractMainDescription(lines);
+      parameters = extractToMap(lines, PARAMETER_JAVADOC_PATTERN);
+      thrownExceptions = extractToMap(lines, EXCEPTION_JAVADOC_PATTERN);
+      returnDescription = extractReturnDescription(lines);
+    }
+
+    public boolean noMainDescription() {
+      return isEmptyDescription(mainDescription);
+    }
+
+    public boolean noReturnDescription() {
+      return isEmptyDescription(returnDescription);
+    }
+
+    public List<String> undocumentedParameters(Tree tree) {
+      return getUndocumentedElements(getParameters(tree), parameters);
+    }
+
+    public List<String> undocumentedThrownExceptions(Tree tree) {
+      return getUndocumentedElements(getExceptions(tree), thrownExceptions);
+    }
+
+    private static List<String> getUndocumentedElements(List<String> elementNames, Map<String, String> elementsWithDescription) {
+      return elementNames.stream().filter(name -> isEmptyDescription(elementsWithDescription.get(name))).collect(Collectors.toList());
+    }
+
+    private static boolean isEmptyDescription(@Nullable String part) {
+      return part == null
+        || part.trim().isEmpty()
+        || PLACEHOLDERS.contains(part)
+        || (!part.contains("{@inheritDoc}") && notEnoughWords(part));
+    }
+
+    private static List<String> getParameters(Tree tree) {
+      if (tree.is(METHOD_KINDS)) {
+        return ((MethodTree) tree).parameters().stream()
+          .map(VariableTree::simpleName)
+          .map(IdentifierTree::name)
+          .collect(Collectors.toList());
+      }
+      // don't check type parameters documentation for methods
+      if (tree.is(CLASS_KINDS)) {
+        return ((ClassTree) tree).typeParameters().stream()
+          .map(TypeParameterTree::identifier)
+          .map(IdentifierTree::name)
+          .map(name -> "<" + name + ">")
+          .collect(Collectors.toList());
+      }
+      return Collections.emptyList();
+    }
+
+    private static List<String> getExceptions(Tree tree) {
+      if (tree.is(METHOD_KINDS)) {
+        return ((MethodTree) tree).throwsClauses().stream()
+          .map(Javadoc::toIdentifier)
+          .filter(Objects::nonNull)
+          .map(IdentifierTree::name)
+          .collect(Collectors.toList());
+      }
+      return Collections.emptyList();
+    }
+
+    private static IdentifierTree toIdentifier(TypeTree typeTree) {
+      switch (typeTree.kind()) {
+        case IDENTIFIER:
+          return (IdentifierTree) typeTree;
+        case MEMBER_SELECT:
+          return ((MemberSelectExpressionTree) typeTree).identifier();
+        default:
+          throw new IllegalStateException(
+            "Should never happen. Exceptions can not be specified other than with an identifier or a fully qualified name, and can not be parametrized.");
+      }
+    }
+
+    private static boolean notEnoughWords(String javadoc) {
+      return javadoc.split("\\s").length < 2;
+    }
+
+    private static List<String> cleanedlines(@Nullable String javadoc) {
+      if (javadoc == null) {
+        return Collections.emptyList();
+      }
+      String[] lines = cleanupJavadoc(javadoc).split("\\r?\\n");
+      return Arrays.stream(lines).map(String::trim).collect(Collectors.toList());
+    }
+
+    private static String cleanupJavadoc(String javadoc) {
+      // remove start and end of Javadoc as well as stars.
+      return javadoc.trim().substring(3).replace("*/", "").replace("*", "").trim();
+    }
+
+    private static String extractMainDescription(List<String> lines) {
+      StringBuilder sb = new StringBuilder();
+      for (String line : lines) {
+        if (line.matches("(@param|@throws|@return).*")) {
+          break;
+        }
+        sb.append(line).append(" ");
+      }
+      return sb.toString().trim();
+    }
+
+    private static Map<String, String> extractToMap(List<String> lines, Pattern pattern) {
+      return lines.stream()
+        .map(pattern::matcher)
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          matcher -> matcher.group("name"),
+          matcher -> matcher.group("descr")));
+    }
+
+    private static String extractReturnDescription(List<String> lines) {
+      for (String line : lines) {
+        Matcher matcher = RETURN_JAVADOC_PATTERN.matcher(line);
+        if (matcher.matches()) {
+          return matcher.group("descr");
+        }
+      }
+      return "";
+    }
+
   }
 
 }

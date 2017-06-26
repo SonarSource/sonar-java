@@ -91,19 +91,21 @@ public class MyClass<T> implements Runnable {    // Noncompliant {{Document the 
  }
 
  /**
-   * @param value ...
+   * Valid descriptions.
+   * @param value Valid descriptions.
    */
  public void doSomething(int value) {           // Compliant
  }
 
  /**
-  * @return foo
+  * Valid descriptions.
+  * @return foo Valid descriptions.
    */
  public int doSomething(int value) {            // Noncompliant {{Document the parameter(s): value}}
    return value;
  }
 
- /** plop
+ /** Valid descriptions.
   *  */
  public int doSomething() {                     // Noncompliant {{Document this method return value.}}
    return value;
@@ -114,35 +116,37 @@ public class MyClass<T> implements Runnable {    // Noncompliant {{Document the 
  */
 interface FooInterface {
   /**
-   * void. */
+   * Valid descriptions. */
   void foo(); // Compliant
 
   /**
-   * bar. */
+   * Valid descriptions. */
   int foo(); // Noncompliant
 
   /**
-   * @return
+   * Valid descriptions.
+   * @return Valid descriptions.
    */
   int foo(); // Compliant
 
-  /** plop.
+  /** Valid descriptions.
    */
   void foo(int a); // Noncompliant {{Document the parameter(s): a}}
 }
 
 /**
- * doc.
+ * Valid descriptions.
  */
 public class FooClass {
-  /** constructor.
+  /** Valid descriptions.
    */
   public FooClass(int a) { // Noncompliant {{Document the parameter(s): a}}
     System.out.println(a);
   }
 
   /**
-   * @param a
+   * Valid descriptions.
+   * @param a Valid descriptions.
    */
   public FooClass(int a) { // Compliant
     System.out.println(a);
@@ -155,11 +159,11 @@ private class FooPrivate { // Compliant - non pubic
 class FooPackage { // Compliant - non public
 }
 
-/** Documented.
+/** Valid descriptions..
  */
 public class Foo { // Compliant
   // Noncompliant@+3
-  /** foo.
+  /** Valid descriptions.
    */
   public int foo(int a, int b, int c) { // Noncompliant
     return 0;
@@ -171,6 +175,7 @@ public class Foo { // Compliant
   }
 
   /**
+    * Valid descriptions.
     * @param <T> foo
     */
   public <T> void foo() { // Compliant - does not return anything
@@ -180,14 +185,16 @@ public class Foo { // Compliant
   }
 
   /**
+   * Valid descriptions.
    * @param <T> foo
    */
   public <T> int foo() { // Noncompliant {{Document this method return value.}}
   }
 
   /**
-   * @param <T> foo
-   * @return foo
+   * Valid descriptions.
+   * @param <T> foo Valid descriptions.
+   * @return Valid descriptions.
    */
   public <T> int foo() { // Compliant
   }
@@ -199,6 +206,7 @@ public class Foo { // Compliant
  * */
 public interface bar { // Noncompliant {{Document this public interface.}}
   /**
+  * Valid descriptions.
   * @param <A>  the annotation type
   * @param annotationType  the <tt>Class</tt> object corresponding to
   *          the annotation type
@@ -211,7 +219,7 @@ public interface bar { // Noncompliant {{Document this public interface.}}
   public int i = 0;
 
   /**
-   * documentMethod.
+   * Valid descriptions.
    */
   default void method(){
     int j = 1;
@@ -245,7 +253,7 @@ public interface deprecatedInterface{
 }
 
 /**
- * Documented
+ * Valid descriptions.
  */
 public class MyRunner extends Foo {
 
@@ -266,7 +274,7 @@ public class MyRunner extends Foo {
   {
   }
 
-  /** Foo.
+  /** Valid descriptions.
    */
   public interface Foo {
 
@@ -306,12 +314,12 @@ class PublicConstructorOfNonPublicClass {
 class A {
 
   /**
-   * Documented
+   * Valid descriptions.
    */
   public void doSomething() { }
 
   /**
-   * Documented
+   * Valid descriptions.
    */
   public static class B extends A {
     public void doSomething() { } // Compliant - Override

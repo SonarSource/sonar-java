@@ -40,23 +40,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PublicApiCheckerTest {
 
-  private PublicApiChecker publicApiChecker;
   private CompilationUnitTree cut;
 
   @Before
   public void setUp() {
     ActionParser p = JavaParser.createParser();
-    publicApiChecker = new PublicApiChecker();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test
   public void isPublicApiAccessorsHandledAsMethods() {
-    SubscriptionVisitor visitor = getPublicApiVisitor(publicApiChecker);
+    SubscriptionVisitor visitor = getPublicApiVisitor();
     visitor.scanTree(cut);
   }
 
-  private SubscriptionVisitor getPublicApiVisitor(final PublicApiChecker publicApiChecker) {
+  private SubscriptionVisitor getPublicApiVisitor() {
     return new SubscriptionVisitor() {
 
       private final Deque<ClassTree> classTrees = Lists.newLinkedList();
@@ -76,23 +74,23 @@ public class PublicApiCheckerTest {
           if (!methodTrees.isEmpty()) {
             parent = methodTrees.peek();
           }
-          assertThat(publicApiChecker.isPublicApi(parent, tree)).as(name).isEqualTo(name.endsWith("Public"));
+          assertThat(PublicApiChecker.isPublicApi(parent, tree)).as(name).isEqualTo(name.endsWith("Public"));
         } else if (tree.is(PublicApiChecker.methodKinds())) {
           MethodTree methodTree = (MethodTree) tree;
           methodTrees.push(methodTree);
           String name = methodTree.simpleName().name();
           // getters and setters are included in the public API
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
+          assertThat(PublicApiChecker.isPublicApi(classTrees.peek(), tree)).as(name).isEqualTo(name.endsWith("Public") || name.contains("GetSet"));
         } else if (tree.is(PublicApiChecker.classKinds())) {
           IdentifierTree className = ((ClassTree) tree).simpleName();
           if(className==null) {
-            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
+            assertThat(PublicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
           }else {
-            assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
+            assertThat(PublicApiChecker.isPublicApi(classTrees.peek(), tree)).as(className.name()).isEqualTo(className != null && className.name().endsWith("Public"));
           }
           classTrees.push((ClassTree) tree);
         } else {
-          assertThat(publicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
+          assertThat(PublicApiChecker.isPublicApi(classTrees.peek(), tree)).isFalse();
         }
       }
 
@@ -137,9 +135,9 @@ public class PublicApiCheckerTest {
 
   private void checkApi(Tree tree, String name) {
     if (name.startsWith("documented")) {
-      assertThat(publicApiChecker.getApiJavadoc(tree)).as(name).isNotNull();
+      assertThat(PublicApiChecker.getApiJavadoc(tree)).as(name).isNotNull();
     } else {
-      assertThat(publicApiChecker.getApiJavadoc(tree)).isNull();
+      assertThat(PublicApiChecker.getApiJavadoc(tree)).isNull();
     }
   }
 
