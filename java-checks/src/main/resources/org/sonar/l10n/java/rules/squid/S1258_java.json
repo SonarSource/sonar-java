@@ -1,6 +1,6 @@
 {
   "title": "Classes and enums with private members should have a constructor",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

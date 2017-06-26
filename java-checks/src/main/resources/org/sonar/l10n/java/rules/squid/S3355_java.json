@@ -1,5 +1,5 @@
 {
-  "title": "Web applications should use validation filters",
+  "title": "Defined filters should be used",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
