@@ -1,6 +1,12 @@
 <p>Deprecation should be marked with both the <code>@Deprecated</code> annotation and @deprecated Javadoc tag. The annotation enables tools such as
 IDEs to warn about referencing deprecated elements, and the tag can be used to explain when it was deprecated, why, and how references should be
-refactored.</p>
+refactored. </p>
+<p>Further, Java 9 adds two additional arguments to the annotation:</p>
+<ul>
+  <li> <code>since</code> allows you to describe when the deprecation took place </li>
+  <li> <code>forRemoval</code>, indicates whether the deprecated element will be removed at some future date </li>
+</ul>
+<p>If your compile level is Java 9 or higher, you should be using one or both of these arguments.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class MyClass {
@@ -29,10 +35,19 @@ class MyClass {
   }
 
   /**
+    * Java &gt;= 9
     * @deprecated (when, why, refactoring advice...)
     */
-  @Deprecated
+  @Deprecated(since="5.1")
   public void foo2() {
+  }
+
+  /**
+    * Java &gt;= 9
+    * @deprecated (when, why, refactoring advice...)
+    */
+  @Deprecated(since="4.2", forRemoval=true)
+  public void foo3() {
   }
 
 }

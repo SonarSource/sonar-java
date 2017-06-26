@@ -3,10 +3,7 @@ best, such an exception will cause abrupt program termination. At worst, it coul
 it could allow an attacker to bypass security measures.</p>
 <p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a
 href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable.</p>
-<p><code>@Nullable</code> denotes that, under some unspecified circumstances, the value might be null. To keep false positives low, this annotation is
-ignored. Whether an explicit test is required or not is left to the developer's discretion.</p>
 <h2>Noncompliant Code Example</h2>
-<p>Here are some examples of null pointer dereferences detected by this rule:</p>
 <pre>
 @CheckForNull
 String getName(){...}
