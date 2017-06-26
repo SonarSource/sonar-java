@@ -41,6 +41,9 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     if (tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE)) {
+      if (withinStringConcatenation(tree)) {
+        return;
+      }
       BinaryExpressionTreeImpl expressionTree = (BinaryExpressionTreeImpl) tree;
       if (expressionTree.symbolType().is("float")) {
         context.reportIssue(this, tree, "Use a \"double\" or \"BigDecimal\" instead.");
@@ -49,6 +52,14 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
       }
     }
     super.visitBinaryExpression(tree);
+  }
+
+  private static boolean withinStringConcatenation(BinaryExpressionTree tree) {
+    Tree parent = tree.parent();
+    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      parent = parent.parent();
+    }
+    return parent.is(Tree.Kind.PLUS) && ((BinaryExpressionTree) parent).symbolType().is("java.lang.String");
   }
 
 }
