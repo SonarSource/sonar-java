@@ -1,15 +1,16 @@
 <p>Try to imagine using the standard Java API (Collections, JDBC, IO, ...) without Javadoc. It would be a nightmare, because Javadoc is the only way
 to understand of the contract of the API. Documenting an API with Javadoc increases the productivity of the developers consuming it.</p>
-<p>The following Javadoc elements are required:</p>
+<p>On top of a main description for each member of a public API, the following Javadoc elements are required to be described:</p>
 <ul>
   <li> Parameters, using <code>@param parameterName</code>. </li>
+  <li> Thrown exceptions, using <code>@throws exceptionName</code>. </li>
   <li> Method return values, using <code>@return</code>. </li>
   <li> Generic types, using <code>@param &lt;T&gt;</code>. </li>
 </ul>
 <p>The following public methods and constructors are not taken into account by this rule:</p>
 <ul>
   <li> Getters and setters. </li>
-  <li> Methods with @Override annotation. </li>
+  <li> Methods with <code>@Override</code> annotation. </li>
   <li> Empty constructors. </li>
   <li> Static constants. </li>
 </ul>
@@ -52,7 +53,7 @@ public class MyClass&lt;T&gt; implements Runnable {    // Noncompliant - missing
 <pre>
 /**
   * This is a Javadoc comment
-  * @param &lt;T&gt; ...
+  * @param &lt;T&gt; the parameter of the class
   */
 public class MyClass&lt;T&gt; implements Runnable {
 
@@ -83,7 +84,8 @@ public class MyClass&lt;T&gt; implements Runnable {
   }
 
   /**
-    * @param value ...
+    * Will do something.
+    * @param value the value to be used
     */
   public void doSomething(int value) {
 

@@ -135,7 +135,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
   }
 
-  public boolean isPublicApi(@Nullable Tree currentParent, Tree tree) {
+  public static boolean isPublicApi(@Nullable Tree currentParent, Tree tree) {
     if (currentParent == null) {
       return tree.is(CLASS_KINDS) && isPublicApi((ClassTree) tree);
     } else if (tree.is(CLASS_KINDS) && currentParent.is(PublicApiChecker.CLASS_KINDS)) {

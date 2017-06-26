@@ -64,4 +64,11 @@ public class UndocumentedApiCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java", check);
   }
 
+  @Test
+  public void testIncompleteJavadoc() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    check.forClasses = "";
+    JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiIncomplete.java", check);
+  }
+
 }
