@@ -19,7 +19,7 @@ ant clean deploy
 cd ../../parallelizing
 case "$TEST" in
   baseline)
-    mvn package -Pit-parallelizing -Dsonar.runtimeVersion=LATEST_RELEASE -Dversion.toCopy=4.11.0.10495 -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    mvn package -Pit-parallelizing -Dsonar.runtimeVersion=LATEST_RELEASE -Dversion.toCopy=4.11.0.10618 -Dmaven.test.redirectTestOutputToFile=false -B -e -V
   ;;
   parallelized)
     mvn package -Pit-parallelizing -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V
