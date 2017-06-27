@@ -18,7 +18,9 @@ ant clean deploy
 
 cd ../../parallelizing
 echo "Downloading SonarQube"
-rm sonar-application.zip
+if [ -f sonar-application.zip ]; then
+  rm sonar-application.zip
+fi
 if [ ! -f sonar-application.zip ]; then
   curl https://repox.sonarsource.com/sonarsource-dev/org/sonarsource/sonarqube/sonar-application/6.5.0.26422/sonar-application-6.5.0.26422.zip -o sonar-application.zip
 fi
