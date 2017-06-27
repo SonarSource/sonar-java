@@ -100,22 +100,24 @@ public class Measurer extends SubscriptionVisitor {
     methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
     super.scanFile(context);
     //leave file.
-    int fileComplexity = context.getComplexityNodes(context.getTree()).size();
-    saveMetricOnFile(CoreMetrics.CLASSES, classes);
-    saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
-    saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
-    saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
-    saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
-    saveMetricOnFile(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, methodComplexityDistribution.build());
+    synchronized (Measurer.class) {
+      int fileComplexity = context.getComplexityNodes(context.getTree()).size();
+      saveMetricOnFile(CoreMetrics.CLASSES, classes);
+      saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
+      saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
+      saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
+      saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
+      saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
+      saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
+      saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
+      saveMetricOnFile(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, methodComplexityDistribution.build());
 
-    RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
-    saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
+      RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
+      saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
 
-    if (isSonarQubeGreaterThanOrEqualTo63()) {
-      saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
+      if (isSonarQubeGreaterThanOrEqualTo63()) {
+        saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
+      }
     }
   }
 
@@ -165,7 +167,7 @@ public class Measurer extends SubscriptionVisitor {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
-  private synchronized <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
+  private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
     sensorContext.<T>newMeasure().forMetric(metric).on(sonarFile).withValue(value).save();
   }
 }
