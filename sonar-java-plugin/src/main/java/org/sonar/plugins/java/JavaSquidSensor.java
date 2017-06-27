@@ -121,7 +121,7 @@ public class JavaSquidSensor implements Sensor {
 
   private void scan(SensorContext context, File file, boolean scanTests) {
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checksForParallel());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, new PostAnalysisIssueFilter(fs), sonarComponents.checksForParallel());
     Iterable<File> files = Collections.singleton(file);
     if(scanTests) {
       squid.scan(Collections.emptyList(), files);
@@ -148,7 +148,7 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-   return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
+    return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
   }
 
   @Override

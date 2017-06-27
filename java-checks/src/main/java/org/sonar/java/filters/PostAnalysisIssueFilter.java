@@ -32,7 +32,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+  private final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new SuppressWarningFilter(),
@@ -68,7 +68,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
   }
 
   @Override
-  public synchronized void scanFile(JavaFileScannerContext context) {
+  public void scanFile(JavaFileScannerContext context) {
     InputFile component = fileSystem.inputFile(fileSystem.predicates().is(context.getFile()));
     if (component == null) {
       throw new AnalysisException("Component not found: " + context.getFileKey());
