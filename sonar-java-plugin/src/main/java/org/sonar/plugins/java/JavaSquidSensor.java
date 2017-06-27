@@ -148,9 +148,7 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
-    LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
-    return javaVersion;
+   return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
   }
 
   @Override

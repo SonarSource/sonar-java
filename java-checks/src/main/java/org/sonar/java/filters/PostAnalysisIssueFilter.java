@@ -68,7 +68,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public synchronized void scanFile(JavaFileScannerContext context) {
     InputFile component = fileSystem.inputFile(fileSystem.predicates().is(context.getFile()));
     if (component == null) {
       throw new AnalysisException("Component not found: " + context.getFileKey());
