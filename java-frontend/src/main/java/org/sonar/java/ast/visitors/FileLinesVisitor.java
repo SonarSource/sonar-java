@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ModifiersUtils;
@@ -110,9 +109,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
         fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
       }
     }
-    synchronized (Measurer.class) {
-      fileLinesContext.save();
-    }
+    fileLinesContext.save();
 
     linesOfCode.clear();
     linesOfComments.clear();
