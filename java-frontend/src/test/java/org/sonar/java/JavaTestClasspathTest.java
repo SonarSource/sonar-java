@@ -109,7 +109,9 @@ public class JavaTestClasspathTest {
 
 
   private JavaTestClasspath createJavaClasspath() {
-    return new JavaTestClasspath(settings, fs);
+    JavaTestClasspath javaTestClasspath = new JavaTestClasspath(settings, fs);
+    javaTestClasspath.init();
+    return javaTestClasspath;
   }
 
 

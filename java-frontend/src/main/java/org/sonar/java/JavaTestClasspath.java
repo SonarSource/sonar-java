@@ -39,7 +39,7 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
   }
 
   @Override
-  protected synchronized void init() {
+  protected void init() {
     if (!initialized) {
       validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");

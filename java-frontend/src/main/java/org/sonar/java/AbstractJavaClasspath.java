@@ -273,12 +273,10 @@ public abstract class AbstractJavaClasspath {
   }
 
   public List<File> getElements() {
-    init();
     return elements;
   }
 
   public List<File> getBinaryDirs() {
-    init();
     return binaries;
   }
 }

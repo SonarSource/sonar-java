@@ -103,6 +103,12 @@ public class SonarComponents {
         registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
       }
     }
+    if(javaClasspath != null) {
+      javaClasspath.init();
+    }
+    if(javaTestClasspath != null) {
+      javaTestClasspath.init();
+    }
   }
 
   public void setSensorContext(SensorContext context) {
