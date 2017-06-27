@@ -17,6 +17,11 @@ fi
 ant clean deploy
 
 cd ../../parallelizing
+echo "Downloading SonarQube"
+if [ ! -f sonar-application.zip ]; then
+  curl https://repox.sonarsource.com/sonarsource-dev/org/sonarsource/sonarqube/sonar-application/6.5.0.26411/sonar-application-6.5.0.26411.zip -o sonar-application.zip
+fi
+
 case "$TEST" in
   baseline)
     mvn package -Pit-parallelizing -Dsonar.runtimeVersion=LATEST_RELEASE -Dversion.toCopy=4.11.0.10618 -Dmaven.test.redirectTestOutputToFile=false -B -e -V

@@ -38,6 +38,7 @@ public class JavaParallelAnalysisTest {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = Orchestrator.builderEnv()
+    .setZipFile(new File("sonar-application.zip"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .restoreProfileAtStartup(FileLocation.of("src/test/profile.xml"))
     .build();
