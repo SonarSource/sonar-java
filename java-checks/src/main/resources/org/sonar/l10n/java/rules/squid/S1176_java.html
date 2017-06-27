@@ -7,6 +7,14 @@ to understand of the contract of the API. Documenting an API with Javadoc increa
   <li> Method return values, using <code>@return</code>. </li>
   <li> Generic types, using <code>@param &lt;T&gt;</code>. </li>
 </ul>
+<p>Furthermore the following guidelines should be followed:</p>
+<ul>
+  <li> At least 1 line of description which should have more than one word. </li>
+  <li> All parameters documented with <code>@param</code>, and names should match. </li>
+  <li> All checked exceptions documented with <code>@throws</code> </li>
+  <li> <code>@return</code> present and documented when not <code>void</code>. </li>
+  <li> Placeholders like "TODO", "FIXME", "..." should be avoided. </li>
+</ul>
 <p>The following public methods and constructors are not taken into account by this rule:</p>
 <ul>
   <li> Getters and setters. </li>
