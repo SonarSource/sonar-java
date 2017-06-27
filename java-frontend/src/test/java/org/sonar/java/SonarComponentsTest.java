@@ -74,6 +74,10 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SonarComponentsTest {
 
+  private static final Version V6_2 = Version.create(6, 2);
+  private static final Version V5_6 = Version.create(5, 6);
+  private static final Version V6_0 = Version.create(6, 0);
+
   private static final String REPOSITORY_NAME = "custom";
 
   @Mock
@@ -272,20 +276,18 @@ public class SonarComponentsTest {
 
     assertThat(context.allIssues()).hasSize(3);
 
-    Version version60 = Version.create(6, 0);
-    Version version56 = Version.create(5, 6);
     RecognitionException parseError = new RecognitionException(new LexerException("parse error"));
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(version60));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isTrue();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(version56));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(version60, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_0, SonarQubeSide.SCANNER));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(version56, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(V5_6, SonarQubeSide.SCANNER));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
   }
 
@@ -326,10 +328,32 @@ public class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(5, 6)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
     assertThat(sonarComponents.isSQGreaterThan62()).isFalse();
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_2));
     assertThat(sonarComponents.isSQGreaterThan62()).isTrue();
+  }
+
+  @Test
+  public void cancellation() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    sonarComponents.setSensorContext(context);
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
+    assertThat(sonarComponents.analysisCancelled()).isFalse();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
+    assertThat(sonarComponents.analysisCancelled()).isFalse();
+
+    // cancellation only handled from SQ 6.0
+    context.setCancelled(true);
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
+    assertThat(sonarComponents.analysisCancelled()).isFalse();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
+    assertThat(sonarComponents.analysisCancelled()).isTrue();
   }
 
   @Test
@@ -347,7 +371,7 @@ public class SonarComponentsTest {
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 2)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_2));
     sonarComponents.setSensorContext(context);
 
     String fileContent = sonarComponents.fileContent(file);
@@ -359,7 +383,7 @@ public class SonarComponentsTest {
     verify(inputFile, times(1)).contents();
     reset(inputFile);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
     sonarComponents.setSensorContext(context);
 
     assertThat(sonarComponents.fileContent(file)).hasSize(59);
@@ -371,7 +395,7 @@ public class SonarComponentsTest {
     reset(inputFile);
 
     // rely on default filesystem charset for version prior to 6.0
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(5, 6)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
     sonarComponents.setSensorContext(context);
 
     assertThat(sonarComponents.fileContent(file)).hasSize(63);
@@ -388,7 +412,7 @@ public class SonarComponentsTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(new TestInputFileBuilder("", "unknown_file.java").setCharset(StandardCharsets.UTF_8).build());
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
     sonarComponents.setSensorContext(context);
 

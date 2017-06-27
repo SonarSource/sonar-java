@@ -58,12 +58,17 @@ public class JavaAstScanner {
     progressReport.start(Lists.newArrayList(files));
 
     boolean successfullyCompleted = false;
+    boolean cancelled = false;
     try {
       for (File file : files) {
+        if (analysisCancelled()) {
+          cancelled = true;
+          break;
+        }
         simpleScan(file);
         progressReport.nextFile();
       }
-      successfullyCompleted = true;
+      successfullyCompleted = !cancelled;
     } finally {
       if (successfullyCompleted) {
         progressReport.stop();
@@ -72,6 +77,10 @@ public class JavaAstScanner {
       }
       visitor.endOfAnalysis();
     }
+  }
+
+  private boolean analysisCancelled() {
+    return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
   private void simpleScan(File file) {

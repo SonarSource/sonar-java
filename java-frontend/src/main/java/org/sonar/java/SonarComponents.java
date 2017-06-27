@@ -287,4 +287,8 @@ public class SonarComponents {
     }
     return fs.encoding();
   }
+
+  public boolean analysisCancelled() {
+    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.isCancelled();
+  }
 }

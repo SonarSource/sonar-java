@@ -39,6 +39,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
@@ -119,6 +120,21 @@ public class JavaAstScannerTest {
     verify(listener).processRecognitionException(any(RecognitionException.class));
   }
 
+  @Test
+  public void should_handle_analysis_cancellation() throws Exception {
+    JavaFileScanner visitor = spy(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        // do nothing
+      }
+    });
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    when(sonarComponents.analysisCancelled()).thenReturn(true);
+    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
+    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), Lists.newArrayList(), sonarComponents, false));
+    scanner.scan(ImmutableList.of(new File("src/test/files/metrics/NoSonar.java")));
+    verifyZeroInteractions(visitor);
+  }
 
   @Test
   public void should_interrupt_analysis_when_InterrptedException_is_thrown() throws Exception {
