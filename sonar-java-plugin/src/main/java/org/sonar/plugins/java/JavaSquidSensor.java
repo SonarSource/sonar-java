@@ -63,7 +63,6 @@ public class JavaSquidSensor implements Sensor {
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
   private final NoSonarFilter noSonarFilter;
-  private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
     DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
@@ -72,7 +71,6 @@ public class JavaSquidSensor implements Sensor {
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
-    this.postAnalysisIssueFilter = postAnalysisIssueFilter;
   }
 
   @Override
@@ -89,13 +87,14 @@ public class JavaSquidSensor implements Sensor {
 
     ExecutorService executorService = createExecutor();
     CompletionService cs =  new ExecutorCompletionService(executorService);
+    ThreadContext threadContext = new ThreadContext(context);
     int fileSize = 0;
     for (File sourceFile : getSourceFiles()) {
-      cs.submit(() -> scan(context, sourceFile, false), null);
+      cs.submit(() -> scan(threadContext, sourceFile, false), null);
       fileSize++;
     }
     for (File testFile : getTestFiles()) {
-      cs.submit(() -> scan(context, testFile, true), null);
+      cs.submit(() -> scan(threadContext, testFile, true), null);
       fileSize++;
     }
     executorService.shutdown();
@@ -119,9 +118,23 @@ public class JavaSquidSensor implements Sensor {
 
   }
 
-  private void scan(SensorContext context, File file, boolean scanTests) {
-    Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, new PostAnalysisIssueFilter(fs), sonarComponents.checksForParallel());
+  private class ThreadContext {
+    final ThreadLocal<JavaSquid> javaSquidThreadLocal;
+
+    ThreadContext(SensorContext context) {
+      javaSquidThreadLocal = ThreadLocal.withInitial(() -> {
+        Measurer measurer = new Measurer(fs, context, noSonarFilter);
+        return new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, new PostAnalysisIssueFilter(fs), sonarComponents.checksForParallel());
+      });
+    }
+
+    public JavaSquid getJavaSquid() {
+      return javaSquidThreadLocal.get();
+    }
+  }
+
+  private void scan(ThreadContext context, File file, boolean scanTests) {
+    JavaSquid squid = context.getJavaSquid();
     Iterable<File> files = Collections.singleton(file);
     if(scanTests) {
       squid.scan(Collections.emptyList(), files);
