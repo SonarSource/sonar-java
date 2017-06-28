@@ -55,6 +55,7 @@ public class H {
   /**
    * This is documented
    * @param o
+   * @param o FIXME
    */
   public void foo(Object o) { } // Noncompliant {{Document the parameter(s): o}} - undocumented
 
@@ -113,8 +114,23 @@ public class H {
   /**
    * This is documented
    * @throws MyException FIXME
+   * @throws MyException when it does not like you
    */
   public void tou() throws MyException { } // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws MyException when it does not like you
+   * @throws MyException FIXME
+   */
+  public void tul() throws MyException { } // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws MyException TODO
+   * @throws MyException FIXME
+   */
+  public void tac() throws MyException { } // Noncompliant {{Document this method thrown exception(s): MyException}}
 
   /**
    * This is documented
