@@ -282,8 +282,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
 
     private final String mainDescription;
-    private final Map<String, String> parameters;
-    private final Map<String, String> thrownExceptions;
+    private final Map<String, List<String>> parameters;
+    private final Map<String, List<String>> thrownExceptions;
     private final String returnDescription;
 
     Javadoc(Tree tree) {
@@ -312,8 +312,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       return getUndocumentedElements(getExceptions(tree), thrownExceptions);
     }
 
-    private static List<String> getUndocumentedElements(List<String> elementNames, Map<String, String> elementsWithDescription) {
-      return elementNames.stream().filter(name -> isEmptyDescription(elementsWithDescription.get(name))).collect(Collectors.toList());
+    private static List<String> getUndocumentedElements(List<String> elementNames, Map<String, List<String>> elementsWithDescriptions) {
+      return elementNames.stream().filter(name -> isEmptyDescription(elementsWithDescriptions.get(name))).collect(Collectors.toList());
+    }
+
+    private static boolean isEmptyDescription(@Nullable List<String> descriptions) {
+      return descriptions == null || descriptions.stream().anyMatch(Javadoc::isEmptyDescription);
     }
 
     private static boolean isEmptyDescription(@Nullable String part) {
@@ -392,13 +396,13 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       return sb.toString().trim();
     }
 
-    private static Map<String, String> extractToMap(List<String> lines, Pattern pattern) {
+    private static Map<String, List<String>> extractToMap(List<String> lines, Pattern pattern) {
       return lines.stream()
         .map(pattern::matcher)
         .filter(Matcher::matches)
-        .collect(Collectors.toMap(
+        .collect(Collectors.groupingBy(
           matcher -> matcher.group("name"),
-          matcher -> matcher.group("descr")));
+          Collectors.mapping(matcher -> matcher.group("descr"), Collectors.toList())));
     }
 
     private static String extractReturnDescription(List<String> lines) {
