@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,7 +41,7 @@ public class SemanticOrderResolution {
     JavaAstScanner.scanSingleFileForTests(
       new File("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/Main.java"),
       new VisitorsBridge(Lists.newArrayList(myVisitor),
-      Lists.newArrayList(new File("target/test-classes")), null));
+        ClassLoaderBuilder.create(Lists.newArrayList(new File("target/test-classes"))), null));
     assertThat(myVisitor.classes).isEqualTo(2);
   }
 

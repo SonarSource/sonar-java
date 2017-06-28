@@ -23,6 +23,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -48,20 +50,20 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
+    this(Collections.singletonList(visitor),ClassLoaderBuilder.create(new ArrayList<>()), sonarComponents);
   }
 
   public VisitorsBridgeForTests(Iterable visitors, SonarComponents sonarComponents) {
-    this(visitors, new ArrayList<>(), sonarComponents, false);
+    this(visitors, ClassLoaderBuilder.create(new ArrayList<>()), sonarComponents, false);
     enableSemantic = false;
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, true);
+  public VisitorsBridgeForTests(Iterable visitors, SquidClassLoader classLoader, @Nullable SonarComponents sonarComponents) {
+    this(visitors, classLoader, sonarComponents, true);
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
-    super(visitors, projectClasspath, sonarComponents, symbolicExecutionEnabled);
+  public VisitorsBridgeForTests(Iterable visitors, SquidClassLoader classLoader, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
+    super(visitors, classLoader, sonarComponents, symbolicExecutionEnabled);
   }
 
   @Override

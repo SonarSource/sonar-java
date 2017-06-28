@@ -84,36 +84,39 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
-
-    ExecutorService executorService = createExecutor();
-    CompletionService cs =  new ExecutorCompletionService(executorService);
-    ThreadContext threadContext = new ThreadContext(context);
-    int fileSize = 0;
-    for (File sourceFile : getSourceFiles()) {
-      cs.submit(() -> scan(threadContext, sourceFile, false), null);
-      fileSize++;
-    }
-    for (File testFile : getTestFiles()) {
-      cs.submit(() -> scan(threadContext, testFile, true), null);
-      fileSize++;
-    }
-    executorService.shutdown();
-    for (int i = 0; i < fileSize; i++) {
-      try {
-        cs.take().get();
-        if (i % 10 == 0) {
-          LOG.info("analyzed " + i + "/" + fileSize + " files");
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-          throw (RuntimeException) cause;
-        } else if (cause instanceof Error) {
-          throw ((Error) cause);
+    try {
+      ExecutorService executorService = createExecutor();
+      CompletionService cs = new ExecutorCompletionService(executorService);
+      ThreadContext threadContext = new ThreadContext(context);
+      int fileSize = 0;
+      for (File sourceFile : getSourceFiles()) {
+        cs.submit(() -> scan(threadContext, sourceFile, false), null);
+        fileSize++;
+      }
+      for (File testFile : getTestFiles()) {
+        cs.submit(() -> scan(threadContext, testFile, true), null);
+        fileSize++;
+      }
+      executorService.shutdown();
+      for (int i = 0; i < fileSize; i++) {
+        try {
+          cs.take().get();
+          if (i % 10 == 0) {
+            LOG.info("analyzed " + i + "/" + fileSize + " files");
+          }
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } catch (ExecutionException e) {
+          Throwable cause = e.getCause();
+          if (cause instanceof RuntimeException) {
+            throw (RuntimeException) cause;
+          } else if (cause instanceof Error) {
+            throw ((Error) cause);
+          }
         }
       }
+    } finally {
+      sonarComponents.closeClassLoaders();
     }
 
   }

@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
@@ -270,8 +271,10 @@ public class JavaTypeTest {
   public void test_fully_qualified_name() {
     File bytecodeDir = new File("target/test-classes");
     ClassFullQualifiedNameVerifierVisitor visitor = new ClassFullQualifiedNameVerifierVisitor(bytecodeDir);
+    SquidClassLoader classLoader = ClassLoaderBuilder.create(Lists.newArrayList(bytecodeDir));
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(Collections.singletonList(visitor), Lists.newArrayList(bytecodeDir), null));
+      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(Collections.singletonList(visitor), classLoader, null));
+    classLoader.close();
   }
 
   private static class ClassFullQualifiedNameVerifierVisitor extends SubscriptionVisitor {

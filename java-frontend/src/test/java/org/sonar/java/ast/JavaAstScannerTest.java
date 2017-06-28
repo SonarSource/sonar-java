@@ -40,6 +40,7 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
@@ -56,6 +57,7 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -131,7 +133,7 @@ public class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.analysisCancelled()).thenReturn(true);
     JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), Lists.newArrayList(), sonarComponents, false));
+    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), ClassLoaderBuilder.create(new ArrayList<>()), sonarComponents, false));
     scanner.scan(ImmutableList.of(new File("src/test/files/metrics/NoSonar.java")));
     verifyZeroInteractions(visitor);
   }
@@ -192,7 +194,7 @@ public class JavaAstScannerTest {
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(File.class))).thenReturn(true);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), Lists.newArrayList(), sonarComponents, false));
+    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), ClassLoaderBuilder.create(new ArrayList<>()), sonarComponents, false));
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(File.class));
     verifyZeroInteractions(listener);

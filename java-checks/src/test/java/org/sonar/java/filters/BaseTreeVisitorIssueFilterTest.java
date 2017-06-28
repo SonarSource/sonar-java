@@ -21,7 +21,6 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
-
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -36,10 +36,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -180,7 +178,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   private static void scanFile(JavaIssueFilter filter) {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), ClassLoaderBuilder.create(Collections.emptyList()), null);
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filters/BaseTreeVisitorIssueFilter.java"), visitorsBridge);
   }
 }

@@ -24,10 +24,12 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +39,7 @@ public class IssuableSubscriptionVisitorTest {
 
   @Test
   public void test_custom_rules_report_issues() throws Exception {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), ClassLoaderBuilder.create(new ArrayList<>()), null);
     JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(7);

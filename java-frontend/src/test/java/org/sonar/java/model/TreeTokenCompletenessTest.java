@@ -27,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -115,7 +117,8 @@ public class TreeTokenCompletenessTest {
 
   private static List<String> readFileFromSyntaxTree(File file) {
     TokenPrinter tokenPrinter = new TokenPrinter();
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(Lists.newArrayList(tokenPrinter), Lists.<File>newArrayList(), null));
+    SquidClassLoader classLoader = ClassLoaderBuilder.create(Lists.<File>newArrayList());
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(Lists.newArrayList(tokenPrinter), classLoader, null));
     return tokenPrinter.getPrintedFile();
   }
 
