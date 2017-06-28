@@ -5,16 +5,6 @@
 'jdk6:java/security/Security.java':[
 68,
 ],
-'jdk6:java/sql/SQLException.java':[
-56,
-82,
-105,
-126,
-150,
-172,
-197,
-223,
-],
 'jdk6:java/util/Scanner.java':[
 636,
 654,

@@ -1,30 +1,11 @@
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nonnull;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.io.FileReader;
-import java.io.BufferedWriter;
+import java.io.*;
+import java.nio.file.*;
 import java.util.Formatter;
 import java.util.jar.JarFile;
-import java.io.DataInputStream;
-import java.io.File;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 
 public class A {
   private final static int MAX_LOOP = 42;
@@ -164,25 +145,25 @@ public class A {
   }
 
   public void closePrimary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16");
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16");  // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     fileIn.close();
   }
   
   public void closeSecondary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16");
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     bufferIn.close();
   }
   
   public void closeTertiary(String fileName) throws IOException {
-    InputStream fileIn = new FileInputStream(fileName); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16");
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     reader.close();
   }
@@ -243,7 +224,7 @@ public class A {
 
   private Delegate response;
   protected void writeEventStream(Payload payload) throws IOException {
-    PrintStream printStream = new PrintStream(response.outputStream());
+    PrintStream printStream = new PrintStream(response.outputStream()); // Noncompliant
 
     try (Stream<?> stream = (Stream<?>) payload.rawContent()) {
       stream.forEach(item -> {
@@ -484,4 +465,35 @@ class Trans {
       fos.close();
     }
   }
+}
+
+
+class MethodHeuristics {
+  Utils utils;
+
+  void test() {
+    OutputStream os = utils.newOutputStream(); // Noncompliant
+    InputStream is = Files.newInputStream(Paths.get("test")); // Noncompliant
+  }
+
+  InputStream testChained() {
+    try {
+      // this is technically an FP, since if constructor fails stream can be still open, but it will cause too many FPs
+      return new BufferedInputStream(Files.newInputStream(Paths.get("test"))); // Compliant
+    } catch (Exception e) {
+    }
+  }
+
+  InputStream testChained2() {
+    try {
+      InputStream is = Files.newInputStream(Paths.get("test")); // Noncompliant
+      return new BufferedInputStream(is);
+    } catch (Exception e) {
+
+    }
+  }
+}
+
+abstract class Utils {
+  abstract OutputStream newOutputStream();
 }
