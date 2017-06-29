@@ -224,6 +224,8 @@ public interface bar { // Noncompliant {{Document this public interface.}}
   default void method(){
     int j = 1;
   }
+
+  void getValue(); // Compliant
 }
 
 @interface nested{

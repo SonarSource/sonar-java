@@ -193,7 +193,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private boolean isAccessor(Tree tree) {
-    if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
+    if (!classTrees.isEmpty() && tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       String name = methodTree.simpleName().name();
       return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
