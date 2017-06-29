@@ -77,10 +77,24 @@ public class H {
   public void foo(double d) { } // Noncompliant {{Document this public method by adding an explicit description.}} - param documented but not the method
 
   /**
-   * This is documented
    * @return
    */
-  public String bar() { } // Noncompliant {{Document this method return value.}} - undocumented
+  public String bar1() { } // Noncompliant {{Document this public method by adding an explicit description.}} - undocumented
+
+  /**
+   * @return this is documented
+   */
+  public String bar2() { } // Complinant - non-void method with no parameter described with the return value
+
+  /**
+   * This is documented
+   */
+  public void bar3() { } // Complinant
+
+  /**
+   * FIXME
+   */
+  public void bar4() { } // Noncompliant {{Document this public method by adding an explicit description.}}
 
   /**
    * This is documented

@@ -143,7 +143,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private void visitNode(Tree tree, Tree reportTree, SymbolMetadata symbolMetadata) {
     if (!isExcluded(tree, symbolMetadata)) {
       Javadoc javadoc = new Javadoc(tree);
-      if (javadoc.noMainDescription()) {
+      if (javadoc.noMainDescription() && !isNonVoidMethodWithNoParameter(tree, javadoc)) {
         context.reportIssue(this, reportTree, "Document this public " + getType(tree) + " by adding an explicit description.");
       } else {
         List<String> undocumentedParameters = javadoc.undocumentedParameters(tree);
@@ -159,6 +159,17 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         }
       }
     }
+  }
+
+  private boolean isNonVoidMethodWithNoParameter(Tree tree, Javadoc javadoc) {
+    if (!tree.is(Tree.Kind.METHOD)) {
+      return false;
+    }
+
+    return hasNonVoidReturnType(tree)
+      && ((MethodTree) tree).parameters().isEmpty()
+      // if return description is there, then it will be validated later
+      && !javadoc.noReturnDescription();
   }
 
   private static String getType(Tree tree) {
