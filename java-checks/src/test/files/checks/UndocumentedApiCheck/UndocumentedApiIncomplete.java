@@ -1,7 +1,5 @@
 package org.foo;
 
-public class Empty {} // Noncompliant {{Document this public class by adding an explicit description.}} - no javadoc
-
 /**
  * FIXME
  */
@@ -37,10 +35,12 @@ public class F { } // Noncompliant {{Document this public class by adding an exp
  */
 public class G extends F { } // Compliant
 
+public class H { } // Noncompliant {{Document this public class by adding an explicit description.}} - no javadoc
+
 /**
  * This is documented
  */
-public class H {
+public class Parameters {
   /**
    * This is documented
    */
@@ -75,7 +75,12 @@ public class H {
    * @param d the ratio of fools
    */
   public void foo(double d) { } // Noncompliant {{Document this public method by adding an explicit description.}} - param documented but not the method
+}
 
+/**
+ * This is documented
+ */
+public class ReturnValue {
   /**
    * @return
    */
@@ -107,11 +112,36 @@ public class H {
    * @return the mighty qix in the face
    */
   public String big() { } // Compliant - documented @return
+}
+
+/**
+ * This is documented
+ */
+public class Exceptions {
 
   /**
    * This is documented
    */
   public void tiu() throws MyException, org.foo.MyOtherException { } // Noncompliant {{Document this method thrown exception(s): MyException, MyOtherException}}
+
+  /**
+   * This is documented
+   */
+  public void tap() throws Exception { } // Noncompliant {{Document this method thrown exception(s): Exception}}
+
+  /**
+   * This is documented
+   * @throws MyException this is documented
+   */
+  public void tip() throws Exception { } // Compliant
+
+  /**
+   * This is documented
+   * @throws IllegalStateException
+   * @throws MyOtherException
+   * @throws MyException this is documented
+   */
+  public void top() throws Exception { } // Noncompliant {{Document this method thrown exception(s): IllegalStateException, MyOtherException}}
 
   /**
    * This is documented

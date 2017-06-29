@@ -287,8 +287,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static class Javadoc {
-    private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)\\s++(?<descr>.+)");
-    private static final Pattern EXCEPTION_JAVADOC_PATTERN = Pattern.compile(".*@throws\\s++(?<name>\\S*)\\s++(?<descr>.+)");
+    private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
+    private static final Pattern EXCEPTION_JAVADOC_PATTERN = Pattern.compile(".*@throws\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
     private static final Pattern RETURN_JAVADOC_PATTERN = Pattern.compile(".*@return\\s++(?<descr>.+)");
     private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
 
@@ -316,15 +316,23 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     }
 
     public List<String> undocumentedParameters(Tree tree) {
-      return getUndocumentedElements(getParameters(tree), parameters);
+      return getParameters(tree).stream()
+        .filter(name -> isEmptyDescription(parameters.get(name)))
+        .collect(Collectors.toList());
     }
 
     public List<String> undocumentedThrownExceptions(Tree tree) {
-      return getUndocumentedElements(getExceptions(tree), thrownExceptions);
-    }
-
-    private static List<String> getUndocumentedElements(List<String> elementNames, Map<String, List<String>> elementsWithDescriptions) {
-      return elementNames.stream().filter(name -> isEmptyDescription(elementsWithDescriptions.get(name))).collect(Collectors.toList());
+      List<String> exceptionNames = getExceptions(tree);
+      if (exceptionNames.size() == 1 && "Exception".equals(exceptionNames.get(0)) && !thrownExceptions.isEmpty()) {
+        // check for described exceptions
+        return thrownExceptions.entrySet().stream()
+          .filter(e -> isEmptyDescription(e.getValue()))
+          .map(Map.Entry::getKey)
+          .collect(Collectors.toList());
+      }
+      return exceptionNames.stream()
+        .filter(name -> isEmptyDescription(thrownExceptions.get(name)))
+        .collect(Collectors.toList());
     }
 
     private static boolean isEmptyDescription(@Nullable List<String> descriptions) {
