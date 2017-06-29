@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SonarJava Viewer</title>
+
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.3.7/css/bootstrap.css">
+    <script src="lib/jquery-3.2.1/jquery.js"></script>
+    <script src="lib/bootstrap-3.3.7/js/bootstrap.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="lib/codemirror-5.27.2/codemirror.css">
+    <script src="lib/codemirror-5.27.2/codemirror.js"></script>
+    <script src="lib/codemirror-5.27.2/mode/clike/clike.js"></script>
+    <script src="lib/codemirror-5.27.2/addon/selection/active-line.js"></script>
+
+    <script src="lib/viewer/viewer.js"></script>
+    <script src="lib/vis-4.20.0/vis.js"></script>
+  </head>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="col-md-4">
+      <div class="row">
+        <h1>Java sample</h1>
+        <form action="/" method="post">
+	        <div style="border: solid lightgray 1px; margin-bottom: 10px;">
+	           <textarea id="java-code" name="javaCode">$javaCode</textarea>
+	        </div>
+	        <div>
+	          <button type="submit" class="btn btn-primary">Generate</button>
+	          <a href="/" class="btn btn-default" role="button">Reset</a>
+	        </div>
+        </form>
+        <h1>Control Flow Graph</h1>
+        <div style="border: solid lightgray 1px;">
+          <textarea id="cfg-code">$cfg</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="row">
+        <div id="graphs">
+          <ul class="nav nav-tabs">
+            <li class="active"><a  href="#eg" data-toggle="tab">Exploded Graph</a></li>
+            <li><a href="#cfg" data-toggle="tab">Control Flow Graph</a></li>
+            <li><a href="#ast" data-toggle="tab">Syntax Tree</a></li>
+          </ul>
+
+          <div class="tab-content ">
+            <div class="tab-pane active" id="eg">
+              <div id="eg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+            </div>
+            <div class="tab-pane" id="cfg">
+              <div id="cfg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+            </div>
+            <div class="tab-pane" id="ast">
+              <div id="ast-container" style="height: 800px; border: solid lightgray 1px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var javaEditor = CodeMirror.fromTextArea(document.getElementById("java-code"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      styleActiveLine: true,
+      mode: "text/x-java"
+    });
+    var cfgEditor = CodeMirror.fromTextArea(document.getElementById("cfg-code"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      styleActiveLine: true,
+      readOnly: true,
+      mode: "text/x-java"
+    });
+
+    var explodedGraphContainer = document.getElementById('eg-container');
+    var dotEG = '$dotEG';
+    loadDot(dotEG, explodedGraphContainer);
+
+    var cfgContainer = document.getElementById('cfg-container');
+    var dotCFG = '$dotCFG';
+    loadDot(dotCFG, cfgContainer);
+
+    var astContainer = document.getElementById('ast-container');
+    var dotAST = '$dotAST';
+    loadDot(dotAST, astContainer, true);
+  </script>
+</body>
+</html>
