@@ -144,7 +144,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (!isExcluded(tree, symbolMetadata)) {
       Javadoc javadoc = new Javadoc(tree);
       if (javadoc.noMainDescription()) {
-        context.reportIssue(this, reportTree, "Document this public " + getType(tree) + ".");
+        context.reportIssue(this, reportTree, "Document this public " + getType(tree) + " by adding an explicit description.");
       } else {
         List<String> undocumentedParameters = javadoc.undocumentedParameters(tree);
         if (!undocumentedParameters.isEmpty()) {

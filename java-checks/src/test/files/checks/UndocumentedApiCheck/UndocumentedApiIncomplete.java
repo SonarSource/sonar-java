@@ -1,36 +1,36 @@
 package org.foo;
 
-public class Empty {} // Noncompliant {{Document this public class.}} - no javadoc
+public class Empty {} // Noncompliant {{Document this public class by adding an explicit description.}} - no javadoc
 
 /**
  * FIXME
  */
-public class A { } // Noncompliant {{Document this public class.}} - placeholder
+public class A { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * .
  */
-public class B { } // Noncompliant {{Document this public class.}} - placeholder
+public class B { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * ...
  */
-public class C { } // Noncompliant {{Document this public class.}} - placeholder
+public class C { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * TODO
  */
-public class D { } // Noncompliant {{Document this public class.}} - placeholder
+public class D { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  *
  */
-public class E { } // Noncompliant {{Document this public class.}} - empty javadoc
+public class E { } // Noncompliant {{Document this public class by adding an explicit description.}} - empty javadoc
 
 /**
  * OneWordIsNotEnough
  */
-public class F { } // Noncompliant {{Document this public class.}} - more than one word is required
+public class F { } // Noncompliant {{Document this public class by adding an explicit description.}} - more than one word is required
 
 /**
  * {@inheritDoc}
@@ -74,7 +74,7 @@ public class H {
   /**
    * @param d the ratio of fools
    */
-  public void foo(double d) { } // Noncompliant {{Document this public method.}} - param documented but not the method
+  public void foo(double d) { } // Noncompliant {{Document this public method by adding an explicit description.}} - param documented but not the method
 
   /**
    * This is documented

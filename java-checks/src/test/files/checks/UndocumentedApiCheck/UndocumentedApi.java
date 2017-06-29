@@ -44,20 +44,20 @@ public class UndocumentedApi { // Compliant - documented
 
 }
 
-public enum FooEnum { // Noncompliant {{Document this public enum.}}
+public enum FooEnum { // Noncompliant {{Document this public enum by adding an explicit description.}}
 }
 
-public interface Ainterface { // Noncompliant {{Document this public interface.}}
+public interface Ainterface { // Noncompliant {{Document this public interface by adding an explicit description.}}
 }
 
-public @interface FooAnnotation { // Noncompliant {{Document this public annotation.}}
+public @interface FooAnnotation { // Noncompliant {{Document this public annotation by adding an explicit description.}}
 }
 
-public class AClass { // Noncompliant {{Document this public class.}}
+public class AClass { // Noncompliant {{Document this public class by adding an explicit description.}}
 
-  public int a; // Noncompliant {{Document this public field.}}
+  public int a; // Noncompliant {{Document this public field by adding an explicit description.}}
 
-  public A() { // Noncompliant {{Document this public constructor.}}
+  public A() { // Noncompliant {{Document this public constructor by adding an explicit description.}}
     System.out.println();
   }
 
@@ -170,7 +170,7 @@ public class Foo { // Compliant
   }
 
 
-  public int foo(int a, int b, int c) { // Noncompliant {{Document this public method.}}
+  public int foo(int a, int b, int c) { // Noncompliant {{Document this public method by adding an explicit description.}}
     return 0;
   }
 
@@ -181,7 +181,7 @@ public class Foo { // Compliant
   public <T> void foo() { // Compliant - does not return anything
   }
 
-  public <T> void foo() { // Noncompliant {{Document this public method.}}
+  public <T> void foo() { // Noncompliant {{Document this public method by adding an explicit description.}}
   }
 
   /**
@@ -204,7 +204,7 @@ public class Foo { // Compliant
 }
 /**
  * */
-public interface bar { // Noncompliant {{Document this public interface.}}
+public interface bar { // Noncompliant {{Document this public interface by adding an explicit description.}}
   /**
   * Valid descriptions.
   * @param <A>  the annotation type
@@ -215,7 +215,7 @@ public interface bar { // Noncompliant {{Document this public interface.}}
   * @see #getAnnotationMirrors()
   */
   <A extends Annotation> A getAnnotation(Class<A> annotationType);
-  static class A{} // Noncompliant {{Document this public class.}}
+  static class A{} // Noncompliant {{Document this public class by adding an explicit description.}}
   public int i = 0;
 
   /**
@@ -232,7 +232,7 @@ public interface bar { // Noncompliant {{Document this public interface.}}
   /**
    *
    */
-  static final class DEFAULT {} // Noncompliant {{Document this public class.}}
+  static final class DEFAULT {} // Noncompliant {{Document this public class by adding an explicit description.}}
   public int i = 0;
 }
 /**
