@@ -159,7 +159,8 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private ExecutorService createExecutor() {
-    int numThreads = Runtime.getRuntime().availableProcessors() + 1;
+//    int numThreads = Runtime.getRuntime().availableProcessors() + 1;
+    int numThreads = 2;
     return Executors.newFixedThreadPool(numThreads, new ThreadFactoryBuilder().setNameFormat("SonarJava-parallel-analysis-%d").build());
   }
 
