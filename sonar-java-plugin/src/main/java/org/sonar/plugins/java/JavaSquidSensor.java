@@ -131,7 +131,7 @@ public class JavaSquidSensor implements Sensor {
       });
     }
 
-    public JavaSquid getJavaSquid() {
+    JavaSquid getJavaSquid() {
       return javaSquidThreadLocal.get();
     }
   }
