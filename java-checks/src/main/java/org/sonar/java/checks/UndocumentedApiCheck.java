@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.PackageUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -324,19 +325,47 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     public List<String> undocumentedThrownExceptions(Tree tree) {
       List<String> exceptionNames = getExceptions(tree);
       if (exceptionNames.size() == 1 && "Exception".equals(exceptionNames.get(0)) && !thrownExceptions.isEmpty()) {
-        // check for described exceptions
+        // check for described exceptions when only "Exception" is used is declared as being thrown
         return thrownExceptions.entrySet().stream()
           .filter(e -> isEmptyDescription(e.getValue()))
           .map(Map.Entry::getKey)
+          .map(Javadoc::toSimpleName)
           .collect(Collectors.toList());
       }
       return exceptionNames.stream()
-        .filter(name -> isEmptyDescription(thrownExceptions.get(name)))
+        .filter(this::noDescriptionForException)
+        .map(Javadoc::toSimpleName)
         .collect(Collectors.toList());
     }
 
+    private boolean noDescriptionForException(String exceptionName) {
+      // try getting the exception described with exact match
+      List<String> descriptions = thrownExceptions.get(exceptionName);
+      if (descriptions == null) {
+        // exceptions used in javadoc is using simple name when method declaration use fully qualified name
+        descriptions = thrownExceptions.get(toSimpleName(exceptionName));
+      }
+      if (descriptions == null) {
+        // exceptions used in javadoc is using fully qualified name when method declaration use simple name
+        descriptions = thrownExceptions.entrySet().stream()
+          .filter(e -> toSimpleName(e.getKey()).equals(exceptionName))
+          .map(Map.Entry::getValue)
+          .flatMap(List::stream)
+          .collect(Collectors.toList());
+      }
+      return isEmptyDescription(descriptions);
+    }
+
+    private static String toSimpleName(String exceptionName) {
+      int lastDot = exceptionName.lastIndexOf('.');
+      if (lastDot != -1) {
+        return exceptionName.substring(lastDot + 1);
+      }
+      return exceptionName;
+    }
+
     private static boolean isEmptyDescription(@Nullable List<String> descriptions) {
-      return descriptions == null || descriptions.stream().anyMatch(Javadoc::isEmptyDescription);
+      return descriptions == null || descriptions.isEmpty() || descriptions.stream().anyMatch(Javadoc::isEmptyDescription);
     }
 
     private static boolean isEmptyDescription(@Nullable String part) {
@@ -367,23 +396,23 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     private static List<String> getExceptions(Tree tree) {
       if (tree.is(METHOD_KINDS)) {
         return ((MethodTree) tree).throwsClauses().stream()
-          .map(Javadoc::toIdentifier)
+          .map(Javadoc::exceptionName)
           .filter(Objects::nonNull)
-          .map(IdentifierTree::name)
           .collect(Collectors.toList());
       }
       return Collections.emptyList();
     }
 
-    private static IdentifierTree toIdentifier(TypeTree typeTree) {
+    private static String exceptionName(TypeTree typeTree) {
       switch (typeTree.kind()) {
         case IDENTIFIER:
-          return (IdentifierTree) typeTree;
+          return ((IdentifierTree) typeTree).name();
         case MEMBER_SELECT:
-          return ((MemberSelectExpressionTree) typeTree).identifier();
+          return ExpressionsHelper.concatenate((MemberSelectExpressionTree) typeTree);
         default:
-          throw new IllegalStateException(
-            "Should never happen. Exceptions can not be specified other than with an identifier or a fully qualified name, and can not be parametrized.");
+          // should not happen, as exceptions can only be defined using identifier or fully qualified name,
+          // no parameterized type can be used
+          return null;
       }
     }
 

@@ -182,9 +182,25 @@ public class Exceptions {
    */
   public void tya() throws MyException { } // Compliant - exception documented
 
-  private static class MyException extends Exception { }
-  private static class MyOtherException extends Exception { }
+  /**
+   * This is documented
+   * @throws MyException
+   */
+  public void ton() throws org.foo.MyException {} // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws org.foo.MyException
+   */
+  public void tot() throws MyException {} // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws MyException
+   */
+  public void tic() throws MyException<Object> {} // Compliant - corner case : does not compile, for coverage only
+
 }
 
-
-
+class MyException extends Exception { }
+class MyOtherException extends Exception { }
