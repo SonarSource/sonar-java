@@ -50,9 +50,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -290,7 +292,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private static class Javadoc {
     private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
     private static final Pattern EXCEPTION_JAVADOC_PATTERN = Pattern.compile(".*@throws\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
-    private static final Pattern RETURN_JAVADOC_PATTERN = Pattern.compile(".*@return\\s++(?<descr>.+)");
+    private static final Pattern RETURN_JAVADOC_PATTERN = Pattern.compile(".*@return(\\s++)?(?<descr>.+)?");
     private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
 
     private final String mainDescription;
@@ -445,22 +447,49 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     }
 
     private static Map<String, List<String>> extractToMap(List<String> lines, Pattern pattern) {
-      return lines.stream()
-        .map(pattern::matcher)
-        .filter(Matcher::matches)
-        .collect(Collectors.groupingBy(
-          matcher -> matcher.group("name"),
-          Collectors.mapping(matcher -> matcher.group("descr"), Collectors.toList())));
+      Map<String, List<String>> results = new HashMap<>();
+      for (int i = 0; i < lines.size(); i++) {
+        String line = lines.get(i);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.matches()) {
+          String elementName = matcher.group("name");
+          if (!results.containsKey(elementName)) {
+            results.put(elementName, new ArrayList<>());
+          }
+          List<String> currentDescriptions = results.get(elementName);
+          String elementDescription = getNextLineIfNeeded(lines, i, matcher.group("descr"));
+          if (elementDescription != null) {
+            currentDescriptions.add(elementDescription);
+          }
+        }
+      }
+      return results;
     }
 
     private static String extractReturnDescription(List<String> lines) {
-      for (String line : lines) {
+      for (int i = 0; i < lines.size(); i++) {
+        String line = lines.get(i);
         Matcher matcher = RETURN_JAVADOC_PATTERN.matcher(line);
         if (matcher.matches()) {
-          return matcher.group("descr");
+          String returnDescription = getNextLineIfNeeded(lines, i, matcher.group("descr"));
+          if (returnDescription != null) {
+            return returnDescription;
+          }
         }
       }
       return "";
+    }
+
+    private static String getNextLineIfNeeded(List<String> lines, int currentIndex, @Nullable String currrentValue) {
+      if (currrentValue == null && currentIndex < lines.size() - 1) {
+        String nextLine = lines.get(currentIndex + 1);
+        // not an element declaration
+        if (!nextLine.startsWith("@")) {
+          // assume the description is on the next line
+          return nextLine;
+        }
+      }
+      return currrentValue;
     }
 
   }

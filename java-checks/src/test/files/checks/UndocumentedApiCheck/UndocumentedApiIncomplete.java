@@ -75,6 +75,13 @@ public class Parameters {
    * @param d the ratio of fools
    */
   public void foo(double d) { } // Noncompliant {{Document this public method by adding an explicit description.}} - param documented but not the method
+
+  /**
+   * This is documented
+   * @param c
+   *    this is the parameter c.
+   */
+  public void foo(char c) { } // Compliant
 }
 
 /**
@@ -112,6 +119,13 @@ public class ReturnValue {
    * @return the mighty qix in the face
    */
   public String big() { } // Compliant - documented @return
+
+  /**
+   * This is documented
+   * @return
+   *    Only good stuff
+   */
+  public String bog() { } // Compliant
 }
 
 /**
@@ -199,6 +213,13 @@ public class Exceptions {
    * @throws MyException
    */
   public void tic() throws MyException<Object> {} // Compliant - corner case : does not compile, for coverage only
+
+  /**
+   * This is documented
+   * @throws MyException
+   *          MyException is sometime thrown, sometime not
+   */
+  public void toe() throws MyException {} // Compliant
 
 }
 
