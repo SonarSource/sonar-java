@@ -90,6 +90,7 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
+  private static final String JAVA_NIO_FILE_FILES = "java.nio.file.Files";
 
   private static final MethodMatcherCollection JDBC_RESOURCE_CREATIONS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(JAVA_SQL_CONNECTION).name("createStatement").withAnyParameters(),
@@ -101,6 +102,14 @@ public class UnclosedResourcesCheck extends SECheck {
     MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name("executeQuery").withoutParameter(),
     MethodMatcher.create().typeDefinition("javax.sql.DataSource").name("getConnection").withAnyParameters(),
     MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters()
+  );
+
+  private static final MethodMatcherCollection STREAMS_BACKED_BY_RESOURCE = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("lines").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("newDirectoryStream").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("list").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("find").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("walk").withAnyParameters()
   );
 
   private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
@@ -171,7 +180,7 @@ public class UnclosedResourcesCheck extends SECheck {
     return ((MethodInvocationTree) tree).symbolType().name();
   }
 
-  private boolean needsClosing(Type type) {
+  private static boolean needsClosing(Type type) {
     if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
       return false;
     }
@@ -180,12 +189,16 @@ public class UnclosedResourcesCheck extends SECheck {
         return false;
       }
     }
+    return isCloseable(type);
+  }
+
+  private boolean excludedByRuleOption(Type type) {
     for (String excludedType : loadExcludedTypesList()) {
       if (type.is(excludedType)) {
-        return false;
+        return true;
       }
     }
-    return isCloseable(type);
+    return false;
   }
   
   private List<String> loadExcludedTypesList() {
@@ -206,7 +219,7 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private boolean isOpeningResource(NewClassTree syntaxNode) {
-    if (isWithinTryHeader(syntaxNode)) {
+    if (isWithinTryHeader(syntaxNode) || excludedByRuleOption(syntaxNode.symbolType())) {
       return false;
     }
     return needsClosing(syntaxNode.symbolType());
@@ -454,10 +467,11 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private boolean methodOpeningResource(MethodInvocationTree mit) {
-      return needsClosing(mit.symbolType())
-        && !isWithinTryHeader(mit)
-        && !CLOSEABLE_EXCEPTIONS.anyMatch(mit)
-        && (JDBC_RESOURCE_CREATIONS.anyMatch(mit) || mitHeuristics(mit));
+      return !isWithinTryHeader(mit)
+        && !excludedByRuleOption(mit.symbolType())
+        && (JDBC_RESOURCE_CREATIONS.anyMatch(mit)
+          || STREAMS_BACKED_BY_RESOURCE.anyMatch(mit)
+          || (needsClosing(mit.symbolType()) && !CLOSEABLE_EXCEPTIONS.anyMatch(mit) && mitHeuristics(mit)));
     }
 
     private boolean mitHeuristics(MethodInvocationTree mit) {

@@ -64,4 +64,8 @@ public class UnclosedResourcesCheckTest {
     assertThat(UnclosedResourcesCheck.ResourceConstraint.CLOSED.valueAsString()).isSameAs("closed");
   }
 
+  @Test
+  public void test_streams() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheckStreams.java", new UnclosedResourcesCheck());
+  }
 }
