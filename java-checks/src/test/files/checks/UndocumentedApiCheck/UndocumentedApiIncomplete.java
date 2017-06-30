@@ -211,12 +211,6 @@ public class Exceptions {
   /**
    * This is documented
    * @throws MyException
-   */
-  public void tic() throws MyException<Object> {} // Compliant - corner case : does not compile, for coverage only
-
-  /**
-   * This is documented
-   * @throws MyException
    *          MyException is sometime thrown, sometime not
    */
   public void toe() throws MyException {} // Compliant

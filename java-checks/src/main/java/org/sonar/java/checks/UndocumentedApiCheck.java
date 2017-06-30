@@ -412,9 +412,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         case MEMBER_SELECT:
           return ExpressionsHelper.concatenate((MemberSelectExpressionTree) typeTree);
         default:
-          // should not happen, as exceptions can only be defined using identifier or fully qualified name,
-          // no parameterized type can be used
-          return null;
+          // Should never happen - Throwable can not be extended by a parameterized type
+          throw new IllegalStateException("Exceptions can not be specified other than with an identifier or a fully qualified name.");
       }
     }
 
@@ -449,17 +448,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     private static Map<String, List<String>> extractToMap(List<String> lines, Pattern pattern) {
       Map<String, List<String>> results = new HashMap<>();
       for (int i = 0; i < lines.size(); i++) {
-        String line = lines.get(i);
-        Matcher matcher = pattern.matcher(line);
+        Matcher matcher = pattern.matcher(lines.get(i));
         if (matcher.matches()) {
-          String elementName = matcher.group("name");
-          if (!results.containsKey(elementName)) {
-            results.put(elementName, new ArrayList<>());
-          }
-          List<String> currentDescriptions = results.get(elementName);
-          String elementDescription = getNextLineIfNeeded(lines, i, matcher.group("descr"));
-          if (elementDescription != null) {
-            currentDescriptions.add(elementDescription);
+          List<String> descriptions = results.computeIfAbsent(matcher.group("name"), key -> new ArrayList<>());
+          String newDescription = getNextLineIfNeeded(lines, i, matcher.group("descr"));
+          if (newDescription != null) {
+            descriptions.add(newDescription);
           }
         }
       }
