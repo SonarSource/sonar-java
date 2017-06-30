@@ -1,46 +1,46 @@
 package org.foo;
 
-public class Empty {} // Noncompliant {{Document this public class.}} - no javadoc
-
 /**
  * FIXME
  */
-public class A { } // Noncompliant {{Document this public class.}} - placeholder
+public class A { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * .
  */
-public class B { } // Noncompliant {{Document this public class.}} - placeholder
+public class B { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * ...
  */
-public class C { } // Noncompliant {{Document this public class.}} - placeholder
+public class C { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  * TODO
  */
-public class D { } // Noncompliant {{Document this public class.}} - placeholder
+public class D { } // Noncompliant {{Document this public class by adding an explicit description.}} - placeholder
 
 /**
  *
  */
-public class E { } // Noncompliant {{Document this public class.}} - empty javadoc
+public class E { } // Noncompliant {{Document this public class by adding an explicit description.}} - empty javadoc
 
 /**
  * OneWordIsNotEnough
  */
-public class F { } // Noncompliant {{Document this public class.}} - more than one word is required
+public class F { } // Noncompliant {{Document this public class by adding an explicit description.}} - more than one word is required
 
 /**
  * {@inheritDoc}
  */
 public class G extends F { } // Compliant
 
+public class H { } // Noncompliant {{Document this public class by adding an explicit description.}} - no javadoc
+
 /**
  * This is documented
  */
-public class H {
+public class Parameters {
   /**
    * This is documented
    */
@@ -74,13 +74,39 @@ public class H {
   /**
    * @param d the ratio of fools
    */
-  public void foo(double d) { } // Noncompliant {{Document this public method.}} - param documented but not the method
+  public void foo(double d) { } // Noncompliant {{Document this public method by adding an explicit description.}} - param documented but not the method
 
   /**
    * This is documented
+   * @param c
+   *    this is the parameter c.
+   */
+  public void foo(char c) { } // Compliant
+}
+
+/**
+ * This is documented
+ */
+public class ReturnValue {
+  /**
    * @return
    */
-  public String bar() { } // Noncompliant {{Document this method return value.}} - undocumented
+  public String bar1() { } // Noncompliant {{Document this public method by adding an explicit description.}} - undocumented
+
+  /**
+   * @return this is documented
+   */
+  public String bar2() { } // Complinant - non-void method with no parameter described with the return value
+
+  /**
+   * This is documented
+   */
+  public void bar3() { } // Complinant
+
+  /**
+   * FIXME
+   */
+  public void bar4() { } // Noncompliant {{Document this public method by adding an explicit description.}}
 
   /**
    * This is documented
@@ -96,8 +122,40 @@ public class H {
 
   /**
    * This is documented
+   * @return
+   *    Only good stuff
+   */
+  public String bog() { } // Compliant
+}
+
+/**
+ * This is documented
+ */
+public class Exceptions {
+
+  /**
+   * This is documented
    */
   public void tiu() throws MyException, org.foo.MyOtherException { } // Noncompliant {{Document this method thrown exception(s): MyException, MyOtherException}}
+
+  /**
+   * This is documented
+   */
+  public void tap() throws Exception { } // Noncompliant {{Document this method thrown exception(s): Exception}}
+
+  /**
+   * This is documented
+   * @throws MyException this is documented
+   */
+  public void tip() throws Exception { } // Compliant
+
+  /**
+   * This is documented
+   * @throws IllegalStateException
+   * @throws MyOtherException
+   * @throws MyException this is documented
+   */
+  public void top() throws Exception { } // Noncompliant {{Document this method thrown exception(s): IllegalStateException, MyOtherException}}
 
   /**
    * This is documented
@@ -138,9 +196,26 @@ public class H {
    */
   public void tya() throws MyException { } // Compliant - exception documented
 
-  private static class MyException extends Exception { }
-  private static class MyOtherException extends Exception { }
+  /**
+   * This is documented
+   * @throws MyException
+   */
+  public void ton() throws org.foo.MyException {} // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws org.foo.MyException
+   */
+  public void tot() throws MyException {} // Noncompliant {{Document this method thrown exception(s): MyException}}
+
+  /**
+   * This is documented
+   * @throws MyException
+   *          MyException is sometime thrown, sometime not
+   */
+  public void toe() throws MyException {} // Compliant
+
 }
 
-
-
+class MyException extends Exception { }
+class MyOtherException extends Exception { }
