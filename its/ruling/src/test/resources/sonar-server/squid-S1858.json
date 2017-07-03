@@ -1,8 +1,0 @@
-{
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/ActiveRuleChange.java':[
-99,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/ActiveRuleCompleter.java':[
-114,
-],
-}

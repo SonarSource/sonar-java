@@ -1,5 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ReactivationException.java':[
-27,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ReactivationException.java':[
+26,
 ],
 }

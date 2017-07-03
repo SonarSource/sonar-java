@@ -1,8 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DatabaseMigrator.java':[
-106,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java':[
-114,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java':[
+121,
 ],
 }

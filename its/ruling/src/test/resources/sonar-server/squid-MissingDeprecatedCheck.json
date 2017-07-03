@@ -1,9 +1,8 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/SearchOptions.java':[
-104,
-162,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/CachingRuleFinder.java':[
+98,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfiles.java':[
-38,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/WebServerRuleFinderImpl.java':[
+57,
 ],
 }

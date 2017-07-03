@@ -1,5 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java':[
-142,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java':[
+139,
 ],
 }

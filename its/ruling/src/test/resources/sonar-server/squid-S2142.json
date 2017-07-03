@@ -1,8 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java':[
-192,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/notifications/NotificationService.java':[
-127,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/AbstractStoppableExecutorService.java':[
+60,
 ],
 }

@@ -1,8 +1,0 @@
-{
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/computation/db/AnalysisReportDaoTest.java':[
-55,
-],
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/computation/step/PurgeDatastoresStepTest.java':[
-46,
-],
-}

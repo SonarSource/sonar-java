@@ -1,0 +1,8 @@
+{
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskAction.java':[
+102,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ServerUserSession.java':[
+117,
+],
+}

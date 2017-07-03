@@ -1,5 +1,11 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/BaseDoc.java':[
-33,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueVisitor.java':[
+25,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/PermissionChange.java':[
+31,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java':[
+39,
 ],
 }

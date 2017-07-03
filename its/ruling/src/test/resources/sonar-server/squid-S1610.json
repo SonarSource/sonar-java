@@ -1,0 +1,8 @@
+{
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/MatchesByScore.java':[
+30,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueVisitor.java':[
+25,
+],
+}
