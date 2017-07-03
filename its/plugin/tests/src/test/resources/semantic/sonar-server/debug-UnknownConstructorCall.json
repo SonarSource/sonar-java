@@ -1,10 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/debt/DebtCharacteristicsXMLImporter.java':[
-52,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java':[
-177,
-181,
-183,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java':[
+83,
 ],
 }
