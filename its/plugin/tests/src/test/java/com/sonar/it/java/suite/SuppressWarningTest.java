@@ -56,6 +56,7 @@ public class SuppressWarningTest {
   public void suppressWarnings_nosonar() throws Exception {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings"))
       .setCleanSonarGoals()
+      .setProperty("sonar.java.binaries", "target")
       .setProperty("sonar.profile", "suppress-warnings");
     ORCHESTRATOR.executeBuild(build);
 

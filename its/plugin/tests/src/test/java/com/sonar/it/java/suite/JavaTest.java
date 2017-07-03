@@ -189,7 +189,8 @@ public class JavaTest {
       .setProperty("sonar.projectName", "jav-file-extension")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
       .setProperty("sonar.java.file.suffixes", ".txt,.foo")
-      .setProperty("sonar.sources", "src");
+      .setProperty("sonar.sources", "src")
+      .setProperty("sonar.java.binaries", "src");
     orchestrator.executeBuild(scan);
 
     assertThat(getMeasureAsInteger("jav-file-extension", "files")).isEqualTo(2);
