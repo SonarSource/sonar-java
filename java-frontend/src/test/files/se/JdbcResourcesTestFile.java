@@ -133,6 +133,17 @@ class DataSourceTest {
       }
     }
   }
+
+  Connection returnConn(DataSource dataSource) {
+    Connection connection = dataSource.getConnection();
+    return connection;
+  }
+
+  Connection returnConn(DataSource dataSource) {
+    Connection connection = dataSource.getConnection(); // Noncompliant
+    connection.setAutoCommit(false); // throws exception
+    return connection;
+  }
 }
 
 class JdbcNotCreatingResource {

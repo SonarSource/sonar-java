@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.StringUtils;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -54,9 +55,10 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.CLOSED;
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.OPEN;
@@ -97,7 +99,8 @@ public class UnclosedResourcesCheck extends SECheck {
     MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getResultSet").withoutParameter(),
     MethodMatcher.create().typeDefinition(JAVA_SQL_STATEMENT).name("getGeneratedKeys").withoutParameter(),
     MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name("executeQuery").withoutParameter(),
-    MethodMatcher.create().typeDefinition("javax.sql.DataSource").name("getConnection").withAnyParameters()
+    MethodMatcher.create().typeDefinition("javax.sql.DataSource").name("getConnection").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters()
   );
 
   private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
@@ -111,9 +114,10 @@ public class UnclosedResourcesCheck extends SECheck {
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream",
     "org.springframework.context.ConfigurableApplicationContext"
   };
-  private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
+
+  private static final MethodMatcherCollection CLOSEABLE_EXCEPTIONS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
-  };
+  );
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -132,7 +136,20 @@ public class UnclosedResourcesCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
-    context.getState().getValuesWithConstraints(OPEN).forEach(sv -> processUnclosedSymbolicValue(node, sv));
+    Set<SymbolicValue> svToReport = symbolicValuesToReport(context);
+    svToReport.forEach(sv -> processUnclosedSymbolicValue(node, sv));
+  }
+
+  private static Set<SymbolicValue> symbolicValuesToReport(CheckerContext context) {
+    List<SymbolicValue> openSymbolicValues = context.getState().getValuesWithConstraints(OPEN);
+    Set<SymbolicValue> svToReport = new HashSet<>(openSymbolicValues);
+    // report only outermost OPEN symbolic value
+    for (SymbolicValue openSymbolicValue : openSymbolicValues) {
+      if (openSymbolicValue instanceof ResourceWrapperSymbolicValue) {
+        svToReport.remove(openSymbolicValue.wrappedValue());
+      }
+    }
+    return svToReport;
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
@@ -232,7 +249,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public SymbolicValue wrappedValue() {
-      return dependent.wrappedValue();
+      return dependent;
     }
 
   }
@@ -268,20 +285,20 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      List<SymbolicValue> arguments = new ArrayList<>(programState.peekValues(syntaxNode.arguments().size()));
-      Collections.reverse(arguments);
       if (isOpeningResource(syntaxNode)) {
-        Iterator<SymbolicValue> iterator = arguments.iterator();
-        for (ExpressionTree argument : syntaxNode.arguments()) {
+        List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(syntaxNode.arguments().size()));
+        Iterator<ProgramState.SymbolicValueSymbol> iterator = arguments.iterator();
+        for (ExpressionTree argumentTree : syntaxNode.arguments()) {
           if (!iterator.hasNext()) {
             throw new IllegalStateException("Mismatch between declared constructor arguments and argument values!");
           }
-          final SymbolicValue value = iterator.next();
-          if (isCloseable(argument) && !isNestedNewResourceCreation(argument)) {
-            constraintManager.setValueFactory(new WrappedValueFactory(value));
+          ProgramState.SymbolicValueSymbol argument = iterator.next();
+          if (shouldWrapArgument(argument, argumentTree)) {
+            constraintManager.setValueFactory(new WrappedValueFactory(argument.symbolicValue()));
             break;
-          } else {
-            closeResource(value);
+          }
+          if (shouldCloseArgument(argument)){
+            closeResource(argument.symbolicValue());
           }
         }
       } else {
@@ -289,13 +306,15 @@ public class UnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private boolean isNestedNewResourceCreation(ExpressionTree expr) {
-      if (expr.is(Tree.Kind.NEW_CLASS)) {
-        return ((NewClassTree) expr).arguments().stream()
-          .filter(UnclosedResourcesCheck::isCloseable)
-          .allMatch(this::isNestedNewResourceCreation);
-      }
-      return false;
+    private boolean shouldWrapArgument(ProgramState.SymbolicValueSymbol argument, ExpressionTree argumentTree) {
+      ResourceConstraint argConstraint = programState.getConstraint(argument.symbolicValue(), ResourceConstraint.class);
+      return (argConstraint == OPEN && argument.symbol() != null)
+        || (argConstraint == null && isCloseable(argumentTree));
+    }
+
+    private boolean shouldCloseArgument(ProgramState.SymbolicValueSymbol argument) {
+      ResourceConstraint argConstraint = programState.getConstraint(argument.symbolicValue(), ResourceConstraint.class);
+      return argConstraint == OPEN;
     }
 
     @Override
@@ -384,14 +403,13 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private void closeResource(@Nullable final SymbolicValue target) {
-      SymbolicValue toClose = target;
-      if(toClose instanceof ResourceWrapperSymbolicValue) {
-        toClose = target.wrappedValue();
+      if (target instanceof ResourceWrapperSymbolicValue) {
+        closeResource(target.wrappedValue());
       }
-      if (toClose != null) {
-        ResourceConstraint oConstraint = programState.getConstraint(toClose, ResourceConstraint.class);
+      if (target != null) {
+        ResourceConstraint oConstraint = programState.getConstraint(target, ResourceConstraint.class);
         if (oConstraint != null) {
-          programState = programState.addConstraintTransitively(toClose, CLOSED);
+          programState = programState.addConstraintTransitively(target, CLOSED);
         }
       }
     }
@@ -414,35 +432,45 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      if (isOpeningResource(syntaxNode)) {
-        final SymbolicValue instanceValue = programState.peekValue();
-        if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraintTransitively(instanceValue, OPEN);
-        }
+      final SymbolicValue instanceValue = programState.peekValue();
+      if (isOpeningResource(syntaxNode) && !passedCloseableParameter(instanceValue)) {
+        programState = programState.addConstraintTransitively(instanceValue, OPEN);
       }
+    }
+
+    private boolean passedCloseableParameter(SymbolicValue resource) {
+      return resource instanceof ResourceWrapperSymbolicValue
+        && programState.getConstraint(((ResourceWrapperSymbolicValue) resource).dependent, ResourceConstraint.class) == null;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
-      for (MethodMatcher matcher : CLOSEABLE_EXCEPTIONS) {
-        if (matcher.matches(syntaxNode)) {
-          return;
-        }
-      }
-      if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && needsClosing(syntaxNode.symbolType())) {
-        final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
-        boolean jdbcResourceCreation = JDBC_RESOURCE_CREATIONS.anyMatch(syntaxNode);
-        if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
-          && (syntaxNode.symbol().isStatic() || jdbcResourceCreation)) {
-          SymbolicValue peekedValue = programState.peekValue();
-          programState = programState.addConstraintTransitively(peekedValue, OPEN);
-          if (jdbcResourceCreation) {
-            programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
-          }
-        }
+      if (methodOpeningResource(syntaxNode)) {
+        SymbolicValue peekedValue = programState.peekValue();
+        programState = programState.addConstraintTransitively(peekedValue, OPEN);
+        // returned resource is not null
+        programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
       }
     }
 
-  }
+    private boolean methodOpeningResource(MethodInvocationTree mit) {
+      return needsClosing(mit.symbolType())
+        && !isWithinTryHeader(mit)
+        && !CLOSEABLE_EXCEPTIONS.anyMatch(mit)
+        && (JDBC_RESOURCE_CREATIONS.anyMatch(mit) || mitHeuristics(mit));
+    }
 
+    private boolean mitHeuristics(MethodInvocationTree mit) {
+      return invocationOfMethodFromOtherClass(mit) && mit.symbol().name().matches("new.*|create.*|open.*");
+    }
+
+    private boolean invocationOfMethodFromOtherClass(MethodInvocationTree mit) {
+      Symbol methodClass = mit.symbol().owner();
+      Tree enclosingType = mit;
+      while (!enclosingType.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE)) {
+        enclosingType = enclosingType.parent();
+      }
+      return ((ClassTree) enclosingType).symbol() != methodClass;
+    }
+  }
 }
