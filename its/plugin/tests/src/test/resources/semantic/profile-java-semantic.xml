@@ -4,12 +4,12 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>java-debugging-plugin</repositoryKey>
+      <repositoryKey>debug</repositoryKey>
       <key>UnknownConstructorCall</key>
       <priority>INFO</priority>
     </rule>
     <rule>
-      <repositoryKey>java-debugging-plugin</repositoryKey>
+      <repositoryKey>debug</repositoryKey>
       <key>UnknownMethodInvocations</key>
       <priority>INFO</priority>
     </rule>

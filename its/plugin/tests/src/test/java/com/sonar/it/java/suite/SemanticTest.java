@@ -94,7 +94,7 @@ public class SemanticTest {
     Try.of(() -> Files.createDirectory(dstProjectDir)).getOrElseThrow(Throwables::propagate);
 
     RULE_KEYS.stream()
-      .map(ruleKey -> srcProjectDir.resolve("java-debugging-plugin-" + ruleKey + ".json"))
+      .map(ruleKey -> srcProjectDir.resolve("debug-" + ruleKey + ".json"))
       .filter(p -> p.toFile().exists())
       .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
         .getOrElseThrow(Throwables::propagate));

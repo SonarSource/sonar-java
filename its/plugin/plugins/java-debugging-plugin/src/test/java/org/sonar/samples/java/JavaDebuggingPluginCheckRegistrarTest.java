@@ -19,30 +19,15 @@
  */
 package org.sonar.samples.java;
 
-import org.sonar.plugins.java.api.CheckRegistrar;
-import org.sonar.plugins.java.api.JavaCheck;
+import org.junit.Test;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaDebuggingPluginCheckRegistrar implements CheckRegistrar {
+public class JavaDebuggingPluginCheckRegistrarTest {
 
-  @Override
-  public void register(RegistrarContext registrarContext) {
-    registrarContext.registerClassesForRepository(
-      JavaDebuggingPluginRulesDefinition.REPOSITORY_KEY,
-      Arrays.asList(checkClasses()),
-      Arrays.asList(testCheckClasses()));
-  }
-
-  public static Class<? extends JavaCheck>[] checkClasses() {
-    return new Class[] {
-      UnknownMethodInvocationsCheck.class,
-      UnknownConstructorCallCheck.class
-    };
-  }
-
-  public static Class<? extends JavaCheck>[] testCheckClasses() {
-    return new Class[0];
+  @Test
+  public void number_of_rules() {
+    assertThat(JavaDebuggingPluginCheckRegistrar.checkClasses()).hasSize(2);
   }
 
 }
