@@ -378,6 +378,7 @@ public final class CheckList {
       .add(StaticFieldUpateCheck.class)
       .add(IgnoredStreamReturnValueCheck.class)
       .add(DateUtilsTruncateCheck.class)
+      .add(DateAndTimesCheck.class)
       .add(PreparedStatementAndResultSetCheck.class)
       .add(URLHashCodeAndEqualsCheck.class)
       .add(ChildClassShadowFieldCheck.class)

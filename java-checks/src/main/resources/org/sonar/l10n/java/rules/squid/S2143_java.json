@@ -1,0 +1,14 @@
+{
+  "title": "\"java.time\" classes should be used for dates and times",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "java8",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}
