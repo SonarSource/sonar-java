@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Rule(key = "S3937")
 public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -56,19 +57,20 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
   private static boolean hasIrregularPattern(String literalValue) {
     List<String> groups = Arrays.asList(cleanup(literalValue).split("_"));
     // groups empty or of size one does not contain "_"
-    return groups.size() > 1
-      && groups.subList(1, groups.size()).stream()
-      .map(String::length)
-      .distinct()
-      .count() != 1;
+    if (groups.size() <= 1) {
+      return false;
+    }
+    int firstGroupLength = groups.get(0).length();
+    List<Integer> lengths = groups.stream().skip(1).map(String::length).distinct().collect(Collectors.toList());
+    return lengths.size() != 1 || lengths.get(0) < firstGroupLength;
   }
 
   private static String cleanup(String literalValue) {
-    String result = literalValue;
+    String result = literalValue.toLowerCase();
     if(result.startsWith("0b") || result.startsWith("0x")) {
       result = result.substring(2);
     }
-    if(result.endsWith("L")) {
+    if(result.endsWith("l")) {
       result = result.substring(0, result.length() - 1);
     }
     return result;
