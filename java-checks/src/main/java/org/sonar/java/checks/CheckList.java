@@ -461,6 +461,7 @@ public final class CheckList {
       .add(ClassWithoutHashCodeInHashStructureCheck.class)
       .add(IgnoredOperationStatusCheck.class)
       .add(UnderscoreOnNumberCheck.class)
+      .add(UnderscoreMisplacedOnNumberCheck.class)
       .add(OptionalAsParameterCheck.class)
       .add(DoubleBraceInitializationCheck.class)
       .add(ArraysAsListOfPrimitiveToStreamCheck.class)
