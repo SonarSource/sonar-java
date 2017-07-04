@@ -235,6 +235,7 @@ public final class CheckList {
       .add(ArchitectureCheck.class)
       .add(CallToDeprecatedMethodCheck.class)
       .add(CallToFileDeleteOnExitMethodCheck.class)
+      .add(NioFileDeleteCheck.class)
       .add(UnusedPrivateMethodCheck.class)
       .add(UnusedPrivateClassCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
