@@ -20,7 +20,7 @@
 import com.google.common.base.Preconditions;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
-import com.sonar.orchestrator.build.SonarRunner;
+import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -48,9 +48,11 @@ public class JavaPerformanceTest {
   public void perform() throws IOException {
     ORCHESTRATOR.getServer().provisionProject("project", "project");
     ORCHESTRATOR.getServer().associateProjectToQualityProfile("project", "java", "no-rules");
-    SonarRunner build = SonarRunner.create(FileLocation.of("../sources/jdk6").getFile())
+    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jdk6").getFile())
       .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx1024m -server")
       .setProperty("sonar.importSources", "false")
+      // Dummy sonar.java.binaries to pass validation
+      .setProperty("sonar.java.binaries", "launcher")
       .setProperty("sonar.showProfiling", "true")
       .setProperty("sonar.preloadFileMetadata", "true")
       .setProjectKey("project")

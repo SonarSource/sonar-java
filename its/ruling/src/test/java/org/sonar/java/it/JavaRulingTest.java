@@ -202,6 +202,8 @@ public class JavaRulingTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
       .setProperty("sonar.java.source", "1.5")
+      // Dummy sonar.java.binaries to pass validation
+      .setProperty("sonar.java.binaries", "launcher")
       .setProperty("sonar.inclusions", "java/**/*.java");
     executeBuildWithCommonProperties(build, projectName);
   }
