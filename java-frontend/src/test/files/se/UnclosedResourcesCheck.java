@@ -19,7 +19,7 @@ public class A {
   }
 
   public void wrongHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     stream.read();
   }
 
@@ -36,9 +36,9 @@ public class A {
   private static class FastByteArrayOutputStream extends ByteArrayOutputStream { }
 
   public void whileLoopHandling() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     while(needsMore()) {
-      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
       stream.read(); // can fail
       stream.close();
     }
@@ -47,10 +47,10 @@ public class A {
 
   public void wrongLoopHandling() {
     int i = 0;
-    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("WhileFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     while(needsMore()) {
       i += 1;
-      stream = new FileInputStream("WhileFile"+i); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      stream = new FileInputStream("WhileFile"+i); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     }
     stream.close();
   }
@@ -73,12 +73,12 @@ public class A {
   }
   
   public void openedRussianDolls() {
-    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Close this "BufferedInputStream" in a "finally" clause.}}
+    BufferedInputStream in = new BufferedInputStream(new FileInputStream("myFile")); // Noncompliant {{Use try-with-resources to close this "BufferedInputStream".}}
     in.read();
   }
   
   public void overwrite() {
-    InputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    InputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     stream = new FileInputStream("otherFile");
     stream.close();
   }
@@ -93,16 +93,16 @@ public class A {
   }
   
   public void creationWithinIFs(boolean test) {
-    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+    Reader reader3 = new FileReader(""); // Noncompliant {{Use try-with-resources to close this "FileReader".}}
     if (test) {
-      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+      reader3 = new FileReader(""); // Noncompliant {{Use try-with-resources to close this "FileReader".}}
     } else {
-      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+      reader3 = new FileReader(""); // Noncompliant {{Use try-with-resources to close this "FileReader".}}
     }
   }
   
   public void closeWithinIFs(boolean test) {
-    Reader reader = new FileReader(""); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+    Reader reader = new FileReader(""); // Noncompliant {{Use try-with-resources to close this "FileReader".}}
     if (test) {
       reader.close();
     }
@@ -111,9 +111,9 @@ public class A {
   public void conditionalCreation(boolean test) {
     BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "BufferedWriter" in a "finally" clause.}}
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Use try-with-resources to close this "BufferedWriter".}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "BufferedWriter" in a "finally" clause.}}
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Use try-with-resources to close this "BufferedWriter".}}
     }
     return;
   }
@@ -124,7 +124,7 @@ public class A {
       fis = new FileInputStream("");
       fis.close();
     } else {
-      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      fis = new FileInputStream(""); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     }
   }
   
@@ -147,7 +147,7 @@ public class A {
   public void closePrimary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16");  // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16");  // Noncompliant {{Use try-with-resources to close this "InputStreamReader".}}
     reader.read(); // can fail
     fileIn.close();
   }
@@ -155,7 +155,7 @@ public class A {
   public void closeSecondary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources to close this "InputStreamReader".}}
     reader.read(); // can fail
     bufferIn.close();
   }
@@ -163,15 +163,15 @@ public class A {
   public void closeTertiary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
     BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
-    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Close this "InputStreamReader" in a "finally" clause.}}
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources to close this "InputStreamReader".}}
     reader.read(); // can fail
     reader.close();
   }
 
   public void forLoopHandling(int maxLoop) {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     for(int i = 0; i < maxLoop; i++) {
-      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
       stream.read();  // can fail
       stream.close();
     }
@@ -179,9 +179,9 @@ public class A {
   }
 
   public void forEachLoopHandling(List<Object> objects) {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     for(Object object : objects) {
-      stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
       stream.read(); // can fail
       stream.close();
     }
@@ -278,7 +278,7 @@ public class A {
   }
 
   public void justToBeAbleToUseVerify() {
-    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
     stream.read();
    return;
   }
@@ -286,7 +286,7 @@ public class A {
   public void forLoopHandling(int maxLoop) {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
-      reader = new FileReader(""); // Noncompliant {{Close this "FileReader" in a "finally" clause.}}
+      reader = new FileReader(""); // Noncompliant {{Use try-with-resources to close this "FileReader".}}
     }
     reader.close();
   }
@@ -294,7 +294,7 @@ public class A {
   public void forEachLoopHandling(List<Object> objects) {
     Writer writer = null;
     for (Object object : objects) {
-      writer = new FileWriter(""); // Noncompliant {{Close this "FileWriter" in a "finally" clause.}}
+      writer = new FileWriter(""); // Noncompliant {{Use try-with-resources to close this "FileWriter".}}
     }
     writer.close();
   }
@@ -313,7 +313,7 @@ public class A {
     j = 0;
     FileInputStream fis = null;
     do {
-      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      fis = new FileInputStream(""); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
       j++;
     } while (j < MAX_LOOP);
     fis.close();
@@ -323,7 +323,7 @@ public class A {
     int j = 0;
     InputStream is = null;
     while (j < MAX_LOOP) {
-      is = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream" in a "finally" clause.}}
+      is = new FileInputStream(""); // Noncompliant {{Use try-with-resources to close this "FileInputStream".}}
       j++;
     }
     is.close();
