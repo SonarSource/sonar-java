@@ -101,9 +101,9 @@ CI)
   fi
   ;;
 
-plugin|ruling)
+ruling)
   if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-   strongEcho "plugin or ruling tests are only run on pull requests!"
+   strongEcho "ruling tests are only run on pull requests!"
    exit 0;
   fi
 

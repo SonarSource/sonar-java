@@ -15,10 +15,8 @@ matrix:
     osx_image: xcode7.3
     # ruling projects
   - env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
 before_script:
   # https://github.com/travis-ci/travis-ci/issues/2839

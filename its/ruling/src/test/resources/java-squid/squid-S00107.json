@@ -1,9 +1,0 @@
-{
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/ast/parser/TreeFactory.java':[
-365,
-839,
-],
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/model/statement/ForStatementTreeImpl.java':[
-50,
-],
-}

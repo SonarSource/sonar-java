@@ -31,7 +31,7 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
-import no.finn.lambdacompanion.Try;
+
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import no.finn.lambdacompanion.Try;
 
 public class JavaRulingTest {
 
@@ -153,17 +155,6 @@ public class JavaRulingTest {
   @Test
   public void apache_commons_beanutils() throws Exception {
     test_project("commons-beanutils:commons-beanutils", "commons-beanutils");
-  }
-
-  @Test
-  public void fluent_http() throws Exception {
-    test_project("net.code-story:http", "fluent-http");
-  }
-
-  @Test
-  public void java_squid() throws Exception {
-    // sonar-java/java-squid (v3.6)
-    test_project("org.sonarsource.java:java-squid", "java-squid");
   }
 
   @Test
