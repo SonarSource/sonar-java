@@ -1,0 +1,19 @@
+<p>Shared coding conventions allow teams to collaborate effectively. While types for lambda arguments are optional, specifying them anyway makes the
+code clearer and easier to read.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Arrays.sort(rosterAsArray,
+    (a, b) -&gt; {  // Noncompliant
+        return a.getBirthday().compareTo(b.getBirthday());
+    }
+);
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+Arrays.sort(rosterAsArray,
+    (Person a, Person b) -&gt; {
+        return a.getBirthday().compareTo(b.getBirthday());
+    }
+);
+</pre>
+

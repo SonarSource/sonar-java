@@ -244,6 +244,7 @@ public final class CheckList {
       .add(ImmediatelyReturnedVariableCheck.class)
       .add(LambdaSingleExpressionCheck.class)
       .add(LambdaOptionalParenthesisCheck.class)
+      .add(LambdaTypeParameterCheck.class)
       .add(AnonymousClassShouldBeLambdaCheck.class)
       .add(AbstractClassNoFieldShouldBeInterfaceCheck.class)
       .add(SAMAnnotatedCheck.class)
