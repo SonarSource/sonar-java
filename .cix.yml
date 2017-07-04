@@ -6,6 +6,7 @@ TEST:
   - ci
   - plugin
   - ruling
+  - semantic
   - performancing
 
 SQ_VERSION:
@@ -111,3 +112,30 @@ exclude:
   - TEST: performancing
     SLAVE: performance
     SQ_VERSION: DEV
+#eclude all semantic jobs on performance slaves
+  - TEST: semantic
+    SLAVE: performance
+    SQ_VERSION: LTS
+  - TEST: semantic
+    SLAVE: performance
+    SQ_VERSION: DEV
+  - TEST: semantic
+    SLAVE: performance
+    SQ_VERSION: LATEST_RELEASE
+#eclude all semantic jobs on linux slaves other than LATEST_RELEASE
+  - TEST: semantic
+    SLAVE: linux
+    SQ_VERSION: LTS
+  - TEST: semantic
+    SLAVE: linux
+    SQ_VERSION: DEV
+#eclude all semantic jobs on windows slaves
+  - TEST: semantic
+    SLAVE: windows
+    SQ_VERSION: LTS
+  - TEST: semantic
+    SLAVE: windows
+    SQ_VERSION: DEV
+  - TEST: semantic
+    SLAVE: windows
+    SQ_VERSION: LATEST_RELEASE

@@ -17,6 +17,7 @@
     <module>performancing</module>
     <module>plugin</module>
     <module>ruling</module>
+    <module>semantic</module>
   </modules>
 
   <properties>

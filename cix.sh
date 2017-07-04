@@ -25,6 +25,8 @@ case "$TEST" in
     git submodule update --init --recursive
   ;;
   plugin)
+  ;;
+  semantic)
     #fetch submodule containing sources of projects used for semantic ITs
     git submodule update --init --recursive
     #Semantic IT projects requires java 8
