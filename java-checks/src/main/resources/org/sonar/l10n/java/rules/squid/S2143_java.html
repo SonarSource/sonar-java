@@ -1,0 +1,77 @@
+<p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and difficult to use properly, particularly in
+a multi-threaded context. <code>JodaTime</code> has long been a popular alternative, but now an even better option is built-in. Java 8's JSR 310
+implementation offers specific classes for:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Class</th>
+      <th>Use for</th>
+    </tr>
+    <tr>
+      <td>LocalDate</td>
+      <td>a date, without time of day, offset, or zone</td>
+    </tr>
+    <tr>
+      <td>LocalTime</td>
+      <td>the time of day, without date, offset, or zone</td>
+    </tr>
+    <tr>
+      <td>LocalDateTime</td>
+      <td>the date and time, without offset, or zone</td>
+    </tr>
+    <tr>
+      <td>OffsetDate</td>
+      <td>a date with an offset such as +02:00, without time of day, or zone</td>
+    </tr>
+    <tr>
+      <td>OffsetTime</td>
+      <td>the time of day with an offset such as +02:00, without date, or zone</td>
+    </tr>
+    <tr>
+      <td>OffsetDateTime</td>
+      <td>the date and time with an offset such as +02:00, without a zone</td>
+    </tr>
+    <tr>
+      <td>ZonedDateTime</td>
+      <td>the date and time with a time zone and offset</td>
+    </tr>
+    <tr>
+      <td>YearMonth</td>
+      <td>a year and month</td>
+    </tr>
+    <tr>
+      <td>MonthDay</td>
+      <td>month and day</td>
+    </tr>
+    <tr>
+      <td>Year/MonthOfDay/DayOfWeek/...</td>
+      <td>classes for the important fields</td>
+    </tr>
+    <tr>
+      <td>DateTimeFields</td>
+      <td>stores a map of field-value pairs which may be invalid</td>
+    </tr>
+    <tr>
+      <td>Calendrical</td>
+      <td>access to the low-level API</td>
+    </tr>
+    <tr>
+      <td>Period</td>
+      <td>a descriptive amount of time, such as "2 months and 3 days"</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Date now = new Date();  // Noncompliant
+DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+Calendar christmas  = Calendar.getInstance();  // Noncompliant
+christmas.setTime(df.parse("25.12.2020"));
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+LocalDate now = LocalDate.now();  // gets calendar date. no time component
+LocalTime now2 = LocalTime.now(); // gets current time. no date component
+LocalDate christmas = LocalDate.of(2020,12,25);
+</pre>
+
