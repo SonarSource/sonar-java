@@ -149,18 +149,18 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_not_log_warnings_if_properties_not_set() {
+  public void should_log_warnings_if_binaries_missing() {
     SonarScanner scanner = ditProjectSonarScanner();
-    String logs = ORCHESTRATOR.executeBuild(scanner).getLogs();
-
-    assertThat(logs).doesNotContain("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin," +
-      " please use sonar.java.binaries and sonar.java.libraries instead");
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(0);
+    BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
+    String logs = buildResult.getLogs();
+    assertThat(logs).contains("Please provide compiled classes of your project with sonar.java.binaries property");
+    assertThat(buildResult.isSuccess()).isFalse();
   }
 
   @Test
   public void directory_of_classes_in_library_should_be_supported() throws Exception {
     SonarScanner scanner = ditProjectSonarScanner();
+    scanner.setProperty("sonar.java.binaries", "target");
     scanner.setProperty("sonar.java.libraries", "target/classes");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);

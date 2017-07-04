@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -100,6 +101,10 @@ public abstract class AbstractJavaClasspath {
 
   protected boolean hasJavaSources() {
     return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
+  }
+
+  protected boolean hasMoreThanOneJavaFile() {
+    return Iterables.size(fs.files(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
   }
 
   private Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {

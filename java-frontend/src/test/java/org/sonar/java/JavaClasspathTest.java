@@ -289,6 +289,27 @@ public class JavaClasspathTest {
   }
 
   @Test
+  public void empty_binaries_on_project_with_more_than_one_source_should_fail() throws Exception {
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
+    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
+    inputFile.setType(InputFile.Type.MAIN);
+    inputFile.setLanguage("java");
+    fs.add(inputFile.build());
+    inputFile = new TestInputFileBuilder("", "bar.java");
+    inputFile.setType(InputFile.Type.MAIN);
+    inputFile.setLanguage("java");
+    fs.add(inputFile.build());
+    try {
+      javaClasspath = createJavaClasspath();
+      javaClasspath.getElements();
+      fail("Exception should have been raised");
+    } catch (AnalysisException ise) {
+      assertThat(ise.getMessage())
+        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
+    }
+  }
+
+  @Test
   public void classpath_empty_if_only_test_files() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");

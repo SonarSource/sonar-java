@@ -52,6 +52,9 @@ public class JavaClasspath extends AbstractJavaClasspath {
         throw new AnalysisException(
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
+      if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
+        throw new AnalysisException("Please provide compiled classes of your project with sonar.java.binaries property");
+      }
       elements = new ArrayList<>(binaries);
       if (libraries.isEmpty() && hasJavaSources()) {
         LOG.warn("Bytecode of dependencies was not provided for analysis of source files, " +
