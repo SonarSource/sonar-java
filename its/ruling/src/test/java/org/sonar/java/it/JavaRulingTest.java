@@ -184,6 +184,8 @@ public class JavaRulingTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
       .setDebugLogs(true)
+      // Dummy sonar.java.binaries to pass validation
+      .setProperty("sonar.java.binaries", "asynch")
       .setProperty("sonar.java.source", "1.5");
     executeDebugBuildWithCommonProperties(build, projectName);
   }
