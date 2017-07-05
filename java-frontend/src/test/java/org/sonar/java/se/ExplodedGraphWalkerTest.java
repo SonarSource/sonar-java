@@ -35,6 +35,7 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -402,7 +403,8 @@ public class ExplodedGraphWalkerTest {
       CustomUnclosedResourcesCheck.class,
       ConditionalUnreachableCodeCheck.class,
       BooleanGratuitousExpressionsCheck.class,
-      InvariantReturnCheck.class
+      InvariantReturnCheck.class,
+      StreamConsumedCheck.class
       )
       .map(Class::getSimpleName)
       .collect(Collectors.toSet());

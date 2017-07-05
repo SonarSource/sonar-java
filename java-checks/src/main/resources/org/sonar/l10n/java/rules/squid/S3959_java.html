@@ -1,0 +1,11 @@
+<p>Stream operations are divided into intermediate and terminal operations, and are combined to form stream pipelines. After the terminal operation is
+performed, the stream pipeline is considered consumed, and cannot be used again. Such a reuse will yield unexpected results.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Stream&lt;Widget&gt; pipeline = widgets.stream().filter(b -&gt; b.getColor() == RED);
+int sum1 = pipeline.sum();
+int sum2 = pipeline.mapToInt(b -&gt; b.getWeight()).sum(); // Noncompliant
+</pre>
+<h2>See</h2>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">Stream Operations</a></p>
+

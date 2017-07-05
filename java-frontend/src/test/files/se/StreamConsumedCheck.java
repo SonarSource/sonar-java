@@ -1,0 +1,51 @@
+import java.util.stream.*;
+import java.util.List;
+
+class A {
+
+  void test() {
+    Stream<Integer> stream = Stream.of(1, 2, 3);
+    stream.count(); // flow@stream {{Pipeline is consumed here.}}
+    stream.findAny(); // Noncompliant [[flows=stream]] {{Refactor this code so that this consumed stream pipeline is not reused.}}
+  }
+
+  void intStream() {
+    IntStream range = IntStream.range(0, 10);
+    range.count(); // flow@is {{Pipeline is consumed here.}}
+    range.average(); // Noncompliant [[flows=is]]
+    range.filter(i -> true); // Noncompliant [[flows=is]]
+  }
+
+  void pipeline() {
+    IntStream range = IntStream.range(0, 10);
+    range  // flow@pipe {{Pipeline is consumed here.}}
+      .filter(i -> i % 2 == 0)
+      .count();
+    range.average(); // Noncompliant [[flows=pipe]]
+  }
+
+  void pipeline2() {
+    IntStream range = IntStream.range(0, 10);
+    IntStream filtered = range.filter(i -> true);
+    range.count();
+    filtered.count(); // Noncompliant
+  }
+
+  void pipeline3(boolean test) {
+    IntStream range = IntStream.range(0, 10);
+    IntStream filtered = range.filter(i -> true);
+    if (test) {
+      range.count();
+    } else {
+      filtered.count();
+    }
+  }
+
+  List list;
+
+  void test() {
+    list.stream().count();
+    list.stream().filter(e -> true).collect(Collectors.toList());
+  }
+
+}
