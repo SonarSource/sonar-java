@@ -94,7 +94,7 @@
     <gitRepositoryName>sonar-java</gitRepositoryName>
 
     <!-- Release: enable publication to Bintray -->
-    <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
+    <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar,${project.groupId}:java-checks:rules</artifactsToPublish>
   </properties>
 
   <dependencyManagement>

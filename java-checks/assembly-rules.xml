@@ -1,0 +1,24 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>rules</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources/org/sonar/l10n/java/rules/squid</directory>
+            <includes>
+                <include>S*_java.*</include>
+            </includes>
+            <outputDirectory>rules</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/org/sonar/l10n/java/rules/squid</directory>
+            <includes>
+                <include>*_profile.json</include>
+            </includes>
+            <outputDirectory>profiles</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
