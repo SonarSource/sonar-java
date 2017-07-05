@@ -504,6 +504,7 @@ public class JavaSymbol implements Symbol {
     Scope typeParameters;
     List<TypeVariableJavaType> typeVariableTypes;
     MethodTree declaration;
+    Object defaultValue;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
@@ -675,6 +676,11 @@ public class JavaSymbol implements Symbol {
         return String.format("!unknownOwner!#%s()", name);
       }
       return String.format("%s#%s()", owner.name, name);
+    }
+
+    @CheckForNull
+    public Object defaultValue() {
+      return defaultValue;
     }
   }
 

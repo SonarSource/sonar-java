@@ -24,6 +24,19 @@ class AnnotationTypeDeclaration {
     }
 
     @interface NestedAnnotationType {
+
+      String valueString() default "valueDefault";
+      int valueInt() default 42;
+      long valueLong() default 42L;
+      String valueStringConstant() default "value4"+"Default";
+      int[] valueArray() default 0;
+      int noDefault();
+      MyEnum valueEnum() default MyEnum.FOO;
+
+      enum MyEnum {
+        FOO, BAR;
+      }
+
     }
   }
 

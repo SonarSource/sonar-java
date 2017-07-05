@@ -429,6 +429,7 @@ public final class CheckList {
       .add(CatchExceptionCheck.class)
       .add(VariableDeclarationScopeCheck.class)
       .add(AnnotationArgumentOrderCheck.class)
+      .add(AnnotationDefaultArgumentCheck.class)
       .add(DeadStoreCheck.class)
       .add(DataStoredInSessionCheck.class)
       .add(DiamondOperatorCheck.class)

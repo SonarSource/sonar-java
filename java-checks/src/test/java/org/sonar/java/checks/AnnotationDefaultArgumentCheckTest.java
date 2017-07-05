@@ -17,10 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.targets;
+package org.sonar.java.checks;
 
-@interface CustomAnnotation {
-  String field1() default "field1Default";
-  String field2() default "field" + "2Default";
-  String field3();
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+public class AnnotationDefaultArgumentCheckTest {
+
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/AnnotationDefaultArgumentCheck.java", new AnnotationDefaultArgumentCheck());
+  }
 }
