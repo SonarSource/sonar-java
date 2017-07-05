@@ -54,13 +54,16 @@ exclude:
   - TEST: plugin
     SLAVE: performance
     SQ_VERSION: LATEST_RELEASE
-#exclude plugin tests on windows except for LATEST_RELEASE
+#exclude plugin tests on windows slaves
   - TEST: plugin
     SLAVE: windows
     SQ_VERSION: LTS
   - TEST: plugin
     SLAVE: windows
     SQ_VERSION: DEV
+  - TEST: plugin
+    SLAVE: windows
+    SQ_VERSION: LATEST_RELEASE
 #exclude ruling tests on performance slaves
   - TEST: ruling
     SLAVE: performance
