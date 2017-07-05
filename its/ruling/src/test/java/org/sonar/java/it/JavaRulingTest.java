@@ -254,6 +254,7 @@ public class JavaRulingTest {
       assertNoDifferences(projectName);
     } else {
       dumpServerLogs();
+      Fail.fail("Build failure for project: " + projectName);
     }
   }
 
@@ -267,6 +268,9 @@ public class JavaRulingTest {
   }
 
   private static void dumpServerLogLastLines(File logFile) throws IOException {
+    if (!logFile.exists()) {
+      return;
+    }
     List<String> logs = Files.readAllLines(logFile.toPath());
     int nbLines = logs.size();
     if (nbLines > LOGS_NUMBER_LINES) {
