@@ -22,6 +22,7 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -65,7 +66,7 @@ public class JavaPerformanceTest {
 
     double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
 
-    double expected = 170;
+    double expected = 178;
     assertThat(time).isEqualTo(expected, offset(expected * 0.04));
   }
 
