@@ -114,8 +114,13 @@ ruling)
   ;;
 
 CI_MACOSX)
-  strongEcho 'Verify build on MAC OS X, no analysis'
-  mvn verify -B -e -V
+  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    strongEcho 'Verify build on MAC OS X only for master branch, no analysis'
+    mvn verify -B -e -V
+  else
+    strongEcho "No MAC OS X build for PRs and Dev branches"
+    exit 0;
+  fi
   ;;
 
 *)
