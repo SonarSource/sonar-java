@@ -1,0 +1,11 @@
+<p>The use of punctuation characters to separate subgroups in a number can make the number more readable. For instance consider 1,000,000,000 versus
+1000000000. But when the grouping is irregular, such as 1,000,00,000; it indicates an error. </p>
+<p>This rule raises an issue when underscores (<code>_</code>) are used to break a number into irregular subgroups.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+int duos = 1_00_00;
+int million = 1_000_00_000;  // Noncompliant
+int thousand = 1000;
+int tenThousand = 100_00;  // Noncompliant
+</pre>
+
