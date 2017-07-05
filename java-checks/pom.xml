@@ -298,7 +298,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${build.outputDirectory}/java-checks-${project.version}-rules.zip</file>
+                  <file>${build.directory}/java-checks-${project.version}-rules.zip</file>
                   <type>zip</type>
                   <classifier>rules</classifier>
                 </artifact>
