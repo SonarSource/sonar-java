@@ -14,16 +14,16 @@ public class JdbcSample {
   }
   
   public void unclosedConnection(String url) {
-    Connection connection = DriverManager.getConnection(url); // Noncompliant {{Use try-with-resources to close this "Connection".}}
-    Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources to close this "Statement".}}
+    Connection connection = DriverManager.getConnection(url); // Noncompliant {{Use try-with-resources or close this "Connection" in a "finally" clause.}}
+    Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources or close this "Statement" in a "finally" clause.}}
   }
   
   public void unclosedResultSet(String url, String query) {
     try (Connection connection = DriverManager.getConnection(url);) {
-      Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources to close this "Statement".}}
-      PreparedStatement preparedStatement = connection.prepareStatement("SELECT"); // Noncompliant {{Use try-with-resources to close this "PreparedStatement".}}
-      ResultSet result = statement.executeQuery(query); // Noncompliant {{Use try-with-resources to close this "ResultSet".}}
-      ResultSet result2 = preparedStatement.executeQuery(); // Noncompliant {{Use try-with-resources to close this "ResultSet".}}
+      Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources or close this "Statement" in a "finally" clause.}}
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT"); // Noncompliant {{Use try-with-resources or close this "PreparedStatement" in a "finally" clause.}}
+      ResultSet result = statement.executeQuery(query); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
+      ResultSet result2 = preparedStatement.executeQuery(); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
       String name = result.getString(0);
     }
   }
@@ -59,7 +59,7 @@ public class JdbcSample {
       try (Statement statement = connection.createStatement();) {
         boolean hasResultSets = statement.execute(query);
         while (hasResultSets) {
-          ResultSet result = statement.getResultSet(); // Noncompliant {{Use try-with-resources to close this "ResultSet".}}
+          ResultSet result = statement.getResultSet(); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
           String name = result.getString(0);
           hasResultSets = statement.getMoreResults();
         }
