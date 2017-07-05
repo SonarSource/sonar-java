@@ -18,6 +18,7 @@ matrix:
   - env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
   - env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
+  - env: TEST=ruling PROJECT=jdk_1_6_source SQ_VERSION=LATEST_RELEASE
 before_script:
   # https://github.com/travis-ci/travis-ci/issues/2839
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export JAVA_HOME=$(/usr/libexec/java_home); fi

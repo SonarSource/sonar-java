@@ -102,9 +102,9 @@ CI)
   ;;
 
 ruling)
-  if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-   strongEcho "ruling tests are only run on pull requests!"
-   exit 0;
+  if [ "$TRAVIS_PULL_REQUEST" == "false" ] || [ -n "${GITHUB_TOKEN-}" ]; then
+    strongEcho "External Pull Request ONLY. For internal PRs, ruling is only played during internal QA!"
+    exit 0;
   fi
 
   [ "$TEST" = "ruling" ] && git submodule update --init --recursive
