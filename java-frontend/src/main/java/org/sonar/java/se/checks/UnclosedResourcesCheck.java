@@ -169,20 +169,8 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void reportIssue(JavaFileScannerContext.Location location) {
-    String message;
-    if (isAutocloseable(location.syntaxNode)) {
-      message = "Use try-with-resources to close this \"" + name(location.syntaxNode) + "\".";
-    } else {
-      message = "Close this \"" + name(location.syntaxNode) + "\" in a \"finally\" clause.";
-    }
+    String message = "Use try-with-resources or close this \"" + name(location.syntaxNode) + "\" in a \"finally\" clause.";
     reportIssue(location.syntaxNode, message);
-  }
-
-  private static boolean isAutocloseable(Tree tree) {
-    if (tree instanceof ExpressionTree) {
-      return ((ExpressionTree) tree).symbolType().isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE);
-    }
-    return false;
   }
 
   private static String name(Tree tree) {
