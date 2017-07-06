@@ -494,6 +494,7 @@ public final class CheckList {
       .add(WrongAssignmentOperatorCheck.class)
       .add(DateFormatWeekYearCheck.class)
       .add(UnusedThrowableCheck.class)
+      .add(ConditionalOnNewLineCheck.class)
       .add(UselessPackageInfoCheck.class)
       .add(StreamConsumedCheck.class)
       .build();
