@@ -88,6 +88,7 @@ import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
+import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -494,6 +495,7 @@ public final class CheckList {
       .add(DateFormatWeekYearCheck.class)
       .add(UnusedThrowableCheck.class)
       .add(UselessPackageInfoCheck.class)
+      .add(StreamConsumedCheck.class)
       .build();
   }
 
