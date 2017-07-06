@@ -1,8 +1,9 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/app/WebServer.java':[
-31,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/http/CeHttpClient.java':[
+147,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/util/CloseableIterator.java':[
-96,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java':[
+94,
+113,
 ],
 }

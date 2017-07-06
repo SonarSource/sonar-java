@@ -1,9 +1,0 @@
-{
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/SonarComponents.java':[
-81,
-82,
-],
-'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/model/declaration/EnumConstantTreeImpl.java':[
-45,
-],
-}

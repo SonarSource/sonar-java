@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>java-semantic</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>debug</repositoryKey>
+      <key>UnknownConstructorCall</key>
+      <priority>INFO</priority>
+    </rule>
+    <rule>
+      <repositoryKey>debug</repositoryKey>
+      <key>UnknownMethodInvocations</key>
+      <priority>INFO</priority>
+    </rule>
+  </rules>
+</profile>

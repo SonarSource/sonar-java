@@ -1,5 +1,11 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FeedFileSources.java':[
-212,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadDuplicationsFromReportStep.java':[
+92,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java':[
+316,
+333,
+348,
+408,
 ],
 }

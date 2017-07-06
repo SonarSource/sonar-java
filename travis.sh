@@ -101,10 +101,10 @@ CI)
   fi
   ;;
 
-plugin|ruling)
-  if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-   strongEcho "plugin or ruling tests are only run on pull requests!"
-   exit 0;
+ruling)
+  if [ "$TRAVIS_PULL_REQUEST" == "false" ] || [ -n "${GITHUB_TOKEN-}" ]; then
+    strongEcho "External Pull Request ONLY. For internal PRs, ruling is only played during internal QA!"
+    exit 0;
   fi
 
   [ "$TEST" = "ruling" ] && git submodule update --init --recursive
@@ -114,8 +114,13 @@ plugin|ruling)
   ;;
 
 CI_MACOSX)
-  strongEcho 'Verify build on MAC OS X, no analysis'
-  mvn verify -B -e -V
+  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    strongEcho 'Verify build on MAC OS X only for master branch, no analysis'
+    mvn verify -B -e -V
+  else
+    strongEcho "No MAC OS X build for PRs and Dev branches"
+    exit 0;
+  fi
   ;;
 
 *)

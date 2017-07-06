@@ -1,8 +1,0 @@
-{
-'net.code-story:http:src/main/java/net/codestory/http/AbstractWebServer.java':[
-67,
-],
-'net.code-story:http:src/main/java/net/codestory/http/filters/auth/CookieAuthFilter.java':[
-44,
-],
-}

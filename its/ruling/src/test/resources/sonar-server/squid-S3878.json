@@ -1,8 +1,0 @@
-{
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/notifications/NotificationService.java':[
-159,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-102,
-],
-}

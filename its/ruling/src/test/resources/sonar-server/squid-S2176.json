@@ -1,8 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/db/IssueDao.java':[
-33,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/db/UserDao.java':[
-35,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java':[
+174,
 ],
 }

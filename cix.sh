@@ -9,9 +9,10 @@ case "$TEST" in
     exit 0;
   ;;
   ruling)
-    if [[ $GITHUB_BRANCH == "PULLREQUEST-"* && $SLAVE != "windows" ]]
+    if [[ $GITHUB_BRANCH == "PULLREQUEST-"* && $SLAVE != "windows" ]] || [[ $GITHUB_BRANCH != "PULLREQUEST-"* && $SLAVE == "windows" ]]
     then
-      #No ruling on PR: those have been run on travis, just keep ruling on windows for safety
+      #Ruling on linux for MASTER branch only (not PR)
+      #Ruling on windows for internal PRs only (not MASTER branch)
       exit 0;
     fi
     #fetch submodule containing sources of ruling projects
@@ -25,6 +26,8 @@ case "$TEST" in
     git submodule update --init --recursive
   ;;
   plugin)
+  ;;
+  semantic)
     #fetch submodule containing sources of projects used for semantic ITs
     git submodule update --init --recursive
     #Semantic IT projects requires java 8

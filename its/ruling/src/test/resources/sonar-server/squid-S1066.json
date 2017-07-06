@@ -1,11 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java':[
-103,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/ws/ScmWriter.java':[
-48,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/util/cache/MemoryCache.java':[
-48,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java':[
+97,
 ],
 }

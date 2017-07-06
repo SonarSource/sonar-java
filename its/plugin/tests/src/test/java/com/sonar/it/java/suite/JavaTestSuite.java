@@ -34,14 +34,9 @@ import org.junit.runners.Suite;
 import org.sonarqube.ws.WsComponents.Component;
 import org.sonarqube.ws.WsMeasures;
 import org.sonarqube.ws.WsMeasures.Measure;
-import org.sonarqube.ws.client.HttpConnector;
-import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.WsClientFactories;
 import org.sonarqube.ws.client.component.ShowWsRequest;
 import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
-import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
-import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -56,7 +51,6 @@ import static java.util.Collections.singletonList;
   JavaClasspathTest.class,
   JaCoCoControllerTest.class,
   SuppressWarningTest.class,
-  SemanticTest.class,
   SonarLintTest.class
 })
 public class JavaTestSuite {

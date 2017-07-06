@@ -1,8 +1,5 @@
 {
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/rule/index/RuleIndexMediumTest.java':[
-1023,
-],
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/util/ProgressLoggerTest.java':[
-39,
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java':[
+60,
 ],
 }

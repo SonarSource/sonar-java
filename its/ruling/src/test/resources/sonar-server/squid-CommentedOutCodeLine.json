@@ -1,11 +1,9 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/BaseDao.java':[
-331,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/GroupsAction.java':[
+102,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/EsClient.java':[
-205,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssueBulkChangeService.java':[
-131,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java':[
+402,
+444,
 ],
 }
