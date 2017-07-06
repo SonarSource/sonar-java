@@ -18,9 +18,9 @@ class A {
 
   void pipeline() {
     IntStream range = IntStream.range(0, 10);
-    range  // flow@pipe {{Pipeline is consumed here.}}
+    range
       .filter(i -> i % 2 == 0)
-      .count();
+      .count(); // flow@pipe {{Pipeline is consumed here.}}
     range.average(); // Noncompliant [[flows=pipe]]
   }
 
@@ -38,6 +38,17 @@ class A {
       range.count();
     } else {
       filtered.count();
+    }
+  }
+
+  void cond(boolean test, boolean other) {
+    IntStream range = IntStream.range(0, 10);
+    IntStream filtered = range.filter(i -> true);
+    if (test) {
+      range.count(); // flow@cond
+    }
+    if (other) {
+      filtered.count(); // Noncompliant [[flows=cond]]
     }
   }
 

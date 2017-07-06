@@ -32,6 +32,8 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -96,8 +98,19 @@ public class StreamConsumedCheck extends SECheck {
     // make copy with explicit message
     return flows.stream()
       .map(f ->
-        f.stream().map(l -> new JavaFileScannerContext.Location("Pipeline is consumed here.", l.syntaxNode)).collect(Collectors.toList()))
+        f.stream().map(l -> new JavaFileScannerContext.Location("Pipeline is consumed here.", flowTree(l.syntaxNode))).collect(Collectors.toList()))
       .collect(Collectors.toSet());
+  }
+
+
+  private static Tree flowTree(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) methodSelect).identifier();
+      }
+    }
+    return tree;
   }
 
   private static SymbolicValue invocationTarget(ProgramState programState, MethodInvocationTree mit) {
