@@ -26,6 +26,7 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -50,7 +51,7 @@ public class MethodJavaSymbolTest {
     MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 89, 91, 98, 100, 102), new HashSet<Integer>());
     JavaAstScanner.scanSingleFileForTests(
       new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"),
-      new VisitorsBridge(Collections.singleton(methodVisitor), Lists.newArrayList(bytecodeDir), null));
+      new VisitorsBridge(Collections.singleton(methodVisitor), ClassLoaderBuilder.create(Lists.newArrayList(bytecodeDir)), null));
   }
 
   @Test
@@ -82,7 +83,7 @@ public class MethodJavaSymbolTest {
           }
           assertThat(thrownTypes.get(1).is("java.io.IOException")).isTrue();
         }
-      }), Lists.newArrayList(bytecodeDir), null));
+      }), ClassLoaderBuilder.create(Lists.newArrayList(bytecodeDir)), null));
   }
 
   private static class MethodVisitor extends SubscriptionVisitor {

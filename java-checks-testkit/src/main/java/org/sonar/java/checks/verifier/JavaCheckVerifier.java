@@ -27,6 +27,7 @@ import org.assertj.core.api.Fail;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -262,7 +263,7 @@ public class JavaCheckVerifier extends CheckVerifier {
     File file = new File(filename);
     SonarComponents sonarComponents = CheckVerifier.sonarComponents(file);
     if (withSemantic) {
-      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), sonarComponents);
+      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), ClassLoaderBuilder.create(Lists.newArrayList(classpath)), sonarComponents);
     } else {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), sonarComponents);
     }

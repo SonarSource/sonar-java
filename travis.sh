@@ -102,6 +102,10 @@ CI)
   ;;
 
 plugin|ruling)
+  if [ "$TRAVIS_PULL_REQUEST" == "1526" ]; then
+    strongEcho "no run of ruling on parallelize pr"
+    exit 0;
+  fi
   if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
    strongEcho "plugin or ruling tests are only run on pull requests!"
    exit 0;
@@ -114,6 +118,10 @@ plugin|ruling)
   ;;
 
 CI_MACOSX)
+  if [ "$TRAVIS_PULL_REQUEST" == "1526" ]; then
+    strongEcho "no CI on osx"
+    exit 0;
+  fi
   strongEcho 'Verify build on MAC OS X, no analysis'
   mvn verify -B -e -V
   ;;

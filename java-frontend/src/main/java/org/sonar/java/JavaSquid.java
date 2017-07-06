@@ -24,11 +24,12 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
@@ -39,6 +40,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,8 +69,8 @@ public class JavaSquid {
       codeVisitors = Iterables.concat(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
-    List<File> classpath = Lists.newArrayList();
-    List<File> testClasspath = Lists.newArrayList();
+    SquidClassLoader javaClassLoader;
+    SquidClassLoader javaTestClassLoader;
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(
@@ -80,20 +82,23 @@ public class JavaSquid {
         );
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
-      classpath = sonarComponents.getJavaClasspath();
-      testClasspath = sonarComponents.getJavaTestClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
+      javaClassLoader = sonarComponents.getJavaClassLoader();
+      javaTestClassLoader = sonarComponents.getJavaTestClassLoader();
+    } else {
+      javaClassLoader = ClassLoaderBuilder.create(new ArrayList<>());
+      javaTestClassLoader = ClassLoaderBuilder.create(new ArrayList<>());
     }
 
     //AstScanner for main files
     ActionParser<Tree> parser = JavaParser.createParser();
     astScanner = new JavaAstScanner(parser, sonarComponents);
     boolean enableSymbolicExecution = hasASymbolicExecutionCheck(visitors);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, enableSymbolicExecution));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, javaClassLoader, javaVersion, sonarComponents, enableSymbolicExecution));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(parser, sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, false));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, javaTestClassLoader, javaVersion, sonarComponents, false));
 
   }
 
@@ -102,8 +107,8 @@ public class JavaSquid {
   }
 
   private static VisitorsBridge createVisitorBridge(
-    Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
+    Iterable<CodeVisitor> codeVisitors, SquidClassLoader classLoader, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classLoader, sonarComponents, enableSymbolicExecution);
     visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;
   }
@@ -115,15 +120,11 @@ public class JavaSquid {
   }
 
   private void scanSources(Iterable<File> sourceFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
-    profiler.stopInfo();
   }
 
   private void scanTests(Iterable<File> testFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
-    profiler.stopInfo();
   }
 
 }

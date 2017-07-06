@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -41,6 +42,12 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -56,7 +63,6 @@ public class JavaSquidSensor implements Sensor {
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
   private final NoSonarFilter noSonarFilter;
-  private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
     DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
@@ -65,7 +71,6 @@ public class JavaSquidSensor implements Sensor {
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
-    this.postAnalysisIssueFilter = postAnalysisIssueFilter;
   }
 
   @Override
@@ -79,9 +84,66 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
-    Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
-    squid.scan(getSourceFiles(), getTestFiles());
+    try {
+      ExecutorService executorService = createExecutor();
+      CompletionService cs = new ExecutorCompletionService(executorService);
+      ThreadContext threadContext = new ThreadContext(context);
+      int fileSize = 0;
+      for (File sourceFile : getSourceFiles()) {
+        cs.submit(() -> scan(threadContext, sourceFile, false), null);
+        fileSize++;
+      }
+      for (File testFile : getTestFiles()) {
+        cs.submit(() -> scan(threadContext, testFile, true), null);
+        fileSize++;
+      }
+      executorService.shutdown();
+      for (int i = 0; i < fileSize; i++) {
+        try {
+          cs.take().get();
+          if (i % 10 == 0) {
+            LOG.info("analyzed " + i + "/" + fileSize + " files");
+          }
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } catch (ExecutionException e) {
+          Throwable cause = e.getCause();
+          if (cause instanceof RuntimeException) {
+            throw (RuntimeException) cause;
+          } else if (cause instanceof Error) {
+            throw ((Error) cause);
+          }
+        }
+      }
+    } finally {
+      sonarComponents.closeClassLoaders();
+    }
+
+  }
+
+  private class ThreadContext {
+    final ThreadLocal<JavaSquid> javaSquidThreadLocal;
+
+    ThreadContext(SensorContext context) {
+      javaSquidThreadLocal = ThreadLocal.withInitial(() -> {
+        Measurer measurer = new Measurer(fs, context, noSonarFilter);
+        return new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, new PostAnalysisIssueFilter(fs), sonarComponents.checksForParallel());
+      });
+    }
+
+    JavaSquid getJavaSquid() {
+      return javaSquidThreadLocal.get();
+    }
+  }
+
+  private void scan(ThreadContext context, File file, boolean scanTests) {
+    JavaSquid squid = context.getJavaSquid();
+    Iterable<File> files = Collections.singleton(file);
+    if(scanTests) {
+      squid.scan(Collections.emptyList(), files);
+    } else {
+      squid.scan(files, Collections.emptyList());
+    }
   }
 
   private Iterable<File> getSourceFiles() {
@@ -96,10 +158,14 @@ public class JavaSquidSensor implements Sensor {
     return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 
+  private ExecutorService createExecutor() {
+//    int numThreads = Runtime.getRuntime().availableProcessors() + 1;
+    int numThreads = 2;
+    return Executors.newFixedThreadPool(numThreads, new ThreadFactoryBuilder().setNameFormat("SonarJava-parallel-analysis-%d").build());
+  }
+
   private JavaVersion getJavaVersion() {
-    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
-    LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
-    return javaVersion;
+    return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
   }
 
   @Override

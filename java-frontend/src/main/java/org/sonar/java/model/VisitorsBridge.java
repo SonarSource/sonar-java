@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,15 +64,15 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), null);
+    this(Collections.singletonList(visitor), ClassLoaderBuilder.create(new ArrayList<>()), null);
   }
 
   @VisibleForTesting
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, true);
+  public VisitorsBridge(Iterable visitors, SquidClassLoader classLoader, @Nullable SonarComponents sonarComponents) {
+    this(visitors, classLoader, sonarComponents, true);
   }
 
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
+  public VisitorsBridge(Iterable visitors, SquidClassLoader classLoader, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -81,7 +82,7 @@ public class VisitorsBridge {
     this.scanners = scannersBuilder.build();
     this.executableScanners = scanners;
     this.sonarComponents = sonarComponents;
-    this.classLoader = ClassLoaderBuilder.create(projectClasspath);
+    this.classLoader = classLoader;
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
   }
 
@@ -188,6 +189,9 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
+  }
+
+  public void closeClassLoader() {
     classLoader.close();
   }
 }

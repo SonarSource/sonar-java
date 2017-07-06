@@ -272,7 +272,6 @@ public class JavaClasspathTest {
   @Test
   public void parent_module_should_not_validate_sonar_libraries() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "non-existing.jar");
-    javaClasspath = createJavaClasspath();
     checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
   }
 
@@ -349,6 +348,8 @@ public class JavaClasspathTest {
   }
 
   private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(settings, fs);
+    JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath.init();
+    return javaClasspath;
   }
 }

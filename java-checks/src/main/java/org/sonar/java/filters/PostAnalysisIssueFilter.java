@@ -32,7 +32,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+  private final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new SuppressWarningFilter(),

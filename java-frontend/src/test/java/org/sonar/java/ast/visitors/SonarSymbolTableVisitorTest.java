@@ -38,6 +38,7 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -75,7 +76,7 @@ public class SonarSymbolTableVisitorTest {
     lines = Files.readLines(file, StandardCharsets.UTF_8);
     String content  = Joiner.on(EOL).join(lines);
     fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), ClassLoaderBuilder.create(sonarComponents.getJavaClasspath()), sonarComponents));
     String componentKey = ":" + file.getName();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));
     // Example class declaration

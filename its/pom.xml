@@ -15,6 +15,7 @@
 
   <modules>
     <module>performancing</module>
+    <module>parallelizing</module>
     <module>plugin</module>
     <module>ruling</module>
   </modules>

@@ -20,13 +20,13 @@
 package org.sonar.java.model;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -56,7 +57,7 @@ public class VisitorsBridgeTest {
     VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
       assertThat(context.getSemanticModel()).isNull();
       assertThat(context.fileParsed()).isTrue();
-    }), Lists.newArrayList(), null);
+    }), ClassLoaderBuilder.create(new ArrayList<>()), null);
     checkFile(contstructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
@@ -73,7 +74,7 @@ public class VisitorsBridgeTest {
       public List<Kind> nodesToVisit() {
         return ImmutableList.of(Tree.Kind.METHOD);
       }
-    }), Lists.newArrayList(), null);
+    }), ClassLoaderBuilder.create(new ArrayList<>()), null);
     checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
@@ -90,7 +91,7 @@ public class VisitorsBridgeTest {
       new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
         assertThat(context.getSemanticModel()).isNotNull();
         ((SemanticModel) context.getSemanticModel()).classesNotFound().addAll(IntStream.range(0, 60).mapToObj(classNotFoundName).collect(Collectors.toList()));
-      }), Lists.newArrayList(), null);
+      }), ClassLoaderBuilder.create(new ArrayList<>()), null);
     checkFile("Foo.java", "class Foo {}", visitorsBridge);
     visitorsBridge.endOfAnalysis();
     assertThat(logTester.logs(LoggerLevel.WARN)).containsOnly(

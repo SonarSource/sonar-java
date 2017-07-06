@@ -57,7 +57,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     .put("java.util.Stack", "\"Deque\"")
     .build();
 
-  private static final Deque<Set<String>> exclusions = new ArrayDeque<>();
+  private final Deque<Set<String>> exclusions = new ArrayDeque<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

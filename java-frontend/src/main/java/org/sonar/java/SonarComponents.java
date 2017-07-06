@@ -38,6 +38,8 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -45,6 +47,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,7 +55,9 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 @BatchSide
@@ -70,7 +75,10 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
+  private final Map<String, Iterable<Class<? extends JavaCheck>>> classByrepoKey = new HashMap<>();
   private SensorContext context;
+  private SquidClassLoader javaClassLoader;
+  private SquidClassLoader javaTestClassLoader;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
@@ -98,6 +106,12 @@ public class SonarComponents {
         registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<>()));
         registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
       }
+    }
+    if(javaClasspath != null) {
+      javaClasspath.init();
+    }
+    if(javaTestClasspath != null) {
+      javaTestClasspath.init();
     }
   }
 
@@ -147,12 +161,17 @@ public class SonarComponents {
 
   public void registerCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
     Checks<JavaCheck> createdChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses);
+    classByrepoKey.put(repositoryKey, checkClasses);
     checks.add(createdChecks);
     allChecks.add(createdChecks);
   }
 
   public CodeVisitor[] checkClasses() {
     return checks.stream().flatMap(ce -> ce.all().stream()).toArray(CodeVisitor[]::new);
+  }
+
+  public CodeVisitor[] checksForParallel() {
+    return classByrepoKey.entrySet().stream().flatMap(e -> checkFactory.create(e.getKey()).addAnnotatedChecks(e.getValue()).all().stream()).toArray(CodeVisitor[]::new);
   }
 
   public Iterable<Checks<JavaCheck>> checks() {
@@ -290,5 +309,28 @@ public class SonarComponents {
 
   public boolean analysisCancelled() {
     return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.isCancelled();
+  }
+
+  public SquidClassLoader getJavaClassLoader() {
+    if(javaClassLoader == null) {
+      javaClassLoader =  ClassLoaderBuilder.create(getJavaClasspath());
+    }
+    return javaClassLoader;
+  }
+
+  public SquidClassLoader getJavaTestClassLoader() {
+    if(javaTestClassLoader == null) {
+      javaTestClassLoader =  ClassLoaderBuilder.create(getJavaTestClasspath());
+    }
+    return javaTestClassLoader;
+  }
+
+  public void closeClassLoaders() {
+    if(javaClassLoader != null) {
+      javaClassLoader.close();
+    }
+    if(javaTestClassLoader != null) {
+      javaTestClassLoader.close();
+    }
   }
 }

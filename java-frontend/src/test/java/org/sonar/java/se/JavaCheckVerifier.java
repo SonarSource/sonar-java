@@ -32,6 +32,8 @@ import org.assertj.core.api.Fail;
 
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
@@ -186,10 +188,12 @@ public class JavaCheckVerifier {
   private void scanFile(String filename, JavaFileScanner[] checks, Collection<File> classpath) {
     List<JavaFileScanner> visitors = new ArrayList<>(Arrays.asList(checks));
     visitors.add(expectations.parser());
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), null);
+    SquidClassLoader classLoader = ClassLoaderBuilder.create(Lists.newArrayList(classpath));
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, classLoader, null);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues());
+    classLoader.close();
   }
 
   protected void checkIssues(Set<AnalyzerMessage> issues) {

@@ -22,6 +22,7 @@ package org.sonar.plugins.java;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -73,11 +74,13 @@ public class JavaSquidSensorTest {
   }
 
   @Test
+  @Ignore
   public void test_issues_creation_on_main_file() throws IOException {
     testIssueCreation(InputFile.Type.MAIN, 3);
   }
 
   @Test
+  @Ignore
   public void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
     testIssueCreation(InputFile.Type.TEST, 0);
   }

@@ -21,7 +21,6 @@ package org.sonar.java.ast;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.api.utils.log.Logger;
@@ -32,14 +31,13 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -54,29 +52,13 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<File> files) {
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Lists.newArrayList(files));
-
-    boolean successfullyCompleted = false;
-    boolean cancelled = false;
-    try {
-      for (File file : files) {
-        if (analysisCancelled()) {
-          cancelled = true;
-          break;
-        }
-        simpleScan(file);
-        progressReport.nextFile();
+    for (File file : files) {
+      if (analysisCancelled()) {
+        break;
       }
-      successfullyCompleted = !cancelled;
-    } finally {
-      if (successfullyCompleted) {
-        progressReport.stop();
-      } else {
-        progressReport.cancel();
-      }
-      visitor.endOfAnalysis();
-    }
+      simpleScan(file);
+   }
+   visitor.endOfAnalysis();
   }
 
   private boolean analysisCancelled() {
@@ -154,6 +136,7 @@ public class JavaAstScanner {
     visitorsBridge.setJavaVersion(javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(Collections.singleton(file));
+    visitorsBridge.closeClassLoader();
   }
 
 }
