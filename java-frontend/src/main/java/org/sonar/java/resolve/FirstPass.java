@@ -22,8 +22,8 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -53,6 +54,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -325,11 +328,29 @@ public class FirstPass extends BaseTreeVisitor {
     //skip type parameters.
     scan(tree.returnType());
     scan(tree.parameters());
-    scan(tree.defaultValue());
     scan(tree.throwsClauses());
+    scan(tree.defaultValue());
+    symbol.defaultValue = getDefaultValueFromTree(tree.defaultValue());
     scan(tree.block());
     restoreEnvironment(tree);
     restoreEnvironment(tree);
+  }
+
+  @Nullable
+  private static Object getDefaultValueFromTree(@Nullable ExpressionTree expressionTree) {
+    if(expressionTree == null) {
+      return null;
+    }
+    if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
+      return LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value());
+    }
+    if (expressionTree.is(Tree.Kind.INT_LITERAL)) {
+      return LiteralUtils.intLiteralValue(expressionTree);
+    }
+    if (expressionTree.is(Tree.Kind.LONG_LITERAL)) {
+      return LiteralUtils.longLiteralValue(expressionTree);
+    }
+    return null;
   }
 
   @Override

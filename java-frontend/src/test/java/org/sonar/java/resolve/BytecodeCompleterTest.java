@@ -39,11 +39,12 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -656,5 +657,33 @@ public class BytecodeCompleterTest {
 
     JavaSymbol.MethodJavaSymbol staticMethod = (JavaSymbol.MethodJavaSymbol) Iterables.getOnlyElement(iface.lookupSymbols("staticMethod"));
     assertThat(staticMethod.flags()).isEqualTo(Flags.STATIC | Flags.PUBLIC);
+  }
+
+
+  @Test
+  public void default_value_of_annotation_methods() throws Exception {
+    Symbol.TypeSymbol annotation = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.DefaultValueOfAnnotationMethods");
+
+    Map<String, Object> nameToDefaultValue = new HashMap<>();
+    List<JavaSymbol.MethodJavaSymbol> methodJavaSymbols = annotation.memberSymbols()
+      .stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (JavaSymbol.MethodJavaSymbol) s)
+      .collect(Collectors.toList());
+    for (JavaSymbol.MethodJavaSymbol methodJavaSymbol : methodJavaSymbols) {
+      nameToDefaultValue.put(methodJavaSymbol.name(), methodJavaSymbol.defaultValue);
+    }
+
+    assertThat(nameToDefaultValue.get("valueString")).isEqualTo("valueDefault");
+    assertThat(nameToDefaultValue.get("valueInt")).isEqualTo(42);
+    assertThat(nameToDefaultValue.get("valueLong")).isEqualTo(42L);
+    // constants are computed by compiler.
+    assertThat(nameToDefaultValue.get("valueStringConstant")).isEqualTo("value4Default");
+    // default ints are wrapped to arrays.
+    assertThat(nameToDefaultValue.get("valueArray")).isEqualTo(new int[] {0});
+    assertThat(nameToDefaultValue.get("noDefault")).isNull();
+    // unsupported
+    assertThat(nameToDefaultValue.get("valueEnum")).isNull();
+
   }
 }

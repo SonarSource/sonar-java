@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -548,6 +549,7 @@ public class SymbolTableTest {
     assertThat(superinterface.owner.getName()).isEqualTo("java.lang.annotation");
 
     assertThat(annotationSymbol.members.lookup("this")).isEmpty();
+    assertThat(((JavaSymbol.MethodJavaSymbol) annotationSymbol.members.lookup("value").get(0)).defaultValue()).isEqualTo(42);
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(annotationSymbol);
@@ -576,6 +578,27 @@ public class SymbolTableTest {
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedAnnotationType");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.INTERFACE | Flags.ANNOTATION);
+
+    Map<String, Object> nameToDefaultValue = new HashMap<>();
+    List<JavaSymbol.MethodJavaSymbol> methodJavaSymbols = typeSymbol.memberSymbols()
+      .stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (JavaSymbol.MethodJavaSymbol) s)
+      .collect(Collectors.toList());
+    for (JavaSymbol.MethodJavaSymbol methodJavaSymbol : methodJavaSymbols) {
+      nameToDefaultValue.put(methodJavaSymbol.name(), methodJavaSymbol.defaultValue);
+    }
+
+    assertThat(nameToDefaultValue.get("valueString")).isEqualTo("valueDefault");
+    assertThat(nameToDefaultValue.get("valueInt")).isEqualTo(42);
+    assertThat(nameToDefaultValue.get("valueLong")).isEqualTo(42L);
+    // constants are unsupported when read from sources
+    assertThat(nameToDefaultValue.get("valueStringConstant")).isNull();
+    // arrays not wrapped when read from sources
+    assertThat(nameToDefaultValue.get("valueArray")).isEqualTo(0);
+    assertThat(nameToDefaultValue.get("noDefault")).isNull();
+    // unsupported
+    assertThat(nameToDefaultValue.get("valueEnum")).isNull();
   }
 
   @Test

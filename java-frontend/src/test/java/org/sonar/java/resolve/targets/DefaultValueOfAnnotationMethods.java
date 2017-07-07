@@ -17,10 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.targets;
+package org.sonar.java.resolve.targets;
 
-@interface CustomAnnotation {
-  String field1() default "field1Default";
-  String field2() default "field" + "2Default";
-  String field3();
+public @interface DefaultValueOfAnnotationMethods {
+  String valueString() default "valueDefault";
+  int valueInt() default 42;
+  long valueLong() default 42L;
+  String valueStringConstant() default "value4"+"Default";
+  int[] valueArray() default 0;
+  int noDefault();
+  MyEnum valueEnum() default MyEnum.FOO;
+
+  enum MyEnum {
+    FOO, BAR;
+  }
 }

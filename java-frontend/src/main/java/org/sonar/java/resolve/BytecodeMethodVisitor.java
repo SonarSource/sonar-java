@@ -64,4 +64,15 @@ public class BytecodeMethodVisitor extends MethodVisitor {
     }
     return null;
   }
+
+  @Override
+  public AnnotationVisitor visitAnnotationDefault() {
+    return new AnnotationVisitor(Opcodes.ASM5) {
+      @Override
+      public void visit(String name, Object value) {
+        methodSymbol.defaultValue = value;
+        super.visit(name, value);
+      }
+    };
+  }
 }
