@@ -4,12 +4,13 @@ import org.sonar.java.checks.targets.CustomAnnotation;
 @interface MyAnnotation {
   String myName() default "myName";
   int myInteger() default 0;
-  String aaaLast();
 }
 @interface MyAnnotation2 {
   String value() default "defaultValue";
 }
-
+@interface MyAnnotation3 {
+  int myHexaInteger() default 0x000;
+}
 class A {
   @CustomAnnotation(field1="field1Default", field2="", field3="") // Noncompliant
   @CustomAnnotation(field1="", field2="field2Default", field3="") // Noncompliant
@@ -20,6 +21,7 @@ class A {
   @MyAnnotation(myName="foo", myInteger=2)
   @MyAnnotation2("defaultValue") // Noncompliant
   @MyAnnotation2("someValue")
+  @MyAnnotation3(myHexaInteger = 0x000) // false negative : unsupported reading of hexadecimal literal value.
   void goodMethod() {
 
   }

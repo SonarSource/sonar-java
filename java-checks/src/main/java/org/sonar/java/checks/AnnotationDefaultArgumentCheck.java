@@ -62,6 +62,7 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
 
     for (ExpressionTree argument : annotationTree.arguments()) {
       Tree valueSet = argument;
+      // Single element annotation : JLS8 9.7.3 : one param must be named value.
       String paramName = "value";
       if (argument.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) argument;
@@ -79,7 +80,8 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
     if (valueSet.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(((LiteralTree) valueSet).value()).equals(defaultValue);
     } else if (valueSet.is(Tree.Kind.INT_LITERAL)) {
-      return LiteralUtils.intLiteralValue((LiteralTree) valueSet).equals(defaultValue);
+      Integer intLiteralValue = LiteralUtils.intLiteralValue((LiteralTree) valueSet);
+      return intLiteralValue != null && intLiteralValue.equals(defaultValue);
     }
     return false;
   }
