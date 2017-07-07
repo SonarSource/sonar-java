@@ -462,6 +462,7 @@ public final class CheckList {
       .add(SyncGetterAndSetterCheck.class)
       .add(ToArrayCheck.class)
       .add(ClassWithoutHashCodeInHashStructureCheck.class)
+      .add(CollectInsteadOfForeachCheck.class)
       .add(IgnoredOperationStatusCheck.class)
       .add(UnderscoreOnNumberCheck.class)
       .add(UnderscoreMisplacedOnNumberCheck.class)

@@ -1,0 +1,13 @@
+{
+  "title": "\"collect\" should be used with \"Streams\" instead of \"list::add\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Minor"
+}
