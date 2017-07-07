@@ -404,6 +404,7 @@ public final class CheckList {
       .add(StaticMethodCheck.class)
       .add(ForLoopUsedAsWhileLoopCheck.class)
       .add(MultilineBlocksCurlyBracesCheck.class)
+      .add(HashMapComparableKeyCheck.class)
       .add(EnumMapCheck.class)
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
