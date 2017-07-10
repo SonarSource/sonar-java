@@ -518,6 +518,7 @@ public final class CheckList {
       .add(UnusedTestRuleCheck.class)
       .add(BadTestClassNameCheck.class)
       .add(BadTestMethodNameCheck.class)
+      .add(SwitchInsteadOfIfSequenceCheck.class)
       .add(AssertionFailInCatchBlockCheck.class)
       .build();
   }
