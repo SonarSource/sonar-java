@@ -45,7 +45,6 @@ import javax.annotation.Nullable;
 @Rule(key = "S3552")
 public class HashMapComparableKeyCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
-  private static final String JAVA_UTIL_MAP = "java.util.Map";
   private static final String JAVA_UTIL_HASH_MAP = "java.util.HashMap";
   private JavaFileScannerContext context;
 
@@ -62,34 +61,47 @@ public class HashMapComparableKeyCheck extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitVariable(VariableTree tree) {
-    Type variableType = tree.type().symbolType();
-    if (variableType.isSubtypeOf(JAVA_UTIL_MAP)) {
-      ExpressionTree initializer = tree.initializer();
-      if (initializer != null) {
-        checkNewMap(initializer, nonComparableKeyTypeName(variableType));
-      }
-    } else {
-      super.visitVariable(tree);
+    if (checkNewMap(tree.initializer(), tree.type().symbolType())) {
+      return;
     }
+    super.visitVariable(tree);
   }
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    Type variableType = tree.variable().symbolType();
-    if (variableType.isSubtypeOf(JAVA_UTIL_MAP)) {
-      checkNewMap(tree.expression(), nonComparableKeyTypeName(variableType));
-    } else {
-      super.visitAssignmentExpression(tree);
+    if (checkNewMap(tree.expression(), tree.variable().symbolType())) {
+      return;
     }
+    super.visitAssignmentExpression(tree);
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.symbolType().isSubtypeOf(JAVA_UTIL_HASH_MAP)) {
-      checkNewMap(tree, nonComparableKeyTypeName(tree.identifier().symbolType()));
-    } else {
-      super.visitNewClass(tree);
+    checkNewMap(tree, tree.identifier().symbolType());
+    super.visitNewClass(tree);
+  }
+
+  private boolean checkNewMap(@Nullable ExpressionTree expr, Type parentExpressionType) {
+    if (expr == null) {
+      return false;
     }
+    ExpressionTree expression = ExpressionUtils.skipParentheses(expr);
+    if (!expression.is(Tree.Kind.NEW_CLASS)) {
+      return false;
+    }
+    NewClassTree newClassTree = (NewClassTree) expression;
+    Type newClassType = newClassTree.symbolType();
+    if (newClassType.isSubtypeOf(JAVA_UTIL_HASH_MAP)) {
+      String name = nonComparableKeyTypeName(newClassType);
+      if (name == null) {
+        name = nonComparableKeyTypeName(parentExpressionType);
+      }
+      if (name != null) {
+        reportIssue(newClassTree, name);
+        return true;
+      }
+    }
+    return false;
   }
 
   @CheckForNull
@@ -108,26 +120,9 @@ public class HashMapComparableKeyCheck extends BaseTreeVisitor implements JavaFi
     return null;
   }
 
-  private void checkNewMap(ExpressionTree expr, @Nullable String typeName) {
-    ExpressionTree expression = ExpressionUtils.skipParentheses(expr);
-    if (expression.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree newClassTree = (NewClassTree) expression;
-      Type newClassType = newClassTree.symbolType();
-      if (newClassType.isSubtypeOf(JAVA_UTIL_HASH_MAP)) {
-        String name = typeName;
-        if (name == null) {
-          name = nonComparableKeyTypeName(newClassType);
-        }
-        if (name != null) {
-          reportIssue(newClassTree, name);
-        }
-      }
-    }
-  }
-
   private void reportIssue(NewClassTree newClassTree, String typeName) {
     context.reportIssue(this, reportTree(newClassTree),
-      String.format("Implement \"Comparable\" in \"%s\" or switch key type.%s",
+      String.format("Implement \"Comparable\" in \"%s\" or change the key type of this map.%s",
         typeName,
         context.getJavaVersion().java8CompatibilityMessage()));
   }
