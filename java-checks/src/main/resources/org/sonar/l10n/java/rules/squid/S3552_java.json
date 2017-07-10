@@ -1,0 +1,14 @@
+{
+  "title": "Classes used as \"HashMap\" keys should implement \"Comparable\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "performance",
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}
