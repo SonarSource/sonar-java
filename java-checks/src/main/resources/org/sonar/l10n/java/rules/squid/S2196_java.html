@@ -1,0 +1,33 @@
+<p>Since Java 7, <code>String</code>s can be used as <code>switch</code> arguments. So when a single <code>String</code> is tested against three or
+more values in an <code>if</code>/<code>else if</code> structure, it should be converted to a switch instead for greater readability.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>7</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+if ("red".equals(choice)) {  // Noncompliant
+  dispenseRed();
+} else if ("blue".equals(choice)) {
+  dispenseBlue();
+} else if ("yellow".equals(choice)) {
+  dispenseYellow();
+} else {
+  promptUser();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+switch(choice) {
+  case "Red":
+    dispenseRed();
+    break;
+  case "Blue":
+    dispenseBlue():
+    break;
+  case "Yellow":
+    dispenseYellow();
+    break;
+  default:
+    promptUser();
+    break;
+}
+</pre>
+
