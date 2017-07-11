@@ -12,6 +12,8 @@ public class TestClass {
   private static java.text.SimpleDateFormat format2; // Noncompliant [[sc=45;ec=52]] {{Make "format2" an instance variable.}}
   private static java.text.SimpleDateFormat format3; // Noncompliant [[sc=45;ec=52]] {{Make "format3" an instance variable.}}
   public static java.text.SimpleDateFormat format4; // Noncompliant [[sc=44;ec=51]] {{Make "format4" an instance variable.}}
+  private static java.text.DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Noncompliant
+  private static java.text.DateFormat dateFormat2 = null;
 
   private java.util.Calendar calendar1; // Compliant
   private static java.util.Calendar calendar2; // Noncompliant {{Make "calendar2" an instance variable.}}
