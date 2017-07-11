@@ -44,6 +44,9 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.checks.StreamConsumedCheck;
+import org.sonar.java.se.checks.StreamNotConsumedCheck;
+import org.sonar.java.se.checks.StreamPipeline;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -1126,6 +1129,24 @@ public class ExplodedGraphWalker {
       seChecks.add(removeOrDefault(checks, new NoWayOutLoopCheck()));
       seChecks.add(removeOrDefault(checks, new OptionalGetBeforeIsPresentCheck()));
       seChecks.addAll(checks);
+
+      addStreamChecks(checks);
+    }
+
+    private void addStreamChecks(List<SECheck> scanners) {
+      StreamNotConsumedCheck streamNotConsumedCheck = null;
+      StreamConsumedCheck streamConsumedCheck = null;
+      for (JavaFileScanner scanner : scanners) {
+        if (scanner instanceof StreamNotConsumedCheck) {
+          streamNotConsumedCheck = ((StreamNotConsumedCheck) scanner);
+        }
+        if (scanner instanceof StreamConsumedCheck) {
+          streamConsumedCheck = ((StreamConsumedCheck) scanner);
+        }
+      }
+      if (streamNotConsumedCheck != null || streamConsumedCheck != null) {
+        seChecks.add(new StreamPipeline(streamConsumedCheck));
+      }
     }
 
     public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {

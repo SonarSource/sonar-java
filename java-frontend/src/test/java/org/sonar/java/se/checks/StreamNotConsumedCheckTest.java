@@ -19,12 +19,14 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.check.Rule;
+import org.junit.Test;
 
-/**
- * This check is just place holder for Rule annotation to be able to report issues on this rule. Check logic is implemented in {@link StreamPipeline}
- */
-@Rule(key = "S3959")
-public class StreamConsumedCheck extends SECheck {
+import org.sonar.java.se.JavaCheckVerifier;
 
+public class StreamNotConsumedCheckTest {
+
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/StreamNotConsumedCheck.java", new StreamNotConsumedCheck());
+  }
 }

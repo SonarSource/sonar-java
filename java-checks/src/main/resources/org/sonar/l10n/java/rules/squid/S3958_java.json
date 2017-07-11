@@ -1,0 +1,13 @@
+{
+  "title": "Intermediate Stream methods should not be left unused",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}
