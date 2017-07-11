@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(key = "S2885")
@@ -50,13 +51,18 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
     Type type = variableTree.type().symbolType();
-    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(type)) {
+    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(variableTree)) {
       if (type.isSubtypeOf(JAVA_TEXT_SIMPLE_DATE_FORMAT) && onlySynchronizedUsages((Symbol.VariableSymbol) variableTree.symbol())) {
         return;
       }
       IdentifierTree identifierTree = variableTree.simpleName();
       reportIssue(identifierTree, String.format("Make \"%s\" an instance variable.", identifierTree.name()));
     }
+  }
+
+  private static boolean isForbiddenType(VariableTree variableTree) {
+    ExpressionTree initializer = variableTree.initializer();
+    return isForbiddenType(variableTree.type().symbolType()) || (initializer != null && !initializer.is(Tree.Kind.NULL_LITERAL) && isForbiddenType(initializer.symbolType()));
   }
 
   private static boolean isForbiddenType(Type type) {
