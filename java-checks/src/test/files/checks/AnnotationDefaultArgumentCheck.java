@@ -22,6 +22,7 @@ class A {
   @MyAnnotation2("defaultValue") // Noncompliant
   @MyAnnotation2("someValue")
   @MyAnnotation3(myHexaInteger = 0x000) // false negative : unsupported reading of hexadecimal literal value.
+  @MyUnknownAnnotation("value")
   void goodMethod() {
 
   }

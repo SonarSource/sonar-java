@@ -140,14 +140,17 @@ class A {
       dispenseYellow();
     }
   }
-
-  void equal_binary_expression() {
-    if ("red" == choice) { // Noncompliant
-      dispenseRed();
-    } else if ("blue" == choice) {
+  void nestedIFs() {
+    if (choice.equals(choice))   // compliant, don't count nesting
+      if ("blue".equals(choice)) { // Noncompliant
+        dispenseBlue();
+      } else if ("yellow".equals(choice)) {
+        dispenseYellow();
+      } else if ("blue".equals(choice)) {
+        dispenseBlue();
+      }
+    else if ("blue".equals(choice)) {
       dispenseBlue();
-    } else if ("yellow" == choice) {
-      dispenseYellow();
     }
   }
 
