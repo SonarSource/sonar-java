@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -82,9 +82,8 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
       return false;
     }
 
-    Tree enclosingBlockTree = semanticModel.getTree(semanticModel.getEnv(methodTree));
-    Tree argEnclosingDeclarationTree = semanticModel.getTree(semanticModel.getEnv(symbol));
-    if (enclosingBlockTree.equals(argEnclosingDeclarationTree)) {
+    boolean isLocalVar = symbol.owner().isMethodSymbol() && !((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
+    if (isLocalVar) {
       //symbol is a local variable, check it is not a dynamic string.
 
       //Check declaration
@@ -96,6 +95,7 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
       //check usages by revisiting the enclosing tree.
       Collection<IdentifierTree> usages = symbol.usages();
       LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
+      Tree argEnclosingDeclarationTree = semanticModel.getTree(semanticModel.getEnv(symbol));
       argEnclosingDeclarationTree.accept(visitor);
       return visitor.dynamicString;
     }

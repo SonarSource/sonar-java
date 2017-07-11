@@ -134,3 +134,21 @@ class Spring {
     preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new int[] {});  // Noncompliant
   }
 }
+
+
+class Test {
+  public void foo() {
+    String from = "from ResourceDBO r, ProjectDBO p where p.id = r.entityId and r.type = :entityType and r.mimeType in :mimeTypes";
+    if (projectUuid != null) {
+      from += " and p.uuid = :projectUuid";
+    }
+    String sortField = "lastUpdateTime";
+    boolean asc = false;
+    if (page != null) {
+      String countJql = "select count(*) " + from;
+      Session session;
+      session.createQuery(countJql);
+
+    }
+  }
+}
