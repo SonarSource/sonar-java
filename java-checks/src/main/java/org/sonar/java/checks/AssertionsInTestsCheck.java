@@ -44,7 +44,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   private static final String VERIFY = "verify";
   private static final String ASSERT_NAME = "assert";
 
-  private static final TypeCriteria ORG_MOCKITO_MOCKITO = TypeCriteria.is("org.mockito.Mockito");
   private static final TypeCriteria ORG_ASSERTJ_ASSERTIONS = TypeCriteria.is("org.assertj.core.api.Assertions");
   private static final TypeCriteria ORG_ASSERTJ_FAIL = TypeCriteria.is("org.assertj.core.api.Fail");
   private static final TypeCriteria IO_RESTASSURED = TypeCriteria.is("io.restassured.response.ValidatableResponseOptions");
@@ -90,7 +89,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // hamcrest
     method("org.hamcrest.MatcherAssert", STARTS_WITH_ASSERT).withAnyParameters(),
     // Mockito
-    method(ORG_MOCKITO_MOCKITO, NameCriteria.startsWith(VERIFY)).withAnyParameters(),
+    method("org.mockito.Mockito", NameCriteria.startsWith(VERIFY)).withAnyParameters(),
+    method("org.mockito.InOrder", NameCriteria.startsWith(VERIFY)).withAnyParameters(),
     // spring
     method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
     // EasyMock

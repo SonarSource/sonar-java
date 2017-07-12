@@ -66,4 +66,9 @@ public class AssertionsInTestsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/RestAssured.java", check);
   }
 
+  @Test
+  public void mockito() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Mockito.java", check);
+  }
+
 }
