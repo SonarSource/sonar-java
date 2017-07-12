@@ -20,68 +20,43 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunWith(Parameterized.class)
 public class AssertionsInTestsCheckTest {
 
   private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
 
-  @Test
-  public void junit3() {
-    verify("Junit3");
+  @Parameters
+  public static Collection<Object[]> frameworks() {
+    return Arrays.asList(new Object[][] {
+      {"Junit4"},
+      {"AssertJ"},
+      {"Hamcrest"},
+      {"Spring"},
+      {"EasyMock"},
+      {"Truth"},
+      {"RestAssured"},
+      {"Mockito"},
+      {"JMock"},
+      {"WireMock"}
+    });
+  }
+
+  public String framework;
+
+  public AssertionsInTestsCheckTest(String framework) {
+    this.framework = framework;
   }
 
   @Test
-  public void junit4() {
-    verify("Junit4");
-  }
-
-  @Test
-  public void assertJ() {
-    verify("AssertJ");
-  }
-
-  @Test
-  public void hamcrest() {
-    verify("Hamcrest");
-  }
-
-  @Test
-  public void spring() {
-    verify("Spring");
-  }
-
-  @Test
-  public void easyMock() {
-    verify("EasyMock");
-  }
-
-  @Test
-  public void truth() {
-    verify("Truth");
-  }
-
-  @Test
-  public void restAssured() {
-    verify("RestAssured");
-  }
-
-  @Test
-  public void mockito() {
-    verify("Mockito");
-  }
-
-  @Test
-  public void jMock() {
-    verify("JMock");
-  }
-
-  @Test
-  public void wireMock() {
-    verify("WireMock");
-  }
-
-  private void verify(String framework) {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
   }
 }
