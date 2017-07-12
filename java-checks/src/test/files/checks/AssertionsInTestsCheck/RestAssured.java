@@ -4,11 +4,17 @@ import io.restassured.specification.ResponseSpecification;
 import org.junit.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 public class AssertionsInTestsCheckTest {
+  
+  @Test
+  public void incomplete() { // Noncompliant
+    // do nothing
+  }
 
   @Test
   public void test_body() { // Compliant

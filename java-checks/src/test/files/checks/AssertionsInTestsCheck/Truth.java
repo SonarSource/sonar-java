@@ -2,6 +2,11 @@ import com.google.common.truth.Truth;
 import org.junit.Test;
 
 public class AssertionsInTestsCheckTest {
+  
+  @Test
+  public void test() { // Noncompliant
+    boolean b = true;
+  }
 
   @Test
   public void test0() { // Compliant

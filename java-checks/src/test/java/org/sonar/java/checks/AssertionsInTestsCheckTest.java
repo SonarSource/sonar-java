@@ -28,42 +28,42 @@ public class AssertionsInTestsCheckTest {
 
   @Test
   public void junit3() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit3.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
   }
 
   @Test
   public void junit4() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit4.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit4.java", check);
   }
 
   @Test
   public void assertJ() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckAssertJ.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/AssertJ.java", check);
   }
 
   @Test
   public void hamcrest() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckHamcrest.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Hamcrest.java", check);
   }
 
   @Test
   public void spring() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckSpring.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Spring.java", check);
   }
 
   @Test
   public void easyMock() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckEasyMock.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/EasyMock.java", check);
   }
 
   @Test
   public void truth() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/AssertionsInTestsCheckTruth.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Truth.java", check);
   }
 
   @Test
   public void restAssured() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/AssertionsInTestsCheckRestAssured.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/RestAssured.java", check);
   }
 
 }
