@@ -28,47 +28,55 @@ public class AssertionsInTestsCheckTest {
 
   @Test
   public void junit3() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
+    verify("Junit3");
   }
 
   @Test
   public void junit4() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit4.java", check);
+    verify("Junit4");
   }
 
   @Test
   public void assertJ() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/AssertJ.java", check);
+    verify("AssertJ");
   }
 
   @Test
   public void hamcrest() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Hamcrest.java", check);
+    verify("Hamcrest");
   }
 
   @Test
   public void spring() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Spring.java", check);
+    verify("Spring");
   }
 
   @Test
   public void easyMock() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/EasyMock.java", check);
+    verify("EasyMock");
   }
 
   @Test
   public void truth() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Truth.java", check);
+    verify("Truth");
   }
 
   @Test
   public void restAssured() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/RestAssured.java", check);
+    verify("RestAssured");
   }
 
   @Test
   public void mockito() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Mockito.java", check);
+    verify("Mockito");
   }
 
+  @Test
+  public void jMock() {
+    verify("JMock");
+  }
+
+  private void verify(String framework) {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
+  }
 }

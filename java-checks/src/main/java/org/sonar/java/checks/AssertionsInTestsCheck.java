@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -37,6 +34,10 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -98,7 +99,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY).withAnyParameters(),
     method(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll").withAnyParameters(),
     // Truth Framework
-    method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters());
+    method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters(),
+    // JMock Mockery
+    method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
