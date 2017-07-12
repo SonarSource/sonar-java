@@ -31,8 +31,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.sonar.java.se.checks.StreamConsumedCheck.StreamPipelineConstraint.NOT_CONSUMED;
+
 /**
- * This check is used just to report issues. Most of the check logic is implemented in {@link StreamPipeline}
+ * This check is used just to report issues. Most of the check logic is implemented in {@link StreamConsumedCheck}
  */
 @Rule(key = "S3958")
 public class StreamNotConsumedCheck extends SECheck {
@@ -40,11 +42,11 @@ public class StreamNotConsumedCheck extends SECheck {
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ProgramState state = context.getState();
-    List<SymbolicValue> notConsumed = state.getValuesWithConstraints(StreamPipeline.StreamPipelineConstraint.NOT_CONSUMED);
+    List<SymbolicValue> notConsumed = state.getValuesWithConstraints(NOT_CONSUMED);
     notConsumed.forEach(sv -> {
         Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), Collections.singleton(sv),
-          StreamPipeline.StreamPipelineConstraint.NOT_CONSUMED::equals, StreamPipeline.StreamPipelineConstraint.NOT_CONSUMED::equals,
-          Collections.singletonList(StreamPipeline.StreamPipelineConstraint.class),
+          NOT_CONSUMED::equals, NOT_CONSUMED::equals,
+          Collections.singletonList(StreamConsumedCheck.StreamPipelineConstraint.class),
           Collections.emptySet());
         List<JavaFileScannerContext.Location> flow = flows.iterator().next();
         JavaFileScannerContext.Location location = flow.iterator().next();

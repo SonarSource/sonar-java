@@ -29,7 +29,7 @@ import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
-import org.sonar.java.se.checks.StreamPipeline;
+import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -58,7 +58,7 @@ import java.util.stream.Stream;
 public class ProgramState {
 
   private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = ImmutableSet.of(UnclosedResourcesCheck.ResourceConstraint.class,
-    CustomUnclosedResourcesCheck.CustomResourceConstraint.class, LocksNotUnlockedCheck.LockConstraint.class, StreamPipeline.StreamPipelineConstraint.class);
+    CustomUnclosedResourcesCheck.CustomResourceConstraint.class, LocksNotUnlockedCheck.LockConstraint.class, StreamConsumedCheck.StreamPipelineConstraint.class);
 
   public static class Pop {
 
