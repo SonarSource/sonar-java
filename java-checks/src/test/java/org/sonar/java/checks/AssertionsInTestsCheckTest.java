@@ -76,6 +76,11 @@ public class AssertionsInTestsCheckTest {
     verify("JMock");
   }
 
+  @Test
+  public void wireMock() {
+    verify("WireMock");
+  }
+
   private void verify(String framework) {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
   }
