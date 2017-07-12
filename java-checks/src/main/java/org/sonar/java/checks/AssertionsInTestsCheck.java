@@ -101,7 +101,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // Truth Framework
     method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters(),
     // JMock Mockery
-    method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters());
+    method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters(),
+    // WireMock
+    method("com.github.tomakehurst.wiremock.client.WireMock", "verify").withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
