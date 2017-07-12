@@ -29,6 +29,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
 import org.sonar.java.JavaConstants;
+import org.sonar.java.JavaSonarLintClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
@@ -47,10 +48,12 @@ public class JavaPlugin implements Plugin {
       builder.addAll(SurefireExtensions.getExtensions());
       builder.addAll(JaCoCoExtensions.getExtensions(sonarQubeVersion));
       builder.add(JavaSonarWayProfile.class);
+      builder.add(JavaClasspath.class);
+    } else {
+      builder.add(JavaSonarLintClasspath.class);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
-      JavaClasspath.class,
       JavaTestClasspath.class,
       Java.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)

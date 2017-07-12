@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
@@ -27,6 +28,8 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
@@ -39,6 +42,8 @@ public class JavaClasspathTest {
   private DefaultFileSystem fs;
   private Settings settings;
   private JavaClasspath javaClasspath;
+  @Rule
+  public LogTester logTester = new LogTester();
 
   @Before
   public void setUp() throws Exception {
@@ -290,6 +295,44 @@ public class JavaClasspathTest {
 
   @Test
   public void empty_binaries_on_project_with_more_than_one_source_should_fail() throws Exception {
+    createTwoFilesInFileSystem();
+    try {
+      javaClasspath = createJavaClasspath();
+      javaClasspath.getElements();
+      fail("Exception should have been raised");
+    } catch (AnalysisException ise) {
+      assertThat(ise.getMessage())
+        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
+    }
+  }
+
+  @Test
+  public void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() throws Exception {
+    createTwoFilesInFileSystem();
+    try {
+      javaClasspath = new JavaClasspath(settings, fs);
+      javaClasspath.getElements();
+      fail("Exception should have been raised");
+    } catch (AnalysisException ise) {
+      assertThat(ise.getMessage())
+        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
+    }
+  }
+
+  @Test
+  public void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() throws Exception {
+    createTwoFilesInFileSystem();
+    try {
+      javaClasspath = new JavaSonarLintClasspath(settings, fs);
+      javaClasspath.getElements();
+
+      logTester.logs(LoggerLevel.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
+    } catch (AnalysisException ise) {
+      fail("Analysis exception was raised but analysis should not fail");
+    }
+  }
+
+  private void createTwoFilesInFileSystem() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
     inputFile.setType(InputFile.Type.MAIN);
@@ -299,14 +342,6 @@ public class JavaClasspathTest {
     inputFile.setType(InputFile.Type.MAIN);
     inputFile.setLanguage("java");
     fs.add(inputFile.build());
-    try {
-      javaClasspath = createJavaClasspath();
-      javaClasspath.getElements();
-      fail("Exception should have been raised");
-    } catch (AnalysisException ise) {
-      assertThat(ise.getMessage())
-        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
-    }
   }
 
   @Test
