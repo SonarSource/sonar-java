@@ -54,6 +54,7 @@ import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
+import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
@@ -477,6 +478,7 @@ public final class CheckList {
       .add(PrivateFieldUsedLocallyCheck.class)
       .add(OptionalGetBeforeIsPresentCheck.class)
       .add(ValueBasedObjectsShouldNotBeSerializedCheck.class)
+      .add(ValueBasedObjectUsedForLockCheck.class)
       .add(FilesExistsJDK8Check.class)
       .add(StaticImportCountCheck.class)
       .add(ClassFieldCountCheck.class)
