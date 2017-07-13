@@ -89,6 +89,7 @@ import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
+import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -500,6 +501,7 @@ public final class CheckList {
       .add(ConditionalOnNewLineCheck.class)
       .add(UselessPackageInfoCheck.class)
       .add(StreamConsumedCheck.class)
+      .add(StreamNotConsumedCheck.class)
       .build();
   }
 

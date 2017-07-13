@@ -29,6 +29,7 @@ import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -55,6 +56,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProgramState {
+
+  private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = ImmutableSet.of(UnclosedResourcesCheck.ResourceConstraint.class,
+    CustomUnclosedResourcesCheck.CustomResourceConstraint.class, LocksNotUnlockedCheck.LockConstraint.class, StreamConsumedCheck.StreamPipelineConstraint.class);
 
   public static class Pop {
 
@@ -345,19 +349,13 @@ public class ProgramState {
 
   private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable Constraint constraint) {
     //FIXME this should be handle with callbacks rather than keeping those value in programstate
-    return SymbolicValue.isDisposable(symbolicValue) &&
-      (constraint == null ||
-        !(constraint instanceof UnclosedResourcesCheck.ResourceConstraint
-          || constraint instanceof CustomUnclosedResourcesCheck.CustomResourceConstraint
-          || constraint instanceof LocksNotUnlockedCheck.LockConstraint));
+    return SymbolicValue.isDisposable(symbolicValue) && (constraint == null || !NON_DISPOSABLE_CONSTRAINTS.contains(constraint.getClass()));
   }
 
   private static boolean isDisposable(SymbolicValue symbolicValue, @Nullable ConstraintsByDomain constraints) {
     //FIXME this should be handle with callbacks rather than keeping those value in programstate
     return SymbolicValue.isDisposable(symbolicValue) &&
-      (constraints == null || (constraints.get(UnclosedResourcesCheck.ResourceConstraint.class) == null
-        && constraints.get(CustomUnclosedResourcesCheck.CustomResourceConstraint.class) == null
-        && constraints.get(LocksNotUnlockedCheck.LockConstraint.class) == null));
+      (constraints == null || NON_DISPOSABLE_CONSTRAINTS.stream().map(constraints::get).allMatch(Objects::isNull));
   }
 
   private static boolean inStack(PStack<SymbolicValueSymbol> stack, SymbolicValue symbolicValue) {

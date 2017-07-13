@@ -13,7 +13,7 @@ class A {
     IntStream range = IntStream.range(0, 10);
     range.count(); // flow@is {{Pipeline is consumed here.}}
     range.average(); // Noncompliant [[flows=is]]
-    range.filter(i -> true); // Noncompliant [[flows=is]]
+    range.filter(i -> true); // Doesn't raise issue, because exception is thrown on previous line and SE is stopped
   }
 
   void pipeline() {

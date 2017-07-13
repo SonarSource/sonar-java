@@ -27,14 +27,18 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
@@ -42,16 +46,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Note that {@link StreamNotConsumedCheck} is implemented by using constraints set by this check
+ */
 @Rule(key = "S3959")
 public class StreamConsumedCheck extends SECheck {
 
-  public enum StreamConsumedConstraint implements Constraint {
-    CONSUMED;
-
-    @Override
-    public String valueAsString() {
-      return "consumed";
-    }
+  public enum StreamPipelineConstraint implements Constraint {
+    CONSUMED, NOT_CONSUMED
   }
 
   private static final Set<String> STREAM_TYPES = ImmutableSet.of("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
@@ -62,39 +64,77 @@ public class StreamConsumedCheck extends SECheck {
       "allMatch", "noneMatch", "average", "summaryStatistics");
 
     STREAM_TYPES.forEach(streamType -> terminalMethods.forEach(method ->
-        TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
+      TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
   }
   private static final MethodMatcherCollection INTERMEDIATE_OPERATIONS = MethodMatcherCollection.create();
   static {
     List<String> intermediateMethods = ImmutableList.of("filter", "map", "mapToInt", "mapToLong", "mapToDouble", "flatMap", "flatMapToInt", "flatMapToLong", "flatMapToDouble",
-      "flatMapToObj", "distinct", "sorted", "peek", "limit", "mapToObj");
+      "flatMapToObj", "distinct", "sorted", "peek", "limit", "mapToObj", "skip");
     STREAM_TYPES.forEach(streamType -> intermediateMethods.forEach(method ->
       INTERMEDIATE_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
   }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    if (!syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      return context.getState();
-    }
-    MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-    ProgramState programState = context.getState();
-    SymbolicValue invocationTarget = invocationTarget(programState, mit);
-    if (isIntermediateOperation(mit)) {
-      // intermediate operations return same stream pipeline, so we reuse SV
-      context.getConstraintManager().setValueFactory(() -> invocationTarget);
-    }
-    if ((isIntermediateOperation(mit) || isTerminalOperation(mit)) && isPipelineConsumed(programState, invocationTarget)) {
-      reportIssue(syntaxNode, "Refactor this code so that this consumed stream pipeline is not reused.", flow(context, invocationTarget));
-    }
-    if (isTerminalOperation(mit)) {
-      return Iterables.getOnlyElement(invocationTarget.setConstraint(programState, StreamConsumedConstraint.CONSUMED));
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      return handleMethodInvocation(context, syntaxNode);
     }
     return context.getState();
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flow(CheckerContext context, SymbolicValue invocationTarget) {
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), invocationTarget, Collections.singletonList(StreamConsumedConstraint.class));
+  private ProgramState handleMethodInvocation(CheckerContext context, Tree syntaxNode) {
+    MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
+    ProgramState programState = context.getState();
+    programState = removeConstraintOnArgs(programState, mit);
+    SymbolicValue invocationTarget = invocationTarget(programState, mit);
+    if ((isIntermediateOperation(mit) || isTerminalOperation(mit))
+        && isPipelineConsumed(programState, invocationTarget)) {
+      reportIssue(syntaxNode, "Refactor this code so that this consumed stream pipeline is not reused.", flow(invocationTarget, context.getNode()));
+      return null;
+    }
+    if (isIntermediateOperation(mit)) {
+      // intermediate operations return same stream pipeline, so we reuse SV
+      context.getConstraintManager().setValueFactory(() -> invocationTarget);
+      return Iterables.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.NOT_CONSUMED));
+    }
+    if (isTerminalOperation(mit)) {
+      return Iterables.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
+    }
+    if (mit.symbol().isUnknown()) {
+      // lambdas used in pipelines are sometimes not resolved properly, this is to shutdown the noise
+      programState = programState.removeConstraintsOnDomain(invocationTarget, StreamPipelineConstraint.class);
+    }
+    return programState;
+  }
+
+  private static ProgramState removeConstraintOnArgs(ProgramState programState, MethodInvocationTree mit) {
+    ProgramState state = programState;
+    for (SymbolicValue arg : programState.peekValues(mit.arguments().size())) {
+      state = state.removeConstraintsOnDomain(arg, StreamPipelineConstraint.class);
+    }
+    return state;
+  }
+
+  private static SymbolicValue invocationTarget(ProgramState programState, MethodInvocationTree mit) {
+    return programState.peekValue(mit.arguments().size());
+  }
+
+  private static boolean isIntermediateOperation(MethodInvocationTree mit) {
+    return INTERMEDIATE_OPERATIONS.anyMatch(mit);
+  }
+
+  private static boolean isPipelineConsumed(ProgramState programState, SymbolicValue symbolicValue) {
+    StreamPipelineConstraint constraint = programState.getConstraint(symbolicValue, StreamPipelineConstraint.class);
+    return constraint == StreamPipelineConstraint.CONSUMED;
+  }
+
+  private static boolean isTerminalOperation(MethodInvocationTree methodInvocationTree) {
+    return TERMINAL_OPERATIONS.anyMatch(methodInvocationTree);
+  }
+
+  private static Set<List<JavaFileScannerContext.Location>> flow(SymbolicValue invocationTarget, ExplodedGraph.Node node) {
+    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, Collections.singleton(invocationTarget), StreamPipelineConstraint.CONSUMED::equals, c -> false,
+      Collections.singletonList(StreamPipelineConstraint.class), Collections.emptySet());
     // make copy with explicit message
     return flows.stream()
       .map(f ->
@@ -113,20 +153,25 @@ public class StreamConsumedCheck extends SECheck {
     return tree;
   }
 
-  private static SymbolicValue invocationTarget(ProgramState programState, MethodInvocationTree mit) {
-    return programState.peekValue(mit.arguments().size());
+  @Override
+  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    ProgramState state = context.getState();
+    if (isReturningPipeline(syntaxNode) || nonLocalAssignment(syntaxNode)) {
+      return state.removeConstraintsOnDomain(state.peekValue(), StreamPipelineConstraint.class);
+    }
+    return state;
   }
 
-  private static boolean isIntermediateOperation(MethodInvocationTree mit) {
-    return INTERMEDIATE_OPERATIONS.anyMatch(mit);
+  private static boolean nonLocalAssignment(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.ASSIGNMENT)) {
+      ExpressionTree variable = ((AssignmentExpressionTree) syntaxNode).variable();
+      return !variable.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) variable).symbol().owner().isTypeSymbol();
+    }
+    return false;
   }
 
-  private static boolean isPipelineConsumed(ProgramState programState, SymbolicValue symbolicValue) {
-    StreamConsumedConstraint constraint = programState.getConstraint(symbolicValue, StreamConsumedConstraint.class);
-    return constraint == StreamConsumedConstraint.CONSUMED;
+  private static boolean isReturningPipeline(Tree syntaxNode) {
+    return syntaxNode.is(Tree.Kind.RETURN_STATEMENT) && ((ReturnStatementTree) syntaxNode).expression() != null;
   }
 
-  private static boolean isTerminalOperation(MethodInvocationTree methodInvocationTree) {
-    return TERMINAL_OPERATIONS.anyMatch(methodInvocationTree);
-  }
 }
