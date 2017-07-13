@@ -88,12 +88,13 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   private static boolean hasConstantInitializer(VariableTree variableTree) {
     Tree init = variableTree.initializer();
     if (init != null) {
+      boolean arrayWithInitializer = true;
       if (init.is(Tree.Kind.NEW_ARRAY)) {
-        //exclude allocations : new int[6] but allow initialization new int[]{1,2};
+        // exclude allocations : new int[6] but allow initialization new int[]{1,2};
         NewArrayTree newArrayTree = (NewArrayTree) init;
-        return newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
+        arrayWithInitializer = newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
       }
-      return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      return arrayWithInitializer && !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }
     return false;
   }
