@@ -177,3 +177,19 @@ public class Junit5MetaAnnotationTest {
   }
 
 }
+
+public class JUnit5InheritedDefaultMethodsTest implements TestA { // Compliant
+
+}
+
+interface TestA {
+
+  @Test
+  default void method1() {}
+}
+
+public class CrazyHierarchyTest extends AbstractCrazyHierarchyTest { } // Compliant, contains test from TestA interface
+
+abstract class AbstractCrazyHierarchyTest implements TestB { }
+
+interface TestB extends TestA { }
