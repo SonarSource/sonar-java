@@ -66,6 +66,10 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
     ExpressionTree firstArgument = tree.arguments().get(0);
     Type argumentType = firstArgument.symbolType();
+    if(argumentType.isUnknown()) {
+      // could happen with type inference.
+      return;
+    }
     Type collectionType = getMethodOwner(tree);
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
