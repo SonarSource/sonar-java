@@ -180,3 +180,16 @@ class J {
     return null;
   }
 }
+class Test {
+  private List<String> badGrades = null;
+
+  public String testSplitArray() {
+    badGrades = java.util.Arrays.asList("C", "D", "E");
+
+    List<String> myGrades = Arrays.asList("A,B,A", "A,C,A", "A,D,E");
+    String test = myGrades.stream().
+      map(grade -> unknownMethod()).
+      filter(grade -> badGrades.contains(grade)). // compliant, type inference is unable to resolve type of grade because of unknownMethod
+      findFirst().orElse("Nothing");
+  }
+}
