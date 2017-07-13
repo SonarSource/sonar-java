@@ -231,6 +231,10 @@ public class JavaSymbol implements Symbol {
     return isFlag(Flags.VOLATILE);
   }
 
+  public boolean isDefault() {
+    return isFlag(Flags.DEFAULT);
+  }
+
   @Override
   public boolean isUnknown() {
     return false;

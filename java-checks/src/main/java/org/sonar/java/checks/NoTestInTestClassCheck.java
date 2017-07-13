@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -70,7 +71,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private void checkClass(ClassTree classTree) {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
-      Stream<Symbol> members = getAllMembers(classSymbol);
+      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol);
       IdentifierTree simpleName = classTree.simpleName();
       if (classSymbol.metadata().isAnnotatedWith("org.testng.annotations.Test")) {
         checkTestNGmembers(simpleName, members);
@@ -85,22 +86,22 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkTestNGmembers(IdentifierTree className, Stream<Symbol> members) {
-    if (members.noneMatch(member -> member.isMethodSymbol() && member.isPublic() && !member.isStatic() && ((Symbol.MethodSymbol) member).returnType() != null)) {
+  private void checkTestNGmembers(IdentifierTree className, Stream<Symbol.MethodSymbol> members) {
+    if (members.noneMatch(member -> member.isPublic() && !member.isStatic() && member.returnType() != null)) {
       reportClass(className);
     }
   }
 
-  private void checkJunit3TestClass(IdentifierTree className, Stream<Symbol> members) {
-    if (members.noneMatch(m -> m.isMethodSymbol() && m.name().startsWith("test"))) {
+  private void checkJunit3TestClass(IdentifierTree className, Stream<Symbol.MethodSymbol> members) {
+    if (members.noneMatch(m -> m.name().startsWith("test"))) {
       reportClass(className);
     }
   }
 
-  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol> members) {
+  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol.MethodSymbol> members) {
     if (symbol.name().endsWith("Test")
       && !runWithEnclosedOrCucumberOrSuiteRunner(symbol)
-      && members.noneMatch(m -> m.isMethodSymbol() && isTestMethod(m))) {
+      && members.noneMatch(NoTestInTestClassCheck::isTestMethod)) {
       reportClass(className);
     }
   }
@@ -121,13 +122,19 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return method.metadata().annotations().stream().anyMatch(PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
   }
 
-  private static Stream<Symbol> getAllMembers(Symbol.TypeSymbol symbol) {
-    Stream<Symbol> members = symbol.memberSymbols().stream();
-    Type superclass = symbol.superClass();
-    while (superclass != null && !"java.lang.Object".equals(superclass.fullyQualifiedName())) {
-      members = Stream.concat(members, superclass.symbol().memberSymbols().stream());
-      superclass = superclass.symbol().superClass();
+  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol) {
+    if ("java.lang.Object".equals(symbol.type().fullyQualifiedName())) {
+      return Stream.empty();
     }
+    Stream<Symbol.MethodSymbol> members = symbol.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(Symbol.MethodSymbol.class::cast);
+    Type superClass = symbol.superClass();
+    if (superClass != null) {
+      members = Stream.concat(members, getAllMembers(superClass.symbol()));
+    }
+    Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
+      .flatMap(i -> getAllMembers(i.symbol()))
+      .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
+    members = Stream.concat(members, defaultMethodsFromInterfaces);
     return members;
   }
 
