@@ -1,0 +1,15 @@
+<p>The Stream API provides the <code>boolean anyMatch(Predicate&lt;? super T&gt; predicate)</code> method, which is a very convenient and efficient
+way to check whether any elements of a stream match the provided predicate.</p>
+<p>This rule raises an issue when a <code>Stream</code> chain could be replaced by this method call. Specifically:</p>
+<ul>
+  <li> <code>filter(Predicate&lt;? super T&gt; predicate).findFirst().isPresent()</code> </li>
+  <li> <code>filter(Predicate&lt;? super T&gt; predicate).findAny().isPresent()</code> </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+boolean hasRed = widgets.stream().filter(w -&gt; w.getColor() == RED).findFirst().isPresent(); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+boolean hasRed = widgets.stream().anyMatch(w -&gt; w.getColor() == RED);
+</pre>

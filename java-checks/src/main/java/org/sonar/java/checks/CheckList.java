@@ -502,6 +502,7 @@ public final class CheckList {
       .add(UselessPackageInfoCheck.class)
       .add(StreamConsumedCheck.class)
       .add(StreamNotConsumedCheck.class)
+      .add(PreferStreamAnyMatchCheck.class)
       .build();
   }
 
