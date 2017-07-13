@@ -391,6 +391,7 @@ public final class CheckList {
       .add(UnusedReturnedDataCheck.class)
       .add(StringToStringCheck.class)
       .add(ThreadStartedInConstructorCheck.class)
+      .add(ThreadLocalWithInitialCheck.class)
       .add(KeySetInsteadOfEntrySetCheck.class)
       .add(IndexOfWithPositiveNumberCheck.class)
       .add(ReadObjectSynchronizedCheck.class)
