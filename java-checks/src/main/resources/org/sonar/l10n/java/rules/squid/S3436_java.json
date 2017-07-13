@@ -1,0 +1,15 @@
+{
+  "title": "Value-based classes should not be used for locking",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "multi-threading",
+    "java8",
+    "lock-in"
+  ],
+  "defaultSeverity": "Major"
+}
