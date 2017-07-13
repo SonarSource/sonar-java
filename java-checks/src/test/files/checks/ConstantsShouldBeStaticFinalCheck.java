@@ -32,6 +32,9 @@ class A {
   }
   private final String[] NOT_POSSIBLE = {}; // Noncompliant
   protected final Object [] a = new Object[] {"UTF-8", null}; // Noncompliant
+  private final Matcher[] matchers = new Matcher[]{ //should not raise issue
+    matcher(g(DIGIT_SEQUENCE, "\\.", o2n(DIGIT), opt(EXPONENT_PART), opt(FLOATING_SUFFIX), CppLexer.OPT_UD_SUFFIX)),
+  };
 }
 
 interface B {
