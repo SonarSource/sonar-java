@@ -53,7 +53,11 @@ public class JavaClasspath extends AbstractJavaClasspath {
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
       if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
-        throw new AnalysisException("Please provide compiled classes of your project with sonar.java.binaries property");
+        if(isSonarLint()) {
+          LOG.warn("sonar.java.binaries is empty, please double check your configuration");
+        } else {
+          throw new AnalysisException("Please provide compiled classes of your project with sonar.java.binaries property");
+        }
       }
       elements = new ArrayList<>(binaries);
       if (libraries.isEmpty() && hasJavaSources()) {
@@ -63,6 +67,10 @@ public class JavaClasspath extends AbstractJavaClasspath {
       elements.addAll(libraries);
       profiler.stopInfo();
     }
+  }
+
+  protected boolean isSonarLint() {
+    return false;
   }
 
   private boolean useDeprecatedProperties() {
