@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.BooleanUtils;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -38,21 +39,46 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import javax.annotation.Nullable;
+
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<SymbolMetadata.AnnotationInstance> PREDICATE_ANNOTATION_TEST_OR_UNKNOWN = input -> {
-    Type type = input.symbol().type();
-    return type.isUnknown() || isTestAnnotation(type);
-  };
+  private final Map<String, Boolean> testAnnotations;
 
-  private static boolean isTestAnnotation(Type type) {
-    return type.is("org.junit.Test") || type.is("org.testng.annotations.Test") || type.is("org.junit.jupiter.api.Test")
-      || type.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.Test");
+  public NoTestInTestClassCheck() {
+    testAnnotations = new HashMap<>();
+    testAnnotations.put("org.junit.Test", Boolean.TRUE);
+    testAnnotations.put("org.testng.annotations.Test", Boolean.TRUE);
+    testAnnotations.put("org.junit.jupiter.api.Test", Boolean.TRUE);
+  }
+
+  private boolean isTestAnnotation(Type type) {
+    return BooleanUtils.isTrue(testAnnotations.get(type.fullyQualifiedName())) || isJUnitTestableMetaAnnotated(type);
+  }
+
+  private boolean isJUnitTestableMetaAnnotated(@Nullable Type type) {
+    if (type == null || BooleanUtils.isFalse(testAnnotations.get(type.fullyQualifiedName()))) {
+      return false;
+    }
+    testAnnotations.put(type.fullyQualifiedName(), Boolean.FALSE);
+    SymbolMetadata metadata = type.symbol().metadata();
+    if (metadata.isAnnotatedWith("org.junit.platform.commons.annotation.Testable")) {
+      testAnnotations.put(type.fullyQualifiedName(), Boolean.TRUE);
+      return true;
+    }
+    for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
+      if (isJUnitTestableMetaAnnotated(annotation.symbol().type())) {
+        testAnnotations.put(type.fullyQualifiedName(), Boolean.TRUE);
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -101,7 +127,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol.MethodSymbol> members) {
     if (symbol.name().endsWith("Test")
       && !runWithEnclosedOrCucumberOrSuiteRunner(symbol)
-      && members.noneMatch(NoTestInTestClassCheck::isTestMethod)) {
+      && members.noneMatch(this::isTestMethod)) {
       reportClass(className);
     }
   }
@@ -118,8 +144,11 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean isTestMethod(Symbol method) {
-    return method.metadata().annotations().stream().anyMatch(PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
+  private boolean isTestMethod(Symbol method) {
+    return method.metadata().annotations().stream().anyMatch(input -> {
+      Type type = input.symbol().type();
+      return type.isUnknown() || isTestAnnotation(type);
+    });
   }
 
   private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol) {
