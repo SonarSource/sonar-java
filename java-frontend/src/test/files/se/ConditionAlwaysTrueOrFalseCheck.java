@@ -2132,7 +2132,13 @@ class OptionalEmptyNotPresent {
     }
     return op;
   }
+  private void orElse() {
+    java.util.Optional<String> op = java.util.Optional.empty();
+    String val = op.orElse(null);
+    if(val == null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
 
+    }
+  }
 }
 
 abstract class SubtypeOfErrorCaught {

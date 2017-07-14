@@ -770,3 +770,10 @@ class finalFieldSetToNull {
     this.field.toString(); // flow@fieldNull {{'field' is dereferenced.}}
   }
 }
+
+class OptionalOrElseNull {
+  void fun(java.util.Optional<String> opt) {
+     String s = opt.orElse(null);
+     s.toString(); // Noncompliant
+  }
+}

@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.base.Preconditions;
-
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +46,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     "\"NoSuchElementException\" will be thrown when invoking method \"%s()\" without verifying Optional parameter.");
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
   private static final MethodMatcher OPTIONAL_GET = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("get").withoutParameter();
+  private static final MethodMatcher OPTIONAL_ORELSE = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("orElse").withAnyParameters();
   private static final MethodMatcher OPTIONAL_IS_PRESENT = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("isPresent").withoutParameter();
   private static final MethodMatcher OPTIONAL_EMPTY = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("empty").withoutParameter();
   private static final MethodMatcher OPTIONAL_OF = MethodMatcher.create().typeDefinition(JAVA_UTIL_OPTIONAL).name("of").withAnyParameters();
@@ -53,6 +54,11 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
   private enum OptionalConstraint implements Constraint {
     PRESENT, NOT_PRESENT;
+
+    @Override
+    public boolean isValidWith(@Nullable Constraint constraint) {
+      return constraint == null || this == constraint;
+    }
 
     @Override
     public boolean hasPreciseValue() {
@@ -151,6 +157,15 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
+        programState = null;
+      } else if (OPTIONAL_ORELSE.matches(tree)) {
+        ProgramState.Pop pop = programState.unstackValue(2);
+        SymbolicValue orElseValue = pop.values.get(0);
+        SymbolicValue optional = pop.values.get(1);
+        List<ProgramState> psEmpty = optional.setConstraint(pop.state.stackValue(orElseValue), OptionalConstraint.NOT_PRESENT);
+        List<ProgramState> psPresent = optional.setConstraint(pop.state.stackValue(constraintManager.createSymbolicValue(tree)), OptionalConstraint.PRESENT);
+        psEmpty.forEach(context::addTransition);
+        psPresent.forEach(context::addTransition);
         programState = null;
       }
     }
