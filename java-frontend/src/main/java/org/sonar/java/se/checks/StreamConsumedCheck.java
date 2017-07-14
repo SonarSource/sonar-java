@@ -33,6 +33,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -61,17 +62,10 @@ public class StreamConsumedCheck extends SECheck {
   private static final MethodMatcherCollection TERMINAL_OPERATIONS = MethodMatcherCollection.create();
   static {
     List<String> terminalMethods = ImmutableList.of("forEach", "forEachOrdered", "toArray", "collect", "reduce", "findAny", "findFirst", "count", "min", "max", "anyMatch",
-      "allMatch", "noneMatch", "average", "summaryStatistics");
+      "allMatch", "noneMatch", "average", "summaryStatistics", "sum");
 
     STREAM_TYPES.forEach(streamType -> terminalMethods.forEach(method ->
       TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
-  }
-  private static final MethodMatcherCollection INTERMEDIATE_OPERATIONS = MethodMatcherCollection.create();
-  static {
-    List<String> intermediateMethods = ImmutableList.of("filter", "map", "mapToInt", "mapToLong", "mapToDouble", "flatMap", "flatMapToInt", "flatMapToLong", "flatMapToDouble",
-      "flatMapToObj", "distinct", "sorted", "peek", "limit", "mapToObj", "skip");
-    STREAM_TYPES.forEach(streamType -> intermediateMethods.forEach(method ->
-      INTERMEDIATE_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
   }
 
   @Override
@@ -120,7 +114,11 @@ public class StreamConsumedCheck extends SECheck {
   }
 
   private static boolean isIntermediateOperation(MethodInvocationTree mit) {
-    return INTERMEDIATE_OPERATIONS.anyMatch(mit);
+    Symbol method = mit.symbol();
+    return method.isMethodSymbol()
+      && !method.isStatic()
+      && STREAM_TYPES.contains(method.owner().type().fullyQualifiedName())
+      && STREAM_TYPES.contains(((Symbol.MethodSymbol) method).returnType().type().fullyQualifiedName());
   }
 
   private static boolean isPipelineConsumed(ProgramState programState, SymbolicValue symbolicValue) {
