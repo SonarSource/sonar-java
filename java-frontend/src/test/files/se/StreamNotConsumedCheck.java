@@ -26,6 +26,8 @@ class A {
     stream.filter(e -> true).count(); // Compliant - consumed
     Stream<Integer> s = Stream.of(1, 2, 3).filter(e -> true);
     s.count( ); // Compliant - consumed
+    Stream.of("1","2","3").mapToLong(Long::valueOf).sum(); // Compliant
+    List<Integer> boxedStream = IntStream.range(0, 10).boxed().collect(Collectors.toList()); // Compliant
   }
 
   void onePath(boolean test) {
