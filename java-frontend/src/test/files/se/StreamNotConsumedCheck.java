@@ -28,6 +28,8 @@ class A {
     s.count( ); // Compliant - consumed
     Stream.of("1","2","3").mapToLong(Long::valueOf).sum(); // Compliant
     List<Integer> boxedStream = IntStream.range(0, 10).boxed().collect(Collectors.toList()); // Compliant
+    Stream.of("1","2","3").sorted().iterator(); // Compliant
+    Stream.of("1","2","3").sorted().spliterator(); // Compliant
   }
 
   void onePath(boolean test) {
