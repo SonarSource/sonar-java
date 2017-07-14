@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 
 class A extends junit.framework.TestCase {
   void testFoo() {
@@ -193,3 +194,18 @@ public class CrazyHierarchyTest extends AbstractCrazyHierarchyTest { } // Compli
 abstract class AbstractCrazyHierarchyTest implements TestB { }
 
 interface TestB extends TestA { }
+
+class MyUnitTest { // Compliant
+  @org.junit.jupiter.params.ParameterizedTest
+  void foo() {
+    assertThat(plop);
+  }
+}
+
+class CustomAnnotationTest {
+  @CustomAnnotation
+  void foo() {}
+}
+
+@org.junit.platform.commons.annotation.Testable
+@interface CustomAnnotation {}
