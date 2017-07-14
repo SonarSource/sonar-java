@@ -66,6 +66,8 @@ public class StreamConsumedCheck extends SECheck {
 
     STREAM_TYPES.forEach(streamType -> terminalMethods.forEach(method ->
       TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
+    TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name("iterator").withoutParameter());
+    TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name("spliterator").withoutParameter());
   }
 
   @Override
