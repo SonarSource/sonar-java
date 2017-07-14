@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.BooleanUtils;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -39,42 +38,34 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
-  private final Map<String, Boolean> testAnnotations;
-
-  public NoTestInTestClassCheck() {
-    testAnnotations = new HashMap<>();
-    testAnnotations.put("org.junit.Test", Boolean.TRUE);
-    testAnnotations.put("org.testng.annotations.Test", Boolean.TRUE);
-    testAnnotations.put("org.junit.jupiter.api.Test", Boolean.TRUE);
-  }
+  private final Set<String> testAnnotations = new HashSet<>();
+  private final Set<String> seenAnnotations = new HashSet<>();
 
   private boolean isTestAnnotation(Type type) {
-    return BooleanUtils.isTrue(testAnnotations.get(type.fullyQualifiedName())) || isJUnitTestableMetaAnnotated(type);
+    return testAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
   }
 
-  private boolean isJUnitTestableMetaAnnotated(@Nullable Type type) {
-    if (type == null || BooleanUtils.isFalse(testAnnotations.get(type.fullyQualifiedName()))) {
+  private boolean isJUnitTestableMetaAnnotated(Type type) {
+    if (seenAnnotations.contains(type.fullyQualifiedName())) {
       return false;
     }
-    testAnnotations.put(type.fullyQualifiedName(), Boolean.FALSE);
+    seenAnnotations.add(type.fullyQualifiedName());
     SymbolMetadata metadata = type.symbol().metadata();
     if (metadata.isAnnotatedWith("org.junit.platform.commons.annotation.Testable")) {
-      testAnnotations.put(type.fullyQualifiedName(), Boolean.TRUE);
+      testAnnotations.add(type.fullyQualifiedName());
       return true;
     }
     for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
       if (isJUnitTestableMetaAnnotated(annotation.symbol().type())) {
-        testAnnotations.put(type.fullyQualifiedName(), Boolean.TRUE);
+        testAnnotations.add(type.fullyQualifiedName());
         return true;
       }
     }
@@ -89,9 +80,18 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
+      resetAnnotationCache();
       CompilationUnitTree cut = (CompilationUnitTree) tree;
       cut.types().stream().filter(typeTree -> typeTree.is(Kind.CLASS)).forEach(typeTree -> checkClass((ClassTree) typeTree));
     }
+  }
+
+  private void resetAnnotationCache() {
+    testAnnotations.clear();
+    seenAnnotations.clear();
+    testAnnotations.add("org.junit.Test");
+    testAnnotations.add("org.testng.annotations.Test");
+    testAnnotations.add("org.junit.jupiter.api.Test");
   }
 
   private void checkClass(ClassTree classTree) {
