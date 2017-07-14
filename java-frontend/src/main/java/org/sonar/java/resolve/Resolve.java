@@ -571,6 +571,9 @@ public class Resolve {
         .map(t -> typeSubstitutionSolver.applySubstitution(t, substitution))
         .collect(Collectors.toList());
     }
+    if (callSite.isArray() && candidate.name().equals("clone")) {
+      returnType = callSite;
+    }
     resolution.type = new MethodJavaType(formals, returnType, thrownTypes, defSite.symbol);
     return resolution;
   }

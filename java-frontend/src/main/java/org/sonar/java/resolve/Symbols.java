@@ -199,14 +199,13 @@ public class Symbols {
       entry.getValue().primitiveType = entry.getKey();
     }
 
-    // TODO comment me
     arrayClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Array", noSymbol);
     ClassJavaType arrayClassType = (ClassJavaType) arrayClass.type;
     arrayClassType.supertype = objectType;
     arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
+    // clone method return type is handled during method resolution.
     arrayClass.members = new Scope(arrayClass);
     arrayClass.members().enter(new JavaSymbol.VariableJavaSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
-    // TODO arrayClass implements clone() method
 
     // java.lang.Synthetic is a virtual annotation added by ASM to workaround a bug in javac on inner classes parameter numbers.
     // Predefining this type avoids to look it up in classpath where it will not be found. We rely on this to detect synthetic parameters on some enum constructor for instance.
