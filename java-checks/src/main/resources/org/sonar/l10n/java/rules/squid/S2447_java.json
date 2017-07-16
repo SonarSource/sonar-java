@@ -7,7 +7,13 @@
     "constantCost": "20min"
   },
   "tags": [
-    "pitfall"
+    "pitfall",
+    "cert",
+    "cwe"
+  ],
+  "standards": [
+    "CERT",
+    "CWE"
   ],
   "defaultSeverity": "Critical"
 }
