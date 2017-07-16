@@ -8,7 +8,11 @@
   },
   "tags": [
     "multi-threading",
+    "cert",
     "pitfall"
+  ],
+  "standards": [
+    "CERT"
   ],
   "defaultSeverity": "Blocker"
 }

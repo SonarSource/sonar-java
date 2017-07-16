@@ -8,9 +8,11 @@
   },
   "tags": [
     "cert",
+    "cwe",
     "unused"
   ],
   "standards": [
+    "CWE",
     "CERT"
   ],
   "defaultSeverity": "Major"

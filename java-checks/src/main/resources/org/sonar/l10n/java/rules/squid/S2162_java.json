@@ -7,10 +7,12 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cert"
+    "cert",
+    "cwe"
   ],
   "standards": [
-    "CERT"
+    "CERT",
+    "CWE"
   ],
   "defaultSeverity": "Minor"
 }
