@@ -30,6 +30,11 @@ public class BadConstantNameCheckTest {
   }
 
   @Test
+  public void no_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadConstantNameNoIssueWithoutSemantic.java", new BadConstantNameCheck());
+  }
+
+  @Test
   public void test2() {
     BadConstantNameCheck check = new BadConstantNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
