@@ -700,6 +700,15 @@ public class CFG {
       targetBlock = labelsBreakTarget.get(label.name());
     }
     currentBlock = createUnconditionalJump(tree, targetBlock);
+    if(currentBlock.exitBlock != null) {
+      currentBlock.exitBlock = null;
+      Block last = breakTargets.removeLast();
+      targetBlock.successors().clear();
+      Block exitBlock = targetBlock.exitBlock;
+      targetBlock.addSuccessor(breakTargets.getLast());
+      targetBlock.addExitSuccessor(exitBlock);
+      breakTargets.addLast(last);
+    }
   }
 
   private void buildContinueStatement(ContinueStatementTree tree) {
@@ -714,6 +723,8 @@ public class CFG {
       targetBlock = labelsContinueTarget.get(label.name());
     }
     currentBlock = createUnconditionalJump(tree, targetBlock);
+    // cleanup for continue statement to a finally: continue block can't have an exit block.
+    currentBlock.exitBlock = null;
   }
 
   private void buildWhileStatement(WhileStatementTree whileStatement) {
@@ -816,6 +827,8 @@ public class CFG {
       build(finallyBlockTree);
       finallyBlock.addExitSuccessor(exitBlock());
       exitBlocks.push(currentBlock);
+      addContinueTarget(finallyBlock);
+      breakTargets.addLast(finallyBlock);
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
@@ -841,6 +854,8 @@ public class CFG {
     currentBlock.elements.add(tryStatementTree);
     if (finallyBlockTree != null) {
       exitBlocks.pop();
+      continueTargets.removeLast();
+      breakTargets.removeLast();
     }
   }
 
