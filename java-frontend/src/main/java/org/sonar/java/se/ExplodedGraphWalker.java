@@ -636,7 +636,7 @@ public class ExplodedGraphWalker {
     }
 
     // Enqueue additional exceptional paths corresponding to unchecked exceptions, for instance OutOfMemoryError
-    enqueueUncheckedExceptionalPaths();
+    enqueueUncheckedExceptionalPaths(methodSymbol);
 
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.valuesAndSymbols);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
@@ -652,7 +652,7 @@ public class ExplodedGraphWalker {
           invocationTypes,
           programState,
           () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType(), constraintManager::createExceptionalSymbolicValue))
-          .forEach(psYield -> enqueueExceptionalPaths(psYield, yield)));
+          .forEach(psYield -> enqueueExceptionalPaths(psYield, methodSymbol, yield)));
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
@@ -697,18 +697,18 @@ public class ExplodedGraphWalker {
     ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
       .map(constraintManager::createExceptionalSymbolicValue)
       .map(ps::stackValue)
-      .forEach(this::enqueueExceptionalPaths);
+      .forEach(ps1 -> enqueueExceptionalPaths(ps1, symbol));
   }
 
-  private void enqueueUncheckedExceptionalPaths() {
-    enqueueExceptionalPaths(programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null)));
+  private void enqueueUncheckedExceptionalPaths(Symbol methodSymbol) {
+    enqueueExceptionalPaths(programState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(null)), methodSymbol);
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps) {
-    enqueueExceptionalPaths(ps, null);
+  private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol) {
+    enqueueExceptionalPaths(ps, methodSymbol, null);
   }
 
-  private void enqueueExceptionalPaths(ProgramState ps, @Nullable MethodYield methodYield) {
+  private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol, @Nullable MethodYield methodYield) {
     Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
     List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
     SymbolicValue peekValue = ps.peekValue();
@@ -735,7 +735,7 @@ public class ExplodedGraphWalker {
 
     // use other exceptional blocks, i.e. finally block and exit blocks
     List<CFG.Block> otherBlocks = exceptionBlocks.stream()
-      .filter(CFG.Block.IS_CATCH_BLOCK.negate())
+      .filter(CFG.Block.IS_CATCH_BLOCK.negate().or(b -> methodSymbol.isUnknown()))
       .collect(Collectors.toList());
     if (otherBlocks.isEmpty()) {
       // explicitly add the exception branching to method exit
