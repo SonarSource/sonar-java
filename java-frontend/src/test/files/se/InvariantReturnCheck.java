@@ -166,5 +166,14 @@ class A {
     }
     return null;
   }
+
+  private boolean someMethod() {
+    try {
+      someExceptionalMethod();
+    } catch (MyException e) {
+      return false;
+    }
+    return true;
+  }
 }
 
