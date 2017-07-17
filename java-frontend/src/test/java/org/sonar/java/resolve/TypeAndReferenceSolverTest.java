@@ -366,7 +366,8 @@ public class TypeAndReferenceSolverTest {
     // method call
     assertThat(typeOf("this.method()").isTagged(JavaType.INT)).isTrue();
     assertThat(typeOf("this.argMethod(12)").isTagged(JavaType.INT)).isTrue();
-    assertThat(typeOf("var[42].clone()")).isSameAs(symbols.objectType);
+    assertThat(typeOf("var[42].clone()")).isEqualTo(new ArrayJavaType(symbols.intType, symbols.arrayClass));
+    assertThat(typeOf("var[42].toString()")).isEqualTo(symbols.stringType);
 
     // field access
     assertThat(typeOfExpression("this.var")).isSameAs(variableSymbol.type);
