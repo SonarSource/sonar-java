@@ -63,4 +63,32 @@ class A {
     this.streamField = streamField.filter(e -> true); // Compliant, assigned to field
   }
 
+  void exceptionalPath() {
+    try {
+      Stream.of(1,2,3)
+        .filter(e -> true)
+        .count();
+    } catch (Exception ex) {
+
+    }
+  }
+
+  void exceptionalPath2() {
+    try {
+      Stream.of(1,2,3).filter(e -> true);  // Noncompliant
+
+      Stream.of(1,2,3)
+        .filter(e -> true)
+        .skip(skipCount())
+        .count();
+
+      Stream.of(1,2,3).skip(skipCount()); // Noncompliant
+    } catch (Exception ex) {
+      System.out.println("Exception!");
+    }
+  }
+
+  int skipCount() {
+    return 42;
+  }
 }

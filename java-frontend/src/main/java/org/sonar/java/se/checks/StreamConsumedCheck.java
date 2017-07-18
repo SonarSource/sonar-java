@@ -42,7 +42,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +78,40 @@ public class StreamConsumedCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return handleMethodInvocation(context, syntaxNode);
     }
-    return context.getState();
+    ProgramState state = context.getState();
+    if (state.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      state = removeConstraintOnExceptionalPath(context);
+    }
+    return state;
+  }
+
+  private static ProgramState removeConstraintOnExceptionalPath(CheckerContext context) {
+    ProgramState state = context.getState();
+    if (state.getValuesWithConstraints(StreamPipelineConstraint.NOT_CONSUMED).isEmpty()) {
+      return state;
+    }
+    ExplodedGraph.Node node = context.getNode();
+    Deque<ExplodedGraph.Edge> ancestors = new ArrayDeque<>(node.edges());
+    Set<ExplodedGraph.Edge> visited = new HashSet<>();
+    while (!ancestors.isEmpty()) {
+      ExplodedGraph.Edge edge = ancestors.pop();
+      if (visited.contains(edge)) {
+        continue;
+      }
+      visited.add(edge);
+      ancestors.addAll(edge.parent().edges());
+      if (edge.parent().isMethodInvocationNode()) {
+        MethodInvocationTree mit = (MethodInvocationTree) edge.parent().programPoint.syntaxTree();
+        if (isIntermediateOperation(mit)) {
+          int argumentCount = mit.arguments().size();
+          SymbolicValue symbolicValue = edge.parent().programState.peekValue(argumentCount);
+          if (state.getConstraint(symbolicValue, StreamPipelineConstraint.class) == StreamPipelineConstraint.NOT_CONSUMED) {
+            state = state.removeConstraintsOnDomain(symbolicValue, StreamPipelineConstraint.class);
+          }
+        }
+      }
+    }
+    return state;
   }
 
   private ProgramState handleMethodInvocation(CheckerContext context, Tree syntaxNode) {
