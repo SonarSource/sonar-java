@@ -101,6 +101,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void constraints_on_fields() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/ConstraintsOnFields.java", seChecks());
+  }
+
+  @Test
   public void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();
     int[] tested = {0};
