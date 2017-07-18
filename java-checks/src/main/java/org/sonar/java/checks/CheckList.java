@@ -409,7 +409,6 @@ public final class CheckList {
       .add(ForLoopUsedAsWhileLoopCheck.class)
       .add(MultilineBlocksCurlyBracesCheck.class)
       .add(MapComputeIfAbsentOrPresentCheck.class)
-      .add(HashMapComparableKeyCheck.class)
       .add(EnumMapCheck.class)
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
