@@ -46,6 +46,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
@@ -60,6 +62,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 
 public class CFGTest {
 
@@ -131,6 +134,7 @@ public class CFGTest {
     private int ifTrue = -1;
     private int ifFalse = -1;
     private int exitId = -1;
+    private boolean hasNoExit = false;
     private boolean isCatchBlock = false;
     private boolean isFinallyBlock = false;
 
@@ -243,12 +247,21 @@ public class CFGTest {
       if (isFinallyBlock) {
         assertThat(block.isFinallyBlock()).as("Block B" + block.id() + " expected to be flagged as 'finally' block").isTrue();
       }
+      if(hasNoExit) {
+        assertThat(block.exitBlock()).as("Block B" + block.id() + " has an unexpected exit block").isNull();
+      }
     }
 
     BlockChecker exit(final int id) {
       exitId = id;
       return this;
     }
+
+    BlockChecker hasNoExitBlock() {
+      hasNoExit = true;
+      return this;
+    }
+
   }
 
   private static class ElementChecker {
@@ -935,6 +948,65 @@ public class CFGTest {
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
       terminator(Tree.Kind.CONTINUE_STATEMENT, 3));
+    cfgChecker.check(cfg);
+  }
+  @Test
+  public void continue_in_try_finally() {
+    final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
+      "      try {\n" +
+      "        bar(\"try\");\n" +
+      "        continue;\n" +
+      "      } finally {\n" +
+      "        qix(\"finally\");\n" +
+      "      }\n" +
+      "    }}");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
+      ).terminator(WHILE_STATEMENT).successors(0, 4),
+      block(element(TRY_STATEMENT)).successors(3),
+      block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(STRING_LITERAL, "try"),
+        element(METHOD_INVOCATION)
+      ).successors(2).exceptions(1),
+      terminator(CONTINUE_STATEMENT, 1).hasNoExitBlock(),
+      block(element(IDENTIFIER, "qix"),
+        element(STRING_LITERAL, "finally"),
+        element(METHOD_INVOCATION)
+      ).successors(0, 5)
+      );
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void break_in_try_finally() {
+    final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
+      "      try {\n" +
+      "        bar(\"try\");\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        qix(\"finally\");\n" +
+      "      }\n" +
+      "    }}");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
+      ).terminator(WHILE_STATEMENT).successors(0, 4),
+      block(element(TRY_STATEMENT)).successors(3),
+      block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(STRING_LITERAL, "try"),
+        element(METHOD_INVOCATION)
+      ).successors(2).exceptions(1),
+      terminator(BREAK_STATEMENT, 1).hasNoExitBlock(),
+      block(element(IDENTIFIER, "qix"),
+        element(STRING_LITERAL, "finally"),
+        element(METHOD_INVOCATION)
+      ).successors(0)
+    );
     cfgChecker.check(cfg);
   }
 
