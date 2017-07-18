@@ -114,7 +114,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     SECheck check = this;
-    checkIssues.stream().filter(CheckIssue::isOnlyPossibleConstraintOnValueForAllPaths).forEach(issue -> issue.report(context, check));
+    checkIssues.stream().filter(checkIssue -> checkIssue.isOnlyPossibleIssueForReportTree(checkIssues)).forEach(issue -> issue.report(context, check));
   }
 
   private static class CheckIssue {
@@ -136,8 +136,12 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
       this.valueConstraint = valueConstraint;
     }
 
-    private boolean isOnlyPossibleConstraintOnValueForAllPaths() {
-      return node.siblings().stream().allMatch(sibling -> valueConstraint.equals(sibling.programState.getConstraint(value, ObjectConstraint.class)));
+    private boolean isOnlyPossibleIssueForReportTree(List<CheckIssue> otherIssues) {
+      return otherIssues.stream().noneMatch(this::differentIssueOnSameTree);
+    }
+
+    private boolean differentIssueOnSameTree(CheckIssue otherIssue) {
+      return this != otherIssue && getInvocation.equals(otherIssue.getInvocation) && valueConstraint != otherIssue.valueConstraint;
     }
 
     private void report(CheckerContext context, SECheck check) {

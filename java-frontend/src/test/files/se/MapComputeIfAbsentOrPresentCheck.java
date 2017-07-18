@@ -85,6 +85,26 @@ abstract class A {
       doSomething();
     }
     map.put(key, new Object());
+    doSomething(value);
+  }
+
+  void dbl(Map<String, Object> map, String key1, String key2) {
+    Object value = map.get(key1); // Compliant - you can reach each put with NULL and NOT_NULL constraint on 'value'
+    if (value == null) {
+      map.put(key1, new Object());
+    } else {
+      map.put(key1, new Object());
+    }
+    doSomething(value);
+
+    // Noncompliant@+1 [[flows=computeIfPresent]] {{Replace this "Map.get()" and condition with a call to "Map.computeIfPresent()".}}
+    value = map.get(key2); // flow@computeIfPresent {{'Map.get()' is invoked.}}
+    if (value == null) { // flow@computeIfPresent {{Implies 'value' is not null.}}
+      map.put(key1, new Object());
+    } else {
+      map.put(key2, new Object()); // flow@computeIfPresent  {{'Map.put()' is invoked with same key.}}
+    }
+    doSomething(value);
   }
 
   abstract void doSomething(Object... objects);
