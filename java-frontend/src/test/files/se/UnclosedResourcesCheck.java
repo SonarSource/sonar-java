@@ -497,3 +497,30 @@ class MethodHeuristics {
 abstract class Utils {
   abstract OutputStream newOutputStream();
 }
+class nestedFinally {
+  void foo() {
+    try {
+      FileInputStream fis = null;
+      try {
+        fis = new FileInputStream("foobar.txt"); // compliant because of the finally.
+        fis.read();
+      }
+      catch (IOException e) {
+        LOG.error("Exception reading from stream:", e);
+      }
+      finally {
+        if (fis != null) {
+          try {
+            fis.close();
+          }
+          catch (IOException e) {
+            LOG.error("Exception closing stream:", e);
+          }
+        }
+      }
+    }
+    catch (Exception e) {
+      LOG.error("Exception reading:", e);
+    }
+  }
+}

@@ -2017,4 +2017,46 @@ public class CFGTest {
     cfgChecker.check(cfg);
 
   }
+
+  @Test
+  public void exception_raised_in_catch() throws Exception {
+    CFG cfg = buildCFG("private void fun() {\n" +
+      "     try {\n" +
+      "      try {\n" +
+      "        f();\n" +
+      "      } catch (Exception e) {\n" +
+      "        ex();\n" +
+      "      } finally {\n" +
+      "        fin();\n" +
+      "      }\n" +
+      "    } catch (Exception e) {\n" +
+      "      outEx();\n" +
+      "    }\n"+
+      "} "
+    );
+    CFGChecker cfgChecker = checker(
+      block(element(TRY_STATEMENT)),
+      block(element(TRY_STATEMENT)),
+      block(
+        element(IDENTIFIER, "f"),
+        element(METHOD_INVOCATION)
+        ).exceptions(2,3),
+      block(
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "ex"),
+        element(METHOD_INVOCATION)
+      ).exceptions(2),
+      block(
+        element(IDENTIFIER, "fin"),
+        element(METHOD_INVOCATION)
+      ).exceptions(0,1),
+      block(
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "outEx"),
+        element(METHOD_INVOCATION)
+      ).exceptions(0)
+    );
+    cfgChecker.check(cfg);
+
+  }
 }
