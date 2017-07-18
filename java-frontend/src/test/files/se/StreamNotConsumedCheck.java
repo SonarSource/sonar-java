@@ -91,4 +91,13 @@ class A {
   int skipCount() {
     return 42;
   }
+
+  void constructors() {
+    new StreamParamInConstructor(IntStream.range(0, 10).filter(e -> true)); // Compliant
+  }
+
+  class StreamParamInConstructor {
+    public StreamParamInConstructor(Stream stream) {
+    }
+  }
 }
