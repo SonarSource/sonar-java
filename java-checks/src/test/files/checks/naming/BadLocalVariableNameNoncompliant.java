@@ -24,6 +24,10 @@ class BadLocalVariableName {
   };
 
   void forEachMethod() {
+    int MY_CONSTANT_IS_NOT_A_CONSTANT = 21; // Noncompliant
+    final int MY_LOCAL_CONSTANT = 42; // Compliant
+    final String MY_OTHER_LOCAL_CONSTANT = "42"; // Compliant
+    final Integer MY_ALTERNATE_CONSTANT = Integer.valueOf(42); // Compliant
     for (byte C : "".getBytes()) {
       int D; // Noncompliant
     }

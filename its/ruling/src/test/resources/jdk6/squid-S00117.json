@@ -5,9 +5,6 @@
 'jdk6:java/awt/BasicStroke.java':[
 179,
 ],
-'jdk6:java/awt/Component.java':[
-1269,
-],
 'jdk6:java/awt/Graphics2D.java':[
 1073,
 1106,
@@ -66,9 +63,6 @@
 965,
 1010,
 1277,
-],
-'jdk6:java/awt/font/TextLine.java':[
-373,
 ],
 'jdk6:java/awt/geom/AffineTransform.java':[
 470,
@@ -166,7 +160,6 @@
 1100,
 1104,
 1108,
-1149,
 ],
 'jdk6:java/awt/image/ColorModel.java':[
 307,
@@ -212,9 +205,6 @@
 'jdk6:java/net/HttpURLConnection.java':[
 449,
 ],
-'jdk6:java/net/IDN.java':[
-198,
-],
 'jdk6:java/net/Inet6Address.java':[
 209,
 285,
@@ -233,9 +223,6 @@
 578,
 602,
 ],
-'jdk6:java/rmi/dgc/VMID.java':[
-134,
-],
 'jdk6:java/security/PermissionCollection.java':[
 161,
 ],
@@ -253,13 +240,6 @@
 88,
 252,
 280,
-],
-'jdk6:java/sql/Date.java':[
-88,
-89,
-90,
-91,
-92,
 ],
 'jdk6:java/sql/SQLClientInfoException.java':[
 187,
@@ -363,10 +343,6 @@
 ],
 'jdk6:java/text/RuleBasedBreakIterator.java':[
 369,
-],
-'jdk6:java/util/Arrays.java':[
-378,
-422,
 ],
 'jdk6:java/util/Calendar.java':[
 1832,
