@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -107,10 +108,19 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   }
 
   private static class OptionalSymbolicValue extends SymbolicValue {
+    private final SymbolicValue wrappedValue;
+
+    private OptionalSymbolicValue(SymbolicValue wrappedValue) {
+      this.wrappedValue = wrappedValue;
+    }
+
+  }
+
+  private static class IsPresentSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue optionalSV;
 
-    public OptionalSymbolicValue(SymbolicValue sv) {
+    public IsPresentSymbolicValue(SymbolicValue sv) {
       this.optionalSV = sv;
     }
 
@@ -153,7 +163,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
-        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
+        constraintManager.setValueFactory(() -> new IsPresentSymbolicValue(peek));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
@@ -163,10 +173,18 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         SymbolicValue orElseValue = pop.values.get(0);
         SymbolicValue optional = pop.values.get(1);
         List<ProgramState> psEmpty = optional.setConstraint(pop.state.stackValue(orElseValue), OptionalConstraint.NOT_PRESENT);
-        List<ProgramState> psPresent = optional.setConstraint(pop.state.stackValue(constraintManager.createSymbolicValue(tree)), OptionalConstraint.PRESENT);
+        SymbolicValue symbolicValue;
+        if(optional instanceof OptionalSymbolicValue) {
+          symbolicValue = ((OptionalSymbolicValue) optional).wrappedValue;
+        } else {
+          symbolicValue = constraintManager.createSymbolicValue(tree);
+        }
+        List<ProgramState> psPresent = optional.setConstraint(pop.state.stackValue(symbolicValue), OptionalConstraint.PRESENT);
         psEmpty.forEach(context::addTransition);
         psPresent.forEach(context::addTransition);
         programState = null;
+      } else if (OPTIONAL_OF.matches(tree) || OPTIONAL_OF_NULLABLE.matches(tree)) {
+        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
       }
     }
 
