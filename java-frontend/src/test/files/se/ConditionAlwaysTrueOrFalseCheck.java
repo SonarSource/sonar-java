@@ -2160,3 +2160,23 @@ abstract class SubtypeOfErrorCaught {
   abstract void doSomething();
   abstract void doSomethingElse();
 }
+
+class OptionalWrappedValue {
+
+  void test() {
+    java.util.Optional<String> op1 = java.util.Optional.of("someString");
+    String val = op1.orElse(null);
+    if(val == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    java.util.Optional<String> op2 = java.util.Optional.ofNullable("someString");
+    val = op2.orElse(null);
+    if(val == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    java.util.Optional<String> op3 = java.util.Optional.ofNullable(null);
+    val = op3.orElse("");
+    if(val == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+  }
+}
