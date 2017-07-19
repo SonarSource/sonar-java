@@ -904,6 +904,7 @@ public class CFG {
   private void handleExceptionalPaths(Symbol symbol) {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
+    Block exceptionPredecessor = currentBlock;
     if (enclosedByCatch.peek()) {
       tryStatement = enclosingTry.peek();
     } else {
@@ -913,6 +914,9 @@ public class CFG {
     if(pop != outerTry) {
       currentBlock = createBlock(currentBlock);
       currentBlock.exceptions.add(exitBlocks.peek());
+      if(!enclosedByCatch.peek()) {
+        exceptionPredecessor = currentBlock;
+      }
     }
     if (symbol.isMethodSymbol()) {
       List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
@@ -924,7 +928,7 @@ public class CFG {
         }
       });
     }
-    currentBlock.exceptions.addAll(tryStatement.runtimeCatches);
+    exceptionPredecessor.exceptions.addAll(tryStatement.runtimeCatches);
   }
 
   private void buildTypeCast(Tree tree) {
