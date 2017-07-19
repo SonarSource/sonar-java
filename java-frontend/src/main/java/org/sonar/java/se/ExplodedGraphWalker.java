@@ -947,14 +947,14 @@ public class ExplodedGraphWalker {
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
       programState = programState.stackValue(value, symbol);
-      learnIdentifierNullConstraints(tree, value);
+      learnIdentifierConstraints(tree, value);
     } else {
       programState = programState.stackValue(value, symbol);
     }
     programState = programState.put(symbol, value);
   }
 
-  private void learnIdentifierNullConstraints(IdentifierTree tree, SymbolicValue sv) {
+  private void learnIdentifierConstraints(IdentifierTree tree, SymbolicValue sv) {
     if (THIS_SUPER.contains(tree.name())) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
       return;
@@ -968,10 +968,18 @@ public class ExplodedGraphWalker {
       return;
     }
     // only check final field with an initializer
-    if (ExpressionUtils.isNullLiteral(initializer)) {
+    initializer = ExpressionUtils.skipParentheses(initializer);
+    if (initializer.is(Tree.Kind.NULL_LITERAL)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NULL);
-    } else if (initializer.is(Tree.Kind.NEW_CLASS) || initializer.is(Tree.Kind.NEW_ARRAY)) {
+    } else if (initializer.is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY, Tree.Kind.STRING_LITERAL)
+      || isNonNullMethodInvocation(initializer)
+      || isNonBooleanPrimitiveTypeExpression(initializer)) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+    } else if (initializer.is(Tree.Kind.BOOLEAN_LITERAL)) {
+      boolean booleanValue = Boolean.parseBoolean(((LiteralTree) initializer).value());
+      programState = programState
+        .addConstraint(sv, ObjectConstraint.NOT_NULL)
+        .addConstraint(sv, booleanValue ? BooleanConstraint.TRUE : BooleanConstraint.FALSE);
     }
   }
 
@@ -979,6 +987,15 @@ public class ExplodedGraphWalker {
     return symbol.isVariableSymbol()
       && symbol.isFinal()
       && symbol.owner().isTypeSymbol();
+  }
+
+  private static boolean isNonNullMethodInvocation(ExpressionTree initializer) {
+    return initializer.is(Tree.Kind.METHOD_INVOCATION) && isNonNullMethod(((MethodInvocationTree) initializer).symbol());
+  }
+
+  private static boolean isNonBooleanPrimitiveTypeExpression(ExpressionTree initializer) {
+    Type symbolType = initializer.symbolType();
+    return symbolType.isPrimitive() && !symbolType.isPrimitive(Type.Primitives.BOOLEAN);
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
