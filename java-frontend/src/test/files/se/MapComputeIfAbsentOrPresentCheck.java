@@ -107,6 +107,36 @@ abstract class A {
     doSomething(value);
   }
 
+  void nmp(MyMap<String, Object> map, String key) {
+    Object value;
+
+    value = map.get(); // Compliant - not the targeted 'put' and 'get' methods
+    if (value == null) {
+      map.put(new Object());
+    }
+
+    value = map.get(key); // Compliant - not the targeted 'put' method
+    if (value == null) {
+      map.put(new Object());
+    }
+
+    value = map.get(); // Compliant - not the targeted 'get' method
+    if (value == null) {
+      map.put(key, new Object());
+    }
+  }
+
   abstract void doSomething(Object... objects);
 
+}
+
+abstract class MyMap<K, V> implements Map<K, V> {
+
+  public V get() {
+    return null;
+  }
+
+  public void put(Object o) {
+    // do nothing
+  }
 }
