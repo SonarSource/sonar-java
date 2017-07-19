@@ -20,11 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -43,13 +50,21 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
-    if (classSymbol != null && isDirectSubtypeOfThread(classSymbol) && !overridesRunMethod(classSymbol)) {
+    if (classSymbol != null
+      && isDirectSubtypeOfThread(classSymbol)
+      && !overridesRunMethod(classSymbol)
+      && !hasConstructorCallingSuperWithRunnable(classTree)) {
       Tree report = classTree.simpleName();
       Tree parent = classTree.parent();
       if(parent.is(Tree.Kind.NEW_CLASS)) {
-        report = ((NewClassTree) parent).identifier();
+        NewClassTree newClassTree = (NewClassTree) parent;
+        if (hasRunnableArgument(newClassTree.arguments())) {
+          // will call the super constructor setting a runnable which will be executed by the run() method
+          return;
+        }
+        report = newClassTree.identifier();
       }
-      reportIssue(report, "Stop extending the Thread class as the \"run\" method is not overridden");
+      reportIssue(report, "Don't extend \"Thread\", since the \"run\" method is not overridden.");
     }
   }
 
@@ -71,5 +86,48 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
       }
     }
     return overridesRunMethod;
+  }
+
+  private static boolean hasConstructorCallingSuperWithRunnable(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
+      .map(MethodTree.class::cast)
+      .anyMatch(ThreadOverridesRunCheck::hasCallToSuperWithRunnable);
+  }
+
+  private static boolean hasRunnableArgument(Arguments args) {
+    return args.stream().anyMatch(ThreadOverridesRunCheck::isRunnable);
+  }
+
+  private static boolean isRunnable(ExpressionTree arg) {
+    return arg.symbolType().isSubtypeOf("java.lang.Runnable");
+  }
+
+  private static boolean hasCallToSuperWithRunnable(MethodTree constructor) {
+    SuperRunnableVisitor visitor = new SuperRunnableVisitor();
+    constructor.accept(visitor);
+    return visitor.callSuperWithRunnable;
+  }
+
+  private static class SuperRunnableVisitor extends BaseTreeVisitor {
+
+    private boolean callSuperWithRunnable = false;
+
+    private static final MethodMatcher SUPER_THREAD = MethodMatcher.create().typeDefinition("java.lang.Thread").name("<init>").withAnyParameters();
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (SUPER_THREAD.matches(tree) && ThreadOverridesRunCheck.hasRunnableArgument(tree.arguments())) {
+        callSuperWithRunnable = true;
+        // no need to visit further
+        return;
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip inner classes
+    }
   }
 }
