@@ -36,6 +36,7 @@ public class AssertionsInTestsCheckTest {
   @Parameters
   public static Collection<Object[]> frameworks() {
     return Arrays.asList(new Object[][] {
+      {"Junit3"},
       {"Junit4"},
       {"AssertJ"},
       {"Hamcrest"},
