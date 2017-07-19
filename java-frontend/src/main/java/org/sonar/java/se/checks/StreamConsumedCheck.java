@@ -81,17 +81,17 @@ public class StreamConsumedCheck extends SECheck {
     }
     ProgramState state = context.getState();
     if (state.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      state = removeConstraintOnExceptionalPath(context);
+      state = removeNotConsumedConstraints(context.getState());
     }
     return state;
   }
 
-  private static ProgramState removeConstraintOnExceptionalPath(CheckerContext context) {
-    ProgramState state = context.getState();
-    for (SymbolicValue notConsumed : state.getValuesWithConstraints(StreamPipelineConstraint.NOT_CONSUMED)) {
-      state = state.removeConstraintsOnDomain(notConsumed, StreamPipelineConstraint.class);
+  private static ProgramState removeNotConsumedConstraints(ProgramState programState) {
+    ProgramState intermediateState = programState;
+    for (SymbolicValue notConsumed : intermediateState.getValuesWithConstraints(StreamPipelineConstraint.NOT_CONSUMED)) {
+      intermediateState = intermediateState.removeConstraintsOnDomain(notConsumed, StreamPipelineConstraint.class);
     }
-    return state;
+    return intermediateState;
   }
 
   private ProgramState handleMethodInvocation(CheckerContext context, Tree syntaxNode) {
