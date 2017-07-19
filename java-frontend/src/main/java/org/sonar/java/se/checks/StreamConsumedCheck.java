@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -75,7 +76,22 @@ public class StreamConsumedCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return handleMethodInvocation(context, syntaxNode);
     }
-    return context.getState();
+    if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
+      return removeConstraintOnArgs(context.getState(), syntaxNode);
+    }
+    ProgramState state = context.getState();
+    if (state.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      state = removeNotConsumedConstraints(context.getState());
+    }
+    return state;
+  }
+
+  private static ProgramState removeNotConsumedConstraints(ProgramState programState) {
+    ProgramState intermediateState = programState;
+    for (SymbolicValue notConsumed : intermediateState.getValuesWithConstraints(StreamPipelineConstraint.NOT_CONSUMED)) {
+      intermediateState = intermediateState.removeConstraintsOnDomain(notConsumed, StreamPipelineConstraint.class);
+    }
+    return intermediateState;
   }
 
   private ProgramState handleMethodInvocation(CheckerContext context, Tree syntaxNode) {
@@ -103,12 +119,23 @@ public class StreamConsumedCheck extends SECheck {
     return programState;
   }
 
-  private static ProgramState removeConstraintOnArgs(ProgramState programState, MethodInvocationTree mit) {
+  private static ProgramState removeConstraintOnArgs(ProgramState programState, Tree tree) {
     ProgramState state = programState;
-    for (SymbolicValue arg : programState.peekValues(mit.arguments().size())) {
+    int argumentCount = argumentCount(tree);
+    for (SymbolicValue arg : programState.peekValues(argumentCount)) {
       state = state.removeConstraintsOnDomain(arg, StreamPipelineConstraint.class);
     }
     return state;
+  }
+
+  private static int argumentCount(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return ((MethodInvocationTree) tree).arguments().size();
+    }
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      return ((NewClassTree) tree).arguments().size();
+    }
+    throw new IllegalArgumentException("Expecting NEW_CLASS or METHOD_INVOCATION. Got " + tree);
   }
 
   private static SymbolicValue invocationTarget(ProgramState programState, MethodInvocationTree mit) {

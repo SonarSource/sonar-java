@@ -63,4 +63,55 @@ class A {
     this.streamField = streamField.filter(e -> true); // Compliant, assigned to field
   }
 
+  void exceptionalPath() {
+    try {
+      Stream.of(1,2,3)
+        .filter(e -> true)
+        .count();
+    } catch (Exception ex) {
+
+    }
+  }
+
+  void exceptionalPath2() {
+    try {
+      Stream.of(1,2,3).filter(e -> true);  // Noncompliant
+
+      Stream.of(1,2,3)
+        .filter(e -> true)
+        .skip(skipCount())
+        .count();
+
+      Stream.of(1,2,3).skip(skipCount()); // Noncompliant
+    } catch (Exception ex) {
+      System.out.println("Exception!");
+    }
+  }
+
+  void exceptionalPath3(Stream<Object> stream) {
+    try {
+      stream = stream.skip(skipCount());  // Compliant - we don't want to report pipelines not consumed on exceptional paths
+    } catch (Exception ex) {
+      return;
+    }
+    stream.forEach(System.out::println);
+  }
+
+  void FN(Stream<Object> stream) {
+    stream.filter(e -> true);  // FN - call to filter() is returning same SV as stream, so SV is set CONSUMED on next line
+    stream.count();
+  }
+
+  int skipCount() {
+    return 42;
+  }
+
+  void constructors() {
+    new StreamParamInConstructor(IntStream.range(0, 10).filter(e -> true)); // Compliant
+  }
+
+  class StreamParamInConstructor {
+    public StreamParamInConstructor(Stream stream) {
+    }
+  }
 }
