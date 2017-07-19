@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 @Rule(key = "S3824")
 public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVersionAwareVisitor {
 
-  private static final MethodMatcher MAP_GET = mapMethod("get");
-  private static final MethodMatcher MAP_PUT = mapMethod("put");
+  private static final MethodMatcher MAP_GET = mapMethod("get", TypeCriteria.anyType());
+  private static final MethodMatcher MAP_PUT = mapMethod("put", TypeCriteria.anyType(), TypeCriteria.anyType());
 
   private final Multimap<SymbolicValue, MapGetInvocation> mapGetInvocations = LinkedListMultimap.create();
   private final List<CheckIssue> checkIssues = new ArrayList<>();
@@ -66,8 +66,8 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     checkIssues.clear();
   }
 
-  private static MethodMatcher mapMethod(String methodName) {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Map")).name(methodName).withAnyParameters();
+  private static MethodMatcher mapMethod(String methodName, TypeCriteria... parameterTypes) {
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Map")).name(methodName).parameters(parameterTypes);
   }
 
   @Override
