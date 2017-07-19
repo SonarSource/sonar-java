@@ -21,9 +21,6 @@ package org.sonar.java.se;
 
 import org.junit.Test;
 
-import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.ConstraintManager;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,20 +60,4 @@ public class ExplodedGraphTest {
     return mock;
   }
 
-  @Test
-  public void test_method_invocation_node() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExplodedGraphTest.java", new SECheck() {
-      @Override
-      public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-        ExplodedGraph.Node nodeB0 = context.getNode();
-        assertThat(nodeB0.isMethodInvocationNode()).isFalse();
-        assertThat(nodeB0.parents()).hasSize(1);
-        ExplodedGraph.Node nodeB11 = nodeB0.parents().iterator().next();
-        assertThat(nodeB11.isMethodInvocationNode()).isFalse();
-        assertThat(nodeB11.parents()).hasSize(1);
-        ExplodedGraph.Node nodeB12 = nodeB11.parents().iterator().next();
-        assertThat(nodeB12.isMethodInvocationNode()).isTrue();
-      }
-    });
-  }
 }

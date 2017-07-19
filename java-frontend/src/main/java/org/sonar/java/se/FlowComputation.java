@@ -519,7 +519,7 @@ public class FlowComputation {
       }
       ExplodedGraph.Node parent = edge.parent;
       Tree nodeTree = parent.programPoint.syntaxTree();
-      if (parent.isMethodInvocationNode()) {
+      if (isMethodInvocationNode(parent)) {
         return methodInvocationFlow(constraint, edge);
       }
       if (nodeTree.is(Tree.Kind.NEW_CLASS)) {
@@ -669,6 +669,16 @@ public class FlowComputation {
           .addAll(passedArgumentsMessages)
           .build())
         .collect(Collectors.toSet());
+    }
+
+    private boolean isMethodInvocationNode(ExplodedGraph.Node node) {
+      // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
+      ProgramPoint pp = node.programPoint;
+      if (pp.i < pp.block.elements().size()) {
+        Tree tree = pp.block.elements().get(pp.i);
+        return tree.is(Tree.Kind.METHOD_INVOCATION);
+      }
+      return false;
     }
 
     private List<Integer> correspondingArgumentIndices(Set<SymbolicValue> candidates, ExplodedGraph.Node invocationNode) {

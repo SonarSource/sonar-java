@@ -135,16 +135,6 @@ public class ExplodedGraph {
     public Collection<Edge> edges() {
       return edges.values();
     }
-
-    public boolean isMethodInvocationNode() {
-      // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
-      ProgramPoint pp = this.programPoint;
-      if (pp.i < pp.block.elements().size()) {
-        Tree tree = pp.block.elements().get(pp.i);
-        return tree.is(Tree.Kind.METHOD_INVOCATION);
-      }
-      return false;
-    }
   }
 
   public static final class Edge {

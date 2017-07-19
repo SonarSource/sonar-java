@@ -88,6 +88,20 @@ class A {
     }
   }
 
+  void exceptionalPathFN(Stream<Object> stream) {
+    try {
+      stream = stream.skip(skipCount());  // Compliant this pipeline is not consumed on exceptional path
+    } catch (Exception ex) {
+      return;
+    }
+    stream.forEach(System.out::println);
+  }
+
+  void testss(Stream<Object> stream) {
+    stream.filter(e -> true);  // FN because SV is reused
+    stream.count();
+  }
+
   int skipCount() {
     return 42;
   }
