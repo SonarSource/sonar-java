@@ -151,3 +151,51 @@ class OptionalWithNullDereference {
     op.get(); // Compliant - empty case triggered a NPE
   }
 }
+
+class ResetFieldValue {
+  boolean b;
+  static boolean b2 = true;
+  Object o;
+
+  void bar() {
+    if (b) {
+      getClass();
+      if (b) { } // Noncompliant
+    }
+
+    if (o == null) {
+      this.getClass();
+      o.toString(); // Noncompliant
+    }
+  }
+  void bar2() {
+    if (b) {
+      foo();
+      if (b) { } // Noncompliant
+    }
+    if (b2) {
+      foo();
+      if (b2) { } // compliant : static call can update static field
+    }
+
+    if (o == null) {
+      foo();
+      o.toString(); // Noncompliant
+    }
+  }
+
+  void qix() {
+    if (b) {
+      fun(this);
+      if (b) { } // compliant, fun can modify internal state of this instance.
+    }
+  }
+
+  public static void foo() {
+    b2 = false;
+  }
+  public static void fun(Object o) {
+    // could modify internal state of o
+  }
+
+}

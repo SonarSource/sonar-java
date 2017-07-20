@@ -115,7 +115,9 @@ public class ExplodedGraphWalker {
   @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
-  private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Object").name("wait").withAnyParameters();
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("wait").withAnyParameters();
+  private static final MethodMatcher GET_CLASS_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("getClass").withoutParameter();
   private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
   private final AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector;
   private MethodTree methodTree;
@@ -317,7 +319,7 @@ public class ExplodedGraphWalker {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name())
       && tree.parameters().size() == 1
-      && tree.parameters().get(0).symbol().type().is("java.lang.Object");
+      && tree.parameters().get(0).symbol().type().is(JAVA_LANG_OBJECT);
     SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
     boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
     boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
@@ -393,7 +395,7 @@ public class ExplodedGraphWalker {
           handleBranch(block, cleanupCondition(doCondition), !doCondition.is(Tree.Kind.BOOLEAN_LITERAL));
           return;
         case SYNCHRONIZED_STATEMENT:
-          resetFieldValues();
+          resetFieldValues(false);
           break;
         case RETURN_STATEMENT:
           ExpressionTree returnExpression = ((ReturnStatementTree) terminator).expression();
@@ -683,7 +685,7 @@ public class ExplodedGraphWalker {
     if (isNonNullMethod(mit.symbol())) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
-      return ps.resetFieldValues(constraintManager);
+      return ps.resetFieldValues(constraintManager, false);
     }
     return ps;
   }
@@ -1012,12 +1014,18 @@ public class ExplodedGraphWalker {
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
-    if (isLocalMethodInvocation(tree) || isProvidingThisAsArgument(tree) || THREAD_SLEEP_MATCHER.matches(tree)) {
-      resetFieldValues();
+    boolean threadSleepMatch = THREAD_SLEEP_MATCHER.matches(tree);
+    boolean providingThisAsArgument = isProvidingThisAsArgument(tree);
+    if (isLocalMethodInvocation(tree) || providingThisAsArgument || threadSleepMatch) {
+      boolean resetOnlyStaticFields = tree.symbol().isStatic() && !threadSleepMatch && !providingThisAsArgument;
+      resetFieldValues(resetOnlyStaticFields);
     }
   }
 
   private static boolean isLocalMethodInvocation(MethodInvocationTree tree) {
+    if(GET_CLASS_MATCHER.matches(tree)) {
+      return false;
+    }
     ExpressionTree methodSelect = tree.methodSelect();
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       return true;
@@ -1038,8 +1046,8 @@ public class ExplodedGraphWalker {
       .anyMatch(expr -> expr.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expr).name()));
   }
 
-  private void resetFieldValues() {
-    programState = programState.resetFieldValues(constraintManager);
+  private void resetFieldValues(boolean resetOnlyStaticFields) {
+    programState = programState.resetFieldValues(constraintManager, resetOnlyStaticFields);
   }
 
   private void logState(MethodInvocationTree mit) {
