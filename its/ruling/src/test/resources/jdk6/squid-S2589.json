@@ -42,6 +42,9 @@
 'jdk6:java/security/Security.java':[
 595,
 ],
+'jdk6:java/security/cert/X509CertSelector.java':[
+2402,
+],
 'jdk6:java/util/Scanner.java':[
 996,
 ],
