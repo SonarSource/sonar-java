@@ -16,6 +16,18 @@ class A {
       promptUser();
     }
   }
+  void foobis() {
+    if ("red" == choice) {  // Noncompliant [[sc=9;ec=24]] {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
+      dispenseRed();
+    } else if ("blue" == choice) {
+      dispenseBlue();
+    } else if ("yellow" == choice) {
+      dispenseYellow();
+    } else {
+      promptUser();
+    }
+  }
+
 
   void foo2() {
     if ("red".equals(choice)) {  // compliant, not enough choices
