@@ -963,7 +963,8 @@ public class ExplodedGraphWalker {
     if (!isFinalField(tree.symbol()) || declaration == null) {
       return;
     }
-    ExpressionTree initializer = ((VariableTree) declaration).initializer();
+    VariableTree variableTree = (VariableTree) declaration;
+    ExpressionTree initializer = variableTree.initializer();
     if (initializer == null) {
       return;
     }
@@ -973,13 +974,9 @@ public class ExplodedGraphWalker {
       programState = programState.addConstraint(sv, ObjectConstraint.NULL);
     } else if (initializer.is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY, Tree.Kind.STRING_LITERAL)
       || isNonNullMethodInvocation(initializer)
-      || isNonBooleanPrimitiveTypeExpression(initializer)) {
+      || variableTree.symbol().type().isPrimitive()
+      || initializer.symbolType().isPrimitive()) {
       programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
-    } else if (initializer.is(Tree.Kind.BOOLEAN_LITERAL)) {
-      boolean booleanValue = Boolean.parseBoolean(((LiteralTree) initializer).value());
-      programState = programState
-        .addConstraint(sv, ObjectConstraint.NOT_NULL)
-        .addConstraint(sv, booleanValue ? BooleanConstraint.TRUE : BooleanConstraint.FALSE);
     }
   }
 
@@ -991,11 +988,6 @@ public class ExplodedGraphWalker {
 
   private static boolean isNonNullMethodInvocation(ExpressionTree initializer) {
     return initializer.is(Tree.Kind.METHOD_INVOCATION) && isNonNullMethod(((MethodInvocationTree) initializer).symbol());
-  }
-
-  private static boolean isNonBooleanPrimitiveTypeExpression(ExpressionTree initializer) {
-    Type symbolType = initializer.symbolType();
-    return symbolType.isPrimitive() && !symbolType.isPrimitive(Type.Primitives.BOOLEAN);
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
