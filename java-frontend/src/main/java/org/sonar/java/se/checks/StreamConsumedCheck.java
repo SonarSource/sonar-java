@@ -74,10 +74,10 @@ public class StreamConsumedCheck extends SECheck {
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      return handleMethodInvocation(context, syntaxNode);
+      return handleMethodInvocation(context, (MethodInvocationTree) syntaxNode);
     }
     if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
-      return removeConstraintOnArgs(context.getState(), syntaxNode);
+      return removeConstraintOnArgs(context.getState(), ((NewClassTree) syntaxNode).arguments().size());
     }
     ProgramState state = context.getState();
     if (state.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
@@ -94,14 +94,13 @@ public class StreamConsumedCheck extends SECheck {
     return intermediateState;
   }
 
-  private ProgramState handleMethodInvocation(CheckerContext context, Tree syntaxNode) {
-    MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
+  private ProgramState handleMethodInvocation(CheckerContext context, MethodInvocationTree mit) {
     ProgramState programState = context.getState();
-    programState = removeConstraintOnArgs(programState, mit);
+    programState = removeConstraintOnArgs(programState, mit.arguments().size());
     SymbolicValue invocationTarget = invocationTarget(programState, mit);
     if ((isIntermediateOperation(mit) || isTerminalOperation(mit))
         && isPipelineConsumed(programState, invocationTarget)) {
-      reportIssue(syntaxNode, "Refactor this code so that this consumed stream pipeline is not reused.", flow(invocationTarget, context.getNode()));
+      reportIssue(mit, "Refactor this code so that this consumed stream pipeline is not reused.", flow(invocationTarget, context.getNode()));
       return null;
     }
     if (isIntermediateOperation(mit)) {
@@ -119,23 +118,12 @@ public class StreamConsumedCheck extends SECheck {
     return programState;
   }
 
-  private static ProgramState removeConstraintOnArgs(ProgramState programState, Tree tree) {
+  private static ProgramState removeConstraintOnArgs(ProgramState programState, int argumentCount) {
     ProgramState state = programState;
-    int argumentCount = argumentCount(tree);
     for (SymbolicValue arg : programState.peekValues(argumentCount)) {
       state = state.removeConstraintsOnDomain(arg, StreamPipelineConstraint.class);
     }
     return state;
-  }
-
-  private static int argumentCount(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      return ((MethodInvocationTree) tree).arguments().size();
-    }
-    if (tree.is(Tree.Kind.NEW_CLASS)) {
-      return ((NewClassTree) tree).arguments().size();
-    }
-    throw new IllegalArgumentException("Expecting NEW_CLASS or METHOD_INVOCATION. Got " + tree);
   }
 
   private static SymbolicValue invocationTarget(ProgramState programState, MethodInvocationTree mit) {

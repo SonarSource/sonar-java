@@ -174,6 +174,7 @@ public class JavaSymbolTest {
     JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "name", P_PACKAGE_JAVA_SYMBOL);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "t", outermostClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(Flags.STATIC | Flags.ABSTRACT, "name", typeSymbol);
+    JavaSymbol.MethodJavaSymbol defaultMethodSymbol = new JavaSymbol.MethodJavaSymbol(Flags.STATIC | Flags.ABSTRACT | Flags.DEFAULT, "name", typeSymbol);
     JavaSymbol.TypeJavaSymbol enumeration = new JavaSymbol.TypeJavaSymbol(Flags.ENUM, "enumeration", P_PACKAGE_JAVA_SYMBOL);
     assertThat(methodSymbol.isEnum()).isFalse();
     assertThat(methodSymbol.isFinal()).isFalse();
@@ -188,5 +189,8 @@ public class JavaSymbolTest {
     assertThat(enumeration.isStatic()).isFalse();
     assertThat(P_PACKAGE_JAVA_SYMBOL.isPackageSymbol()).isTrue();
     assertThat(outermostClass.isPackageSymbol()).isFalse();
+
+    assertThat(methodSymbol.isDefault()).isFalse();
+    assertThat(defaultMethodSymbol.isDefault()).isTrue();
   }
 }
