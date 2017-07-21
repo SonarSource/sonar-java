@@ -11,3 +11,14 @@ class C extends B {
 
   void foo(Integer i) { }
 }
+
+class VarArgs {
+
+  public void qix(String a, Object... array) {
+    qix(a, false, array); // should resolve to the other qix method, not as a recursive call.
+  }
+
+  private String qix(String a, boolean b, Object... array) {
+    return a + b + array;
+  }
+}

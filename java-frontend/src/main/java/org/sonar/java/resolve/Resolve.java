@@ -39,6 +39,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -404,27 +405,27 @@ public class Resolve {
   private Resolution findMethodInStaticImport(Env env, String name, List<JavaType> argTypes, List<JavaType> typeParamTypes) {
     Resolution bestSoFar = unresolved();
     JavaType enclosingType = env.enclosingClass.getType();
-    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, env.namedImports, bestSoFar);
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, false, env.namedImports, bestSoFar);
     if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return bestSoFar;
     }
-    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, env.staticStarImports, bestSoFar);
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, false, env.staticStarImports, bestSoFar);
     if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return bestSoFar;
     }
-    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, env.namedImports, bestSoFar);
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, true, env.namedImports, bestSoFar);
     if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return bestSoFar;
     }
-    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, env.staticStarImports, bestSoFar);
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, true, env.staticStarImports, bestSoFar);
     return bestSoFar;
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes) {
-    return findMethod(env, site, site, name, argTypes, ImmutableList.<JavaType>of());
+    return findMethod(env, site, site, name, argTypes, Collections.emptyList());
   }
 
   public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
@@ -458,24 +459,25 @@ public class Resolve {
 
   private Resolution findMethodByStrictThenLooseInvocation(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
     // JLS8 - §5.3 searching by strict invocation, then loose invocation
-    Resolution bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, false);
+    Resolution bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, false, false);
     // searching for a specific method applicable with fixed arity and loose invocation
-    if (!argTypes.isEmpty() && (bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS || canFindStrictInvocationWithLooseInvocation(argTypes, bestSoFar))) {
+    if (!argTypes.isEmpty() && bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS) {
       // retry with loose invocation
-      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
+      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true, false);
+    }
+    if(bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS) {
+      // loose invocation and var arity
+      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true, true);
     }
     return bestSoFar;
   }
 
-  private static boolean canFindStrictInvocationWithLooseInvocation(List<JavaType> argTypes, Resolution bestSoFar) {
-    return ((JavaSymbol.MethodJavaSymbol) bestSoFar.symbol).isVarArgs() && argTypes.stream().anyMatch(t -> t.isPrimitive() || t.isPrimitiveWrapper());
-  }
-
-  private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean looseInvocation) {
+  private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams,
+                                boolean looseInvocation, boolean varArity) {
     JavaType superclass = site.getSuperType();
     Resolution bestSoFar = unresolved();
 
-    bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, site.getSymbol().members(), bestSoFar);
+    bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, varArity, site.getSymbol().members(), bestSoFar);
     if (name.equals(CONSTRUCTOR_NAME) && !site.symbol.isInterface()) {
       // Interfaces do not have constructors, but for anonymous classes of interfaces, the Object constructor should be resolved
       return bestSoFar;
@@ -484,7 +486,7 @@ public class Resolve {
     // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
-      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation);
+      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation, varArity);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
       Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
@@ -492,7 +494,7 @@ public class Resolve {
       }
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
-      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams, looseInvocation);
+      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams, looseInvocation, varArity);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
       Resolution best = selectBest(env, interfaceType, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
@@ -503,14 +505,18 @@ public class Resolve {
   }
 
   private Resolution lookupInScope(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams,
-                                   boolean autoboxing, Scope scope, Resolution bestFound) {
+                                   boolean looseInvocation, boolean varArity, Scope scope, Resolution bestFound) {
     Resolution bestSoFar = bestFound;
     // look in site members
     for (JavaSymbol symbol : scope.lookup(name)) {
       if (symbol.kind == JavaSymbol.MTH) {
-        Resolution best = selectBest(env, site, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
-        if (best.symbol == symbol) {
-          bestSoFar = best;
+        boolean diffArity = varArity || (!((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs())
+          || (argTypes.size() == ((JavaSymbol.MethodJavaSymbol) symbol).parameterTypes().size() && argTypes.get(argTypes.size() -1 ).isArray());
+        if(diffArity) {
+          Resolution best = selectBest(env, site, callSite, argTypes, typeParams, symbol, bestSoFar, looseInvocation);
+          if (best.symbol == symbol) {
+            bestSoFar = best;
+          }
         }
       }
     }
@@ -769,7 +775,7 @@ public class Resolve {
     }
     m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, m1Substitution);
     m2ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m2ArgTypes, m2Substitution);
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, false);
+    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, true);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {

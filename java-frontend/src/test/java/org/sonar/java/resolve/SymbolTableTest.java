@@ -691,9 +691,12 @@ public class SymbolTableTest {
     JavaSymbol fooA = result.symbol("foo", 2);
     JavaSymbol fooC = result.symbol("foo", 12);
 
-    assertThat(fooA).isSameAs(result.reference(9, 5));
+    assertThat(result.reference(9, 5)).isSameAs(fooA);
     assertThat(fooA.usages()).hasSize(1);
     assertThat(fooC.usages()).hasSize(0);
+
+    assertThat(result.symbol("qix", 17).usages()).isEmpty();
+    assertThat(result.symbol("qix", 21).usages()).hasSize(1);
   }
 
   @Test
