@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.*;
 
@@ -17,4 +18,14 @@ class A {
     Stream.of("a", "b", "c").findAny().isPresent(); // Compliant
   }
 
+  void coverage() {
+    Optional<Object> optional = Optional.empty();
+    optional.isPresent();
+  }
+
+  abstract class MoreCoverage implements Stream {
+    void test() {
+      findAny().isPresent();
+    }
+  }
 }
