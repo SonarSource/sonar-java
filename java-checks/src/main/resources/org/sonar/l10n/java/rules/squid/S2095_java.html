@@ -1,6 +1,7 @@
-<p>Java's garbage collection cannot be relied on to clean up everything. Specifically, connections, streams, files and other classes that implement
-the <code>Closeable</code> interface or its super-interface, <code>AutoCloseable</code>, must be manually closed after creation. Further, that
-<code>close</code> call must be made in a <code>finally</code> block, otherwise an exception could keep the call from being made. </p>
+<p>Connections, streams, files, and other classes that implement the <code>Closeable</code> interface or its super-interface,
+<code>AutoCloseable</code>, needs to be closed after use. Further, that <code>close</code> call must be made in a <code>finally</code> block otherwise
+an exception could keep the call from being made. Preferably, when class implements <code>AutoCloseable</code>, resource should be created using
+"try-with-resources" pattern and will be closed automatically.</p>
 <p>Failure to properly close resources will result in a resource leak which could bring first the application and then perhaps the box it's on to
 their knees.</p>
 <h2>Noncompliant Code Example</h2>
@@ -10,6 +11,8 @@ private void readTheFile() throws IOException {
   BufferedReader reader = Files.newBufferedReader(path, this.charset)) {
   // ...
   reader.close();  // Noncompliant
+  // ...
+  Files.lines("input.txt").forEach(System.out::println); // Noncompliant: The stream needs to be closed
 }
 
 private void doSomething() {
@@ -28,17 +31,16 @@ private void doSomething() {
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-private void readTheFile() throws IOException {
-  Path path = Paths.get(this.fileName);
-  BufferedReader reader = null;
-  try {
-    reader = Files.newBufferedReader(path, this.charset)) {
-    // ...
-  } finally {
-    if (reader != null) {
-      reader.close();
+private void readTheFile(String fileName) throws IOException {
+    Path path = Paths.get(fileName);
+    try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+      reader.readLine();
+      // ...
     }
-  }
+    // ..
+    try (Stream&lt;String&gt; input = Files.lines("input.txt"))  {
+      input.forEach(System.out::println);
+    }
 }
 
 private void doSomething() {
@@ -71,5 +73,6 @@ catch ( ... ) {
   <li> <a href="http://cwe.mitre.org/data/definitions/459.html">MITRE, CWE-459</a> - Incomplete Cleanup </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/9gFqAQ">CERT, FIO04-J.</a> - Release resources when they are no longer needed </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/GAGQBw">CERT, FIO42-C.</a> - Close files when they are no longer needed </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">Try With Resources</a> </li>
 </ul>
 

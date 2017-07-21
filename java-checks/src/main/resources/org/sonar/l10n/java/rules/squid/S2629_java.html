@@ -10,6 +10,8 @@ then <code>Preconditions</code> should be skipped altoghether, and the relevant 
 <pre>
 logger.log(Level.DEBUG, "Something went wrong: " + message);  // Noncompliant; string concatenation performed even when log level too high to show DEBUG messages
 
+logger.fine("An exception occurred with message: " + message); // Noncompliant
+
 LOG.error("Unable to open file " + csvPath, e);  // Noncompliant
 
 Preconditions.checkState(a &gt; 0, "Arg must be positive, but got " + a);  // Noncompliant. String concatenation performed even when a &gt; 0
@@ -21,6 +23,8 @@ Preconditions.checkState(condition, "message: %s", formatMessage());  // Noncomp
 <h2>Compliant Solution</h2>
 <pre>
 logger.log(Level.SEVERE, "Something went wrong: %s ", message);  // String formatting only applied if needed
+
+logger.log(Level.FINE, "An exception occurred with message: {}", message);
 
 logger.log(Level.SEVERE, () -&gt; "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
 

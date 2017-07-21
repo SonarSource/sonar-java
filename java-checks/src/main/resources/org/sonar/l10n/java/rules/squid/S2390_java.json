@@ -1,6 +1,6 @@
 {
-  "title": "Classes should not access static members of their own subclasses during initialization",
-  "type": "BUG",
+  "title": "Classes should not access their own subclasses during initialization",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -12,5 +12,5 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }
