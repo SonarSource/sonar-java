@@ -14,4 +14,17 @@ public class MyRunner extends Thread { // Noncompliant; run method not overridde
   public void doSometing() {...}
 }
 </pre>
+<h2>Exceptions</h2>
+<p>If <code>run()</code> is not overridden in a class extending <code>Thread</code>, it means that starting the thread will actually call
+<code>Thread.run()</code>. However, <code>Thread.run()</code> does nothing if it has not been fed with a target <code>Runnable</code>. The rule
+consequently ignore classes extending <code>Thread</code> if they are calling, in their constructors, the <code>super(...)</code> constructor with a
+proper <code>Runnable</code> target.</p>
+<pre>
+class MyThread extends Thread { // Compliant - calling super constructor with a Runnable
+  MyThread(Runnable target) {
+    super(target); // calling super constructor with a Runnable, which will be used for when Thread.run() is executed
+    // ...
+  }
+}
+</pre>
 

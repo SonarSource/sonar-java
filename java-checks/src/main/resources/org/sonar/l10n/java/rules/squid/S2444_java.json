@@ -1,6 +1,6 @@
 {
   "title": "Lazy initialization of \"static\" fields should be \"synchronized\"",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,5 +9,5 @@
   "tags": [
     "multi-threading"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

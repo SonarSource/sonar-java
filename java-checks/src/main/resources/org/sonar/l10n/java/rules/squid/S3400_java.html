@@ -3,13 +3,13 @@ method call must be made will likely mislead developers who call the method thin
 <p>This rule raises an issue if on methods that contain only one statement: the <code>return</code> of a constant value. </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public int getBestNumber() {
+int getBestNumber() {
   return 12;  // Noncompliant
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-public static int bestNumber = 12;
+static int bestNumber = 12;
 </pre>
 <h2>Exceptions</h2>
 <p>Methods with annotations, such as <code>@Override</code> and Spring's <code>@RequestMapping</code>, are ignored.</p>

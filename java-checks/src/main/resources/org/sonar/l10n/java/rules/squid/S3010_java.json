@@ -1,6 +1,6 @@
 {
   "title": "Static fields should not be updated in constructors",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

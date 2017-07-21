@@ -1,6 +1,6 @@
 {
   "title": "Locale should be used in String operations",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

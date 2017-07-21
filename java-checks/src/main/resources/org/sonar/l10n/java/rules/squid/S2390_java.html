@@ -1,15 +1,21 @@
-<p>When a parent class references a static member of a subclass during its own initialization, the results will not be what you expect because the
-child class won't exist yet. </p>
-<p>In a best-case scenario, you'll see immediate failures in the code as a result. Worst-case, the damage will be more insidious and difficult to
-track down.</p>
+<p>When a parent class references a member of a subclass during its own initialization, the results might not be what you expect because the child
+class might not have been initialized yet. This could create what is known as an "initialisation cycle", or even a deadlock in some extreme cases.</p>
+<p>To make things worse, these issues are very hard to diagnose so it is highly recommended you avoid creating this kind of dependencies.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class Parent {
-  public static final int childVersion = Child.version;
+  static int field1 = Child.method(); // Noncompliant
+  static int field2 = 42;
+
+  public static void main(String[] args) {
+    System.out.println(Parent.field1); // will display "0" instead of "42"
+  }
 }
 
 class Child extends Parent {
-  public static final int version = 6;
+  static int method() {
+    return Parent.field2;
+  }
 }
 </pre>
 <h2>See</h2>

@@ -12,8 +12,15 @@ void doSomething(int a) {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>Override and implementation methods are excluded, as are parameters annotated with <code>@Observes</code>, and methods that are intended to be
-overridden.</p>
+<p>The rule will not raise issues for unused parameters:</p>
+<ul>
+  <li> that are annotated with <code>@javax.enterprise.event.Observes</code> </li>
+  <li> in overrides and implementation methods </li>
+  <li> in interface <code>default</code> methods </li>
+  <li> in non-private methods that only <code>throw</code> or that have empty bodies </li>
+  <li> in annotated methods, unless the annotation is <code>@SuppressWarning("unchecked")</code> or <code>@SuppressWarning("rawtypes")</code>, in
+  which case the annotation will be ignored </li>
+</ul>
 <pre>
 @Override
 void doSomething(int a, int b) {     // no issue reported on b
