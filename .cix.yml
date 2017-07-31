@@ -3,7 +3,6 @@
 # Possible values for SLAVE: "performance" (for perf tests) and "linux" (for linux machines connected to DB services)
 
 TEST:
-  - ci
   - plugin
   - ruling
   - semantic
@@ -14,36 +13,7 @@ SQ_VERSION:
   - DEV
   - LATEST_RELEASE
 
-
-
 exclude:
-#exclude ci jobs on performance slaves
-  - TEST: ci
-    SLAVE: performance
-    SQ_VERSION: LTS
-  - TEST: ci
-    SLAVE: performance
-    SQ_VERSION: DEV
-  - TEST: ci
-    SLAVE: performance
-    SQ_VERSION: LATEST_RELEASE
-#exclude ci jobs on windows slaves except for LATEST_RELEASE
-  - TEST: ci
-    SLAVE: windows
-    SQ_VERSION: LTS
-  - TEST: ci
-    SLAVE: windows
-    SQ_VERSION: DEV
-#exclude ci jobs on linux slaves
-  - TEST: ci
-    SLAVE: linux
-    SQ_VERSION: LTS
-  - TEST: ci
-    SLAVE: linux
-    SQ_VERSION: DEV
-  - TEST: ci
-    SLAVE: linux
-    SQ_VERSION: LATEST_RELEASE
 #exclude plugin tests on performance slaves
   - TEST: plugin
     SLAVE: performance

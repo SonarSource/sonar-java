@@ -3,11 +3,6 @@ set -euo pipefail
 echo "Running $TEST with SQ=$SQ_VERSION"
 
 case "$TEST" in
-  ci)
-    # only verify build
-    mvn verify -B -e -V
-    exit 0;
-  ;;
   ruling)
     if [[ $GITHUB_BRANCH == "PULLREQUEST-"* && $SLAVE != "windows" ]] || [[ $GITHUB_BRANCH != "PULLREQUEST-"* && $SLAVE == "windows" ]]
     then
