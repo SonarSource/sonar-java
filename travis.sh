@@ -9,10 +9,6 @@ function configureTravis {
 }
 configureTravis
 
-if [ "$TEST" != "CI_MACOSX" ]; then
-  . installJDK8
-fi
-
 function strongEcho {
   echo ""
   echo "================ $1 ================="
@@ -111,16 +107,6 @@ ruling)
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
   mvn install -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-$TEST $EXTRA_PARAMS
-  ;;
-
-CI_MACOSX)
-  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    strongEcho 'Verify build on MAC OS X only for master branch, no analysis'
-    mvn verify -B -e -V
-  else
-    strongEcho "No MAC OS X build for PRs and Dev branches"
-    exit 0;
-  fi
   ;;
 
 *)
