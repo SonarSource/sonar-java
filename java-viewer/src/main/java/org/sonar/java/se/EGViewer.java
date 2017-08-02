@@ -66,8 +66,15 @@ public class EGViewer {
   private static ExplodedGraph buildEG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
-    MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return getEg(cut, semanticModel, firstMethod);
+    return getEg(cut, semanticModel, getFirstMethod(cut));
+  }
+
+  private static MethodTree getFirstMethod(CompilationUnitTree cut) {
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    return (MethodTree) classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.METHOD))
+      .findFirst()
+      .orElse(null);
   }
 
   private static ExplodedGraph getEg(CompilationUnitTree cut, SemanticModel semanticModel, MethodTree methodTree) {

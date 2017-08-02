@@ -48,8 +48,15 @@ public class CFGViewer {
   public static CFG buildCFG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
     SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
-    MethodTree firstMethod = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return CFG.build(firstMethod);
+    return CFG.build(getFirstMethod(cut));
+  }
+
+  private static MethodTree getFirstMethod(CompilationUnitTree cut) {
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    return (MethodTree) classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.METHOD))
+      .findFirst()
+      .orElse(null);
   }
 
   /**
