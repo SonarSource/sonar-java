@@ -115,14 +115,18 @@ public class EGViewer {
   private static String specialHighlight(ExplodedGraph.Node node, boolean hasParents, int firstBlockId, ProgramStateDataProvider psDataProvider) {
     if (hasParents) {
       if (isFirstBlock(node, firstBlockId)) {
-        return ",color=\"green\",fontcolor=\"white\"";
+        return specialHighlight("firstNode");
       }
       // lost nodes - should never happen - worth investigation if appears in viewer
-      return ",color=\"red\",fontcolor=\"white\"";
+      return specialHighlight("lostNode");
     } else if (psDataProvider.programPoint().startsWith("B0.0")) {
-      return ",color=\"black\",fontcolor=\"white\"";
+      return specialHighlight("exitNode");
     }
     return "";
+  }
+
+  private static String specialHighlight(String name) {
+    return ",specialHighlight=\"" + name + "\"";
   }
 
   private static boolean isFirstBlock(ExplodedGraph.Node node, int firstBlockId) {
@@ -143,14 +147,14 @@ public class EGViewer {
 
   private static String handleException(ExplodedGraph.Node node) {
     if (node.programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      return ",color=\"red\",fontcolor=\"red\"";
+      return specialHighlight("exceptionEdge");
     }
     return "";
   }
 
   private static String yield(ExplodedGraph.Edge edge) {
     return edge.yields().stream()
-      .map(y -> String.format(",color=\"purple\",fontcolor=\"purple\",selectedMethodYield=\"%s\"", y))
+      .map(y -> String.format("%s,selectedMethodYield=\"%s\"", specialHighlight("yieldEdge"), y))
       .collect(Collectors.joining());
   }
 }
