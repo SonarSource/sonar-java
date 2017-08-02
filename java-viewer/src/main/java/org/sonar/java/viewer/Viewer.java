@@ -30,12 +30,15 @@ import org.sonar.java.cfg.CFGViewer;
 import org.sonar.java.se.EGViewer;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static spark.Spark.exception;
 import static spark.Spark.get;
@@ -68,22 +71,46 @@ public class Viewer {
     MultiMap<String> params = new MultiMap<>();
     UrlEncoded.decodeUtf8To(request.body(), params);
     String javaCode = params.getOrDefault("javaCode", Collections.singletonList(DEFAULT_SOURCE_CODE)).get(0);
-    return renderIndex(javaCode);
+    try {
+      return renderIndex(javaCode);
+    } catch (Exception e) {
+      return renderError(javaCode, e);
+    }
   }
 
   private static String renderIndex(String javaCode) {
-    HashMap<String, String> model = new HashMap<>();
+    HashMap<String, String> values = new HashMap<>();
 
     CFG cfg = CFGViewer.buildCFG(javaCode);
 
-    model.put("javaCode", javaCode);
-    model.put("cfg", CFGDebug.toString(cfg));
+    values.put("cfg", CFGDebug.toString(cfg));
 
-    model.put("dotAST", ASTViewer.toDot(javaCode));
-    model.put("dotCFG", CFGViewer.toDot(cfg));
-    model.put("dotEG", EGViewer.toDot(javaCode, cfg.blocks().get(0).id()));
+    values.put("dotAST", ASTViewer.toDot(javaCode));
+    values.put("dotCFG", CFGViewer.toDot(cfg));
+    values.put("dotEG", EGViewer.toDot(javaCode, cfg.blocks().get(0).id()));
 
-    return new VelocityTemplateEngine().render(new ModelAndView(model, "velocity/index.vm"));
+    values.put("errorMessage", "");
+    values.put("errorStackTrace", "");
+
+    return renderWithValues(javaCode, values);
+  }
+
+  private static String renderError(String javaCode, Exception e) {
+    HashMap<String, String> values = new HashMap<>();
+
+    StringWriter sw = new StringWriter();
+    e.printStackTrace(new PrintWriter(sw));
+    String stackTrace = sw.toString();
+
+    values.put("errorMessage", e.getMessage());
+    values.put("errorStackTrace", stackTrace.replace(System.getProperty("line.separator"), "<br/>\n"));
+
+    return renderWithValues(javaCode, values);
+  }
+
+  private static String renderWithValues(String javaCode, Map<String, String> values) {
+    values.put("javaCode", javaCode);
+    return new VelocityTemplateEngine().render(new ModelAndView(values, "velocity/index.vm"));
   }
 
   private static String defaultFileContent() {
