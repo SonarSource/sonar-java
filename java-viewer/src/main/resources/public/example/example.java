@@ -1,8 +1,15 @@
 class A {
-  int foo(boolean a) {
-    if(a) {
-      return 12;
+  void foo(boolean a) {
+    Object o = bar(a);
+    if (a) {
+      o.toString();
     }
-    return 14;
+  }
+
+  private Object bar(boolean b) {
+    if (b) {
+      return null;
+    }
+    return new Object();
   }
 }

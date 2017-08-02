@@ -7,25 +7,25 @@ function loadDot(DOTstring, targetContainer, displayAsTree) {
   }
 
   /* START: DEBUG STYLE */
-//  data.nodes.push({
-//    id: 12412312,
-//    label: 'lost',
-//    specialHighlight: 'lostNode',
-//  });
-//  data.edges.push({
-//    arrows: 'to',
-//    from: 12412312,
-//    to: 0,
-//    label: 'exception',
-//    specialHighlight: 'exceptionEdge',
-//  });
-//  data.edges.push({
-//    arrows: 'to',
-//    from: 12412312,
-//    to: 5,
-//    label: 'yield',
-//    specialHighlight: 'yieldEdge',
-//  });
+  //  data.nodes.push({
+  //    id: 12412312,
+  //    label: 'lost',
+  //    highlighting: 'lostNode',
+  //  });
+  //  data.edges.push({
+  //    arrows: 'to',
+  //    from: 12412312,
+  //    to: 0,
+  //    label: 'exception',
+  //    highlighting: 'exceptionEdge',
+  //  });
+  //  data.edges.push({
+  //    arrows: 'to',
+  //    from: 12412312,
+  //    to: 1,
+  //    label: 'yield',
+  //    highlighting: 'yieldEdge',
+  //  });
   /* END: DEBUG STYLE */
 
   setNodesColor(data.nodes);
@@ -67,7 +67,7 @@ function setNodesColor(nodes) {
       align: 'left'
     };
 
-    switch(node.specialHighlight) {
+    switch(node.highlighting) {
       case 'firstNode':
         node['color']['background'] = 'green';
         node['color']['border'] = 'limegreen';
@@ -101,7 +101,7 @@ function setEdgesColor(edges) {
       color: 'gray'
     };
 
-    switch(edge.specialHighlight) {
+    switch(edge.highlighting) {
       case 'exceptionEdge':
         edge['color']['color'] = 'red';
         edge['font']['color'] = 'red';
