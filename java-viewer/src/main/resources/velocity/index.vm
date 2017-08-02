@@ -25,13 +25,13 @@
       <div class="row">
         <h1>Java sample</h1>
         <form action="/" method="post">
-	        <div style="border: solid lightgray 1px; margin-bottom: 10px;">
-	           <textarea id="java-code" name="javaCode">$javaCode</textarea>
-	        </div>
-	        <div>
-	          <button type="submit" class="btn btn-primary">Generate</button>
-	          <a href="/" class="btn btn-default" role="button">Reset</a>
-	        </div>
+          <div style="border: solid lightgray 1px; margin-bottom: 10px;">
+             <textarea id="java-code" name="javaCode">$javaCode</textarea>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Generate</button>
+            <a href="/" class="btn btn-default" role="button">Reset</a>
+          </div>
         </form>
         <h1>Control Flow Graph</h1>
         <div style="border: solid lightgray 1px;">
@@ -42,21 +42,31 @@
     <div class="col-md-8">
       <div class="row">
         <div id="graphs">
-          <ul class="nav nav-tabs">
-            <li class="active"><a  href="#eg" data-toggle="tab">Exploded Graph</a></li>
-            <li><a href="#cfg" data-toggle="tab">Control Flow Graph</a></li>
-            <li><a href="#ast" data-toggle="tab">Syntax Tree</a></li>
-          </ul>
+          <div class="panel panel-danger" id="errorBox">
+            <div class="panel-heading">
+              <h3 class=panel-title>$errorMessage</h3>
+            </div>
+            <div class="panel-body">
+              <p style="font-family: monospace;">$errorStackTrace</p>
+            </div>
+          </div>
+          <div id="tabs">
+            <ul class="nav nav-tabs">
+              <li class="active"><a  href="#eg" data-toggle="tab">Exploded Graph</a></li>
+              <li><a href="#cfg" data-toggle="tab">Control Flow Graph</a></li>
+              <li><a href="#ast" data-toggle="tab">Syntax Tree</a></li>
+            </ul>
 
-          <div class="tab-content ">
-            <div class="tab-pane active" id="eg">
-              <div id="eg-container" style="height: 800px; border: solid lightgray 1px;"></div>
-            </div>
-            <div class="tab-pane" id="cfg">
-              <div id="cfg-container" style="height: 800px; border: solid lightgray 1px;"></div>
-            </div>
-            <div class="tab-pane" id="ast">
-              <div id="ast-container" style="height: 800px; border: solid lightgray 1px;"></div>
+            <div class="tab-content ">
+              <div class="tab-pane active" id="eg">
+                <div id="eg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+              </div>
+              <div class="tab-pane" id="cfg">
+                <div id="cfg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+              </div>
+              <div class="tab-pane" id="ast">
+                <div id="ast-container" style="height: 800px; border: solid lightgray 1px;"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -79,17 +89,29 @@
       mode: "text/x-java"
     });
 
-    var explodedGraphContainer = document.getElementById('eg-container');
-    var dotEG = '$dotEG';
-    loadDot(dotEG, explodedGraphContainer);
+    var errorMessage = '$errorMessage';
 
-    var cfgContainer = document.getElementById('cfg-container');
-    var dotCFG = '$dotCFG';
-    loadDot(dotCFG, cfgContainer);
+    if (errorMessage) {
+      cfgEditor.setValue("");
 
-    var astContainer = document.getElementById('ast-container');
-    var dotAST = '$dotAST';
-    loadDot(dotAST, astContainer, true);
+      var tabs = document.getElementById('tabs');
+      tabs.parentNode.removeChild(tabs);
+    } else {
+      var explodedGraphContainer = document.getElementById('eg-container');
+      var dotEG = '$dotEG';
+      loadDot(dotEG, explodedGraphContainer);
+
+      var cfgContainer = document.getElementById('cfg-container');
+      var dotCFG = '$dotCFG';
+      loadDot(dotCFG, cfgContainer);
+
+      var astContainer = document.getElementById('ast-container');
+      var dotAST = '$dotAST';
+      loadDot(dotAST, astContainer, true);
+
+      var errorBox = document.getElementById('errorBox');
+      errorBox.parentNode.removeChild(errorBox);
+    }
   </script>
 </body>
 </html>
