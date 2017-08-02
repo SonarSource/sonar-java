@@ -15,13 +15,15 @@
     <script src="lib/codemirror-5.27.2/mode/clike/clike.js"></script>
     <script src="lib/codemirror-5.27.2/addon/selection/active-line.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="lib/viewer/style.css">
     <script src="lib/viewer/viewer.js"></script>
+
     <script src="lib/vis-4.20.0/vis.js"></script>
   </head>
 </head>
 <body>
   <div class="container-fluid">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="row">
         <h1>Java sample</h1>
         <form action="/" method="post">
@@ -39,7 +41,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-9">
       <div class="row">
         <div id="graphs">
           <div class="panel panel-danger" id="errorBox">
@@ -57,15 +59,36 @@
               <li><a href="#ast" data-toggle="tab">Syntax Tree</a></li>
             </ul>
 
-            <div class="tab-content ">
+            <div class="tab-content">
               <div class="tab-pane active" id="eg">
-                <div id="eg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+                <div class="col-md-8">
+                  <div id="eg-container" style="height: 800px;"></div>
+                </div>
+                <div class="col-md-4">
+                  <div style="margin: 10px;">
+                     <div id="eg-details" >
+                       <em>Select a node or an edge from the graph for more details...</em>
+                     </div>
+                     <div id="eg-nodeDetails">
+                       <div class="panel panel-default">
+                         <div class="panel-heading">Node</div>
+                         <div class="panel-body"></div>
+                       </div>
+                     </div>
+                     <div id="eg-edgeDetails">
+                       <div class="panel panel-default">
+                         <div class="panel-heading">Edge</div>
+                         <div class="panel-body"></div>
+                       </div>
+                     </div>
+                  </div>
+                </div>
               </div>
               <div class="tab-pane" id="cfg">
-                <div id="cfg-container" style="height: 800px; border: solid lightgray 1px;"></div>
+                <div id="cfg-container" style="height: 800px;"></div>
               </div>
               <div class="tab-pane" id="ast">
-                <div id="ast-container" style="height: 800px; border: solid lightgray 1px;"></div>
+                <div id="ast-container" style="height: 800px;"></div>
               </div>
             </div>
           </div>
@@ -99,11 +122,16 @@
     } else {
       var explodedGraphContainer = document.getElementById('eg-container');
       var dotEG = '$dotEG';
-      loadDot(dotEG, explodedGraphContainer);
+      var detailsPanels = {
+         info: $('#eg-details'),
+         node: $('#eg-nodeDetails'),
+         edge: $('#eg-edgeDetails')
+      };
+      loadDot(dotEG, explodedGraphContainer, false, detailsPanels);
 
       var cfgContainer = document.getElementById('cfg-container');
       var dotCFG = '$dotCFG';
-      loadDot(dotCFG, cfgContainer);
+      loadDot(dotCFG, cfgContainer, false);
 
       var astContainer = document.getElementById('ast-container');
       var dotAST = '$dotAST';

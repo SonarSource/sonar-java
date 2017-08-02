@@ -1,0 +1,36 @@
+div.panel-body h3 {
+  margin-top: 5px;
+  font-style: italic;
+  font-size: 20px;
+}
+
+div.panel-body table {
+  width: 100%;
+  text-align: left;
+}
+
+div.panel-body table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+div.panel-body table td {
+  vertical-align: top;
+  padding: 5px;
+}
+
+div.panel-body table td:first-child {
+  font-weight: bold;
+}
+
+div.panel-body table.innerTable {
+  padding: 0px;
+  font-family: monospace;
+}
+
+div.panel-body table.innerTable tr:nth-child(even) {
+  background-color: inherit;
+}
+
+div.panel-body table.innerTable td {
+  vertical-align: top;
+}

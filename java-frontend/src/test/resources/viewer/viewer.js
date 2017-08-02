@@ -88,7 +88,7 @@ function loadDot(DOTstring, useProgramStates, displayAsTree) {
         }
       });
 
-      result = '<h3>Program State:</h3>';
+      result = '<h3>Program State</h3>';
       result += '<table>';
       result += tableLine('values', valuesAsString);
       result += tableLine('constraints', constraintsAsString);
