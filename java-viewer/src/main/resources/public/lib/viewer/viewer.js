@@ -6,24 +6,32 @@ function loadDot(DOTstring, targetContainer, displayAsTree) {
     edges: parsedData.edges
   }
 
-  var options = parsedData.options;
+  /* START: DEBUG STYLE */
+//  data.nodes.push({
+//    id: 12412312,
+//    label: 'lost',
+//    specialHighlight: 'lostNode',
+//  });
+//  data.edges.push({
+//    arrows: 'to',
+//    from: 12412312,
+//    to: 0,
+//    label: 'exception',
+//    specialHighlight: 'exceptionEdge',
+//  });
+//  data.edges.push({
+//    arrows: 'to',
+//    from: 12412312,
+//    to: 5,
+//    label: 'yield',
+//    specialHighlight: 'yieldEdge',
+//  });
+  /* END: DEBUG STYLE */
 
-  options.nodes = {
-    color: {
-      background: '#eee',
-      border: 'gray',
-      highlight:{
-        background: 'yellow',
-        border: 'gold'
-      }
-    },
-    font: {
-      size: 12,
-      face: 'monospace',
-      color: '#333',
-      align: 'left'
-    }
-  }
+  setNodesColor(data.nodes);
+  setEdgesColor(data.edges);
+
+  var options = parsedData.options;
 
   if(displayAsTree) {
     options.layout = {
@@ -36,12 +44,72 @@ function loadDot(DOTstring, targetContainer, displayAsTree) {
     }
   }
 
-  options.edges = {
-    font: {
-      size: 10,
-      color: 'grey'
+  new vis.Network(targetContainer, data, options);
+};
+
+function setNodesColor(nodes) {
+  for (var id in nodes) {
+    var node = nodes[id];
+
+    // common properties
+    node['color'] = {
+      background: '#eee',
+      border: 'gray',
+      highlight: {
+        background: 'yellow',
+        border: 'gold'
+      }
+    };
+    node['font'] = {
+      size: 12,
+      face: 'monospace',
+      color: '#333',
+      align: 'left'
+    };
+
+    switch(node.specialHighlight) {
+      case 'firstNode':
+        node['color']['background'] = 'green';
+        node['color']['border'] = 'limegreen';
+        node['font']['color'] = 'white';
+        break;
+      case 'exitNode':
+        node['color']['background'] = 'black';
+        node['color']['border'] = 'dimgray';
+        node['font']['color'] = 'white';
+        break;
+      case 'lostNode':
+        node['color']['background'] = 'red';
+        node['color']['border'] = 'firebrick';
+        node['font']['color'] = 'white';
+        break;
     }
   }
+}
 
-  var network = new vis.Network(targetContainer, data, options);
-};
+function setEdgesColor(edges) {
+  for (var id in edges) {
+    var edge = edges[id];
+
+    // common properties
+    edge['color'] = {
+      color: 'gray',
+      highlight: 'yellow'
+    };
+    edge['font'] = {
+      size: 10,
+      color: 'gray'
+    };
+
+    switch(edge.specialHighlight) {
+      case 'exceptionEdge':
+        edge['color']['color'] = 'red';
+        edge['font']['color'] = 'red';
+        break;
+      case 'yieldEdge':
+        edge['color']['color'] = 'purple';
+        edge['font']['color'] = 'purple';
+        break;
+    }
+  }
+}
