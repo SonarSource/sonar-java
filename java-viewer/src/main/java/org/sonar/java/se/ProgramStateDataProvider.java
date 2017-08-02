@@ -20,16 +20,19 @@
 package org.sonar.java.se;
 
 import org.sonar.java.collections.PStack;
+import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
 import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProgramStateDataProvider {
 
+  private static final char ESCAPE_CHAR = '?';
+  private static final String ESCAPED_COUPLE = escape("{0}") + ":" + escape("{1}");
   private final ProgramState ps;
   private final ProgramPoint pp;
 
@@ -39,24 +42,38 @@ public class ProgramStateDataProvider {
   }
 
   public String values() {
-    return ps.values.toString();
+    List<String> values = new ArrayList<>();
+    ps.values.forEach((symbol, sv) -> values.add(MessageFormat.format(ESCAPED_COUPLE, symbol, sv)));
+    String result = values.stream().collect(Collectors.joining(","));
+    return "{" + result + "}";
+  }
+
+  private static String escape(String value) {
+    return ESCAPE_CHAR + value + ESCAPE_CHAR;
   }
 
   public String constraints() {
-    List<String> result = new ArrayList<>();
-    ps.constraints.forEach((sv, constraints) -> result.add(sv.toString() + "=" + constraints.stream().map(Constraint::toString).collect(Collectors.toList()).toString()));
-    return result.stream().sorted().collect(Collectors.toList()).toString();
+    List<String> constraints = new ArrayList<>();
+    ps.constraints.forEach((sv, svConstraints) -> constraints.add(escape(sv.toString()) + ":" + svConstraints.stream()
+      .map(Constraint::toString)
+      .map(ProgramStateDataProvider::escape)
+      .collect(Collectors.toList()).toString()));
+    String result = constraints.stream().sorted().collect(Collectors.joining(","));
+    return "{" + result + "}";
   }
 
   public String stack() {
-    /// Ugly hack to get the stack and not expose programState API. The stack should remain private to avoid uncontrolled usage in engine
+    // Ugly hack to get the stack and not expose programState API. The stack should remain private to avoid uncontrolled usage in engine
     try {
       Field stackField = ps.getClass().getDeclaredField("stack");
       stackField.setAccessible(true);
-      PStack<SymbolicValue> stack = (PStack<SymbolicValue>) stackField.get(ps);
-      return stack.toString();
+      PStack<SymbolicValueSymbol> stack = (PStack<SymbolicValueSymbol>) stackField.get(ps);
+      List<String> stackItems = new ArrayList<>();
+      stack.forEach(svs -> stackItems.add(MessageFormat.format(ESCAPED_COUPLE, svs.sv, svs.symbol)));
+      String result = stackItems.stream().sorted().collect(Collectors.joining(","));
+      return "{" + result + "}";
     } catch (Exception e) {
-      return "[]";
+      return "{}";
     }
   }
 
