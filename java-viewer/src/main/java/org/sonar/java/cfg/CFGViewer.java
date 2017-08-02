@@ -25,12 +25,14 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.viewer.DotHelper;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.text.MessageFormat;
+import javax.annotation.CheckForNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -79,28 +81,25 @@ public class CFGViewer {
 
   private static String dotBlockLabel(int blockId, int firstBlockId) {
     String label = "B" + blockId;
-    String color = "";
+    DotHelper.Highlighting highlighting = null;
     if (blockId == 0) {
       label += " (EXIT)";
-      color = "red";
+      highlighting = DotHelper.Highlighting.EXIT_NODE;
     } else if (blockId == firstBlockId) {
       label += " (START)";
-      color = "green";
+      highlighting = DotHelper.Highlighting.FIRST_NODE;
     }
 
-    if (!color.isEmpty()) {
-      color = MessageFormat.format(",fillcolor=\"{0}\",fontcolor=\"white\"", color);
-    }
-
-    return dotLine("{0}[label=\"{1}\"{2}];", blockId, label, color);
+    return dotLine(DotHelper.node(blockId, label, highlighting));
   }
 
   private static String dotSuccessorFormat(Block block, Block successor) {
-    return dotLine("{0}->{1}{2};", block.id(), successor.id(), dotSuccessorLabel(block, successor));
+    return DotHelper.edge(block.id(), successor.id(), dotSuccessorLabel(block, successor));
   }
 
+  @CheckForNull
   private static String dotSuccessorLabel(Block block, Block successor) {
-    String edgeLabel = "";
+    String edgeLabel = null;
     if (successor == block.trueBlock()) {
       edgeLabel = "TRUE";
     } else if (successor == block.falseBlock()) {
@@ -108,18 +107,15 @@ public class CFGViewer {
     } else if (successor == block.exitBlock()) {
       edgeLabel = "EXIT";
     }
-    if (!edgeLabel.isEmpty()) {
-      return "[label=\"" + edgeLabel + "\"]";
-    }
-    return "";
+    return edgeLabel;
   }
 
   private static String dotExceptionFormat(Block block, Block exception) {
-    return dotLine("{0}->{1}[label=\"EXCEPTION\",color=\"orange\",fontcolor=\"orange\"];", block.id(), exception.id());
+    return dotLine(DotHelper.edge(block.id(), exception.id(), "EXCEPTION", DotHelper.Highlighting.EXCEPTION_EDGE));
   }
 
-  private static String dotLine(String text, Object... args) {
-    return DOT_PADDING + MessageFormat.format(text, args) + NEW_LINE;
+  private static String dotLine(String dotLine) {
+    return DOT_PADDING + dotLine + NEW_LINE;
   }
 
 }
