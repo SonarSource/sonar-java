@@ -262,6 +262,11 @@ function setNodesColor(nodes) {
         node['color']['border'] = 'firebrick';
         node['font']['color'] = 'white';
         break;
+      case 'syntaxToken':
+        node['color']['background'] = 'skyblue';
+        node['color']['border'] = 'slateblue';
+        node['shape'] = 'box';
+        break;
     }
   }
 }

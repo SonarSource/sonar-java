@@ -23,6 +23,8 @@ import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.viewer.DotHelper;
+import org.sonar.java.viewer.DotHelper.Highlighting;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -47,16 +49,17 @@ public class ASTViewer {
 
     private String getNode(Tree tree) {
       StringBuilder builder = new StringBuilder();
-      builder.append(index + "[label = \"" + tree.kind() + "#" + (tree.firstToken() != null ? tree.firstToken().line() : "") + "\"] ");
+      String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
+      builder.append(DotHelper.node(index, label, null));
       if(tree.is(Tree.Kind.TOKEN)) {
-        builder.append(index + "[label = \"" + ((SyntaxToken) tree).text() + "\"] ");
+        builder.append(DotHelper.node(index, ((SyntaxToken) tree).text(), Highlighting.SYNTAX_TOKEN));
       }
       int currentNodeIndex = index;
       if(!((JavaTree) tree).isLeaf()) {
         for (Tree child : ((JavaTree) tree).getChildren()) {
           index++;
           int childIndex = index;
-          builder.append(getNode(child) + currentNodeIndex + "->" + childIndex + " ");
+          builder.append(getNode(child) + DotHelper.edge(currentNodeIndex, childIndex, null));
         }
       }
       return builder.toString();
