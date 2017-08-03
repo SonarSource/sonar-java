@@ -50,63 +50,59 @@
       </div>
     </div>
     <div class="col-md-9">
-      <div class="row">
-        <div id="graphs">
-          <div class="panel panel-danger" id="errorBox">
-            <div class="panel-heading">
-              <h3 class=panel-title>$errorMessage</h3>
-            </div>
-            <div class="panel-body">
-              <p>$errorStackTrace</p>
-            </div>
-          </div>
-          <div id="tabs">
-            <div class="tab-content">
-              <div class="tab-pane active" id="eg">
-                <div id="eg-detailsBox" class="col-md-5">
-                  <div id="eg-details" >
-                    <div class="alert alert-info alert-dismissible" role="alert">
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <p>Select a node or an edge from the graph for more details...</p>
-                    </div>
+      <div class="panel panel-danger" id="errorBox">
+        <div class="panel-heading">
+          <h3 class=panel-title>$errorMessage</h3>
+        </div>
+        <div class="panel-body">
+          <p>$errorStackTrace</p>
+        </div>
+      </div>
+      <div id="tabs">
+        <div class="tab-content">
+          <div class="tab-pane active" id="eg">
+            <div id="eg-detailsBox" class="col-md-5">
+              <div id="eg-details" >
+                <div class="alert alert-info alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <p>Select a node or an edge from the graph for more details...</p>
+                </div>
+              </div>
+              <div id="eg-nodeDetails">
+                <div class="panel panel-default">
+                  <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#eg-nodeDetails-collapse">
+                    <h4 class="panel-title">Node</h4>
                   </div>
-                  <div id="eg-nodeDetails">
-                    <div class="panel panel-default">
-                      <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#eg-nodeDetails-collapse">
-                        <h4 class="panel-title">Node</h4>
-                      </div>
-                      <div id="eg-nodeDetails-collapse" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                          <div id="nodeDetails-content"></div>
-                          <hr>
-                          <h3>Program point: <span id="ppKey"></span></h3>
-                          <a href="#" id="same-pp-btn" class="btn btn-primary" role="button">Nodes at same PP</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="eg-edgeDetails">
-                    <div class="panel panel-default">
-                      <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#eg-edgeDetails-collapse">
-                        <h4 class="panel-title">Edge</h4>
-                      </div>
-                      <div id="eg-edgeDetails-collapse" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                          <div id="edgeDetails-content"></div>
-                        </div>
-                      </div>
+                  <div id="eg-nodeDetails-collapse" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div id="nodeDetails-content"></div>
+                      <hr>
+                      <h3>Program point: <span id="ppKey"></span></h3>
+                      <a href="#" id="same-pp-btn" class="btn btn-primary" role="button">Nodes at same PP</a>
                     </div>
                   </div>
                 </div>
-                <div id="eg-container" class="dotGraph"></div>
               </div>
-              <div class="tab-pane" id="cfg">
-                <div id="cfg-container" class="dotGraph"></div>
-              </div>
-              <div class="tab-pane" id="ast">
-                <div id="ast-container" class="dotGraph"></div>
+              <div id="eg-edgeDetails">
+                <div class="panel panel-default">
+                  <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#eg-edgeDetails-collapse">
+                    <h4 class="panel-title">Edge</h4>
+                  </div>
+                  <div id="eg-edgeDetails-collapse" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <div id="edgeDetails-content"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+            <div id="eg-container" class="dotGraph"></div>
+          </div>
+          <div class="tab-pane" id="cfg">
+            <div id="cfg-container" class="dotGraph"></div>
+          </div>
+          <div class="tab-pane" id="ast">
+            <div id="ast-container" class="dotGraph"></div>
           </div>
         </div>
       </div>
