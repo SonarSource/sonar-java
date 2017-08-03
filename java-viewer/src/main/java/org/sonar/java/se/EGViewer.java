@@ -28,7 +28,6 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.java.viewer.DotHelper;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -44,8 +43,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
@@ -106,7 +103,7 @@ public class EGViewer {
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
       Collection<ExplodedGraph.Edge> edges = node.edges();
-      result.append(graphNode(index, node, edges.isEmpty(), firstBlockId, viewer.behaviorCache));
+      result.append(node(index, node, edges.isEmpty(), firstBlockId, viewer.behaviorCache));
       Stream<ExplodedGraph.Edge> edgeStream = edges.stream();
       if (!SHOW_MULTIPLE_PARENTS) {
         edgeStream = edgeStream.limit(1);
@@ -119,17 +116,14 @@ public class EGViewer {
 
   }
 
-  private static String graphNode(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
-    ProgramStateDataProvider psDataProvider = new ProgramStateDataProvider(node, behaviorCache);
+  private static String node(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
+    EGNodeDataProvider psDataProvider = new EGNodeDataProvider(node, behaviorCache);
     Map<String, String> extraFields = new HashMap<>();
     extraFields.put("psStack", psDataProvider.stack());
     extraFields.put("psConstraints", psDataProvider.constraints());
     extraFields.put("psValues", psDataProvider.values());
-    String yields = psDataProvider.yields();
-    if (yields != null) {
-      extraFields.put("methodYields", yields);
-      extraFields.put("methodName", psDataProvider.methodName());
-    }
+    extraFields.put("methodYields", psDataProvider.yields());
+    extraFields.put("methodName", psDataProvider.methodName());
     return DotHelper.node(
       index,
       psDataProvider.programPoint(),
@@ -138,7 +132,7 @@ public class EGViewer {
   }
 
   @CheckForNull
-  private static DotHelper.Highlighting specialNodeHighlight(ExplodedGraph.Node node, boolean hasParents, int firstBlockId, ProgramStateDataProvider psDataProvider) {
+  private static DotHelper.Highlighting specialNodeHighlight(ExplodedGraph.Node node, boolean hasParents, int firstBlockId, EGNodeDataProvider psDataProvider) {
     if (hasParents) {
       if (isFirstBlock(node, firstBlockId)) {
         return DotHelper.Highlighting.FIRST_NODE;
@@ -156,20 +150,19 @@ public class EGViewer {
   }
 
   private static String edge(int from, int to, ExplodedGraph.Edge edge) {
-    String label = learnedAssociations(edge) + "\\n" + learnedConstraints(edge);
-    Map<String, String> yield = yield(edge);
-    if (!yield.isEmpty()) {
-      return DotHelper.edge(from, to, label, DotHelper.Highlighting.YIELD_EDGE, yield);
+    EGEdgeDataProvider edgeDataProvider = new EGEdgeDataProvider(edge);
+    Map<String, String> extraFields = new HashMap<>();
+    extraFields.put("learnedConstraints", edgeDataProvider.learnedConstraints());
+    extraFields.put("learnedAssociations", edgeDataProvider.learnedAssociations());
+    String selectedMethodYield = edgeDataProvider.yield();
+    extraFields.put("selectedMethodYield", selectedMethodYield);
+    DotHelper.Highlighting highligting;
+    if (selectedMethodYield != null) {
+      highligting = DotHelper.Highlighting.YIELD_EDGE;
+    } else {
+      highligting = specialEdgeHighlight(edge.child());
     }
-    return DotHelper.edge(from, to, label, specialEdgeHighlight(edge.child()));
-  }
-
-  private static String learnedConstraints(ExplodedGraph.Edge edge) {
-    return edge.learnedConstraints().stream().map(LearnedConstraint::toString).collect(Collectors.joining(","));
-  }
-
-  private static String learnedAssociations(ExplodedGraph.Edge edge) {
-    return edge.learnedAssociations().stream().map(LearnedAssociation::toString).collect(Collectors.joining(","));
+    return DotHelper.edge(from, to, edgeDataProvider.label(), highligting, extraFields);
   }
 
   @CheckForNull
@@ -178,16 +171,5 @@ public class EGViewer {
       return DotHelper.Highlighting.EXCEPTION_EDGE;
     }
     return null;
-  }
-
-  private static Map<String, String> yield(ExplodedGraph.Edge edge) {
-    Set<MethodYield> yields = edge.yields();
-    if (yields.isEmpty()) {
-      return Collections.emptyMap();
-    }
-    String yieldsAsText = yields.stream().map(ProgramStateDataProvider::yield).collect(Collectors.joining());
-    Map<String, String> result = new HashMap<>();
-    result.put("selectedMethodYield", yieldsAsText);
-    return result;
   }
 }

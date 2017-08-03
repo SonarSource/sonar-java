@@ -37,21 +37,18 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProgramStateDataProvider {
+public class EGNodeDataProvider extends EGDataProvider {
 
-  private static final char ESCAPE_CHAR = '?';
-  private static final String ESCAPED_COUPLE = escape("{0}") + ":" + escape("{1}");
   private final ProgramState ps;
   private final ProgramPoint pp;
   private final BehaviorCache bc;
 
-  public ProgramStateDataProvider(ExplodedGraph.Node node, BehaviorCache behaviorCache) {
+  public EGNodeDataProvider(ExplodedGraph.Node node, BehaviorCache behaviorCache) {
     this.ps = node.programState;
     this.pp = node.programPoint;
     this.bc = behaviorCache;
@@ -59,20 +56,16 @@ public class ProgramStateDataProvider {
 
   public String values() {
     List<String> values = new ArrayList<>();
-    ps.values.forEach((symbol, sv) -> values.add(MessageFormat.format(ESCAPED_COUPLE, symbol, sv)));
+    ps.values.forEach((symbol, sv) -> values.add(escapeCouple(symbol, sv)));
     String result = values.stream().collect(Collectors.joining(","));
-    return "{" + result + "}";
-  }
-
-  private static String escape(String value) {
-    return ESCAPE_CHAR + value + ESCAPE_CHAR;
+    return asObject(result);
   }
 
   public String constraints() {
     List<String> constraints = new ArrayList<>();
     ps.constraints.forEach((sv, svConstraints) -> constraints.add(escape(sv.toString()) + ":" + constraintsAsString(svConstraints)));
     String result = constraints.stream().sorted().collect(Collectors.joining(","));
-    return "{" + result + "}";
+    return asObject(result);
   }
 
   private static String constraintsAsString(@Nullable ConstraintsByDomain constraintsByDomain) {
@@ -81,7 +74,7 @@ public class ProgramStateDataProvider {
     }
     return constraintsByDomain.stream()
       .map(Constraint::toString)
-      .map(ProgramStateDataProvider::escape)
+      .map(EGNodeDataProvider::escape)
       .collect(Collectors.toList()).toString();
   }
 
@@ -89,17 +82,18 @@ public class ProgramStateDataProvider {
   public String stack() {
     // Ugly hack to get the stack and not expose programState API.
     // The stack should remain private to avoid uncontrolled usage in engine
+    String result = null;
     try {
       Field stackField = ps.getClass().getDeclaredField("stack");
       stackField.setAccessible(true);
       PStack<SymbolicValueSymbol> stack = (PStack<SymbolicValueSymbol>) stackField.get(ps);
       List<String> stackItems = new ArrayList<>();
-      stack.forEach(svs -> stackItems.add(MessageFormat.format(ESCAPED_COUPLE, svs.sv, svs.symbol)));
-      String result = stackItems.stream().sorted().collect(Collectors.joining(","));
-      return "{" + result + "}";
+      stack.forEach(svs -> stackItems.add(escapeCouple(svs.sv, svs.symbol)));
+      result = stackItems.stream().sorted().collect(Collectors.joining(","));
     } catch (Exception e) {
-      return "{}";
+      // do nothing
     }
+    return asObject(result);
   }
 
   public String programPoint() {
@@ -120,23 +114,23 @@ public class ProgramStateDataProvider {
     if (knownBehavior == null) {
       return null;
     }
-    String result = knownBehavior.yields().stream().map(ProgramStateDataProvider::yield).collect(Collectors.joining(","));
-    return "[" + result + "]";
+    String result = knownBehavior.yields().stream().map(EGNodeDataProvider::yield).collect(Collectors.joining(","));
+    return asList(result);
   }
 
   public static String yield(MethodYield methodYield) {
     List<ConstraintsByDomain> parametersConstraints = getParametersConstraints(methodYield);
-    String result = escape("params") + ":" + parametersConstraints.stream().map(ProgramStateDataProvider::constraintsAsString).collect(Collectors.toList()).toString();
+    String result = escape("params") + ":" + parametersConstraints.stream().map(EGNodeDataProvider::constraintsAsString).collect(Collectors.toList()).toString();
     if (methodYield instanceof HappyPathYield) {
       HappyPathYield hpy = (HappyPathYield) methodYield;
       result += "," + escape("result") + ":" + constraintsAsString(hpy.resultConstraint());
       result += "," + escape("resultIndex") + ":" + hpy.resultIndex();
     } else if (methodYield instanceof ExceptionalYield) {
       Type exceptionType = ((ExceptionalYield) methodYield).exceptionType();
-      String exceptionFQN = escape(exceptionType == null ? "runtime Exception" : exceptionType.fullyQualifiedName());
-      result += "," + escape("exception") + ":" + exceptionFQN;
+      String exceptionFQN = exceptionType == null ? "runtime Exception" : exceptionType.fullyQualifiedName();
+      result += "," + escapeCouple("exception", exceptionFQN);
     }
-    return "{" + result + "}";
+    return asObject(result);
   }
 
   @SuppressWarnings("unchecked")

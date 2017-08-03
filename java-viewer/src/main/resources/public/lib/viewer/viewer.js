@@ -6,28 +6,6 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
     edges: parsedData.edges
   }
 
-  /* START: DEBUG STYLE */
-  //  data.nodes.push({
-  //    id: 12412312,
-  //    label: 'lost',
-  //    highlighting: 'lostNode',
-  //  });
-  //  data.edges.push({
-  //    arrows: 'to',
-  //    from: 12412312,
-  //    to: 0,
-  //    label: 'exception',
-  //    highlighting: 'exceptionEdge',
-  //  });
-  //  data.edges.push({
-  //    arrows: 'to',
-  //    from: 12412312,
-  //    to: 1,
-  //    label: 'yield',
-  //    highlighting: 'yieldEdge',
-  //  });
-  /* END: DEBUG STYLE */
-
   setNodesColor(data.nodes);
   setEdgesColor(data.edges);
 
@@ -116,21 +94,21 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
 
     function getProgramState(node) {
       var result = '<table class="programState-table">';
-      result += programStateTableLine('Values', node.psValues);
-      result += programStateTableLine('Constraints', node.psConstraints);
-      result += programStateTableLine('Stack', stackItem(node.psStack));
+      result += tableLine('Values', node.psValues);
+      result += tableLine('Constraints', node.psConstraints);
+      result += tableLine('Stack', stackItem(node.psStack));
       result += '</table>';
       return result;
     }
 
-    function programStateTableLine(label, value) {
+    function tableLine(label, value) {
       if (value) {
         var newValue = value;
         if (typeof value == 'string'  && value.startsWith('{') && value.endsWith('}')) {
-          var valueAsObject = JSON.parse(value.replace(/\?/g, '"'));
+          var valueAsObject = asJsonObject(value);
           newValue = '<table class="innerTable">';
           for (var key in valueAsObject) {
-            newValue += programStateTableLine(key, valueAsObject[key]);
+            newValue += tableLine(key, valueAsObject[key]);
           }
           newValue += '</table>'
         }
@@ -144,7 +122,7 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
       if (value == '{}') {
         result += '<li class="list-group-item"><em>empty</em></li>';
       } else {
-        var valueAsObject = JSON.parse(value.replace(/\?/g, '"'));
+        var valueAsObject = asJsonObject(value);
         for (var key in valueAsObject) {
           var item = valueAsObject[key];
           if (item == 'null') {
@@ -165,7 +143,7 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
       result += '<th>Parameters constraints</th>';
       result += '<th>Result constraint / Thrown exception</th>';
       result += '</tr>';
-      var methodYieldsAsObject = JSON.parse(methodYieldsAsString.replace(/\?/g, '"'));
+      var methodYieldsAsObject = asJsonObject(methodYieldsAsString);
       var methodYieldNumber = 1;
       for (var methodYieldId in methodYieldsAsObject) {
         result += getMethodYield(methodYieldsAsObject[methodYieldId], methodYieldNumber);
@@ -207,10 +185,37 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
     }
 
     function getEdgeDetails(edge) {
-      var result = '<em>No data...</em>';
+      if (!edge.learnedConstraints && !edge.learnedAssociations && ! edge.selectedMethodYield) {
+        return '<em>No data...</em>';
+      }
+      var result = '';
+      if (edge.learnedConstraints) {
+        result += '<h3>Learned constraints</h3>';
+        result += '<table>';
+        var learnedConstraintsAsObject = asJsonObject(edge.learnedConstraints);
+        for (var lc in learnedConstraintsAsObject) {
+          result += tableLine(lc, learnedConstraintsAsObject[lc]);
+        }
+        result += '</table>';
+      }
+      if (edge.learnedAssociations) {
+        if (edge.learnedConstraints) {
+          result += '<hr>';
+        }
+        result += '<h3>Learned associations</h3>';
+        result += '<table>';
+        var learnedAssociationsAsObject = asJsonObject(edge.learnedAssociations);
+        for (var la in learnedAssociationsAsObject) {
+          result += tableLine(la, learnedAssociationsAsObject[la]);
+        }
+        result += '</table>';
+      }
       if (edge.selectedMethodYield) {
-        result = '<h3>Method Yield</h3>';
-        var methodYieldAsObject = JSON.parse(edge.selectedMethodYield.replace(/\?/g, '"'));
+        if (edge.learnedAssociations || edge.learnedConstraints) {
+          result += '<hr>';
+        }
+        result += '<h3>Method Yield</h3>';
+        var methodYieldAsObject = asJsonObject(edge.selectedMethodYield);
         result += '<table class="methodYield-table">';
         result += '<tr>';
         result += '<th>Parameters constraints</th>';
@@ -220,6 +225,10 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
         result += '</table>';
       }
       return result;
+    }
+
+    function asJsonObject(value) {
+      return JSON.parse(value.replace(/\?/g, '"'));
     }
   }
 
