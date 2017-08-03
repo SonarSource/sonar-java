@@ -73,6 +73,7 @@ public class DotHelper {
     FIRST_NODE("firstNode"),
     LOST_NODE("lostNode"),
     EXIT_NODE("exitNode"),
+    SYNTAX_TOKEN("syntaxToken"),
     EXCEPTION_EDGE("exceptionEdge"),
     YIELD_EDGE("yieldEdge");
 
