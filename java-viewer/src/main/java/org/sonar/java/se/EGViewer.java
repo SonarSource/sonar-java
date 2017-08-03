@@ -26,6 +26,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.java.viewer.DotHelper;
@@ -52,21 +53,25 @@ import static org.mockito.Mockito.when;
 
 public class EGViewer {
 
-  private EGViewer() {
+  private ExplodedGraph explodedGraph;
+  private BehaviorCache behaviorCache;
+
+  private EGViewer(String source) {
+    buildEG(source);
   }
 
   private static final ActionParser<Tree> PARSER = JavaParser.createParser();
   private static final boolean SHOW_MULTIPLE_PARENTS = true;
 
   public static String toDot(String source, int cfgFirstBlockId) {
-    ExplodedGraph eg = buildEG(source);
-    return egToDot(eg, cfgFirstBlockId);
+    EGViewer viewer = new EGViewer(source);
+    return egToDot(viewer, cfgFirstBlockId);
   }
 
-  private static ExplodedGraph buildEG(String source) {
+  private void buildEG(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
-    return getEg(cut, semanticModel, getFirstMethod(cut));
+    computeEG(cut, semanticModel, getFirstMethod(cut));
   }
 
   private static MethodTree getFirstMethod(CompilationUnitTree cut) {
@@ -77,7 +82,7 @@ public class EGViewer {
       .orElse(null);
   }
 
-  private static ExplodedGraph getEg(CompilationUnitTree cut, SemanticModel semanticModel, MethodTree methodTree) {
+  private void computeEG(CompilationUnitTree cut, SemanticModel semanticModel, MethodTree methodTree) {
     JavaFileScannerContext mockContext = mock(JavaFileScannerContext.class);
     when(mockContext.getTree()).thenReturn(cut);
     when(mockContext.getSemanticModel()).thenReturn(semanticModel);
@@ -90,16 +95,18 @@ public class EGViewer {
     };
     ExplodedGraphWalker walker = new ExplodedGraphWalker(sev.behaviorCache, semanticModel);
     walker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
-    return walker.getExplodedGraph();
+
+    this.explodedGraph = walker.getExplodedGraph();
+    this.behaviorCache = sev.behaviorCache;
   }
 
-  private static String egToDot(ExplodedGraph eg, int firstBlockId) {
+  private static String egToDot(EGViewer viewer, int firstBlockId) {
     StringBuilder result = new StringBuilder("graph ExplodedGraph { ");
-    List<ExplodedGraph.Node> nodes = new ArrayList<>(eg.nodes().keySet());
+    List<ExplodedGraph.Node> nodes = new ArrayList<>(viewer.explodedGraph.nodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : nodes) {
       Collection<ExplodedGraph.Edge> edges = node.edges();
-      result.append(graphNode(index, node, edges.isEmpty(), firstBlockId));
+      result.append(graphNode(index, node, edges.isEmpty(), firstBlockId, viewer.behaviorCache));
       Stream<ExplodedGraph.Edge> edgeStream = edges.stream();
       if (!SHOW_MULTIPLE_PARENTS) {
         edgeStream = edgeStream.limit(1);
@@ -112,12 +119,17 @@ public class EGViewer {
 
   }
 
-  private static String graphNode(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId) {
-    ProgramStateDataProvider psDataProvider = new ProgramStateDataProvider(node);
+  private static String graphNode(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
+    ProgramStateDataProvider psDataProvider = new ProgramStateDataProvider(node, behaviorCache);
     Map<String, String> extraFields = new HashMap<>();
     extraFields.put("psStack", psDataProvider.stack());
     extraFields.put("psConstraints", psDataProvider.constraints());
     extraFields.put("psValues", psDataProvider.values());
+    String yields = psDataProvider.yields();
+    if (yields != null) {
+      extraFields.put("methodYields", yields);
+      extraFields.put("methodName", psDataProvider.methodName());
+    }
     return DotHelper.node(
       index,
       psDataProvider.programPoint(),
@@ -173,7 +185,7 @@ public class EGViewer {
     if (yields.isEmpty()) {
       return Collections.emptyMap();
     }
-    String yieldsAsText = yields.stream().map(MethodYield::toString).collect(Collectors.joining());
+    String yieldsAsText = yields.stream().map(ProgramStateDataProvider::yield).collect(Collectors.joining());
     Map<String, String> result = new HashMap<>();
     result.put("selectedMethodYield", yieldsAsText);
     return result;
