@@ -119,6 +119,7 @@ public class EGViewer {
   private static String node(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
     EGNodeDataProvider psDataProvider = new EGNodeDataProvider(node, behaviorCache);
     Map<String, String> extraFields = new HashMap<>();
+    extraFields.put("ppKey", psDataProvider.programPointKey());
     extraFields.put("psStack", psDataProvider.stack());
     extraFields.put("psConstraints", psDataProvider.constraints());
     extraFields.put("psValues", psDataProvider.values());
