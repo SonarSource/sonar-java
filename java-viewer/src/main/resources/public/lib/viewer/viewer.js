@@ -86,7 +86,7 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
         detailsPanels['edge'].show();
         detailsPanels['edge'].find('.collapse').collapse('show');
       } else {
-        detailsPanels['info'].show();
+        detailsPanels['info'].hide();
         detailsPanels['node'].hide();
         detailsPanels['edge'].hide();
       }
