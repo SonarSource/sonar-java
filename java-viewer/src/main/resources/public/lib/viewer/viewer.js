@@ -52,37 +52,44 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
     detailsPanels['node'].hide();
     detailsPanels['edge'].hide();
 
-    network.on("click", function(params) {
+    network.on('click', function(params) {
       clickAction(params);
     });
 
     function clickAction(params) {
+      var nodeHtmlContent = '<p>No data</p>';
       if (params.nodes.length == 1) {
         var node = getItem(params.nodes[0], data.nodes);
 
-        var programState = "";
         if (node) {
-          programState = getProgramState(node);
+          nodeHtmlContent = getNodeDetails(node);
         }
-        detailsPanels['node']
-          .find('.panel-body')
-          .html(programState);
         // TODO add program points and link to siblings
 
         detailsPanels['info'].hide();
+        detailsPanels['node'].find('.panel-body').html(nodeHtmlContent);
         detailsPanels['node'].show();
+        detailsPanels['node'].find('.collapse').collapse('show');
         detailsPanels['edge'].hide();
       } else if (params.edges.length == 1) {
         var edge = getItem(params.edges[0], data.edges);
-        // TODO add edge INFO
+
+        if (edge) {
+          nodeHtmlContent = getEdgeDetails(edge);
+        }
+
         detailsPanels['info'].hide();
         detailsPanels['node'].hide();
+        detailsPanels['edge'].find('.panel-body').html(nodeHtmlContent);
         detailsPanels['edge'].show();
+        detailsPanels['edge'].find('.collapse').collapse('show');
       } else {
         detailsPanels['info'].show();
         detailsPanels['node'].hide();
         detailsPanels['edge'].hide();
       }
+
+      return network;
     }
 
     function getItem(itemId, collection) {
@@ -96,32 +103,42 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
       return result;
     }
 
-    function getProgramState(node) {
+    function getNodeDetails(node) {
       var result = '<h3>Program State</h3>';
-      result += '<table>';
-      result += tableLine('Values', node.psValues);
-      result += tableLine('Constraints', node.psConstraints);
-      result += tableLine('Stack', stackItem(node.psStack));
-      // TODO add all possible yields
-      result += '</table>';
+      result += getProgramState(node);
+
+      if (node.methodYields) {
+        result += '<hr>';
+        result += '<h3>Method Yields: ' + node.methodName + '(...)</h3>';
+        result += getMethodYields(node.methodYields);
+      }
 
       return result;
     }
 
-    function tableLine(label, value) {
+    function getProgramState(node) {
+      var result = '<table class="programState-table">';
+      result += programStateTableLine('Values', node.psValues);
+      result += programStateTableLine('Constraints', node.psConstraints);
+      result += programStateTableLine('Stack', stackItem(node.psStack));
+      result += '</table>';
+      return result;
+    }
+
+    function programStateTableLine(label, value) {
       if (value) {
         var newValue = value;
         if (typeof value == 'string'  && value.startsWith('{') && value.endsWith('}')) {
           var valueAsObject = JSON.parse(value.replace(/\?/g, '"'));
           newValue = '<table class="innerTable">';
           for (var key in valueAsObject) {
-            newValue += tableLine(key, valueAsObject[key]);
+            newValue += programStateTableLine(key, valueAsObject[key]);
           }
           newValue += '</table>'
         }
         return '<tr><td>' + label + '</td><td>' + newValue + '</td></tr>';
       }
-      return "";
+      return '';
     }
 
     function stackItem(value) {
@@ -140,6 +157,70 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
       }
       result += '</ul>';
 
+      return result;
+    }
+
+    function getMethodYields(methodYieldsAsString) {
+      var result = '<table class="methodYield-table">';
+      result += '<tr>';
+      result += '<th></th>';
+      result += '<th>Parameters constraints</th>';
+      result += '<th>Result constraint / Thrown exception</th>';
+      result += '</tr>';
+      var methodYieldsAsObject = JSON.parse(methodYieldsAsString.replace(/\?/g, '"'));
+      var methodYieldNumber = 1;
+      for (var methodYieldId in methodYieldsAsObject) {
+        result += getMethodYield(methodYieldsAsObject[methodYieldId], methodYieldNumber);
+        methodYieldNumber++;
+      }
+      result += '</table>';
+      return result;
+    }
+
+    function getMethodYield(methodYield, id) {
+      var result = '<tr>';
+      if (id) {
+        result += '<td>#' + id + '</td>';
+      }
+      result += '<td>' + methodParameters(methodYield.params) + '</td>'
+      result += '<td>' + methodResult(methodYield.result, methodYield.resultIndex, methodYield.exception) + '</td>';
+      result += '</tr>';
+      return result;
+    }
+
+    function methodParameters(params) {
+      var result = '<table class="innerTable">';
+      for (var paramId in params) {
+        result += '<tr><td>arg'+ paramId +'</td><td>' + params[paramId] + '</td></tr>'
+      }
+      result += '</table>';
+      return result;
+    }
+
+    function methodResult(resultConstraints, resultIndex, exception) {
+      if (exception) {
+        return '<code>' + exception + '</code>';
+      }
+      var result = resultConstraints;
+      if (resultIndex != -1) {
+        result += ' (arg' + resultIndex + ')';
+      }
+      return result;
+    }
+
+    function getEdgeDetails(edge) {
+      var result = '<em>No data...</em>';
+      if (edge.selectedMethodYield) {
+        result = '<h3>Method Yield</h3>';
+        var methodYieldAsObject = JSON.parse(edge.selectedMethodYield.replace(/\?/g, '"'));
+        result += '<table class="methodYield-table">';
+        result += '<tr>';
+        result += '<th>Parameters constraints</th>';
+        result += '<th>Result constraint / Thrown exception</th>';
+        result += '</tr>';
+        result += getMethodYield(methodYieldAsObject);
+        result += '</table>';
+      }
       return result;
     }
   }

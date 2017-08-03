@@ -60,6 +60,7 @@ public class Viewer {
     BasicConfigurator.configure();
 
     exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e)); // print all exceptions
+
     staticFiles.location("/public");
     port(9999);
 
@@ -124,5 +125,4 @@ public class Viewer {
     }
     return result;
   }
-
 }
