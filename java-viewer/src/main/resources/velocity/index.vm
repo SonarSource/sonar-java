@@ -148,6 +148,24 @@
 
       var errorBox = document.getElementById('errorBox');
       errorBox.parentNode.removeChild(errorBox);
+
+      $('a[data-toggle="tab"]').on('click', function (e) {
+        var network = null;
+        switch(this.hash) {
+          case '#eg':
+            network = networkEG;
+            break;
+          case '#cfg':
+            network = networkCFG;
+            break;
+          case '#ast':
+            network = networkAST;
+            break;
+        }
+        if (network) {
+          setTimeout(function() { network.fit(); }, 10);
+        }
+      });
     }
   </script>
 </body>

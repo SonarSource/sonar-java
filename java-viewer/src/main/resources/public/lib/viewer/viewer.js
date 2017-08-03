@@ -88,8 +88,6 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
         detailsPanels['node'].hide();
         detailsPanels['edge'].hide();
       }
-
-      return network;
     }
 
     function getItem(itemId, collection) {
@@ -224,6 +222,8 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
       return result;
     }
   }
+
+  return network;
 }
 
 function setNodesColor(nodes) {
