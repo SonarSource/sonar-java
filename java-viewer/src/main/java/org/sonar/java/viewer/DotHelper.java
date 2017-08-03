@@ -23,7 +23,9 @@ import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DotHelper {
 
@@ -35,7 +37,12 @@ public class DotHelper {
   }
 
   public static String node(int id, String label, @Nullable Highlighting highlighting, Map<String, String> extraFields) {
-    return MessageFormat.format("{0}[{1}{2}{3}];", id, label(label), highlight(highlighting), extraFields(extraFields));
+    Map<String, String> newMap = new HashMap<>(extraFields);
+    newMap.put("label", label);
+    if (highlighting != null) {
+      newMap.put("highlighting", highlighting.name);
+    }
+    return MessageFormat.format("{0}[{1}];", id, extraFields(newMap));
   }
 
   public static String edge(int from, int to, @Nullable String label) {
@@ -47,26 +54,24 @@ public class DotHelper {
   }
 
   public static String edge(int from, int to, @Nullable String label, @Nullable Highlighting highlighting, Map<String, String> extraFields) {
-    return MessageFormat.format("{0}->{1}[{2}{3}{4}];", from, to, label(label), highlight(highlighting), extraFields(extraFields));
+    Map<String, String> newMap = new HashMap<>(extraFields);
+    if (label != null) {
+      newMap.put("label", label);
+    }
+    if (highlighting != null) {
+      newMap.put("highlighting", highlighting.name);
+    }
+    return MessageFormat.format("{0}->{1}[{2}];", from, to, extraFields(newMap));
   }
 
   private static String extraFields(Map<String, String> extraFields) {
     if (extraFields.isEmpty()) {
       return "";
     }
-    StringBuilder sb = new StringBuilder();
-    for (Map.Entry<String, String> extraField : extraFields.entrySet()) {
-      sb.append(MessageFormat.format(",{0}=\"{1}\"", extraField.getKey(), extraField.getValue()));
-    }
-    return sb.toString();
-  }
-
-  private static String highlight(@Nullable Highlighting highlighting) {
-    return highlighting == null ? "" : ",highlighting=\"" + highlighting.name + "\"";
-  }
-
-  private static String label(@Nullable String label) {
-    return label == null ? "" : MessageFormat.format("label=\"{0}\"", label);
+    return extraFields.entrySet().stream()
+      .filter(entry -> entry.getValue() != null)
+      .map(entry -> MessageFormat.format("{0}=\"{1}\"", entry.getKey(), entry.getValue()))
+      .collect(Collectors.joining(","));
   }
 
   public enum Highlighting {
