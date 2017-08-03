@@ -96,12 +96,16 @@ public class EGNodeDataProvider extends EGDataProvider {
     return asObject(result);
   }
 
+  public String programPointKey() {
+    return "B" + pp.block.id() + "." + pp.i;
+  }
+
   public String programPoint() {
     String tree = "";
     if (pp.i < pp.block.elements().size()) {
       tree = "" + pp.block.elements().get(pp.i).kind() + " L#" + pp.block.elements().get(pp.i).firstToken().line();
     }
-    return "B" + pp.block.id() + "." + pp.i + "  " + tree;
+    return programPointKey() + "  " + tree;
   }
 
   @CheckForNull

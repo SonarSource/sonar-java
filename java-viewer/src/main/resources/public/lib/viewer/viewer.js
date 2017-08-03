@@ -2,9 +2,11 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
   var parsedData = vis.network.convertDot(DOTstring);
 
   var data = {
-    nodes: parsedData.nodes,
-    edges: parsedData.edges
+    nodes: new vis.DataSet(parsedData.nodes),
+    edges: new vis.DataSet(parsedData.edges)
   }
+
+  var ppMap = getPPMap(data.nodes);
 
   setNodesColor(data.nodes);
   setEdgesColor(data.edges);
@@ -35,17 +37,39 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
     });
 
     function clickAction(params) {
+      // reset any custom color from selection
+      setNodesColor(data.nodes);
+
       var nodeHtmlContent = '<p>No data</p>';
+
       if (params.nodes.length == 1) {
         var node = getItem(params.nodes[0], data.nodes);
 
         if (node) {
           nodeHtmlContent = getNodeDetails(node);
+          var ppKey = node.ppKey;
+          detailsPanels['node'].find('#ppKey').html(ppKey);
+          var nodeIdsWithSamePP = ppMap[ppKey];
+          if (nodeIdsWithSamePP) {
+            var sameProgramPointBtn = detailsPanels['node'].find('#same-pp-btn');
+            var disabled = nodeIdsWithSamePP.length <= 1;
+            if (disabled) {
+              sameProgramPointBtn.removeClass('btn-primary');
+              sameProgramPointBtn.addClass('btn-default');
+            } else {
+              sameProgramPointBtn.addClass('btn-primary');
+              sameProgramPointBtn.removeClass('btn-default');
+            }
+            sameProgramPointBtn.attr('disabled', disabled);
+            sameProgramPointBtn.unbind('click', highlightAllNodesAtSamePP);
+            sameProgramPointBtn.on('click', function (e) {
+              highlightAllNodesAtSamePP(node.id, nodeIdsWithSamePP, data.nodes, network);
+            });
+          }
         }
-        // TODO add program points and link to siblings
 
         detailsPanels['info'].hide();
-        detailsPanels['node'].find('.panel-body').html(nodeHtmlContent);
+        detailsPanels['node'].find('#nodeDetails-content').html(nodeHtmlContent);
         detailsPanels['node'].show();
         detailsPanels['node'].find('.collapse').collapse('show');
         detailsPanels['edge'].hide();
@@ -58,7 +82,7 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
 
         detailsPanels['info'].hide();
         detailsPanels['node'].hide();
-        detailsPanels['edge'].find('.panel-body').html(nodeHtmlContent);
+        detailsPanels['edge'].find('#edgeDetails-content').html(nodeHtmlContent);
         detailsPanels['edge'].show();
         detailsPanels['edge'].find('.collapse').collapse('show');
       } else {
@@ -235,10 +259,8 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
   return network;
 }
 
-function setNodesColor(nodes) {
-  for (var id in nodes) {
-    var node = nodes[id];
-
+function setNodesColor(nodes, selectedNodesIds, forcedHighlighting) {
+  nodes.forEach(function (node) {
     // common properties
     node['color'] = {
       background: '#eee',
@@ -255,7 +277,9 @@ function setNodesColor(nodes) {
       align: 'left'
     };
 
-    switch(node.highlighting) {
+    var highlighting = $.inArray(node.id, selectedNodesIds) != -1 ? forcedHighlighting : node.highlighting;
+
+    switch(highlighting) {
       case 'firstNode':
         node['color']['background'] = 'green';
         node['color']['border'] = 'limegreen';
@@ -276,14 +300,18 @@ function setNodesColor(nodes) {
         node['color']['border'] = 'slateblue';
         node['shape'] = 'box';
         break;
+      case 'samePP':
+        node['color']['background'] = 'pink';
+        node['color']['border'] = 'mediumvioletred';
+        node['font']['color'] = 'black';
+        break;
     }
-  }
+    nodes.update(node);
+  });
 }
 
 function setEdgesColor(edges) {
-  for (var id in edges) {
-    var edge = edges[id];
-
+  edges.forEach(function (edge) {
     // common properties
     edge['color'] = {
       color: 'gray',
@@ -304,5 +332,31 @@ function setEdgesColor(edges) {
         edge['font']['color'] = 'purple';
         break;
     }
-  }
+
+    edges.update(edge);
+  });
+}
+
+function getPPMap(nodes) {
+  var result = {};
+  nodes.forEach(function (node) {
+    if (node.ppKey) {
+      if (!result[node.ppKey]) {
+        result[node.ppKey] = [];
+      }
+      result[node.ppKey].push(node.id);
+    }
+  });
+  return result;
+}
+
+function highlightAllNodesAtSamePP(sourceId, nodeIdsWithSamePP, nodes, network) {
+  var samePPNodes = [];
+  nodes.forEach(function (node) {
+    if (sourceId != node.id && $.inArray(node.id, nodeIdsWithSamePP) != -1) {
+      samePPNodes.push(node.id);
+    }
+  });
+  setNodesColor(nodes, samePPNodes, 'samePP');
+  network.redraw();
 }
