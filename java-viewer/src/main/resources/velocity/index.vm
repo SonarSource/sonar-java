@@ -145,7 +145,6 @@
 
     if (errorMessage) {
       cfgEditor.setValue("");
-
       var tabs = document.getElementById('tabs');
       tabs.parentNode.removeChild(tabs);
     } else {
@@ -157,6 +156,13 @@
          edge: $('#eg-edgeDetails')
       };
       var networkEG = loadDot(dotEG, explodedGraphContainer, false, detailsPanels);
+      networkEG['eg']['ppMapCFG'] = mapPPByLine(cfgEditor.getValue());
+      networkEG['eg']['cfgEditor'] = cfgEditor;
+      networkEG['eg']['cfgEditorSelectedLine'] = 0;
+
+      cfgEditor.on('cursorActivity', function(editor) {
+        handleNewPP(editor, networkEG);
+      });
 
       var cfgContainer = document.getElementById('cfg-container');
       var dotCFG = '$dotCFG';
