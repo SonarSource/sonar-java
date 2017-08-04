@@ -24,7 +24,6 @@ import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.viewer.DotHelper;
-import org.sonar.java.viewer.DotHelper.Highlighting;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -50,9 +49,9 @@ public class ASTViewer {
     private String getNode(Tree tree) {
       StringBuilder builder = new StringBuilder();
       String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
-      builder.append(DotHelper.node(index, label, null));
+      builder.append(DotHelper.node(index, label, DotHelper.Highlighting.fromTreeKind(tree.kind())));
       if(tree.is(Tree.Kind.TOKEN)) {
-        builder.append(DotHelper.node(index, ((SyntaxToken) tree).text(), Highlighting.SYNTAX_TOKEN));
+        builder.append(DotHelper.node(index, ((SyntaxToken) tree).text(), DotHelper.Highlighting.TOKEN_KIND));
       }
       int currentNodeIndex = index;
       if(!((JavaTree) tree).isLeaf()) {
