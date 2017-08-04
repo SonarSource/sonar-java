@@ -6,8 +6,6 @@ function loadDot(DOTstring, targetContainer, hierarchical, detailsPanels) {
     edges: new vis.DataSet(parsedData.edges)
   }
 
-  var ppMap = getPPMap(data.nodes);
-
   setNodesColor(data.nodes);
   setEdgesColor(data.edges);
 
@@ -19,6 +17,13 @@ function loadDot(DOTstring, targetContainer, hierarchical, detailsPanels) {
     detailsPanels['info'].show();
     detailsPanels['node'].hide();
     detailsPanels['edge'].hide();
+
+    var ppMap = getPPMap(data.nodes);
+    // enrich network with mapping between PP and nodes
+    network['eg'] = {
+      'ppMap' : ppMap,
+      'nodes' : data.nodes
+    };
 
     network.on('click', function(params) {
       clickAction(params);
@@ -48,10 +53,14 @@ function loadDot(DOTstring, targetContainer, hierarchical, detailsPanels) {
               sameProgramPointBtn.addClass('btn-primary');
               sameProgramPointBtn.removeClass('btn-default');
             }
+            // highlight given node
+            highlightAllNodesAtSamePP(ppKey, [node.id], data.nodes, network);
+
+            // enable button and handlers
             sameProgramPointBtn.attr('disabled', disabled);
             sameProgramPointBtn.unbind('click', highlightAllNodesAtSamePP);
             sameProgramPointBtn.on('click', function (e) {
-              highlightAllNodesAtSamePP(node.id, nodeIdsWithSamePP, data.nodes, network);
+              highlightAllNodesAtSamePP(ppKey, nodeIdsWithSamePP, data.nodes, network);
             });
           }
         }
@@ -346,15 +355,69 @@ function getPPMap(nodes) {
   return result;
 }
 
-function highlightAllNodesAtSamePP(sourceId, nodeIdsWithSamePP, nodes, network) {
+function mapPPByLine(cfgCode) {
+  var result = {};
+  var currentBlock;
+  var lines = cfgCode.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (line.startsWith('B') && !line.startsWith('B0')) {
+      currentBlock = line;
+    } else if (line.startsWith('B0')) {
+      result['B0.0'] = i;
+    } else if (line.match(/^\d/)) {
+      var blockElement = currentBlock + '.' + line.split(':')[0];
+      result[blockElement] = i;
+    }
+  }
+  return result;
+}
+
+function highlightAllNodesAtSamePP(ppKey, nodeIdsWithSamePP, nodes, network) {
   var samePPNodes = [];
   nodes.forEach(function (node) {
-    if (sourceId != node.id && $.inArray(node.id, nodeIdsWithSamePP) != -1) {
+    if ($.inArray(node.id, nodeIdsWithSamePP) != -1) {
       samePPNodes.push(node.id);
     }
   });
+
+  // update CFG editor line
+  var cfgEditorLine = network['eg']['ppMapCFG'][ppKey];
+  if (cfgEditorLine) {
+    network['eg']['cfgEditorSelectedLine'] = cfgEditorLine;
+    network['eg']['cfgEditor'].setCursor(cfgEditorLine);
+  }
+
+  // update graph
   setNodesColor(nodes, samePPNodes, 'samePP');
   network.redraw();
+}
+
+function handleNewPP(editor, network) {
+  var newLine = editor.getCursor()['line'];
+
+  if (network['eg']['cfgEditorSelectedLine'] == newLine) {
+    // already on that line, nothing to do
+    return;
+  }
+
+  network['eg']['cfgEditorSelectedLine'] = newLine;
+
+  var ppMapCFG = network['eg']['ppMapCFG'];
+  var ppKey = null;
+  for(var key in ppMapCFG) {
+    var ppMapLine = ppMapCFG[key];
+    if (newLine == ppMapLine) {
+      ppKey = key;
+      break;
+    }
+  }
+
+  var nodeIdsWithSamePP = [];
+  if (ppKey) {
+    nodeIdsWithSamePP = network['eg']['ppMap'][ppKey];
+  }
+  highlightAllNodesAtSamePP(ppKey, nodeIdsWithSamePP, network['eg']['nodes'], network);
 }
 
 function changeLayout(network, hierarchical) {
