@@ -6,9 +6,9 @@
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" href="/favicon-152.png">
 
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.3.7/css/bootstrap.css">
-    <script src="lib/jquery-3.2.1/jquery.js"></script>
-    <script src="lib/bootstrap-3.3.7/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="lib/jquery-3.2.1/jquery.min.js"></script>
+    <script src="lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="lib/codemirror-5.27.2/codemirror.css">
     <script src="lib/codemirror-5.27.2/codemirror.js"></script>
@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="lib/viewer/style.css">
     <script src="lib/viewer/viewer.js"></script>
 
-    <script src="lib/vis-4.20.0/vis.js"></script>
+    <script src="lib/vis-4.20.0/vis.min.js"></script>
   </head>
 </head>
 <body>
