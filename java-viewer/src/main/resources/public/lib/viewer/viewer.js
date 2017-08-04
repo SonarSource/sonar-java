@@ -1,4 +1,4 @@
-function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
+function loadDot(DOTstring, targetContainer, hierarchical, detailsPanels) {
   var parsedData = vis.network.convertDot(DOTstring);
 
   var data = {
@@ -11,20 +11,8 @@ function loadDot(DOTstring, targetContainer, displayAsTree, detailsPanels) {
   setNodesColor(data.nodes);
   setEdgesColor(data.edges);
 
-  var options = parsedData.options;
-
-  if(displayAsTree) {
-    options.layout = {
-      hierarchical: {
-        enabled: true,
-        sortMethod: 'directed',
-        levelSeparation: 100,
-        nodeSpacing: 1
-      }
-    }
-  }
-
-  var network = new vis.Network(targetContainer, data, options);
+  var network = new vis.Network(targetContainer, data);
+  changeLayout(network, hierarchical);
 
   if (detailsPanels) {
     // by default only show info panel
@@ -281,9 +269,8 @@ function setNodesColor(nodes, selectedNodesIds, forcedHighlighting) {
 
     switch(highlighting) {
       case 'firstNode':
-        node['color']['background'] = 'green';
+        node['color']['background'] = 'palegreen';
         node['color']['border'] = 'limegreen';
-        node['font']['color'] = 'white';
         break;
       case 'exitNode':
         node['color']['background'] = 'black';
@@ -295,10 +282,19 @@ function setNodesColor(nodes, selectedNodesIds, forcedHighlighting) {
         node['color']['border'] = 'firebrick';
         node['font']['color'] = 'white';
         break;
-      case 'syntaxToken':
-        node['color']['background'] = 'skyblue';
-        node['color']['border'] = 'slateblue';
+      case 'tokenKind':
+        node['color']['background'] = 'black';
+        node['color']['border'] = 'dimgray';
+        node['font']['color'] = 'white';
         node['shape'] = 'box';
+        break;
+      case 'classKind':
+        node['color']['background'] = 'pink';
+        node['color']['border'] = 'red';
+        break;
+      case 'methodKind':
+        node['color']['background'] = 'skyblue';
+        node['color']['border'] = 'blue';
         break;
       case 'samePP':
         node['color']['background'] = 'pink';
@@ -359,4 +355,17 @@ function highlightAllNodesAtSamePP(sourceId, nodeIdsWithSamePP, nodes, network) 
   });
   setNodesColor(nodes, samePPNodes, 'samePP');
   network.redraw();
+}
+
+function changeLayout(network, hierarchical) {
+  var options = { 'layout' : { 'hierarchical' : false } }
+  if (hierarchical) {
+    options['layout']['hierarchical'] = {
+        enabled: true,
+        sortMethod: 'directed',
+        levelSeparation: 100,
+        nodeSpacing: 1
+      };
+  }
+  network.setOptions(options);
 }

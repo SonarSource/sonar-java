@@ -19,6 +19,9 @@
  */
 package org.sonar.java.viewer;
 
+import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
@@ -78,7 +81,11 @@ public class DotHelper {
     FIRST_NODE("firstNode"),
     LOST_NODE("lostNode"),
     EXIT_NODE("exitNode"),
-    SYNTAX_TOKEN("syntaxToken"),
+
+    TOKEN_KIND("tokenKind"),
+    CLASS_KIND("classKind"),
+    METHOD_KIND("methodKind"),
+
     EXCEPTION_EDGE("exceptionEdge"),
     YIELD_EDGE("yieldEdge");
 
@@ -86,6 +93,26 @@ public class DotHelper {
 
     private Highlighting(String name) {
       this.name = name;
+    }
+
+    @CheckForNull
+    public static Highlighting fromTreeKind(Tree.Kind kind) {
+      switch (kind) {
+        case COMPILATION_UNIT:
+          return FIRST_NODE;
+        case CLASS:
+        case INTERFACE:
+        case ANNOTATION_TYPE:
+        case ENUM:
+          return CLASS_KIND;
+        case CONSTRUCTOR:
+        case METHOD:
+          return METHOD_KIND;
+        case TOKEN:
+          // token are explicitly selected
+        default:
+          return null;
+      }
     }
 
   }
