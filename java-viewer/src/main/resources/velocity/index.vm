@@ -27,9 +27,9 @@
       <div class="row">
         <h1>Graphs</h1>
         <ul class="nav nav-pills">
-          <li role="presentation" class="active"><a  href="#eg" data-toggle="tab">Exploded Graph</a></li>
-          <li role="presentation"><a href="#cfg" data-toggle="tab">Control Flow Graph</a></li>
-          <li role="presentation"><a href="#ast" data-toggle="tab">Syntax Tree</a></li>
+          <li role="presentation" class="active"><a  href="#eg" data-toggle="tab" class="btn btn-default">Exploded Graph</a></li>
+          <li role="presentation"><a href="#cfg" data-toggle="tab" class="btn btn-default">Control Flow Graph</a></li>
+          <li role="presentation"><a href="#ast" data-toggle="tab" class="btn btn-default">Syntax Tree</a></li>
         </ul>
       </div>
       <div class="row">
@@ -39,8 +39,8 @@
             <textarea id="java-code" name="javaCode">$javaCode</textarea>
           </div>
           <div>
-            <button type="submit" class="btn btn-primary">Generate</button>
-            <a href="/" class="btn btn-default" role="button">Reset</a>
+            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span>   Generate</button>
+            <a href="/" class="btn btn-default" role="button"><span class="glyphicon glyphicon-repeat"></span>   Reset</a>
           </div>
         </form>
         <h1>Control Flow Graph</h1>
