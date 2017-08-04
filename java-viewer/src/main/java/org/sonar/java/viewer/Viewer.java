@@ -103,7 +103,8 @@ public class Viewer {
     e.printStackTrace(new PrintWriter(sw));
     String stackTrace = sw.toString();
 
-    values.put("errorMessage", e.getMessage());
+    String message = e.getMessage();
+    values.put("errorMessage", message == null ? "Unexpected error" : message);
     values.put("errorStackTrace", stackTrace.replace(System.getProperty("line.separator"), "<br/>\n"));
 
     return renderWithValues(javaCode, values);

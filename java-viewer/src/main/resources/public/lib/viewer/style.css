@@ -13,6 +13,10 @@ div.codeWrapper {
   font-size: 12px;
 }
 
+div#errorBox {
+  margin: 10px;
+}
+
 div#errorBox .panel-body p {
   font-family: monospace;
 }
