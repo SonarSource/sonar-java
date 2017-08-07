@@ -90,7 +90,8 @@ public class EGViewer {
         super.execute(methodTree);
       }
     };
-    ExplodedGraphWalker walker = new ExplodedGraphWalker(sev.behaviorCache, semanticModel);
+    ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(Collections.emptyList());
+    ExplodedGraphWalker walker = egwFactory.createWalker(sev.behaviorCache, semanticModel);
     walker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
 
     this.explodedGraph = walker.getExplodedGraph();
