@@ -10,10 +10,10 @@
     <script src="lib/jquery-3.2.1/jquery.min.js"></script>
     <script src="lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="lib/codemirror-5.27.2/codemirror.css">
-    <script src="lib/codemirror-5.27.2/codemirror.js"></script>
-    <script src="lib/codemirror-5.27.2/mode/clike/clike.js"></script>
-    <script src="lib/codemirror-5.27.2/addon/selection/active-line.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/codemirror-5.27.2/codemirror.min.css">
+    <script src="lib/codemirror-5.27.2/codemirror.min.js"></script>
+    <script src="lib/codemirror-5.27.2/mode/clike/clike.min.js"></script>
+    <script src="lib/codemirror-5.27.2/addon/selection/active-line.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="lib/viewer/style.css">
     <script src="lib/viewer/viewer.js"></script>
