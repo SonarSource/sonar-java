@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static spark.Spark.awaitInitialization;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.port;
@@ -54,16 +55,20 @@ public class Viewer {
   private static final Logger LOGGER = LoggerFactory.getLogger(Viewer.class);
   private static final String DEFAULT_SOURCE_CODE_LOCATION = "/public/example/example.java";
   private static final String DEFAULT_SOURCE_CODE = defaultFileContent();
+  private static final int DEFAULT_PORT = 9999;
 
   public static void main(String[] args) {
     // print all exceptions
     exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e));
 
     staticFiles.location("/public");
-    port(9999);
+    port(DEFAULT_PORT);
 
     get("/", (req, res) -> renderIndex(defaultFileContent()));
     post("/", (req, res) -> generate(req));
+
+    awaitInitialization();
+    LOGGER.info("Viewer at http://localhost:{}", DEFAULT_PORT);
   }
 
   private static String generate(Request request) {
