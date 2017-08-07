@@ -19,8 +19,6 @@
  */
 package org.sonar.java.viewer;
 
-import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.util.UrlEncoded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
@@ -41,9 +39,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static spark.Spark.exception;
 import static spark.Spark.get;
@@ -69,9 +67,7 @@ public class Viewer {
   }
 
   private static String generate(Request request) {
-    MultiMap<String> params = new MultiMap<>();
-    UrlEncoded.decodeUtf8To(request.body(), params);
-    String javaCode = params.getOrDefault("javaCode", Collections.singletonList(DEFAULT_SOURCE_CODE)).get(0);
+    String javaCode = Optional.ofNullable(request.queryParams("javaCode")).orElse(DEFAULT_SOURCE_CODE);
     try {
       return renderIndex(javaCode);
     } catch (Exception e) {
