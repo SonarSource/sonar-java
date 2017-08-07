@@ -88,7 +88,7 @@ public class EGEdgeDataProvider {
 
   @CheckForNull
   private JsonArray yields() {
-    if (!hasYields()) {
+    if (edge.yields().isEmpty()) {
       return null;
     }
     JsonArrayBuilder builder = Json.createArrayBuilder();
