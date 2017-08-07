@@ -19,10 +19,14 @@
  */
 package org.sonar.java.viewer;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.ModelAndView;
+import spark.Request;
+import spark.template.velocity.VelocityTemplateEngine;
+
 import org.sonar.java.ast.ASTViewer;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
@@ -47,19 +51,13 @@ import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
-import spark.ModelAndView;
-import spark.Request;
-import spark.template.velocity.VelocityTemplateEngine;
-
 public class Viewer {
 
-  private static final Logger LOGGER = Logger.getLogger(Viewer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Viewer.class);
   private static final String DEFAULT_SOURCE_CODE_LOCATION = "/public/example/example.java";
   private static final String DEFAULT_SOURCE_CODE = defaultFileContent();
 
   public static void main(String[] args) {
-    BasicConfigurator.configure();
-
     // print all exceptions
     exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e));
 
