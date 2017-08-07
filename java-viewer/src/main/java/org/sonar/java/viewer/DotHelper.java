@@ -32,7 +32,30 @@ import java.util.stream.Collectors;
 
 public class DotHelper {
 
+  private static final char ESCAPE_CHAR = '?';
+  private static final String ESCAPED_COUPLE = escape("{0}") + ":" + escape("{1}");
+
   private DotHelper() {
+  }
+
+  public static String escape(String value) {
+    return ESCAPE_CHAR + value + ESCAPE_CHAR;
+  }
+
+  public static String escapeCouple(Object key, Object value) {
+    return MessageFormat.format(ESCAPED_COUPLE, key, value);
+  }
+
+  public static String asObject(@Nullable String value) {
+    return "{" + valueOrEmpty(value) + "}";
+  }
+
+  public static String asList(@Nullable String value) {
+    return "[" + valueOrEmpty(value) + "]";
+  }
+
+  private static String valueOrEmpty(@Nullable String value) {
+    return value != null ? value : "";
   }
 
   public static String node(int id, String label, @Nullable Highlighting highlighting) {
@@ -91,7 +114,7 @@ public class DotHelper {
 
     private final String name;
 
-    private Highlighting(String name) {
+    Highlighting(String name) {
       this.name = name;
     }
 

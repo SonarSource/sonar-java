@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.java.viewer.DotHelper;
 
 import javax.annotation.CheckForNull;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EGEdgeDataProvider extends EGDataProvider {
+public class EGEdgeDataProvider {
 
   private final ExplodedGraph.Edge edge;
 
@@ -41,7 +42,7 @@ public class EGEdgeDataProvider extends EGDataProvider {
     if (lcs.isEmpty()) {
       return null;
     }
-    return asObject(lcs.stream().map(lc -> escapeCouple(lc.symbolicValue(), lc.constraint)).collect(Collectors.joining(",")));
+    return DotHelper.asObject(lcs.stream().map(lc -> DotHelper.escapeCouple(lc.symbolicValue(), lc.constraint)).collect(Collectors.joining(",")));
   }
 
   @CheckForNull
@@ -50,7 +51,7 @@ public class EGEdgeDataProvider extends EGDataProvider {
     if (las.isEmpty()) {
       return null;
     }
-    return asObject(las.stream().map(la -> escapeCouple(la.symbol, la.sv)).collect(Collectors.joining(",")));
+    return DotHelper.asObject(las.stream().map(la -> DotHelper.escapeCouple(la.symbol, la.sv)).collect(Collectors.joining(",")));
   }
 
   @CheckForNull

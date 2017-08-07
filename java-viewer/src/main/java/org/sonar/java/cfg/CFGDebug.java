@@ -35,8 +35,10 @@ public class CFGDebug {
     StringBuilder buffer = new StringBuilder();
     buffer.append("Starts at B");
     buffer.append(cfg.entry().id());
+
     buffer.append('\n');
     buffer.append('\n');
+
     for (Block block : cfg.blocks()) {
       buffer.append(toString(block));
     }
@@ -50,6 +52,18 @@ public class CFGDebug {
     if (block.id() == 0) {
       buffer.append(" (Exit):");
     }
+
+    appendElements(buffer, block);
+    appendTerminator(buffer, block);
+    appendSuccessors(buffer, block);
+    appendExceptions(buffer, block);
+
+    buffer.append('\n');
+    buffer.append('\n');
+    return buffer.toString();
+  }
+
+  private static void appendElements(StringBuilder buffer, CFG.Block block) {
     int i = 0;
     for (Tree tree : block.elements()) {
       buffer.append('\n');
@@ -59,12 +73,30 @@ public class CFGDebug {
       buffer.append(SyntaxTreeDebug.toString(tree));
       i++;
     }
+  }
+
+  private static void appendKind(StringBuilder buffer, Kind kind) {
+    String name = kind.name();
+    int n = MAX_KINDNAME - name.length();
+    buffer.append(name);
+    --n;
+    while (n >= 0) {
+      buffer.append(' ');
+      --n;
+    }
+    buffer.append('\t');
+  }
+
+  private static void appendTerminator(StringBuilder buffer, CFG.Block block) {
     Tree terminator = block.terminator();
     if (terminator != null) {
       buffer.append("\nT:\t");
       appendKind(buffer, terminator.kind());
       buffer.append(SyntaxTreeDebug.toString(terminator));
     }
+  }
+
+  private static void appendSuccessors(StringBuilder buffer, CFG.Block block) {
     boolean first = true;
     for (Block successor : block.successors()) {
       if (first) {
@@ -87,7 +119,10 @@ public class CFGDebug {
       }
 
     }
-    first = true;
+  }
+
+  private static void appendExceptions(StringBuilder buffer, CFG.Block block) {
+    boolean first = true;
     for (Block exception : block.exceptions()) {
       if (first) {
         first = false;
@@ -99,18 +134,5 @@ public class CFGDebug {
       buffer.append('B');
       buffer.append(exception.id());
     }
-    buffer.append('\n');
-    buffer.append('\n');
-    return buffer.toString();
-  }
-
-  private static void appendKind(StringBuilder buffer, Kind kind) {
-    String name = kind.name();
-    int n = MAX_KINDNAME - name.length();
-    buffer.append(name);
-    while (--n >= 0) {
-      buffer.append(' ');
-    }
-    buffer.append('\t');
   }
 }

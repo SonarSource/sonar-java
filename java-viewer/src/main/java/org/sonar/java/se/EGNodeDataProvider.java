@@ -28,6 +28,7 @@ import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.java.viewer.DotHelper;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -42,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EGNodeDataProvider extends EGDataProvider {
+public class EGNodeDataProvider {
 
   private final ProgramState ps;
   private final ProgramPoint pp;
@@ -56,25 +57,25 @@ public class EGNodeDataProvider extends EGDataProvider {
 
   public String values() {
     List<String> values = new ArrayList<>();
-    ps.values.forEach((symbol, sv) -> values.add(escapeCouple(symbol, sv)));
+    ps.values.forEach((symbol, sv) -> values.add(DotHelper.escapeCouple(symbol, sv)));
     String result = values.stream().collect(Collectors.joining(","));
-    return asObject(result);
+    return DotHelper.asObject(result);
   }
 
   public String constraints() {
     List<String> constraints = new ArrayList<>();
-    ps.constraints.forEach((sv, svConstraints) -> constraints.add(escape(sv.toString()) + ":" + constraintsAsString(svConstraints)));
+    ps.constraints.forEach((sv, svConstraints) -> constraints.add(DotHelper.escape(sv.toString()) + ":" + constraintsAsString(svConstraints)));
     String result = constraints.stream().sorted().collect(Collectors.joining(","));
-    return asObject(result);
+    return DotHelper.asObject(result);
   }
 
   private static String constraintsAsString(@Nullable ConstraintsByDomain constraintsByDomain) {
     if (constraintsByDomain == null || constraintsByDomain.isEmpty()) {
-      return escape("no constraint");
+      return DotHelper.escape("no constraint");
     }
     return constraintsByDomain.stream()
       .map(Constraint::toString)
-      .map(EGNodeDataProvider::escape)
+      .map(DotHelper::escape)
       .collect(Collectors.toList()).toString();
   }
 
@@ -88,12 +89,12 @@ public class EGNodeDataProvider extends EGDataProvider {
       stackField.setAccessible(true);
       PStack<SymbolicValueSymbol> stack = (PStack<SymbolicValueSymbol>) stackField.get(ps);
       List<String> stackItems = new ArrayList<>();
-      stack.forEach(svs -> stackItems.add(escapeCouple(svs.sv, svs.symbol)));
+      stack.forEach(svs -> stackItems.add(DotHelper.escapeCouple(svs.sv, svs.symbol)));
       result = stackItems.stream().sorted().collect(Collectors.joining(","));
     } catch (Exception e) {
       // do nothing
     }
-    return asObject(result);
+    return DotHelper.asObject(result);
   }
 
   public String programPointKey() {
@@ -119,22 +120,22 @@ public class EGNodeDataProvider extends EGDataProvider {
       return null;
     }
     String result = knownBehavior.yields().stream().map(EGNodeDataProvider::yield).collect(Collectors.joining(","));
-    return asList(result);
+    return DotHelper.asList(result);
   }
 
   public static String yield(MethodYield methodYield) {
     List<ConstraintsByDomain> parametersConstraints = getParametersConstraints(methodYield);
-    String result = escape("params") + ":" + parametersConstraints.stream().map(EGNodeDataProvider::constraintsAsString).collect(Collectors.toList()).toString();
+    String result = DotHelper.escape("params") + ":" + parametersConstraints.stream().map(EGNodeDataProvider::constraintsAsString).collect(Collectors.toList()).toString();
     if (methodYield instanceof HappyPathYield) {
       HappyPathYield hpy = (HappyPathYield) methodYield;
-      result += "," + escape("result") + ":" + constraintsAsString(hpy.resultConstraint());
-      result += "," + escape("resultIndex") + ":" + hpy.resultIndex();
+      result += "," + DotHelper.escape("result") + ":" + constraintsAsString(hpy.resultConstraint());
+      result += "," + DotHelper.escape("resultIndex") + ":" + hpy.resultIndex();
     } else if (methodYield instanceof ExceptionalYield) {
       Type exceptionType = ((ExceptionalYield) methodYield).exceptionType();
       String exceptionFQN = exceptionType == null ? "runtime Exception" : exceptionType.fullyQualifiedName();
-      result += "," + escapeCouple("exception", exceptionFQN);
+      result += "," + DotHelper.escapeCouple("exception", exceptionFQN);
     }
-    return asObject(result);
+    return DotHelper.asObject(result);
   }
 
   @SuppressWarnings("unchecked")

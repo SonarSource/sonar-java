@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,7 +60,8 @@ public class Viewer {
   public static void main(String[] args) {
     BasicConfigurator.configure();
 
-    exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e)); // print all exceptions
+    // print all exceptions
+    exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e));
 
     staticFiles.location("/public");
     port(9999);
@@ -119,7 +121,7 @@ public class Viewer {
     String result;
     try {
       Path path = Paths.get(Viewer.class.getResource(DEFAULT_SOURCE_CODE_LOCATION).toURI());
-      result = new String(Files.readAllBytes(path));
+      result = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     } catch (URISyntaxException | IOException e) {
       LOGGER.error("Unable to read default file.", e);
       result = "// Unable to read default file:\\n\\n";
