@@ -40,9 +40,7 @@ import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
@@ -119,18 +117,11 @@ public class EGViewer {
 
   private static String node(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
     EGNodeDataProvider psDataProvider = new EGNodeDataProvider(node, behaviorCache);
-    Map<String, String> extraFields = new HashMap<>();
-    extraFields.put("ppKey", psDataProvider.programPointKey());
-    extraFields.put("psStack", psDataProvider.stack());
-    extraFields.put("psConstraints", psDataProvider.constraints());
-    extraFields.put("psValues", psDataProvider.values());
-    extraFields.put("methodYields", psDataProvider.yields());
-    extraFields.put("methodName", psDataProvider.methodName());
     return DotHelper.node(
       index,
       psDataProvider.programPoint(),
       specialNodeHighlight(node, hasParents, firstBlockId, psDataProvider),
-      extraFields);
+      psDataProvider.details());
   }
 
   @CheckForNull
@@ -153,18 +144,13 @@ public class EGViewer {
 
   private static String edge(int from, int to, ExplodedGraph.Edge edge) {
     EGEdgeDataProvider edgeDataProvider = new EGEdgeDataProvider(edge);
-    Map<String, String> extraFields = new HashMap<>();
-    extraFields.put("learnedConstraints", edgeDataProvider.learnedConstraints());
-    extraFields.put("learnedAssociations", edgeDataProvider.learnedAssociations());
-    String selectedMethodYield = edgeDataProvider.yield();
-    extraFields.put("selectedMethodYield", selectedMethodYield);
     DotHelper.Highlighting highligting;
-    if (selectedMethodYield != null) {
+    if (edgeDataProvider.hasYields()) {
       highligting = DotHelper.Highlighting.YIELD_EDGE;
     } else {
       highligting = specialEdgeHighlight(edge.child());
     }
-    return DotHelper.edge(from, to, edgeDataProvider.label(), highligting, extraFields);
+    return DotHelper.edge(from, to, edgeDataProvider.label(), highligting, edgeDataProvider.details());
   }
 
   @CheckForNull

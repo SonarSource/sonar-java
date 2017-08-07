@@ -19,16 +19,24 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.java.viewer.DotHelper;
 
 import javax.annotation.CheckForNull;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EGEdgeDataProvider {
+
+  private static final Comparator<LearnedConstraint> LC_BY_SV = (lc1, lc2) -> lc1.sv.toString().compareTo(lc2.sv.toString());
+  private static final Comparator<LearnedAssociation> LA_BY_SV = (la1, la2) -> la1.sv.toString().compareTo(la2.sv.toString());
 
   private final ExplodedGraph.Edge edge;
 
@@ -37,35 +45,69 @@ public class EGEdgeDataProvider {
   }
 
   @CheckForNull
-  public String learnedConstraints() {
-    Set<LearnedConstraint> lcs = edge.learnedConstraints();
-    if (lcs.isEmpty()) {
+  private JsonArray learnedConstraints() {
+    Set<LearnedConstraint> learnedConstraints = edge.learnedConstraints();
+    if (learnedConstraints.isEmpty()) {
       return null;
     }
-    return DotHelper.asObject(lcs.stream().map(lc -> DotHelper.escapeCouple(lc.symbolicValue(), lc.constraint)).collect(Collectors.joining(",")));
+    JsonArrayBuilder builder = Json.createArrayBuilder();
+    learnedConstraints.stream()
+      .sorted(LC_BY_SV)
+      .forEach(lc -> {
+      JsonObject lcObject = Json.createObjectBuilder()
+        .add("sv", lc.sv.toString())
+        .add("constraint", lc.constraint.toString())
+        .build();
+      builder.add(lcObject);
+    });
+    return builder.build();
   }
 
   @CheckForNull
-  public String learnedAssociations() {
-    Set<LearnedAssociation> las = edge.learnedAssociations();
-    if (las.isEmpty()) {
+  private JsonArray learnedAssociations() {
+    Set<LearnedAssociation> learnedAssociations = edge.learnedAssociations();
+    if (learnedAssociations.isEmpty()) {
       return null;
     }
-    return DotHelper.asObject(las.stream().map(la -> DotHelper.escapeCouple(la.symbol, la.sv)).collect(Collectors.joining(",")));
+    JsonArrayBuilder builder = Json.createArrayBuilder();
+    learnedAssociations.stream()
+      .sorted(LA_BY_SV)
+      .forEach(la -> {
+      JsonObject laObject = Json.createObjectBuilder()
+        .add("sv", la.sv.toString())
+        .add("symbol", la.symbol.toString())
+        .build();
+      builder.add(laObject);
+    });
+    return builder.build();
+  }
+
+  public boolean hasYields() {
+    return !edge.yields().isEmpty();
   }
 
   @CheckForNull
-  public String yield() {
-    Set<MethodYield> yields = edge.yields();
-    if (yields.isEmpty()) {
+  private JsonArray yields() {
+    if (!hasYields()) {
       return null;
     }
-    return yields.stream().map(EGNodeDataProvider::yield).collect(Collectors.joining(","));
+    JsonArrayBuilder builder = Json.createArrayBuilder();
+    edge.yields().stream().map(EGNodeDataProvider::yield).forEach(builder::add);
+    return builder.build();
   }
 
   public String label() {
-    Stream<String> learnedConstraints = edge.learnedConstraints().stream().map(LearnedConstraint::toString);
-    Stream<String> learnedAssociations = edge.learnedAssociations().stream().map(LearnedAssociation::toString);
+    Stream<String> learnedConstraints = edge.learnedConstraints().stream().sorted(LC_BY_SV).map(LearnedConstraint::toString);
+    Stream<String> learnedAssociations = edge.learnedAssociations().stream().sorted(LA_BY_SV).map(LearnedAssociation::toString);
     return Stream.concat(learnedConstraints, learnedAssociations).collect(Collectors.joining(",\\n"));
   }
+
+  public JsonObject details() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    DotHelper.addIfNotNull(builder, "learnedConstraints", learnedConstraints());
+    DotHelper.addIfNotNull(builder, "learnedAssociations", learnedAssociations());
+    DotHelper.addIfNotNull(builder, "selectedMethodYields", yields());
+    return builder.build();
+  }
+
 }

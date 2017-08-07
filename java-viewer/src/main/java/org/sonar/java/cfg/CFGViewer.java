@@ -41,7 +41,6 @@ public class CFGViewer {
   private CFGViewer() {
   }
 
-  private static final String DOT_PADDING = "  ";
   private static final String NEW_LINE = "\n";
   private static final ActionParser<Tree> PARSER = JavaParser.createParser();
 
@@ -97,7 +96,7 @@ public class CFGViewer {
       highlighting = DotHelper.Highlighting.FIRST_NODE;
     }
 
-    return dotLine(DotHelper.node(blockId, label, highlighting));
+    return DotHelper.node(blockId, label, highlighting);
   }
 
   private static String dotSuccessorFormat(Block block, Block successor) {
@@ -118,11 +117,6 @@ public class CFGViewer {
   }
 
   private static String dotExceptionFormat(Block block, Block exception) {
-    return dotLine(DotHelper.edge(block.id(), exception.id(), "EXCEPTION", DotHelper.Highlighting.EXCEPTION_EDGE));
+    return DotHelper.edge(block.id(), exception.id(), "EXCEPTION", DotHelper.Highlighting.EXCEPTION_EDGE);
   }
-
-  private static String dotLine(String dotLine) {
-    return DOT_PADDING + dotLine + NEW_LINE;
-  }
-
 }

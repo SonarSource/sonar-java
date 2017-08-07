@@ -23,16 +23,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DotHelper {
 
-  private static final char ESCAPE_CHAR = '?';
+  private static final String ESCAPE_CHAR = "?";
   private static final String ESCAPED_COUPLE = escape("{0}") + ":" + escape("{1}");
 
   private DotHelper() {
@@ -40,6 +42,24 @@ public class DotHelper {
 
   public static String escape(String value) {
     return ESCAPE_CHAR + value + ESCAPE_CHAR;
+  }
+
+  public static String escape(JsonValue jsonValue) {
+    return jsonValue.toString().replaceAll("\"", ESCAPE_CHAR);
+  }
+
+  public static JsonObjectBuilder addIfNotNull(JsonObjectBuilder builder, String key, @Nullable JsonValue value) {
+    if (value != null) {
+      builder.add(key, value);
+    }
+    return builder;
+  }
+
+  public static JsonObjectBuilder addIfNotNull(JsonObjectBuilder builder, String key, @Nullable String value) {
+    if (value != null) {
+      builder.add(key, value);
+    }
+    return builder;
   }
 
   public static String escapeCouple(Object key, Object value) {
@@ -59,42 +79,48 @@ public class DotHelper {
   }
 
   public static String node(int id, String label, @Nullable Highlighting highlighting) {
-    return node(id, label, highlighting, Collections.emptyMap());
+    return node(id, label, highlighting, null);
   }
 
-  public static String node(int id, String label, @Nullable Highlighting highlighting, Map<String, String> extraFields) {
-    Map<String, String> newMap = new HashMap<>(extraFields);
-    newMap.put("label", label);
+  public static String node(int id, String label, @Nullable Highlighting highlighting, @Nullable JsonObject details) {
+    Map<String, String> dotFields = new HashMap<>();
+    dotFields.put("label", label);
     if (highlighting != null) {
-      newMap.put("highlighting", highlighting.name);
+      dotFields.put("highlighting", highlighting.name);
     }
-    return MessageFormat.format("{0}[{1}];", id, extraFields(newMap));
+    if (details != null) {
+      dotFields.put("details", escape(details));
+    }
+    return MessageFormat.format("{0}[{1}];\\n", id, dotFields(dotFields));
   }
 
   public static String edge(int from, int to, @Nullable String label) {
-    return edge(from, to, label, null, Collections.emptyMap());
+    return edge(from, to, label, null, null);
   }
 
   public static String edge(int from, int to, @Nullable String label, Highlighting highlighting) {
-    return edge(from, to, label, highlighting, Collections.emptyMap());
+    return edge(from, to, label, highlighting, null);
   }
 
-  public static String edge(int from, int to, @Nullable String label, @Nullable Highlighting highlighting, Map<String, String> extraFields) {
-    Map<String, String> newMap = new HashMap<>(extraFields);
+  public static String edge(int from, int to, @Nullable String label, @Nullable Highlighting highlighting, @Nullable JsonObject details) {
+    Map<String, String> dotFields = new HashMap<>();
     if (label != null) {
-      newMap.put("label", label);
+      dotFields.put("label", label);
     }
     if (highlighting != null) {
-      newMap.put("highlighting", highlighting.name);
+      dotFields.put("highlighting", highlighting.name);
     }
-    return MessageFormat.format("{0}->{1}[{2}];", from, to, extraFields(newMap));
+    if (details != null) {
+      dotFields.put("details", escape(details));
+    }
+    return MessageFormat.format("{0}->{1}[{2}];\\n", from, to, dotFields(dotFields));
   }
 
-  private static String extraFields(Map<String, String> extraFields) {
-    if (extraFields.isEmpty()) {
+  private static String dotFields(Map<String, String> fields) {
+    if (fields.isEmpty()) {
       return "";
     }
-    return extraFields.entrySet().stream()
+    return fields.entrySet().stream()
       .filter(entry -> entry.getValue() != null)
       .map(entry -> MessageFormat.format("{0}=\"{1}\"", entry.getKey(), entry.getValue()))
       .collect(Collectors.joining(","));
