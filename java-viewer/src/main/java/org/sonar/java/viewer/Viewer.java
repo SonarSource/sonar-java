@@ -19,17 +19,22 @@
  */
 package org.sonar.java.viewer;
 
+import com.sonar.sslr.api.typed.ActionParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
-import spark.Request;
-import spark.template.velocity.VelocityTemplateEngine;
-
-import org.sonar.java.ast.ASTViewer;
+import org.sonar.java.ast.ASTDotGraph;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGDebug;
-import org.sonar.java.cfg.CFGViewer;
-import org.sonar.java.se.EGViewer;
+import org.sonar.java.cfg.CFGDotGraph;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.EGDotGraph;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,6 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -50,12 +56,18 @@ import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
+import spark.ModelAndView;
+import spark.Request;
+import spark.template.velocity.VelocityTemplateEngine;
+
 public class Viewer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Viewer.class);
   private static final String DEFAULT_SOURCE_CODE_LOCATION = "/public/example/example.java";
   private static final String DEFAULT_SOURCE_CODE = defaultFileContent();
   private static final int DEFAULT_PORT = 9999;
+
+  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
 
   public static void main(String[] args) {
     // print all exceptions
@@ -83,18 +95,30 @@ public class Viewer {
   private static String renderIndex(String javaCode) {
     HashMap<String, String> values = new HashMap<>();
 
-    CFG cfg = CFGViewer.buildCFG(javaCode);
+    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(javaCode);
+    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+    MethodTree firstMethod = getFirstMethod(cut);
+
+    CFG cfg = CFG.build(firstMethod);
 
     values.put("cfg", CFGDebug.toString(cfg));
 
-    values.put("dotAST", ASTViewer.toDot(javaCode));
-    values.put("dotCFG", CFGViewer.toDot(cfg));
-    values.put("dotEG", EGViewer.toDot(javaCode, cfg.blocks().get(0).id()));
+    values.put("dotAST", new ASTDotGraph(cut).toDot());
+    values.put("dotCFG", new CFGDotGraph(cfg).toDot());
+    values.put("dotEG", new EGDotGraph(cut, firstMethod, semanticModel, cfg.blocks().get(0).id()).toDot());
 
     values.put("errorMessage", "");
     values.put("errorStackTrace", "");
 
     return renderWithValues(javaCode, values);
+  }
+
+  private static MethodTree getFirstMethod(CompilationUnitTree cut) {
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    return (MethodTree) classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.METHOD))
+      .findFirst()
+      .orElse(null);
   }
 
   private static String renderError(String javaCode, Exception e) {

@@ -19,57 +19,53 @@
  */
 package org.sonar.java.ast;
 
-import com.sonar.sslr.api.typed.ActionParser;
-
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.viewer.DotDataProvider;
+import org.sonar.java.viewer.DotGraph;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.json.JsonObject;
 
-public class ASTViewer {
+public class ASTDotGraph extends DotGraph {
 
-  private ASTViewer() {
+  private int index = 0;
+  private final Tree startTree;
+
+  public ASTDotGraph(Tree tree) {
+    this.startTree = tree;
   }
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
-
-
-  public static String toDot(String source) {
-    return new TreeToDot().treeToDot(PARSER.parse(source));
+  @Override
+  public String name() {
+    return "AST";
   }
 
-  private static class TreeToDot {
-    int index = 0;
+  @Override
+  public ASTDotGraph build() {
+    buildGraph(startTree);
+    return this;
+  }
 
-    private String treeToDot(Tree tree) {
-      return "graph AST {" + getNode(tree) + "}";
+  private void buildGraph(Tree tree) {
+    String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
+    nodes.add(new ASTDotNode(index, label, tree.kind()));
+    if (tree.is(Tree.Kind.TOKEN)) {
+      // add an extra node for tokens
+      nodes.add(new ASTDotNode(index, ((SyntaxToken) tree).text()));
     }
-
-    private String getNode(Tree tree) {
-      StringBuilder builder = new StringBuilder();
-      String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
-      builder.append(new ASTDotNode(index, label, tree.kind()).node());
-      if(tree.is(Tree.Kind.TOKEN)) {
-        // add an extra node for tokens
-        builder.append(new ASTDotNode(index, ((SyntaxToken) tree).text()).node());
+    int currentNodeIndex = index;
+    if (!((JavaTree) tree).isLeaf()) {
+      for (Tree child : ((JavaTree) tree).getChildren()) {
+        index++;
+        int childIndex = index;
+        buildGraph(child);
+        edges.add(new ASTDotEdge(currentNodeIndex, childIndex));
       }
-      int currentNodeIndex = index;
-      if(!((JavaTree) tree).isLeaf()) {
-        for (Tree child : ((JavaTree) tree).getChildren()) {
-          index++;
-          int childIndex = index;
-          builder.append(getNode(child) + new ASTDotEdge(currentNodeIndex, childIndex).edge());
-        }
-      }
-      return builder.toString();
     }
   }
 
-  private static class ASTDotNode extends DotDataProvider.Node {
+  private static class ASTDotNode extends DotGraph.Node {
 
     private final String label;
     private final Highlighting highlighting;
@@ -123,7 +119,7 @@ public class ASTViewer {
 
   }
 
-  private static class ASTDotEdge extends DotDataProvider.Edge {
+  private static class ASTDotEdge extends DotGraph.Edge {
 
     public ASTDotEdge(int from, int to) {
       super(from, to);

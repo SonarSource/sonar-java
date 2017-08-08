@@ -25,40 +25,44 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class DotDataProvider {
+public abstract class DotGraph {
 
-  public static final String ESCAPE_CHAR = "?";
+  protected final List<DotGraph.Node> nodes = new ArrayList<>();
+  protected final List<DotGraph.Edge> edges = new ArrayList<>();
 
-  public abstract String label();
+  /**
+   * Provide the graph name
+   * @return the graph name
+   */
+  public abstract String name();
 
-  @CheckForNull
-  public abstract Highlighting highlighting();
+  /**
+   * Fill nodes and edges for the graph
+   * @return the completed graph
+   */
+  public abstract DotGraph build();
 
-  @CheckForNull
-  public abstract JsonObject details();
+  /**
+   * Convert the CFG to DOT format (graph description language).
+   * See language specification: http://www.graphviz.org/content/dot-language
+   */
+  public final String toDot() {
+    build();
 
-
-  public static String escape(@Nullable JsonValue jsonValue) {
-    if (jsonValue == null) {
-      return null;
+    StringBuilder sb = new StringBuilder("graph " + name() + "{");
+    for (DotGraph.Node node : nodes) {
+      sb.append(node.toDot());
     }
-    return jsonValue.toString().replaceAll("\"", ESCAPE_CHAR);
-  }
-
-  public String dotProperties() {
-    Map<String, String> properties = new HashMap<>();
-    properties.put("label", label());
-    properties.put("highlighting", Highlighting.name(highlighting()));
-    properties.put("details", DotDataProvider.escape(details()));
-
-    return properties.entrySet().stream()
-      .filter(entry -> entry.getValue() != null)
-      .map(entry -> MessageFormat.format("{0}=\"{1}\"", entry.getKey(), entry.getValue()))
-      .collect(Collectors.joining(","));
+    for (DotGraph.Edge edge : edges) {
+      sb.append(edge.toDot());
+    }
+    return sb.append("}").toString();
   }
 
   public enum Highlighting {
@@ -88,7 +92,41 @@ public abstract class DotDataProvider {
     }
   }
 
-  public abstract static class Node extends DotDataProvider {
+  private abstract static class DotElement {
+
+    private static final String ESCAPE_CHAR = "?";
+
+    public abstract String label();
+
+    @CheckForNull
+    public abstract Highlighting highlighting();
+
+    @CheckForNull
+    public abstract JsonObject details();
+
+    public abstract String toDot();
+
+    protected String dotProperties() {
+      Map<String, String> properties = new HashMap<>();
+      properties.put("label", label());
+      properties.put("highlighting", Highlighting.name(highlighting()));
+      properties.put("details", escape(details()));
+
+      return properties.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .map(entry -> MessageFormat.format("{0}=\"{1}\"", entry.getKey(), entry.getValue()))
+        .collect(Collectors.joining(","));
+    }
+
+    private static String escape(@Nullable JsonValue jsonValue) {
+      if (jsonValue == null) {
+        return null;
+      }
+      return jsonValue.toString().replaceAll("\"", ESCAPE_CHAR);
+    }
+  }
+
+  public abstract static class Node extends DotElement {
 
     private final int id;
 
@@ -96,12 +134,13 @@ public abstract class DotDataProvider {
       this.id = id;
     }
 
-    public final String node() {
+    @Override
+    public final String toDot() {
       return MessageFormat.format("{0}[{1}];\\n", id, dotProperties());
     }
   }
 
-  public abstract static class Edge extends DotDataProvider {
+  public abstract static class Edge extends DotElement {
 
     private final int from;
     private final int to;
@@ -111,11 +150,15 @@ public abstract class DotDataProvider {
       this.to = to;
     }
 
+    /**
+     * Label can be null for Edges
+     */
     @CheckForNull
     @Override
     public abstract String label();
 
-    public final String edge() {
+    @Override
+    public final String toDot() {
       return MessageFormat.format("{0}->{1}[{2}];\\n", from, to, dotProperties());
     }
   }

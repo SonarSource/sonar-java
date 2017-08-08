@@ -28,7 +28,7 @@ import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.java.viewer.DotDataProvider;
+import org.sonar.java.viewer.DotGraph;
 import org.sonar.java.viewer.JsonHelper;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class EGDotNode extends DotDataProvider.Node {
+public class EGDotNode extends DotGraph.Node {
 
   private final ProgramState ps;
   private final ProgramPoint pp;
@@ -76,15 +76,15 @@ public class EGDotNode extends DotDataProvider.Node {
 
   @Override
   @CheckForNull
-  public Highlighting highlighting() {
+  public DotGraph.Highlighting highlighting() {
     if (hasParents) {
       if (isFirstBlock) {
-        return Highlighting.FIRST_NODE;
+        return DotGraph.Highlighting.FIRST_NODE;
       }
       // lost nodes - should never happen - worth investigation if appears in viewer
-      return Highlighting.LOST_NODE;
+      return DotGraph.Highlighting.LOST_NODE;
     } else if (programPoint().startsWith("B0.0")) {
-      return Highlighting.EXIT_NODE;
+      return DotGraph.Highlighting.EXIT_NODE;
     }
     return null;
   }

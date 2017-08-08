@@ -20,7 +20,7 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.viewer.DotDataProvider;
+import org.sonar.java.viewer.DotGraph;
 import org.sonar.java.viewer.JsonHelper;
 
 import javax.annotation.CheckForNull;
@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EGDotEdge extends DotDataProvider.Edge {
+public class EGDotEdge extends DotGraph.Edge {
 
   private final ExplodedGraph.Edge edge;
 
@@ -56,11 +56,11 @@ public class EGDotEdge extends DotDataProvider.Edge {
 
   @CheckForNull
   @Override
-  public Highlighting highlighting() {
+  public DotGraph.Highlighting highlighting() {
     if (hasYields()) {
-      return Highlighting.YIELD_EDGE;
+      return DotGraph.Highlighting.YIELD_EDGE;
     } else if (edge.child.programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      return Highlighting.EXCEPTION_EDGE;
+      return DotGraph.Highlighting.EXCEPTION_EDGE;
     }
     return null;
   }

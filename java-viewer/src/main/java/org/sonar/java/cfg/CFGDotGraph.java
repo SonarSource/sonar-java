@@ -19,52 +19,24 @@
  */
 package org.sonar.java.cfg;
 
-import com.sonar.sslr.api.typed.ActionParser;
-
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG.Block;
-import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.viewer.DotDataProvider;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.viewer.DotGraph;
 
 import javax.annotation.CheckForNull;
 import javax.json.JsonObject;
 
-import java.util.Collections;
 import java.util.List;
 
-public class CFGViewer {
+public class CFGDotGraph extends DotGraph {
 
-  private CFGViewer() {
+  private final CFG cfg;
+
+  public CFGDotGraph(CFG cfg) {
+    this.cfg = cfg;
   }
 
-  private static final String NEW_LINE = "\n";
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
-
-  public static CFG buildCFG(String source) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(source);
-    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
-    return CFG.build(getFirstMethod(cut));
-  }
-
-  private static MethodTree getFirstMethod(CompilationUnitTree cut) {
-    ClassTree classTree = (ClassTree) cut.types().get(0);
-    return (MethodTree) classTree.members().stream()
-      .filter(m -> m.is(Tree.Kind.METHOD))
-      .findFirst()
-      .orElse(null);
-  }
-
-  /**
-   * Convert the CFG to DOT format (graph description language).
-   * See language specification: http://www.graphviz.org/content/dot-language
-   */
-  public static String toDot(CFG cfg) {
-    StringBuilder sb = new StringBuilder();
+  @Override
+  public CFGDotGraph build() {
     List<CFG.Block> blocks = cfg.blocks();
 
     // nodes
@@ -72,31 +44,21 @@ public class CFGViewer {
     blocks.stream()
       .map(CFG.Block::id)
       .map(id -> new CFGDotNode(id, id == firstBlockId))
-      .map(DotDataProvider.Node::node)
-      .forEach(sb::append);
-
-    sb.append(NEW_LINE);
+      .forEach(nodes::add);
 
     // edges
     for (CFG.Block block : blocks) {
       block.successors().stream()
         .map(successor -> new CFGDotEdge(block, successor))
-        .map(DotDataProvider.Edge::edge)
-        .forEach(sb::append);
+        .forEach(edges::add);
       block.exceptions().stream()
-        .map(exception -> new CFGDotEdge(block, exception, "EXCEPTION", DotDataProvider.Highlighting.EXCEPTION_EDGE))
-        .map(DotDataProvider.Edge::edge)
-        .forEach(sb::append);
+        .map(exception -> new CFGDotEdge(block, exception, "EXCEPTION", DotGraph.Highlighting.EXCEPTION_EDGE))
+        .forEach(edges::add);
     }
-
-    return escapeNewLines("graph cfg {" + NEW_LINE + sb.toString() + "}");
+    return this;
   }
 
-  private static String escapeNewLines(String dotGraph) {
-    return dotGraph.replaceAll("\\n", "\\\\n");
-  }
-
-  private static class CFGDotNode extends DotDataProvider.Node {
+  private static class CFGDotNode extends DotGraph.Node {
 
     private final int blockId;
     private final boolean isFirstBlock;
@@ -137,7 +99,7 @@ public class CFGViewer {
     }
   }
 
-  private static class CFGDotEdge extends DotDataProvider.Edge {
+  private static class CFGDotEdge extends DotGraph.Edge {
 
     private final String label;
     private final Highlighting highlighting;
@@ -182,4 +144,10 @@ public class CFGViewer {
     }
 
   }
+
+  @Override
+  public String name() {
+    return "CFG";
+  }
+
 }
