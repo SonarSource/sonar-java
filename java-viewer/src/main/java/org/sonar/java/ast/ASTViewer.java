@@ -23,9 +23,12 @@ import com.sonar.sslr.api.typed.ActionParser;
 
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.viewer.DotHelper;
+import org.sonar.java.viewer.DotDataProvider;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
+import javax.json.JsonObject;
 
 public class ASTViewer {
 
@@ -49,19 +52,97 @@ public class ASTViewer {
     private String getNode(Tree tree) {
       StringBuilder builder = new StringBuilder();
       String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
-      builder.append(DotHelper.node(index, label, DotHelper.Highlighting.fromTreeKind(tree.kind())));
+      builder.append(new ASTDotNode(index, label, tree.kind()).node());
       if(tree.is(Tree.Kind.TOKEN)) {
-        builder.append(DotHelper.node(index, ((SyntaxToken) tree).text(), DotHelper.Highlighting.TOKEN_KIND));
+        // add an extra node for tokens
+        builder.append(new ASTDotNode(index, ((SyntaxToken) tree).text()).node());
       }
       int currentNodeIndex = index;
       if(!((JavaTree) tree).isLeaf()) {
         for (Tree child : ((JavaTree) tree).getChildren()) {
           index++;
           int childIndex = index;
-          builder.append(getNode(child) + DotHelper.edge(currentNodeIndex, childIndex, null));
+          builder.append(getNode(child) + new ASTDotEdge(currentNodeIndex, childIndex).edge());
         }
       }
       return builder.toString();
     }
+  }
+
+  private static class ASTDotNode extends DotDataProvider.Node {
+
+    private final String label;
+    private final Highlighting highlighting;
+
+    public ASTDotNode(int id, String label) {
+      super(id);
+      this.label = label;
+      this.highlighting = Highlighting.TOKEN_KIND;
+    }
+
+    public ASTDotNode(int id, String label, Tree.Kind kind) {
+      super(id);
+      this.label = label;
+      this.highlighting = fromTreeKind(kind);
+    }
+
+    @CheckForNull
+    private static Highlighting fromTreeKind(Tree.Kind kind) {
+      switch (kind) {
+        case COMPILATION_UNIT:
+          return Highlighting.FIRST_NODE;
+        case CLASS:
+        case INTERFACE:
+        case ANNOTATION_TYPE:
+        case ENUM:
+          return Highlighting.CLASS_KIND;
+        case CONSTRUCTOR:
+        case METHOD:
+          return Highlighting.METHOD_KIND;
+        case TOKEN:
+          // token are explicitly selected
+        default:
+          return null;
+      }
+    }
+
+    @Override
+    public String label() {
+      return label;
+    }
+
+    @Override
+    public Highlighting highlighting() {
+      return highlighting;
+    }
+
+    @Override
+    public JsonObject details() {
+      return null;
+    }
+
+  }
+
+  private static class ASTDotEdge extends DotDataProvider.Edge {
+
+    public ASTDotEdge(int from, int to) {
+      super(from, to);
+    }
+
+    @Override
+    public String label() {
+      return null;
+    }
+
+    @Override
+    public Highlighting highlighting() {
+      return null;
+    }
+
+    @Override
+    public JsonObject details() {
+      return null;
+    }
+
   }
 }

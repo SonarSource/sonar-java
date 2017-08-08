@@ -21,13 +21,15 @@ package org.sonar.java.se;
 
 import org.sonar.java.collections.PStack;
 import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.java.viewer.DotHelper;
+import org.sonar.java.viewer.DotDataProvider;
+import org.sonar.java.viewer.JsonHelper;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -42,65 +44,98 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class EGNodeDataProvider {
-
-  private static final Comparator<JsonObject> BY_SV = (o1, o2) -> o1.getString("sv").compareTo(o2.getString("sv"));
+public class EGDotNode extends DotDataProvider.Node {
 
   private final ProgramState ps;
   private final ProgramPoint pp;
   private final BehaviorCache bc;
+  private final boolean hasParents;
+  private final boolean isFirstBlock;
 
-  public EGNodeDataProvider(ExplodedGraph.Node node, BehaviorCache behaviorCache) {
+  public EGDotNode(int id, ExplodedGraph.Node node, BehaviorCache behaviorCache, boolean hasParents, int firstBlockId) {
+    super(id);
     this.ps = node.programState;
     this.pp = node.programPoint;
     this.bc = behaviorCache;
+    this.hasParents = hasParents;
+    this.isFirstBlock = isFirstBlock(node, firstBlockId);
+  }
+
+  private static boolean isFirstBlock(ExplodedGraph.Node node, int firstBlockId) {
+    return node.programPoint.toString().startsWith("B" + firstBlockId + "." + "0");
+  }
+
+  @Override
+  public String label() {
+    return programPoint();
+  }
+
+  @Override
+  @CheckForNull
+  public Highlighting highlighting() {
+    if (hasParents) {
+      if (isFirstBlock) {
+        return Highlighting.FIRST_NODE;
+      }
+      // lost nodes - should never happen - worth investigation if appears in viewer
+      return Highlighting.LOST_NODE;
+    } else if (programPoint().startsWith("B0.0")) {
+      return Highlighting.EXIT_NODE;
+    }
+    return null;
+  }
+
+  @Override
+  public JsonObject details() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("ppKey", programPointKey());
+    builder.add("psStack", stack());
+    builder.add("psConstraints", constraints());
+    builder.add("psValues", values());
+    JsonHelper.addIfNotNull(builder, "methodYields", yields());
+    JsonHelper.addIfNotNull(builder, "methodName", methodName());
+    return builder.build();
   }
 
   private JsonArray values() {
-    List<JsonObject> values = new ArrayList<>();
+    Stream.Builder<JsonObject> values = Stream.builder();
     ps.values.forEach((symbol, sv) -> {
       JsonObject jsonConstraint = Json.createObjectBuilder()
-        .add("symbol", symbol.toString())
         .add("sv", sv.toString())
+        .add("symbol", symbol.toString())
         .build();
       values.add(jsonConstraint);
     });
-    JsonArrayBuilder builder = Json.createArrayBuilder();
-    values.stream().sorted(EGNodeDataProvider.BY_SV).forEach(builder::add);
-    return builder.build();
+    return JsonHelper.toArraySortedByField(values.build(), "sv");
   }
 
   private JsonArray constraints() {
-    List<JsonObject> constraints = new ArrayList<>();
-    ps.constraints.forEach((sv, svConstraints) -> {
+    Stream.Builder<JsonObject> constraints = Stream.builder();
+    ps.constraints.forEach((sv, constraint) -> {
       JsonObject jsonConstraint = Json.createObjectBuilder()
         .add("sv", sv.toString())
-        .add("constraints", constraintsAsJsonArray(svConstraints))
+        .add("constraints", constraintsAsJsonArray(constraint))
         .build();
       constraints.add(jsonConstraint);
     });
-    JsonArrayBuilder builder = Json.createArrayBuilder();
-    constraints.stream().sorted(EGNodeDataProvider.BY_SV).forEach(builder::add);
-    return builder.build();
+    return JsonHelper.toArraySortedByField(constraints.build(), "sv");
   }
 
   private static JsonArray constraintsAsJsonArray(List<ConstraintsByDomain> constraintsByDomain) {
-    JsonArrayBuilder builder = Json.createArrayBuilder();
-    constraintsByDomain.stream().map(EGNodeDataProvider::constraintsAsJsonArray).forEach(builder::add);
-    return builder.build();
+    return JsonHelper.toArray(constraintsByDomain.stream().map(EGDotNode::constraintsAsJsonArray));
   }
 
   private static JsonArray constraintsAsJsonArray(@Nullable ConstraintsByDomain constraintsByDomain) {
     JsonArrayBuilder builder = Json.createArrayBuilder();
     if (constraintsByDomain == null || constraintsByDomain.isEmpty()) {
-      return builder.add("no constraint").build();
+      builder.add("no constraint");
+    } else {
+      constraintsByDomain.stream().map(Constraint::toString).forEach(builder::add);
     }
-    constraintsByDomain.stream().forEach(constraint -> builder.add(constraint.toString()));
     return builder.build();
   }
 
@@ -132,7 +167,7 @@ public class EGNodeDataProvider {
     return "B" + pp.block.id() + "." + pp.i;
   }
 
-  public String programPoint() {
+  private String programPoint() {
     String tree = "";
     if (pp.i < pp.block.elements().size()) {
       tree = "" + pp.block.elements().get(pp.i).kind() + " L#" + pp.block.elements().get(pp.i).firstToken().line();
@@ -151,7 +186,7 @@ public class EGNodeDataProvider {
       return null;
     }
     JsonArrayBuilder builder = Json.createArrayBuilder();
-    knownBehavior.yields().stream().map(EGNodeDataProvider::yield).forEach(builder::add);
+    knownBehavior.yields().stream().map(EGDotNode::yield).forEach(builder::add);
     return builder.build();
   }
 
@@ -197,14 +232,4 @@ public class EGNodeDataProvider {
     return symbol.name();
   }
 
-  public JsonObject details() {
-    JsonObjectBuilder builder = Json.createObjectBuilder();
-    builder.add("ppKey", programPointKey());
-    builder.add("psStack", stack());
-    builder.add("psConstraints", constraints());
-    builder.add("psValues", values());
-    DotHelper.addIfNotNull(builder, "methodYields", yields());
-    DotHelper.addIfNotNull(builder, "methodName", methodName());
-    return builder.build();
-  }
 }

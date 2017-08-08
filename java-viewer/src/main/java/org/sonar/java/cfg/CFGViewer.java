@@ -25,13 +25,14 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.viewer.DotHelper;
+import org.sonar.java.viewer.DotDataProvider;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import javax.json.JsonObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,18 +65,28 @@ public class CFGViewer {
    */
   public static String toDot(CFG cfg) {
     StringBuilder sb = new StringBuilder();
-    List<Block> blocks = cfg.blocks();
+    List<CFG.Block> blocks = cfg.blocks();
 
     // nodes
     int firstBlockId = blocks.size() - 1;
-    blocks.stream().map(block -> dotBlockLabel(block.id(), firstBlockId)).forEach(sb::append);
+    blocks.stream()
+      .map(CFG.Block::id)
+      .map(id -> new CFGDotNode(id, id == firstBlockId))
+      .map(DotDataProvider.Node::node)
+      .forEach(sb::append);
 
     sb.append(NEW_LINE);
 
     // edges
-    for (Block block : blocks) {
-      block.successors().stream().map(successor -> dotSuccessorFormat(block, successor)).forEach(sb::append);
-      block.exceptions().stream().map(exception -> dotExceptionFormat(block, exception)).forEach(sb::append);
+    for (CFG.Block block : blocks) {
+      block.successors().stream()
+        .map(successor -> new CFGDotEdge(block, successor))
+        .map(DotDataProvider.Edge::edge)
+        .forEach(sb::append);
+      block.exceptions().stream()
+        .map(exception -> new CFGDotEdge(block, exception, "EXCEPTION", DotDataProvider.Highlighting.EXCEPTION_EDGE))
+        .map(DotDataProvider.Edge::edge)
+        .forEach(sb::append);
     }
 
     return escapeNewLines("graph cfg {" + NEW_LINE + sb.toString() + "}");
@@ -85,38 +96,90 @@ public class CFGViewer {
     return dotGraph.replaceAll("\\n", "\\\\n");
   }
 
-  private static String dotBlockLabel(int blockId, int firstBlockId) {
-    String label = "B" + blockId;
-    DotHelper.Highlighting highlighting = null;
-    if (blockId == 0) {
-      label += " (EXIT)";
-      highlighting = DotHelper.Highlighting.EXIT_NODE;
-    } else if (blockId == firstBlockId) {
-      label += " (START)";
-      highlighting = DotHelper.Highlighting.FIRST_NODE;
+  private static class CFGDotNode extends DotDataProvider.Node {
+
+    private final int blockId;
+    private final boolean isFirstBlock;
+    private final boolean isExitBlock;
+
+    public CFGDotNode(int blockId, boolean isFirstBlock) {
+      super(blockId);
+      this.blockId = blockId;
+      this.isFirstBlock = isFirstBlock;
+      this.isExitBlock = blockId == 0;
     }
 
-    return DotHelper.node(blockId, label, highlighting);
-  }
-
-  private static String dotSuccessorFormat(Block block, Block successor) {
-    return DotHelper.edge(block.id(), successor.id(), dotSuccessorLabel(block, successor));
-  }
-
-  @CheckForNull
-  private static String dotSuccessorLabel(Block block, Block successor) {
-    String edgeLabel = null;
-    if (successor == block.trueBlock()) {
-      edgeLabel = "TRUE";
-    } else if (successor == block.falseBlock()) {
-      edgeLabel = "FALSE";
-    } else if (successor == block.exitBlock()) {
-      edgeLabel = "EXIT";
+    @Override
+    public String label() {
+      String label = "B" + blockId;
+      if (isExitBlock) {
+        label += " (EXIT)";
+      } else if (isFirstBlock) {
+        label += " (START)";
+      }
+      return label;
     }
-    return edgeLabel;
+
+    @Override
+    public Highlighting highlighting() {
+      if (isExitBlock) {
+        return Highlighting.EXIT_NODE;
+      }
+      if (isFirstBlock) {
+        return Highlighting.FIRST_NODE;
+      }
+      return null;
+    }
+
+    @Override
+    public JsonObject details() {
+      return null;
+    }
   }
 
-  private static String dotExceptionFormat(Block block, Block exception) {
-    return DotHelper.edge(block.id(), exception.id(), "EXCEPTION", DotHelper.Highlighting.EXCEPTION_EDGE);
+  private static class CFGDotEdge extends DotDataProvider.Edge {
+
+    private final String label;
+    private final Highlighting highlighting;
+
+    public CFGDotEdge(CFG.Block from, CFG.Block to) {
+      super(from.id(), to.id());
+      this.label = label(from, to);
+      this.highlighting = null;
+    }
+
+    public CFGDotEdge(CFG.Block from, CFG.Block to, String label, Highlighting highlighting) {
+      super(from.id(), to.id());
+      this.label = label;
+      this.highlighting = highlighting;
+    }
+
+    @Override
+    public String label() {
+      return label;
+    }
+
+    @CheckForNull
+    private static String label(Block block, Block successor) {
+      if (successor == block.trueBlock()) {
+        return "TRUE";
+      } else if (successor == block.falseBlock()) {
+        return "FALSE";
+      } else if (successor == block.exitBlock()) {
+        return "EXIT";
+      }
+      return null;
+    }
+
+    @Override
+    public Highlighting highlighting() {
+      return highlighting;
+    }
+
+    @Override
+    public JsonObject details() {
+      return null;
+    }
+
   }
 }

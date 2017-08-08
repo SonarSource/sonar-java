@@ -25,17 +25,13 @@ import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.viewer.DotHelper;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -108,7 +104,9 @@ public class EGViewer {
         edgeStream = edgeStream.limit(1);
       }
       int finalIndex = index;
-      edgeStream.map(e -> edge(nodes.indexOf(e.parent()), finalIndex, e)).forEach(result::append);
+      edgeStream.map(e -> new EGDotEdge(nodes.indexOf(e.parent()), finalIndex, e))
+        .map(EGDotEdge::edge)
+        .forEach(result::append);
       index++;
     }
     return result.append("}").toString();
@@ -116,48 +114,7 @@ public class EGViewer {
   }
 
   private static String node(int index, ExplodedGraph.Node node, boolean hasParents, int firstBlockId, BehaviorCache behaviorCache) {
-    EGNodeDataProvider psDataProvider = new EGNodeDataProvider(node, behaviorCache);
-    return DotHelper.node(
-      index,
-      psDataProvider.programPoint(),
-      specialNodeHighlight(node, hasParents, firstBlockId, psDataProvider),
-      psDataProvider.details());
+    return new EGDotNode(index, node, behaviorCache, hasParents, firstBlockId).node();
   }
 
-  @CheckForNull
-  private static DotHelper.Highlighting specialNodeHighlight(ExplodedGraph.Node node, boolean hasParents, int firstBlockId, EGNodeDataProvider psDataProvider) {
-    if (hasParents) {
-      if (isFirstBlock(node, firstBlockId)) {
-        return DotHelper.Highlighting.FIRST_NODE;
-      }
-      // lost nodes - should never happen - worth investigation if appears in viewer
-      return DotHelper.Highlighting.LOST_NODE;
-    } else if (psDataProvider.programPoint().startsWith("B0.0")) {
-      return DotHelper.Highlighting.EXIT_NODE;
-    }
-    return null;
-  }
-
-  private static boolean isFirstBlock(ExplodedGraph.Node node, int firstBlockId) {
-    return node.programPoint.toString().startsWith("B" + firstBlockId + "." + "0");
-  }
-
-  private static String edge(int from, int to, ExplodedGraph.Edge edge) {
-    EGEdgeDataProvider edgeDataProvider = new EGEdgeDataProvider(edge);
-    DotHelper.Highlighting highligting;
-    if (edgeDataProvider.hasYields()) {
-      highligting = DotHelper.Highlighting.YIELD_EDGE;
-    } else {
-      highligting = specialEdgeHighlight(edge.child());
-    }
-    return DotHelper.edge(from, to, edgeDataProvider.label(), highligting, edgeDataProvider.details());
-  }
-
-  @CheckForNull
-  private static DotHelper.Highlighting specialEdgeHighlight(ExplodedGraph.Node node) {
-    if (node.programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      return DotHelper.Highlighting.EXCEPTION_EDGE;
-    }
-    return null;
-  }
 }

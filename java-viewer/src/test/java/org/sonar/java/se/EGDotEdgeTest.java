@@ -35,7 +35,7 @@ import javax.json.JsonObject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EGEdgeDataProviderTest {
+public class EGDotEdgeTest {
 
   private ExplodedGraph eg;
   private static final Symbol A_SYMBOL = mockSymbol("a");
@@ -54,7 +54,7 @@ public class EGEdgeDataProviderTest {
     ExplodedGraph.Node n2 = node(2, ProgramState.EMPTY_STATE);
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    EGEdgeDataProvider egEdgeDataProvider = new EGEdgeDataProvider(edge);
+    EGDotEdge egEdgeDataProvider = new EGDotEdge(1, 2, edge);
 
     assertThat(egEdgeDataProvider.label()).isEmpty();
   }
@@ -65,7 +65,7 @@ public class EGEdgeDataProviderTest {
     ExplodedGraph.Node n2 = node(2, ProgramState.EMPTY_STATE.put(A_SYMBOL, SV_42));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    String label = new EGEdgeDataProvider(edge).label();
+    String label = new EGDotEdge(1, 2, edge).label();
     assertThat(label).contains("SV_42");
     assertThat(label).contains("a");
   }
@@ -76,7 +76,7 @@ public class EGEdgeDataProviderTest {
     ExplodedGraph.Node n2 = node(2, ProgramState.EMPTY_STATE.addConstraint(SV_42, ObjectConstraint.NOT_NULL));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    String label = new EGEdgeDataProvider(edge).label();
+    String label = new EGDotEdge(1, 2, edge).label();
     assertThat(label).contains("SV_42");
     assertThat(label).contains("NOT_NULL");
   }
@@ -89,7 +89,7 @@ public class EGEdgeDataProviderTest {
       .addConstraint(SV_42, ObjectConstraint.NOT_NULL));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    String label = new EGEdgeDataProvider(edge).label();
+    String label = new EGDotEdge(1, 2, edge).label();
     String[] split = label.split(",\\\\n");
 
     assertThat(split).hasSize(2);
@@ -108,7 +108,7 @@ public class EGEdgeDataProviderTest {
       .addConstraint(SV_42, BooleanConstraint.FALSE));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    JsonObject details = new EGEdgeDataProvider(edge).details();
+    JsonObject details = new EGDotEdge(1, 2, edge).details();
 
     JsonArray learnedConstraints = details.getJsonArray("learnedConstraints");
     assertThat(learnedConstraints).isNotNull();
@@ -131,7 +131,7 @@ public class EGEdgeDataProviderTest {
       .put(B_SYMBOL, SV_21));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2);
-    JsonObject details = new EGEdgeDataProvider(edge).details();
+    JsonObject details = new EGDotEdge(1, 2, edge).details();
 
     JsonArray learnedAssociations = details.getJsonArray("learnedAssociations");
     assertThat(learnedAssociations).isNotNull();
@@ -154,7 +154,7 @@ public class EGEdgeDataProviderTest {
       .addConstraint(SV_42, ObjectConstraint.NOT_NULL));
 
     ExplodedGraph.Edge edge = addEdge(n1, n2, null);
-    JsonObject details = new EGEdgeDataProvider(edge).details();
+    JsonObject details = new EGDotEdge(1, 2, edge).details();
 
     JsonArray learnedConstraints = details.getJsonArray("learnedConstraints");
     assertThat(learnedConstraints).isNotNull();
