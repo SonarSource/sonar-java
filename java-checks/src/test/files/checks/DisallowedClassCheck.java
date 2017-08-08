@@ -21,3 +21,9 @@ class B extends String { // Noncompliant [[sc=17;ec=23]]
     return new Unknown();
   }
 }
+
+class C {
+  void foo(Object o) {
+    ((java.util.Optional<String>) o).map(value -> 1);
+  }
+}

@@ -97,7 +97,7 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
         throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + disallowedClass, e);
       }
     }
-    if (pattern.matcher(className).matches()) {
+    if (pattern.matcher(className).matches() && !tree.is(Tree.Kind.INFERED_TYPE)) {
       context.reportIssue(this, tree, "Remove the use of this forbidden class.");
     }
   }
