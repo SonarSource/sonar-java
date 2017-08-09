@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
-
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
@@ -31,6 +30,7 @@ import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
@@ -409,7 +409,8 @@ public class ExplodedGraphWalkerTest {
       ConditionalUnreachableCodeCheck.class,
       BooleanGratuitousExpressionsCheck.class,
       InvariantReturnCheck.class,
-      StreamNotConsumedCheck.class
+      StreamNotConsumedCheck.class,
+      MapComputeIfAbsentOrPresentCheck.class
       )
       .map(Class::getSimpleName)
       .collect(Collectors.toSet());

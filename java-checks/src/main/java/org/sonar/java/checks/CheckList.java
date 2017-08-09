@@ -85,6 +85,7 @@ import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -407,6 +408,7 @@ public final class CheckList {
       .add(StaticMethodCheck.class)
       .add(ForLoopUsedAsWhileLoopCheck.class)
       .add(MultilineBlocksCurlyBracesCheck.class)
+      .add(MapComputeIfAbsentOrPresentCheck.class)
       .add(EnumMapCheck.class)
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
