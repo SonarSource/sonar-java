@@ -157,7 +157,6 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      List<SymbolicValue> symbolicValues;
       switch (tree.kind()) {
         case MULTIPLY:
         case PLUS:
@@ -167,21 +166,9 @@ public class DivisionByZeroCheck extends SECheck {
           ProgramState.Pop unstackValue = programState.unstackValue(2);
           checkExpression(tree, unstackValue.values.get(1), unstackValue.values.get(0), unstackValue.valuesAndSymbols.get(0).symbol());
           break;
-        case GREATER_THAN:
-        case GREATER_THAN_OR_EQUAL_TO:
-        case LESS_THAN:
-        case LESS_THAN_OR_EQUAL_TO:
-          symbolicValues = programState.peekValues(2);
-          removeZeroConstraint(symbolicValues.get(1));
-          removeZeroConstraint(symbolicValues.get(0));
-          break;
         default:
           // do nothing
       }
-    }
-
-    private void removeZeroConstraint(SymbolicValue sv) {
-      programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
     }
 
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {

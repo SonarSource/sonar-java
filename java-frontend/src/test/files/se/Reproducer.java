@@ -9,13 +9,13 @@ package javax.annotation;
 class A {
  public void testCheckNotNull2(@CheckForNull Object parameter) {
     long remainingNanos = 0;
-    final long endNanos = remainingNanos > 0 ? System.nanoTime() + remainingNanos : 0;
+    final long endNanos = remainingNanos > 0 ? System.nanoTime() + remainingNanos : 0; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     label :
     do{
-      if(remainingNanos <0 ){
+      if(remainingNanos <0 ){ // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
         break label;
       }
-    } while ( remainingNanos >0);
+    } while ( remainingNanos >0); // Noncompliant {{Remove this expression which always evaluates to "false"}}
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;

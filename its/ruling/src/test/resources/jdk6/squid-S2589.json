@@ -24,6 +24,9 @@
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
 ],
+'jdk6:java/io/UnixFileSystem.java':[
+206,
+],
 'jdk6:java/net/InetAddress.java':[
 1240,
 ],
