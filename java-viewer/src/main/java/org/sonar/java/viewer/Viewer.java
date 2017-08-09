@@ -27,8 +27,8 @@ import org.sonar.java.ast.ASTDotGraph;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGDebug;
 import org.sonar.java.cfg.CFGDotGraph;
+import org.sonar.java.cfg.CFGPrinter;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.EGDotGraph;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -101,7 +101,7 @@ public class Viewer {
 
     CFG cfg = CFG.build(firstMethod);
 
-    values.put("cfg", CFGDebug.toString(cfg));
+    values.put("cfg", CFGPrinter.toString(cfg));
 
     values.put("dotAST", new ASTDotGraph(cut).toDot());
     values.put("dotCFG", new CFGDotGraph(cfg).toDot());

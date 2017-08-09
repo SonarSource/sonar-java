@@ -19,16 +19,25 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonar.java.ast.SyntaxTreeDebug;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class CFGDebug {
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class CFGPrinter {
 
   private static final int MAX_KINDNAME = Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT.name().length() + 5;
 
-  private CFGDebug() {
+  private CFGPrinter() {
   }
 
   public static String toString(CFG cfg) {
@@ -70,7 +79,7 @@ public class CFGDebug {
       buffer.append(i);
       buffer.append(":\t");
       appendKind(buffer, tree.kind());
-      buffer.append(SyntaxTreeDebug.toString(tree));
+      buffer.append(toString(tree));
       i++;
     }
   }
@@ -92,7 +101,7 @@ public class CFGDebug {
     if (terminator != null) {
       buffer.append("\nT:\t");
       appendKind(buffer, terminator.kind());
-      buffer.append(SyntaxTreeDebug.toString(terminator));
+      buffer.append(toString(terminator));
     }
   }
 
@@ -133,6 +142,59 @@ public class CFGDebug {
       }
       buffer.append('B');
       buffer.append(exception.id());
+    }
+  }
+
+  private static String toString(Tree tree) {
+    Stream.Builder<String> sb = Stream.builder();
+    switch (tree.kind()) {
+      case TOKEN:
+        sb.add(((SyntaxToken) tree).text());
+        break;
+      case VARIABLE:
+        VariableTree vt = (VariableTree) tree;
+        // skip initializer
+        addTrees(sb, vt.type(), vt.simpleName());
+        break;
+      case NEW_CLASS:
+        NewClassTree nct = (NewClassTree) tree;
+        // skip body for anonymous classes
+        addTrees(sb, nct.newKeyword(), nct.identifier(), nct.arguments());
+        break;
+      case MEMBER_SELECT:
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree;
+        if (mset.expression().is(Tree.Kind.METHOD_INVOCATION)) {
+          // skip method invocation
+          addTrees(sb, mset.identifier());
+        } else {
+          addChildren(sb, tree);
+        }
+        break;
+      case IF_STATEMENT:
+        IfStatementTree ist = (IfStatementTree) tree;
+        // skip thenClause and elseClause
+        addTrees(sb, ist.ifKeyword(), ist.openParenToken(), ist.condition(), ist.closeParenToken());
+        break;
+      default:
+        addChildren(sb, tree);
+        break;
+    }
+    return sb.build().filter(text -> !text.isEmpty()).collect(Collectors.joining(" "));
+  }
+
+  private static void addChildren(Stream.Builder<String> sb, Tree tree) {
+    addTrees(sb, ((JavaTree) tree).getChildren());
+  }
+
+  private static void addTrees(Stream.Builder<String> sb, Tree... trees) {
+    for (Tree tree : trees) {
+      sb.add(toString(tree));
+    }
+  }
+
+  private static void addTrees(Stream.Builder<String> sb, List<Tree> trees) {
+    for (Tree tree : trees) {
+      sb.add(toString(tree));
     }
   }
 }
