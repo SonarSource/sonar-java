@@ -1,5 +1,7 @@
 import com.google.common.base.Preconditions;
 
+import javax.annotation.CheckForNull;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,27 +17,40 @@ abstract class A {
 
   void bar(Map<String,Object> map, String key) {
     Object value = map.get(key); // Noncompliant {{Replace this "Map.get()" and condition with a call to "Map.computeIfPresent()".}}
-    if (value != null) {
+    if (null != value) {
       map.put(key, new Object());
     }
   }
 
   void del(Map<String,Object> map, String key) {
-    Object value = map.get(key); // Noncompliant - FP?
+    Object value = map.get(key); // Compliant - throws an exception in case of null ness
     Preconditions.checkState(value == null, "Value should always be null!");
     map.put(key, new Object());
   }
 
   void thr(Map<String,Object> map, String key) {
-    Object value = map.get(key); // Noncompliant - FP?
+    Object value = map.get(key); // Compliant - throws an exception in case of null ness
     if (value == null) {
       throw new IllegalStateException("Value should always be null!");
     }
     map.put(key, new Object());
   }
 
+  void asd(Map<String,Object> map, String key) {
+    Object value = map.get(key); // Compliant
+    if (value == null) {
+      value = map.get(key);
+      if (value != null) {
+        return;
+      }
+    }
+    if (value == null) {
+      map.put(key, new Object());
+    }
+  }
+
   void qix(Map<String, Object> map, String key) {
-    Object value = map.get(key); // Noncompliant
+    Object value = map.get(key); // FN - requires explicit null-check
     if (Objects.isNull(value)) {
       map.put(key, new Object());
       doSomething(value); // required to keep 'value' alive and be able to retrieve constraint...
@@ -88,7 +103,7 @@ abstract class A {
     doSomething(value);
   }
 
-  void dbl(Map<String, Object> map, String key1, String key2) {
+  void db1(Map<String, Object> map, String key1, String key2) {
     Object value = map.get(key1); // Compliant - you can reach each put with NULL and NOT_NULL constraint on 'value'
     if (value == null) {
       map.put(key1, new Object());
@@ -97,14 +112,22 @@ abstract class A {
     }
     doSomething(value);
 
-    // Noncompliant@+1 [[flows=computeIfPresent]] {{Replace this "Map.get()" and condition with a call to "Map.computeIfPresent()".}}
-    value = map.get(key2); // flow@computeIfPresent {{'Map.get()' is invoked.}}
-    if (value == null) { // flow@computeIfPresent {{Implies 'value' is not null.}}
+    value = map.get(key2);
+    if (value == null) { // FN - requires if statement without else
       map.put(key1, new Object());
     } else {
-      map.put(key2, new Object()); // flow@computeIfPresent  {{'Map.put()' is invoked with same key.}}
+      map.put(key2, new Object());
     }
     doSomething(value);
+  }
+
+  void db2(Map<String, Object> map, String key) {
+    Object value = map.get(key); // Compliant
+    if (value == null) {
+      map.put(key, new Object());
+    } else {
+      doSomething(value); // value is used differntly if not null, but only added in the map if not present
+    }
   }
 
   void nmp(MyMap<String, Object> map, String key) {
@@ -127,6 +150,8 @@ abstract class A {
   }
 
   abstract void doSomething(Object... objects);
+  @CheckForNull
+  abstract Object getValue();
 
 }
 

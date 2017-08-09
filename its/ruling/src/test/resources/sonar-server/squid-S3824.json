@@ -1,11 +1,4 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/MapBasedDbIdsRepository.java':[
-47,
-64,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/FormulaExecutorComponentVisitor.java':[
-223,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepository.java':[
 163,
 ],
@@ -23,11 +16,5 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/PluginUpdateAggregator.java':[
 52,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/startup/RegisterMetrics.java':[
-125,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/cache/MemoryCache.java':[
-45,
 ],
 }

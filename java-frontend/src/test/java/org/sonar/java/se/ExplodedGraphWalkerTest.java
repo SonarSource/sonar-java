@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
+
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;

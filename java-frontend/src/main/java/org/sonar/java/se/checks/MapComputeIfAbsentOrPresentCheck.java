@@ -27,6 +27,7 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
@@ -36,6 +37,9 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -102,13 +106,35 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
           .findAny()
           .ifPresent(getOnSameMap -> {
             ObjectConstraint constraint = ps.getConstraint(getOnSameMap.value, ObjectConstraint.class);
-            if (constraint != null) {
+            if (constraint != null && isInsideIfStatementWithNullCheckWithoutElse(mit)) {
               checkIssues.add(new CheckIssue(context.getNode(), getOnSameMap.mit, mit, getOnSameMap.value, constraint));
             }
           });
       }
     }
     return super.checkPreStatement(context, syntaxNode);
+  }
+
+  private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
+    Tree parent = mit.parent();
+    while (parent != null && !parent.is(Tree.Kind.IF_STATEMENT)) {
+      parent = parent.parent();
+    }
+    if (parent == null) {
+      return false;
+    }
+    IfStatementTree ifStatementTree = (IfStatementTree) parent;
+    return ifStatementTree.elseStatement() == null && isNullCheck(ExpressionUtils.skipParentheses(ifStatementTree.condition()));
+  }
+
+  private static boolean isNullCheck(ExpressionTree condition) {
+    if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree bet = (BinaryExpressionTree) condition;
+      ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
+      ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
+      return rightOperand.is(Tree.Kind.NULL_LITERAL) || leftOperand.is(Tree.Kind.NULL_LITERAL);
+    }
+    return false;
   }
 
   @Override
