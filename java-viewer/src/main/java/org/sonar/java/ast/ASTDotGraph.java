@@ -42,17 +42,16 @@ public class ASTDotGraph extends DotGraph {
   }
 
   @Override
-  public ASTDotGraph build() {
+  public void build() {
     buildGraph(startTree);
-    return this;
   }
 
   private void buildGraph(Tree tree) {
     String label = tree.kind() + (tree.firstToken() != null ? (" L#" + tree.firstToken().line()) : "");
-    nodes.add(new ASTDotNode(index, label, tree.kind()));
+    addNode(new ASTDotNode(index, label, tree.kind()));
     if (tree.is(Tree.Kind.TOKEN)) {
       // add an extra node for tokens
-      nodes.add(new ASTDotNode(index, ((SyntaxToken) tree).text()));
+      addNode(new ASTDotNode(index, ((SyntaxToken) tree).text()));
     }
     int currentNodeIndex = index;
     if (!((JavaTree) tree).isLeaf()) {
@@ -60,7 +59,7 @@ public class ASTDotGraph extends DotGraph {
         index++;
         int childIndex = index;
         buildGraph(child);
-        edges.add(new ASTDotEdge(currentNodeIndex, childIndex));
+        addEdge(new ASTDotEdge(currentNodeIndex, childIndex));
       }
     }
   }

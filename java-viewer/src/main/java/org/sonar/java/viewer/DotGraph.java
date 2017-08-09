@@ -25,16 +25,17 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class DotGraph {
 
-  protected final List<DotGraph.Node> nodes = new ArrayList<>();
-  protected final List<DotGraph.Edge> edges = new ArrayList<>();
+  private static final String ESCAPE_CHAR = "?";
+  private static final String NEW_LINE = "\\n";
+
+  private final Stream.Builder<DotElement> elements = Stream.builder();
 
   /**
    * Provide the graph name
@@ -46,23 +47,32 @@ public abstract class DotGraph {
    * Fill nodes and edges for the graph
    * @return the completed graph
    */
-  public abstract DotGraph build();
+  public abstract void build();
+
+  public final void addEdge(DotGraph.Edge edge) {
+    elements.add(edge);
+  }
+
+  public final void addNode(DotGraph.Node node) {
+    elements.add(node);
+  }
 
   /**
-   * Convert the CFG to DOT format (graph description language).
+   * Convert the graph to DOT format (graph description language).
    * See language specification: http://www.graphviz.org/content/dot-language
    */
   public final String toDot() {
     build();
 
-    StringBuilder sb = new StringBuilder("graph " + name() + "{");
-    for (DotGraph.Node node : nodes) {
-      sb.append(node.toDot());
-    }
-    for (DotGraph.Edge edge : edges) {
-      sb.append(edge.toDot());
-    }
-    return sb.append("}").toString();
+    StringBuilder sb = new StringBuilder()
+      .append("graph ")
+      .append(name())
+      .append(" {")
+      .append(NEW_LINE);
+    elements.build().map(DotElement::toDot).forEach(sb::append);
+    return sb.append(NEW_LINE)
+      .append("}")
+      .toString();
   }
 
   public enum Highlighting {
@@ -94,7 +104,6 @@ public abstract class DotGraph {
 
   private abstract static class DotElement {
 
-    private static final String ESCAPE_CHAR = "?";
 
     public abstract String label();
 
@@ -136,7 +145,7 @@ public abstract class DotGraph {
 
     @Override
     public final String toDot() {
-      return MessageFormat.format("{0}[{1}];\\n", id, dotProperties());
+      return MessageFormat.format("{0}[{1}];{2}", id, dotProperties(), NEW_LINE);
     }
   }
 
@@ -159,7 +168,7 @@ public abstract class DotGraph {
 
     @Override
     public final String toDot() {
-      return MessageFormat.format("{0}->{1}[{2}];\\n", from, to, dotProperties());
+      return MessageFormat.format("{0}->{1}[{2}];{3}", from, to, dotProperties(), NEW_LINE);
     }
   }
 }

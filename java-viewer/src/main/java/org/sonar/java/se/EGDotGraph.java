@@ -82,20 +82,19 @@ public class EGDotGraph extends DotGraph {
   }
 
   @Override
-  public EGDotGraph build() {
+  public void build() {
     List<ExplodedGraph.Node> egNodes = new ArrayList<>(explodedGraph.nodes().keySet());
     int index = 0;
     for (ExplodedGraph.Node node : egNodes) {
       Collection<ExplodedGraph.Edge> egEdges = node.edges();
-      nodes.add(new EGDotNode(index, node, behaviorCache, egEdges.isEmpty(), cfgFirstBlockId));
+      addNode(new EGDotNode(index, node, behaviorCache, egEdges.isEmpty(), cfgFirstBlockId));
       Stream<ExplodedGraph.Edge> edgeStream = egEdges.stream();
       if (!SHOW_MULTIPLE_PARENTS) {
         edgeStream = edgeStream.limit(1);
       }
       int finalIndex = index;
-      edgeStream.map(e -> new EGDotEdge(egNodes.indexOf(e.parent()), finalIndex, e)).forEach(edges::add);
+      edgeStream.map(e -> new EGDotEdge(egNodes.indexOf(e.parent()), finalIndex, e)).forEach(this::addEdge);
       index++;
     }
-    return this;
   }
 }

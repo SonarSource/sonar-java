@@ -36,7 +36,7 @@ public class CFGDotGraph extends DotGraph {
   }
 
   @Override
-  public CFGDotGraph build() {
+  public void build() {
     List<CFG.Block> blocks = cfg.blocks();
 
     // nodes
@@ -44,18 +44,17 @@ public class CFGDotGraph extends DotGraph {
     blocks.stream()
       .map(CFG.Block::id)
       .map(id -> new CFGDotNode(id, id == firstBlockId))
-      .forEach(nodes::add);
+      .forEach(this::addNode);
 
     // edges
     for (CFG.Block block : blocks) {
       block.successors().stream()
         .map(successor -> new CFGDotEdge(block, successor))
-        .forEach(edges::add);
+        .forEach(this::addEdge);
       block.exceptions().stream()
         .map(exception -> new CFGDotEdge(block, exception, "EXCEPTION", DotGraph.Highlighting.EXCEPTION_EDGE))
-        .forEach(edges::add);
+        .forEach(this::addEdge);
     }
-    return this;
   }
 
   private static class CFGDotNode extends DotGraph.Node {

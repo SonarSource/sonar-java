@@ -19,6 +19,7 @@
  */
 package org.sonar.java.viewer;
 
+import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.typed.ActionParser;
 
 import org.slf4j.Logger;
@@ -35,6 +36,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import javax.annotation.CheckForNull;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,6 +102,8 @@ public class Viewer {
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     MethodTree firstMethod = getFirstMethod(cut);
 
+    Preconditions.checkNotNull(firstMethod, "Unable to find a method in first class.");
+
     CFG cfg = CFG.build(firstMethod);
 
     values.put("cfg", CFGPrinter.toString(cfg));
@@ -113,6 +118,7 @@ public class Viewer {
     return renderWithValues(javaCode, values);
   }
 
+  @CheckForNull
   private static MethodTree getFirstMethod(CompilationUnitTree cut) {
     ClassTree classTree = (ClassTree) cut.types().get(0);
     return (MethodTree) classTree.members().stream()
