@@ -404,11 +404,11 @@ class Assignment {
 
 class ConstraintCopy {
   void f(int x) {
-    boolean b1 = x < 0 || (x == 0.0 && 1 / x); // Noncompliant
+    boolean b1 = x < 0 || (x == 0.0 && (1 / x > 0)); // Noncompliant
   }
 
   void g(int x) {
-    boolean b2 = x >= -1 && x == 0 && 1 / x; // Noncompliant
+    boolean b2 = x >= -1 && x == 0 && (1 / x >= 0); // Noncompliant
   }
 }
 
@@ -446,4 +446,50 @@ class NonZeroAfterDiv {
     }
   }
 
+}
+
+class RelationalOperators {
+  void h() {
+    int x = 1;
+    int a = 0;
+    if (x >= a) {
+      int y = 1 / a; // Noncompliant
+    }
+  }
+
+  void h2() {
+    int x = 1;
+    int a = 0;
+    if (x > a) {
+      int y = 1 / a; // Noncompliant
+    }
+  }
+
+  void h3() {
+    int x = -1;
+    int a = 0;
+    if (x < a) {
+      int y = 1 / a; // Noncompliant
+    }
+  }
+
+  void h4() {
+    int x = -1;
+    int a = 0;
+    if (x <= a) {
+      int y = 1 / a; // Noncompliant
+    }
+  }
+
+  void f() {
+    g(0, 1);
+  }
+
+  private int g(int x, int y) {
+    if (x > 0) {
+      return y / x;  // Compliant
+    } else {
+      return y;
+    }
+  }
 }

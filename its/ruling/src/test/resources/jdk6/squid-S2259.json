@@ -89,9 +89,6 @@
 398,
 714,
 ],
-'jdk6:java/nio/channels/spi/AbstractSelectableChannel.java':[
-205,
-],
 'jdk6:java/security/AccessControlContext.java':[
 435,
 ],
