@@ -17,28 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve;
+@ParametersAreNonnullByDefault
+package org.sonar.java.bytecode.cfg;
 
-import org.objectweb.asm.Opcodes;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import java.nio.ByteBuffer;
-
-public class Java9Support {
-
-  private static final short JAVA_8_MAJOR_VERSION = Opcodes.V1_8;
-  private static final short JAVA_9_MAJOR_VERSION = JAVA_8_MAJOR_VERSION + 1;
-  private static final int MAJOR_VERSION_OFFSET = 6;
-
-  private Java9Support() {
-    // utility class
-  }
-
-  public static boolean isJava9Class(byte[] bytecode) {
-    return ByteBuffer.wrap(bytecode).getShort(MAJOR_VERSION_OFFSET) == JAVA_9_MAJOR_VERSION;
-  }
-
-  public static void setJava8MajorVersion(byte[] bytecode) {
-    ByteBuffer byteBuffer = ByteBuffer.wrap(bytecode);
-    byteBuffer.putShort(MAJOR_VERSION_OFFSET, JAVA_8_MAJOR_VERSION);
-  }
-}
