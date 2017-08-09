@@ -1,0 +1,112 @@
+h1 {
+  font-size: 24px;
+}
+
+hr {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+div.codeWrapper {
+  border: solid lightgray 1px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+div#errorBox {
+  margin: 10px;
+}
+
+div#errorBox .panel-body p {
+  font-family: monospace;
+}
+
+div.dotGraph {
+  height: 850px;
+}
+
+div.detailsBox {
+  margin: 10px;
+  float: right;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 9000;
+}
+
+div.detailsBox .panel-heading {
+  cursor: pointer;
+}
+
+div.detailsBox .panel-heading h4 {
+  padding-left: 20px;
+}
+
+div.detailsBox .panel-heading:before {
+  font-family: 'Glyphicons Halflings';
+  content: "\e114";
+  float: left;
+  color: grey;
+}
+div.detailsBox .panel-heading.collapsed:before {
+  content: "\e080";
+}
+
+div.detailsBox ul.list-group {
+  margin-bottom: 0px;
+}
+
+div.panel-body h3 {
+  margin-top: 5px;
+  font-size: 20px;
+}
+
+table {
+  text-align: left;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table td {
+  vertical-align: top;
+  text-align: left;
+  padding: 5px;
+}
+
+table td:first-child {
+  font-weight: bold;
+  min-width: 100px;
+}
+
+table td:last-child {
+  width: 100%;
+}
+
+table.innerTable tr:nth-child(even) {
+  background-color: inherit;
+}
+
+table.innerTable td {
+  vertical-align: top;
+}
+
+table.innerTable td:nth-child(2) {
+  font-weight: normal;
+}
+
+table.methodYield-table th,
+table.methodYield-table td {
+  border-right: 1px solid #ddd;
+}
+
+table.methodYield-table th:last-child,
+table.methodYield-table td:last-child,
+table.methodYield-table table.innerTable th,
+table.methodYield-table table.innerTable td {
+  border: none;
+}
+
