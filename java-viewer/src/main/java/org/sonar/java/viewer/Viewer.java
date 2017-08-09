@@ -19,6 +19,7 @@
  */
 package org.sonar.java.viewer;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.typed.ActionParser;
 
@@ -79,7 +80,7 @@ public class Viewer {
     staticFiles.location("/public");
     port(DEFAULT_PORT);
 
-    get("/", (req, res) -> renderIndex(defaultFileContent()));
+    get("/", (req, res) -> generate(DEFAULT_SOURCE_CODE));
     post("/", (req, res) -> generate(req));
 
     awaitInitialization();
@@ -88,15 +89,22 @@ public class Viewer {
 
   private static String generate(Request request) {
     String javaCode = Optional.ofNullable(request.queryParams("javaCode")).orElse(DEFAULT_SOURCE_CODE);
-    try {
-      return renderIndex(javaCode);
-    } catch (Exception e) {
-      return renderError(javaCode, e);
-    }
+    return generate(javaCode);
   }
 
-  private static String renderIndex(String javaCode) {
-    HashMap<String, String> values = new HashMap<>();
+  private static String generate(String javaCode) {
+    Map<String, String> values;
+    try {
+      values = getValues(javaCode);
+    } catch (Exception e) {
+      values = getErrorValues(e);
+    }
+    return renderWithValues(javaCode, values);
+  }
+
+  @VisibleForTesting
+  static Map<String, String> getValues(String javaCode) {
+    Map<String, String> values = new HashMap<>();
 
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(javaCode);
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
@@ -112,10 +120,11 @@ public class Viewer {
     values.put("dotCFG", new CFGDotGraph(cfg).toDot());
     values.put("dotEG", new EGDotGraph(cut, firstMethod, semanticModel, cfg.blocks().get(0).id()).toDot());
 
+    // explicitly force empty message and stack trace
     values.put("errorMessage", "");
     values.put("errorStackTrace", "");
 
-    return renderWithValues(javaCode, values);
+    return values;
   }
 
   @CheckForNull
@@ -127,8 +136,9 @@ public class Viewer {
       .orElse(null);
   }
 
-  private static String renderError(String javaCode, Exception e) {
-    HashMap<String, String> values = new HashMap<>();
+  @VisibleForTesting
+  static Map<String, String> getErrorValues(Exception e) {
+    Map<String, String> values = new HashMap<>();
 
     StringWriter sw = new StringWriter();
     e.printStackTrace(new PrintWriter(sw));
@@ -138,7 +148,7 @@ public class Viewer {
     values.put("errorMessage", message == null ? "Unexpected error" : message);
     values.put("errorStackTrace", stackTrace.replace(System.getProperty("line.separator"), "<br/>\n"));
 
-    return renderWithValues(javaCode, values);
+    return values;
   }
 
   private static String renderWithValues(String javaCode, Map<String, String> values) {
