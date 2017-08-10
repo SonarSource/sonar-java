@@ -29,6 +29,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.Convert;
 import org.sonar.java.resolve.Java9Support;
 import org.sonar.java.resolve.JavaSymbol;
@@ -38,8 +39,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BytecodeCFGBuilder {
 
@@ -71,8 +74,8 @@ public class BytecodeCFGBuilder {
     }
   }
 
-  static class BytecodeCFG {
-    List<Block> blocks;
+  public static class BytecodeCFG {
+    public List<Block> blocks;
     Symbol.MethodSymbol methodSymbol;
 
     BytecodeCFG(Symbol.MethodSymbol methodSymbol) {
@@ -81,8 +84,12 @@ public class BytecodeCFGBuilder {
       // create exit block
       blocks.add(new Block(this));
     }
+
+    public CFG.IBlock<Instruction> entry() {
+      return blocks.get(1);
+    }
   }
-  static class Block {
+  public static class Block implements CFG.IBlock<Instruction> {
     int id;
     BytecodeCFG cfg;
     List<Instruction> instructions;
@@ -106,7 +113,7 @@ public class BytecodeCFGBuilder {
       return newBlock;
     }
 
-    String printBlock() {
+    public String printBlock() {
       StringBuilder sb = new StringBuilder();
       sb.append("B").append(id);
       if (id == 0) {
@@ -124,6 +131,21 @@ public class BytecodeCFGBuilder {
       sb.append("\n");
       return sb.toString();
     }
+
+    @Override
+    public int id() {
+      return id;
+    }
+
+    @Override
+    public List<Instruction> elements() {
+      return instructions;
+    }
+
+    @Override
+    public Set<Block> successors() {
+      return new HashSet<>(successors);
+    }
   }
 
   private static class BytecodeCFGMethodVisitor extends MethodVisitor {
@@ -135,6 +157,7 @@ public class BytecodeCFGBuilder {
       super(Opcodes.ASM5);
       cfg = new BytecodeCFG(methodSymbol);
       currentBlock = new Block(cfg);
+      cfg.blocks.add(currentBlock);
     }
 
     @Override
@@ -224,9 +247,9 @@ public class BytecodeCFGBuilder {
   /**
    * Bytecode instruction.
    */
-  static class Instruction {
+  public static class Instruction {
 
-    private final int opcode;
+    public final int opcode;
 
     Instruction(int opcode) {
       this.opcode = opcode;

@@ -103,8 +103,9 @@ public class CheckerDispatcher implements CheckerContext {
     if (currentCheckerIndex < checks.size()) {
       explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
     } else {
-      if (explodedGraphWalker.programPosition.i< explodedGraphWalker.programPosition.block.elements().size()) {
-        explodedGraphWalker.clearStack(explodedGraphWalker.programPosition.block.elements().get(explodedGraphWalker.programPosition.i));
+      CFG.Block block = (CFG.Block) explodedGraphWalker.programPosition.block;
+      if (explodedGraphWalker.programPosition.i< block.elements().size()) {
+        explodedGraphWalker.clearStack(block.elements().get(explodedGraphWalker.programPosition.i));
       }
       explodedGraphWalker.enqueue(
         explodedGraphWalker.programPosition.next(),

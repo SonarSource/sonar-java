@@ -69,7 +69,7 @@ public class ExplodedGraph {
 
     private final Map<Node, Edge> edges = new HashMap<>();
 
-    boolean isNew;
+    public boolean isNew;
     boolean exitPath = false;
     boolean happyPath = true;
     private final int hashcode;

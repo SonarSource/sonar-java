@@ -228,7 +228,7 @@ public class ProgramState {
     return result.build();
   }
 
-  int numberOfTimeVisited(ProgramPoint programPoint) {
+  public int numberOfTimeVisited(ProgramPoint programPoint) {
     Integer count = visitedPoints.get(programPoint);
     return count == null ? 0 : count;
   }
