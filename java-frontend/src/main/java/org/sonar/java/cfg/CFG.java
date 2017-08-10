@@ -156,9 +156,7 @@ public class CFG {
     int id();
     List<T> elements();
 
-    default T terminator() {
-      return null;
-    }
+    T terminator();
 
     Set<? extends IBlock<T>> successors();
   }

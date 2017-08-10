@@ -19,10 +19,22 @@
  */
 package org.sonar.java.bytecode.cfg;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
 import org.junit.Test;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.util.Printer;
+
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.Convert;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -30,6 +42,10 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,14 +65,14 @@ public class BytecodeCFGBuilderTest {
      "B0(Exit)\n" +
        "B1\n" +
        "0: ILOAD\n" +
-       "Jumps to: B2 B3 \n" +
+       "IFEQ Jumps to: B2 B3 \n" +
        "B2\n" +
        "0: LDC\n" +
        "1: ARETURN\n" +
        "Jumps to: B0 \n" +
        "B3\n" +
        "0: ALOAD\n" +
-       "Jumps to: B4 B5 \n" +
+       "IFNONNULL Jumps to: B4 B5 \n" +
        "B4\n" +
        "0: LDC\n" +
        "1: ARETURN\n" +
@@ -80,4 +96,33 @@ public class BytecodeCFGBuilderTest {
     }
   }
 
+  @Test
+  public void test_all_instructions_are_part_of_CFG() throws Exception {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/testdata/CFGTestData.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    Symbol.TypeSymbol testClazz = ((ClassTree) tree.types().get(0)).symbol();
+    ClassReader cr = new ClassReader(squidClassLoader.getResourceAsStream(Convert.bytecodeName(CFGTestData.class.getCanonicalName()) + ".class"));
+    ClassNode classNode = new ClassNode(Opcodes.ASM5);
+    cr.accept(classNode, 0);
+    for (MethodNode method : classNode.methods) {
+      Multiset<String> opcodes = Arrays.stream(method.instructions.toArray())
+        .map(AbstractInsnNode::getOpcode)
+        .filter(opcode -> opcode != -1)
+        .map(opcode -> Printer.OPCODES[opcode])
+        .collect(Collectors.toCollection(HashMultiset::create));
+
+      Symbol methodSymbol = Iterables.getOnlyElement(testClazz.lookupSymbols(method.name));
+      BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG((Symbol.MethodSymbol) methodSymbol, squidClassLoader);
+      Multiset<String> cfgOpcodes = bytecodeCFG.blocks.stream()
+        .flatMap(block -> Stream.concat(block.instructions.stream(), Stream.of(block.terminator)))
+        .filter(Objects::nonNull)
+        .map(BytecodeCFGBuilder.Instruction::opcode)
+        .map(opcode -> Printer.OPCODES[opcode])
+        .collect(Collectors.toCollection(HashMultiset::create));
+
+      assertThat(cfgOpcodes).isEqualTo(opcodes);
+    }
+  }
 }

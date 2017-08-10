@@ -35,6 +35,8 @@ import org.sonar.java.resolve.Java9Support;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import javax.annotation.CheckForNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -94,6 +96,7 @@ public class BytecodeCFGBuilder {
     BytecodeCFG cfg;
     List<Instruction> instructions;
     List<Block> successors;
+    Instruction terminator;
 
     Block(BytecodeCFG cfg) {
       this.cfg = cfg;
@@ -126,6 +129,9 @@ public class BytecodeCFGBuilder {
         sb.append(index).append(": ").append(Printer.OPCODES[instruction.opcode]).append("\n");
         index++;
       }
+      if (terminator != null) {
+        sb.append(Printer.OPCODES[terminator.opcode]).append(" ");
+      }
       sb.append("Jumps to: ");
       successors.forEach(s -> sb.append("B").append(s.id).append(" "));
       sb.append("\n");
@@ -140,6 +146,12 @@ public class BytecodeCFGBuilder {
     @Override
     public List<Instruction> elements() {
       return instructions;
+    }
+
+    @CheckForNull
+    @Override
+    public Instruction terminator() {
+      return terminator;
     }
 
     @Override
@@ -229,6 +241,7 @@ public class BytecodeCFGBuilder {
     @Override
     public void visitJumpInsn(int opcode, Label label) {
       blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+      currentBlock.terminator = new Instruction(opcode);
       currentBlock = currentBlock.createSuccessor();
     }
 
@@ -253,6 +266,10 @@ public class BytecodeCFGBuilder {
 
     Instruction(int opcode) {
       this.opcode = opcode;
+    }
+
+    int opcode() {
+      return opcode;
     }
   }
 }
