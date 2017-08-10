@@ -1,0 +1,20 @@
+<p>It's a common pattern to test the result of a <code>java.util.Map.get()</code> against <code>null</code> before proceeding with adding or changing
+the value in the map. However the <code>java.util.Map</code> API offers a significantly better alternative in the form of the
+<code>computeIfPresent()</code> and <code>computeIfAbsent()</code> methods. Using these instead leads to cleaner and more readable code.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is not 8.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+V value = map.get(key);
+if (value == null) {  // Noncompliant
+  value = V.createFor(key);
+  if (value != null) {
+    map.put(key, value);
+  }
+}
+return value;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+return map.computeIfAbsent(key, k -&gt; V.createFor(k));
+</pre>
+
