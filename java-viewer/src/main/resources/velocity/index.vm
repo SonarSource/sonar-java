@@ -15,8 +15,8 @@
     <script src="lib/codemirror-5.27.2/mode/clike/clike.min.js"></script>
     <script src="lib/codemirror-5.27.2/addon/selection/active-line.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="lib/viewer/style.css">
-    <script src="lib/viewer/viewer.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/viewer/css/style.css">
+    <script src="lib/viewer/js/viewer.js"></script>
 
     <script src="lib/vis-4.20.0/vis.min.js"></script>
   </head>
@@ -76,9 +76,6 @@
                   <div id="eg-nodeDetails-collapse" class="panel-collapse collapse in">
                     <div class="panel-body">
                       <div id="nodeDetails-content"></div>
-                      <hr>
-                      <h3>Program point: <span id="ppKey"></span></h3>
-                      <a href="#" id="same-pp-btn" class="btn btn-primary" role="button">Nodes at same PP</a>
                     </div>
                   </div>
                 </div>

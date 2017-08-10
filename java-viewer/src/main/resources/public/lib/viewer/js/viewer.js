@@ -40,72 +40,38 @@ function clickAction(params, data, network, detailsPanels) {
   // reset any custom color from selection
   setNodesColor(data.nodes);
 
-  let nodeHtmlContent = '<p>No data</p>';
-
   if (params.nodes.length === 1) {
-    const node = getItem(params.nodes[0], data.nodes);
+    const node = data.nodes.get(params.nodes[0]);
 
     if (node) {
-      const details = node['details'];
-      nodeHtmlContent = getNodeDetails(details);
-      const ppKey = details['ppKey'];
-      detailsPanels['node'].find('#ppKey').html(ppKey);
-      const nodeIdsWithSamePP = network['eg']['ppMap'][ppKey];
-      if (nodeIdsWithSamePP) {
-        const sameProgramPointBtn = detailsPanels['node'].find('#same-pp-btn');
-        const disabled = nodeIdsWithSamePP.length <= 1;
-        if (disabled) {
-          sameProgramPointBtn.removeClass('btn-primary');
-          sameProgramPointBtn.addClass('btn-default');
-        } else {
-          sameProgramPointBtn.addClass('btn-primary');
-          sameProgramPointBtn.removeClass('btn-default');
-        }
-        // highlight given node
-        highlightAllNodesAtSamePP(ppKey, [ node.id ], data.nodes, network);
+      const nodeHtmlContent = getNodeDetails(node['details']);
 
-        // enable button and handlers
-        sameProgramPointBtn.attr('disabled', disabled);
-        sameProgramPointBtn.unbind('click', highlightAllNodesAtSamePP);
-        sameProgramPointBtn.on('click', function (e) {
-          highlightAllNodesAtSamePP(ppKey, nodeIdsWithSamePP, data.nodes, network);
-        });
-      }
-    }
-
-    detailsPanels['info'].hide();
-    detailsPanels['node'].find('#nodeDetails-content').html(nodeHtmlContent);
-    detailsPanels['node'].show();
-    detailsPanels['node'].find('.collapse').collapse('show');
-    detailsPanels['edge'].hide();
-  } else if (params.edges.length === 1) {
-    const edge = getItem(params.edges[0], data.edges);
-
-    if (edge) {
-      nodeHtmlContent = getEdgeDetails(edge['details']);
-    }
-
-    detailsPanels['info'].hide();
-    detailsPanels['node'].hide();
-    detailsPanels['edge'].find('#edgeDetails-content').html(nodeHtmlContent);
-    detailsPanels['edge'].show();
-    detailsPanels['edge'].find('.collapse').collapse('show');
-  } else {
-    detailsPanels['info'].hide();
-    detailsPanels['node'].hide();
-    detailsPanels['edge'].hide();
-  }
-}
-
-function getItem(itemId, collection) {
-  let result = null;
-  collection.forEach(function(item) {
-    if (itemId === item.id) {
-      result = item;
+      detailsPanels['info'].hide();
+      detailsPanels['node'].find('#nodeDetails-content').html(nodeHtmlContent);
+      detailsPanels['node'].show();
+      detailsPanels['node'].find('.collapse').collapse('show');
+      detailsPanels['edge'].hide();
       return;
     }
-  });
-  return result;
+
+  } else if (params.edges.length === 1) {
+    const edge = data.edges.get(params.edges[0]);
+
+    if (edge) {
+      const nodeHtmlContent = getEdgeDetails(edge['details']);
+
+      detailsPanels['info'].hide();
+      detailsPanels['node'].hide();
+      detailsPanels['edge'].find('#edgeDetails-content').html(nodeHtmlContent);
+      detailsPanels['edge'].show();
+      detailsPanels['edge'].find('.collapse').collapse('show');
+      return;
+    }
+  }
+
+  detailsPanels['info'].hide();
+  detailsPanels['node'].hide();
+  detailsPanels['edge'].hide();
 }
 
 function updateDetails(collection) {
@@ -119,6 +85,9 @@ function updateDetails(collection) {
 }
 
 function getNodeDetails(details) {
+  if (!details) {
+    return '<em>No data...</em>';
+  }
   let result = '<h3>Program State</h3>';
   result += getProgramState(details);
 
@@ -132,17 +101,21 @@ function getNodeDetails(details) {
 }
 
 function getProgramState(details) {
-  let result = '<table class="programState-table">';
-  result += tableLine('Values', getValues(details.psValues));
-  result += tableLine('Constraints', getConstraints(details.psConstraints));
-  result += tableLine('Stack', getStack(details.psStack));
-  result += '</table>';
-  return result;
+  let result = '';
+  if (details.psValues) {
+    result += tableLine('Values', getValues(details.psValues));
+  }
+  if (details.psConstraints) {
+    result += tableLine('Constraints', getConstraints(details.psConstraints));
+  }
+  if (details.psStack) {
+    result += tableLine('Stack', getStack(details.psStack));
+  }
+  return table(result, 'programState-table');
 }
 
 function getMethodYields(methodYields) {
-  let result = '<table class="methodYield-table">';
-  result += '<tr>';
+  let result = '<tr>';
   result += '<th></th>';
   result += '<th>Parameters constraints</th>';
   result += '<th>Result constraint / Thrown exception</th>';
@@ -152,28 +125,23 @@ function getMethodYields(methodYields) {
     result += getMethodYield(methodYield, methodYieldNumber);
     methodYieldNumber++;
   });
-  result += '</table>';
-  return result;
+  return table(result, 'methodYield-table');
 }
 
 function getMethodYield(methodYield, id) {
-  let result = '<tr>';
-  if (id) {
-    result += `<td>#${id}</td>`;
-  }
-  result += `<td>${methodParameters(methodYield.params)}</td>`;
-  result += `<td>${methodResult(methodYield.result, methodYield.resultIndex, methodYield.exception)}</td>`;
-  result += '</tr>';
-  return result;
+  let result = '';
+  result += tableCell(`#${id}`);
+  result += tableCell(methodParameters(methodYield.params));
+  result += tableCell(methodResult(methodYield.result, methodYield.resultIndex, methodYield.exception));
+  return tableRow(result);
 }
 
 function methodParameters(params) {
-  let result = '<table class="innerTable">';
+  let result = '';
   for (let i = 0; i < params.length; i++) {
-    result += `<tr><td>arg${i}</td><td>${params[i]}</td></tr>`;
+    result += tableLine(`arg${i}`, params[i]);
   }
-  result += '</table>';
-  return result;
+  return table(result, 'innerTable');
 }
 
 function methodResult(resultConstraints, resultIndex, exception) {
@@ -187,29 +155,45 @@ function methodResult(resultConstraints, resultIndex, exception) {
   return result;
 }
 
+function table(content, style) {
+  let classStyle = '';
+  if (style) {
+    classStyle = ` class="${style}"`;
+  }
+  return `<table${classStyle}>${content}</table>`;
+}
+
+function tableCell(value) {
+  return `<td>${value}</td>`;
+}
+
+function tableRow(value) {
+  return `<tr>${value}</tr>`;
+}
+
 function tableLine(label, value) {
   if (value) {
-    return `<tr><td>${label}</td><td>${value}</td></tr>`;
+    const c1 = tableCell(label);
+    const c2 = tableCell(value);
+    return tableRow(c1 + c2);
   }
   return '';
 }
 
 function getValues(values) {
-  let result = '<table class="innerTable">';
+  let result = '';
   values.forEach(function (value) {
-    result += `<tr><td>${value['symbol']}</td><td>${value['sv']}</td></tr>`;
+    result += tableLine(value['symbol'], value['sv']);
   });
-  result += '</table>';
-  return result;
+  return table(result, 'innerTable');
 }
 
 function getConstraints(constraints) {
-  let result = '<table class="innerTable">';
+  let result = '';
   constraints.forEach(function (constraint) {
-    result += `<tr><td>${constraint['sv']}</td><td>${constraint['constraints']}</td></tr>`;
+    result += tableLine(constraint['sv'], constraint['constraints']);
   });
-  result += '</table>';
-  return result;
+  return table(result, 'innerTable');
 }
 
 function getStack(items) {
@@ -231,7 +215,7 @@ function getStack(items) {
 }
 
 function getEdgeDetails(details) {
-  if (!details.learnedConstraints && !details.learnedAssociations && !details.selectedMethodYields) {
+  if (!details || (!details.learnedConstraints && !details.learnedAssociations && !details.selectedMethodYields)) {
     return '<em>No data...</em>';
   }
   let result = '';
@@ -274,6 +258,19 @@ function getLearnedAssociations(las) {
   return result;
 }
 
+function inArray(value, array) {
+  if (!array) {
+    return false;
+  }
+  let result = false;
+  array.forEach(function (item) {
+    if (item === value) {
+      result = true;
+    }
+  });
+  return result;
+}
+
 function setNodesColor(nodes, selectedNodesIds, forcedHighlighting) {
   nodes.forEach(function (node) {
     // common properties
@@ -292,7 +289,7 @@ function setNodesColor(nodes, selectedNodesIds, forcedHighlighting) {
       align: 'left'
     };
 
-    const highlighting = $.inArray(node.id, selectedNodesIds) !== -1 ? forcedHighlighting : node.highlighting;
+    const highlighting = inArray(node.id, selectedNodesIds) ? forcedHighlighting : node.highlighting;
 
     let newBackgroundColor, newBorderColor, newFontColor;
     switch(highlighting) {
@@ -376,7 +373,7 @@ function getPPMap(nodes) {
   let result = {};
   nodes.forEach(function (node) {
     const details = node['details'];
-    if (details.ppKey) {
+    if (details && details.ppKey) {
       if (!result[details.ppKey]) {
         result[details.ppKey] = [];
       }
@@ -407,7 +404,7 @@ function mapPPByLine(cfgCode) {
 function highlightAllNodesAtSamePP(ppKey, nodeIdsWithSamePP, nodes, network) {
   let samePPNodes = [];
   nodes.forEach(function (node) {
-    if ($.inArray(node.id, nodeIdsWithSamePP) !== -1) {
+    if (inArray(node.id, nodeIdsWithSamePP)) {
       samePPNodes.push(node.id);
     }
   });
@@ -462,4 +459,29 @@ function changeLayout(network, hierarchical) {
       };
   }
   network.setOptions(options);
+}
+
+// Exposes method to be tested
+try {
+  module.exports = {
+    clickAction,
+    table,
+    tableLine,
+    getEdgeDetails,
+    getNodeDetails,
+    updateDetails,
+    getProgramState,
+    getLearnedAssociations,
+    getLearnedConstraints,
+    getMethodYield,
+    setNodesColor,
+    setEdgesColor,
+    changeLayout,
+    mapPPByLine,
+    getPPMap,
+    highlightAllNodesAtSamePP,
+    handleNewPP
+  };
+} catch(moduleNotDefined) {
+  // NOP
 }

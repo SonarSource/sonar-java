@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -14,8 +15,9 @@
   <name>SonarQube Java :: Viewer</name>
 
   <properties>
-    <sonar.sources>src/main/java,src/main/resources/public/lib/viewer,src/main/resources/velocity</sonar.sources>
-    <sonar.tests>src/test/java</sonar.tests>
+    <sonar.sources>src/main/java,src/main/resources/public/lib/viewer/js,src/main/resources/public/lib/viewer/css,src/main/resources/velocity</sonar.sources>
+    <sonar.tests>src/test/java,src/main/resources/public/lib/viewer/__test__</sonar.tests>
+    <sonar.javascript.lcov.reportPaths>target/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
   </properties>
 
   <dependencies>
@@ -44,7 +46,7 @@
       <artifactId>logback-classic</artifactId>
       <scope>compile</scope>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
@@ -54,7 +56,7 @@
       <version>7.0</version>
       <scope>provided</scope>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
       <version>1.1</version>
@@ -93,6 +95,60 @@
         </executions>
         <configuration>
           <mainClass>org.sonar.java.viewer.Viewer</mainClass>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <installDirectory>target</installDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+              <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
+              <nodeVersion>v6.9.1</nodeVersion>
+              <npmVersion>3.10.9</npmVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <phase>test</phase>
+            <id>npm coverage</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run coverage</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>node_modules</directory>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
         </configuration>
       </plugin>
     </plugins>
