@@ -152,7 +152,18 @@ public class CFG {
     return blocks;
   }
 
-  public static class Block {
+  public interface IBlock<T> {
+    int id();
+    List<T> elements();
+
+    default T terminator() {
+      return null;
+    }
+
+    Set<? extends IBlock<T>> successors();
+  }
+
+  public static class Block implements IBlock<Tree> {
     public static final Predicate<Block> IS_CATCH_BLOCK = Block::isCatchBlock;
     private int id;
     private final List<Tree> elements = new ArrayList<>();
@@ -176,6 +187,7 @@ public class CFG {
       return id;
     }
 
+    @Override
     public List<Tree> elements() {
       return Lists.reverse(elements);
     }

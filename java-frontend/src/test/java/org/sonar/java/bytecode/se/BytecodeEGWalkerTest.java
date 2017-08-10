@@ -17,13 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.bytecode.cfg;
+package org.sonar.java.bytecode.se;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -31,53 +33,28 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import java.io.File;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
-public class BytecodeCFGBuilderTest {
+public class BytecodeEGWalkerTest {
 
   @Test
-  public void test() throws Exception {
+  public void generateMethodBehavior() throws Exception {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null));
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(0)).symbol();
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(symbol, squidClassLoader);
-    StringBuilder sb = new StringBuilder();
-    cfg.blocks.forEach(b-> sb.append(b.printBlock()));
-    assertThat(sb.toString()).isEqualTo(
-     "B0(Exit)\n" +
-       "B1\n" +
-       "0: ILOAD\n" +
-       "Jumps to: B2 B3 \n" +
-       "B2\n" +
-       "0: LDC\n" +
-       "1: ARETURN\n" +
-       "Jumps to: B0 \n" +
-       "B3\n" +
-       "0: ALOAD\n" +
-       "Jumps to: B4 B5 \n" +
-       "B4\n" +
-       "0: LDC\n" +
-       "1: ARETURN\n" +
-       "Jumps to: B0 \n" +
-       "B5\n" +
-       "0: ACONST_NULL\n" +
-       "1: ARETURN\n" +
-       "Jumps to: B0 \n");
+    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
+    assertThat(methodBehavior.yields()).hasSize(1);
   }
 
   static class InnerClass {
     Object fun(boolean a, Object b) {
-      if (a) {
-        if (b == null) {
-          return null;
-        }
-        return "";
-      } else {
-        return "not a";
+      if (b == null) {
+        return null;
       }
+      return "";
     }
   }
-
 }

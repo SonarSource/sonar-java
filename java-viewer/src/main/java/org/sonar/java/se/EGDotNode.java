@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.PStack;
 import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
 import org.sonar.java.se.constraint.Constraint;
@@ -42,7 +43,6 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -170,7 +170,8 @@ public class EGDotNode extends DotGraph.Node {
   private String programPoint() {
     String tree = "";
     if (pp.i < pp.block.elements().size()) {
-      tree = "" + pp.block.elements().get(pp.i).kind() + " L#" + pp.block.elements().get(pp.i).firstToken().line();
+      Tree syntaxNode = ((CFG.Block) pp.block).elements().get(pp.i);
+      tree = "" + syntaxNode.kind() + " L#" + syntaxNode.firstToken().line();
     }
     return programPointKey() + "  " + tree;
   }

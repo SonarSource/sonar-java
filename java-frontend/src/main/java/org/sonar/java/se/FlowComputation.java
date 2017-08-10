@@ -23,9 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
@@ -55,7 +55,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -675,7 +674,7 @@ public class FlowComputation {
       // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
       ProgramPoint pp = node.programPoint;
       if (pp.i < pp.block.elements().size()) {
-        Tree tree = pp.block.elements().get(pp.i);
+        Tree tree = ((CFG.Block) pp.block).elements().get(pp.i);
         return tree.is(Tree.Kind.METHOD_INVOCATION);
       }
       return false;

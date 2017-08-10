@@ -231,24 +231,26 @@ public class ExplodedGraphWalker {
       }
       // LIFO:
       setNode(workList.removeFirst());
-      if (programPosition.block.successors().isEmpty()) {
+      CFG.Block block = (CFG.Block) programPosition.block;
+      if (block.successors().isEmpty()) {
         endOfExecutionPath.add(node);
         continue;
       }
       try {
-        if (programPosition.i < programPosition.block.elements().size()) {
+        Tree terminator = block.terminator();
+        if (programPosition.i < block.elements().size()) {
           // process block element
-          visit(programPosition.block.elements().get(programPosition.i), programPosition.block.terminator());
-        } else if (programPosition.block.terminator() == null) {
+          visit(block.elements().get(programPosition.i), terminator);
+        } else if (terminator == null) {
           // process block exit, which is unconditional jump such as goto-statement or return-statement
           handleBlockExit(programPosition);
-        } else if (programPosition.i == programPosition.block.elements().size()) {
+        } else if (programPosition.i == block.elements().size()) {
           // process block exist, which is conditional jump such as if-statement
-          checkerDispatcher.executeCheckPostStatement(programPosition.block.terminator());
+          checkerDispatcher.executeCheckPostStatement(terminator);
         } else {
           // process branch
           // process block exist, which is conditional jump such as if-statement
-          checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator());
+          checkerDispatcher.executeCheckPreStatement(terminator);
           handleBlockExit(programPosition);
         }
       } catch (TooManyNestedBooleanStatesException e) {
@@ -363,7 +365,7 @@ public class ExplodedGraphWalker {
   }
 
   private void handleBlockExit(ProgramPoint programPosition) {
-    CFG.Block block = programPosition.block;
+    CFG.Block block = (CFG.Block) programPosition.block;
     Tree terminator = block.terminator();
     cleanUpProgramState(block);
     boolean exitPath = node.exitPath;
@@ -711,7 +713,7 @@ public class ExplodedGraphWalker {
   }
 
   private void enqueueExceptionalPaths(ProgramState ps, Symbol methodSymbol, @Nullable MethodYield methodYield) {
-    Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
+    Set<CFG.Block> exceptionBlocks = ((CFG.Block) node.programPoint.block).exceptions();
     List<CFG.Block> catchBlocks = exceptionBlocks.stream().filter(CFG.Block.IS_CATCH_BLOCK).collect(Collectors.toList());
     SymbolicValue peekValue = ps.peekValue();
 
@@ -743,6 +745,7 @@ public class ExplodedGraphWalker {
       // explicitly add the exception branching to method exit
       CFG.Block methodExit = node.programPoint.block.successors()
         .stream()
+        .map(b -> (CFG.Block) b)
         .filter(CFG.Block::isMethodExitBlock)
         .findFirst()
         .orElse(exitBlock);
@@ -891,7 +894,7 @@ public class ExplodedGraphWalker {
     NewClassTree newClassTree = tree;
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
-    node.programPoint.block.exceptions().forEach(b -> enqueue(new ProgramPoint(b), programState, !b.isCatchBlock()));
+    ((CFG.Block) node.programPoint.block).exceptions().forEach(b -> enqueue(new ProgramPoint(b), programState, !b.isCatchBlock()));
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
     programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
@@ -1081,7 +1084,7 @@ public class ExplodedGraphWalker {
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       if (isRestartingForEachLoop(programPoint)) {
         // reached the max number of visit by program point, so take the false branch with current program state
-        programPoint = new ProgramPoint(programPoint.block.falseBlock());
+        programPoint = new ProgramPoint(((CFG.Block) programPoint.block).falseBlock());
       } else {
         debugPrint(programPoint);
         return;
@@ -1101,7 +1104,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isRestartingForEachLoop(ProgramPoint programPoint) {
-    Tree terminator = programPoint.block.terminator();
+    Tree terminator = ((CFG.Block) programPoint.block).terminator();
     return terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT);
   }
 
