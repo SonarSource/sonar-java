@@ -25,6 +25,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -43,11 +45,22 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.NOP;
+import static org.sonar.java.bytecode.cfg.Instructions.FIELD_ISNSN;
+import static org.sonar.java.bytecode.cfg.Instructions.INT_INSN;
+import static org.sonar.java.bytecode.cfg.Instructions.JUMP_ISNS;
+import static org.sonar.java.bytecode.cfg.Instructions.METHOD_ISNS;
+import static org.sonar.java.bytecode.cfg.Instructions.NO_OPERAND_INSN;
+import static org.sonar.java.bytecode.cfg.Instructions.TYPE_ISNSN;
+import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
 public class BytecodeCFGBuilderTest {
 
@@ -115,14 +128,52 @@ public class BytecodeCFGBuilderTest {
 
       Symbol methodSymbol = Iterables.getOnlyElement(testClazz.lookupSymbols(method.name));
       BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG((Symbol.MethodSymbol) methodSymbol, squidClassLoader);
-      Multiset<String> cfgOpcodes = bytecodeCFG.blocks.stream()
-        .flatMap(block -> Stream.concat(block.instructions.stream(), Stream.of(block.terminator)))
-        .filter(Objects::nonNull)
-        .map(BytecodeCFGBuilder.Instruction::opcode)
-        .map(opcode -> Printer.OPCODES[opcode])
-        .collect(Collectors.toCollection(HashMultiset::create));
-
+      Multiset<String> cfgOpcodes = cfgOpcodes(bytecodeCFG);
       assertThat(cfgOpcodes).isEqualTo(opcodes);
     }
+  }
+
+  private Multiset<String> cfgOpcodes(BytecodeCFGBuilder.BytecodeCFG bytecodeCFG) {
+    return bytecodeCFG.blocks.stream()
+          .flatMap(block -> Stream.concat(block.instructions.stream(), Stream.of(block.terminator)))
+          .filter(Objects::nonNull)
+          .map(BytecodeCFGBuilder.Instruction::opcode)
+          .map(opcode -> Printer.OPCODES[opcode])
+          .collect(Collectors.toCollection(HashMultiset::create));
+  }
+
+  @Test
+  public void all_opcodes_should_be_visited() throws Exception {
+    Instructions bb = new Instructions();
+    NO_OPERAND_INSN.forEach(bb::visitInsn);
+    INT_INSN.forEach(i -> bb.visitIntInsn(i, 0));
+    VAR_INSN.forEach(i -> bb.visitVarInsn(i, 0));
+    TYPE_ISNSN.forEach(i -> bb.visitTypeInsn(i, "java/lang/Object"));
+    FIELD_ISNSN.forEach(i -> bb.visitFieldInsn(i, "java/lang/Object", "foo", "D(D)"));
+    METHOD_ISNS.forEach(i -> bb.visitMethodInsn(i, "java/lang/Object", "foo", "()V", i == INVOKEINTERFACE));
+    Label l0 = new Label();
+    bb.visitLabel(l0);
+    JUMP_ISNS.forEach(i -> bb.visitJumpInsn(i, l0));
+
+    bb.visitLdcInsn("a");
+    bb.visitIincInsn(0, 1);
+    Handle handle = new Handle(H_INVOKESTATIC, "", "", "()V", false);
+    bb.visitInvokeDynamicInsn("sleep", "()V", handle);
+    bb.visitLookupSwitchInsn(new Label(), new int[] {}, new Label[] {});
+    bb.visitMultiANewArrayInsn("B", 1);
+
+    Label dflt = new Label();
+    Label case0 = new Label();
+    bb.visitTableSwitchInsn(0, 1, dflt, case0);
+    bb.visitLabel(dflt);
+    bb.visitInsn(NOP);
+    bb.visitLabel(l0);
+    bb.visitInsn(NOP);
+
+
+    BytecodeCFGBuilder.BytecodeCFG cfg = bb.cfg();
+    Multiset<String> cfgOpcodes = cfgOpcodes(cfg);
+    List<String> collect = Instructions.ASM_OPCODES.stream().map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
+    assertThat(cfgOpcodes).containsAll(collect);
   }
 }
