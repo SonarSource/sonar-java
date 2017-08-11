@@ -57,23 +57,23 @@ public class Instructions {
 
   static final ImmutableSet<Integer> INT_INSN = ImmutableSet.of(BIPUSH, SIPUSH, NEWARRAY);
   static final ImmutableSet<Integer> VAR_INSN = ImmutableSet.of(ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE, RET);
-  static final ImmutableSet<Integer> TYPE_ISNSN = ImmutableSet.of(NEW, ANEWARRAY, CHECKCAST, INSTANCEOF);
-  static final ImmutableSet<Integer> FIELD_ISNSN = ImmutableSet.of(GETSTATIC, PUTSTATIC, GETFIELD, PUTFIELD);
-  static final ImmutableSet<Integer> METHOD_ISNS = ImmutableSet.of(INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC, INVOKEINTERFACE);
-  static final ImmutableSet<Integer> JUMP_ISNS = ImmutableSet.of(IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ,
+  static final ImmutableSet<Integer> TYPE_INSN = ImmutableSet.of(NEW, ANEWARRAY, CHECKCAST, INSTANCEOF);
+  static final ImmutableSet<Integer> FIELD_INSN = ImmutableSet.of(GETSTATIC, PUTSTATIC, GETFIELD, PUTFIELD);
+  static final ImmutableSet<Integer> METHOD_INSN = ImmutableSet.of(INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC, INVOKEINTERFACE);
+  static final ImmutableSet<Integer> JUMP_INSN = ImmutableSet.of(IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ,
     IF_ACMPNE, GOTO, JSR, IFNULL, IFNONNULL);
 
-  static final ImmutableSet<Integer> OTHER_ISNS = ImmutableSet.of(LDC, IINC, TABLESWITCH, LOOKUPSWITCH, MULTIANEWARRAY, INVOKEDYNAMIC);
+  static final ImmutableSet<Integer> OTHER_INSN = ImmutableSet.of(LDC, IINC, TABLESWITCH, LOOKUPSWITCH, MULTIANEWARRAY, INVOKEDYNAMIC);
 
   static final ImmutableSet<Integer> ALL = ImmutableSet.<Integer>builder()
     .addAll(NO_OPERAND_INSN)
     .addAll(INT_INSN)
     .addAll(VAR_INSN)
-    .addAll(TYPE_ISNSN)
-    .addAll(FIELD_ISNSN)
-    .addAll(METHOD_ISNS)
-    .addAll(JUMP_ISNS)
-    .addAll(OTHER_ISNS)
+    .addAll(TYPE_INSN)
+    .addAll(FIELD_INSN)
+    .addAll(METHOD_INSN)
+    .addAll(JUMP_INSN)
+    .addAll(OTHER_INSN)
     .build();
 
   static final Set<Integer> ASM_OPCODES = ImmutableSet.copyOf(IntStream.range(0, Printer.OPCODES.length)
@@ -106,19 +106,19 @@ public class Instructions {
   }
 
   public Instructions visitTypeInsn(int opcode, String type) {
-    Preconditions.checkArgument(TYPE_ISNSN.contains(opcode));
+    Preconditions.checkArgument(TYPE_INSN.contains(opcode));
     mv.visitTypeInsn(opcode, type);
     return this;
   }
 
   public Instructions visitFieldInsn(int opcode, String owner, String name, String desc) {
-    Preconditions.checkArgument(FIELD_ISNSN.contains(opcode));
+    Preconditions.checkArgument(FIELD_INSN.contains(opcode));
     mv.visitFieldInsn(opcode, owner, name, desc);
     return this;
   }
 
   public Instructions visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-    Preconditions.checkArgument(METHOD_ISNS.contains(opcode));
+    Preconditions.checkArgument(METHOD_INSN.contains(opcode));
     mv.visitMethodInsn(opcode, owner, name, desc, itf);
     return this;
   }
@@ -129,7 +129,7 @@ public class Instructions {
   }
 
   public Instructions visitJumpInsn(int opcode, Label label) {
-    Preconditions.checkArgument(JUMP_ISNS.contains(opcode));
+    Preconditions.checkArgument(JUMP_INSN.contains(opcode));
     mv.visitJumpInsn(opcode, label);
     return this;
   }
