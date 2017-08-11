@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -27,6 +28,7 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -37,6 +39,7 @@ import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public class BytecodeEGWalker {
 
@@ -55,9 +58,11 @@ public class BytecodeEGWalker {
   private Set<ExplodedGraph.Node> endOfExecutionPath;
   private ConstraintManager constraintManager;
   MethodBehavior methodBehavior;
+  private CheckerDispatcher checkerDispatcher;
 
   BytecodeEGWalker(BehaviorCache behaviorCache){
     this.behaviorCache = behaviorCache;
+    checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(new BytecodeSECheck.NullnessCheck()));
   }
 
   public MethodBehavior getMethodBehavior(Symbol.MethodSymbol symbol, SquidClassLoader classLoader) {
@@ -111,8 +116,13 @@ public class BytecodeEGWalker {
   }
 
   private void executeInstruction(BytecodeCFGBuilder.Instruction instruction) {
-    // TODO execute check prestatement
+    if(!checkerDispatcher.executeCheckPreStatement(instruction)) {
+      return;
+    }
     switch (instruction.opcode) {
+      case Opcodes.ARETURN:
+        programState.storeExitValue();
+        break;
       case Opcodes.ACONST_NULL:
         programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;
@@ -123,6 +133,7 @@ public class BytecodeEGWalker {
         break;
       case Opcodes.LLOAD:
       case Opcodes.AALOAD:
+        break;
       case Opcodes.BALOAD:
       case Opcodes.CALOAD:
       case Opcodes.DALOAD:
@@ -131,11 +142,15 @@ public class BytecodeEGWalker {
       case Opcodes.LALOAD:
       case Opcodes.SALOAD:
         break;
+      case Opcodes.LDC:
+        SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(symbolicValue);
+        programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
+        break;
       default:
         // do nothing
     }
-    // TODO execute check poststatement
-    enqueue(programPosition.next(), programState);
+    checkerDispatcher.executeCheckPostStatement(instruction);
   }
 
   private void handleBlockExit(ProgramPoint programPosition) {
@@ -148,7 +163,16 @@ public class BytecodeEGWalker {
 
   private Iterable<ProgramState> startingStates(Symbol.MethodSymbol symbol, ProgramState currentState) {
     // TODO : deal with parameter annotations, equals methods etc.
-    return Collections.singletonList(currentState);
+    int arity = symbol.parameterTypes().size();
+    ProgramState state = currentState;
+    if(!symbol.isStatic()) {
+      // Add a sv for "this"
+      SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      methodBehavior.addParameter(thisSV);
+      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL);
+    }
+    IntStream.range(0, arity).forEach(i -> methodBehavior.addParameter(constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null)));
+    return Collections.singletonList(state);
   }
 
   private void setNode(ExplodedGraph.Node node) {
@@ -157,7 +181,7 @@ public class BytecodeEGWalker {
     programState = this.node.programState;
   }
 
-  private void enqueue(ProgramPoint pp, ProgramState programState) {
+  void enqueue(ProgramPoint pp, ProgramState programState) {
     int nbOfExecution = programState.numberOfTimeVisited(pp);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       return;
