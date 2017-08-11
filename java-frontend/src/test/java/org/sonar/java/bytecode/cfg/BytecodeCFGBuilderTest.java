@@ -54,12 +54,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.NOP;
-import static org.sonar.java.bytecode.cfg.Instructions.FIELD_ISNSN;
+import static org.sonar.java.bytecode.cfg.Instructions.FIELD_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.INT_INSN;
-import static org.sonar.java.bytecode.cfg.Instructions.JUMP_ISNS;
-import static org.sonar.java.bytecode.cfg.Instructions.METHOD_ISNS;
+import static org.sonar.java.bytecode.cfg.Instructions.JUMP_INSN;
+import static org.sonar.java.bytecode.cfg.Instructions.METHOD_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.NO_OPERAND_INSN;
-import static org.sonar.java.bytecode.cfg.Instructions.TYPE_ISNSN;
+import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
 public class BytecodeCFGBuilderTest {
@@ -144,34 +144,34 @@ public class BytecodeCFGBuilderTest {
 
   @Test
   public void all_opcodes_should_be_visited() throws Exception {
-    Instructions bb = new Instructions();
-    NO_OPERAND_INSN.forEach(bb::visitInsn);
-    INT_INSN.forEach(i -> bb.visitIntInsn(i, 0));
-    VAR_INSN.forEach(i -> bb.visitVarInsn(i, 0));
-    TYPE_ISNSN.forEach(i -> bb.visitTypeInsn(i, "java/lang/Object"));
-    FIELD_ISNSN.forEach(i -> bb.visitFieldInsn(i, "java/lang/Object", "foo", "D(D)"));
-    METHOD_ISNS.forEach(i -> bb.visitMethodInsn(i, "java/lang/Object", "foo", "()V", i == INVOKEINTERFACE));
+    Instructions ins = new Instructions();
+    NO_OPERAND_INSN.forEach(ins::visitInsn);
+    INT_INSN.forEach(i -> ins.visitIntInsn(i, 0));
+    VAR_INSN.forEach(i -> ins.visitVarInsn(i, 0));
+    TYPE_INSN.forEach(i -> ins.visitTypeInsn(i, "java/lang/Object"));
+    FIELD_INSN.forEach(i -> ins.visitFieldInsn(i, "java/lang/Object", "foo", "D(D)"));
+    METHOD_INSN.forEach(i -> ins.visitMethodInsn(i, "java/lang/Object", "foo", "()V", i == INVOKEINTERFACE));
     Label l0 = new Label();
-    bb.visitLabel(l0);
-    JUMP_ISNS.forEach(i -> bb.visitJumpInsn(i, l0));
+    ins.visitLabel(l0);
+    JUMP_INSN.forEach(i -> ins.visitJumpInsn(i, l0));
 
-    bb.visitLdcInsn("a");
-    bb.visitIincInsn(0, 1);
+    ins.visitLdcInsn("a");
+    ins.visitIincInsn(0, 1);
     Handle handle = new Handle(H_INVOKESTATIC, "", "", "()V", false);
-    bb.visitInvokeDynamicInsn("sleep", "()V", handle);
-    bb.visitLookupSwitchInsn(new Label(), new int[] {}, new Label[] {});
-    bb.visitMultiANewArrayInsn("B", 1);
+    ins.visitInvokeDynamicInsn("sleep", "()V", handle);
+    ins.visitLookupSwitchInsn(new Label(), new int[] {}, new Label[] {});
+    ins.visitMultiANewArrayInsn("B", 1);
 
     Label dflt = new Label();
     Label case0 = new Label();
-    bb.visitTableSwitchInsn(0, 1, dflt, case0);
-    bb.visitLabel(dflt);
-    bb.visitInsn(NOP);
-    bb.visitLabel(l0);
-    bb.visitInsn(NOP);
+    ins.visitTableSwitchInsn(0, 1, dflt, case0);
+    ins.visitLabel(dflt);
+    ins.visitInsn(NOP);
+    ins.visitLabel(l0);
+    ins.visitInsn(NOP);
 
 
-    BytecodeCFGBuilder.BytecodeCFG cfg = bb.cfg();
+    BytecodeCFGBuilder.BytecodeCFG cfg = ins.cfg();
     Multiset<String> cfgOpcodes = cfgOpcodes(cfg);
     List<String> collect = Instructions.ASM_OPCODES.stream().map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
     assertThat(cfgOpcodes).containsAll(collect);
