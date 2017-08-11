@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.cfg;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import org.objectweb.asm.ClassReader;
@@ -58,22 +59,27 @@ public class BytecodeCFGBuilder {
       if (Java9Support.isJava9Class(bytes)) {
         Java9Support.setJava8MajorVersion(bytes);
       }
-      ClassReader cr = new ClassReader(bytes);
-      BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor(methodSymbol);
-      cr.accept(new ClassVisitor(Opcodes.ASM5) {
-        @Override
-        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-          // TODO : name matching is not sufficient in case of overloading.
-          if (name.equals(methodSymbol.name())) {
-            return methodVisitor;
-          }
-          return null;
-        }
-      }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-      return methodVisitor.cfg;
+      return buildCFG(methodSymbol, bytes);
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  @VisibleForTesting
+  static BytecodeCFG buildCFG(Symbol.MethodSymbol methodSymbol, byte[] bytes) {
+    ClassReader cr = new ClassReader(bytes);
+    BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor(methodSymbol);
+    cr.accept(new ClassVisitor(Opcodes.ASM5) {
+      @Override
+      public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        // TODO : name matching is not sufficient in case of overloading.
+        if (name.equals(methodSymbol.name())) {
+          return methodVisitor;
+        }
+        return null;
+      }
+    }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+    return methodVisitor.cfg;
   }
 
   public static class BytecodeCFG {
@@ -220,6 +226,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
+      currentBlock.terminator = new Instruction(Opcodes.TABLESWITCH);
       blockByLabel.computeIfAbsent(dflt, l -> currentBlock.createSuccessor());
       for (Label label : labels) {
         blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
@@ -228,6 +235,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+      currentBlock.terminator = new Instruction(Opcodes.LOOKUPSWITCH);
       for (Label label : labels) {
         blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
       }
