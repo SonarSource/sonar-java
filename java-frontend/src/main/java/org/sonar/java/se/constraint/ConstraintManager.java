@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -187,5 +188,8 @@ public class ConstraintManager {
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
-  
+
+  public SymbolicValue createSymbolicValue(BytecodeCFGBuilder.Instruction inst) {
+    return createDefaultSymbolicValue();
+  }
 }

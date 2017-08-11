@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -32,6 +35,9 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -46,7 +52,21 @@ public class BytecodeEGWalkerTest {
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(0)).symbol();
     MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
-    assertThat(methodBehavior.yields()).hasSize(1);
+    assertThat(methodBehavior.yields()).hasSize(2);
+
+    SymbolicValue svFirstArg = new SymbolicValue();
+    SymbolicValue svsecondArg = new SymbolicValue();
+    SymbolicValue svResult = new SymbolicValue();
+
+    List<ObjectConstraint> collect = methodBehavior.yields().stream().map(my -> {
+      Collection<ProgramState> ps = my.statesAfterInvocation(Lists.newArrayList(svFirstArg, svsecondArg), Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+      assertThat(ps).hasSize(1);
+      ProgramState next = ps.iterator().next();
+      return next.getConstraint(svResult, ObjectConstraint.class);
+    })
+      .collect(Collectors.toList());
+    assertThat(collect).hasSize(2).containsOnly(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
+
   }
 
   static class InnerClass {
