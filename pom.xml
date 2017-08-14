@@ -131,6 +131,13 @@
         <groupId>org.sonarsource.sslr</groupId>
         <artifactId>sslr-testing-harness</artifactId>
         <version>${sslr.version}</version>
+        <exclusions>
+          <!-- junit 4.12 depends on more recent hamcrest -->
+          <exclusion>
+            <artifactId>hamcrest-all</artifactId>
+            <groupId>org.hamcrest</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.sonarsource.sslr-squid-bridge</groupId>
@@ -181,7 +188,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>4.12</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
