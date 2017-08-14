@@ -35,7 +35,7 @@
         <h1>Java sample</h1>
         <form action="/" method="post">
           <div class="codeWrapper">
-            <textarea id="java-code" name="javaCode">$javaCode</textarea>
+            <textarea id="java-code" name="javaCode">class B{void meth() {}}</textarea>
           </div>
           <div>
             <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span>   Generate</button>
@@ -44,17 +44,21 @@
         </form>
         <h1>Control Flow Graph</h1>
         <div class="codeWrapper">
-          <textarea id="cfg-code">$cfg</textarea>
+          <textarea id="cfg-code">Starts at B0
+
+B0 (Exit):
+
+</textarea>
         </div>
       </div>
     </div>
     <div class="col-md-9">
       <div class="panel panel-danger" id="errorBox">
         <div class="panel-heading">
-          <h3 class=panel-title>$errorMessage</h3>
+          <h3 class=panel-title></h3>
         </div>
         <div class="panel-body">
-          <p>$errorStackTrace</p>
+          <p></p>
         </div>
       </div>
       <div id="tabs">
@@ -137,7 +141,7 @@
       mode: "text/x-java"
     });
 
-    var errorMessage = '$errorMessage';
+    var errorMessage = '';
 
     if (errorMessage) {
       cfgEditor.setValue("");
@@ -145,7 +149,7 @@
       tabs.parentNode.removeChild(tabs);
     } else {
       var explodedGraphContainer = document.getElementById('eg-container');
-      var dotEG = '$dotEG';
+      var dotEG = 'graph ExplodedGraph {\n0[details="{?ppKey?:?B0.0?,?psStack?:[],?psConstraints?:[{?sv?:?SV_FALSE?,?constraints?:[?NOT_NULL?,?FALSE?]},{?sv?:?SV_NULL?,?constraints?:[?NULL?]},{?sv?:?SV_TRUE?,?constraints?:[?NOT_NULL?,?TRUE?]}],?psValues?:[]}",label="B0.0  ",highlighting="firstNode"];\n\n}';
       var detailsPanels = {
          info: $('#eg-details'),
          node: $('#eg-nodeDetails'),
@@ -161,11 +165,11 @@
       });
 
       var cfgContainer = document.getElementById('cfg-container');
-      var dotCFG = '$dotCFG';
+      var dotCFG = 'graph CFG {\n0[label="B0 (EXIT)",highlighting="exitNode"];\n\n}';
       var networkCFG = loadDot(dotCFG, cfgContainer, false);
 
       var astContainer = document.getElementById('ast-container');
-      var dotAST = '$dotAST';
+      var dotAST = 'graph AST {\n0[label="COMPILATION_UNIT L#1",highlighting="firstNode"];\n1[label="CLASS L#1",highlighting="classKind"];\n2[label="MODIFIERS"];\n1->2[];\n3[label="TOKEN L#1"];\n3[label="class",highlighting="tokenKind"];\n1->3[];\n4[label="IDENTIFIER L#1"];\n5[label="TOKEN L#1"];\n5[label="B",highlighting="tokenKind"];\n4->5[];\n1->4[];\n6[label="TYPE_PARAMETERS"];\n1->6[];\n7[label="LIST"];\n1->7[];\n8[label="TOKEN L#1"];\n8[label="{",highlighting="tokenKind"];\n1->8[];\n9[label="METHOD L#1",highlighting="methodKind"];\n10[label="MODIFIERS"];\n9->10[];\n11[label="TYPE_PARAMETERS"];\n9->11[];\n12[label="PRIMITIVE_TYPE L#1"];\n13[label="TOKEN L#1"];\n13[label="void",highlighting="tokenKind"];\n12->13[];\n9->12[];\n14[label="IDENTIFIER L#1"];\n15[label="TOKEN L#1"];\n15[label="meth",highlighting="tokenKind"];\n14->15[];\n9->14[];\n16[label="TOKEN L#1"];\n16[label="(",highlighting="tokenKind"];\n9->16[];\n17[label="TOKEN L#1"];\n17[label=")",highlighting="tokenKind"];\n9->17[];\n18[label="BLOCK L#1"];\n19[label="TOKEN L#1"];\n19[label="{",highlighting="tokenKind"];\n18->19[];\n20[label="TOKEN L#1"];\n20[label="}",highlighting="tokenKind"];\n18->20[];\n9->18[];\n1->9[];\n21[label="TOKEN L#1"];\n21[label="}",highlighting="tokenKind"];\n1->21[];\n0->1[];\n22[label="TOKEN L#1"];\n22[label="",highlighting="tokenKind"];\n0->22[];\n\n}';
       var networkAST = loadDot(dotAST, astContainer, true);
 
       var errorBox = document.getElementById('errorBox');
