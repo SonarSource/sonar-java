@@ -35,7 +35,7 @@
         <h1>Java sample</h1>
         <form action="/" method="post">
           <div class="codeWrapper">
-            <textarea id="java-code" name="javaCode">$javaCode</textarea>
+            <textarea id="java-code" name="javaCode">class B{}</textarea>
           </div>
           <div>
             <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span>   Generate</button>
@@ -51,10 +51,34 @@
     <div class="col-md-9">
       <div class="panel panel-danger" id="errorBox">
         <div class="panel-heading">
-          <h3 class=panel-title>$errorMessage</h3>
+          <h3 class=panel-title>Unable to find a method in first class.</h3>
         </div>
         <div class="panel-body">
-          <p>$errorStackTrace</p>
+          <p>java.lang.NullPointerException: Unable to find a method in first class.<br/>
+  at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:228)<br/>
+  at org.sonar.java.viewer.Viewer.getValues(Viewer.java:117)<br/>
+  at org.sonar.java.viewer.Viewer.generate(Viewer.java:102)<br/>
+  at org.sonar.java.viewer.Viewer.generate(Viewer.java:96)<br/>
+  at org.sonar.java.viewer.Viewer.lambda$startWebServer$2(Viewer.java:85)<br/>
+  at spark.RouteImpl$1.handle(RouteImpl.java:61)<br/>
+  at spark.http.matching.Routes.execute(Routes.java:61)<br/>
+  at spark.http.matching.MatcherFilter.doFilter(MatcherFilter.java:126)<br/>
+  at spark.embeddedserver.jetty.JettyHandler.doHandle(JettyHandler.java:50)<br/>
+  at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:189)<br/>
+  at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)<br/>
+  at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:119)<br/>
+  at org.eclipse.jetty.server.Server.handle(Server.java:517)<br/>
+  at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:308)<br/>
+  at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:242)<br/>
+  at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:261)<br/>
+  at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:95)<br/>
+  at org.eclipse.jetty.io.SelectChannelEndPoint$2.run(SelectChannelEndPoint.java:75)<br/>
+  at org.eclipse.jetty.util.thread.strategy.ExecuteProduceConsume.produceAndRun(ExecuteProduceConsume.java:213)<br/>
+  at org.eclipse.jetty.util.thread.strategy.ExecuteProduceConsume.run(ExecuteProduceConsume.java:147)<br/>
+  at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:654)<br/>
+  at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:572)<br/>
+  at java.lang.Thread.run(Thread.java:748)<br/>
+</p>
         </div>
       </div>
       <div id="tabs">
@@ -100,20 +124,20 @@
           <div class="tab-pane" id="ast">
             <div id="ast-detailBox" class="col-md-2 detailsBox">
               <div class="panel panel-default">
-                 <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#ast-control-collapse">
-                   <h4 class="panel-title">Hierarchical Layout</h4>
-                 </div>
-                 <div id="ast-control-collapse" class="panel-collapse collapse in">
-                   <div class="panel-body">
-                     <div id="ast-hierarchical-layout">
-                       <div class="btn-group btn-group-justified" data-toggle="buttons">
-                         <label class="btn btn-primary active"><input type="radio" id="ast-hierarchicalON" name="ast-hierarchical" autocomplete="off" checked>ON</label>
-                         <label class="btn btn-default"><input type="radio" id="ast-hierarchicalOFF" name="ast-hierarchical" autocomplete="off">OFF</label>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
+                <div class="panel-heading panel-toggle" data-toggle="collapse" data-target="#ast-control-collapse">
+                  <h4 class="panel-title">Hierarchical Layout</h4>
+                </div>
+                <div id="ast-control-collapse" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div id="ast-hierarchical-layout">
+                      <div class="btn-group btn-group-justified" data-toggle="buttons">
+                        <label class="btn btn-primary active"><input type="radio" id="ast-hierarchicalON" name="ast-hierarchical" autocomplete="off" checked>ON</label>
+                        <label class="btn btn-default"><input type="radio" id="ast-hierarchicalOFF" name="ast-hierarchical" autocomplete="off">OFF</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div id="ast-container" class="dotGraph"></div>
           </div>
@@ -137,7 +161,7 @@
       mode: "text/x-java"
     });
 
-    var errorMessage = '$errorMessage';
+    var errorMessage = 'Unable to find a method in first class.';
 
     if (errorMessage) {
       cfgEditor.setValue("");

@@ -19,10 +19,25 @@
  */
 package org.sonar.java.viewer;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import spark.utils.IOUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,4 +92,42 @@ public class ViewerTest {
     assertThat(values.get("errorStackTrace")).startsWith("java.lang.Exception: " + message);
   }
 
+  @Test
+  public void start_server_and_test_requests() throws Exception {
+    ServerSocket serverSocket = new ServerSocket(0);
+    int localPort = serverSocket.getLocalPort();
+    serverSocket.close();
+    String uri = "http://localhost:" + localPort + "/";
+    Viewer.startWebServer(localPort, "class A {void fun() {}}");
+    try(CloseableHttpClient client = HttpClients.createMinimal()) {
+      CloseableHttpResponse resp = client.execute(new HttpGet(uri));
+      assertThat(resp.getStatusLine().getStatusCode()).isEqualTo(200);
+      assertThat(EntityUtils.toString(resp.getEntity())).isEqualTo(IOUtils.toString(new FileInputStream(new File("src/test/resources/viewer_result1.html"))));
+
+      // post with no data, answer with default code.
+      HttpPost httpPost = new HttpPost(uri);
+      resp = client.execute(httpPost);
+      assertThat(resp.getStatusLine().getStatusCode()).isEqualTo(200);
+      assertThat(EntityUtils.toString(resp.getEntity())).isEqualTo(IOUtils.toString(new FileInputStream(new File("src/test/resources/viewer_result1.html"))));
+
+      // render something besides default code
+      httpPost = new HttpPost(uri);
+      List<NameValuePair> postParameters = new ArrayList<>();
+      postParameters.add(new BasicNameValuePair("javaCode", "class B{void meth() {}}"));
+      httpPost.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
+      resp = client.execute(httpPost);
+      assertThat(resp.getStatusLine().getStatusCode()).isEqualTo(200);
+      assertThat(EntityUtils.toString(resp.getEntity())).isEqualTo(IOUtils.toString(new FileInputStream(new File("src/test/resources/viewer_result2.html"))));
+
+      // send unproper code.
+      httpPost = new HttpPost(uri);
+      postParameters = new ArrayList<>();
+      postParameters.add(new BasicNameValuePair("javaCode", "class B{}"));
+      httpPost.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
+      resp = client.execute(httpPost);
+      assertThat(resp.getStatusLine().getStatusCode()).isEqualTo(200);
+      assertThat(EntityUtils.toString(resp.getEntity())).isEqualToIgnoringWhitespace(IOUtils.toString(new FileInputStream(new File("src/test/resources/viewer_result3.html"))));
+    }
+
+  }
 }

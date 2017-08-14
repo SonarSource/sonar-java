@@ -22,7 +22,6 @@ package org.sonar.java.viewer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.typed.ActionParser;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.ASTDotGraph;
@@ -37,9 +36,11 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import spark.ModelAndView;
+import spark.Request;
+import spark.template.velocity.VelocityTemplateEngine;
 
 import javax.annotation.CheckForNull;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -51,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.exception;
@@ -59,10 +59,6 @@ import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
-
-import spark.ModelAndView;
-import spark.Request;
-import spark.template.velocity.VelocityTemplateEngine;
 
 public class Viewer {
 
@@ -74,21 +70,29 @@ public class Viewer {
   private static final ActionParser<Tree> PARSER = JavaParser.createParser();
 
   public static void main(String[] args) {
+    startWebServer(DEFAULT_PORT, DEFAULT_SOURCE_CODE);
+  }
+
+  @VisibleForTesting
+  static void startWebServer(int port, String defaultSourceCode) {
     // print all exceptions
     exception(Exception.class, (e, req, res) -> LOGGER.error("Unexpected exception.", e));
 
     staticFiles.location("/public");
-    port(DEFAULT_PORT);
+    port(port);
 
-    get("/", (req, res) -> generate(DEFAULT_SOURCE_CODE));
-    post("/", (req, res) -> generate(req));
+    get("/", (req, res) -> generate(defaultSourceCode));
+    post("/", (req, res) -> generate(req, defaultSourceCode));
 
     awaitInitialization();
-    LOGGER.info("Viewer at http://localhost:{}", DEFAULT_PORT);
+    LOGGER.info("Viewer at http://localhost:{}", port);
   }
 
-  private static String generate(Request request) {
-    String javaCode = Optional.ofNullable(request.queryParams("javaCode")).orElse(DEFAULT_SOURCE_CODE);
+  private static String generate(Request request, String defaultSourceCode) {
+    String javaCode = request.queryParams("javaCode");
+    if (javaCode == null) {
+      javaCode = defaultSourceCode;
+    }
     return generate(javaCode);
   }
 
