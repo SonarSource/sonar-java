@@ -25,21 +25,73 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.Printer;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ANEWARRAY;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.BIPUSH;
+import static org.objectweb.asm.Opcodes.CHECKCAST;
+import static org.objectweb.asm.Opcodes.DLOAD;
+import static org.objectweb.asm.Opcodes.DSTORE;
+import static org.objectweb.asm.Opcodes.FLOAD;
+import static org.objectweb.asm.Opcodes.FSTORE;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IFGE;
+import static org.objectweb.asm.Opcodes.IFGT;
+import static org.objectweb.asm.Opcodes.IFLE;
+import static org.objectweb.asm.Opcodes.IFLT;
+import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.IFNONNULL;
+import static org.objectweb.asm.Opcodes.IFNULL;
+import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ACMPNE;
+import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ICMPGE;
+import static org.objectweb.asm.Opcodes.IF_ICMPGT;
+import static org.objectweb.asm.Opcodes.IF_ICMPLE;
+import static org.objectweb.asm.Opcodes.IF_ICMPLT;
+import static org.objectweb.asm.Opcodes.IF_ICMPNE;
+import static org.objectweb.asm.Opcodes.IINC;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INSTANCEOF;
+import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.ISTORE;
+import static org.objectweb.asm.Opcodes.JSR;
+import static org.objectweb.asm.Opcodes.LDC;
+import static org.objectweb.asm.Opcodes.LLOAD;
+import static org.objectweb.asm.Opcodes.LOOKUPSWITCH;
+import static org.objectweb.asm.Opcodes.LSTORE;
+import static org.objectweb.asm.Opcodes.MULTIANEWARRAY;
+import static org.objectweb.asm.Opcodes.NEW;
+import static org.objectweb.asm.Opcodes.NEWARRAY;
+import static org.objectweb.asm.Opcodes.NOP;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+import static org.objectweb.asm.Opcodes.PUTSTATIC;
+import static org.objectweb.asm.Opcodes.RET;
+import static org.objectweb.asm.Opcodes.SIPUSH;
+import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
 @RunWith(Parameterized.class)
 public class BytecodeCFGConstructionTest {
 
   public static final String JAVA_LANG_OBJECT = "java/lang/Object";
 
-  @Parameters
+  @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     ImmutableList.Builder<Object[]> testData = ImmutableList.builder();
 
@@ -122,6 +174,11 @@ public class BytecodeCFGConstructionTest {
     String type;
     FieldOrMethod fieldOrMethod;
 
+    @Override
+    public String toString() {
+      return Printer.OPCODES[opcode];
+    }
+
     TestInput(int opcode) {
       this.opcode = opcode;
     }
@@ -154,11 +211,7 @@ public class BytecodeCFGConstructionTest {
     }
   }
 
-  interface Expectation {
-
-  }
-
-  static class InstructionExpectation implements Expectation {
+  static class InstructionExpectation {
     BytecodeCFGBuilder.Instruction instruction;
 
     InstructionExpectation(BytecodeCFGBuilder.Instruction instruction) {
@@ -167,7 +220,7 @@ public class BytecodeCFGConstructionTest {
   }
 
   private TestInput testInput;
-  private Expectation expected;
+  private InstructionExpectation expected;
 
   @BeforeClass
   public static void verifyTestData() {
@@ -175,43 +228,48 @@ public class BytecodeCFGConstructionTest {
     assertThat(opcodes).containsAll(Instructions.ASM_OPCODES);
   }
 
-  public BytecodeCFGConstructionTest(TestInput testInput, Expectation expected) {
+  public BytecodeCFGConstructionTest(TestInput testInput, InstructionExpectation expected) {
     this.testInput = testInput;
     this.expected = expected;
   }
 
   @Test
   public void test() throws Exception {
-    if (Instructions.NO_OPERAND_INSN.contains(testInput.opcode)) {
-      test_no_operand();
-    } else if (Instructions.JUMP_INSN.contains(testInput.opcode)) {
+    int opcode = testInput.opcode;
+    if (isJumpInstruction(opcode)) {
       test_jumps();
     } else {
-      assertThat(expected).isNull();
+      test_no_operand();
     }
   }
 
+  private boolean isJumpInstruction(int opcode) {
+    return Opcodes.IFEQ <= opcode && opcode <= LOOKUPSWITCH && opcode != RET || opcode==IFNULL || opcode==IFNONNULL;
+  }
+
   private void test_no_operand() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
-      .visitInsn(testInput.opcode)
-      .cfg();
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
     assertThat(cfg.blocks.size()).isEqualTo(2);
-    assertThat(cfg.blocks.get(1).instructions.get(0).opcode()).isEqualTo(((InstructionExpectation) expected).instruction.opcode());
+    int opcode = testInput.opcode;
+    if(expected != null) {
+      opcode = expected.instruction.opcode();
+    }
+    assertThat(cfg.blocks.get(1).instructions.get(0).opcode()).isEqualTo(opcode);
   }
 
   private void test_jumps() {
-    Label label = new Label();
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
-      .visitJumpInsn(testInput.opcode, label)
-      .visitInsn(ICONST_0)
-      .visitLabel(label)
-      .visitInsn(NOP)
-      .cfg();
-    // exit block, jump block, jump-to block, other block
-    assertThat(cfg.blocks.size()).isEqualTo(4);
-    assertThat(cfg.blocks.get(1).instructions).isEmpty();
-    assertThat(cfg.blocks.get(1).terminator().opcode()).isEqualTo(testInput.opcode);
-    assertThat(cfg.blocks.get(2).instructions.get(0).opcode()).isEqualTo(NOP);
-    assertThat(cfg.blocks.get(3).instructions.get(0).opcode()).isEqualTo(ICONST_0);
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
+    if(testInput.opcode == TABLESWITCH) {
+      assertThat(cfg.blocks.size()).isEqualTo(5);
+    } else if(testInput.opcode == LOOKUPSWITCH) {
+      assertThat(cfg.blocks.size()).isEqualTo(3);
+    }else {
+      // exit block, jump block, jump-to block, other block
+      assertThat(cfg.blocks.size()).isEqualTo(4);
+      assertThat(cfg.blocks.get(1).instructions).isEmpty();
+      assertThat(cfg.blocks.get(1).terminator().opcode()).isEqualTo(testInput.opcode);
+      assertThat(cfg.blocks.get(2).instructions.get(0).opcode()).isEqualTo(NOP);
+      assertThat(cfg.blocks.get(3).instructions.get(0).opcode()).isEqualTo(ICONST_0);
+    }
   }
 }
