@@ -536,4 +536,9 @@ public class ProgramState {
     return result.build();
   }
 
+  @VisibleForTesting
+  public int stackDepth() {
+    return stack.size();
+  }
+
 }
