@@ -27,7 +27,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
-
 import org.sonar.java.resolve.JavaSymbol;
 
 import java.util.Set;
@@ -173,5 +172,70 @@ public class Instructions {
   public BytecodeCFGBuilder.BytecodeCFG cfg() {
     JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);
     return BytecodeCFGBuilder.buildCFG(methodStub, bytes());
+  }
+
+  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode) {
+    if (NO_OPERAND_INSN.contains(opcode)) {
+      visitInsn(opcode);
+    } else {
+      return cfg(opcode, 1);
+    }
+    return cfg();
+  }
+
+  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand) {
+    if (NO_OPERAND_INSN.contains(opcode)) {
+      visitInsn(opcode);
+    } else if (INT_INSN.contains(opcode)) {
+      visitIntInsn(opcode, operand);
+    } else if (VAR_INSN.contains(opcode)) {
+      visitVarInsn(opcode, operand);
+    } else if (TYPE_INSN.contains(opcode)) {
+      visitTypeInsn(opcode, "SomeType");
+    } else if (FIELD_INSN.contains(opcode)) {
+      visitFieldInsn(opcode, "owner", "name", "desc");
+    } else if (METHOD_INSN.contains(opcode)) {
+      visitMethodInsn(opcode, "owner", "name", "()V", false);
+    } else if (JUMP_INSN.contains(opcode)) {
+      Label label = new Label();
+      visitJumpInsn(opcode, label);
+      visitInsn(ICONST_0);
+      visitLabel(label);
+      visitInsn(NOP);
+    } else if (OTHER_INSN.contains(opcode)) {
+      switch (opcode) {
+        case LDC:
+          visitLdcInsn("a");
+          break;
+        case IINC:
+          visitIincInsn(0, 1);
+          break;
+        case INVOKEDYNAMIC:
+          visitInvokeDynamicInsn("sleep", "()V", new Handle(H_INVOKESTATIC, "", "", "()V", false));
+          break;
+        case LOOKUPSWITCH:
+          Label dflt1 = new Label();
+          visitLookupSwitchInsn(dflt1, new int[] {}, new Label[] {});
+          visitLabel(dflt1);
+          break;
+        case TABLESWITCH: {
+          Label dflt = new Label();
+          Label case0 = new Label();
+          visitTableSwitchInsn(0, 1, dflt, case0);
+          visitLabel(dflt);
+          visitInsn(NOP);
+          visitLabel(case0);
+          visitInsn(NOP);
+        }
+          break;
+        case MULTIANEWARRAY:
+          visitMultiANewArrayInsn("B", 1);
+          break;
+        default:
+          throw new IllegalStateException("unknown opcode " + opcode);
+      }
+
+    }
+    return cfg();
   }
 }
