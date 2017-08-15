@@ -140,12 +140,27 @@ public class ProgramState {
   private final PMap<SymbolicValue, Integer> references;
   private SymbolicValue exitSymbolicValue;
   final PMap<Symbol, SymbolicValue> values;
+  final PMap<Integer, SymbolicValue> valuesByIndex;
   final PMap<SymbolicValue, ConstraintsByDomain> constraints;
+
+  private ProgramState(PMap<Symbol, SymbolicValue> values,PMap<Integer, SymbolicValue> valuesByIndex, PMap<SymbolicValue, Integer> references,
+                       PMap<SymbolicValue, ConstraintsByDomain> constraints, PMap<ProgramPoint, Integer> visitedPoints,
+                       PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
+    this.values = values;
+    this.valuesByIndex = valuesByIndex;
+    this.references = references;
+    this.constraints = constraints;
+    this.visitedPoints = visitedPoints;
+    this.stack = stack;
+    this.exitSymbolicValue = exitSymbolicValue;
+    constraintSize = 3;
+  }
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, ConstraintsByDomain> constraints, PMap<ProgramPoint, Integer> visitedPoints,
                        PStack<SymbolicValueSymbol> stack, SymbolicValue exitSymbolicValue) {
     this.values = values;
+    this.valuesByIndex = PCollections.emptyMap();
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
@@ -156,6 +171,7 @@ public class ProgramState {
 
   private ProgramState(ProgramState ps, PStack<SymbolicValueSymbol> newStack) {
     values = ps.values;
+    valuesByIndex = ps.valuesByIndex;
     references = ps.references;
     constraints = ps.constraints;
     constraintSize = ps.constraintSize;
@@ -166,6 +182,7 @@ public class ProgramState {
 
   private ProgramState(ProgramState ps, PMap<SymbolicValue, ConstraintsByDomain> newConstraints) {
     values = ps.values;
+    valuesByIndex = ps.valuesByIndex;
     references = ps.references;
     constraints = newConstraints;
     constraintSize = ps.constraintSize + 1;
@@ -308,6 +325,15 @@ public class ProgramState {
       return new ProgramState(this, constraints.remove(sv));
     }
     return addConstraints(sv, newConstraintForSv);
+  }
+
+  @VisibleForTesting
+  public ProgramState put(int index, SymbolicValue value) {
+    SymbolicValue sv = valuesByIndex.get(index);
+    if(sv == null || sv != value) {
+      return new ProgramState(values, valuesByIndex.put(index, value), references, constraints, visitedPoints, stack, exitSymbolicValue);
+    }
+    return this;
   }
 
   @VisibleForTesting
@@ -466,7 +492,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
+    return new ProgramState(values, valuesByIndex, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, exitSymbolicValue);
   }
 
   @Nullable
@@ -485,6 +511,11 @@ public class ProgramState {
 
   public int constraintsSize() {
     return constraintSize;
+  }
+
+  @CheckForNull
+  public SymbolicValue getValue(int index) {
+    return valuesByIndex.get(index);
   }
 
   @CheckForNull
