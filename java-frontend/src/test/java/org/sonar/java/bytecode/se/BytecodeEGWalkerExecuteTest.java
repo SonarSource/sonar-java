@@ -65,8 +65,9 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   private void assertStack(ProgramState ps, Constraint... constraints) {
-    assertThat(ps.stackDepth()).isEqualTo(1);
-    List<SymbolicValue> symbolicValues = ps.peekValues(constraints.length);
+    ProgramState.Pop pop = ps.unstackValue(constraints.length);
+    assertThat(pop.state.peekValue()).isNull();
+    List<SymbolicValue> symbolicValues = pop.values;
     int idx = 0;
     for (SymbolicValue sv : symbolicValues) {
       ConstraintsByDomain constraintsByDomain = ps.getConstraints(sv);
