@@ -110,9 +110,11 @@ public class BytecodeCFGBuilder {
       instructions = new ArrayList<>();
       successors = new ArrayList<>();
     }
+
     void addInsn(int opcode) {
       instructions.add(new Instruction(opcode));
     }
+
     void addInsn(int opcode, int operand) {
       instructions.add(new Instruction(opcode, operand));
     }

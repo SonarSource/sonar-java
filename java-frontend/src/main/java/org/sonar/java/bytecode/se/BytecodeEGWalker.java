@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
@@ -39,7 +40,6 @@ import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 public class BytecodeEGWalker {
 
@@ -131,8 +131,11 @@ public class BytecodeEGWalker {
       case Opcodes.DLOAD:
       case Opcodes.FLOAD:
       case Opcodes.ILOAD:
-        break;
       case Opcodes.LLOAD:
+        SymbolicValue value = programState.getValue(instruction.operand);
+        Preconditions.checkNotNull(value, "Loading a symbolic value unindexed");
+        programState = programState.stackValue(value);
+        break;
       case Opcodes.AALOAD:
         break;
       case Opcodes.BALOAD:
@@ -165,14 +168,21 @@ public class BytecodeEGWalker {
   private Iterable<ProgramState> startingStates(Symbol.MethodSymbol symbol, ProgramState currentState) {
     // TODO : deal with parameter annotations, equals methods etc.
     int arity = symbol.parameterTypes().size();
+    int startIndexParam = 0;
     ProgramState state = currentState;
     if(!symbol.isStatic()) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
       methodBehavior.addParameter(thisSV);
-      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL);
+      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
+      startIndexParam = 1;
+      arity += 1;
     }
-    IntStream.range(0, arity).forEach(i -> methodBehavior.addParameter(constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null)));
+    for (int i = startIndexParam; i < arity; i++) {
+      SymbolicValue sv = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      methodBehavior.addParameter(sv);
+      state = state.put(i, sv);
+    }
     return Collections.singletonList(state);
   }
 

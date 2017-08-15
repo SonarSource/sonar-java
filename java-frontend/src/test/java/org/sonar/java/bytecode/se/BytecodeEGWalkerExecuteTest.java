@@ -21,7 +21,6 @@ package org.sonar.java.bytecode.se;
 
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
-
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -34,6 +33,7 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +62,18 @@ public class BytecodeEGWalkerExecuteTest {
     SymbolicValue returnValue = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.ARETURN), ProgramState.EMPTY_STATE.stackValue(returnValue));
     assertThat(programState.peekValue()).isEqualTo(returnValue);
+  }
+
+  @Test
+  public void test_load() throws Exception {
+    int[] loadRefOpcodes = new int[] {Opcodes.ILOAD, Opcodes.LLOAD, Opcodes.FLOAD, Opcodes.DLOAD, Opcodes.ALOAD};
+    for (int loadRefOpcode : loadRefOpcodes) {
+      SymbolicValue loadRef = new SymbolicValue();
+      ProgramState programState = execute(new Instruction(loadRefOpcode, 0), ProgramState.EMPTY_STATE.put(0, loadRef));
+      assertThat(programState.peekValue()).isEqualTo(loadRef);
+      // no SV indexed should failed
+      assertThatThrownBy(() -> execute(new Instruction(loadRefOpcode, 0), ProgramState.EMPTY_STATE)).hasMessage("Loading a symbolic value unindexed");
+    }
   }
 
   private void assertStack(ProgramState ps, Constraint... constraints) {
