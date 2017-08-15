@@ -30,61 +30,11 @@ import org.objectweb.asm.util.Printer;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ANEWARRAY;
-import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.BIPUSH;
-import static org.objectweb.asm.Opcodes.CHECKCAST;
-import static org.objectweb.asm.Opcodes.DLOAD;
-import static org.objectweb.asm.Opcodes.DSTORE;
-import static org.objectweb.asm.Opcodes.FLOAD;
-import static org.objectweb.asm.Opcodes.FSTORE;
-import static org.objectweb.asm.Opcodes.GETFIELD;
-import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.ICONST_0;
-import static org.objectweb.asm.Opcodes.IFEQ;
-import static org.objectweb.asm.Opcodes.IFGE;
-import static org.objectweb.asm.Opcodes.IFGT;
-import static org.objectweb.asm.Opcodes.IFLE;
-import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.IFNE;
-import static org.objectweb.asm.Opcodes.IFNONNULL;
-import static org.objectweb.asm.Opcodes.IFNULL;
-import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ACMPNE;
-import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ICMPGE;
-import static org.objectweb.asm.Opcodes.IF_ICMPGT;
-import static org.objectweb.asm.Opcodes.IF_ICMPLE;
-import static org.objectweb.asm.Opcodes.IF_ICMPLT;
-import static org.objectweb.asm.Opcodes.IF_ICMPNE;
-import static org.objectweb.asm.Opcodes.IINC;
-import static org.objectweb.asm.Opcodes.ILOAD;
-import static org.objectweb.asm.Opcodes.INSTANCEOF;
-import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
-import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
-import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.ISTORE;
-import static org.objectweb.asm.Opcodes.JSR;
-import static org.objectweb.asm.Opcodes.LDC;
-import static org.objectweb.asm.Opcodes.LLOAD;
-import static org.objectweb.asm.Opcodes.LOOKUPSWITCH;
-import static org.objectweb.asm.Opcodes.LSTORE;
-import static org.objectweb.asm.Opcodes.MULTIANEWARRAY;
-import static org.objectweb.asm.Opcodes.NEW;
-import static org.objectweb.asm.Opcodes.NEWARRAY;
-import static org.objectweb.asm.Opcodes.NOP;
-import static org.objectweb.asm.Opcodes.PUTFIELD;
-import static org.objectweb.asm.Opcodes.PUTSTATIC;
-import static org.objectweb.asm.Opcodes.RET;
-import static org.objectweb.asm.Opcodes.SIPUSH;
-import static org.objectweb.asm.Opcodes.TABLESWITCH;
+import static org.objectweb.asm.Opcodes.*;
 
 @RunWith(Parameterized.class)
 public class BytecodeCFGConstructionTest {
@@ -98,26 +48,26 @@ public class BytecodeCFGConstructionTest {
     // Instructions without operand
     testData.addAll(
       Instructions.NO_OPERAND_INSN.stream()
-        .map(opcode -> new Object[] {new TestInput(opcode), new InstructionExpectation(new BytecodeCFGBuilder.Instruction(opcode))})
+        .map(opcode -> new Object[] {new TestInput(opcode), new BytecodeCFGBuilder.Instruction(opcode)})
         .collect(Collectors.toList()));
 
     // Instructions with int operand
-    testData.add(new Object[] {new TestInput(BIPUSH, 1), null});
-    testData.add(new Object[] {new TestInput(SIPUSH, 1), null});
-    testData.add(new Object[] {new TestInput(NEWARRAY, 1), null});
+    testData.add(new Object[] {intOp(BIPUSH, 1), inst(BIPUSH)});
+    testData.add(new Object[] {intOp(SIPUSH, 1), inst(SIPUSH)});
+    testData.add(new Object[] {intOp(NEWARRAY, 1), inst(NEWARRAY)});
 
     // LOAD STORE
-    testData.add(new Object[] {new TestInput(ILOAD, 1), null});
-    testData.add(new Object[] {new TestInput(LLOAD, 1), null});
-    testData.add(new Object[] {new TestInput(FLOAD, 1), null});
-    testData.add(new Object[] {new TestInput(DLOAD, 1), null});
-    testData.add(new Object[] {new TestInput(ALOAD, 1), null});
-    testData.add(new Object[] {new TestInput(ISTORE, 1), null});
-    testData.add(new Object[] {new TestInput(LSTORE, 1), null});
-    testData.add(new Object[] {new TestInput(FSTORE, 1), null});
-    testData.add(new Object[] {new TestInput(DSTORE, 1), null});
-    testData.add(new Object[] {new TestInput(ASTORE, 1), null});
-    testData.add(new Object[] {new TestInput(RET, 1), null});
+    testData.add(new Object[] {intOp(ILOAD, 42), inst(ILOAD, 42)});
+    testData.add(new Object[] {intOp(LLOAD, 42), inst(LLOAD, 42)});
+    testData.add(new Object[] {intOp(FLOAD, 42), inst(FLOAD, 42)});
+    testData.add(new Object[] {intOp(DLOAD, 42), inst(DLOAD, 42)});
+    testData.add(new Object[] {intOp(ALOAD, 42), inst(ALOAD, 42)});
+    testData.add(new Object[] {intOp(ISTORE, 42),inst(ISTORE, 42)});
+    testData.add(new Object[] {intOp(LSTORE, 42),inst(LSTORE, 42)});
+    testData.add(new Object[] {intOp(FSTORE, 42),inst(FSTORE, 42)});
+    testData.add(new Object[] {intOp(DSTORE, 42),inst(DSTORE, 42)});
+    testData.add(new Object[] {intOp(ASTORE, 42),inst(ASTORE, 42)});
+    testData.add(new Object[] {intOp(RET, 42), inst(RET, 42)});
 
     // Instructions with type argument
     testData.add(new Object[] {new TestInput(NEW, JAVA_LANG_OBJECT), null});
@@ -168,6 +118,17 @@ public class BytecodeCFGConstructionTest {
     return testData.build();
   }
 
+  private static TestInput intOp(int opcode, int operand) {
+    return new TestInput(opcode, operand);
+  }
+
+  private static BytecodeCFGBuilder.Instruction inst(int opcode) {
+    return new BytecodeCFGBuilder.Instruction(opcode);
+  }
+  private static BytecodeCFGBuilder.Instruction inst(int opcode, int operand) {
+    return new BytecodeCFGBuilder.Instruction(opcode, operand);
+  }
+
   static class TestInput {
     int opcode;
     int operandOrVar;
@@ -211,16 +172,8 @@ public class BytecodeCFGConstructionTest {
     }
   }
 
-  static class InstructionExpectation {
-    BytecodeCFGBuilder.Instruction instruction;
-
-    InstructionExpectation(BytecodeCFGBuilder.Instruction instruction) {
-      this.instruction = instruction;
-    }
-  }
-
   private TestInput testInput;
-  private InstructionExpectation expected;
+  private BytecodeCFGBuilder.Instruction expected;
 
   @BeforeClass
   public static void verifyTestData() {
@@ -228,7 +181,7 @@ public class BytecodeCFGConstructionTest {
     assertThat(opcodes).containsAll(Instructions.ASM_OPCODES);
   }
 
-  public BytecodeCFGConstructionTest(TestInput testInput, InstructionExpectation expected) {
+  public BytecodeCFGConstructionTest(TestInput testInput, BytecodeCFGBuilder.Instruction expected) {
     this.testInput = testInput;
     this.expected = expected;
   }
@@ -238,27 +191,28 @@ public class BytecodeCFGConstructionTest {
     int opcode = testInput.opcode;
     if (isJumpInstruction(opcode)) {
       test_jumps();
-    } else {
-      test_no_operand();
+      return;
     }
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar);
+    assertThat(cfg.blocks.size()).isEqualTo(2);
+    if(expected == null) {
+      expected = inst(testInput.opcode);
+    }
+    BytecodeCFGBuilder.Instruction actual = cfg.blocks.get(1).instructions.get(0);
+    assertThat(isEquivalentInstruction(actual, expected)).isTrue();
   }
 
-  private boolean isJumpInstruction(int opcode) {
+  private static boolean isJumpInstruction(int opcode) {
     return Opcodes.IFEQ <= opcode && opcode <= LOOKUPSWITCH && opcode != RET || opcode==IFNULL || opcode==IFNONNULL;
   }
 
-  private void test_no_operand() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
-    assertThat(cfg.blocks.size()).isEqualTo(2);
-    int opcode = testInput.opcode;
-    if(expected != null) {
-      opcode = expected.instruction.opcode();
-    }
-    assertThat(cfg.blocks.get(1).instructions.get(0).opcode()).isEqualTo(opcode);
+  private static boolean isEquivalentInstruction(BytecodeCFGBuilder.Instruction i1, BytecodeCFGBuilder.Instruction i2) {
+    return i1.opcode == i2.opcode && Objects.equals(i1.operand, i2.operand);
   }
 
   private void test_jumps() {
     BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
+    assertThat(expected).isNull();
     if(testInput.opcode == TABLESWITCH) {
       assertThat(cfg.blocks.size()).isEqualTo(5);
     } else if(testInput.opcode == LOOKUPSWITCH) {
