@@ -110,9 +110,11 @@ public class BytecodeCFGBuilder {
       instructions = new ArrayList<>();
       successors = new ArrayList<>();
     }
-
     void addInsn(int opcode) {
       instructions.add(new Instruction(opcode));
+    }
+    void addInsn(int opcode, int operand) {
+      instructions.add(new Instruction(opcode, operand));
     }
 
     Block createSuccessor() {
@@ -190,7 +192,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitVarInsn(int opcode, int var) {
-      currentBlock.addInsn(opcode);
+      currentBlock.addInsn(opcode, var);
     }
 
     @Override
@@ -271,10 +273,16 @@ public class BytecodeCFGBuilder {
   public static class Instruction {
 
     public final int opcode;
+    public final Integer operand;
 
     @VisibleForTesting
+    public Instruction(int opcode, int operand) {
+      this.opcode = opcode;
+      this.operand = operand;
+    }
     public Instruction(int opcode) {
       this.opcode = opcode;
+      this.operand = null;
     }
 
     int opcode() {
