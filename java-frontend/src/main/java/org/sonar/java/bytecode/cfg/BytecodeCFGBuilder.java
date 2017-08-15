@@ -272,7 +272,8 @@ public class BytecodeCFGBuilder {
 
     public final int opcode;
 
-    Instruction(int opcode) {
+    @VisibleForTesting
+    public Instruction(int opcode) {
       this.opcode = opcode;
     }
 

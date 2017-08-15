@@ -63,6 +63,10 @@ public class BytecodeEGWalker {
   BytecodeEGWalker(BehaviorCache behaviorCache){
     this.behaviorCache = behaviorCache;
     checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(new BytecodeSECheck.NullnessCheck()));
+    constraintManager = new ConstraintManager();
+    explodedGraph = new ExplodedGraph();
+    workList = new LinkedList<>();
+    endOfExecutionPath = new LinkedHashSet<>();
   }
 
   public MethodBehavior getMethodBehavior(Symbol.MethodSymbol symbol, SquidClassLoader classLoader) {
@@ -75,11 +79,7 @@ public class BytecodeEGWalker {
   }
 
   private void execute(Symbol.MethodSymbol symbol, SquidClassLoader classLoader) {
-    explodedGraph = new ExplodedGraph();
-    constraintManager = new ConstraintManager();
     programState = ProgramState.EMPTY_STATE;
-    workList = new LinkedList<>();
-    endOfExecutionPath = new LinkedHashSet<>();
     steps = 0;
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(symbol, classLoader);
     for (ProgramState startingState : startingStates(symbol, programState)) {
@@ -115,7 +115,8 @@ public class BytecodeEGWalker {
     constraintManager = null;
   }
 
-  private void executeInstruction(BytecodeCFGBuilder.Instruction instruction) {
+  @VisibleForTesting
+  void executeInstruction(BytecodeCFGBuilder.Instruction instruction) {
     if(!checkerDispatcher.executeCheckPreStatement(instruction)) {
       return;
     }
