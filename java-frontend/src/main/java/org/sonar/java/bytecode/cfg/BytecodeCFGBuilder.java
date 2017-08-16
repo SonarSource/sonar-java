@@ -103,6 +103,8 @@ public class BytecodeCFGBuilder {
     List<Instruction> instructions;
     List<Block> successors;
     Instruction terminator;
+    private Block trueBlock;
+    private Block falseBlock;
 
     Block(BytecodeCFG cfg) {
       this.cfg = cfg;
@@ -126,6 +128,24 @@ public class BytecodeCFGBuilder {
       return newBlock;
     }
 
+    Block createTrueSuccessor() {
+      trueBlock = createSuccessor();
+      return trueBlock;
+    }
+
+    Block createFalseSuccessor() {
+      falseBlock = createSuccessor();
+      return falseBlock;
+    }
+
+    public Block trueSuccessor() {
+      return trueBlock;
+    }
+
+    public Block falseSuccessor() {
+      return falseBlock;
+    }
+
     public String printBlock() {
       StringBuilder sb = new StringBuilder();
       sb.append("B").append(id);
@@ -143,7 +163,16 @@ public class BytecodeCFGBuilder {
         sb.append(Printer.OPCODES[terminator.opcode]).append(" ");
       }
       sb.append("Jumps to: ");
-      successors.forEach(s -> sb.append("B").append(s.id).append(" "));
+      successors.forEach(s -> {
+        sb.append("B").append(s.id);
+        if(s == trueBlock) {
+          sb.append("(true)");
+        }
+        if(s == falseBlock) {
+          sb.append("(false)");
+        }
+        sb.append(" ");
+      });
       sb.append("\n");
       return sb.toString();
     }
@@ -252,9 +281,9 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitJumpInsn(int opcode, Label label) {
-      blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+      blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
       currentBlock.terminator = new Instruction(opcode);
-      currentBlock = currentBlock.createSuccessor();
+      currentBlock = currentBlock.createFalseSuccessor();
     }
 
     @Override

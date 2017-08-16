@@ -28,6 +28,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -54,18 +55,30 @@ public class BytecodeEGWalkerTest {
     MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
     assertThat(methodBehavior.yields()).hasSize(2);
 
+    SymbolicValue svThis = new SymbolicValue();
     SymbolicValue svFirstArg = new SymbolicValue();
     SymbolicValue svsecondArg = new SymbolicValue();
     SymbolicValue svResult = new SymbolicValue();
-
+    List<SymbolicValue> invocationArguments = Lists.newArrayList(svThis, svFirstArg, svsecondArg);
     List<ObjectConstraint> collect = methodBehavior.yields().stream().map(my -> {
-      Collection<ProgramState> ps = my.statesAfterInvocation(Lists.newArrayList(svFirstArg, svsecondArg), Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+
+      Collection<ProgramState> ps = my.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
       assertThat(ps).hasSize(1);
       ProgramState next = ps.iterator().next();
       return next.getConstraint(svResult, ObjectConstraint.class);
     })
       .collect(Collectors.toList());
     assertThat(collect).hasSize(2).containsOnly(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
+
+    List<HappyPathYield> nullConstraintOnResult =
+      methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
+    assertThat(nullConstraintOnResult).hasSize(1);
+    HappyPathYield nullConstraintResult = nullConstraintOnResult.get(0);
+    Collection<ProgramState> ps = nullConstraintResult.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    assertThat(ps).hasSize(1);
+    ObjectConstraint constraint = ps.iterator().next().getConstraint(svsecondArg, ObjectConstraint.class);
+    assertThat(constraint).isSameAs(ObjectConstraint.NULL);
+
 
   }
 

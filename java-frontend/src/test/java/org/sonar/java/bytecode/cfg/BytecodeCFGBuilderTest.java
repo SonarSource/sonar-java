@@ -78,14 +78,14 @@ public class BytecodeCFGBuilderTest {
      "B0(Exit)\n" +
        "B1\n" +
        "0: ILOAD\n" +
-       "IFEQ Jumps to: B2 B3 \n" +
+       "IFEQ Jumps to: B2(true) B3(false) \n" +
        "B2\n" +
        "0: LDC\n" +
        "1: ARETURN\n" +
        "Jumps to: B0 \n" +
        "B3\n" +
        "0: ALOAD\n" +
-       "IFNONNULL Jumps to: B4 B5 \n" +
+       "IFNONNULL Jumps to: B4(true) B5(false) \n" +
        "B4\n" +
        "0: LDC\n" +
        "1: ARETURN\n" +
