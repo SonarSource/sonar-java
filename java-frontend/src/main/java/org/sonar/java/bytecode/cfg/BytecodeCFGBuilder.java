@@ -28,6 +28,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
@@ -119,6 +120,10 @@ public class BytecodeCFGBuilder {
 
     void addInsn(int opcode, int operand) {
       instructions.add(new Instruction(opcode, operand));
+    }
+
+    void addInsn(int opcode, String className) {
+      instructions.add(new Instruction(opcode, className));
     }
 
     Block createSuccessor() {
@@ -276,7 +281,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitTypeInsn(int opcode, String type) {
-      currentBlock.addInsn(opcode);
+      currentBlock.addInsn(opcode, Type.getObjectType(type).getClassName());
     }
 
     @Override
@@ -305,15 +310,25 @@ public class BytecodeCFGBuilder {
 
     public final int opcode;
     public final Integer operand;
+    public final String className;
 
     @VisibleForTesting
     public Instruction(int opcode, int operand) {
       this.opcode = opcode;
       this.operand = operand;
+      this.className = null;
     }
+
     public Instruction(int opcode) {
       this.opcode = opcode;
       this.operand = null;
+      this.className = null;
+    }
+
+    public Instruction(int opcode, String className) {
+      this.opcode = opcode;
+      this.operand = null;
+      this.className = className;
     }
 
     int opcode() {
