@@ -47,7 +47,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IFGE;
+import static org.objectweb.asm.Opcodes.IFGT;
+import static org.objectweb.asm.Opcodes.IFLE;
+import static org.objectweb.asm.Opcodes.IFLT;
+import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.IFNONNULL;
+import static org.objectweb.asm.Opcodes.IFNULL;
+import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ACMPNE;
+import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ICMPGE;
+import static org.objectweb.asm.Opcodes.IF_ICMPGT;
+import static org.objectweb.asm.Opcodes.IF_ICMPLE;
+import static org.objectweb.asm.Opcodes.IF_ICMPLT;
+import static org.objectweb.asm.Opcodes.IF_ICMPNE;
 public class BytecodeEGWalker {
 
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
@@ -175,6 +190,9 @@ public class BytecodeEGWalker {
   private void handleBlockExit(ProgramPoint programPosition) {
     BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
     BytecodeCFGBuilder.Instruction terminator = block.terminator();
+    ProgramState.Pop pop;
+    ProgramState ps;
+    List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
     if (terminator != null) {
       switch (terminator.opcode) {
         case IFEQ:
@@ -182,17 +200,16 @@ public class BytecodeEGWalker {
         case IFLT:
         case IFGE:
         case IFGT:
-        case IFLE: {
+        case IFLE:
+          pop = programState.unstackValue(1);
+          symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
           SymbolicValue svZero = new SymbolicValue();
-          ProgramState.Pop pop = programState.unstackValue(1);
-          List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
           symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(svZero, null));
           List<ProgramState> programStates = svZero.setConstraint(pop.state, DivisionByZeroCheck.ZeroConstraint.ZERO).stream()
             .flatMap(s -> svZero.setConstraint(s, BooleanConstraint.FALSE).stream()).collect(Collectors.toList());
           Preconditions.checkState(programStates.size() == 1);
-          programState = programStates.get(0).stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
-        }
-        break;
+          ps = programStates.get(0);
+          break;
         case IF_ICMPEQ:
         case IF_ICMPNE:
         case IF_ICMPLT:
@@ -201,22 +218,24 @@ public class BytecodeEGWalker {
         case IF_ICMPLE:
         case IF_ACMPEQ:
         case IF_ACMPNE:
-
+          pop = programState.unstackValue(2);
+          symbolicValueSymbols = pop.valuesAndSymbols;
+          ps = pop.state;
           break;
         case IFNULL:
         case IFNONNULL:
-          ProgramState.Pop pop = programState.unstackValue(1);
-          List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
+          pop = programState.unstackValue(1);
+          symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
           symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
-          programState = pop.state.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
+          ps = pop.state;
           break;
         default:
           throw new IllegalStateException("Unexpected terminator");
       }
-
+      programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
+      Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
       ProgramPoint falsePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).falseSuccessor());
       ProgramPoint truePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).trueSuccessor());
-      Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {

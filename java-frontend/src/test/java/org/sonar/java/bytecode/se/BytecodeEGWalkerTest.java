@@ -48,13 +48,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void generateMethodBehavior() throws Exception {
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null));
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
-    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(0)).symbol();
-    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
+    MethodBehavior methodBehavior = getMethodBehavior(0);
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svThis = new SymbolicValue();
@@ -98,18 +92,22 @@ public class BytecodeEGWalkerTest {
       }
       return "";
     }
+
+    Object int_comparison(int a, int b) {
+      if (a < b) {
+        if(a < b) {
+          return null;
+        }
+        return "";
+      }
+      return null;
+    }
   }
 
 
   @Test
   public void verify_behavior_of_fun2_method() throws Exception {
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null));
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
-    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(1)).symbol();
-    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
+    MethodBehavior methodBehavior = getMethodBehavior(1);
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svThis = new SymbolicValue();
@@ -140,5 +138,23 @@ public class BytecodeEGWalkerTest {
     assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.FALSE);
     assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.ZERO);
 
+  }
+
+  @Test
+  public void test_int_comparator() throws Exception {
+    MethodBehavior methodBehavior = getMethodBehavior(2);
+    assertThat(methodBehavior.yields()).hasSize(1);
+    HappyPathYield methodYield = ((HappyPathYield) methodBehavior.yields().get(0));
+    assertThat(methodYield.resultConstraint().get(ObjectConstraint.class)).isSameAs(ObjectConstraint.NULL);
+  }
+
+  private MethodBehavior getMethodBehavior(int index) {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null));
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(index)).symbol();
+    return bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
   }
 }
