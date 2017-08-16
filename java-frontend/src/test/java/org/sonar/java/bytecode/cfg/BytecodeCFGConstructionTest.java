@@ -70,7 +70,7 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {intOp(RET, 42), inst(RET, 42)});
 
     // Instructions with type argument
-    testData.add(new Object[] {new TestInput(NEW, JAVA_LANG_OBJECT), null});
+    testData.add(new Object[] {new TestInput(NEW), inst(NEW)});
     testData.add(new Object[] {new TestInput(ANEWARRAY, JAVA_LANG_OBJECT), null});
     testData.add(new Object[] {new TestInput(CHECKCAST, JAVA_LANG_OBJECT), null});
     testData.add(new Object[] {new TestInput(INSTANCEOF, JAVA_LANG_OBJECT), null});

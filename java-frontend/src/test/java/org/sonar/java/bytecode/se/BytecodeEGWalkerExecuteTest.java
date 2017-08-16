@@ -76,6 +76,12 @@ public class BytecodeEGWalkerExecuteTest {
     }
   }
 
+  @Test
+  public void test_new() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.NEW));
+    assertStack(programState, ObjectConstraint.NOT_NULL);
+  }
+
   private void assertStack(ProgramState ps, Constraint... constraints) {
     ProgramState.Pop pop = ps.unstackValue(constraints.length);
     assertThat(pop.state.peekValue()).isNull();
