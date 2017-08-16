@@ -152,6 +152,7 @@ public class BytecodeEGWalker {
       case Opcodes.SALOAD:
         break;
       case Opcodes.LDC:
+      case Opcodes.NEW:
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
         programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
