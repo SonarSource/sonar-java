@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.cfg;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import org.objectweb.asm.ClassWriter;
@@ -28,6 +29,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.resolve.JavaSymbol;
+
+import javax.annotation.Nullable;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -178,12 +181,12 @@ public class Instructions {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else {
-      return cfg(opcode, 1);
+      return cfg(opcode, 1, null);
     }
     return cfg();
   }
 
-  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand) {
+  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand, @Nullable String className) {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else if (INT_INSN.contains(opcode)) {
@@ -191,7 +194,7 @@ public class Instructions {
     } else if (VAR_INSN.contains(opcode)) {
       visitVarInsn(opcode, operand);
     } else if (TYPE_INSN.contains(opcode)) {
-      visitTypeInsn(opcode, "SomeType");
+      visitTypeInsn(opcode, MoreObjects.firstNonNull(className, "SomeType"));
     } else if (FIELD_INSN.contains(opcode)) {
       visitFieldInsn(opcode, "owner", "name", "desc");
     } else if (METHOD_INSN.contains(opcode)) {

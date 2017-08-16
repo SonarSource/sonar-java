@@ -39,7 +39,7 @@ import static org.objectweb.asm.Opcodes.*;
 @RunWith(Parameterized.class)
 public class BytecodeCFGConstructionTest {
 
-  public static final String JAVA_LANG_OBJECT = "java/lang/Object";
+  public static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -70,10 +70,10 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {intOp(RET, 42), inst(RET, 42)});
 
     // Instructions with type argument
-    testData.add(new Object[] {new TestInput(NEW), inst(NEW)});
-    testData.add(new Object[] {new TestInput(ANEWARRAY, JAVA_LANG_OBJECT), null});
-    testData.add(new Object[] {new TestInput(CHECKCAST, JAVA_LANG_OBJECT), null});
-    testData.add(new Object[] {new TestInput(INSTANCEOF, JAVA_LANG_OBJECT), null});
+    testData.add(new Object[] {new TestInput(NEW, JAVA_LANG_OBJECT), inst(NEW, JAVA_LANG_OBJECT)});
+    testData.add(new Object[] {new TestInput(ANEWARRAY, JAVA_LANG_OBJECT), inst(ANEWARRAY, JAVA_LANG_OBJECT)});
+    testData.add(new Object[] {new TestInput(CHECKCAST, JAVA_LANG_OBJECT), inst(CHECKCAST, JAVA_LANG_OBJECT)});
+    testData.add(new Object[] {new TestInput(INSTANCEOF, JAVA_LANG_OBJECT), inst(INSTANCEOF, JAVA_LANG_OBJECT)});
 
     // Instructions with field argument
     testData.add(new Object[] {new TestInput(GETSTATIC, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
@@ -125,8 +125,13 @@ public class BytecodeCFGConstructionTest {
   private static BytecodeCFGBuilder.Instruction inst(int opcode) {
     return new BytecodeCFGBuilder.Instruction(opcode);
   }
+
   private static BytecodeCFGBuilder.Instruction inst(int opcode, int operand) {
     return new BytecodeCFGBuilder.Instruction(opcode, operand);
+  }
+
+  private static BytecodeCFGBuilder.Instruction inst(int opcode, String type) {
+    return new BytecodeCFGBuilder.Instruction(opcode, type);
   }
 
   static class TestInput {
@@ -188,12 +193,11 @@ public class BytecodeCFGConstructionTest {
 
   @Test
   public void test() throws Exception {
-    int opcode = testInput.opcode;
-    if (isJumpInstruction(opcode)) {
+    if (isJumpInstruction(testInput.opcode)) {
       test_jumps();
       return;
     }
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar);
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type);
     assertThat(cfg.blocks.size()).isEqualTo(2);
     if(expected == null) {
       expected = inst(testInput.opcode);
@@ -207,7 +211,9 @@ public class BytecodeCFGConstructionTest {
   }
 
   private static boolean isEquivalentInstruction(BytecodeCFGBuilder.Instruction i1, BytecodeCFGBuilder.Instruction i2) {
-    return i1.opcode == i2.opcode && Objects.equals(i1.operand, i2.operand);
+    return i1.opcode == i2.opcode
+      && Objects.equals(i1.operand, i2.operand)
+      && Objects.equals(i1.className, i2.className);
   }
 
   private void test_jumps() {
