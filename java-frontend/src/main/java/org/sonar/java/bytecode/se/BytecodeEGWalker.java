@@ -26,6 +26,7 @@ import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -35,11 +36,15 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+
+import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeEGWalker {
 
@@ -158,7 +163,45 @@ public class BytecodeEGWalker {
   }
 
   private void handleBlockExit(ProgramPoint programPosition) {
-    programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
+    BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
+    BytecodeCFGBuilder.Instruction terminator = block.terminator();
+    if (terminator != null) {
+      switch (terminator.opcode) {
+        case IFEQ:
+        case IFNE:
+        case IFLT:
+        case IFGE:
+        case IFGT:
+        case IFLE:
+
+        case IF_ICMPEQ:
+        case IF_ICMPNE:
+        case IF_ICMPLT:
+        case IF_ICMPGE:
+        case IF_ICMPGT:
+        case IF_ICMPLE:
+        case IF_ACMPEQ:
+        case IF_ACMPNE:
+
+          break;
+        case IFNULL:
+        case IFNONNULL:
+          ProgramState.Pop pop = programState.unstackValue(1);
+          List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
+          symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
+          programState = pop.state.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
+          break;
+      }
+
+      ProgramPoint falsePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).falseSuccessor());
+      ProgramPoint truePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).trueSuccessor());
+      Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
+      pair.a.stream().forEach(s -> enqueue(falsePP, s));
+      pair.b.stream().forEach(s -> enqueue(truePP, s));
+    } else {
+      //  Table switch and lookup
+      programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
+    }
   }
 
   private void executeCheckEndOfExecution() {

@@ -22,7 +22,7 @@ package org.sonar.java.se.constraint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
+import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class ConstraintManager {
@@ -187,6 +186,27 @@ public class ConstraintManager {
     List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
+  }
+
+  public SymbolicValue createBinarySymbolicValue(BytecodeCFGBuilder.Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
+    SymbolicValue result;
+    switch (inst.opcode) {
+      case Opcodes.IFEQ:
+        result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+        break;
+      case Opcodes.IFNE:
+        result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
+        break;
+      case Opcodes.IFNULL:
+        result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+        break;
+      case Opcodes.IFNONNULL:
+        result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
+        break;
+      default:
+        result = createDefaultSymbolicValue();
+    }
+    return result;
   }
 
   public SymbolicValue createSymbolicValue(BytecodeCFGBuilder.Instruction inst) {
