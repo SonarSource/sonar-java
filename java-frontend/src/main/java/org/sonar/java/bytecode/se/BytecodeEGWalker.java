@@ -152,11 +152,18 @@ public class BytecodeEGWalker {
       case Opcodes.SALOAD:
         break;
       case Opcodes.LDC:
-      case Opcodes.NEW:
+      case Opcodes.NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
         programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
         break;
+      }
+      case Opcodes.DUP: {
+        SymbolicValue symbolicValue = programState.peekValue();
+        Preconditions.checkNotNull(symbolicValue, "DUP on empty stack");
+        programState = programState.stackValue(symbolicValue);
+        break;
+      }
       default:
         // do nothing
     }
