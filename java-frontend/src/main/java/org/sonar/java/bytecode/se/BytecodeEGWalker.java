@@ -29,6 +29,8 @@ import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -43,9 +45,9 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.*;
-
 public class BytecodeEGWalker {
 
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
@@ -180,8 +182,17 @@ public class BytecodeEGWalker {
         case IFLT:
         case IFGE:
         case IFGT:
-        case IFLE:
-
+        case IFLE: {
+          SymbolicValue svZero = new SymbolicValue();
+          ProgramState.Pop pop = programState.unstackValue(1);
+          List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
+          symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(svZero, null));
+          List<ProgramState> programStates = svZero.setConstraint(pop.state, DivisionByZeroCheck.ZeroConstraint.ZERO).stream()
+            .flatMap(s -> svZero.setConstraint(s, BooleanConstraint.FALSE).stream()).collect(Collectors.toList());
+          Preconditions.checkState(programStates.size() == 1);
+          programState = programStates.get(0).stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
+        }
+        break;
         case IF_ICMPEQ:
         case IF_ICMPNE:
         case IF_ICMPLT:
@@ -199,6 +210,8 @@ public class BytecodeEGWalker {
           symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
           programState = pop.state.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
           break;
+        default:
+          throw new IllegalStateException("Unexpected terminator");
       }
 
       ProgramPoint falsePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).falseSuccessor());

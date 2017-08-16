@@ -25,6 +25,8 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -89,5 +91,54 @@ public class BytecodeEGWalkerTest {
       }
       return "";
     }
+
+    Object fun2(boolean a) {
+      if (a) {
+        return null;
+      }
+      return "";
+    }
+  }
+
+
+  @Test
+  public void verify_behavior_of_fun2_method() throws Exception {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null));
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(1)).symbol();
+    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(symbol, squidClassLoader);
+    assertThat(methodBehavior.yields()).hasSize(2);
+
+    SymbolicValue svThis = new SymbolicValue();
+    SymbolicValue svFirstArg = new SymbolicValue();
+    SymbolicValue svResult = new SymbolicValue();
+    List<SymbolicValue> invocationArguments = Lists.newArrayList(svThis, svFirstArg);
+    List<HappyPathYield> oneYield =
+      methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
+
+    assertThat(oneYield).hasSize(1);
+    HappyPathYield yield = oneYield.get(0);
+    Collection<ProgramState> pss = yield.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    assertThat(pss).hasSize(1);
+    ProgramState ps = pss.iterator().next();
+    assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
+    assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.TRUE);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+
+    oneYield =
+      methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NOT_NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
+
+    assertThat(oneYield).hasSize(1);
+    yield = oneYield.get(0);
+    pss = yield.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    assertThat(pss).hasSize(1);
+    ps = pss.iterator().next();
+    assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
+    assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.FALSE);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.ZERO);
+
   }
 }
