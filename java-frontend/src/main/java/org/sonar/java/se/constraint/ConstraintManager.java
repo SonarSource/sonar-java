@@ -22,7 +22,6 @@ package org.sonar.java.se.constraint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -39,7 +38,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
+
+import static org.objectweb.asm.Opcodes.*;
 
 public class ConstraintManager {
 
@@ -191,20 +193,36 @@ public class ConstraintManager {
   public SymbolicValue createBinarySymbolicValue(BytecodeCFGBuilder.Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     SymbolicValue result;
     switch (inst.opcode) {
-      case Opcodes.IFEQ:
+      case IF_ICMPEQ:
+      case IF_ACMPEQ:
+      case IFEQ:
+      case IFNULL:
         result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
         break;
-      case Opcodes.IFNE:
+      case IFNE:
+      case IFNONNULL:
+      case IF_ICMPNE:
+      case IF_ACMPNE:
         result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
         break;
-      case Opcodes.IFNULL:
-        result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
+      case IF_ICMPLT:
+      case IFLT:
+        result = createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
         break;
-      case Opcodes.IFNONNULL:
-        result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
+      case IF_ICMPGE:
+      case IFGE:
+        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, computedFrom);
+        break;
+      case IF_ICMPGT:
+      case IFGT:
+        result = createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
+        break;
+      case IF_ICMPLE:
+      case IFLE:
+        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, Lists.reverse(computedFrom));
         break;
       default:
-        result = createDefaultSymbolicValue();
+        throw new IllegalStateException("Unexpected kind for binary SV");
     }
     return result;
   }
