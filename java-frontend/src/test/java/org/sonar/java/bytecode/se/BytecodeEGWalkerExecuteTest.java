@@ -82,6 +82,18 @@ public class BytecodeEGWalkerExecuteTest {
     assertStack(programState, ObjectConstraint.NOT_NULL);
   }
 
+  @Test
+  public void test_dup() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP), ProgramState.EMPTY_STATE.stackValue(sv));
+    ProgramState.Pop pop = programState.unstackValue(2);
+    assertThat(pop.values).containsOnly(sv);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP)))
+      .hasMessage("DUP on empty stack");
+  }
+
   private void assertStack(ProgramState ps, Constraint... constraints) {
     ProgramState.Pop pop = ps.unstackValue(constraints.length);
     assertThat(pop.state.peekValue()).isNull();
