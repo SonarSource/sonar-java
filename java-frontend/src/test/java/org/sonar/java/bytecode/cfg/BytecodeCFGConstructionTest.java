@@ -224,7 +224,6 @@ public class BytecodeCFGConstructionTest {
       assertThat(cfg.blocks.size()).isEqualTo(3);
     }else {
       // exit block, jump block, jump-to block, other block
-      cfg.blocks.forEach(b -> System.out.println(b.printBlock()));
       BytecodeCFGBuilder.Block block1 = cfg.blocks.get(1);
       assertThat(block1.instructions).isEmpty();
       assertThat(block1.terminator().opcode()).isEqualTo(testInput.opcode);
@@ -236,8 +235,9 @@ public class BytecodeCFGConstructionTest {
         assertThat(cfg.blocks.get(2).instructions).hasSize(2);
       } else {
         assertThat(cfg.blocks.size()).isEqualTo(4);
-        assertThat(cfg.blocks.get(2).instructions.get(0).opcode()).isEqualTo(NOP);
-        assertThat(cfg.blocks.get(3).instructions.get(0).opcode()).isEqualTo(ICONST_0);
+        assertThat(cfg.blocks.get(2).instructions.get(0).opcode()).isEqualTo(ICONST_0);
+        assertThat(cfg.blocks.get(2).instructions.get(1).opcode()).isEqualTo(NOP);
+        assertThat(cfg.blocks.get(3).instructions).isEmpty();
       }
     }
   }
