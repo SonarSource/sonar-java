@@ -21,6 +21,7 @@ package org.sonar.java.bytecode.se;
 
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
+import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -110,6 +111,60 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP)))
       .hasMessage("DUP on empty stack");
   }
+
+  @Test
+  public void test_invoke_instance_method() throws Exception {
+    int[] opcodes = new int[] {Opcodes.INVOKESPECIAL, Opcodes.INVOKEVIRTUAL, Opcodes.INVOKEINTERFACE};
+    for (int opcode: opcodes) {
+      SymbolicValue thisSv = new SymbolicValue();
+      ProgramState stateWithThis = ProgramState.EMPTY_STATE.stackValue(thisSv);
+      ProgramState programState = execute(invokeMethod(opcode, "()V"), stateWithThis);
+      assertEmptyStack(programState);
+      assertThat(programState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+
+      programState = execute(invokeMethod(opcode, "()Z"), stateWithThis);
+      assertStack(programState, new Constraint[] {null});
+
+      SymbolicValue arg = new SymbolicValue();
+      programState = execute(invokeMethod(opcode, "(I)I"), stateWithThis.stackValue(arg));
+      assertStack(programState, new Constraint[] {null});
+      assertThat(programState.peekValue()).isNotEqualTo(arg);
+
+      programState = execute(invokeMethod(opcode, "(II)V"), stateWithThis.stackValue(arg).stackValue(arg));
+      assertEmptyStack(programState);
+      assertThatThrownBy(() -> execute(invokeMethod(opcode, "(II)V"), stateWithThis))
+        .hasMessage("Arguments mismatch for INVOKE");
+    }
+  }
+
+  @Test
+  public void test_invoke_static() throws Exception {
+    ProgramState programState = execute(invokeStatic("()V"));
+    assertEmptyStack(programState);
+
+    programState = execute(invokeStatic("()Z"));
+    assertStack(programState, new Constraint[]{null});
+
+    SymbolicValue arg = new SymbolicValue();
+    programState = execute(invokeStatic("(I)I"), ProgramState.EMPTY_STATE.stackValue(arg));
+    assertStack(programState, new Constraint[]{null});
+    assertThat(programState.peekValue()).isNotEqualTo(arg);
+
+    programState = execute(invokeStatic("(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
+    assertEmptyStack(programState);
+
+    assertThatThrownBy(() -> execute(invokeStatic("(I)V")))
+      .hasMessage("Arguments mismatch for INVOKE");
+  }
+
+  private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
+    return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
+  }
+
+  private BytecodeCFGBuilder.Instruction invokeStatic(String desc) {
+    return new Instruction(Opcodes.INVOKESTATIC, new Instruction.FieldOrMethod("owner", "name", desc, false));
+  }
+
   private void assertStack(ProgramState ps, Constraint... constraints) {
     Constraint[][] cs = new Constraint[constraints.length][1];
     int i = 0;
@@ -122,7 +177,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   private void assertStack(ProgramState ps, Constraint[]... constraints) {
     ProgramState.Pop pop = ps.unstackValue(constraints.length);
-    assertThat(pop.state.peekValue()).isNull();
+    assertEmptyStack(pop.state);
     assertThat(pop.valuesAndSymbols).hasSize(constraints.length);
     List<SymbolicValue> symbolicValues = pop.values;
     int idx = 0;
@@ -143,6 +198,10 @@ public class BytecodeEGWalkerExecuteTest {
       }
       idx++;
     }
+  }
+
+  private void assertEmptyStack(ProgramState programState) {
+    assertThat(programState.peekValue()).isNull();
   }
 
   private ProgramState execute(Instruction instruction) {

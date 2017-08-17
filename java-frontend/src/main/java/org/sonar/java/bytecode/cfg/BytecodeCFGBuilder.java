@@ -374,7 +374,7 @@ public class BytecodeCFGBuilder {
       public final String desc;
       public final boolean ownerIsInterface;
 
-      FieldOrMethod(String owner, String name, String desc, boolean ownerIsInterface) {
+      public FieldOrMethod(String owner, String name, String desc, boolean ownerIsInterface) {
         this.owner = owner;
         this.name = name;
         this.desc = desc;
