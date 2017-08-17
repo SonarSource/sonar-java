@@ -28,6 +28,8 @@ import org.junit.runners.Parameterized.Parameters;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 
+import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction.FieldOrMethod;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -76,16 +78,16 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(INSTANCEOF, JAVA_LANG_OBJECT), inst(INSTANCEOF, JAVA_LANG_OBJECT)});
 
     // Instructions with field argument
-    testData.add(new Object[] {new TestInput(GETSTATIC, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(PUTSTATIC, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(GETFIELD, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(PUTFIELD, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
+    testData.add(new Object[] {new TestInput(GETSTATIC, JAVA_LANG_OBJECT, "field", ""), null});
+    testData.add(new Object[] {new TestInput(PUTSTATIC, JAVA_LANG_OBJECT, "field", ""), null});
+    testData.add(new Object[] {new TestInput(GETFIELD, JAVA_LANG_OBJECT, "field", ""), null});
+    testData.add(new Object[] {new TestInput(PUTFIELD, JAVA_LANG_OBJECT, "field", ""), null});
 
     // Instructions with method argument
-    testData.add(new Object[] {new TestInput(INVOKESPECIAL, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(INVOKESTATIC, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(INVOKEVIRTUAL, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
-    testData.add(new Object[] {new TestInput(INVOKEINTERFACE, new FieldOrMethod(JAVA_LANG_OBJECT, "field", "")), null});
+    testData.add(new Object[] {new TestInput(INVOKESPECIAL, JAVA_LANG_OBJECT, "hashCode", "()I", false), inst(INVOKESPECIAL, JAVA_LANG_OBJECT, "hashCode", "()I", false)});
+    testData.add(new Object[] {new TestInput(INVOKESTATIC, JAVA_LANG_OBJECT, "hashCode", "()I", false), inst(INVOKESTATIC, JAVA_LANG_OBJECT, "hashCode", "()I", false)});
+    testData.add(new Object[] {new TestInput(INVOKEVIRTUAL, JAVA_LANG_OBJECT, "hashCode", "()I", false), inst(INVOKEVIRTUAL, JAVA_LANG_OBJECT, "hashCode", "()I", false)});
+    testData.add(new Object[] {new TestInput(INVOKEINTERFACE, JAVA_LANG_OBJECT, "hashCode", "()I", false), inst(INVOKEINTERFACE, JAVA_LANG_OBJECT, "hashCode", "()I", false)});
 
     // Jump instructions
     testData.add(new Object[] {new TestInput(IFEQ), null});
@@ -134,6 +136,10 @@ public class BytecodeCFGConstructionTest {
     return new BytecodeCFGBuilder.Instruction(opcode, type);
   }
 
+  private static BytecodeCFGBuilder.Instruction inst(int opcode, String owner, String name, String desc, boolean itf) {
+    return new BytecodeCFGBuilder.Instruction(opcode, new FieldOrMethod(owner, name, desc, itf));
+  }
+
   static class TestInput {
     int opcode;
     int operandOrVar;
@@ -159,21 +165,13 @@ public class BytecodeCFGConstructionTest {
       this.type = type;
     }
 
-    TestInput(int opcode, FieldOrMethod fieldOrMethod) {
-      this.opcode = opcode;
-      this.fieldOrMethod = fieldOrMethod;
+    TestInput(int opcode, String owner, String name, String desc) {
+      this(opcode, owner, name, desc, false);
     }
-  }
 
-  static class FieldOrMethod {
-    String owner;
-    String name;
-    String desc;
-
-    FieldOrMethod(String owner, String name, String desc) {
-      this.owner = owner;
-      this.name = name;
-      this.desc = desc;
+    TestInput(int opcode, String owner, String name, String desc, boolean itf) {
+      this.opcode = opcode;
+      this.fieldOrMethod = new FieldOrMethod(owner, name, desc, itf);
     }
   }
 
@@ -197,7 +195,7 @@ public class BytecodeCFGConstructionTest {
       test_jumps();
       return;
     }
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type);
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type, testInput.fieldOrMethod);
     assertThat(cfg.blocks.size()).isEqualTo(2);
     if(expected == null) {
       expected = inst(testInput.opcode);
@@ -213,7 +211,8 @@ public class BytecodeCFGConstructionTest {
   private static boolean isEquivalentInstruction(BytecodeCFGBuilder.Instruction i1, BytecodeCFGBuilder.Instruction i2) {
     return i1.opcode == i2.opcode
       && Objects.equals(i1.operand, i2.operand)
-      && Objects.equals(i1.className, i2.className);
+      && Objects.equals(i1.className, i2.className)
+      && Objects.equals(i1.fieldOrMethod, i2.fieldOrMethod);
   }
 
   private void test_jumps() {

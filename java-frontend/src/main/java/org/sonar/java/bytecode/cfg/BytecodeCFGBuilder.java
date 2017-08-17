@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class BytecodeCFGBuilder {
@@ -124,6 +125,10 @@ public class BytecodeCFGBuilder {
 
     void addInsn(int opcode, String className) {
       instructions.add(new Instruction(opcode, className));
+    }
+
+    void addInsn(int opcode, Instruction.FieldOrMethod fieldOrMethod) {
+      instructions.add(new Instruction(opcode, fieldOrMethod));
     }
 
     Block createSuccessor() {
@@ -238,7 +243,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-      currentBlock.addInsn(opcode);
+      currentBlock.addInsn(opcode, new BytecodeCFGBuilder.Instruction.FieldOrMethod(owner, name, desc, itf));
     }
 
     @Override
@@ -311,28 +316,73 @@ public class BytecodeCFGBuilder {
     public final int opcode;
     public final Integer operand;
     public final String className;
+    public final FieldOrMethod fieldOrMethod;
 
     @VisibleForTesting
     public Instruction(int opcode, int operand) {
       this.opcode = opcode;
       this.operand = operand;
       this.className = null;
+      this.fieldOrMethod = null;
     }
 
     public Instruction(int opcode) {
       this.opcode = opcode;
       this.operand = null;
       this.className = null;
+      this.fieldOrMethod = null;
     }
 
     public Instruction(int opcode, String className) {
       this.opcode = opcode;
-      this.operand = null;
       this.className = className;
+      this.operand = null;
+      this.fieldOrMethod = null;
+    }
+
+    public Instruction(int opcode, FieldOrMethod fieldOrMethod) {
+      this.opcode = opcode;
+      this.fieldOrMethod = fieldOrMethod;
+      this.operand = null;
+      this.className = null;
     }
 
     int opcode() {
       return opcode;
+    }
+
+    public static class FieldOrMethod {
+      public final String owner;
+      public final String name;
+      public final String desc;
+      public final boolean ownerIsInterface;
+
+      FieldOrMethod(String owner, String name, String desc, boolean ownerIsInterface) {
+        this.owner = owner;
+        this.name = name;
+        this.desc = desc;
+        this.ownerIsInterface = ownerIsInterface;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) {
+          return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+          return false;
+        }
+        FieldOrMethod that = (FieldOrMethod) o;
+        return ownerIsInterface == that.ownerIsInterface &&
+          Objects.equals(owner, that.owner) &&
+          Objects.equals(name, that.name) &&
+          Objects.equals(desc, that.desc);
+      }
+
+      @Override
+      public int hashCode() {
+        return Objects.hash(owner, name, desc, ownerIsInterface);
+      }
     }
   }
 }
