@@ -38,6 +38,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -221,6 +222,9 @@ public class BytecodeCFGBuilder {
     @Override
     public void visitInsn(int opcode) {
       currentBlock.addInsn(opcode);
+      if ((Opcodes.IRETURN <= opcode && opcode <= Opcodes.RETURN) || opcode == Opcodes.ATHROW) {
+        currentBlock.successors.add(cfg.blocks.get(0));
+      }
     }
 
     @Override
@@ -290,7 +294,7 @@ public class BytecodeCFGBuilder {
     public void visitJumpInsn(int opcode, Label label) {
       if(opcode == GOTO || opcode == JSR) {
         currentBlock.terminator = new Instruction(opcode);
-        currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+        blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
         return;
       }
       blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
@@ -300,13 +304,19 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitLabel(Label label) {
+      Block previous = currentBlock;
       currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+      if(previous.successors.isEmpty()) {
+        previous.successors.add(currentBlock);
+      }
     }
 
     @Override
     public void visitEnd() {
-      // if a block ends up with no successors, it is returning or throwing, link it to exit block.
-      cfg.blocks.stream().filter(b -> b.successors.isEmpty() && b.id != 0).forEach(b -> b.successors.add(cfg.blocks.get(0)));
+      // if last block ends up with no successors, it is returning or throwing, link it to exit block.
+      if(currentBlock.successors.isEmpty()) {
+        currentBlock.successors.add(cfg.blocks.get(0));
+      }
     }
   }
 

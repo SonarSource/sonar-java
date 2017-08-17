@@ -202,8 +202,8 @@ public class Instructions {
     } else if (JUMP_INSN.contains(opcode)) {
       Label label = new Label();
       visitJumpInsn(opcode, label);
-      visitInsn(ICONST_0);
       visitLabel(label);
+      visitInsn(ICONST_0);
       visitInsn(NOP);
     } else if (OTHER_INSN.contains(opcode)) {
       switch (opcode) {

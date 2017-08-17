@@ -107,6 +107,34 @@ public class BytecodeCFGBuilderTest {
         return "not a";
       }
     }
+    boolean label_goto(Object b) {
+      return  b == null;
+    }
+  }
+
+  @Test
+  public void label_goto_successors() throws Exception {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(1)).symbol();
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(symbol, squidClassLoader);
+    StringBuilder sb = new StringBuilder();
+    cfg.blocks.forEach(b-> sb.append(b.printBlock()));
+    assertThat(sb.toString()).isEqualTo("B0(Exit)\n" +
+      "B1\n" +
+      "0: ALOAD\n" +
+      "IFNONNULL Jumps to: B2(true) B3(false) \n" +
+      "B2\n" +
+      "0: ICONST_0\n" +
+      "Jumps to: B4 \n" +
+      "B3\n" +
+      "0: ICONST_1\n" +
+      "GOTO Jumps to: B4 \n" +
+      "B4\n" +
+      "0: IRETURN\n" +
+      "Jumps to: B0 \n");
   }
 
   @Test
