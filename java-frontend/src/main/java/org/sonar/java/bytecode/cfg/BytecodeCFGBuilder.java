@@ -38,7 +38,6 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,6 +46,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.JSR;
 
 public class BytecodeCFGBuilder {
 
@@ -286,6 +288,11 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitJumpInsn(int opcode, Label label) {
+      if(opcode == GOTO || opcode == JSR) {
+        currentBlock.terminator = new Instruction(opcode);
+        currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+        return;
+      }
       blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
       currentBlock.terminator = new Instruction(opcode);
       currentBlock = currentBlock.createFalseSuccessor();

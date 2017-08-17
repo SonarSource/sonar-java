@@ -151,9 +151,12 @@ public class BytecodeCFGBuilderTest {
     TYPE_INSN.forEach(i -> ins.visitTypeInsn(i, "java/lang/Object"));
     FIELD_INSN.forEach(i -> ins.visitFieldInsn(i, "java/lang/Object", "foo", "D(D)"));
     METHOD_INSN.forEach(i -> ins.visitMethodInsn(i, "java/lang/Object", "foo", "()V", i == INVOKEINTERFACE));
-    Label l0 = new Label();
-    ins.visitLabel(l0);
-    JUMP_INSN.forEach(i -> ins.visitJumpInsn(i, l0));
+
+    JUMP_INSN.forEach(i -> {
+      Label jumpLabel = new Label();
+      ins.visitLabel(jumpLabel);
+      ins.visitJumpInsn(i, jumpLabel);
+    });
 
     ins.visitLdcInsn("a");
     ins.visitIincInsn(0, 1);
@@ -162,6 +165,7 @@ public class BytecodeCFGBuilderTest {
     ins.visitLookupSwitchInsn(new Label(), new int[] {}, new Label[] {});
     ins.visitMultiANewArrayInsn("B", 1);
 
+    Label l0 = new Label();
     Label dflt = new Label();
     Label case0 = new Label();
     ins.visitTableSwitchInsn(0, 1, dflt, case0);
