@@ -173,6 +173,11 @@ public class BytecodeEGWalker {
       case Opcodes.ARETURN:
         programState.storeExitValue();
         break;
+      case Opcodes.ATHROW:
+        pop = programState.unstackValue(1);
+        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
+        programState.storeExitValue();
+        break;
       case Opcodes.ACONST_NULL:
         programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;

@@ -157,6 +157,15 @@ public class BytecodeEGWalkerExecuteTest {
       .hasMessage("Arguments mismatch for INVOKE");
   }
 
+  @Test
+  public void test_athrow() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.ATHROW), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+    SymbolicValue exception = programState.peekValue();
+    assertThat(exception).isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
+    assertThat(((SymbolicValue.ExceptionalSymbolicValue) exception).exceptionType()).isNull();
+    assertThat(programState.exitValue()).isEqualTo(exception);
+  }
+
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }

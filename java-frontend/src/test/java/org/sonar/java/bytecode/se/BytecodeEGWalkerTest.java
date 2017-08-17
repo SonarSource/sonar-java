@@ -30,8 +30,10 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -106,6 +108,10 @@ public class BytecodeEGWalkerTest {
     boolean gotoTerminator(Object o) {
       return o==null;
     }
+
+    void throw_exception() {
+      throw new RuntimeException();
+    }
   }
 
 
@@ -156,6 +162,14 @@ public class BytecodeEGWalkerTest {
   public void goto_terminator() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior(3);
     assertThat(methodBehavior.yields()).hasSize(2);
+  }
+
+  @Test
+  public void test_method_throwing_exception() throws Exception {
+    MethodBehavior methodBehavior = getMethodBehavior(4);
+    assertThat(methodBehavior.yields()).hasSize(1);
+    MethodYield methodYield = methodBehavior.yields().get(0);
+    assertThat(methodYield).isInstanceOf(ExceptionalYield.class);
   }
 
   private MethodBehavior getMethodBehavior(int index) {
