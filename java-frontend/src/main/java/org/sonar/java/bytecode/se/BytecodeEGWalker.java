@@ -48,6 +48,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.ICONST_2;
+import static org.objectweb.asm.Opcodes.ICONST_3;
+import static org.objectweb.asm.Opcodes.ICONST_4;
+import static org.objectweb.asm.Opcodes.ICONST_5;
+import static org.objectweb.asm.Opcodes.ICONST_M1;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFGE;
 import static org.objectweb.asm.Opcodes.IFGT;
@@ -146,6 +153,22 @@ public class BytecodeEGWalker {
       return;
     }
     switch (instruction.opcode) {
+      case ICONST_0:
+        SymbolicValue svZero = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(svZero).addConstraint(svZero, DivisionByZeroCheck.ZeroConstraint.ZERO).addConstraint(svZero, BooleanConstraint.FALSE);
+        break;
+      case ICONST_M1:
+      case ICONST_1:
+      case ICONST_2:
+      case ICONST_3:
+      case ICONST_4:
+      case ICONST_5:
+        SymbolicValue svNonZero = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(svNonZero).addConstraint(svNonZero, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+        if (instruction.opcode == ICONST_1) {
+          programState = programState.addConstraint(svNonZero, BooleanConstraint.TRUE);
+        }
+        break;
       case Opcodes.ARETURN:
         programState.storeExitValue();
         break;
