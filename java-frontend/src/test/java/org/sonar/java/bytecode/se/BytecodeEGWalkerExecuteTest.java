@@ -24,6 +24,8 @@ import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -65,6 +67,21 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
+  public void test_iconst() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.ICONST_0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE}});
+
+    programState = execute(new Instruction(Opcodes.ICONST_1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE}});
+
+    int[] opCodesConst = new int[] {Opcodes.ICONST_M1, Opcodes.ICONST_2, Opcodes.ICONST_3, Opcodes.ICONST_4, Opcodes.ICONST_5};
+    for (int opcode : opCodesConst) {
+      programState = execute(new Instruction(opcode));
+      assertStack(programState, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+    }
+  }
+
+  @Test
   public void test_load() throws Exception {
     int[] loadRefOpcodes = new int[] {Opcodes.ILOAD, Opcodes.LLOAD, Opcodes.FLOAD, Opcodes.DLOAD, Opcodes.ALOAD};
     for (int loadRefOpcode : loadRefOpcodes) {
@@ -93,22 +110,36 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP)))
       .hasMessage("DUP on empty stack");
   }
-
   private void assertStack(ProgramState ps, Constraint... constraints) {
+    Constraint[][] cs = new Constraint[constraints.length][1];
+    int i = 0;
+    for (Constraint constraint : constraints) {
+      cs[i] = new Constraint[] {constraint};
+      i++;
+    }
+    assertStack(ps, cs);
+  }
+
+  private void assertStack(ProgramState ps, Constraint[]... constraints) {
     ProgramState.Pop pop = ps.unstackValue(constraints.length);
     assertThat(pop.state.peekValue()).isNull();
+    assertThat(pop.valuesAndSymbols).hasSize(constraints.length);
     List<SymbolicValue> symbolicValues = pop.values;
     int idx = 0;
     for (SymbolicValue sv : symbolicValues) {
       ConstraintsByDomain constraintsByDomain = ps.getConstraints(sv);
-      Constraint expectedConstraint = constraints[idx];
-      if (expectedConstraint != null) {
-        Class<? extends Constraint> expectedConstraintDomain = expectedConstraint.getClass();
-        Constraint constraint = constraintsByDomain.get(expectedConstraintDomain);
-        assertThat(constraint).isEqualTo(expectedConstraint);
-        assertThat(constraintsByDomain.remove(expectedConstraintDomain).isEmpty()).isTrue();
-      } else {
-        assertThat(constraintsByDomain).isNull();
+      for (Constraint expectedConstraint : constraints[idx]) {
+        if (expectedConstraint != null) {
+          Class<? extends Constraint> expectedConstraintDomain = expectedConstraint.getClass();
+          Constraint constraint = constraintsByDomain.get(expectedConstraintDomain);
+          assertThat(constraint).isEqualTo(expectedConstraint);
+          constraintsByDomain = constraintsByDomain.remove(expectedConstraintDomain);
+        } else {
+          assertThat(constraintsByDomain).isNull();
+        }
+      }
+      if(constraintsByDomain != null) {
+        assertThat(constraintsByDomain.isEmpty()).isTrue();
       }
       idx++;
     }
