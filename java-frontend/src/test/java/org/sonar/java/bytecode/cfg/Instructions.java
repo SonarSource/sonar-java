@@ -28,6 +28,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
+
+import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction.FieldOrMethod;
 import org.sonar.java.resolve.JavaSymbol;
 
 import javax.annotation.Nullable;
@@ -181,12 +183,12 @@ public class Instructions {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else {
-      return cfg(opcode, 1, null);
+      return cfg(opcode, 1, null, null);
     }
     return cfg();
   }
 
-  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand, @Nullable String className) {
+  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand, @Nullable String className, @Nullable FieldOrMethod fieldOrMethod) {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else if (INT_INSN.contains(opcode)) {
@@ -198,7 +200,11 @@ public class Instructions {
     } else if (FIELD_INSN.contains(opcode)) {
       visitFieldInsn(opcode, "owner", "name", "desc");
     } else if (METHOD_INSN.contains(opcode)) {
-      visitMethodInsn(opcode, "owner", "name", "()V", false);
+      if (fieldOrMethod != null) {
+        visitMethodInsn(opcode, fieldOrMethod.owner, fieldOrMethod.name, fieldOrMethod.desc, fieldOrMethod.ownerIsInterface);
+      } else {
+        visitMethodInsn(opcode, "owner", "name", "()V", false);
+      }
     } else if (JUMP_INSN.contains(opcode)) {
       Label label = new Label();
       visitJumpInsn(opcode, label);
