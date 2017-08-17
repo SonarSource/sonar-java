@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFGE;
 import static org.objectweb.asm.Opcodes.IFGT;
@@ -63,6 +64,8 @@ import static org.objectweb.asm.Opcodes.IF_ICMPGT;
 import static org.objectweb.asm.Opcodes.IF_ICMPLE;
 import static org.objectweb.asm.Opcodes.IF_ICMPLT;
 import static org.objectweb.asm.Opcodes.IF_ICMPNE;
+import static org.objectweb.asm.Opcodes.JSR;
+
 public class BytecodeEGWalker {
 
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
@@ -195,6 +198,10 @@ public class BytecodeEGWalker {
     List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
     if (terminator != null) {
       switch (terminator.opcode) {
+        case GOTO:
+        case JSR:
+          programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
+          return;
         case IFEQ:
         case IFNE:
         case IFLT:
@@ -230,7 +237,7 @@ public class BytecodeEGWalker {
           ps = pop.state;
           break;
         default:
-          throw new IllegalStateException("Unexpected terminator");
+          throw new IllegalStateException("Unexpected terminator " + terminator.opcode);
       }
       programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
       Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);

@@ -102,6 +102,10 @@ public class BytecodeEGWalkerTest {
       }
       return null;
     }
+
+    boolean gotoTerminator(Object o) {
+      return o==null;
+    }
   }
 
 
@@ -146,6 +150,12 @@ public class BytecodeEGWalkerTest {
     assertThat(methodBehavior.yields()).hasSize(1);
     HappyPathYield methodYield = ((HappyPathYield) methodBehavior.yields().get(0));
     assertThat(methodYield.resultConstraint().get(ObjectConstraint.class)).isSameAs(ObjectConstraint.NULL);
+  }
+
+  @Test
+  public void goto_terminator() throws Exception {
+    MethodBehavior methodBehavior = getMethodBehavior(3);
+    assertThat(methodBehavior.yields()).hasSize(2);
   }
 
   private MethodBehavior getMethodBehavior(int index) {
