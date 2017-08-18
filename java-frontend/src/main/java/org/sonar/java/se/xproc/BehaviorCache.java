@@ -63,15 +63,13 @@ public class BehaviorCache {
     if (!behaviors.containsKey(symbol)) {
       if (isRequireNonNullMethod(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
-      } else if (isObjectsNullMethod(symbol)) {
+      } else if (isObjectsNullMethod(symbol) || isGuavaPrecondition(symbol)) {
         return new BytecodeEGWalker(this).getMethodBehavior(symbol, classLoader);
       } else if (isStringUtilsMethod(symbol)) {
         MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
         if (stringUtilsMethod != null) {
           behaviors.put(symbol, stringUtilsMethod);
         }
-      } else if (isGuavaPrecondition(symbol)) {
-        behaviors.put(symbol, createGuavaPreconditionsBehavior(symbol, "checkNotNull".equals(symbol.name())));
       } else if (isCollectionUtilsIsEmpty(symbol)) {
         behaviors.put(symbol, createCollectionUtilsBehavior(symbol));
       } else if (isSpringIsNull(symbol)) {
@@ -192,22 +190,6 @@ public class BehaviorCache {
       exceptionalYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
     behavior.addYield(exceptionalYield);
-
-    behavior.completed();
-    return behavior;
-  }
-
-  private static MethodBehavior createGuavaPreconditionsBehavior(Symbol.MethodSymbol symbol, boolean isCheckNotNull) {
-    MethodBehavior behavior = new MethodBehavior(symbol);
-    HappyPathYield happyPathYield = new HappyPathYield(behavior);
-    Constraint constraint = isCheckNotNull ? ObjectConstraint.NOT_NULL : BooleanConstraint.TRUE;
-    happyPathYield.parametersConstraints.add(ConstraintsByDomain.empty().put(constraint));
-    for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      happyPathYield.parametersConstraints.add(ConstraintsByDomain.empty());
-    }
-    ConstraintsByDomain constraints = isCheckNotNull ? happyPathYield.parametersConstraints.get(0) : null;
-    happyPathYield.setResult(isCheckNotNull ? 0 : -1, constraints);
-    behavior.addYield(happyPathYield);
 
     behavior.completed();
     return behavior;
