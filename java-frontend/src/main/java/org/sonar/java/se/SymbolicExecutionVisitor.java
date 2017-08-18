@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -45,7 +46,10 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
-    behaviorCache = new BehaviorCache(this);
+    this(executableScanners, new SquidClassLoader(Lists.newArrayList()));
+  }
+  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader) {
+    behaviorCache = new BehaviorCache(this, classLoader);
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
   }
 

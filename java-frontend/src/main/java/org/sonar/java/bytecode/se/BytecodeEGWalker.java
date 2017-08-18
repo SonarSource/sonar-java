@@ -92,7 +92,7 @@ public class BytecodeEGWalker {
   MethodBehavior methodBehavior;
   private CheckerDispatcher checkerDispatcher;
 
-  BytecodeEGWalker(BehaviorCache behaviorCache){
+  public BytecodeEGWalker(BehaviorCache behaviorCache){
     this.behaviorCache = behaviorCache;
     checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(new BytecodeSECheck.NullnessCheck()));
     constraintManager = new ConstraintManager();
@@ -171,6 +171,7 @@ public class BytecodeEGWalker {
         }
         break;
       case Opcodes.ARETURN:
+      case Opcodes.IRETURN:
         programState.storeExitValue();
         break;
       case Opcodes.ATHROW:
@@ -349,7 +350,7 @@ public class BytecodeEGWalker {
 //        checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
 //      }
       if (/*!interrupted && */methodBehavior != null) {
-        methodBehavior.createYield(node);
+        methodBehavior.createYield(node, false);
       }
     });
     setNode(savedNode);
