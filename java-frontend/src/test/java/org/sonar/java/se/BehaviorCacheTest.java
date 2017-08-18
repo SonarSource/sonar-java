@@ -28,7 +28,6 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -61,12 +60,12 @@ public class BehaviorCacheTest {
     assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
-    assertThat(sev.behaviorCache.behaviors.keySet().stream().map(Symbol.MethodSymbol::name).collect(Collectors.toList()))
-      .containsSequence("topMethod", "bar", "foo", "independent");
+    assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList()))
+      .containsSequence("MethodBehavior#topMethod(boolean)", "MethodBehavior#bar(boolean)", "MethodBehavior#foo(boolean)", "MethodBehavior#independent()");
 
     // method which can be overriden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
-      .filter(s -> "nativeMethod".equals(s.name()) || "abstractMethod".equals(s.name()) || "publicMethod".equals(s.name()))
+      .filter(s -> s.equals("#nativeMethod") || s.contains("#abstractMethod") || s.contains("#publicMethod"))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
   }
 
@@ -82,7 +81,7 @@ public class BehaviorCacheTest {
   public void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
-    assertThat(sev.behaviorCache.behaviors.keySet().iterator().next().name()).isEqualTo("foo");
+    assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test

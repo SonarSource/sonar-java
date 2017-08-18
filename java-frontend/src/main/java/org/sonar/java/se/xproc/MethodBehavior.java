@@ -159,4 +159,8 @@ public class MethodBehavior {
   public void visited() {
     visited = true;
   }
+
+  public Symbol.MethodSymbol methodSymbol() {
+    return methodSymbol;
+  }
 }

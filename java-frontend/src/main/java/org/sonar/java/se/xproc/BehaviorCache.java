@@ -20,29 +20,30 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class BehaviorCache {
 
-  private static final String IS_NULL = "isNull";
   private final SymbolicExecutionVisitor sev;
   private final SquidClassLoader classLoader;
   @VisibleForTesting
-  public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
+  public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private static final ConstraintsByDomain NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
   private static final ConstraintsByDomain NOT_NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
@@ -55,79 +56,90 @@ public class BehaviorCache {
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
-    return behaviors.computeIfAbsent(symbol, MethodBehavior::new);
+    return behaviors.computeIfAbsent(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), k -> new MethodBehavior(symbol));
   }
 
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
-    if (!behaviors.containsKey(symbol)) {
-      if (isRequireNonNullMethod(symbol)) {
-        behaviors.put(symbol, createRequireNonNullBehavior(symbol));
-      } else if (isObjectsNullMethod(symbol) || isGuavaPrecondition(symbol)) {
+    String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
+    return get(signature, symbol);
+  }
+  public MethodBehavior get(String signature) {
+    return get(signature, null);
+  }
+  private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
+    if (!behaviors.containsKey(signature)) {
+      if (isRequireNonNullMethod(signature)) {
+        behaviors.put(signature, createRequireNonNullBehavior(symbol));
+      } else if (isObjectsNullMethod(signature) || isGuavaPrecondition(signature)) {
         return new BytecodeEGWalker(this).getMethodBehavior(symbol, classLoader);
-      } else if (isStringUtilsMethod(symbol)) {
+      } else if (isStringUtilsMethod(signature)) {
         MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
         if (stringUtilsMethod != null) {
-          behaviors.put(symbol, stringUtilsMethod);
+          behaviors.put(signature, stringUtilsMethod);
         }
-      } else if (isCollectionUtilsIsEmpty(symbol)) {
-        behaviors.put(symbol, createCollectionUtilsBehavior(symbol));
-      } else if (isSpringIsNull(symbol)) {
-        behaviors.put(symbol, createRequireNullBehavior(symbol));
-      } else {
+      } else if (isCollectionUtilsIsEmpty(signature)) {
+        behaviors.put(signature, createCollectionUtilsBehavior(symbol));
+      } else if (isSpringIsNull(signature)) {
+        behaviors.put(signature, createRequireNullBehavior(symbol));
+      } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
           sev.execute(declaration);
         }
       }
     }
-    return behaviors.get(symbol);
+    return behaviors.get(signature);
   }
 
-  private static boolean isSpringIsNull(Symbol.MethodSymbol symbol) {
-    return symbol.owner().type().is("org.springframework.util.Assert") && IS_NULL.equals(symbol.name());
+  private static boolean isSpringIsNull(String signature) {
+    return signature.startsWith("org.springframework.util.Assert#isNull");
   }
 
-  private static boolean isRequireNonNullMethod(Symbol.MethodSymbol symbol) {
-    return isObjectsRequireNonNullMethod(symbol) || isValidateMethod(symbol) || isLog4jOrSpringAssertNotNull(symbol);
+  private static boolean isRequireNonNullMethod(String signature) {
+    return isObjectsRequireNonNullMethod(signature) || isValidateMethod(signature) || isLog4jOrSpringAssertNotNull(signature);
   }
 
-  private static boolean isValidateMethod(Symbol.MethodSymbol symbol) {
-    Type type = symbol.owner().type();
-    String name = symbol.name();
-    return (type.is("org.apache.commons.lang3.Validate") || type.is("org.apache.commons.lang.Validate"))
-      && ("notEmpty".equals(name) || "notNull".equals(name));
+  private static boolean isValidateMethod(String signature) {
+    return Stream.of(
+      "org.apache.commons.lang3.Validate#notEmpty",
+      "org.apache.commons.lang3.Validate#notNull",
+      "org.apache.commons.lang.Validate#notEmpty",
+      "org.apache.commons.lang.Validate#notNull").anyMatch(signature::startsWith);
   }
 
-  private static boolean isCollectionUtilsIsEmpty(Symbol.MethodSymbol symbol) {
-    Type type = symbol.owner().type();
-    return (type.is("org.apache.commons.collections4.CollectionUtils") || type.is("org.apache.commons.collections.CollectionUtils"))
-      && ("isEmpty".equals(symbol.name()) || "isNotEmpty".equals(symbol.name()));
+  private static boolean isCollectionUtilsIsEmpty(String signature) {
+    return Stream.of(
+      "org.apache.commons.collections4.CollectionUtils#isEmpty",
+      "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
+      "org.apache.commons.collections.CollectionUtils#isEmpty",
+      "org.apache.commons.collections.CollectionUtils#isNotEmpty").anyMatch(signature::startsWith);
   }
 
-  private static boolean isGuavaPrecondition(Symbol.MethodSymbol symbol) {
-    String name = symbol.name();
-    return symbol.owner().type().is("com.google.common.base.Preconditions")
-      && ("checkNotNull".equals(name) || "checkArgument".equals(name) || "checkState".equals(name));
+  private static boolean isGuavaPrecondition(String signature) {
+    return Stream.of(
+      "com.google.common.base.Preconditions#checkNotNull",
+      "com.google.common.base.Preconditions#checkArgument",
+      "com.google.common.base.Preconditions#checkState").anyMatch(signature::startsWith);
   }
 
-  private static boolean isStringUtilsMethod(Symbol.MethodSymbol symbol) {
-    Type ownerType = symbol.owner().type();
-    return ownerType.is("org.apache.commons.lang3.StringUtils") || ownerType.is("org.apache.commons.lang.StringUtils");
+  private static boolean isStringUtilsMethod(String signature) {
+    return signature.startsWith("org.apache.commons.lang3.StringUtils") || signature.startsWith("org.apache.commons.lang.StringUtils");
   }
 
-  private static boolean isObjectsNullMethod(Symbol.MethodSymbol symbol) {
-    return symbol.owner().type().is("java.util.Objects") && ("nonNull".equals(symbol.name()) || IS_NULL.equals(symbol.name()));
+  private static boolean isObjectsNullMethod(String signature) {
+    return signature.startsWith("java.util.Objects#nonNull") || signature.startsWith("java.util.Objects#isNull");
   }
 
-  private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
-    return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
+  private static boolean isObjectsRequireNonNullMethod(String signature) {
+    return signature.startsWith("java.util.Objects#requireNonNull");
   }
 
-  private static boolean isLog4jOrSpringAssertNotNull(Symbol symbol) {
-    Type ownerType = symbol.owner().type();
-    return (ownerType.is("org.apache.logging.log4j.core.util.Assert") && "requireNonNull".equals(symbol.name()))
-      || (ownerType.is("org.springframework.util.Assert") && ("notNull".equals(symbol.name()) || "notEmpty".equals(symbol.name())));
+  private static boolean isLog4jOrSpringAssertNotNull(String signature) {
+    return Arrays.asList(
+      "org.apache.logging.log4j.core.util.Assert#requireNonNull",
+      "org.springframework.util.Assert#notNull",
+      "org.springframework.util.Assert#notEmpty").stream().anyMatch(signature::startsWith);
   }
 
   @CheckForNull
