@@ -21,6 +21,8 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -38,13 +40,18 @@ public class BehaviorCache {
 
   private static final String IS_NULL = "isNull";
   private final SymbolicExecutionVisitor sev;
+  private final SquidClassLoader classLoader;
   @VisibleForTesting
   public final Map<Symbol.MethodSymbol, MethodBehavior> behaviors = new LinkedHashMap<>();
   private static final ConstraintsByDomain NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
   private static final ConstraintsByDomain NOT_NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   public BehaviorCache(SymbolicExecutionVisitor sev) {
+    this(sev, null);
+  }
+  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader) {
     this.sev = sev;
+    this.classLoader = classLoader;
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
@@ -57,7 +64,7 @@ public class BehaviorCache {
       if (isRequireNonNullMethod(symbol)) {
         behaviors.put(symbol, createRequireNonNullBehavior(symbol));
       } else if (isObjectsNullMethod(symbol)) {
-        behaviors.put(symbol, createIsNullBehavior(symbol));
+        return new BytecodeEGWalker(this).getMethodBehavior(symbol, classLoader);
       } else if (isStringUtilsMethod(symbol)) {
         MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
         if (stringUtilsMethod != null) {
@@ -185,33 +192,6 @@ public class BehaviorCache {
       exceptionalYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
     behavior.addYield(exceptionalYield);
-
-    behavior.completed();
-    return behavior;
-  }
-
-  /**
-   * Create behavior for java.util.Objects.isNull and nonNull methods
-   * @param symbol the symbol of the associated method.
-   * @return the behavior corresponding to the symbol passed as parameter.
-   */
-  private static MethodBehavior createIsNullBehavior(Symbol.MethodSymbol symbol) {
-    boolean isNull = IS_NULL.equals(symbol.name());
-
-    ConstraintsByDomain trueConstraint = isNull ? NULL_CONSTRAINTS : NOT_NULL_CONSTRAINTS;
-    ConstraintsByDomain falseConstraint = isNull ? NOT_NULL_CONSTRAINTS : NULL_CONSTRAINTS;
-
-    MethodBehavior behavior = new MethodBehavior(symbol);
-
-    HappyPathYield trueYield = new HappyPathYield(behavior);
-    trueYield.parametersConstraints.add(trueConstraint);
-    trueYield.setResult(-1, ConstraintsByDomain.empty().put(BooleanConstraint.TRUE));
-    behavior.addYield(trueYield);
-
-    HappyPathYield falseYield = new HappyPathYield(behavior);
-    falseYield.parametersConstraints.add(falseConstraint);
-    falseYield.setResult(-1, ConstraintsByDomain.empty().put(BooleanConstraint.FALSE));
-    behavior.addYield(falseYield);
 
     behavior.completed();
     return behavior;

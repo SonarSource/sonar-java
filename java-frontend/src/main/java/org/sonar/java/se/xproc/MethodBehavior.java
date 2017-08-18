@@ -52,20 +52,27 @@ public class MethodBehavior {
     this.varArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
     this.arity = methodSymbol.parameterTypes().size();
   }
-
   public void createYield(ExplodedGraph.Node node) {
+    createYield(node, true);
+  }
+
+  public void createYield(ExplodedGraph.Node node, boolean storeNodeForReporting) {
+    ExplodedGraph.Node nodeForYield = null;
+    if(storeNodeForReporting) {
+      nodeForYield = node;
+    }
     MethodYield yield;
     boolean expectReturnValue = !(isConstructor() || isVoidMethod());
     SymbolicValue resultSV = node.programState.exitValue();
 
     if ((resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      ExceptionalYield exceptionalYield = new ExceptionalYield(node, this);
+      ExceptionalYield exceptionalYield = new ExceptionalYield(nodeForYield, this);
       if (resultSV != null) {
         exceptionalYield.setExceptionType(((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType());
       }
       yield = exceptionalYield;
     } else {
-      HappyPathYield happyPathYield = new HappyPathYield(node, this);
+      HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
       if (expectReturnValue) {
         happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraints(resultSV));
       }
