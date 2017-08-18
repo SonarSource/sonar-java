@@ -299,13 +299,13 @@ public class MethodYieldTest {
 
   @Test
   public void native_methods_behavior_should_not_be_used() throws Exception {
-    Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcNativeMethods.java").behaviorCache.behaviors;
-    behaviorCache.entrySet().stream().filter(e -> e.getKey().name().equals("foo")).forEach(e -> assertThat(e.getValue().yields()).hasSize(2));
+    Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcNativeMethods.java").behaviorCache.behaviors;
+    behaviorCache.entrySet().stream().filter(e -> "foo".contains(e.getKey())).forEach(e -> assertThat(e.getValue().yields()).hasSize(2));
   }
 
   @Test
   public void catch_class_cast_exception() throws Exception {
-    Map<Symbol.MethodSymbol, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache.behaviors;
+    Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache.behaviors;
     assertThat(behaviorCache.values()).hasSize(1);
     MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
     assertThat(methodBehavior.yields()).hasSize(2);

@@ -29,11 +29,12 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +64,10 @@ public class SETestUtils {
     return sev;
   }
 
-  public static Map.Entry<MethodSymbol, MethodBehavior> getSymbolWithMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<Map.Entry<MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.behaviors.entrySet().stream()
-      .filter(e -> methodName.equals(e.getKey().name()))
+  public static Map.Entry<Symbol.MethodSymbol, MethodBehavior> getSymbolWithMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
+    Optional<AbstractMap.SimpleEntry<Symbol.MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.behaviors.entrySet().stream()
+      .filter(e -> e.getKey().contains("#" + methodName))
+      .map(e -> new AbstractMap.SimpleEntry<>(e.getValue().methodSymbol(), e.getValue()))
       .findFirst();
     assertThat(mb.isPresent()).isTrue();
     return mb.get();

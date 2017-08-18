@@ -509,6 +509,7 @@ public class JavaSymbol implements Symbol {
     List<TypeVariableJavaType> typeVariableTypes;
     MethodTree declaration;
     Object defaultValue;
+    String desc;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
@@ -520,6 +521,17 @@ public class JavaSymbol implements Symbol {
     public MethodJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(MTH, flags, name, owner);
       this.typeVariableTypes = Lists.newArrayList();
+    }
+
+    public String completeSignature(){
+      return owner.getType().fullyQualifiedName()+"#"+name+desc();
+    }
+
+    private String desc() {
+      if(desc == null) {
+        desc = "("+getParametersTypes().stream().map(JavaType::fullyQualifiedName).collect(Collectors.joining(";"))+")";
+      }
+      return desc;
     }
 
     public TypeJavaSymbol getReturnType() {

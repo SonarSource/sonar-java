@@ -228,6 +228,7 @@ public class BytecodeVisitor extends ClassVisitor {
         methodFlags |= Flags.DEFAULT;
       }
       final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(methodFlags, name, type, classSymbol);
+      methodSymbol.desc = desc;
       classSymbol.members.enter(methodSymbol);
       if (signature != null) {
         SignatureReader signatureReader = new SignatureReader(signature);
