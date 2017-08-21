@@ -27,6 +27,7 @@ import org.sonar.java.checks.naming.BadConstantNameCheck;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
 import org.sonar.java.checks.naming.BadInterfaceNameCheck;
+import org.sonar.java.checks.naming.BadLocalConstantNameCheck;
 import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.checks.naming.BadPackageNameCheck;
@@ -129,6 +130,7 @@ public final class CheckList {
       .add(BadClassNameCheck.class)
       .add(BadInterfaceNameCheck.class)
       .add(BadConstantNameCheck.class)
+      .add(BadLocalConstantNameCheck.class)
       .add(BadFieldNameCheck.class)
       .add(BadFieldNameStaticNonFinalCheck.class)
       .add(BadLocalVariableNameCheck.class)
