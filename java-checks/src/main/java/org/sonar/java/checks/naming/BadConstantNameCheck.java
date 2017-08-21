@@ -20,27 +20,19 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -60,7 +52,7 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
@@ -73,34 +65,17 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
-      checkMethodForLocalConstants((MethodTree) tree);
-    } else {
-      ClassTree classTree = (ClassTree) tree;
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          checkVariableTree(classTree, (VariableTree) member);
-        } else if (member.is(Tree.Kind.ENUM_CONSTANT)) {
-          checkName((VariableTree) member);
+    ClassTree classTree = (ClassTree) tree;
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.VARIABLE) && hasSemantic()) {
+        VariableTree variableTree = (VariableTree) member;
+        Type symbolType = variableTree.type().symbolType();
+        if (isConstantType(symbolType) && (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree))) {
+          checkName(variableTree);
         }
+      } else if (member.is(Tree.Kind.ENUM_CONSTANT)) {
+        checkName((VariableTree) member);
       }
-    }
-  }
-
-  private void checkVariableTree(Tree owner, VariableTree variableTree) {
-    if (!hasSemantic()) {
-      return;
-    }
-    Type symbolType = variableTree.type().symbolType();
-    if (isConstantType(symbolType) && (owner.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree.symbol()))) {
-      checkName(variableTree);
-    }
-  }
-
-  private void checkMethodForLocalConstants(MethodTree methodTree) {
-    BlockTree block = methodTree.block();
-    if (block != null) {
-      block.accept(new VariableFromMethodVisitor(methodTree));
     }
   }
 
@@ -114,48 +89,19 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isStaticFinal(Symbol variable) {
-    return (variable.isStatic() && variable.isFinal())
-      || (variable.owner().isMethodSymbol() && variable.isFinal());
-  }
-
-  private class VariableFromMethodVisitor extends BaseTreeVisitor {
-
-    private final MethodTree method;
-
-    public VariableFromMethodVisitor(MethodTree method) {
-      this.method = method;
-    }
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (hasLiteralInitializer(tree.initializer())) {
-        checkVariableTree(method, tree);
+  private static boolean isStaticFinal(VariableTree variableTree) {
+    boolean isStatic = false;
+    boolean isFinal = false;
+    for (ModifierKeywordTree modifierKeywordTree : variableTree.modifiers().modifiers()) {
+      Modifier modifier = modifierKeywordTree.modifier();
+      if (modifier == Modifier.STATIC) {
+        isStatic = true;
       }
-      super.visitVariable(tree);
+      if (modifier == Modifier.FINAL) {
+        isFinal = true;
+      }
     }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // skip lambdas
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // skip inner classes and anonymous classes - will be explored later, starting from the class tree
-    }
-
-    private boolean hasLiteralInitializer(@Nullable ExpressionTree initializer) {
-      return initializer != null && ExpressionUtils.skipParentheses(initializer).is(
-        Tree.Kind.BOOLEAN_LITERAL,
-        Tree.Kind.CHAR_LITERAL,
-        Tree.Kind.DOUBLE_LITERAL,
-        Tree.Kind.FLOAT_LITERAL,
-        Tree.Kind.INT_LITERAL,
-        Tree.Kind.LONG_LITERAL,
-        Tree.Kind.NULL_LITERAL,
-        Tree.Kind.STRING_LITERAL);
-    }
+    return isStatic && isFinal;
   }
 
 }
