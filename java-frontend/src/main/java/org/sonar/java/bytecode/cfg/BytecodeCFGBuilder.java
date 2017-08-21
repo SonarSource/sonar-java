@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.cfg;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import org.objectweb.asm.ClassReader;
@@ -50,6 +51,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.JSR;
 
 public class BytecodeCFGBuilder {
@@ -366,6 +369,18 @@ public class BytecodeCFGBuilder {
 
     int opcode() {
       return opcode;
+    }
+
+
+    public int arity() {
+      Preconditions.checkState(INVOKEVIRTUAL <= opcode && opcode <= INVOKEDYNAMIC, "Not an INVOKE opcode");
+      Type methodType = Type.getMethodType(fieldOrMethod.desc);
+      return methodType.getArgumentTypes().length;
+    }
+
+    public boolean hasReturnValue() {
+      Preconditions.checkState(INVOKEVIRTUAL <= opcode && opcode <= INVOKEDYNAMIC, "Not an INVOKE opcode");
+      return Type.getMethodType(fieldOrMethod.desc).getReturnType() == Type.VOID_TYPE;
     }
 
     public static class FieldOrMethod {

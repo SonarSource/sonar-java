@@ -133,7 +133,7 @@ public class BytecodeEGWalkerExecuteTest {
       programState = execute(invokeMethod(opcode, "(II)V"), stateWithThis.stackValue(arg).stackValue(arg));
       assertEmptyStack(programState);
       assertThatThrownBy(() -> execute(invokeMethod(opcode, "(II)V"), stateWithThis))
-        .hasMessage("Arguments mismatch for INVOKE");
+        .isInstanceOf(IllegalStateException.class);
     }
   }
 
@@ -166,8 +166,27 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(programState.exitValue()).isEqualTo(exception);
   }
 
+  @Test
+  public void test_nullness_check() throws Exception {
+    SymbolicValue thisSv = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(thisSv);
+    ProgramState programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "()V"), startingState);
+    assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
+
+    programState = execute(invokeMethod(Opcodes.INVOKESTATIC, "()V"), startingState);
+    assertThat(programState).isEqualTo(startingState);
+
+    programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "(I)V"), startingState.stackValue(new SymbolicValue()));
+    assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
+  }
+
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
+  }
+
+  private boolean hasConstraint(SymbolicValue sv, ProgramState ps, Constraint constraint) {
+    ConstraintsByDomain constraints = ps.getConstraints(sv);
+    return constraints != null && constraints.get(constraint.getClass()) == constraint;
   }
 
   private BytecodeCFGBuilder.Instruction invokeStatic(String desc) {
