@@ -26,9 +26,9 @@ public class D { } // Noncompliant {{Document this public class by adding an exp
 public class E { } // Noncompliant {{Document this public class by adding an explicit description.}} - empty javadoc
 
 /**
- * OneWordIsNotEnough
+ * OneWordIsEnough
  */
-public class F { } // Noncompliant {{Document this public class by adding an explicit description.}} - more than one word is required
+public class F { } // Compliant
 
 /**
  * {@inheritDoc}
