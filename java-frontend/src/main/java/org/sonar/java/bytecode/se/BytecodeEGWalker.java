@@ -217,13 +217,12 @@ public class BytecodeEGWalker {
       case Opcodes.INVOKESTATIC:
       case Opcodes.INVOKEVIRTUAL:
       case Opcodes.INVOKEINTERFACE:
-        org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(instruction.fieldOrMethod.desc);
         boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
-        int arity = isStatic ? methodType.getArgumentTypes().length : (methodType.getArgumentTypes().length + 1);
+        int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
         pop = programState.unstackValue(arity);
         Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
         // TODO resolve method and retrieve behavior
-        if (methodType.getReturnType() == org.objectweb.asm.Type.VOID_TYPE) {
+        if (instruction.hasReturnValue()) {
           programState = pop.state;
         } else {
           // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals

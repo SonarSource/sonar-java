@@ -41,7 +41,7 @@ public interface BytecodeSECheck {
     public ProgramState checkPreStatement(CheckerDispatcher dispatcher, BytecodeCFGBuilder.Instruction inst) {
       ProgramState state = dispatcher.getState();
       if (isInvokeOnObjectRef(inst)) {
-        SymbolicValue objectRef = state.peekValue(/*TODO peek the n+1 value with n arity of the method invoked*/);
+        SymbolicValue objectRef = state.peekValue(inst.arity());
         ObjectConstraint constraint = state.getConstraint(objectRef, ObjectConstraint.class);
         if (constraint != null && constraint.isNull()) {
 //       Exceptional Yield should be added : context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
