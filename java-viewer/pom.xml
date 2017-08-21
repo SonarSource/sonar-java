@@ -18,6 +18,7 @@
     <sonar.sources>src/main/java,src/main/resources/public/lib/viewer/js,src/main/resources/public/lib/viewer/css,src/main/resources/velocity</sonar.sources>
     <sonar.tests>src/test/java,src/main/resources/public/lib/viewer/__test__</sonar.tests>
     <sonar.javascript.lcov.reportPaths>target/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+    <skipJS>false</skipJS>
   </properties>
 
   <dependencies>
@@ -110,6 +111,7 @@
         <version>1.5</version>
         <configuration>
           <installDirectory>target</installDirectory>
+          <skip>${skipJS}</skip>
         </configuration>
         <executions>
           <execution>
@@ -160,5 +162,12 @@
     </plugins>
   </build>
 
-
+  <profiles>
+    <profile>
+      <id>skipJS</id>
+       <properties>
+         <skipJS>true</skipJS>
+       </properties>
+    </profile>
+  </profiles>
 </project>
