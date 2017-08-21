@@ -373,8 +373,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     private static boolean isEmptyDescription(@Nullable String part) {
       return part == null
         || part.trim().isEmpty()
-        || PLACEHOLDERS.contains(part)
-        || (!part.contains("{@inheritDoc}") && notEnoughWords(part));
+        || PLACEHOLDERS.contains(part);
     }
 
     private static List<String> getParameters(Tree tree) {
@@ -415,10 +414,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
           // Should never happen - Throwable can not be extended by a parameterized type
           throw new IllegalStateException("Exceptions can not be specified other than with an identifier or a fully qualified name.");
       }
-    }
-
-    private static boolean notEnoughWords(String javadoc) {
-      return javadoc.split("\\s").length < 2;
     }
 
     private static List<String> cleanedlines(@Nullable String javadoc) {
