@@ -205,6 +205,14 @@ public class BytecodeEGWalker {
       case Opcodes.LALOAD:
       case Opcodes.SALOAD:
         break;
+      case Opcodes.ASTORE:
+      case Opcodes.DSTORE:
+      case Opcodes.FSTORE:
+      case Opcodes.ISTORE:
+      case Opcodes.LSTORE:
+        pop = programState.unstackValue(1);
+        programState = pop.state.put(instruction.operand, pop.values.get(0));
+        break;
       case Opcodes.LDC:
       case Opcodes.NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);

@@ -180,6 +180,17 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
   }
 
+  @Test
+  public void test_store() throws Exception {
+    int[] storeOpcodes = new int[] {Opcodes.ISTORE, Opcodes.LSTORE, Opcodes.FSTORE, Opcodes.DSTORE, Opcodes.ASTORE};
+    SymbolicValue sv = new SymbolicValue();
+    ProgramState startState = ProgramState.EMPTY_STATE.stackValue(sv);
+    for (int opcode : storeOpcodes) {
+      ProgramState programState = execute(new Instruction(opcode, 67), startState);
+      assertThat(programState.getValue(67)).isEqualTo(sv);
+    }
+  }
+
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
