@@ -338,23 +338,24 @@ public class BytecodeEGWalker {
     // TODO callback to checks at end of execution
   }
 
-  private Iterable<ProgramState> startingStates(String signature, ProgramState currentState) {
+  @VisibleForTesting
+  Iterable<ProgramState> startingStates(String signature, ProgramState currentState) {
     // TODO : deal with parameter annotations, equals methods etc.
-    int arity = Type.getArgumentTypes(signature.substring(signature.indexOf('('))).length;
-    int startIndexParam = 0;
+    int parameterIdx = 0;
     ProgramState state = currentState;
     if(!methodBehavior.isStaticMethod()) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
       methodBehavior.addParameter(thisSV);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
-      startIndexParam = 1;
-      arity += 1;
+      parameterIdx = 1;
     }
-    for (int i = startIndexParam; i < arity; i++) {
+    Type[] argumentTypes = Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
+    for (Type argumentType: argumentTypes) {
       SymbolicValue sv = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
       methodBehavior.addParameter(sv);
-      state = state.put(i, sv);
+      state = state.put(parameterIdx, sv);
+      parameterIdx += argumentType.getSize();
     }
     return Collections.singletonList(state);
   }

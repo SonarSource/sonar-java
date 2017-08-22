@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.se;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -171,6 +172,31 @@ public class BytecodeEGWalkerTest {
     assertThat(methodBehavior.yields()).hasSize(1);
     MethodYield methodYield = methodBehavior.yields().get(0);
     assertThat(methodYield).isInstanceOf(ExceptionalYield.class);
+  }
+
+  @Test
+  public void test_starting_states() throws Exception {
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+
+    String signature = "()V";
+    walker.methodBehavior = new MethodBehavior(signature);
+    walker.methodBehavior.setStaticMethod(false);
+    ProgramState startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    SymbolicValue thisSv = startingState.getValue(0);
+    assertThat(thisSv).isNotNull();
+    assertThat(startingState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+
+    walker.methodBehavior.setStaticMethod(true);
+    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    assertThat(startingState).isEqualTo(ProgramState.EMPTY_STATE);
+
+    signature = "(DI)V";
+    walker.methodBehavior = new MethodBehavior(signature);
+    walker.methodBehavior.setStaticMethod(true);
+    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    assertThat(startingState.getValue(0)).isNotNull();
+    assertThat(startingState.getValue(1)).isNull();
+    assertThat(startingState.getValue(2)).isNotNull();
   }
 
   private MethodBehavior getMethodBehavior(int index) {
