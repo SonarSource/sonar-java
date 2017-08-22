@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -47,9 +47,6 @@ public class BehaviorCache {
   private static final ConstraintsByDomain NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
   private static final ConstraintsByDomain NOT_NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
-  public BehaviorCache(SymbolicExecutionVisitor sev) {
-    this(sev, null);
-  }
   public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader) {
     this.sev = sev;
     this.classLoader = classLoader;
@@ -59,27 +56,31 @@ public class BehaviorCache {
     return behaviors.computeIfAbsent(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), k -> new MethodBehavior(symbol));
   }
 
+  public MethodBehavior methodBehaviorForSymbol(String signature) {
+    return behaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature));
+  }
+
   @CheckForNull
   public MethodBehavior get(Symbol.MethodSymbol symbol) {
     String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
     return get(signature, symbol);
   }
+
   public MethodBehavior get(String signature) {
     return get(signature, null);
   }
+
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(signature)) {
       if (isRequireNonNullMethod(signature)) {
         behaviors.put(signature, createRequireNonNullBehavior(symbol));
-      } else if (isObjectsNullMethod(signature) || isGuavaPrecondition(signature)) {
-        return new BytecodeEGWalker(this).getMethodBehavior(symbol, classLoader);
+      } else if (isObjectsNullMethod(signature) || isGuavaPrecondition(signature) || isCollectionUtilsIsEmpty(signature)) {
+        return new BytecodeEGWalker(this).getMethodBehavior(signature, classLoader);
       } else if (isStringUtilsMethod(signature)) {
         MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
         if (stringUtilsMethod != null) {
           behaviors.put(signature, stringUtilsMethod);
         }
-      } else if (isCollectionUtilsIsEmpty(signature)) {
-        behaviors.put(signature, createCollectionUtilsBehavior(symbol));
       } else if (isSpringIsNull(signature)) {
         behaviors.put(signature, createRequireNullBehavior(symbol));
       } else if(symbol != null) {
@@ -136,10 +137,10 @@ public class BehaviorCache {
   }
 
   private static boolean isLog4jOrSpringAssertNotNull(String signature) {
-    return Arrays.asList(
+    return Stream.of(
       "org.apache.logging.log4j.core.util.Assert#requireNonNull",
       "org.springframework.util.Assert#notNull",
-      "org.springframework.util.Assert#notEmpty").stream().anyMatch(signature::startsWith);
+      "org.springframework.util.Assert#notEmpty").anyMatch(signature::startsWith);
   }
 
   @CheckForNull
@@ -202,24 +203,6 @@ public class BehaviorCache {
       exceptionalYield.parametersConstraints.add(ConstraintsByDomain.empty());
     }
     behavior.addYield(exceptionalYield);
-
-    behavior.completed();
-    return behavior;
-  }
-
-  private static MethodBehavior createCollectionUtilsBehavior(Symbol.MethodSymbol symbol) {
-    MethodBehavior behavior = new MethodBehavior(symbol);
-
-    HappyPathYield happyPathYield = new HappyPathYield(behavior);
-    happyPathYield.parametersConstraints.add(NULL_CONSTRAINTS);
-    BooleanConstraint constraint = symbol.name().contains("Not") ? BooleanConstraint.FALSE : BooleanConstraint.TRUE;
-    happyPathYield.setResult(-1, ConstraintsByDomain.empty().put(constraint));
-    behavior.addYield(happyPathYield);
-
-    happyPathYield = new HappyPathYield(behavior);
-    happyPathYield.parametersConstraints.add(NOT_NULL_CONSTRAINTS);
-    happyPathYield.setResult(-1, ConstraintsByDomain.empty());
-    behavior.addYield(happyPathYield);
 
     behavior.completed();
     return behavior;

@@ -524,14 +524,58 @@ public class JavaSymbol implements Symbol {
     }
 
     public String completeSignature(){
-      return owner.getType().fullyQualifiedName()+"#"+name+desc();
+      String sign = "";
+      if(owner != null) {
+        sign += owner.getType().fullyQualifiedName();
+      }
+      sign += "#" + name + desc();
+      return sign;
     }
 
     private String desc() {
       if(desc == null) {
-        desc = "("+getParametersTypes().stream().map(JavaType::fullyQualifiedName).collect(Collectors.joining(";"))+")";
+        org.objectweb.asm.Type ret = returnType == null ? org.objectweb.asm.Type.VOID_TYPE : toAsmType(returnType.type);
+        org.objectweb.asm.Type[] argTypes = new org.objectweb.asm.Type[0];
+        if(super.type != null) {
+          argTypes = getParametersTypes().stream().map(MethodJavaSymbol::toAsmType).toArray(org.objectweb.asm.Type[]::new);
+        }
+        desc = org.objectweb.asm.Type.getMethodDescriptor(ret, argTypes);
       }
       return desc;
+    }
+
+    private static org.objectweb.asm.Type toAsmType(JavaType javaType) {
+      switch (javaType.tag) {
+        case JavaType.BYTE:
+          return org.objectweb.asm.Type.BYTE_TYPE;
+        case JavaType.CHAR:
+          return org.objectweb.asm.Type.CHAR_TYPE;
+        case JavaType.SHORT:
+          return org.objectweb.asm.Type.SHORT_TYPE;
+        case JavaType.INT:
+          return org.objectweb.asm.Type.INT_TYPE;
+        case JavaType.LONG:
+          return org.objectweb.asm.Type.LONG_TYPE;
+        case JavaType.FLOAT:
+          return org.objectweb.asm.Type.FLOAT_TYPE;
+        case JavaType.DOUBLE:
+          return org.objectweb.asm.Type.DOUBLE_TYPE;
+        case JavaType.BOOLEAN:
+          return org.objectweb.asm.Type.BOOLEAN_TYPE;
+        case JavaType.VOID:
+          return org.objectweb.asm.Type.VOID_TYPE;
+        case JavaType.CLASS:
+        case JavaType.UNKNOWN:
+          return org.objectweb.asm.Type.getObjectType(Convert.bytecodeName(javaType.fullyQualifiedName()));
+        case JavaType.ARRAY:
+          JavaType element = ((ArrayJavaType) javaType).elementType;
+          return org.objectweb.asm.Type.getObjectType("["+toAsmType(element).getDescriptor());
+        case JavaType.PARAMETERIZED:
+        case JavaType.TYPEVAR:
+          return toAsmType(javaType.erasure());
+        default:
+          throw new IllegalStateException("Unexpected java type tag "+javaType.tag);
+      }
     }
 
     public TypeJavaSymbol getReturnType() {

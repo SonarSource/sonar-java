@@ -34,12 +34,10 @@ import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.Convert;
+import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Java9Support;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -60,42 +58,43 @@ public class BytecodeCFGBuilder {
   private BytecodeCFGBuilder() {
   }
 
-  public static BytecodeCFG buildCFG(Symbol.MethodSymbol methodSymbol, SquidClassLoader classLoader) {
-    try(InputStream is = classLoader.getResourceAsStream(Convert.bytecodeName(((JavaSymbol.TypeJavaSymbol) methodSymbol.owner()).getFullyQualifiedName()) + ".class")) {
+  public static BytecodeCFG buildCFG(String signature, SquidClassLoader classLoader) {
+    try(InputStream is = classLoader.getResourceAsStream(Convert.bytecodeName(signature.substring(0, signature.indexOf('#'))) + ".class")) {
       byte[] bytes = ByteStreams.toByteArray(is);
       // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
       if (Java9Support.isJava9Class(bytes)) {
         Java9Support.setJava8MajorVersion(bytes);
       }
-      return buildCFG(methodSymbol, bytes);
+      return buildCFG(signature, bytes);
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
   }
 
   @VisibleForTesting
-  static BytecodeCFG buildCFG(Symbol.MethodSymbol methodSymbol, byte[] bytes) {
+  static BytecodeCFG buildCFG(String sign, byte[] bytes) {
     ClassReader cr = new ClassReader(bytes);
-    BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor(methodSymbol);
+    BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor();
     cr.accept(new ClassVisitor(Opcodes.ASM5) {
       @Override
       public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        // TODO : name matching is not sufficient in case of overloading.
-        if (name.equals(methodSymbol.name())) {
+        if (name.equals(sign.substring(sign.indexOf('#') + 1, sign.indexOf('('))) && desc.equals(sign.substring(sign.indexOf('(')))) {
+          methodVisitor.isStaticMethod = (access & Flags.STATIC) != 0;
+          methodVisitor.isVarArgs = (access & Flags.VARARGS) != 0;
           return methodVisitor;
         }
         return null;
       }
     }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-    return methodVisitor.cfg;
+    return methodVisitor.cfg();
   }
 
   public static class BytecodeCFG {
     public List<Block> blocks;
-    Symbol.MethodSymbol methodSymbol;
+    public boolean isStaticMethod;
+    public boolean isVarArgs;
 
-    BytecodeCFG(Symbol.MethodSymbol methodSymbol) {
-      this.methodSymbol = methodSymbol;
+    BytecodeCFG() {
       blocks = new ArrayList<>();
       // create exit block
       blocks.add(new Block(this));
@@ -219,10 +218,12 @@ public class BytecodeCFGBuilder {
     Map<Label, Block> blockByLabel = new HashMap<>();
     private Block currentBlock;
     private BytecodeCFG cfg;
+    public boolean isStaticMethod;
+    public boolean isVarArgs;
 
-    BytecodeCFGMethodVisitor(Symbol.MethodSymbol methodSymbol) {
+    BytecodeCFGMethodVisitor() {
       super(Opcodes.ASM5);
-      cfg = new BytecodeCFG(methodSymbol);
+      cfg = new BytecodeCFG();
       currentBlock = new Block(cfg);
       cfg.blocks.add(currentBlock);
     }
@@ -326,6 +327,12 @@ public class BytecodeCFGBuilder {
         currentBlock.successors.add(cfg.blocks.get(0));
       }
     }
+
+    public BytecodeCFG cfg() {
+      cfg.isStaticMethod = isStaticMethod;
+      cfg.isVarArgs = isVarArgs;
+      return cfg;
+    }
   }
 
   /**
@@ -414,6 +421,10 @@ public class BytecodeCFGBuilder {
       @Override
       public int hashCode() {
         return Objects.hash(owner, name, desc, ownerIsInterface);
+      }
+
+      public String completeSignature() {
+        return Type.getObjectType(owner).getClassName() + "#" + name + desc;
       }
     }
   }

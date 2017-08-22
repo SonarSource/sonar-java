@@ -237,7 +237,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   private ProgramState execute(Instruction instruction, ProgramState startingState) {
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null));
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
     ProgramPoint programPoint = mock(ProgramPoint.class);
     when(programPoint.next()).thenReturn(programPoint);
     walker.programPosition = programPoint;

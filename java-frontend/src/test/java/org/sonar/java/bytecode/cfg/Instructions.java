@@ -176,7 +176,7 @@ public class Instructions {
 
   public BytecodeCFGBuilder.BytecodeCFG cfg() {
     JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);
-    return BytecodeCFGBuilder.buildCFG(methodStub, bytes());
+    return BytecodeCFGBuilder.buildCFG(methodStub.completeSignature(), bytes());
   }
 
   public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode) {
