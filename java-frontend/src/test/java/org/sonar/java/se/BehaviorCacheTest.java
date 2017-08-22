@@ -61,7 +61,7 @@ public class BehaviorCacheTest {
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList()))
-      .containsSequence("MethodBehavior#topMethod(boolean)", "MethodBehavior#bar(boolean)", "MethodBehavior#foo(boolean)", "MethodBehavior#independent()");
+      .containsSequence("MethodBehavior#topMethod(Z)Z", "MethodBehavior#bar(Z)Z", "MethodBehavior#foo(Z)Z", "MethodBehavior#independent()V");
 
     // method which can be overriden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
     assertThat(sev.behaviorCache.behaviors.keySet().stream()

@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
@@ -36,7 +37,6 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,20 +101,22 @@ public class BytecodeEGWalker {
     endOfExecutionPath = new LinkedHashSet<>();
   }
 
-  public MethodBehavior getMethodBehavior(Symbol.MethodSymbol symbol, SquidClassLoader classLoader) {
-    methodBehavior = behaviorCache.methodBehaviorForSymbol(symbol);
+  public MethodBehavior getMethodBehavior(String signature, SquidClassLoader classLoader) {
+    methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
     if(!methodBehavior.isComplete()) {
-      execute(symbol, classLoader);
+      execute(signature, classLoader);
       methodBehavior.completed();
     }
     return methodBehavior;
   }
 
-  private void execute(Symbol.MethodSymbol symbol, SquidClassLoader classLoader) {
+  private void execute(String signature, SquidClassLoader classLoader) {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
-    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(symbol, classLoader);
-    for (ProgramState startingState : startingStates(symbol, programState)) {
+    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
+    methodBehavior.isStaticMethod = bytecodeCFG.isStaticMethod;
+    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs);
+    for (ProgramState startingState : startingStates(signature, programState)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
     while (!workList.isEmpty()) {
@@ -222,12 +224,28 @@ public class BytecodeEGWalker {
         int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
         pop = programState.unstackValue(arity);
         Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
-        // TODO resolve method and retrieve behavior
+        // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
+        SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
+        if (isStatic) {
+          // follow only static invocations for now.
+          String signature = instruction.fieldOrMethod.completeSignature();
+          MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+          if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+            methodInvokedBehavior
+              .yields()
+              .forEach(yield ->
+                yield.statesAfterInvocation(pop.values, Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+                checkerDispatcher.methodYield = yield;
+                checkerDispatcher.addTransition(ps);
+                checkerDispatcher.methodYield = null;
+              }));
+            return;
+          }
+
+        }
         if (instruction.hasReturnValue()) {
           programState = pop.state;
         } else {
-          // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
-          SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
           programState = pop.state.stackValue(returnSV);
         }
         break;
@@ -302,12 +320,12 @@ public class BytecodeEGWalker {
     // TODO callback to checks at end of execution
   }
 
-  private Iterable<ProgramState> startingStates(Symbol.MethodSymbol symbol, ProgramState currentState) {
+  private Iterable<ProgramState> startingStates(String signature, ProgramState currentState) {
     // TODO : deal with parameter annotations, equals methods etc.
-    int arity = symbol.parameterTypes().size();
+    int arity = Type.getArgumentTypes(signature.substring(signature.indexOf('('))).length;
     int startIndexParam = 0;
     ProgramState state = currentState;
-    if(!symbol.isStatic()) {
+    if(!methodBehavior.isStaticMethod()) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
       methodBehavior.addParameter(thisSV);

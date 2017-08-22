@@ -20,7 +20,6 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.checks.SECheck;
@@ -37,21 +36,33 @@ import java.util.stream.Stream;
 
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
-  private final boolean varArgs;
+  private boolean varArgs;
   private final int arity;
 
   private final Set<MethodYield> yields;
   private final List<SymbolicValue> parameters;
+  private final String signature;
   private boolean complete = false;
   private boolean visited = false;
+  public boolean isStaticMethod;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
+    this.signature = null;
     this.yields = new LinkedHashSet<>();
     this.parameters = new ArrayList<>();
     this.varArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
     this.arity = methodSymbol.parameterTypes().size();
   }
+  public MethodBehavior(String signature) {
+    this.methodSymbol = null;
+    this.signature = signature;
+    this.yields = new LinkedHashSet<>();
+    this.parameters = new ArrayList<>();
+    this.varArgs = false;
+    this.arity = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('('))).length;
+  }
+
   public void createYield(ExplodedGraph.Node node) {
     createYield(node, true);
   }
@@ -109,11 +120,13 @@ public class MethodBehavior {
   }
 
   private boolean isVoidMethod() {
-    return methodSymbol.returnType().type().isVoid();
+    return methodSymbol == null ?
+      (org.objectweb.asm.Type.getReturnType(signature.substring(signature.indexOf('('))) == org.objectweb.asm.Type.VOID_TYPE)
+      : methodSymbol.returnType().type().isVoid();
   }
 
   private boolean isConstructor() {
-    return ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
+    return methodSymbol == null ? signature.contains("<init>") : ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
   }
 
   public List<MethodYield> yields() {
@@ -162,5 +175,13 @@ public class MethodBehavior {
 
   public Symbol.MethodSymbol methodSymbol() {
     return methodSymbol;
+  }
+
+  public boolean isStaticMethod() {
+    return isStaticMethod;
+  }
+
+  public void setVarArgs(boolean varArgs) {
+    this.varArgs = varArgs;
   }
 }
