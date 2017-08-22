@@ -115,9 +115,9 @@ public class BytecodeEGWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
-    exitBlock = bytecodeCFG.blocks.get(0);
-    methodBehavior.isStaticMethod = bytecodeCFG.isStaticMethod;
-    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs);
+    exitBlock = bytecodeCFG.exitBlock();
+    methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
+    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
     for (ProgramState startingState : startingStates(signature, programState)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
@@ -365,7 +365,7 @@ public class BytecodeEGWalker {
     ProgramState ps = programState.visitedPoint(pp, nbOfExecution + 1);
     ExplodedGraph.Node cachedNode = explodedGraph.node(pp, ps);
     cachedNode.addParent(node, null);
-    if (cachedNode.isNew) {
+    if (cachedNode.isNew()) {
       workList.addFirst(cachedNode);
     }
   }

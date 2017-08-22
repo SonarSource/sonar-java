@@ -90,9 +90,9 @@ public class BytecodeCFGBuilder {
   }
 
   public static class BytecodeCFG {
-    public List<Block> blocks;
-    public boolean isStaticMethod;
-    public boolean isVarArgs;
+    List<Block> blocks;
+    boolean isStaticMethod;
+    boolean isVarArgs;
 
     BytecodeCFG() {
       blocks = new ArrayList<>();
@@ -102,6 +102,18 @@ public class BytecodeCFGBuilder {
 
     public CFG.IBlock<Instruction> entry() {
       return blocks.get(1);
+    }
+
+    public boolean isStaticMethod() {
+      return isStaticMethod;
+    }
+
+    public boolean isVarArgs() {
+      return isVarArgs;
+    }
+
+    public Block exitBlock() {
+      return blocks.get(0);
     }
   }
   public static class Block implements CFG.IBlock<Instruction> {
@@ -218,8 +230,8 @@ public class BytecodeCFGBuilder {
     Map<Label, Block> blockByLabel = new HashMap<>();
     private Block currentBlock;
     private BytecodeCFG cfg;
-    public boolean isStaticMethod;
-    public boolean isVarArgs;
+    private boolean isStaticMethod;
+    private boolean isVarArgs;
 
     BytecodeCFGMethodVisitor() {
       super(Opcodes.ASM5);

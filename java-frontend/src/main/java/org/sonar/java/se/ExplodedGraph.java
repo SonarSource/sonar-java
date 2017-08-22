@@ -69,9 +69,8 @@ public class ExplodedGraph {
 
     private final Map<Node, Edge> edges = new HashMap<>();
 
-    public boolean isNew;
+    private boolean isNew;
     boolean exitPath = false;
-    boolean happyPath = true;
     private final int hashcode;
     private final ExplodedGraph explodedGraph;
 
@@ -134,6 +133,10 @@ public class ExplodedGraph {
 
     public Collection<Edge> edges() {
       return edges.values();
+    }
+
+    public boolean isNew() {
+      return isNew;
     }
   }
 

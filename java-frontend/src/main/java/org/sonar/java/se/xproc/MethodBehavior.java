@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 public class MethodBehavior {
   private final Symbol.MethodSymbol methodSymbol;
   private boolean varArgs;
+  private boolean isStaticMethod;
   private final int arity;
 
   private final Set<MethodYield> yields;
@@ -44,7 +45,6 @@ public class MethodBehavior {
   private final String signature;
   private boolean complete = false;
   private boolean visited = false;
-  public boolean isStaticMethod;
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
@@ -95,8 +95,8 @@ public class MethodBehavior {
 
   private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
     // add the constraints on all the parameters
-    for (int i = 0; i < parameters.size(); i++) {
-      ConstraintsByDomain constraints = node.programState.getConstraints(parameters.get(i));
+    for (SymbolicValue parameter : parameters) {
+      ConstraintsByDomain constraints = node.programState.getConstraints(parameter);
       if (constraints == null) {
         constraints = ConstraintsByDomain.empty();
       }
@@ -183,5 +183,9 @@ public class MethodBehavior {
 
   public void setVarArgs(boolean varArgs) {
     this.varArgs = varArgs;
+  }
+
+  public void setStaticMethod(boolean staticMethod) {
+    isStaticMethod = staticMethod;
   }
 }
