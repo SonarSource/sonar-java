@@ -91,6 +91,7 @@ public class BytecodeEGWalker {
   private ConstraintManager constraintManager;
   MethodBehavior methodBehavior;
   private CheckerDispatcher checkerDispatcher;
+  private BytecodeCFGBuilder.Block exitBlock;
 
   public BytecodeEGWalker(BehaviorCache behaviorCache){
     this.behaviorCache = behaviorCache;
@@ -114,6 +115,7 @@ public class BytecodeEGWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
+    exitBlock = bytecodeCFG.blocks.get(0);
     methodBehavior.isStaticMethod = bytecodeCFG.isStaticMethod;
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs);
     for (ProgramState startingState : startingStates(signature, programState)) {
@@ -232,13 +234,21 @@ public class BytecodeEGWalker {
           MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
           if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
             methodInvokedBehavior
-              .yields()
+              .happyPathYields()
               .forEach(yield ->
-                yield.statesAfterInvocation(pop.values, Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
-                checkerDispatcher.methodYield = yield;
-                checkerDispatcher.addTransition(ps);
-                checkerDispatcher.methodYield = null;
-              }));
+                yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+                  checkerDispatcher.methodYield = yield;
+                  checkerDispatcher.addTransition(ps);
+                  checkerDispatcher.methodYield = null;
+                }));
+            methodInvokedBehavior
+              .exceptionalPathYields()
+              .forEach(yield ->
+                yield.statesAfterInvocation(
+                  Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
+                  ps.storeExitValue();
+                  enqueue(new ProgramPoint(exitBlock), ps);
+                }));
             return;
           }
 
