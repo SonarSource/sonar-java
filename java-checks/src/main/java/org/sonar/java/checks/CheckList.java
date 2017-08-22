@@ -175,6 +175,7 @@ public final class CheckList {
       .add(CaseInsensitiveComparisonCheck.class)
       .add(MethodWithExcessiveReturnsCheck.class)
       .add(CollectionIsEmptyCheck.class)
+      .add(CollectionSizeAndArrayLengthCheck.class)
       .add(SynchronizedClassUsageCheck.class)
       .add(NonStaticClassInitializerCheck.class)
       .add(ReturnEmptyArrayNotNullCheck.class)

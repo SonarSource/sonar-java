@@ -1,0 +1,20 @@
+<p>The size of a collection and the length of an array are always greater than or equal to zero. So testing that a size or length is greater than or
+equal to zero doesn't make sense, since the result is always <code>true</code>. Similarly testing that it is less than zero will always return
+<code>false</code>. Perhaps the intent was to check the non-emptiness of the collection or array instead. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+if (myList.size() &gt;= 0) { ... }
+
+if (myList.size() &lt; 0) { ... }
+
+boolean result = myArray.length &gt;= 0;
+
+if (0 &gt; myArray.length) { ... }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+if (!myList.isEmpty()) { ... }
+
+if (myArray.length &gt;= 42) { ... }
+</pre>
+
