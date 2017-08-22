@@ -72,17 +72,17 @@ public class BehaviorCache {
 
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(signature)) {
-      if (isRequireNonNullMethod(signature)) {
-        behaviors.put(signature, createRequireNonNullBehavior(symbol));
-      } else if (isObjectsNullMethod(signature) || isGuavaPrecondition(signature) || isCollectionUtilsIsEmpty(signature)) {
+      if (isRequireNonNullMethod(signature)
+        || isObjectsNullMethod(signature)
+        || isGuavaPrecondition(signature)
+        || isCollectionUtilsIsEmpty(signature)
+        || isSpringIsNull(signature)) {
         return new BytecodeEGWalker(this).getMethodBehavior(signature, classLoader);
       } else if (isStringUtilsMethod(signature)) {
         MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
         if (stringUtilsMethod != null) {
           behaviors.put(signature, stringUtilsMethod);
         }
-      } else if (isSpringIsNull(signature)) {
-        behaviors.put(signature, createRequireNullBehavior(symbol));
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
@@ -111,6 +111,7 @@ public class BehaviorCache {
 
   private static boolean isCollectionUtilsIsEmpty(String signature) {
     return Stream.of(
+      "org.springframework.util.CollectionUtils#isEmpty",
       "org.apache.commons.collections4.CollectionUtils#isEmpty",
       "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
       "org.apache.commons.collections.CollectionUtils#isEmpty",
