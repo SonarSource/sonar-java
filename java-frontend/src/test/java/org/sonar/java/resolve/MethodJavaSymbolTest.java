@@ -114,4 +114,24 @@ public class MethodJavaSymbolTest {
     }
   }
 
+  @Test
+  public void test_signature() throws Exception {
+    JavaAstScanner.scanSingleFileForTests(
+      new File("src/test/java/org/sonar/java/resolve/targets/MethodCompleteSignature.java"),
+      new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
+        @Override
+        public List<Tree.Kind> nodesToVisit() {
+          return Lists.newArrayList(Tree.Kind.METHOD_INVOCATION);
+        }
+
+        @Override
+        public void visitNode(Tree tree) {
+          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) ((MethodInvocationTree) tree).symbol();
+          assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
+            .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test(SJZI[BLjava/lang/Object;CFDLjava/lang/String;)V");
+        }
+
+      }), Collections.singletonList(new File("target/test-classes")), null));
+  }
+
 }
