@@ -246,6 +246,7 @@ public final class CheckList {
       .add(UnusedPrivateMethodCheck.class)
       .add(UnusedPrivateClassCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
+      .add(RedundantCloseCheck.class)
       .add(ThrowsSeveralCheckedExceptionCheck.class)
       .add(ThreadRunCheck.class)
       .add(DuplicateConditionIfElseIfCheck.class)
