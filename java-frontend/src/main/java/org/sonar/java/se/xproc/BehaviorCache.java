@@ -24,10 +24,6 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.Constraint;
-import org.sonar.java.se.constraint.ConstraintsByDomain;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
@@ -44,8 +40,6 @@ public class BehaviorCache {
   private final SquidClassLoader classLoader;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
-  private static final ConstraintsByDomain NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
-  private static final ConstraintsByDomain NOT_NULL_CONSTRAINTS = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader) {
     this.sev = sev;
@@ -76,13 +70,9 @@ public class BehaviorCache {
         || isObjectsNullMethod(signature)
         || isGuavaPrecondition(signature)
         || isCollectionUtilsIsEmpty(signature)
-        || isSpringIsNull(signature)) {
+        || isSpringIsNull(signature)
+        || isStringUtilsMethod(signature)) {
         return new BytecodeEGWalker(this).getMethodBehavior(signature, classLoader);
-      } else if (isStringUtilsMethod(signature)) {
-        MethodBehavior stringUtilsMethod = createStringUtilMethodBehavior(symbol);
-        if (stringUtilsMethod != null) {
-          behaviors.put(signature, stringUtilsMethod);
-        }
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
@@ -126,7 +116,9 @@ public class BehaviorCache {
   }
 
   private static boolean isStringUtilsMethod(String signature) {
-    return signature.startsWith("org.apache.commons.lang3.StringUtils") || signature.startsWith("org.apache.commons.lang.StringUtils");
+    return Stream.of("isEmpty", "isNotEmpty", "isBlank", "isNotBlank")
+      .flatMap(m -> Stream.of("org.apache.commons.lang3.StringUtils#" + m, "org.apache.commons.lang.StringUtils#" + m))
+      .anyMatch(signature::startsWith);
   }
 
   private static boolean isObjectsNullMethod(String signature) {
@@ -142,71 +134,6 @@ public class BehaviorCache {
       "org.apache.logging.log4j.core.util.Assert#requireNonNull",
       "org.springframework.util.Assert#notNull",
       "org.springframework.util.Assert#notEmpty").anyMatch(signature::startsWith);
-  }
-
-  @CheckForNull
-  private static MethodBehavior createStringUtilMethodBehavior(Symbol.MethodSymbol symbol) {
-    MethodBehavior behavior;
-    switch (symbol.name()) {
-      case "isNotEmpty" :
-      case "isNotBlank" :
-        behavior = createIsEmptyOrBlankMethodBehavior(symbol, BooleanConstraint.FALSE);
-        break;
-      case "isEmpty" :
-      case "isBlank" :
-        behavior = createIsEmptyOrBlankMethodBehavior(symbol, BooleanConstraint.TRUE);
-        break;
-      default:
-        behavior = null;
-    }
-    return behavior;
-  }
-
-  private static MethodBehavior createIsEmptyOrBlankMethodBehavior(Symbol.MethodSymbol symbol, Constraint constraint) {
-    MethodBehavior behavior = new MethodBehavior(symbol);
-    HappyPathYield nullYield = new HappyPathYield(behavior);
-    nullYield.parametersConstraints.add(NULL_CONSTRAINTS);
-    nullYield.setResult(-1, ConstraintsByDomain.empty().put(constraint));
-    behavior.addYield(nullYield);
-    MethodYield notNullYield = new HappyPathYield(behavior);
-    notNullYield.parametersConstraints.add(NOT_NULL_CONSTRAINTS);
-    behavior.addYield(notNullYield);
-    behavior.completed();
-    return behavior;
-  }
-
-  /**
-   * Creates method behavior for the three requireNonNull methods define in java.util.Objects
-   * @param symbol the proper method symbol.
-   * @return the behavior corresponding to that symbol.
-   */
-  private static MethodBehavior createRequireNonNullBehavior(Symbol.MethodSymbol symbol) {
-    return createRequireNullnessBehavior(symbol, false);
-  }
-
-  private static MethodBehavior createRequireNullBehavior(Symbol.MethodSymbol symbol) {
-    return createRequireNullnessBehavior(symbol, true);
-  }
-
-  private static MethodBehavior createRequireNullnessBehavior(Symbol.MethodSymbol symbol, boolean mustBeNull) {
-    MethodBehavior behavior = new MethodBehavior(symbol);
-    HappyPathYield happyYield = new HappyPathYield(behavior);
-    happyYield.parametersConstraints.add(mustBeNull ? NULL_CONSTRAINTS : NOT_NULL_CONSTRAINTS);
-    for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      happyYield.parametersConstraints.add(ConstraintsByDomain.empty());
-    }
-    happyYield.setResult(0, happyYield.parametersConstraints.get(0));
-    behavior.addYield(happyYield);
-
-    ExceptionalYield exceptionalYield = new ExceptionalYield(behavior);
-    exceptionalYield.parametersConstraints.add(mustBeNull ? NOT_NULL_CONSTRAINTS : NULL_CONSTRAINTS);
-    for (int i = 1; i < symbol.parameterTypes().size(); i++) {
-      exceptionalYield.parametersConstraints.add(ConstraintsByDomain.empty());
-    }
-    behavior.addYield(exceptionalYield);
-
-    behavior.completed();
-    return behavior;
   }
 
 }
