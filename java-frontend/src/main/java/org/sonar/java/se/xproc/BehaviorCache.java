@@ -71,7 +71,9 @@ public class BehaviorCache {
         || isGuavaPrecondition(signature)
         || isCollectionUtilsIsEmpty(signature)
         || isSpringIsNull(signature)
-        || isStringUtilsMethod(signature)) {
+        || isStringUtilsMethod(signature)
+        || isEclipseAssert(signature)
+        ) {
         return new BytecodeEGWalker(this).getMethodBehavior(signature, classLoader);
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
@@ -81,6 +83,10 @@ public class BehaviorCache {
       }
     }
     return behaviors.get(signature);
+  }
+
+  private static boolean isEclipseAssert(String signature) {
+    return signature.startsWith("org.eclipse.core.runtime.Assert#");
   }
 
   private static boolean isSpringIsNull(String signature) {

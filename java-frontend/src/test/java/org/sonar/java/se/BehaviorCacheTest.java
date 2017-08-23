@@ -147,6 +147,11 @@ public class BehaviorCacheTest {
     verifyNoIssueOnFile("src/test/files/se/SpringAndLog4jAssert.java");
   }
 
+  @Test
+  public void eclipse_aspectj_assert() throws Exception {
+    verifyNoIssueOnFile("src/test/files/se/EclipseAssert.java");
+  }
+
   private static void verifyNoIssueOnFile(String fileName) {
     NullDereferenceCheck seCheck = new NullDereferenceCheck();
     createSymbolicExecutionVisitor(fileName, seCheck);

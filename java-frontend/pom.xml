@@ -207,6 +207,11 @@
                   <artifactId>junit-jupiter-api</artifactId>
                   <version>5.0.0-M4</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.aspectj</groupId>
+                  <artifactId>aspectjtools</artifactId>
+                  <version>1.8.10</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
