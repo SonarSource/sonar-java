@@ -20,9 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -45,6 +45,23 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .add("java.lang.Character")
       .add("java.lang.Short")
       .add("java.lang.StackTraceElement")
+      .add("java.time.DayOfWeek")
+      .add("java.time.Duration")
+      .add("java.time.Instant")
+      .add("java.time.LocalDate")
+      .add("java.time.LocalDateTime")
+      .add("java.time.LocalTime")
+      .add("java.time.Month")
+      .add("java.time.MonthDay")
+      .add("java.time.OffsetDateTime")
+      .add("java.time.OffsetTime")
+      .add("java.time.Period")
+      .add("java.time.Year")
+      .add("java.time.YearMonth")
+      .add("java.time.ZonedDateTime")
+      .add("java.math.BigInteger")
+      .add("java.math.BigDecimal")
+      .add("java.util.Optional")
       .build();
 
   @Override
@@ -57,7 +74,8 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     ExpressionStatementTree est = (ExpressionStatementTree) tree;
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
-      if (!isVoidOrUnknown(mit.symbolType()) && isCheckedType(mit.symbol().owner().type())) {
+      if (!isVoidOrUnknown(mit.symbolType()) && isCheckedType(mit.symbol().owner().type())
+        && mit.symbol().isPublic() && !((JavaSymbol.MethodJavaSymbol) mit.symbol()).isConstructor()) {
         IdentifierTree methodName = MethodsHelper.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }

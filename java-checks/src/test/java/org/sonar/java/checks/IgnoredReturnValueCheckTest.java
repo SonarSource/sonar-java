@@ -27,5 +27,6 @@ public class IgnoredReturnValueCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/IgnoredReturnValueCheck.java", new IgnoredReturnValueCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/IgnoredReturnValueCheckInternalCalls.java", new IgnoredReturnValueCheck());
   }
 }
