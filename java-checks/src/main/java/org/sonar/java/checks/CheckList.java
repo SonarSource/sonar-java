@@ -192,6 +192,7 @@ public final class CheckList {
       .add(SwitchCaseWithoutBreakCheck.class)
       .add(CatchUsesExceptionWithContextCheck.class)
       .add(MethodTooBigCheck.class)
+      .add(MethodIdenticalImplementationsCheck.class)
       .add(KeywordAsIdentifierCheck.class)
       .add(AnonymousClassesTooBigCheck.class)
       .add(SunPackagesUsedCheck.class)
