@@ -1,0 +1,20 @@
+<p>Java 7's try-with-resources structure automatically handles closing the resources that the <code>try</code> itself opens. Thus, adding an explicit
+<code>close()</code> call is redundant and potentially confusing.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+try (PrintWriter writer = new PrintWriter(process.getOutputStream())) {
+  String contents = file.contents();
+  writer.write(new Gson().toJson(new MyObject(contents)));
+  writer.flush();
+  writer.close();  // Noncompliant
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+try (PrintWriter writer = new PrintWriter(process.getOutputStream())) {
+  String contents = file.contents();
+  writer.write(new Gson().toJson(new MyObject(contents)));
+  writer.flush();
+}
+</pre>
+

@@ -1,0 +1,13 @@
+{
+  "title": "\"close()\" calls should not be redundant",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "redundant"
+  ],
+  "defaultSeverity": "Minor"
+}
