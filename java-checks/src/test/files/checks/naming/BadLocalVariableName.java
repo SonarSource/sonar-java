@@ -6,7 +6,7 @@ class BadLocalVariableName {
     int good;
 
     for (int I = 0; I < 10; I++) {
-      int D;
+      int DVAR;
     }
 
     for (good = 0; good < 10; good++) {
@@ -14,6 +14,7 @@ class BadLocalVariableName {
 
     try (Closeable BAD_RESOURCE = open()) {
     } catch (Exception BAD_EXCEPTION) {
+    } catch (Exception e) {
     }
   }
 
@@ -25,7 +26,7 @@ class BadLocalVariableName {
 
   void forEachMethod() {
     for (byte C : "".getBytes()) {
-      int D;
+      int DVAR;
     }
   }
 

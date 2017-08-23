@@ -32,7 +32,7 @@ public class BadLocalVariableNameCheckTest {
   @Test
   public void test2() {
     BadLocalVariableNameCheck check = new BadLocalVariableNameCheck();
-    check.format = "^[a-zA-Z0-9_]*$";
+    check.format = "^[a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_]*$";
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadLocalVariableName.java", check);
   }
 
