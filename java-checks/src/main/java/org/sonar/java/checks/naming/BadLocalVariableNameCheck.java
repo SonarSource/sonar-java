@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -79,6 +80,15 @@ public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaF
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     scan(tree.statement());
+  }
+
+  @Override
+  public void visitCatch(CatchTree tree) {
+    VariableTree parameter = tree.parameter();
+    if (parameter.simpleName().name().length() > 1) {
+      scan(parameter);
+    }
+    scan(tree.block());
   }
 
   @Override

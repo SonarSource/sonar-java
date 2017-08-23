@@ -14,6 +14,8 @@ class BadLocalVariableName {
 
     try (Closeable BAD_RESOURCE = open()) { // Noncompliant
     } catch (Exception BAD_EXCEPTION) { // Noncompliant
+    } catch (Exception E) { // compliant
+    } catch (Exception EX) { // Noncompliant
     }
   }
 
