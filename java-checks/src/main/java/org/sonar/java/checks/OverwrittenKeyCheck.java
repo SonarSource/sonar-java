@@ -49,7 +49,8 @@ import java.util.Objects;
 @Rule(key = "S4143")
 public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher MAP_PUT = MethodMatcher.create().typeDefinition("java.util.Map").name("put").parameters(TypeCriteria.anyType(), TypeCriteria.anyType());
+  private static final MethodMatcher MAP_PUT = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Map")).name("put")
+    .parameters(TypeCriteria.anyType(), TypeCriteria.anyType());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -83,11 +84,13 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     private final Symbol collection;
     private final Tree keyTree;
     private final Object key;
+    private final boolean isArray;
 
-    private CollectionAndKey(Symbol collection, Tree keyTree, Object key) {
+    private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray) {
       this.collection = collection;
       this.keyTree = keyTree;
       this.key = key;
+      this.isArray = isArray;
     }
 
     @Override
@@ -129,7 +132,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
           ExpressionTree keyTree = aaet.dimension().expression();
           Object key = extractKey(keyTree);
           if (collection != null && key != null) {
-            return new CollectionAndKey(collection, keyTree, key);
+            return new CollectionAndKey(collection, keyTree, key, true);
           }
         }
       }
@@ -147,7 +150,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
         ExpressionTree keyTree = mapPut.arguments().get(0);
         Object key = extractKey(keyTree);
         if (collection != null && key != null) {
-          return new CollectionAndKey(collection, keyTree, key);
+          return new CollectionAndKey(collection, keyTree, key, false);
         }
       }
     }
@@ -157,7 +160,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
   private void handleKey(Map<CollectionAndKey, Tree> keys, CollectionAndKey collectionAndKey) {
     if (keys.containsKey(collectionAndKey)) {
       Tree previousTree = keys.get(collectionAndKey);
-      String indexOrKey = collectionAndKey.keyTree.parent().is(Tree.Kind.ARRAY_DIMENSION) ? "index" : "key";
+      String indexOrKey = collectionAndKey.isArray ? "index" : "key";
       reportIssue(collectionAndKey.keyTree,
         String.format("Verify this is the %s that was intended; a value has already been saved for it on line %d.", indexOrKey, previousTree.firstToken().line()),
         ImmutableList.of(new JavaFileScannerContext.Location("Original value", previousTree)),

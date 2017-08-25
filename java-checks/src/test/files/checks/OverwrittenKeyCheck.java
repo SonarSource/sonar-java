@@ -1,4 +1,4 @@
-import java.util.Map;
+import java.util.*;
 
 class A {
 
@@ -51,5 +51,11 @@ class A {
     arr[0][1] = 1;
     arr[0][2] = 1;
     arr[0][1] = 1; // FN - multidimensional arrays are not handled
+  }
+
+  void hashMap() {
+    HashMap<Object, Object> hashMap = new HashMap<>();
+    hashMap.put("a", "Apple");
+    hashMap.put("a", "Banana"); // Noncompliant
   }
 }
