@@ -28,7 +28,6 @@ import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -180,7 +179,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     Symbol symbol = localVar.symbol();
     ExpressionTree initializer = localVar.initializer();
     if (initializer != null && !isUsualDefaultValue(initializer) && !out.contains(symbol)) {
-      createIssue(((VariableTreeImpl) localVar).equalToken(), initializer, symbol);
+      createIssue(localVar.equalToken(), initializer, symbol);
     }
     out.remove(symbol);
   }

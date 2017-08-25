@@ -169,7 +169,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return initializer;
   }
 
-  @CheckForNull
+  @Nullable
+  @Override
   public SyntaxToken equalToken() {
     return equalToken;
   }

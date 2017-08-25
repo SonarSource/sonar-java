@@ -45,6 +45,9 @@ public interface VariableTree extends StatementTree {
   IdentifierTree simpleName();
 
   @Nullable
+  SyntaxToken equalToken();
+
+  @Nullable
   ExpressionTree initializer();
 
   Symbol symbol();
