@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -112,18 +111,14 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
 
   private void checkConcatenation(Tree tree, ExpressionTree leftOperand, ExpressionTree rightOperand) {
     Type wrapper = null;
-    if (isEmptyString(leftOperand)) {
+    if (LiteralUtils.isEmptyString(leftOperand)) {
       wrapper = ((JavaType) rightOperand.symbolType()).primitiveWrapperType();
-    } else if (isEmptyString(rightOperand)) {
+    } else if (LiteralUtils.isEmptyString(rightOperand)) {
       wrapper = ((JavaType) leftOperand.symbolType()).primitiveWrapperType();
     }
     if (wrapper != null) {
       createIssue(tree, wrapper.name());
     }
-  }
-
-  private static boolean isEmptyString(ExpressionTree expressionTree) {
-    return expressionTree.is(Kind.STRING_LITERAL) && LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value()).isEmpty();
   }
 
   private static boolean isValueOfInvocation(ExpressionTree abstractTypedTree) {

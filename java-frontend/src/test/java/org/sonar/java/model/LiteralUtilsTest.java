@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -27,10 +28,26 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LiteralUtilsTest {
+
+  static List<VariableTree> variables;
+
+  @BeforeClass
+  public static void setUp() {
+    File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    variables = classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .collect(Collectors.toList());
+  }
 
   int x1 = 42;
   int x2 = -7;
@@ -58,23 +75,23 @@ public class LiteralUtilsTest {
   long y15 = 0b11010010_01101001_10010100_10010010;
   long y16 = 100_10;
 
+  String s1 = "";
+  String s2 = " ";
+  String s3 = "not_empty";
+  String s4 = "\n";
+
   @Test
   public void test_int_and_long_value() throws Exception {
     Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null, 5678};
     Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null, 10010L};
-    File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    ClassTree classTree = (ClassTree) tree.types().get(0);
     int i = 0;
     int j = 0;
-    for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) member;
-        if (variableTree.simpleName().name().startsWith("x")) {
-          assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
-        } else {
-          assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
-        }
+
+    for (VariableTree variableTree : variables) {
+      if (variableTree.simpleName().name().startsWith("x")) {
+        assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
+      } else if (variableTree.simpleName().name().startsWith("y")) {
+        assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
       }
     }
   }
@@ -86,6 +103,20 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "l")).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "L")).isEqualTo(longValue);
+  }
+
+  @Test
+  public void testEmptyString() {
+    boolean[] expectedStringEmptyResult = {true, false, false, false};
+    int i = 0;
+    for (VariableTree variableTree : variables) {
+      if (variableTree.simpleName().name().startsWith("s")) {
+        assertThat(LiteralUtils.isEmptyString(variableTree.initializer())).isEqualTo(expectedStringEmptyResult[i++]);
+      }
+    }
+    Optional<VariableTree> nonStringVariable = variables.stream().filter(v -> v.simpleName().name().startsWith("x")).findFirst();
+    assertThat(nonStringVariable).isPresent();
+    assertThat(LiteralUtils.isEmptyString(nonStringVariable.get().initializer())).isFalse();
   }
 
   @Test
