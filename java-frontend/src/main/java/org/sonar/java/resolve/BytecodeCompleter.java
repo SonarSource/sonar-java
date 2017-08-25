@@ -245,13 +245,11 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     if (StringUtils.isBlank(fullname)) {
       return symbols.defaultPackage;
     }
-    JavaSymbol.PackageJavaSymbol result = packages.get(fullname);
-    if (result == null) {
-      result = new JavaSymbol.PackageJavaSymbol(fullname, symbols.defaultPackage);
-      result.completer = this;
-      packages.put(fullname, result);
-    }
-    return result;
+    return packages.computeIfAbsent(fullname, name -> {
+      JavaSymbol.PackageJavaSymbol pck  = new JavaSymbol.PackageJavaSymbol(fullname, symbols.defaultPackage);
+      pck.completer = this;
+      return pck;
+    });
   }
 
   /**

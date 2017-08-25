@@ -60,17 +60,8 @@ public class ParametrizedTypeCache {
   }
 
   public JavaType getWildcardType(JavaType bound, BoundType boundType) {
-    Map<WildCardType.BoundType, WildCardType> map = wildcardCache.get(bound);
-    if (map == null) {
-      map = new EnumMap<>(WildCardType.BoundType.class);
-      wildcardCache.put(bound, map);
-    }
-    WildCardType wildcardType = map.get(boundType);
-    if (wildcardType == null) {
-      wildcardType = new WildCardType(bound, boundType);
-      map.put(boundType, wildcardType);
-    }
-    return wildcardType;
+    Map<WildCardType.BoundType, WildCardType> map = wildcardCache.computeIfAbsent(bound, b -> new EnumMap<>(WildCardType.BoundType.class));
+    return map.computeIfAbsent(boundType, bt -> new WildCardType(bound, bt));
   }
 
   public void setTypeSubstitutionSolver(TypeSubstitutionSolver typeSubstitutionSolver) {
