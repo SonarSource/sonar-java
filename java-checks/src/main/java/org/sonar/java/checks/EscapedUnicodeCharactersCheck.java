@@ -49,10 +49,10 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree node) {
-    String value = LiteralUtils.trimQuotes(((LiteralTree) node).value());
-    if (value.isEmpty()) {
+    if (LiteralUtils.isEmptyString(node)) {
       return;
     }
+    String value = LiteralUtils.trimQuotes(((LiteralTree) node).value());
     // replace \\ with nothing just to differentiate \u0000 and \\u0000
     Matcher matcher = UNICODE_ESCAPED_CHAR.matcher(value.replaceAll("\\\\\\\\",""));
     List<String> matches = getAllMatches(matcher);

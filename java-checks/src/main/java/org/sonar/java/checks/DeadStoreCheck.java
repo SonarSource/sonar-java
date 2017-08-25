@@ -191,7 +191,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       case NULL_LITERAL:
         return true;
       case STRING_LITERAL:
-        return isEmptyString((LiteralTree) expr);
+        return LiteralUtils.isEmptyString(expr);
       case INT_LITERAL:
         String value = ((LiteralTree) expr).value();
         return "0".equals(value) || "1".equals(value);
@@ -201,10 +201,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       default:
         return false;
     }
-  }
-
-  private static boolean isEmptyString(LiteralTree expr) {
-    return LiteralUtils.trimQuotes(expr.value()).isEmpty();
   }
 
   private static void handleNewClass(Set<Symbol> out, Symbol.MethodSymbol methodSymbol, NewClassTree element) {

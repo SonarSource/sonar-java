@@ -89,6 +89,10 @@ public class LiteralUtils {
     return nullableInteger == null ? null : -nullableInteger;
   }
 
+  public static boolean isEmptyString(Tree tree) {
+    return tree.is(Tree.Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
+  }
+
   public static String trimQuotes(String value) {
     return value.substring(1, value.length() - 1);
   }
