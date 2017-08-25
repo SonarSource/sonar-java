@@ -524,3 +524,19 @@ class nestedFinally {
     }
   }
 }
+
+class NPEUnknownSymbol implements Closeable {
+
+  NPEUnknownSymbol() {
+    // this method invocation's symbol is unresolved, which triggered NPE in check
+    this(NPEUnknownSymbol::consumer);
+  }
+
+  NPEUnknownSymbol(Consumer<?> consumer) {
+
+  }
+
+  static void consumer(Object o) {}
+
+  public void close()  {}
+}
