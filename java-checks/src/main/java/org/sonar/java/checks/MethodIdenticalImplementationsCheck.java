@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -28,27 +29,23 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Rule(key = "S4144")
 public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MSG = "Update this method so that its implementation is not identical to \"%s\" on line %d.";
-  private static final Pattern ZERO_OR_ONE = Pattern.compile("^(0|1)L?$");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -102,8 +99,8 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
     }
     if (statements.size() == 1) {
       StatementTree singleStatement = statements.get(0);
-      return !isTrivialReturn(singleStatement)
-        && !isAnyThrowStatement(singleStatement)
+      return !singleStatement.is(Tree.Kind.THROW_STATEMENT)
+        && !isTrivialReturn(singleStatement)
         && !isMethodInvocationWithoutParameter(singleStatement);
     }
     return true;
@@ -116,8 +113,8 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
     ExpressionTree returnExpression = ((ReturnStatementTree) tree).expression();
     return returnExpression == null
       || returnExpression.is(Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.NULL_LITERAL)
+      || LiteralUtils.isEmptyString(returnExpression)
       || isThis(returnExpression)
-      || isEmptyString(returnExpression)
       || isZeroOrOne(returnExpression)
       || isMethodInvocationWithoutParameter(returnExpression);
   }
@@ -126,20 +123,9 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
     return tree.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) tree).name());
   }
 
-  private static boolean isEmptyString(Tree tree) {
-    return tree.is(Tree.Kind.STRING_LITERAL) && "\"\"".equals(((LiteralTree) tree).value());
-  }
-
-  private static boolean isZeroOrOne(Tree tree) {
-    Tree expr = tree;
-    if (expr.is(Tree.Kind.UNARY_MINUS)) {
-      expr = ((UnaryExpressionTree) expr).expression();
-    }
-    return expr.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL) && ZERO_OR_ONE.matcher(((LiteralTree) expr).value()).matches();
-  }
-
-  private static boolean isAnyThrowStatement(Tree tree) {
-    return tree.is(Tree.Kind.THROW_STATEMENT);
+  private static boolean isZeroOrOne(ExpressionTree tree) {
+    Long longValue = LiteralUtils.longLiteralValue(tree);
+    return longValue != null && (longValue == -1L || longValue == 0L || longValue == 1L);
   }
 
   private static boolean isMethodInvocationWithoutParameter(Tree tree) {
