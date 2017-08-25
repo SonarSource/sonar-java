@@ -1585,4 +1585,11 @@ public class SymbolTableTest {
     assertThat(res.symbol("combine1").usages()).hasSize(1);
     assertThat(res.symbol("combine2").usages()).hasSize(1);
   }
+
+  @Test
+  public void type_inference_recursion() throws Exception {
+    Result res = Result.createFor("TypeInferenceRecursion");
+    // wrong resolution because of flaw in type inference. usages size should be one.
+    assertThat(res.symbol("baseBuilder").usages()).isEmpty();
+  }
 }

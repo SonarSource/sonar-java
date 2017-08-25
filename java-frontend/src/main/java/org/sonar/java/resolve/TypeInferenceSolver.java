@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TypeInferenceSolver {
 
@@ -150,7 +151,10 @@ public class TypeInferenceSolver {
 
     } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
       List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
-      TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
+      TypeSubstitution newSubstitution = new TypeSubstitution();
+      if (IntStream.range(0, formalTypeSubstitutedTypes.size()).noneMatch(i -> handledFormals.get(formalTypeSubstitutedTypes.get(i)).contains(objectTypes.get(i)))) {
+        newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
+      }
       result = mergeTypeSubstitutions(substitution, newSubstitution);
     } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
       for (JavaType superType : ((ClassJavaType) argType).superTypes()) {
