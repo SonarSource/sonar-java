@@ -81,6 +81,12 @@ abstract class A {
   int zik1() { return -1; }
   int zik2() { return -1; } // Compliant
 
+  int zik3() { return 0; }
+  int zik4() { return 0; } // Compliant
+
+  int zik5() { return 1; }
+  int zik6() { return 1; } // Compliant
+
   void bar1() { throw new UnsupportedOperationException(); }
   void bar2() { throw new UnsupportedOperationException(); } // Compliant
 
