@@ -37,12 +37,7 @@ public class UnitTestIndex {
   }
 
   public UnitTestClassReport index(String classname) {
-    UnitTestClassReport classReport = indexByClassname.get(classname);
-    if (classReport == null) {
-      classReport = new UnitTestClassReport();
-      indexByClassname.put(classname, classReport);
-    }
-    return classReport;
+    return indexByClassname.computeIfAbsent(classname, name -> new UnitTestClassReport());
   }
 
   public UnitTestClassReport get(String classname) {

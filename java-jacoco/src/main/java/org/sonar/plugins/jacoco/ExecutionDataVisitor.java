@@ -38,11 +38,7 @@ public class ExecutionDataVisitor implements ISessionInfoVisitor, IExecutionData
   @Override
   public void visitSessionInfo(SessionInfo info) {
     String sessionId = info.getId();
-    executionDataStore = sessions.get(sessionId);
-    if (executionDataStore == null) {
-      executionDataStore = new ExecutionDataStore();
-      sessions.put(sessionId, executionDataStore);
-    }
+    executionDataStore = sessions.computeIfAbsent(sessionId, id -> new ExecutionDataStore());
   }
 
   @Override

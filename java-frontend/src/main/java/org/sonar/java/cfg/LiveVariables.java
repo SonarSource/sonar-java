@@ -45,8 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class
-    LiveVariables {
+public class LiveVariables {
 
   private final CFG cfg;
   private final Map<CFG.Block, Set<Symbol>> out = new HashMap<>();
@@ -112,11 +111,7 @@ public class
     while (!workList.isEmpty()) {
       CFG.Block block = workList.removeFirst();
 
-      Set<Symbol> blockOut = out.get(block);
-      if (blockOut == null) {
-        blockOut = new HashSet<>();
-        out.put(block, blockOut);
-      }
+      Set<Symbol> blockOut = out.computeIfAbsent(block, k -> new HashSet<>());
       block.successors().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
       block.exceptions().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
       // in = gen and (out - kill)
