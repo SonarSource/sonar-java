@@ -475,7 +475,10 @@ public class UnclosedResourcesCheck extends SECheck {
     }
 
     private boolean mitHeuristics(MethodInvocationTree mit) {
-      return invocationOfMethodFromOtherClass(mit) && mit.symbol().name().matches("new.*|create.*|open.*");
+      Symbol methodSymbol = mit.symbol();
+      return !methodSymbol.isUnknown()
+        && invocationOfMethodFromOtherClass(mit)
+        && methodSymbol.name().matches("new.*|create.*|open.*");
     }
 
     private boolean invocationOfMethodFromOtherClass(MethodInvocationTree mit) {
