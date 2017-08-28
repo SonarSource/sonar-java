@@ -25,12 +25,5 @@ public String getName() {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>Following methods are ignored: </p>
-<ul>
-  <li> Empty methods (with only <code>return;</code>, or without instructions); </li>
-  <li> Methods only returning constants (<code>true</code>, <code>false</code>, <code>this</code>, <code>null</code>, <code>-1</code>, <code>0</code>,
-  <code>1</code>, <code>""</code>) ; </li>
-  <li> Methods only throwing an <code>Exception</code>; </li>
-  <li> Methods only calling another method without parameter (for example: <code>throwMyCustomException()</code>). </li>
-</ul>
+<p>Methods that are not accessors (getters and setters), with fewer than 2 statements are ignored.</p>
 
