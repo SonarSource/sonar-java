@@ -76,12 +76,28 @@ function clickAction(params, data, network, detailsPanels) {
 
 function updateDetails(collection) {
   collection.forEach(function (item) {
+    let changed = false;
+    const label = item['label'];
+    if (label) {
+      item['label'] = unescapeSpecialChars(item['label']);
+      changed = true;
+    }
     const details = item['details'];
     if (details) {
       item['details'] = JSON.parse(details.replace(/\?/g, '"'));
+      changed = true;
+    }
+    if (changed) {
       collection.update(item);
     }
   });
+}
+
+function unescapeSpecialChars(text) {
+  let result = text;
+  result = result.replace(/&quest;/g, '?');
+  result = result.replace(/&quot;/g, '"');
+  return result;
 }
 
 function getNodeDetails(details) {

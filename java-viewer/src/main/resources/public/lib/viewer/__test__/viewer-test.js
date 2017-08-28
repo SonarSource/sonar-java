@@ -42,7 +42,16 @@ describe('viewer', function() {
   });
 
   describe('updateDetails', function() {
-    it('should do nothing if there is no details provided', function() {
+    it('should unescape labels', function() {
+      const node = { id: 0, label: '&quot;ise&quest;&quot;'};
+      const input = new vis.DataSet([node]);
+
+      viewer.updateDetails(input);
+
+      expect(input.get(0)).toEqual({id: 0, label: '"ise?"' });
+    });
+
+    it('should do nothing if there is no details nor label provided', function() {
       const node = {id: 0, otherdata: { stuff: 42}};
       const input = new vis.DataSet([node]);
 
