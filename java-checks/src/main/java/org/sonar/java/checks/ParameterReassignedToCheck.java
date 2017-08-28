@@ -21,20 +21,23 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.cfg.CFG;
+import org.sonar.java.cfg.LiveVariables;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
 import java.util.Set;
 
 @Rule(key = "S1226")
@@ -43,60 +46,83 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   private final Set<Symbol> variables = Sets.newHashSet();
 
   private JavaFileScannerContext context;
-  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
     variables.clear();
-    semanticModel = (SemanticModel) context.getSemanticModel();
-    scan(context.getTree());
-  }
-
-  private boolean hasSemanticModel() {
-    return semanticModel != null;
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
+    BlockTree block = tree.block();
+    if(block == null) {
+      return;
+    }
+    CFG cfg = CFG.build(tree);
+    LiveVariables analyze = LiveVariables.analyze(cfg);
+    Set<Symbol> live = analyze.getIn(cfg.entry());
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.add(parameterTree.symbol());
+      if(!live.contains(parameterTree.symbol())) {
+        variables.add(parameterTree.symbol());
+      }
     }
     super.visitMethod(tree);
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.remove(parameterTree.symbol());
+      if(!live.contains(parameterTree.symbol())) {
+        variables.remove(parameterTree.symbol());
+      }
     }
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    variables.add(tree.parameter().symbol());
+    CFG cfg = CFG.buildCFG(tree.block().body(), true);
+    Symbol var = tree.parameter().symbol();
+    boolean liveVar = true;
+    if(var.owner().isMethodSymbol()) {
+      cfg.setMethodSymbol((Symbol.MethodSymbol) var.owner());
+      LiveVariables analyze = LiveVariables.analyze(cfg);
+      Set<Symbol> live = analyze.getIn(cfg.entry());
+      liveVar = live.contains(var);
+    }
+    if(!liveVar) {
+      variables.add(var);
+    }
     super.visitCatch(tree);
-    variables.remove(tree.parameter().symbol());
+    if(!liveVar) {
+      variables.remove(var);
+    }
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
+    Symbol var = tree.variable().symbol();
+    boolean liveVar = true;
+    if(var.owner().isMethodSymbol()) {
+      cfg.setMethodSymbol((Symbol.MethodSymbol) var.owner());
+      LiveVariables analyze = LiveVariables.analyze(cfg);
+      Set<Symbol> live = analyze.getOut(cfg.reversedBlocks().get(1));
+      liveVar = live.contains(var);
+    }
+    if(!liveVar) {
+      variables.add(var);
+    }
+    super.visitForEachStatement(tree);
+    if(!liveVar) {
+      variables.remove(var);
+    }
   }
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    checkExpression(tree.variable());
-  }
-
-  @Override
-  public void visitUnaryExpression(UnaryExpressionTree tree) {
-    if (isIncrementOrDecrement(tree) && tree.expression().is(Tree.Kind.IDENTIFIER)) {
-      checkExpression(tree.expression());
-    }
-  }
-
-  private static boolean isIncrementOrDecrement(Tree tree) {
-    return tree.is(Tree.Kind.PREFIX_INCREMENT) ||
-      tree.is(Tree.Kind.PREFIX_DECREMENT) ||
-      tree.is(Tree.Kind.POSTFIX_INCREMENT) ||
-      tree.is(Tree.Kind.POSTFIX_DECREMENT);
-  }
-
-  private void checkExpression(ExpressionTree tree) {
-    if (hasSemanticModel() && tree.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) tree;
+    ExpressionTree variable = tree.variable();
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) variable;
       Symbol reference = identifier.symbol();
       if (reference.isVariableSymbol() && variables.contains(reference)) {
         context.reportIssue(this, identifier, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");

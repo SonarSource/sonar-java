@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -2058,5 +2059,17 @@ public class CFGTest {
     );
     cfgChecker.check(cfg);
 
+  }
+
+  @Test
+  public void build_partial_cfg_with_break() throws Exception {
+    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A {void meth(){ try {fun(); } catch ( Exception e) {e.printStackTrace(); break; } }}");
+    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+    MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
+    List<StatementTree> body = methodTree.block().body();
+    CFG cfg = CFG.buildCFG(body, true);
+    cfg.setMethodSymbol(methodTree.symbol());
+    assertThat(cfg.blocks()).hasSize(5);
+    assertThat(cfg.methodSymbol()).isSameAs(methodTree.symbol());
   }
 }
