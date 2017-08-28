@@ -51,7 +51,7 @@ public class ASTDotGraph extends DotGraph {
     addNode(new ASTDotNode(index, label, tree.kind()));
     if (tree.is(Tree.Kind.TOKEN)) {
       // add an extra node for tokens
-      addNode(new ASTDotNode(index, ((SyntaxToken) tree).text()));
+      addNode(new ASTDotNode(index, escapeSpecialChars(((SyntaxToken) tree).text())));
     }
     int currentNodeIndex = index;
     if (!((JavaTree) tree).isLeaf()) {
@@ -62,6 +62,13 @@ public class ASTDotGraph extends DotGraph {
         addEdge(new ASTDotEdge(currentNodeIndex, childIndex));
       }
     }
+  }
+
+  private static String escapeSpecialChars(String text) {
+    String result = text;
+    result = result.replaceAll("\"", "&quot;");
+    result = result.replaceAll("\\?", "&quest;");
+    return result;
   }
 
   private static class ASTDotNode extends DotGraph.Node {
