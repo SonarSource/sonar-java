@@ -133,7 +133,7 @@ public class SurefireJavaParser {
         if (resource != null) {
           save(report, resource, context);
         } else {
-          LOGGER.warn("Resource not found: {}", entry.getKey());
+          LOGGER.debug("Resource not found: {}", entry.getKey());
         }
       }
     }
