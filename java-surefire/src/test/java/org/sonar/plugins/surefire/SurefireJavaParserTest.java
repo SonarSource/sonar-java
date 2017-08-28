@@ -20,6 +20,7 @@
 package org.sonar.plugins.surefire;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.fs.InputFile;
@@ -31,6 +32,8 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
@@ -56,6 +59,9 @@ public class SurefireJavaParserTest {
   private ResourcePerspectives perspectives;
   private JavaResourceLocator javaResourceLocator;
   private SurefireJavaParser parser;
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   @Before
   public void before() {
@@ -181,6 +187,15 @@ public class SurefireJavaParserTest {
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(659);
+  }
+
+  @Test
+  public void should_log_missing_resource_with_debug_level() throws Exception {
+    SensorContextTester context = mockContext();
+    parser =  new SurefireJavaParser(mock(ResourcePerspectives.class), mock(JavaResourceLocator.class));
+    parser.collect(context, getDirs("resourceNotFound"), true);
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Resource not found: org.sonar.Foo");
   }
 
   private List<File> getDirs(String... directoryNames) throws URISyntaxException {
