@@ -8,7 +8,7 @@ class A {
 
   private void a(char[] pwd, String var) {
     String variable1 = "blabla";
-    String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{Remove this hard-coded password.}}
+    String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{'password' detected in this expression, review this potentially hardcoded credential.}}
     String variable3 = "login=a&passwd=xxx"; // Noncompliant
     String variable4 = "login=a&pwd=xxx"; // Noncompliant
     String variable5 = "login=a&password=";
@@ -41,7 +41,7 @@ class A {
     MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant
 
     PasswordAuthentication pa;
-    pa = new PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant
+    pa = new PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant {{Remove this hard-coded password.}}
     pa = new PasswordAuthentication("userName", pwd); // Compliant
     pa = new PasswordAuthentication("userName", getPwd(var)); // Compliant
     pa = new PasswordAuthentication("userName", var.toCharArray()); // Compliant
@@ -65,4 +65,7 @@ class A {
     OtherPasswordAuthentication(String username, char[] pwd) {}
   }
 
+  void fun() {
+    String risikoDesAltenSchadenvorgangs = ""; // Noncompliant {{'koDe' detected in this expression, review this potentially hardcoded credential.}}
+  }
 }
