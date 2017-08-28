@@ -43,6 +43,7 @@ import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
+import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -1147,6 +1148,7 @@ public class ExplodedGraphWalker {
       seChecks.add(removeOrDefault(checks, new NoWayOutLoopCheck()));
       seChecks.add(removeOrDefault(checks, new OptionalGetBeforeIsPresentCheck()));
       seChecks.add(removeOrDefault(checks, new StreamConsumedCheck()));
+      seChecks.add(removeOrDefault(checks, new RedundantAssignmentsCheck()));
 
       seChecks.addAll(checks);
     }
