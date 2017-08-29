@@ -24,8 +24,11 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,6 +56,10 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     boolean useClassGetName = false;
     boolean useStackTraceElementGetClassName = false;
     for (ExpressionTree expression : expressionsToCheck) {
+      if (expression.is(Tree.Kind.IDENTIFIER) && isParam(((IdentifierTree) expression).symbol())) {
+        // exclude comparison to method parameters
+        return;
+      }
       ClassGetNameDetector visitor = new ClassGetNameDetector();
       expression.accept(visitor);
       useAssignableMessage &= visitor.useClassGetName;
@@ -66,6 +73,10 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
       }
       reportIssue(mit, message);
     }
+  }
+
+  private static boolean isParam(Symbol symbol) {
+    return symbol.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
   }
 
   private static class ClassGetNameDetector extends BaseTreeVisitor {

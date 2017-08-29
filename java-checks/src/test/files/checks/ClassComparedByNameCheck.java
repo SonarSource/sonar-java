@@ -5,7 +5,7 @@ class A {
       new A().getClass().getName().equals("A"); // Noncompliant {{Use an "instanceof" comparison instead.}}
       String name = new A().getClass().getName();
       name.equals("A"); //False negative ?
-      A.class.getSimpleName().substring(0).equals("A"); // Noncompliant {{Use an "instanceof" comparison instead.}}
+      A.class.getSimpleName().substring(0).equals(name); // Noncompliant {{Use an "instanceof" comparison instead.}}
       foo(A.class.getSimpleName()).equals("A");
 
       StackTraceElement element = getElement();
@@ -17,4 +17,11 @@ class A {
     StackTraceElement getElement() {
       return null;
     }
+
+  Object foo(String realType) {
+    if (Integer.class.getName().equals(realType)) { // compliant
+      return null;
+    }
+    return null;
+  }
 }
