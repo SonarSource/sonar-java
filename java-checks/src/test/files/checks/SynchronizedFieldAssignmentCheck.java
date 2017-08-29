@@ -109,4 +109,10 @@ class SyncOnParam {
 
     }
   }
+
+  void fun2() {
+    synchronized (new Object()) { // Noncompliant {{Synchronizing on a new instance is a no-op.}}
+      System.out.println("");
+    }
+  }
 }

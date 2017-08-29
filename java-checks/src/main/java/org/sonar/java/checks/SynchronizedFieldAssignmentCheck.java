@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.CheckForNull;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2445")
@@ -41,21 +41,26 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.SYNCHRONIZED_STATEMENT);
+    return Collections.singletonList(Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-      Symbol field = getField(sst.expression());
-      if (field != null) {
-        sst.block().accept(new AssignmentVisitor(field, sst.expression()));
-      } else {
-        Symbol parameter = getParam(sst.expression());
-        if(parameter != null) {
-          reportIssue(tree, String.format("\"%s\" is a method parameter, and should not be used for synchronization.", parameter.name()));
-        }
+    if (!hasSemantic()) {
+      return;
+    }
+    SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
+    if(sst.expression().is(Kind.NEW_CLASS)) {
+      reportIssue(tree, "Synchronizing on a new instance is a no-op.");
+      return;
+    }
+    Symbol field = getField(sst.expression());
+    if (field != null) {
+      sst.block().accept(new AssignmentVisitor(field, sst.expression()));
+    } else {
+      Symbol parameter = getParam(sst.expression());
+      if(parameter != null) {
+        reportIssue(tree, String.format("\"%s\" is a method parameter, and should not be used for synchronization.", parameter.name()));
       }
     }
   }
@@ -112,7 +117,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
     private final Symbol field;
     private final Tree synchronizedStatement;
 
-    public AssignmentVisitor(Symbol field, Tree tree) {
+    AssignmentVisitor(Symbol field, Tree tree) {
       this.field = field;
       this.synchronizedStatement = tree;
     }
