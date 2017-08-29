@@ -21,12 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -86,8 +89,14 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean hasConstantInitializer(VariableTree variableTree) {
-    Tree init = variableTree.initializer();
+    ExpressionTree init = variableTree.initializer();
     if (init != null) {
+      if(ExpressionUtils.skipParentheses(init).is(Tree.Kind.METHOD_REFERENCE)) {
+        MethodReferenceTree methodRef = (MethodReferenceTree) ExpressionUtils.skipParentheses(init);
+        if(isInstanceIdentifier(methodRef.expression())) {
+          return false;
+        }
+      }
       boolean arrayWithInitializer = true;
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         // exclude allocations : new int[6] but allow initialization new int[]{1,2};
@@ -97,6 +106,10 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
       return arrayWithInitializer && !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }
     return false;
+  }
+
+  private static boolean isInstanceIdentifier(Tree expression) {
+    return expression.is(Tree.Kind.IDENTIFIER) && !((IdentifierTree) expression).symbol().isStatic();
   }
 
   private static boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
