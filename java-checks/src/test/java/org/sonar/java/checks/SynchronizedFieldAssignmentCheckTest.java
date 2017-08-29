@@ -27,4 +27,9 @@ public class SynchronizedFieldAssignmentCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/SynchronizedFieldAssignmentCheck.java", new SynchronizedFieldAssignmentCheck());
   }
+
+  @Test
+  public void no_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizedFieldAssignmentCheck.java", new SynchronizedFieldAssignmentCheck());
+  }
 }
