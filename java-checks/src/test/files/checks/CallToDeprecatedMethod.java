@@ -89,3 +89,13 @@ enum PartiallyDeprecatedEnum {
   C,
   @Deprecated D;
 }
+
+class MyCustomClass {
+  @Deprecated
+  MyDeprecatedType myVar;
+}
+
+@Deprecated
+class MyDeprecatedType {
+  // some stuff
+}

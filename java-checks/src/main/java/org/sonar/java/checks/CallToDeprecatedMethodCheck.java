@@ -42,6 +42,9 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     super.scanFile(context);
     nestedDeprecationLevel = 0;
   }
@@ -53,9 +56,6 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     if (nestedDeprecationLevel == 0) {
       if (tree.is(Tree.Kind.IDENTIFIER)) {
         checkIdentifierIssue((IdentifierTree) tree);
@@ -70,13 +70,13 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (hasSemantic() && (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree))) {
+    if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
       nestedDeprecationLevel--;
     }
   }
 
   private void checkIdentifierIssue(IdentifierTree identifierTree) {
-    if (isSimpleNameOfVariableTree(identifierTree)) {
+    if (isSimpleNameOfVariableTreeOrVariableIsDeprecated(identifierTree)) {
       return;
     }
     Symbol symbol = identifierTree.symbol();
@@ -91,9 +91,9 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isSimpleNameOfVariableTree(IdentifierTree identifierTree) {
+  private static boolean isSimpleNameOfVariableTreeOrVariableIsDeprecated(IdentifierTree identifierTree) {
     Tree parent = identifierTree.parent();
-    return parent.is(Tree.Kind.VARIABLE) && identifierTree.equals(((VariableTree) parent).simpleName());
+    return parent.is(Tree.Kind.VARIABLE) && (identifierTree.equals(((VariableTree) parent).simpleName()) || ((VariableTree) parent).symbol().isDeprecated());
   }
 
   private void checkMethodIssue(MethodTree methodTree) {
