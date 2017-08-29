@@ -81,7 +81,8 @@ import java.util.function.Predicate;
 
 public class CFG {
 
-  private final Symbol.MethodSymbol methodSymbol;
+  private final boolean ignoreBreakAndContinue;
+  private Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
 
   /**
@@ -119,8 +120,9 @@ public class CFG {
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
 
-  private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol) {
+  private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
     methodSymbol = symbol;
+    this.ignoreBreakAndContinue = ignoreBreakAndContinue;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
     outerTry = new TryStatement();
@@ -349,13 +351,17 @@ public class CFG {
     blocks.add(result);
     return result;
   }
+  public static CFG buildCFG(List<? extends Tree> trees, boolean ignoreBreak) {
+    return new CFG(trees, null, ignoreBreak);
+  }
+
   public static CFG buildCFG(List<? extends Tree> trees) {
-    return new CFG(trees, null);
+    return new CFG(trees, null, false);
   }
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block.body(), tree.symbol());
+    return new CFG(block.body(), tree.symbol(), false);
   }
 
   private void build(ListTree<? extends Tree> trees) {
@@ -700,12 +706,15 @@ public class CFG {
 
   private void buildBreakStatement(BreakStatementTree tree) {
     IdentifierTree label = tree.label();
-    Block targetBlock;
+    Block targetBlock = null;
     if (label == null) {
       if (breakTargets.isEmpty()) {
-        throw new IllegalStateException("'break' statement not in loop or switch statement");
+        if (!ignoreBreakAndContinue) {
+          throw new IllegalStateException("'break' statement not in loop or switch statement");
+        }
+      } else {
+        targetBlock = breakTargets.getLast();
       }
-      targetBlock = breakTargets.getLast();
     } else {
       targetBlock = labelsBreakTarget.get(label.name());
     }
@@ -723,12 +732,15 @@ public class CFG {
 
   private void buildContinueStatement(ContinueStatementTree tree) {
     IdentifierTree label = tree.label();
-    Block targetBlock;
+    Block targetBlock = null;
     if (label == null) {
       if (continueTargets.isEmpty()) {
-        throw new IllegalStateException("'continue' statement not in loop or switch statement");
+        if (!ignoreBreakAndContinue) {
+          throw new IllegalStateException("'continue' statement not in loop or switch statement");
+        }
+      } else {
+        targetBlock = continueTargets.getLast();
       }
-      targetBlock = continueTargets.getLast();
     } else {
       targetBlock = labelsContinueTarget.get(label.name());
     }
@@ -1026,6 +1038,10 @@ public class CFG {
     result.addFalseSuccessor(falseBranch);
     result.addTrueSuccessor(trueBranch);
     return result;
+  }
+
+  public void setMethodSymbol(Symbol.MethodSymbol methodSymbol) {
+    this.methodSymbol = methodSymbol;
   }
 
 }
