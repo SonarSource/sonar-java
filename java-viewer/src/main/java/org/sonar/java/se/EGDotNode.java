@@ -52,7 +52,8 @@ public class EGDotNode extends DotGraph.Node {
 
   private final ProgramState ps;
   private final ProgramPoint pp;
-  private final BehaviorCache bc;
+  @Nullable
+  private final MethodBehavior methodBehavior;
   private final boolean hasParents;
   private final boolean isFirstBlock;
 
@@ -60,9 +61,9 @@ public class EGDotNode extends DotGraph.Node {
     super(id);
     this.ps = node.programState;
     this.pp = node.programPoint;
-    this.bc = behaviorCache;
     this.hasParents = hasParents;
     this.isFirstBlock = isFirstBlock(node, firstBlockId);
+    this.methodBehavior = getMethodBehavior(behaviorCache, pp.syntaxTree());
   }
 
   private static boolean isFirstBlock(ExplodedGraph.Node node, int firstBlockId) {
@@ -178,17 +179,22 @@ public class EGDotNode extends DotGraph.Node {
 
   @CheckForNull
   private JsonArray yields() {
-    Tree syntaxTree = pp.syntaxTree();
+    if (methodBehavior == null) {
+      return null;
+    }
+    return JsonHelper.toArray(methodBehavior.yields().stream().map(EGDotNode::yield));
+  }
+
+  @CheckForNull
+  private static MethodBehavior getMethodBehavior(BehaviorCache bc, @Nullable Tree syntaxTree) {
     if (syntaxTree == null || !syntaxTree.is(Tree.Kind.METHOD_INVOCATION)) {
       return null;
     }
-    MethodBehavior knownBehavior = bc.behaviors.get(((MethodInvocationTree) syntaxTree).symbol());
-    if (knownBehavior == null) {
+    Symbol symbol = ((MethodInvocationTree) syntaxTree).symbol();
+    if (!symbol.isMethodSymbol()) {
       return null;
     }
-    JsonArrayBuilder builder = Json.createArrayBuilder();
-    knownBehavior.yields().stream().map(EGDotNode::yield).forEach(builder::add);
-    return builder.build();
+    return bc.get((Symbol.MethodSymbol) symbol);
   }
 
   public static JsonObject yield(MethodYield methodYield) {
@@ -221,16 +227,10 @@ public class EGDotNode extends DotGraph.Node {
 
   @CheckForNull
   private String methodName() {
-    Tree syntaxTree = pp.syntaxTree();
-    if (syntaxTree == null || !syntaxTree.is(Tree.Kind.METHOD_INVOCATION)) {
+    if (methodBehavior == null) {
       return null;
     }
-    Symbol symbol = ((MethodInvocationTree) syntaxTree).symbol();
-    MethodBehavior knownBehavior = bc.behaviors.get(symbol);
-    if (knownBehavior == null) {
-      return null;
-    }
-    return symbol.name();
+    return methodBehavior.methodSymbol().name();
   }
 
 }
