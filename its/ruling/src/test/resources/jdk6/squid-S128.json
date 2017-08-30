@@ -49,9 +49,6 @@
 641,
 1366,
 ],
-'jdk6:java/io/FilePermission.java':[
-482,
-],
 'jdk6:java/io/LineNumberInputStream.java':[
 83,
 ],
@@ -62,14 +59,8 @@
 'jdk6:java/net/PlainDatagramSocketImpl.java':[
 335,
 ],
-'jdk6:java/net/SocketPermission.java':[
-557,
-],
 'jdk6:java/text/MessageFormat.java':[
 465,
-],
-'jdk6:java/util/PropertyPermission.java':[
-289,
 ],
 'jdk6:java/util/regex/Pattern.java':[
 1879,
