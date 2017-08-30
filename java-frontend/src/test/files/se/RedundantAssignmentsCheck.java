@@ -72,3 +72,29 @@ class B {
     return newIndex;
   }
 }
+
+class C {
+  abstract class A {
+
+    void foo() {
+      Throwable caughtEx = null;
+      caughtEx = bar(caughtEx); // Noncompliant - FP caused by SONARJAVA-2188
+    }
+
+    // method yields are wrong,and produces exceptional yields instead of normal yields
+    private Throwable bar(Throwable ex) {
+      Throwable result = null;
+      try {
+        doSomething();
+      } catch (Exception e) {
+        result = e;
+      }
+      if (result != null) {
+        return result;
+      }
+      return ex;
+    }
+
+    abstract void doSomething();
+  }
+}
