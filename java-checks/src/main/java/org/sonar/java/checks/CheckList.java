@@ -517,6 +517,7 @@ public final class CheckList {
       .add(StreamNotConsumedCheck.class)
       .add(PreferStreamAnyMatchCheck.class)
       .add(OverwrittenKeyCheck.class)
+      .add(LeastSpecificTypeCheck.class)
       .build();
   }
 

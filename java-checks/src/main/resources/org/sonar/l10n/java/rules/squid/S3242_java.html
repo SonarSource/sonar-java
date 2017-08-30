@@ -1,0 +1,46 @@
+<p>For maximum reusability, methods should accept parameters with as little specialization as possible. So unless specific features from a child class
+are required by a method, a type higher up the class hierarchy should be used instead.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+interface IVehicle { void Go(); }
+public class Submarine : IVehicle
+{
+  public void Go() {  /* ... */ }
+  public void Submerge(int depth) { /* ... */ }
+}
+
+// ...
+public void Travel(Submarine transport) // Noncompliant; no class-specific features used
+{
+  transport.Go();
+}
+
+public void ExploreDepths(Submarine transport) // Compliant; class-specific feature used
+{
+  var depth = 0;
+  // ...
+  transport.Submerge(depth);
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+interface IVehicle { void Go(); }
+public class Submarine : IVehicle
+{
+  public void Go() {  /* ... */ }
+  public void Submerge(int depth) { /* ... */ }
+}
+
+// ...
+public void Travel(IVehicle transport)
+{
+  transport.Go();
+}
+
+public void ExploreDepths(Submarine transport)
+{
+  var depth = 0;
+  // ...
+  transport.Submerge(depth);
+}
+</pre>
