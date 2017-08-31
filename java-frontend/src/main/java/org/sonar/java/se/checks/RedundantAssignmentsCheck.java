@@ -58,17 +58,17 @@ public class RedundantAssignmentsCheck extends SECheck {
     "java.util.stream.IntStream",
     "java.util.stream.LongStream",
     "java.util.stream.DoubleStream");
-  private final Deque<Multimap<AssignmentExpressionTree, Assignment>> contexts = new LinkedList<>();
+  private final Deque<Multimap<AssignmentExpressionTree, AssignmentDataHolder>> assignmentsByMethod = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    contexts.clear();
+    assignmentsByMethod.clear();
     super.scanFile(context);
   }
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    contexts.push(ArrayListMultimap.create());
+    assignmentsByMethod.push(ArrayListMultimap.create());
   }
 
   @Override
@@ -93,20 +93,20 @@ public class RedundantAssignmentsCheck extends SECheck {
     SymbolicValue oldValue = previousState.getValue(assignedSymbol);
     SymbolicValue newValue = assignedVariable.symbolicValue();
     Symbol fromSymbol = previousState.peekValueSymbol().symbol();
-    contexts.peek().put(assignmentExpressionTree, new Assignment(assignedSymbol, oldValue, newValue, fromSymbol, node));
+    assignmentsByMethod.peek().put(assignmentExpressionTree, new AssignmentDataHolder(assignedSymbol, oldValue, newValue, fromSymbol, node));
   }
 
   @Override
   public void interruptedExecution(CheckerContext context) {
-    this.contexts.pop();
+    this.assignmentsByMethod.pop();
   }
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    for (Map.Entry<AssignmentExpressionTree, Collection<Assignment>> assignmentForTree : contexts.pop().asMap().entrySet()) {
-      Collection<Assignment> allAssignments = assignmentForTree.getValue();
-      if (allAssignments.stream().allMatch(Assignment::isRedundant)) {
-        Set<List<Location>> flows = allAssignments.stream().map(Assignment::flows).flatMap(Set::stream).collect(Collectors.toSet());
+    for (Map.Entry<AssignmentExpressionTree, Collection<AssignmentDataHolder>> assignmentForTree : assignmentsByMethod.pop().asMap().entrySet()) {
+      Collection<AssignmentDataHolder> allAssignments = assignmentForTree.getValue();
+      if (allAssignments.stream().allMatch(AssignmentDataHolder::isRedundant)) {
+        Set<List<Location>> flows = allAssignments.stream().map(AssignmentDataHolder::flows).flatMap(Set::stream).collect(Collectors.toSet());
         reportIssue(assignmentForTree.getKey(),
           String.format("Remove this useless assignment; \"%s\" already holds the assigned value along all execution paths.",
             Iterables.getFirst(allAssignments, null).assignedSymbol.name()),
@@ -115,7 +115,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     }
   }
 
-  private static class Assignment {
+  private static class AssignmentDataHolder {
 
     private final Symbol assignedSymbol;
     @Nullable
@@ -124,7 +124,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     private final SymbolicValue newValue;
     private final ExplodedGraph.Node node;
 
-    public Assignment(Symbol assignedSymbol, @Nullable SymbolicValue oldValue, SymbolicValue newValue, @Nullable Symbol fromSymbol, ExplodedGraph.Node node) {
+    public AssignmentDataHolder(Symbol assignedSymbol, @Nullable SymbolicValue oldValue, SymbolicValue newValue, @Nullable Symbol fromSymbol, ExplodedGraph.Node node) {
       this.assignedSymbol = assignedSymbol;
       this.fromSymbol = fromSymbol;
       this.oldValue = oldValue;
