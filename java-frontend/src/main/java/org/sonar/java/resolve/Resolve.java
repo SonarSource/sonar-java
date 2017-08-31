@@ -140,7 +140,7 @@ public class Resolve {
     if (c.getSuperclass() != null) {
       resolution = findField(env, site, name, c.getSuperclass().symbol);
       if (resolution.symbol.kind < bestSoFar.symbol.kind) {
-        resolution.type = typeSubstitutionSolver.applySiteSubstitution(resolution.symbol.type, c.getSuperclass());
+        resolution.type = typeSubstitutionSolver.applySiteSubstitution(resolution.type(), c.getSuperclass());
         bestSoFar = resolution;
       }
     }
