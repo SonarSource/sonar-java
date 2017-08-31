@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -35,13 +36,14 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "S3242")
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
@@ -77,7 +79,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
   private void handleParameter(Symbol parameter) {
     Type leastSpecificType = findLeastSpecificType(parameter);
-    if (!parameter.type().is(leastSpecificType.fullyQualifiedName())
+    if (parameter.type() != leastSpecificType
       && !leastSpecificType.is("java.lang.Object")) {
       String suggestedType = leastSpecificType.fullyQualifiedName().replace('$', '.');
       reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().name()));
@@ -85,9 +87,8 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Type findLeastSpecificType(Symbol parameter) {
-    List<IdentifierTree> usages = parameter.usages();
     InheritanceGraph inheritanceGraph = new InheritanceGraph(parameter.type());
-    for (IdentifierTree usage : usages) {
+    for (IdentifierTree usage : parameter.usages()) {
       Tree parent = usage.parent();
       while (parent != null && !parent.is(Tree.Kind.ARGUMENTS, Tree.Kind.METHOD_INVOCATION, Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT)) {
         parent = parent.parent();
@@ -96,13 +97,8 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         return parameter.type();
       }
       if (parent.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-        // find Iterable.iterator() method
-        Collection<Symbol> symbols = parameter.type().symbol().lookupSymbols("iterator");
-        symbols.stream()
-          .filter(Symbol::isMethodSymbol)
-          .filter(s -> ((Symbol.MethodSymbol) s).parameterTypes().isEmpty())
-          .findFirst()
-          .ifPresent(inheritanceGraph::update);
+        Symbol iteratorMethod = findIteratorMethod(parameter).orElseThrow(() -> new IllegalStateException("Iterable.iterator() not found"));
+        inheritanceGraph.update(iteratorMethod);
       } else if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) parent;
         if (isMethodInvocationOnParameter(parameter, mit)) {
@@ -111,6 +107,13 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
     }
     return inheritanceGraph.leastSpecificType();
+  }
+
+  private static Optional<Symbol> findIteratorMethod(Symbol parameter) {
+    return parameter.type().symbol().lookupSymbols("iterator").stream()
+      .filter(Symbol::isMethodSymbol)
+      .filter(s -> ((Symbol.MethodSymbol) s).parameterTypes().isEmpty())
+      .findFirst();
   }
 
   private static class InheritanceGraph {
@@ -133,33 +136,27 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     private List<List<Type>> computeChains(Symbol m, Type type) {
       Symbol.TypeSymbol typeSymbol = type.symbol();
       Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) typeSymbol).directSuperTypes();
-      List<List<Type>> result = new ArrayList<>();
-      for (Type superType: superTypes) {
-        for (List<Type> chain: computeChains(m, superType)) {
-          List<Type> newChain = new ArrayList<>();
-          newChain.addAll(chain);
-          newChain.add(type);
-          result.add(newChain);
-        }
-      }
-      boolean definesSymbol = definesSymbol(m, typeSymbol, false);
+      List<List<Type>> result = superTypes.stream()
+        .flatMap(superType -> computeChains(m, superType).stream())
+        .map(c -> Stream.concat(c.stream(), Stream.of(type)).collect(Collectors.toList()))
+        .collect(Collectors.toList());
+
+      boolean definesSymbol = definesSymbol(m, typeSymbol);
       boolean isSpecialization = !((JavaType) startType).isParameterized() && ((JavaType) type).isParameterized();
       if (definesSymbol && !isSpecialization && result.isEmpty()) {
-        List<Type> newChain = new ArrayList<>();
-        newChain.add(type);
-        result.add(newChain);
+        result.add(Lists.newArrayList(type));
       }
       return result;
     }
 
-    private boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol, boolean inherited) {
-      boolean result = hasSameVisibility(startType.symbol(), typeSymbol) && typeSymbol.memberSymbols().stream()
+    private boolean definesOrInheritsSymbol(Symbol symbol, JavaSymbol.TypeJavaSymbol typeSymbol) {
+      return definesSymbol(symbol, typeSymbol)
+        || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
+    }
+
+    private boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol) {
+      return hasSameVisibility(startType.symbol(), typeSymbol) && typeSymbol.memberSymbols().stream()
         .anyMatch(s -> isOverriding(m, s, ((ClassJavaType) typeSymbol.type())));
-      if (!inherited) {
-        return result;
-      }
-      Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) typeSymbol).superTypes();
-      return result || superTypes.stream().anyMatch(superType -> definesSymbol(m, superType.symbol(), false));
     }
 
     private void refineChains(Symbol m) {
@@ -167,7 +164,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         Iterator<Type> chainIterator = chain.iterator();
         while (chainIterator.hasNext()) {
           Type type = chainIterator.next();
-          if (definesSymbol(m, type.symbol(), true)) {
+          if (definesOrInheritsSymbol(m, (JavaSymbol.TypeJavaSymbol) type.symbol())) {
             break;
           }
           chainIterator.remove();
