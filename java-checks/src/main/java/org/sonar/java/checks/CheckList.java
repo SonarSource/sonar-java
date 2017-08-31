@@ -91,6 +91,7 @@ import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
+import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -248,6 +249,7 @@ public final class CheckList {
       .add(UnusedPrivateClassCheck.class)
       .add(RedundantThrowsDeclarationCheck.class)
       .add(RedundantCloseCheck.class)
+      .add(RedundantAssignmentsCheck.class)
       .add(ThrowsSeveralCheckedExceptionCheck.class)
       .add(ThreadRunCheck.class)
       .add(DuplicateConditionIfElseIfCheck.class)
