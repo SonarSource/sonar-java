@@ -1,50 +1,13 @@
-<p>While it is technically correct to assign to parameters from within method bodies, it reduces code readability because developers won't be able to
-tell whether the original parameter or some temporary variable is being accessed without going through the whole method. Moreover, some developers
-might also expect assignments of method parameters to be visible to callers, which is not the case, and this lack of visibility could confuse them.
-Instead, all parameters, caught exceptions, and foreach parameters should be treated as <code>final</code>.</p>
+<p>While it is technically correct to assign to parameters from within method bodies, doing so before the parameter value is read is likely a bug.
+Instead, initial values of parameters, caught exceptions, and foreach parameters should be, if not treated as <code>final</code>, then at least read
+before reassignment.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-class MyClass {
-  public String name;
+public void doTheThing(String str, int i, List&lt;String&gt; strings) {
+  str = Integer.toString(i);  // Noncompliant
 
-  public MyClass(String name) {
-    name = name;                    // Noncompliant - useless identity assignment
-  }
-
-  public int add(int a, int b) {
-    a = a + b;                      // Noncompliant
-
-    /* additional logic */
-
-    return a;                       // Seems like the parameter is returned as is, what is the point?
-  }
-
-  public static void main(String[] args) {
-    MyClass foo = new MyClass();
-    int a = 40;
-    int b = 2;
-    foo.add(a, b);                  // Variable "a" will still hold 40 after this call
-  }
-}
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-class MyClass {
-  public String name;
-
-  public MyClass(String name) {
-    this.name = name;               // Compliant
-  }
-
-  public int add(int a, int b) {
-    return a + b;                   // Compliant
-  }
-
-  public static void main(String[] args) {
-    MyClass foo = new MyClass();
-    int a = 40;
-    int b = 2;
-    foo.add(a, b);
+  for (String s : strings) {
+    s = "hello world";  // Noncompliant
   }
 }
 </pre>

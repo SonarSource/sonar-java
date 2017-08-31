@@ -1,6 +1,6 @@
 {
   "title": "The Object.finalize() method should not be overriden",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -13,5 +13,5 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Critical"
 }

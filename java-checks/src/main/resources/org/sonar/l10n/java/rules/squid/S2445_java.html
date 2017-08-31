@@ -13,6 +13,9 @@ private void doSomething(){
     color = "green"; // other threads now allowed into this block
     // ...
   }
+  synchronized(new Object()) { // Noncompliant this is a no-op.
+     // ...
+  }
 }
 </pre>
 <h2>Compliant Solution</h2>
