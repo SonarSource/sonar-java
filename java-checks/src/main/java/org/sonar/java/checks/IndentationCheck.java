@@ -57,6 +57,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   private boolean isBlockAlreadyReported;
   private int excludeIssueAtLine;
   private JavaFileScannerContext context;
+  private List<String> fileLines;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -64,6 +65,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     isBlockAlreadyReported = false;
     excludeIssueAtLine = 0;
     this.context = context;
+    fileLines = context.getFileLines();
     scan(context.getTree());
   }
 
@@ -176,7 +178,14 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private void checkIndentation(Tree tree, int expectedLevel) {
     SyntaxToken firstSyntaxToken = tree.firstToken();
-    if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
+    String line = fileLines.get(firstSyntaxToken.line() - 1);
+    int level = firstSyntaxToken.column();
+    for (int i = 0; i < firstSyntaxToken.column(); i++) {
+      if (line.charAt(i) == '\t') {
+        level += indentationLevel - 1;
+      }
+    }
+    if (level != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
       context.addIssue(((JavaTree) tree).getLine(), this, "Make this line start at column " + (expectedLevel + 1) + ".");
       isBlockAlreadyReported = true;
     }

@@ -35,4 +35,10 @@ public class IndentationCheckTest {
     check.indentationLevel = 4;
     JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_custom.java", check);
   }
+
+
+  @Test
+  public void assume_tab_is_indentation_level() {
+    JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_tab.java", new IndentationCheck());
+  }
 }
