@@ -253,6 +253,7 @@ public final class CheckList {
       .add(ThrowsSeveralCheckedExceptionCheck.class)
       .add(ThreadRunCheck.class)
       .add(DuplicateConditionIfElseIfCheck.class)
+      .add(DuplicateArgumentCheck.class)
       .add(ImmediatelyReturnedVariableCheck.class)
       .add(LambdaSingleExpressionCheck.class)
       .add(LambdaOptionalParenthesisCheck.class)
