@@ -1592,4 +1592,13 @@ public class SymbolTableTest {
     // wrong resolution because of flaw in type inference. usages size should be one.
     assertThat(res.symbol("baseBuilder").usages()).isEmpty();
   }
+
+  @Test
+  public void fieldType_in_parameterized_hierarchy() throws Exception {
+    Result res = Result.createFor("TypeSubstitutionInSubclasses");
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(res.referenceTree(10, 9).symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
+    softly.assertThat(res.referenceTree(17, 9).symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
+    softly.assertAll();
+  }
 }
