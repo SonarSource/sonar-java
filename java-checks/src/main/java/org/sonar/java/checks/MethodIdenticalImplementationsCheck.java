@@ -24,16 +24,22 @@ import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,33 +59,39 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
       return;
     }
     ClassTree classTree = (ClassTree) tree;
-    List<MethodTree> methods = classTree.members().stream()
+    List<MethodWithUsedVariables> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(methodTree -> isDuplicateCandidate(methodTree, classTree))
+      .map(MethodWithUsedVariables::new)
       .collect(Collectors.toList());
     if (methods.size() <= 1) {
       return;
     }
     Set<MethodTree> reported = new HashSet<>();
     for (int i = 0; i < methods.size(); i++) {
-      MethodTree method = methods.get(i);
+      MethodWithUsedVariables methodWithVariables = methods.get(i);
+      MethodTree method = methodWithVariables.method;
       SyntaxToken methodIdentifier = method.simpleName().identifierToken();
       List<StatementTree> methodBody = method.block().body();
       methods.stream()
         .skip(i + 1L)
         // avoid reporting multiple times
-        .filter(otherMethod -> !reported.contains(otherMethod))
+        .filter(otherMethodWithVariables -> !reported.contains(otherMethodWithVariables.method))
         // skip overloads
-        .filter(otherMethod -> !methodIdentifier.text().equals(otherMethod.simpleName().name()))
-        .filter(otherMethod -> SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body()))
-        .forEach(otherMethod -> {
-          reported.add(otherMethod);
+        .filter(otherMethodWithVariables -> !methodIdentifier.text().equals(otherMethodWithVariables.method.simpleName().name()))
+        // only consider method syntactically equivalent
+        .filter(otherMethodWithVariables -> SyntacticEquivalence.areEquivalent(methodBody, otherMethodWithVariables.method.block().body()))
+        // only consider method having same types for their variables
+        .filter(methodWithVariables::isUsingSameVariablesWithSameTypes)
+        .forEach(otherMethodWithVariables -> {
+          MethodTree otherMethod = otherMethodWithVariables.method;
           reportIssue(
             otherMethod.simpleName(),
             String.format(ISSUE_MSG, methodIdentifier.text(), methodIdentifier.line()),
             Collections.singletonList(new JavaFileScannerContext.Location("original implementation", methodIdentifier)),
             null);
+          reported.add(otherMethod);
         });
     }
   }
@@ -88,5 +100,37 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
     BlockTree block = methodTree.block();
     return AccessorsUtils.isAccessor(classTree, methodTree)
       || (block != null && block.body().size() >= 2);
+  }
+
+  private static class MethodWithUsedVariables extends BaseTreeVisitor {
+    private final MethodTree method;
+    private final Map<String, Type> usedVariablesByNameAndType = new HashMap<>();
+    private boolean hasUnknownVariableType = false;
+
+    public MethodWithUsedVariables(MethodTree method) {
+      this.method = method;
+      method.accept(this);
+    }
+
+    public boolean isUsingSameVariablesWithSameTypes(MethodWithUsedVariables otherMethod) {
+      return !hasUnknownVariableType
+        && !otherMethod.hasUnknownVariableType
+        && usedVariablesByNameAndType.equals(otherMethod.usedVariablesByNameAndType);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      Symbol symbol = tree.symbol();
+      Type type = symbol.type();
+      if (symbol.isVariableSymbol()) {
+        if (type.isUnknown()) {
+          hasUnknownVariableType = true;
+        } else {
+          usedVariablesByNameAndType.putIfAbsent(tree.name(), type);
+        }
+      }
+      super.visitIdentifier(tree);
+    }
+
   }
 }

@@ -61,3 +61,64 @@ class C {
   // single method in class
   void foo() { }
 }
+
+abstract class E {
+  void foo1(LocalA param) {
+    doSomething(param.getValue());
+    doSomethingElse(param.getOtherValue());
+  }
+
+  // Compliant - foo2() looks similar but types of LocalB and LocalA are different. Only their method names are the same
+  void foo2(LocalB param) {
+    doSomething(param.getValue());
+    doSomethingElse(param.getOtherValue());
+  }
+
+  void qix1(Object[] items) {
+    for (Object item : items) {
+      doSomething(item);
+    }
+  }
+
+  // Compliant - can not be simply swap to call to other method, or common method
+  void qix2(java.util.List<Object> items) {
+    for (Object item : items) {
+      doSomething(item);
+    }
+  }
+
+  void bar1(E a) {
+    doSomething(a);
+    doSomethingElse(a);
+  }
+
+  // Compliant - We can not guarantee equivalence  because of UnknownType in bar2
+  void bar2(UnknownType a) {
+    doSomething(a);
+    doSomethingElse(a);
+  }
+
+  void gul1(UnknownType b) {
+    doSomething(b);
+    doSomethingElse(b);
+  }
+
+  // Compliant - We can not guarantee equivalence because of UnknownType in gul1
+  void gul2(E b) {
+    doSomething(b);
+    doSomethingElse(b);
+  }
+
+  abstract void doSomething(Object o);
+  abstract void doSomethingElse(Object o);
+
+  abstract static class LocalA {
+    Object getValue();
+    Object getOtherValue();
+  }
+
+  abstract static class LocalB {
+    Object getValue();
+    Object getOtherValue();
+  }
+}
