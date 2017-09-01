@@ -3,7 +3,7 @@ class A {
   static final String CONSTANT = "";
   void fun() {
     assertEquals(0, new A().actual());
-    assertEquals(new A().actual(), 0); // Noncompliant [[sc=36;ec=37]]
+    assertEquals(new A().actual(), 0); // Noncompliant [[sc=36;ec=37;secondary=6]]
     assertEquals("message", new A().actual(), 0); // Noncompliant
     assertEquals("message", 0, new A().actual());
     assertEquals("message", "constantString", actualObject());
@@ -16,13 +16,13 @@ class A {
     //assert equals with double/float and delta
     assertEquals("message", 0d, actualDouble(), 1d);
     assertEquals(0d, actualDouble(), 1d);
-    assertEquals(actualDouble(), 0.0d, 1d); // Noncompliant {{Make sure these 2 arguments are in the correct order: expected value, actual value.}}
+    assertEquals(actualDouble(), 0.0d, 1d); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
     assertEquals("message", actualDouble(), 0.0d, 1d); // Noncompliant
     assertEquals(actualDouble(), 0.0d); // Noncompliant
 
     assertEquals("message", 0f, actualFloat(), 1f);
     assertEquals(0f, actualFloat(), 1f);
-    assertEquals(actualFloat(), 0.0f, 1f); // Noncompliant {{Make sure these 2 arguments are in the correct order: expected value, actual value.}}
+    assertEquals(actualFloat(), 0.0f, 1f); // Noncompliant {{Swap these 2 arguments so they are in the correct order: expected value, actual value.}}
     assertEquals("message", actualFloat(), 0.0f, 1f); // Noncompliant
     assertEquals(actualFloat(), 0.0f); // Noncompliant
 

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3415")
@@ -51,8 +53,13 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argToCheck = getActualArgument(mit);
     if (isConstant(argToCheck)) {
-      context.reportIssue(this, argToCheck, "Make sure these 2 arguments are in the correct order: expected value, actual value.");
+      List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", previousArg(argToCheck, mit)));
+      context.reportIssue(this, argToCheck, "Swap these 2 arguments so they are in the correct order: expected value, actual value.", secondaries, null);
     }
+  }
+
+  private static Tree previousArg(ExpressionTree argToCheck, MethodInvocationTree mit) {
+    return mit.arguments().get(mit.arguments().indexOf(argToCheck) - 1);
   }
 
   private static ExpressionTree getActualArgument(MethodInvocationTree mit) {
