@@ -62,10 +62,16 @@ class A {
     hashMap.put("a", "Banana");
   }
 
-  void rhs(int[] arr, Map<Integer, Integer> map) {
+  void rhs(int[] arr, Map<Integer, Integer> map, int i) {
     arr[i] = arr[i] + 1;
     arr[i] = arr[i] + 1; // compliant arr[i] is used on RHS
     arr[i] = 3; // Noncompliant [[secondary=67,69]]
     arr[i] = 3;
   }
+
+  void unknownSymbols(Map<X<?>, X<?>> x) {
+    x.put(UNKNOWN_1, BFO);
+    x.put(UNKNOWN_2, BLA);
+  }
+
 }

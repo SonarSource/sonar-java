@@ -153,7 +153,10 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
   @CheckForNull
   private static Symbol symbolFromIdentifier(ExpressionTree collectionExpression) {
     if (collectionExpression.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) collectionExpression).symbol();
+      Symbol symbol = ((IdentifierTree) collectionExpression).symbol();
+      if (!symbol.isUnknown()) {
+        return symbol;
+      }
     }
     return null;
   }
