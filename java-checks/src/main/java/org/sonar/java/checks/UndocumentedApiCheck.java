@@ -102,7 +102,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (context.getSemanticModel() == null) {
       return;
     }
-    this.context = context;
     classTrees.clear();
     currentParents.clear();
     packageName = "";
