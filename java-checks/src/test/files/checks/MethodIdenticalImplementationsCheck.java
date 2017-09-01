@@ -109,6 +109,17 @@ abstract class E {
     doSomethingElse(b);
   }
 
+  void bam1(LocalA o1, LocalB o2) {
+    doSomething(o1);
+    doSomethingElse(o2);
+  }
+
+  LocalB o2;
+  void bam2(LocalA o1) { // Noncompliant - parameters are not considered
+    doSomething(o1);
+    doSomethingElse(o2);
+  }
+
   abstract void doSomething(Object o);
   abstract void doSomethingElse(Object o);
 
