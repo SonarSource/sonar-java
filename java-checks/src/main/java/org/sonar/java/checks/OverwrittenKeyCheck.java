@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -28,6 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,10 +44,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import javax.annotation.CheckForNull;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Rule(key = "S4143")
 public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
@@ -63,21 +66,44 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    Map<CollectionAndKey, Tree> usedKeys = new HashMap<>();
+    ListMultimap<CollectionAndKey, Tree> usedKeys = ArrayListMultimap.create();
     for (StatementTree statementTree: ((BlockTree) tree).body()){
       CollectionAndKey mapPut = isMapPut(statementTree);
       if (mapPut != null) {
-        handleKey(usedKeys, mapPut);
+        usedKeys.put(mapPut, mapPut.keyTree);
       } else {
         CollectionAndKey arrayAssignment = isArrayAssignment(statementTree);
         if (arrayAssignment != null) {
-          handleKey(usedKeys, arrayAssignment);
+          if (arrayAssignment.collectionOnRHS()) {
+            usedKeys.clear();
+          }
+          usedKeys.put(arrayAssignment, arrayAssignment.keyTree);
         } else {
           // sequence of setting collection values is interrupted
+          reportOverwrittenKeys(usedKeys);
           usedKeys.clear();
         }
       }
     }
+    reportOverwrittenKeys(usedKeys);
+  }
+
+  private void reportOverwrittenKeys(ListMultimap<CollectionAndKey, Tree> usedKeys) {
+    Multimaps.asMap(usedKeys).forEach( (key, trees) -> {
+      if (trees.size() > 1) {
+        Tree firstUse = trees.get(0);
+        Tree firstOverwrite = trees.get(1);
+        List<Tree> rest = trees.subList(2, trees.size());
+        reportIssue(firstOverwrite,"Verify this is the " + key.indexOrKey() + " that was intended; it was already set before.", secondaryLocations(key, firstUse, rest), 0);
+      }
+    });
+  }
+
+  private static List<JavaFileScannerContext.Location> secondaryLocations(CollectionAndKey key, Tree firstUse, List<Tree> rest) {
+    return Stream.concat(
+      Stream.of(new JavaFileScannerContext.Location("Original value", firstUse)),
+      rest.stream().map(t -> new JavaFileScannerContext.Location("Same " + key.indexOrKey() + " is set", t)))
+      .collect(Collectors.toList());
   }
 
   private static class CollectionAndKey {
@@ -85,12 +111,24 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     private final Tree keyTree;
     private final Object key;
     private final boolean isArray;
+    private ExpressionTree rhs;
 
-    private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray) {
+    private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray, ExpressionTree expression) {
       this.collection = collection;
       this.keyTree = keyTree;
       this.key = key;
       this.isArray = isArray;
+      this.rhs = expression;
+    }
+
+    private boolean collectionOnRHS() {
+      FindSymbolUsage findSymbolUsage = new FindSymbolUsage(collection);
+      rhs.accept(findSymbolUsage);
+      return findSymbolUsage.used;
+    }
+
+    private String indexOrKey() {
+      return isArray ? "index" : "key";
     }
 
     @Override
@@ -125,20 +163,39 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     if (statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       ExpressionTree expression = ((ExpressionStatementTree) statementTree).expression();
       if (expression.is(Tree.Kind.ASSIGNMENT)) {
-        ExpressionTree variable = ((AssignmentExpressionTree) expression).variable();
+        AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
+        ExpressionTree variable = assignment.variable();
         if (variable.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
           ArrayAccessExpressionTree aaet = (ArrayAccessExpressionTree) variable;
           Symbol collection = symbolFromIdentifier(aaet.expression());
           ExpressionTree keyTree = aaet.dimension().expression();
           Object key = extractKey(keyTree);
           if (collection != null && key != null) {
-            return new CollectionAndKey(collection, keyTree, key, true);
+            return new CollectionAndKey(collection, keyTree, key, true, assignment.expression());
           }
         }
       }
     }
     return null;
   }
+
+  private static class FindSymbolUsage extends BaseTreeVisitor {
+
+    private final Symbol symbol;
+    private boolean used;
+
+    public FindSymbolUsage(Symbol symbol) {
+      this.symbol = symbol;
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (!used) {
+        used = tree.symbol() == symbol;
+      }
+    }
+  }
+
 
   @CheckForNull
   private static CollectionAndKey isMapPut(StatementTree statementTree) {
@@ -150,25 +207,13 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
         ExpressionTree keyTree = mapPut.arguments().get(0);
         Object key = extractKey(keyTree);
         if (collection != null && key != null) {
-          return new CollectionAndKey(collection, keyTree, key, false);
+          return new CollectionAndKey(collection, keyTree, key, false, null);
         }
       }
     }
     return null;
   }
 
-  private void handleKey(Map<CollectionAndKey, Tree> keys, CollectionAndKey collectionAndKey) {
-    if (keys.containsKey(collectionAndKey)) {
-      Tree previousTree = keys.get(collectionAndKey);
-      String indexOrKey = collectionAndKey.isArray ? "index" : "key";
-      reportIssue(collectionAndKey.keyTree,
-        String.format("Verify this is the %s that was intended; a value has already been saved for it on line %d.", indexOrKey, previousTree.firstToken().line()),
-        ImmutableList.of(new JavaFileScannerContext.Location("Original value", previousTree)),
-        null);
-    } else {
-      keys.put(collectionAndKey, collectionAndKey.keyTree);
-    }
-  }
 
   @CheckForNull
   private static Object extractKey(ExpressionTree keyArgument) {

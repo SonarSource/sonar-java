@@ -6,7 +6,7 @@ class A {
 
   void map() {
     map.put("a", "Apple");
-    map.put("a", "Banana"); // Noncompliant [[secondary=8]]{{Verify this is the key that was intended; a value has already been saved for it on line 8.}}
+    map.put("a", "Banana"); // Noncompliant [[secondary=8]]{{Verify this is the key that was intended; it was already set before.}}
   }
 
   void map2() {
@@ -16,12 +16,14 @@ class A {
     if (blah) {
       map.put(3, "test");
       map.put(4, "another");
-      map.put(4, "another"); // Noncompliant {{Verify this is the key that was intended; a value has already been saved for it on line 18.}}
+      map.put(4, "another"); // Noncompliant [[secondary=18,20,21]]
+      map.put(4, "another");
+      map.put(4, "another");
     }
 
     for (int i = 0; i < 10; i++) {
       map.put(i, "test");
-      map.put(i, "test"); // Noncompliant {{Verify this is the key that was intended; a value has already been saved for it on line 23.}}
+      map.put(i, "test"); // Noncompliant [[secondary=25]]
     }
 
     for (int i = 0; i < 10; i++) {
@@ -34,9 +36,9 @@ class A {
     arr[1] = null;
     map.put("a", 1);
     other.put("a", 2);
-    map.put("a", 1); // Noncompliant {{Verify this is the key that was intended; a value has already been saved for it on line 35.}}
-    other.put("a", 2); // Noncompliant {{Verify this is the key that was intended; a value has already been saved for it on line 36.}}
-    arr[1] = null; // Noncompliant {{Verify this is the index that was intended; a value has already been saved for it on line 34.}}
+    map.put("a", 1); // Noncompliant [[secondary=37]]
+    other.put("a", 2); // Noncompliant [[secondary=38]]
+    arr[1] = null; // Noncompliant [[secondary=36]]
   }
 
   int[] ints;
@@ -44,7 +46,7 @@ class A {
   void arrays() {
     int i;
     ints[i] = 1;
-    ints[i] = 2; // Noncompliant {{Verify this is the index that was intended; a value has already been saved for it on line 46.}}
+    ints[i] = 2; // Noncompliant [[secondary=48]] {{Verify this is the index that was intended; it was already set before.}}
   }
 
   void marrays(int[][] arr) {
@@ -56,6 +58,14 @@ class A {
   void hashMap() {
     HashMap<Object, Object> hashMap = new HashMap<>();
     hashMap.put("a", "Apple");
-    hashMap.put("a", "Banana"); // Noncompliant
+    hashMap.put("a", "Apple"); // Noncompliant [[secondary=60,62]]
+    hashMap.put("a", "Banana");
+  }
+
+  void rhs(int[] arr, Map<Integer, Integer> map) {
+    arr[i] = arr[i] + 1;
+    arr[i] = arr[i] + 1; // compliant arr[i] is used on RHS
+    arr[i] = 3; // Noncompliant [[secondary=67,69]]
+    arr[i] = 3;
   }
 }
