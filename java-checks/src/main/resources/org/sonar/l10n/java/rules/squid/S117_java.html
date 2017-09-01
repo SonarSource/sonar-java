@@ -1,5 +1,5 @@
-<p>Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all local
-variable and function parameter names match a provided regular expression.</p>
+<p>Shared naming conventions allow teams to collaborate effectively. This rule raises an issue when a local variable or function parameter name does
+not match the provided regular expression.</p>
 <h2>Noncompliant Code Example</h2>
 <p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
 <pre>
@@ -20,6 +20,13 @@ public void doSomething(int myParam) {
 <pre>
 for (int i_1 = 0; i_1 &lt; limit; i_1++) {  // Compliant
   // ...
+}
+</pre>
+<p>as well as one-character <code>catch</code> variables: </p>
+<pre>
+try {
+//...
+} catch (Exception e) { // Compliant
 }
 </pre>
 
