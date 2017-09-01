@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Rule(key = "S3242")
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
@@ -97,8 +96,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         return parameter.type();
       }
       if (parent.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-        Symbol iteratorMethod = findIteratorMethod(parameter).orElseThrow(() -> new IllegalStateException("Iterable.iterator() not found"));
-        inheritanceGraph.update(iteratorMethod);
+        findIteratorMethod(parameter).ifPresent(inheritanceGraph::update);
       } else if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) parent;
         if (isMethodInvocationOnParameter(parameter, mit)) {
@@ -138,7 +136,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) typeSymbol).directSuperTypes();
       List<List<Type>> result = superTypes.stream()
         .flatMap(superType -> computeChains(m, superType).stream())
-        .map(c -> Stream.concat(c.stream(), Stream.of(type)).collect(Collectors.toList()))
+        .peek(c -> c.add(type))
         .collect(Collectors.toList());
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
