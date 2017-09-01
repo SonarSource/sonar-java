@@ -37,21 +37,21 @@ class A {
     return null;
   }
 
-  interface IA {
+  public interface IA {
     default void a() {
     }
   }
 
-  interface IB {
+  public interface IB {
     default void b() {
     }
   }
 
-  class S implements IA, IB {
+  public class S implements IA, IB {
 
   }
 
-  class C extends S {
+  public class C extends S {
   }
 
   public void test4(C arg) { // Noncompliant {{Use 'A.S' here; it is a more general type than 'C'.}}
@@ -75,7 +75,11 @@ class A {
     Integer min = Collections.min(list);
   }
 
-  abstract static class Base {
+  public interface IBase {
+    void b2();
+  }
+
+  abstract static class Base implements IBase {
     public abstract void b();
   }
 
@@ -88,6 +92,7 @@ class A {
   }
 
   public static void visibility(Visibility vis) { // Compliant - Base has package visibility
+    vis.b2();
     vis.b();
   }
 
@@ -123,30 +128,30 @@ class A {
     e.field.toString();
   }
 
-  interface II1 {}
+  public interface II1 {}
 
-  interface I1 extends II1 {
+  public interface I1 extends II1 {
     void m();
   }
 
-  interface I2 extends I1 {
+  public interface I2 extends I1 {
     void m();
   }
 
-  static class T1 {
+  public static class T1 {
     void m() {}
     void mt1() {}
   }
 
-  static class T2 extends T1 implements I2 {
+  public static class T2 extends T1 implements I2 {
     void ma();
   }
 
-  interface IMB {
+  public interface IMB {
     void ma();
   }
 
-  interface IMA {
+  public interface IMA {
     void ma();
   }
 
@@ -166,11 +171,11 @@ class A {
     t.ma();
   }
 
-  interface IG<T> {
+  public interface IG<T> {
     T get();
   }
 
-  abstract class GImpl implements IG<GImpl> {
+  public abstract class GImpl implements IG<GImpl> {
     GImpl get();
   }
 
@@ -190,5 +195,28 @@ class A {
     g.get();
   }
 
+  public static void stringBuilder(final StringBuilder name) {
+    name.charAt(0);
+    name.substring(0, 1);
+  }
 
+  private static class PrivateClass implements IBase {
+    void m2() {}
+  }
+
+  protected static class ProtectedClass extends PrivateClass {
+
+  }
+
+  static class PackageClass extends ProtectedClass {
+
+  }
+
+  public static void coverage(PrivateClass c) { // Noncompliant  {{Use 'A.IBase' here; it is a more general type than 'PrivateClass'.}}
+    c.b2();
+  }
+
+  public static void coverage2(PackageClass c) {
+    c.m2();
+  }
 }

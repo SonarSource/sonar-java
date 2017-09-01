@@ -147,14 +147,13 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return result;
     }
 
-    private boolean definesOrInheritsSymbol(Symbol symbol, JavaSymbol.TypeJavaSymbol typeSymbol) {
+    private static boolean definesOrInheritsSymbol(Symbol symbol, JavaSymbol.TypeJavaSymbol typeSymbol) {
       return definesSymbol(symbol, typeSymbol)
         || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
     }
 
-    private boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol) {
-      return hasSameVisibility(startType.symbol(), typeSymbol) && typeSymbol.memberSymbols().stream()
-        .anyMatch(s -> isOverriding(m, s, ((ClassJavaType) typeSymbol.type())));
+    private static boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol) {
+      return typeSymbol.memberSymbols().stream().anyMatch(s -> isOverriding(m, s, ((ClassJavaType) typeSymbol.type())));
     }
 
     private void refineChains(Symbol m) {
@@ -171,7 +170,11 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     }
 
     private Type leastSpecificType() {
-      if (chains == null || chains.isEmpty()) {
+      if (chains == null) {
+        return startType;
+      }
+      chains.forEach(c -> c.removeIf(t -> !t.symbol().isPublic()));
+      if (chains.stream().allMatch(List::isEmpty)) {
         return startType;
       }
       // pick longest chain, if multiple have same length, prefer interface, if multiple choices, choose alphabetically
@@ -182,19 +185,6 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
       List<Type> longestChain = chains.get(0);
       return longestChain.get(0);
-    }
-
-    private static boolean hasSameVisibility(Symbol.TypeSymbol type, Symbol.TypeSymbol replacement) {
-      if (type.isPublic()) {
-        return replacement.isPublic();
-      }
-      if (type.isProtected()) {
-        return replacement.isPublic() || replacement.isProtected();
-      }
-      if (type.isPackageVisibility()) {
-        return replacement.isPublic() || (((JavaSymbol.TypeJavaSymbol) type).packge() == ((JavaSymbol.TypeJavaSymbol) replacement).packge());
-      }
-      return false;
     }
 
     private static boolean isOverriding(Symbol s1, Symbol s2, ClassJavaType superClass) {
