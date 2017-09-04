@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
@@ -2063,7 +2064,17 @@ public class CFGTest {
 
   @Test
   public void build_partial_cfg_with_break() throws Exception {
-    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A {void meth(){ try {fun(); } catch ( Exception e) {e.printStackTrace(); break; } }}");
+    build_partial_cfg("break");
+  }
+
+  @Test
+  public void build_partial_cfg_with_continue() throws Exception {
+    build_partial_cfg("continue");
+  }
+
+  private void build_partial_cfg(String breakOrContinue) {
+    String methodCode = "void meth(){ try {fun(); } catch ( Exception e) {e.printStackTrace(); "+breakOrContinue+"; } }";
+    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A {" + methodCode + "}");
     SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     List<StatementTree> body = methodTree.block().body();
@@ -2071,5 +2082,12 @@ public class CFGTest {
     cfg.setMethodSymbol(methodTree.symbol());
     assertThat(cfg.blocks()).hasSize(5);
     assertThat(cfg.methodSymbol()).isSameAs(methodTree.symbol());
+
+    try {
+      CFG.buildCFG(body, false);
+      fail("IllegalStateException should have been thrown");
+    } catch (IllegalStateException iae) {
+      assertThat(iae).hasMessage("'"+breakOrContinue+"' statement not in loop or switch statement");
+    }
   }
 }
