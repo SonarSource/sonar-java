@@ -43,6 +43,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -78,11 +79,11 @@ public class EGDotNode extends DotGraph.Node {
   @Override
   @CheckForNull
   public DotGraph.Highlighting highlighting() {
-    if (hasParents) {
+    if (!hasParents) {
       if (isFirstBlock) {
         return DotGraph.Highlighting.FIRST_NODE;
       }
-      // lost nodes - should never happen - worth investigation if appears in viewer
+      // lost node with no parents, but not first node - should never happen - worth investigation if appears in viewer
       return DotGraph.Highlighting.LOST_NODE;
     } else if (programPoint().startsWith("B0.0")) {
       return DotGraph.Highlighting.EXIT_NODE;

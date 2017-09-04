@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.viewer.DotGraph;
 
 import javax.annotation.CheckForNull;
@@ -121,7 +120,7 @@ public class CFGDotGraph extends DotGraph {
     }
 
     @CheckForNull
-    private static String label(Block block, Block successor) {
+    private static String label(CFG.Block block, CFG.Block successor) {
       if (successor == block.trueBlock()) {
         return "TRUE";
       } else if (successor == block.falseBlock()) {
