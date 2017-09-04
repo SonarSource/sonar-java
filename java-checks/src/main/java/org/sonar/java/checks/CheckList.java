@@ -499,7 +499,6 @@ public final class CheckList {
       .add(DisallowedClassCheck.class)
       .add(LazyArgEvaluationCheck.class)
       .add(BooleanMethodNameCheck.class)
-      .add(WrappedNativeMethodCheck.class)
       .add(StaticFieldUpdateInConstructorCheck.class)
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
