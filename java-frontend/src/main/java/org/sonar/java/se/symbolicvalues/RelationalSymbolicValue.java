@@ -445,4 +445,9 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       super("Number of transitive relations exceeded!" + msg);
     }
   }
+
+  @VisibleForTesting
+  public Kind kind() {
+    return kind;
+  }
 }
