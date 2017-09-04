@@ -35,6 +35,7 @@ import spark.utils.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +49,19 @@ public class ViewerTest {
   public final ExpectedException exception = ExpectedException.none();
 
   @Test
+  public void private_constructor() throws Exception {
+    Constructor<Viewer> constructor = Viewer.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
+  @Test
   public void code_without_method_trigger_an_exception() {
     exception.expect(NullPointerException.class);
     exception.expectMessage("Unable to find a method in first class.");
 
-    Viewer.getValues("class A { }");
+    new Viewer.Base("class A { }");
   }
 
   @Test
@@ -166,6 +175,12 @@ public class ViewerTest {
 
     assertThat(values.get("errorMessage")).isEmpty();
     assertThat(values.get("errorStackTrace")).isEmpty();
+  }
+
+  @Test
+  public void missing_default_code_should_still_return_something() {
+    String sourceCode = Viewer.fileContent("/public/example/");
+    assertThat(sourceCode).isEqualTo("// Unable to read file at location: \"/public/example/\"\\n\\n");
   }
 
 }

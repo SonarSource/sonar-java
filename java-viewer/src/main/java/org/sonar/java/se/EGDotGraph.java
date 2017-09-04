@@ -25,6 +25,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.viewer.DotGraph;
+import org.sonar.java.viewer.Viewer;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -49,7 +50,11 @@ public class EGDotGraph extends DotGraph {
   private final SemanticModel semanticModel;
   private final int cfgFirstBlockId;
 
-  public EGDotGraph(CompilationUnitTree cut, MethodTree method, SemanticModel semanticModel, int cfgFirstBlockId) {
+  public EGDotGraph(Viewer.Base base) {
+    this(base.cut, base.firstMethod, base.semanticModel, base.cfgFirstMethod.blocks().get(0).id());
+  }
+
+  private EGDotGraph(CompilationUnitTree cut, MethodTree method, SemanticModel semanticModel, int cfgFirstBlockId) {
     this.cut = cut;
     this.methodToAnalyze = method;
     this.semanticModel = semanticModel;

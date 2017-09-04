@@ -63,11 +63,11 @@ import static spark.Spark.staticFiles;
 public class Viewer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Viewer.class);
-  private static final String DEFAULT_SOURCE_CODE_LOCATION = "/public/example/example.java";
-  private static final String DEFAULT_SOURCE_CODE = defaultFileContent();
+  private static final String DEFAULT_SOURCE_CODE = fileContent("/public/example/example.java");
   private static final int DEFAULT_PORT = 9999;
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
+  private Viewer() {
+  }
 
   public static void main(String[] args) {
     startWebServer(DEFAULT_PORT, DEFAULT_SOURCE_CODE);
@@ -110,34 +110,19 @@ public class Viewer {
   static Map<String, String> getValues(String javaCode) {
     Map<String, String> values = new HashMap<>();
 
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(javaCode);
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
-    MethodTree firstMethod = getFirstMethod(cut);
+    Base base = new Base(javaCode);
 
-    Preconditions.checkNotNull(firstMethod, "Unable to find a method in first class.");
+    values.put("cfg", CFGPrinter.toString(base.cfgFirstMethod));
 
-    CFG cfg = CFG.build(firstMethod);
-
-    values.put("cfg", CFGPrinter.toString(cfg));
-
-    values.put("dotAST", new ASTDotGraph(cut).toDot());
-    values.put("dotCFG", new CFGDotGraph(cfg).toDot());
-    values.put("dotEG", new EGDotGraph(cut, firstMethod, semanticModel, cfg.blocks().get(0).id()).toDot());
+    values.put("dotAST", new ASTDotGraph(base.cut).toDot());
+    values.put("dotCFG", new CFGDotGraph(base.cfgFirstMethod).toDot());
+    values.put("dotEG", new EGDotGraph(base).toDot());
 
     // explicitly force empty message and stack trace
     values.put("errorMessage", "");
     values.put("errorStackTrace", "");
 
     return values;
-  }
-
-  @CheckForNull
-  private static MethodTree getFirstMethod(CompilationUnitTree cut) {
-    ClassTree classTree = (ClassTree) cut.types().get(0);
-    return (MethodTree) classTree.members().stream()
-      .filter(m -> m.is(Tree.Kind.METHOD))
-      .findFirst()
-      .orElse(null);
   }
 
   @VisibleForTesting
@@ -160,15 +145,43 @@ public class Viewer {
     return new VelocityTemplateEngine().render(new ModelAndView(values, "velocity/index.vm"));
   }
 
-  private static String defaultFileContent() {
+  @VisibleForTesting
+  static String fileContent(String location) {
     String result;
     try {
-      Path path = Paths.get(Viewer.class.getResource(DEFAULT_SOURCE_CODE_LOCATION).toURI());
+      Path path = Paths.get(Viewer.class.getResource(location).toURI());
       result = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     } catch (URISyntaxException | IOException e) {
-      LOGGER.error("Unable to read default file.", e);
-      result = "// Unable to read default file:\\n\\n";
+      LOGGER.error("Unable to read file at location: " + location + ".", e);
+      result = "// Unable to read file at location: \"" + location + "\"\\n\\n";
     }
     return result;
+  }
+
+  public static class Base {
+    private static final ActionParser<Tree> PARSER = JavaParser.createParser();
+    public final CompilationUnitTree cut;
+    public final MethodTree firstMethod;
+    public final SemanticModel semanticModel;
+    public final CFG cfgFirstMethod;
+
+    public Base(String source) {
+      this.cut = (CompilationUnitTree) PARSER.parse(source);
+      this.semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+      this.firstMethod = getFirstMethod(cut);
+
+      Preconditions.checkNotNull(firstMethod, "Unable to find a method in first class.");
+
+      this.cfgFirstMethod = CFG.build(firstMethod);
+    }
+
+    @CheckForNull
+    private static MethodTree getFirstMethod(CompilationUnitTree cut) {
+      ClassTree classTree = (ClassTree) cut.types().get(0);
+      return (MethodTree) classTree.members().stream()
+        .filter(m -> m.is(Tree.Kind.METHOD))
+        .findFirst()
+        .orElse(null);
+    }
   }
 }
