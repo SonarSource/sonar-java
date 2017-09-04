@@ -65,8 +65,10 @@ class A {
   void rhs(int[] arr, Map<Integer, Integer> map, int i) {
     arr[i] = arr[i] + 1;
     arr[i] = arr[i] + 1; // compliant arr[i] is used on RHS
-    arr[i] = 3; // Noncompliant [[secondary=67,69]]
+    arr[i] = 3; // Noncompliant [[secondary=67,69,70]]
     arr[i] = 3;
+    arr[i] = i;
+    arr[i++] = i; // index is not a symbol
   }
 
   void unknownSymbols(Map<X<?>, X<?>> x) {
@@ -74,4 +76,17 @@ class A {
     x.put(UNKNOWN_2, BLA);
   }
 
+  int[] fieldArr;
+
+  void assignment_to_non_local_array(int i, int[] arr) {
+    i = 42;
+    this.fieldArr[i] = 0;
+    this.fieldArr[i++] = 0; // index is not a symbol
+  }
+
+  class MyMap extends HashMap<Object, Object> {
+    void map_put_invoked_as_identifier() {
+      put(1, 2);
+    }
+  }
 }
