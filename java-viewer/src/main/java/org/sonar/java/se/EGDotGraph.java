@@ -92,7 +92,7 @@ public class EGDotGraph extends DotGraph {
     int index = 0;
     for (ExplodedGraph.Node node : egNodes) {
       Collection<ExplodedGraph.Edge> egEdges = node.edges();
-      addNode(new EGDotNode(index, node, behaviorCache, egEdges.isEmpty(), cfgFirstBlockId));
+      addNode(new EGDotNode(index, node, behaviorCache, !egEdges.isEmpty(), cfgFirstBlockId));
       Stream<ExplodedGraph.Edge> edgeStream = egEdges.stream();
       if (!SHOW_MULTIPLE_PARENTS) {
         edgeStream = edgeStream.limit(1);
