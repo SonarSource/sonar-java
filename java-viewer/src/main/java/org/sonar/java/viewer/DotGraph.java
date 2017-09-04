@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 public abstract class DotGraph {
 
   private static final String ESCAPE_CHAR = "?";
-  private static final String NEW_LINE = "\\n";
 
   private final Stream.Builder<DotElement> elements = Stream.builder();
 
@@ -67,11 +66,9 @@ public abstract class DotGraph {
     StringBuilder sb = new StringBuilder()
       .append("graph ")
       .append(name())
-      .append(" {")
-      .append(NEW_LINE);
+      .append(" {");
     elements.build().map(DotElement::toDot).forEach(sb::append);
-    return sb.append(NEW_LINE)
-      .append("}")
+    return sb.append("}")
       .toString();
   }
 
@@ -145,7 +142,7 @@ public abstract class DotGraph {
 
     @Override
     public final String toDot() {
-      return MessageFormat.format("{0}[{1}];{2}", id, dotProperties(), NEW_LINE);
+      return MessageFormat.format("{0}[{1}];", id, dotProperties());
     }
   }
 
@@ -168,7 +165,7 @@ public abstract class DotGraph {
 
     @Override
     public final String toDot() {
-      return MessageFormat.format("{0}->{1}[{2}];{3}", from, to, dotProperties(), NEW_LINE);
+      return MessageFormat.format("{0}->{1}[{2}];", from, to, dotProperties());
     }
   }
 }
