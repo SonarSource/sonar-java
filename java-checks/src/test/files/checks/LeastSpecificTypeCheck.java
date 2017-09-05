@@ -219,4 +219,7 @@ class A {
   public static void coverage2(PackageClass c) {
     c.m2();
   }
+
+  public static void primitiveTypesAreIgnored(int i, long l, double d, float f, byte b, short s, char c, boolean boo) { }
+  
 }
