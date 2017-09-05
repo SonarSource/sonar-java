@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -98,14 +99,23 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     }
 
     @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
+
+    @Override
     public void visitIdentifier(IdentifierTree tree) {
       Type type = tree.symbolType();
       if (type instanceof MethodJavaType) {
         type = ((MethodJavaType) type).resultType();
       }
-      if (!classType.equals(type) && type.isSubtypeOf(classType)) {
+      if (!sameErasure(type) && type.isSubtypeOf(classType)) {
         reportIssue(tree, String.format("Remove this reference to \"%s\".", type.symbol().name()));
       }
+    }
+
+    private boolean sameErasure(Type type) {
+      return classType.erasure().equals(type.erasure());
     }
   }
 

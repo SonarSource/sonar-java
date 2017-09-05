@@ -24,5 +24,15 @@ class Child extends Parent {
    }
 }
 
-class MoreChild extends Child {
+class MoreChild extends Child { }
+
+class A<T extends java.util.Date> {
+  static final java.util.Comparator<A<?>> COMPARATOR = (a1, a2) -> a1.value.compareTo(a2.value); // Compliant
+  T value;
 }
+
+class C {
+  static final java.util.function.Function<D, D> FUNC = (D d) -> d; // Compliant
+}
+
+class D extends C { }
