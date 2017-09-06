@@ -25,6 +25,7 @@ import org.sonar.java.collections.PMap;
 import javax.annotation.Nullable;
 
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConstraintsByDomain {
@@ -89,6 +90,11 @@ public class ConstraintsByDomain {
     }
     ConstraintsByDomain that = (ConstraintsByDomain) o;
     return constraintPMap.equals(that.constraintPMap);
+  }
+
+  @Override
+  public String toString() {
+    return stream().map(Constraint::toString).sorted().collect(Collectors.joining(",", "[", "]"));
   }
 
   @Override

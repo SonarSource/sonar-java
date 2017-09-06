@@ -82,6 +82,23 @@ public class ConstraintsByDomainTest {
     assertThat(counter.count).isEqualTo(1);
   }
 
+  @Test
+  public void test_toString() {
+    ConstraintsByDomain constraints = ConstraintsByDomain.empty();
+    assertThat(constraints.toString()).isEqualTo("[]");
+
+    // uses constraints value
+    constraints = constraints.put(ObjectConstraint.NOT_NULL);
+    assertThat(constraints.toString()).isEqualTo("[NOT_NULL]");
+
+    // ordered by constraint name
+    constraints = constraints.put(BooleanConstraint.FALSE);
+    assertThat(constraints.toString()).isEqualTo("[FALSE,NOT_NULL]");
+
+    constraints = constraints.put(BooleanConstraint.TRUE);
+    assertThat(constraints.toString()).isEqualTo("[NOT_NULL,TRUE]");
+  }
+
   private static class Counter implements BiConsumer<Class<? extends Constraint>, Constraint> {
 
     private int count;
