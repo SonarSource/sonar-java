@@ -209,6 +209,18 @@ public class SymbolicValue {
 
   }
 
+  public static class CaughtExceptionSymbolicValue extends SymbolicValue {
+    private final ExceptionalSymbolicValue thrownSV;
+
+    public CaughtExceptionSymbolicValue(ExceptionalSymbolicValue thrownSV) {
+      this.thrownSV = thrownSV;
+    }
+
+    public ExceptionalSymbolicValue exception() {
+      return thrownSV;
+    }
+  }
+
   public static class NotSymbolicValue extends UnarySymbolicValue {
 
 

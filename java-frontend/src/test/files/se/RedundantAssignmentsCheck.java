@@ -94,10 +94,9 @@ class C {
 
     void foo() {
       Throwable caughtEx = null;
-      caughtEx = bar(caughtEx); // Noncompliant - FP caused by SONARJAVA-2188
+      caughtEx = bar(caughtEx); // Compliant
     }
 
-    // method yields are wrong,and produces exceptional yields instead of normal yields
     private Throwable bar(Throwable ex) {
       Throwable result = null;
       try {
@@ -106,7 +105,7 @@ class C {
         result = e;
       }
       if (result != null) {
-        return result;
+        return result; // return another exception
       }
       return ex;
     }
