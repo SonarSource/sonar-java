@@ -24,11 +24,7 @@ import org.junit.Test;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,5 +96,13 @@ public class SymbolicValueTest {
     SymbolicValue.XorSymbolicValue xorSV = new SymbolicValue.XorSymbolicValue();
     SymbolicValueTestUtil.computedFrom(xorSV, sv1, sv2);
     assertThat(xorSV).hasToString(sv2 + " ^ " + sv1);
+  }
+
+  @Test
+  public void caughtException() {
+    SymbolicValue.ExceptionalSymbolicValue thrownSV = new SymbolicValue.ExceptionalSymbolicValue(null);
+    SymbolicValue.CaughtExceptionSymbolicValue caughtSV = new SymbolicValue.CaughtExceptionSymbolicValue(thrownSV);
+
+    assertThat(caughtSV.exception()).isEqualTo(thrownSV);
   }
 }

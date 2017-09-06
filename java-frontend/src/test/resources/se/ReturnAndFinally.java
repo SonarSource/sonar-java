@@ -1,3 +1,5 @@
+package org.foo;
+
 abstract class ReturnAndFinally {
 
   private Object foo(Object a) {
@@ -30,9 +32,8 @@ abstract class ReturnAndFinally {
   }
 
   public abstract Object bar(Object o) throws RuntimeException;
-  private class MyException extends Exception {}
 
-  private boolean returnInFinally() {
+  private boolean returnInFinally() throws Exception {
     try {
       foo();
     } catch (MyException e) {
@@ -54,4 +55,16 @@ abstract class ReturnAndFinally {
     return null;
   }
   abstract void doSomething() throws Exception;
+
+  private Exception rethrowingException() throws Exception {
+    try {
+      doSomethingElse();
+    } catch (Exception e) {
+      throw e;
+    }
+    return null;
+  }
+  abstract void doSomethingElse() throws MyException;
 }
+
+class MyException extends Exception {}

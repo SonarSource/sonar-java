@@ -408,8 +408,14 @@ public class ExplodedGraphWalker {
           break;
         case THROW_STATEMENT:
           ProgramState.Pop unstack = programState.unstackValue(1);
-          // we don't use the SV related to the expression
-          programState = unstack.state.stackValue(constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType()));
+          SymbolicValue sv = unstack.values.get(0);
+          if (sv instanceof SymbolicValue.CaughtExceptionSymbolicValue) {
+            // retrowing the exception from a catch block
+            sv = ((SymbolicValue.CaughtExceptionSymbolicValue) sv).exception();
+          } else {
+            sv = constraintManager.createExceptionalSymbolicValue(((ThrowStatementTree) terminator).expression().symbolType());
+          }
+          programState = unstack.state.stackValue(sv);
           programState.storeExitValue();
           break;
         default:
@@ -793,7 +799,11 @@ public class ExplodedGraphWalker {
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = getCaughtException(variableTree.symbol().type());
+        sv = handleCatchVariable(variableTree.symbol().type());
+        // an exception have been thrown and caught, stack must be cleared
+        // see notes in JVMS 8 - §6.5. - instruction "athrow"
+        programState = programState.clearStack();
+        // exception variable is not null by definition
         programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
       }
       if (sv != null) {
@@ -806,22 +816,21 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private SymbolicValue getCaughtException(Type caughtType) {
-    SymbolicValue sv = null;
+  private SymbolicValue handleCatchVariable(Type caughtType) {
+    SymbolicValue peekValue = programState.peekValue();
+    SymbolicValue.ExceptionalSymbolicValue sv = null;
     Type exceptionType = null;
     // FIXME SONARJAVA-2069 every path conducting to a catch block should have an exceptional symbolic value on top of the stack
-    if (programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      ProgramState.Pop unstack = programState.unstackValue(1);
-      programState = unstack.state;
-      // use the Exceptional SV from the stack
-      sv = unstack.values.get(0);
-      exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) sv).exceptionType();
+    if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      sv = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
+      exceptionType = sv.exceptionType();
     }
     if (exceptionType == null || exceptionType.isUnknown()) {
       // unknown exception, create an exception of the adequate type
       sv = constraintManager.createExceptionalSymbolicValue(caughtType);
     }
-    return sv;
+    // use a dedicated SV encapsulating the caught exception
+    return constraintManager.createCaughtExceptionSymbolicValue(sv);
   }
 
   private void executeTypeCast(TypeCastTree typeCast) {

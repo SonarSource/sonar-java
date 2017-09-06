@@ -67,12 +67,12 @@ public class MethodBehaviorTest {
   @Test
   public void method_behavior_handling_finally() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);
-    assertThat(foo.happyPathYields().count()).isEqualTo(2);
-    assertThat(foo.exceptionalPathYields().count()).isEqualTo(2);
+    assertThat(foo.happyPathYields()).hasSize(2);
+    assertThat(foo.exceptionalPathYields()).hasSize(2);
 
     MethodBehavior qix = getMethodBehavior(sev, "qix");
     List<MethodYield> qixYield = qix.yields();
@@ -90,13 +90,21 @@ public class MethodBehaviorTest {
 
     MethodBehavior returnInFinally = getMethodBehavior(sev, "returnInFinally");
     assertThat(returnInFinally.yields()).hasSize(1);
-    assertThat(returnInFinally.yields().get(0)).isInstanceOf(HappyPathYield.class);
+    assertThat(returnInFinally.happyPathYields()).hasSize(1);
 
     MethodBehavior returningException = getMethodBehavior(sev, "returningException");
     assertThat(returningException.yields()).hasSize(3);
-    // FIXME : there should be only one exceptional path and 2 happy paths : see SONARJAVA-2188
-    assertThat(returningException.yields().stream().filter(y-> y instanceof HappyPathYield).count()).isEqualTo(1);
-    assertThat(returningException.yields().stream().filter(y-> y instanceof ExceptionalYield).count()).isEqualTo(2);
+    assertThat(returningException.happyPathYields()).hasSize(2);
+    assertThat(returningException.exceptionalPathYields()).hasSize(1);
+
+    MethodBehavior rethrowingException = getMethodBehavior(sev, "rethrowingException");
+    assertThat(rethrowingException.yields()).hasSize(4);
+    assertThat(rethrowingException.happyPathYields()).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields()).hasSize(3);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() == null)).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() != null && y.exceptionType().is("java.lang.Exception"))).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException"))).hasSize(1);
+
   }
 
 }

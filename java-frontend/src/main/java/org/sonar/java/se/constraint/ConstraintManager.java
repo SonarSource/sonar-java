@@ -126,6 +126,10 @@ public class ConstraintManager {
     return new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
   }
 
+  public SymbolicValue.CaughtExceptionSymbolicValue createCaughtExceptionSymbolicValue(SymbolicValue.ExceptionalSymbolicValue thrownValue) {
+    return new SymbolicValue.CaughtExceptionSymbolicValue(thrownValue);
+  }
+
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<ProgramState.SymbolicValueSymbol> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
