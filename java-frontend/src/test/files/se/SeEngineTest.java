@@ -139,7 +139,7 @@ class DefaultValues {
   }
 }
 
-class OptionalWithNullDereference {
+abstract class TestingOptionals {
   private void usingOfNullable(@javax.annotation.Nullable Object o) {
     // null value used with 'ofNullable' creates an empty optional
     java.util.Optional<Object> op = java.util.Optional.ofNullable(o);
@@ -150,6 +150,19 @@ class OptionalWithNullDereference {
     }
     op.get(); // Compliant - empty case triggered a NPE
   }
+
+  private java.util.Optional<File> usingFilters(java.util.Optional<String> relativePath) { // Compliant - not always same result
+    if (relativePath.filter(this::isNotBlank).isPresent()) {
+      java.io.File f = getFile(relativePath.get()); // Compliant
+      return java.util.Optional.ofNullable(f);
+    }
+    return java.util.Optional.empty();
+  }
+
+  abstract boolean isNotBlank(@javax.annotation.Nullable String s);
+
+  @javax.annotation.CheckForNull
+  abstract File getFile(String path);
 }
 
 class ResetFieldValue {

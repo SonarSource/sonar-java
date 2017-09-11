@@ -3,7 +3,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-class A {
+abstract class A {
   Optional<String> getOptional() { return Optional.of(""); }
   Optional<String> optional;
 
@@ -81,6 +81,22 @@ class A {
       op.get(); // Compliant - if o is not null, then the optional is necessarily present
     }
   }
+
+  private void usingFilter1(Optional<String> op) {
+    if (op.filter(this::testSomething).isPresent()) {
+      op.get(); // Compliant - filter should return the same optional if test pass
+    }
+    op.get(); // Noncompliant
+  }
+
+  private void usingFilter2(Optional<String> op) {
+    if (!op.filter(this::testSomething).isPresent()) {
+      return;
+    }
+    op.get(); // Compliant - FN
+  }
+
+  abstract boolean testSomething(String s);
 }
 
 class Location {
