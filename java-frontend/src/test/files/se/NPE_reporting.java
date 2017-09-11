@@ -64,9 +64,9 @@ class A {
 
   void Xproc(boolean a) {
     if (a) {
-      Object b = // flow@xproc
-        foo(a); // flow@xproc
-      b.toString(); // Noncompliant [[flows=xproc]] flow@xproc {{'b' is dereferenced.}}
+      Object b = // flow@xproc [[order=2]]
+        foo(a); // flow@xproc [[order=1]]
+      b.toString(); // Noncompliant [[flows=xproc]] flow@xproc [[order=3]] {{'b' is dereferenced.}}
     }
   }
 

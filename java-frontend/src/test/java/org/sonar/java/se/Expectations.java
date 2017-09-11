@@ -25,14 +25,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
-
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -54,7 +53,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
@@ -63,7 +61,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.sonar.java.se.Expectations.IssueAttribute.EFFORT_TO_FIX;
@@ -171,6 +168,10 @@ class Expectations {
       return MESSAGE.get(attributes);
     }
 
+    int line() {
+      return line;
+    }
+
     @Override
     public String toString() {
       return String.format("%d: flow@%s %s", line, id, attributes.toString());
@@ -183,8 +184,6 @@ class Expectations {
   final String expectFileIssue;
   final Integer expectFileIssueOnLine;
 
-  //initialized lazily in #containFlow
-  private Map<ImmutableList<Integer>, String> flowLines = null;
   private Set<String> seenFlowIds = new HashSet<>();
 
   Expectations() {
@@ -198,31 +197,41 @@ class Expectations {
   }
 
 
-  Optional<String> containFlow(List<AnalyzerMessage> flow) {
-    if (flowLines == null) {
-      flowLines = computeFlowLines();
+  Optional<String> containFlow(List<AnalyzerMessage> actual) {
+    List<Integer> actualLines = flowToLines(actual, AnalyzerMessage::getLine);
+    Set<String> expectedFlows = flows.keySet().stream()
+      .filter(flowId -> !seenFlowIds.contains(flowId))
+      .filter(flowId -> flowToLines(flows.get(flowId), FlowComment::line).equals(actualLines))
+      .collect(Collectors.toSet());
+    if (expectedFlows.isEmpty()) {
+      return Optional.empty();
     }
-    ImmutableList<Integer> actualLines = flowToLines(flow, AnalyzerMessage::getLine);
-    Optional<String> flowId = Optional.ofNullable(flowLines.get(actualLines));
-    flowId.ifPresent(id -> seenFlowIds.add(id));
-    return flowId;
+    if (expectedFlows.size() == 1) {
+      String flowId = Iterables.getOnlyElement(expectedFlows);
+      seenFlowIds.add(flowId);
+      return Optional.of(flowId);
+    }
+    // more than 1 flow with same lines, let's check messages
+    List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).collect(toList());
+    Optional<String> foundFlow = expectedFlows.stream().filter(flowId -> hasSameMessages(flowId, actualMessages)).findFirst();
+    foundFlow.ifPresent(flowId -> seenFlowIds.add(flowId));
+    return foundFlow;
+  }
+
+  private boolean hasSameMessages(String flowId, List<String> actualMessages) {
+    List<String> expectedMessages = flows.get(flowId).stream().map(FlowComment::message).collect(toList());
+    return expectedMessages.equals(actualMessages);
   }
 
   Set<String> unseenFlowIds() {
     return Sets.difference(flows.keySet(), seenFlowIds);
   }
 
-  private Map<ImmutableList<Integer>, String> computeFlowLines() {
-    Map<String, SortedSet<FlowComment>> flows = Multimaps.asMap(this.flows);
-    return flows.entrySet().stream()
-      .collect(Collectors.toMap(e -> flowToLines(e.getValue(), flowComment -> flowComment.line), Map.Entry::getKey));
-  }
-
-  private static <T> ImmutableList<Integer> flowToLines(Collection<T> flow, ToIntFunction<T> toLineFunction) {
+  private static <T> List<Integer> flowToLines(Collection<T> flow, ToIntFunction<T> toLineFunction) {
     return flow.stream()
       .mapToInt(toLineFunction)
-      .sorted().boxed()
-      .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+      .boxed()
+      .collect(toList());
   }
 
   String flowToLines(String flowId) {

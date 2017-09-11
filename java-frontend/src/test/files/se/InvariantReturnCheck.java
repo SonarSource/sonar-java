@@ -2,11 +2,11 @@ class A {
   private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
     int b = 12;
     if(a) {
-      return b; // flow@issue1
+      return b; // flow@issue1 [[order=3]]
     } else if(polop()) {
-      return b;  // flow@issue1
+      return b;  // flow@issue1 [[order=2]]
     }
-    return b; // flow@issue1
+    return b; // flow@issue1 [[order=1]]
   }
 
   private int foo2(boolean a) {
