@@ -20,7 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -38,11 +37,13 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2222")
 public class LocksNotUnlockedCheck extends SECheck {
+
+  private static final List<Class<? extends Constraint>> LOCK_CONSTRAINT_DOMAIN = Collections.singletonList(LockConstraint.class);
 
   public enum LockConstraint implements Constraint {
     LOCKED, UNLOCKED;
@@ -182,10 +183,8 @@ public class LocksNotUnlockedCheck extends SECheck {
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(LockConstraint.LOCKED).stream()
-      .flatMap(sv ->{
-        List<Class<? extends Constraint>> domains = Lists.newArrayList(LockConstraint.class);
-        return FlowComputation.flow(node, sv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, domains).stream().flatMap(Collection::stream);
-      })
+      .flatMap(lockedSv -> FlowComputation.flow(node, lockedSv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, LOCK_CONSTRAINT_DOMAIN).stream())
+      .flatMap(FlowComputation::firstFlowLocation)
       .forEach(this::reportIssue);
   }
 

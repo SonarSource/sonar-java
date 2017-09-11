@@ -29,9 +29,9 @@ class A {
 
   void exceptions(Object o) {
      try {
-       throwIfNull(o); // flow@ex [[order=1]] {{'o' is passed to 'throwIfNull()'.}} flow@ex [[order=4]] {{Implies 'o' is null.}}
+       throwIfNull(o); // flow@ex [[order=1]] {{'o' is passed to 'throwIfNull()'.}} flow@ex [[order=4]] {{Implies 'o' is null.}} flow@ex [[order=5]] {{'IllegalStateException' is thrown.}}
      } catch (IllegalStateException ex) {
-       o.toString(); // Noncompliant [[flows=ex]] {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@ex [[order=5]] {{'o' is dereferenced.}}
+       o.toString(); // Noncompliant [[flows=ex]] {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@ex [[order=6]] {{'o' is dereferenced.}}
      }
   }
 

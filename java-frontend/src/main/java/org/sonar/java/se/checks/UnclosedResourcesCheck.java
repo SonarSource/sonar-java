@@ -54,7 +54,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +66,8 @@ import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint
 
 @Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
+
+  private static final List<Class<? extends Constraint>> RESOURCE_CONSTRAINT_DOMAIN = Collections.singletonList(ResourceConstraint.class);
 
   public enum ResourceConstraint implements Constraint {
     OPEN, CLOSED;
@@ -162,8 +164,8 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    ArrayList<Class<? extends Constraint>> domains = Lists.newArrayList(ResourceConstraint.class);
-    FlowComputation.flow(node, sv, OPEN::equals, domains).stream().flatMap(Collection::stream)
+    FlowComputation.flow(node, sv, OPEN::equals, RESOURCE_CONSTRAINT_DOMAIN).stream()
+      .flatMap(FlowComputation::firstFlowLocation)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }
