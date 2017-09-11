@@ -42,6 +42,7 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -295,6 +296,8 @@ public class FlowComputation {
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
       SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
+      flowFromThrownException(edge).ifPresent(flowBuilder::add);
+
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
       flowBuilder.addAll(lcFlow);
@@ -313,6 +316,18 @@ public class FlowComputation {
       return yieldsFlows.stream()
         .map(yieldFlow -> ImmutableList.<JavaFileScannerContext.Location>builder().addAll(currentFlow).addAll(yieldFlow).build())
         .map(f -> new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, f, endOfPath));
+    }
+
+    private Optional<JavaFileScannerContext.Location> flowFromThrownException(ExplodedGraph.Edge edge) {
+      if (isMethodInvocationNode(edge.parent)) {
+        SymbolicValue peekValue = edge.child.programState.peekValue();
+        if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+          Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
+          String msg = String.format("%s is thrown.", type == null ? "Exception" : ("'" + type.name() + "'"));
+          return Optional.of(location(edge.parent, msg));
+        }
+      }
+      return Optional.empty();
     }
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
@@ -749,5 +764,9 @@ public class FlowComputation {
       default:
         return null;
     }
+  }
+
+  public static Stream<JavaFileScannerContext.Location> firstFlowLocation(List<JavaFileScannerContext.Location> flow) {
+    return flow.stream().reduce((a,b) -> b).map(Stream::of).orElseGet(Stream::empty);
   }
 }

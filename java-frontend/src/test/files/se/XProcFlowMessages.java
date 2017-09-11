@@ -16,7 +16,7 @@ abstract class A {
   }
 
   private void foo(A a) {
-    a.bar();                                     // flow@flow_a1 {{Implies 'a' is null.}} flow@flow_a1 {{'NullPointerException' is thrown here.}} flow@flow_a2 {{Implies 'a' is null.}} flow@flow_a2 {{'NullPointerException' is thrown here.}}
+    a.bar();                                     // flow@flow_a1 {{Implies 'a' is null.}} flow@flow_a1 {{'NullPointerException' is thrown.}} flow@flow_a1 {{'NullPointerException' is thrown here.}} flow@flow_a2 {{Implies 'a' is null.}} flow@flow_a2 {{'NullPointerException' is thrown.}} flow@flow_a2 {{'NullPointerException' is thrown here.}}
   }
 
   @CheckForNull
@@ -88,7 +88,7 @@ abstract class D {
   }
 
   private void foo(D arg) {                      // flow@flow_d1 {{Implies 'arg' has the same value as 'param'.}}
-    arg.bar();                                   // flow@flow_d1 {{Implies 'arg' is null.}} flow@flow_d1 {{'NullPointerException' is thrown here.}}
+    arg.bar();                                   // flow@flow_d1 {{Implies 'arg' is null.}}  flow@flow_d1 {{'NullPointerException' is thrown.}} flow@flow_d1 {{'NullPointerException' is thrown here.}}
   }
 
   void qix(D param) {
@@ -104,7 +104,7 @@ abstract class D {
   }
 
   private void gul(D arg) {                      // flow@flow_d2 [[order=6]] {{Implies 'arg' has the same value as 'param'.}}
-    arg.bar();                                   // flow@flow_d2 [[order=7]] {{Implies 'arg' is null.}} flow@flow_d2 [[order=8]] {{'NullPointerException' is thrown here.}}
+    arg.bar();                                   // flow@flow_d2 [[order=7]] {{Implies 'arg' is null.}} flow@flow_d2 [[order=8]] {{'NullPointerException' is thrown.}} flow@flow_d2 [[order=9]] {{'NullPointerException' is thrown here.}}
   }
 
   abstract void doSomething();
