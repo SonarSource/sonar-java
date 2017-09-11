@@ -1,11 +1,11 @@
-package javax.inject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@interface Inject {}
+import javax.inject.Inject;
+import javax.ejb.EJB;
 
 class Address {
 }
@@ -94,7 +94,13 @@ class Person7 implements Serializable {
 }
 
 class Person8 implements Serializable {
-  @Inject Address address; // Compliant field is injected
+  @javax.inject.Inject Address address; // Compliant field is injected
+  @javax.ejb.EJB Address address2; // Compliant
+
+  @Inject Address address3; // Compliant
+  @EJB Address address4; // Compliant
+
+  @Deprecated Address address5; // Noncompliant
 }
 
 class MyObject {

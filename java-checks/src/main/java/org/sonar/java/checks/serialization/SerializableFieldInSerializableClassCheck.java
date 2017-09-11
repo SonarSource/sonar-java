@@ -25,6 +25,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -130,7 +131,11 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   }
 
   private static boolean isTransientSerializableOrInjected(VariableTree member) {
-    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type()) || member.symbol().metadata().isAnnotatedWith("javax.inject.Inject");
+    if (ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type())) {
+      return true;
+    }
+    SymbolMetadata metadata = member.symbol().metadata();
+    return metadata.isAnnotatedWith("javax.inject.Inject") || metadata.isAnnotatedWith("javax.ejb.EJB");
   }
 
   private static boolean isSerializable(Tree tree) {
