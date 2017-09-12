@@ -31,9 +31,9 @@ abstract class A {
   void test_two_yields(boolean a, boolean cond) {
     try {
       two_yields_one_flow_each(a, cond); // flow@normal1 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@normal1 [[order=4]] {{Implies 'a' is false.}} flow@normal2 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@normal2 [[order=4]] {{Implies 'a' is false.}} flow@ex1 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@ex1 [[order=4]] {{Implies 'a' is true.}} flow@ex1 [[order=5]] {{'MyEx' is thrown.}}  flow@ex2 [[order=1]] {{'a' is passed to 'two_yields_one_flow_each()'.}} flow@ex2 [[order=4]] {{Implies 'a' is true.}} flow@ex2 [[order=5]] {{'MyEx' is thrown.}}
-    } catch (MyEx e) {
+    } catch (MyEx e) { // flow@ex1,ex2 [[order=6]] {{'MyEx' is caught.}}
       // Noncompliant@+1 [[flows=ex1,ex2]]
-      if (a) { // flow@ex1 [[order=6]] {{Expression is always true.}} flow@ex2 [[order=6]] {{Expression is always true.}}
+      if (a) { // flow@ex1,ex2 [[order=7]] {{Expression is always true.}}
         return;
       }
     }

@@ -17,7 +17,7 @@ abstract class A {
     Object o = null; // flow@normal,ex {{Implies 'o' is null.}}
     try {
       methodA();  // flow@ex {{'ExA' is thrown.}}
-    } catch (ExA e) {
+    } catch (ExA e) { // flow@ex {{'ExA' is caught.}}
 
     }
     o.toString(); // Noncompliant [[flows=normal,ex]]  flow@normal,ex {{'o' is dereferenced.}}
@@ -28,9 +28,9 @@ abstract class A {
     try {
       methodAB();  // flow@ex1 {{'ExA' is thrown.}} flow@ex2 {{'ExB' is thrown.}}
       o = new Object();
-    } catch (ExA e) {
+    } catch (ExA e) { // flow@ex1 {{'ExA' is caught.}}
 
-    } catch (ExB e) {
+    } catch (ExB e) { // flow@ex2 {{'ExB' is caught.}}
 
     }
     o.toString(); // Noncompliant [[flows=ex1,ex2]]  flow@ex1,ex2 {{'o' is dereferenced.}}
@@ -43,9 +43,9 @@ abstract class A {
     try {
       noBehavior();  // flow@nb1 {{'ExA' is thrown.}} flow@nb2 {{'ExB' is thrown.}}
       o = new Object();
-    } catch (ExA e) {
+    } catch (ExA e) { // flow@nb1 {{'ExA' is caught.}}
 
-    } catch (ExB e) {
+    } catch (ExB e) { // flow@nb2 {{'ExB' is caught.}}
 
     }
     o.toString(); // Noncompliant [[flows=nb1,nb2]]  flow@nb1,nb2 {{'o' is dereferenced.}}
