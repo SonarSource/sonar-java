@@ -14,12 +14,12 @@ abstract class A {
   void tst(Object o, boolean b) {
     try {
       foo(b, o); // flow@catof1 [[order=1]] {{'o' is passed to 'foo()'.}} flow@catof1 [[order=3]] {{Implies 'o' is null.}} flow@catof1 [[order=4]] {{'MyException1' is thrown.}} flow@npe [[order=1]] {{'o' is passed to 'foo()'.}} flow@npe [[order=3]] {{Implies 'o' is null.}}  flow@npe [[order=4]] {{'MyException1' is thrown.}} flow@catof2 [[order=1]] {{'b' is passed to 'foo()'.}}  flow@catof2 [[order=3]] {{Implies 'b' is true.}} flow@catof2 [[order=4]] {{'MyException1' is thrown.}}
-    } catch (MyException1 e) {
-      if (b) { // Noncompliant [[flows=catof2]] {{Remove this expression which always evaluates to "true"}} flow@catof2 [[order=5]] {{Expression is always true.}}
-        if (o == null) {} // Noncompliant [[flows=catof1]] {{Remove this expression which always evaluates to "true"}} flow@catof1 [[order=5]] {{Expression is always true.}}
+    } catch (MyException1 e) { // flow@npe,catof1,catof2 [[order=5]] {{'MyException1' is caught.}}
+      if (b) { // Noncompliant [[flows=catof2]] {{Remove this expression which always evaluates to "true"}} flow@catof2 [[order=6]] {{Expression is always true.}}
+        if (o == null) {} // Noncompliant [[flows=catof1]] {{Remove this expression which always evaluates to "true"}} flow@catof1 [[order=6]] {{Expression is always true.}}
       }
     } finally {
-      o.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "o" is nullable here.}}  flow@npe [[order=5]] {{'o' is dereferenced.}}
+      o.toString(); // Noncompliant [[flows=npe]] {{A "NullPointerException" could be thrown; "o" is nullable here.}}  flow@npe [[order=6]] {{'o' is dereferenced.}}
     }
   }
 

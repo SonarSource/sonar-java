@@ -34,7 +34,7 @@ class A {
   void exceptions() {
     try {
       Thread.sleep(0); // flow@ex1 {{'InterruptedException' is thrown.}} flow@ex2 {{Exception is thrown.}}
-    } catch (Exception ex) { // flow@ex1,ex2 {{Implies 'ex' is not null.}}
+    } catch (Exception ex) { // flow@ex1,ex2 {{Implies 'ex' is not null.}}  flow@ex1 {{'InterruptedException' is caught.}} flow@ex2 {{'Exception' is caught.}}
       if (ex != null) { // Noncompliant [[flows=ex1,ex2]] {{Remove this expression which always evaluates to "true"}}   flow@ex1,ex2 {{Expression is always true.}}
         ex.getClause();
       }

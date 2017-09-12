@@ -297,6 +297,7 @@ public class FlowComputation {
       SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
       flowFromThrownException(edge).ifPresent(flowBuilder::add);
+      flowFromCaughtException(edge).ifPresent(flowBuilder::add);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
@@ -323,11 +324,27 @@ public class FlowComputation {
         SymbolicValue peekValue = edge.child.programState.peekValue();
         if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
           Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
-          String msg = String.format("%s is thrown.", type == null ? "Exception" : ("'" + type.name() + "'"));
+          String msg = String.format("%s is thrown.", exceptionName(type));
           return Optional.of(location(edge.parent, msg));
         }
       }
       return Optional.empty();
+    }
+
+    private Optional<JavaFileScannerContext.Location> flowFromCaughtException(ExplodedGraph.Edge edge) {
+      ProgramPoint programPoint = edge.parent.programPoint;
+      if (((CFG.Block) programPoint.block).isCatchBlock() && programPoint.i == 0) {
+        VariableTree catchVariable = ((VariableTree) programPoint.syntaxTree());
+        SymbolicValue.CaughtExceptionSymbolicValue caughtSv = ((SymbolicValue.CaughtExceptionSymbolicValue) edge.child.programState.getValue(catchVariable.symbol()));
+        Preconditions.checkNotNull(caughtSv, "Caught exception not found in program state");
+        Type exceptionType = caughtSv.exception().exceptionType();
+        return Optional.of(location(edge.parent, String.format("%s is caught.", exceptionName(exceptionType))));
+      }
+      return Optional.empty();
+    }
+
+    private String exceptionName(@Nullable Type type) {
+      return type == null ? "Exception" : ("'" + type.name() + "'");
     }
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
