@@ -153,7 +153,7 @@ public class FlowComputation {
   }
 
   private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
-    Set<List<JavaFileScannerContext.Location>> flows = new HashSet<>();
+    Set<ExecutionPath> paths = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
     SameConstraints sameConstraints = new SameConstraints(node, trackedSymbols, domains);
     node.edges().stream().flatMap(e -> startPath(e, trackedSymbols, sameConstraints)).forEach(workList::push);
@@ -162,7 +162,7 @@ public class FlowComputation {
     while (!workList.isEmpty()) {
       ExecutionPath path = workList.pop();
       if (path.finished) {
-        flows.add(path.flow);
+        paths.add(path);
       } else {
         path.lastEdge.parent.edges().stream()
           .filter(path::notVisited)
@@ -179,7 +179,12 @@ public class FlowComputation {
         break;
       }
     }
-    return flows;
+    Stream<ExecutionPath> flows = paths.stream();
+    if (paths.stream().anyMatch(ExecutionPath::isExceptional) && paths.stream().anyMatch(ExecutionPath::isNonExceptional)) {
+      // have both exceptional and non-exceptional paths, keep only the non-exceptional
+      flows = flows.filter(ExecutionPath::isNonExceptional);
+    }
+    return flows.map(ExecutionPath::flow).collect(Collectors.toSet());
   }
 
   Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints) {
@@ -254,6 +259,7 @@ public class FlowComputation {
     final PSet<ExplodedGraph.Edge> visited;
     final List<JavaFileScannerContext.Location> flow;
     final boolean finished;
+    private boolean exceptional = false;
 
     private ExecutionPath(@Nullable ExplodedGraph.Edge edge, PSet<ExplodedGraph.Edge> visited, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints,
                           List<JavaFileScannerContext.Location> flow, boolean finished) {
@@ -263,6 +269,22 @@ public class FlowComputation {
       this.visited = visited;
       this.flow = flow;
       this.finished = finished;
+    }
+
+    private List<JavaFileScannerContext.Location> flow() {
+      return flow;
+    }
+
+    private void setAsExceptional() {
+      exceptional = true;
+    }
+
+    private boolean isExceptional() {
+      return exceptional;
+    }
+
+    private boolean isNonExceptional() {
+      return !exceptional;
     }
 
     @Override
@@ -296,7 +318,10 @@ public class FlowComputation {
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
       SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
-      flowFromThrownException(edge).ifPresent(flowBuilder::add);
+      flowFromThrownException(edge).ifPresent(loc -> {
+        setAsExceptional();
+        flowBuilder.add(loc);
+      });
       flowFromCaughtException(edge).ifPresent(flowBuilder::add);
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);

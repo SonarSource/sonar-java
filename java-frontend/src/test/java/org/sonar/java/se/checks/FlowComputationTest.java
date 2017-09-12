@@ -155,6 +155,11 @@ public class FlowComputationTest {
   }
 
   @Test
+  public void test_discard_exceptional_flow_if_non_exceptional_exists() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/ExceptionalFlowDiscarded.java", new NullDereferenceCheck());
+  }
+
+  @Test
   public void test_first_flow_location() {
     List<JavaFileScannerContext.Location> flow1 = ImmutableList
       .of(new JavaFileScannerContext.Location("last", mock(Tree.class)), new JavaFileScannerContext.Location("first", mock(Tree.class)));
