@@ -72,7 +72,7 @@ class A {
   }
 
   static int divByZeroIfArg1Zero(int i, int j) {
-    return i / j; // flow@foo2 [[order=2]] {{Implies 'j' is zero.}} flow@foo2 [[order=4]] {{'ArithmeticException' is thrown here.}} flow@foo3 [[order=4]] {{Implies 'j' is zero.}} flow@foo3 [[order=5]] {{'ArithmeticException' is thrown here.}}
+    return i / j; // flow@foo2 [[order=2]] {{Implies 'j' is zero.}} flow@foo2 [[order=4]] {{'ArithmeticException' is thrown.}} flow@foo3 [[order=4]] {{Implies 'j' is zero.}} flow@foo3 [[order=5]] {{'ArithmeticException' is thrown.}}
   }
 
   static int throwsExceptionIfArg1Zero(int i, int j) {

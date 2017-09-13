@@ -20,11 +20,9 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -35,7 +33,6 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -165,19 +162,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
     List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().collect(Collectors.toList());
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, svCausingException, domains);
-    Tree syntaxTree = node.programPoint.syntaxTree();
-    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flowBuilder = ImmutableSet.builder();
-
-    for (List<JavaFileScannerContext.Location> flow : flows) {
-      List<JavaFileScannerContext.Location> newFlow = ImmutableList.<JavaFileScannerContext.Location>builder()
-        .add(new JavaFileScannerContext.Location("'" + exceptionType().name() + "' is thrown here.", syntaxTree))
-        .addAll(flow)
-        .build();
-      flowBuilder.add(newFlow);
-    }
-
-    return flowBuilder.build();
+    return FlowComputation.flow(node, svCausingException, domains);
   }
 
 
