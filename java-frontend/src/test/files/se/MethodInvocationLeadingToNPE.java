@@ -50,7 +50,7 @@ class A {
   }
 
   static void npeIfNull(Object o) {
-    o.toString(); // flow@foo2 [[order=3]] {{Implies 'o' is null.}} flow@foo2 [[order=4]] {{'NullPointerException' is thrown.}} flow@foo2 [[order=5]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // flow@foo2 [[order=3]] {{Implies 'o' is null.}} flow@foo2 [[order=4]] {{'NullPointerException' is thrown.}}
   }
 
   static void npeIfArg0IsTrueAndArg1IsNull(boolean arg0, Object arg1, boolean arg2) { // flow@foo6 [[order=4]] {{Implies 'arg1' has the same value as 'o'.}}
@@ -58,12 +58,12 @@ class A {
       return;
     }
     if (arg0) { // only b2 has consequences on NPE
-      arg1.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "arg1" is nullable here.}} flow@foo6  [[order=6]] {{'NullPointerException' is thrown.}} flow@foo6  [[order=7]] {{'NullPointerException' is thrown here.}}
+      arg1.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "arg1" is nullable here.}} flow@foo6  [[order=6]] {{'NullPointerException' is thrown.}}
     }
   }
 
   static void nullable(@Nullable Object o) {
-    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown.}} flow@foo5 [[order=4]] {{'NullPointerException' is thrown here.}}
+    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown.}}
   }
 }
 
@@ -202,7 +202,7 @@ abstract class E {
 
   private void doSomething(Object param, String text) { // flow@myMethod [[order=3]] {{Implies 'param' has the same value as 'o'.}} flow@myOtherMethod [[order=3]] {{Implies 'param' has the same value as 'field'.}}
     if (text.startsWith("default")) {
-      param.toString(); // flow@myMethod [[order=4]] {{Implies 'param' is null.}} flow@myMethod [[order=5]] {{'NullPointerException' is thrown.}} flow@myMethod [[order=6]] {{'NullPointerException' is thrown here.}} flow@myOtherMethod [[order=4]] {{Implies 'param' is null.}} flow@myOtherMethod [[order=5]] {{'NullPointerException' is thrown.}} flow@myOtherMethod [[order=6]] {{'NullPointerException' is thrown here.}} flow@myAlternativeMethod [[order=3]] {{Implies 'param' is null.}} flow@myAlternativeMethod [[order=4]] {{'NullPointerException' is thrown.}} flow@myAlternativeMethod [[order=5]] {{'NullPointerException' is thrown here.}}
+      param.toString(); // flow@myMethod [[order=4]] {{Implies 'param' is null.}} flow@myMethod [[order=5]] {{'NullPointerException' is thrown.}} flow@myOtherMethod [[order=4]] {{Implies 'param' is null.}} flow@myOtherMethod [[order=5]] {{'NullPointerException' is thrown.}} flow@myAlternativeMethod [[order=3]] {{Implies 'param' is null.}} flow@myAlternativeMethod [[order=4]] {{'NullPointerException' is thrown.}}
     }
   }
 

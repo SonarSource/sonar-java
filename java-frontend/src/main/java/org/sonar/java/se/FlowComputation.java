@@ -320,15 +320,22 @@ public class FlowComputation {
     }
 
     private Optional<JavaFileScannerContext.Location> flowFromThrownException(ExplodedGraph.Edge edge) {
-      if (isMethodInvocationNode(edge.parent)) {
-        SymbolicValue peekValue = edge.child.programState.peekValue();
-        if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
-          Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
-          String msg = String.format("%s is thrown.", exceptionName(type));
-          return Optional.of(location(edge.parent, msg));
-        }
+      // don't add message on explicit throw statements
+      if (isThrowStatement(edge)) {
+        return Optional.empty();
+      }
+      SymbolicValue peekValue = edge.child.programState.peekValue();
+      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+        Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
+        String msg = String.format("%s is thrown.", exceptionName(type));
+        return Optional.of(location(edge.parent, msg));
       }
       return Optional.empty();
+    }
+
+    private boolean isThrowStatement(ExplodedGraph.Edge edge) {
+      Tree tree = edge.parent.programPoint.syntaxTree();
+      return tree != null && tree.parent() != null && tree.parent().is(Tree.Kind.THROW_STATEMENT);
     }
 
     private Optional<JavaFileScannerContext.Location> flowFromCaughtException(ExplodedGraph.Edge edge) {
