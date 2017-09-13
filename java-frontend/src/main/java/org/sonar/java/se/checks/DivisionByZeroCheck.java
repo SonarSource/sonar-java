@@ -20,11 +20,11 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -264,9 +264,9 @@ public class DivisionByZeroCheck extends SECheck {
       String operation = tree.is(Tree.Kind.REMAINDER, Tree.Kind.REMAINDER_ASSIGNMENT) ? "modulation" : "division";
       String expressionName = expression.is(Tree.Kind.IDENTIFIER) ? ("\"" + ((IdentifierTree) expression).name() + "\"") : "this expression";
       List<Class<? extends Constraint>> domains = Collections.singletonList(ZeroConstraint.class);
-      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), denominator, domains, denominatorSymbol).stream()
+      Set<Flow> flows = FlowComputation.flow(context.getNode(), denominator, domains, denominatorSymbol).stream()
         .filter(f -> !f.isEmpty())
-        .map(f -> ImmutableList.<JavaFileScannerContext.Location>builder()
+        .map(f -> Flow.builder()
           .add(new JavaFileScannerContext.Location("Division by zero.", tree))
           .addAll(f)
           .build())

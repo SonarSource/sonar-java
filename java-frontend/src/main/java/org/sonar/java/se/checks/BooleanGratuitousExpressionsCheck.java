@@ -22,10 +22,9 @@ package org.sonar.java.se.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class BooleanGratuitousExpressionsCheck extends SECheck {
 
   private void reportBooleanExpression(CheckerContext context, AlwaysTrueOrFalseExpressionCollector atof, Tree condition, boolean isTrue) {
     if (!AlwaysTrueOrFalseExpressionCollector.hasUnreachableCode(condition, isTrue)) {
-      Set<List<JavaFileScannerContext.Location>> flows = atof.flowForExpression(condition).stream()
+      Set<Flow> flows = atof.flowForExpression(condition).stream()
         .map(flow -> AlwaysTrueOrFalseExpressionCollector.addIssueLocation(flow, condition, isTrue))
         .collect(Collectors.toSet());
       context.reportIssue(condition, this, "Remove this expression which always evaluates to \"" + isTrue + "\"", flows);

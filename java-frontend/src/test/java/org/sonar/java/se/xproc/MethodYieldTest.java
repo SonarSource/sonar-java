@@ -26,6 +26,7 @@ import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -35,7 +36,6 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -90,10 +90,10 @@ public class MethodYieldTest {
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    Set<List<JavaFileScannerContext.Location>> flowReturnValue = methodYield.flow(ImmutableList.of(-1), Lists.newArrayList(ObjectConstraint.class));
+    Set<Flow> flowReturnValue = methodYield.flow(ImmutableList.of(-1), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flowReturnValue.iterator().next()).isNotEmpty();
 
-    Set<List<JavaFileScannerContext.Location>> flowFirstParam = methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    Set<Flow> flowFirstParam = methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
     assertThat(flowFirstParam.iterator().next()).isNotEmpty();
   }
 

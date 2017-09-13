@@ -106,7 +106,7 @@ public class FlowComputation {
 
   // FIXME It is assumed that this will always return set with at least one element, which could be empty, because result is consumed in other places and messages are
   // added to returned flows. This design should be improved.
-  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
                                                                 Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
@@ -129,21 +129,21 @@ public class FlowComputation {
     return flowComputation.run(currentNode, trackedSymbols);
   }
 
-  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
     return flow(currentNode, currentVal, constraint -> true, domains);
   }
 
-  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains,
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains,
                                                                 @Nullable Symbol trackSymbol) {
     return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol));
   }
 
-  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                                 List<Class<? extends Constraint>> domains) {
     return flow(currentNode, currentVal, addToFlow, c -> false, domains);
   }
 
-  public static Set<List<JavaFileScannerContext.Location>> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
                                                                 Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
     return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet());
   }
@@ -152,7 +152,7 @@ public class FlowComputation {
     return val == null ? ImmutableSet.of() : ImmutableSet.of(val);
   }
 
-  private Set<List<JavaFileScannerContext.Location>> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
+  private Set<Flow> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
     Set<Flow> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
     SameConstraints sameConstraints = new SameConstraints(node, trackedSymbols, domains);

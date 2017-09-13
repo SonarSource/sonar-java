@@ -246,10 +246,6 @@ public class Flow implements List<JavaFileScannerContext.Location> {
       return this;
     }
 
-    public Builder addAll(List<JavaFileScannerContext.Location> items) {
-      return addAll(new Flow(items, false));
-    }
-
     public Flow build() {
       return new Flow(builder.build(), exceptional);
     }
