@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,19 +28,13 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.resolve.Result;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 
 public class FlowComputationTest {
 
@@ -152,17 +145,5 @@ public class FlowComputationTest {
   @Test
   public void test_exception_flows() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/ExceptionFlows.java", new NullDereferenceCheck());
-  }
-
-  @Test
-  public void test_first_flow_location() {
-    List<JavaFileScannerContext.Location> flow1 = ImmutableList
-      .of(new JavaFileScannerContext.Location("last", mock(Tree.class)), new JavaFileScannerContext.Location("first", mock(Tree.class)));
-    List<JavaFileScannerContext.Location> collect = FlowComputation.firstFlowLocation(flow1).collect(Collectors.toList());
-    assertThat(collect).hasSize(1);
-    assertThat(collect.get(0).msg).isEqualTo("first");
-
-    Stream<JavaFileScannerContext.Location> empty = FlowComputation.firstFlowLocation(Collections.emptyList());
-    assertThat(empty).isEmpty();
   }
 }

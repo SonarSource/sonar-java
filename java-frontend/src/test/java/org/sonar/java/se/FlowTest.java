@@ -20,26 +20,30 @@
 package org.sonar.java.se;
 
 import org.junit.Test;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTest;
-import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
-
-import java.util.Collections;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class SECheckTest {
-  @Test(timeout = 3000)
-  public void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
-    CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
-    ExplodedGraph eg = new ExplodedGraph();
-    ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), ProgramState.EMPTY_STATE);
-    node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), ProgramState.EMPTY_STATE), null);
-    Set<Flow> flows = FlowComputation.flow(node, new SymbolicValue(), Collections.singletonList(ObjectConstraint.class));
-    assertThat(flows.iterator().next().isEmpty()).isTrue();
+public class FlowTest {
+
+  @Test
+  public void test_first_flow_location() {
+    Flow flow1 = Flow.builder()
+      .add(new JavaFileScannerContext.Location("last", mock(Tree.class)))
+      .add(new JavaFileScannerContext.Location("first", mock(Tree.class)))
+      .build();
+    List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().collect(Collectors.toList());
+    assertThat(collect).hasSize(1);
+    assertThat(collect.get(0).msg).isEqualTo("first");
+
+    Stream<JavaFileScannerContext.Location> empty = Flow.empty().firstFlowLocation();
+    assertThat(empty).isEmpty();
   }
 
 }

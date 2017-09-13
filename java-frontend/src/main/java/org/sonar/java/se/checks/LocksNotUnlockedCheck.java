@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -184,7 +185,7 @@ public class LocksNotUnlockedCheck extends SECheck {
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(LockConstraint.LOCKED).stream()
       .flatMap(lockedSv -> FlowComputation.flow(node, lockedSv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, LOCK_CONSTRAINT_DOMAIN).stream())
-      .flatMap(FlowComputation::firstFlowLocation)
+      .flatMap(Flow::firstFlowLocation)
       .forEach(this::reportIssue);
   }
 

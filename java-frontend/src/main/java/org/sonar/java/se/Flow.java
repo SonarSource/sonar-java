@@ -26,31 +26,23 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.stream.Stream;
 
-public class Flow implements List<JavaFileScannerContext.Location> {
+public class Flow {
 
-  private final List<JavaFileScannerContext.Location> items;
+  private final List<JavaFileScannerContext.Location> elements;
   private boolean exceptional;
 
-  public Flow() {
-    this(new ArrayList<>(), false);
-  }
-
-  private Flow(List<JavaFileScannerContext.Location> items, boolean exceptional) {
-    this.items = items;
+  private Flow(List<JavaFileScannerContext.Location> elements, boolean exceptional) {
+    this.elements = elements;
     this.exceptional = exceptional;
   }
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder()
-      .append(items)
+      .append(elements)
       .append(exceptional)
       .toHashCode();
   }
@@ -68,7 +60,7 @@ public class Flow implements List<JavaFileScannerContext.Location> {
     }
     Flow other = (Flow) obj;
     return new EqualsBuilder()
-      .append(items, other.items)
+      .append(elements, other.elements)
       .append(exceptional, other.exceptional)
       .isEquals();
   }
@@ -85,148 +77,50 @@ public class Flow implements List<JavaFileScannerContext.Location> {
     return !exceptional;
   }
 
-  public static Flow empty() {
-    return new Flow(Collections.emptyList(), false);
+  public Flow reverse() {
+    return new Flow(Lists.reverse(elements), exceptional);
   }
 
-  public static Flow copyOf(Flow currentFlow) {
-    return new Flow(ImmutableList.copyOf(currentFlow.items), currentFlow.exceptional);
+  public Stream<JavaFileScannerContext.Location> stream() {
+    return elements.stream();
+  }
+
+  public Stream<JavaFileScannerContext.Location> firstFlowLocation() {
+    return elements.stream().reduce((a, b) -> b).map(Stream::of).orElseGet(Stream::empty);
+  }
+
+  public List<JavaFileScannerContext.Location> elements() {
+    // list is unmodifiable by construction, so can be safely returned
+    return elements;
+  }
+
+  public boolean isEmpty() {
+    return elements.isEmpty();
+  }
+
+  public static Flow empty() {
+    return new Flow(ImmutableList.of(), false);
+  }
+
+  public static Flow of(JavaFileScannerContext.Location location) {
+    return new Flow(ImmutableList.of(location), false);
+  }
+
+  public static Flow of(Flow currentFlow) {
+    return new Flow(ImmutableList.copyOf(currentFlow.elements), currentFlow.exceptional);
   }
 
   public static Builder builder() {
     return new Builder();
   }
 
-  public static Flow of(JavaFileScannerContext.Location location) {
-    return new Flow(Collections.singletonList(location), false);
-  }
-
-  public Flow reverse() {
-    return new Flow(Lists.reverse(items), exceptional);
-  }
-
-  @Override
-  public int size() {
-    return items.size();
-  }
-
-  @Override
-  public boolean isEmpty() {
-    return items.isEmpty();
-  }
-
-  @Override
-  public boolean contains(Object o) {
-    return items.contains(o);
-  }
-
-  @Override
-  public Iterator<JavaFileScannerContext.Location> iterator() {
-    return items.iterator();
-  }
-
-  @Override
-  public Object[] toArray() {
-    return items.toArray();
-  }
-
-  @Override
-  public <T> T[] toArray(T[] a) {
-    return items.toArray(a);
-  }
-
-  @Override
-  public boolean add(JavaFileScannerContext.Location e) {
-    return items.add(e);
-  }
-
-  @Override
-  public boolean remove(Object o) {
-    return items.remove(o);
-  }
-
-  @Override
-  public boolean containsAll(Collection<?> c) {
-    return items.containsAll(c);
-  }
-
-  @Override
-  public boolean addAll(Collection<? extends JavaFileScannerContext.Location> c) {
-    return items.addAll(c);
-  }
-
-  @Override
-  public boolean addAll(int index, Collection<? extends JavaFileScannerContext.Location> c) {
-    return items.addAll(index, c);
-  }
-
-  @Override
-  public boolean removeAll(Collection<?> c) {
-    return items.removeAll(c);
-  }
-
-  @Override
-  public boolean retainAll(Collection<?> c) {
-    return items.retainAll(c);
-  }
-
-  @Override
-  public void clear() {
-    items.clear();
-  }
-
-  @Override
-  public JavaFileScannerContext.Location get(int index) {
-    return items.get(index);
-  }
-
-  @Override
-  public JavaFileScannerContext.Location set(int index, JavaFileScannerContext.Location element) {
-    return items.set(index, element);
-  }
-
-  @Override
-  public void add(int index, JavaFileScannerContext.Location element) {
-    items.add(index, element);
-  }
-
-  @Override
-  public JavaFileScannerContext.Location remove(int index) {
-    return items.remove(index);
-  }
-
-  @Override
-  public int indexOf(Object o) {
-    return items.indexOf(o);
-  }
-
-  @Override
-  public int lastIndexOf(Object o) {
-    return items.lastIndexOf(o);
-  }
-
-  @Override
-  public ListIterator<JavaFileScannerContext.Location> listIterator() {
-    return items.listIterator();
-  }
-
-  @Override
-  public ListIterator<JavaFileScannerContext.Location> listIterator(int index) {
-    return items.listIterator(index);
-  }
-
-  @Override
-  public List<JavaFileScannerContext.Location> subList(int fromIndex, int toIndex) {
-    return items.subList(fromIndex, toIndex);
-  }
-
   public static class Builder {
 
-    private final ImmutableList.Builder<JavaFileScannerContext.Location> builder;
+    private final ImmutableList.Builder<JavaFileScannerContext.Location> elementsBuilder;
     private boolean exceptional;
 
     private Builder() {
-      this.builder = ImmutableList.builder();
+      this.elementsBuilder = ImmutableList.builder();
       this.exceptional = false;
     }
 
@@ -236,18 +130,18 @@ public class Flow implements List<JavaFileScannerContext.Location> {
     }
 
     public Builder add(JavaFileScannerContext.Location element) {
-      builder.add(element);
+      elementsBuilder.add(element);
       return this;
     }
 
     public Builder addAll(Flow flow) {
-      builder.addAll(flow.items);
+      elementsBuilder.addAll(flow.elements);
       this.exceptional |= flow.exceptional;
       return this;
     }
 
     public Flow build() {
-      return new Flow(builder.build(), exceptional);
+      return new Flow(elementsBuilder.build(), exceptional);
     }
   }
 }

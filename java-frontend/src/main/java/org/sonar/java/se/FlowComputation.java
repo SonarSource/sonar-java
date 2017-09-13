@@ -318,7 +318,7 @@ public class FlowComputation {
       Flow currentFlow = flowBuilder.build();
       Set<Flow> yieldsFlows = flowFromYields(edge);
       if (yieldsFlows.isEmpty()) {
-        return Stream.of(new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, Flow.copyOf(currentFlow), endOfPath));
+        return Stream.of(new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, Flow.of(currentFlow), endOfPath));
       }
       return yieldsFlows.stream()
         .map(yieldFlow -> Flow.builder().addAll(currentFlow).addAll(yieldFlow).build())
@@ -800,7 +800,4 @@ public class FlowComputation {
     }
   }
 
-  public static Stream<JavaFileScannerContext.Location> firstFlowLocation(List<JavaFileScannerContext.Location> flow) {
-    return flow.stream().reduce((a,b) -> b).map(Stream::of).orElseGet(Stream::empty);
-  }
 }

@@ -112,7 +112,7 @@ public abstract class SECheck implements JavaFileScanner {
         // have both exceptional and non-exceptional paths, keep only the non-exceptional
         flowsAsStream = flowsAsStream.filter(Flow::isNonExceptional);
       }
-      return flowsAsStream.collect(Collectors.toSet());
+      return flowsAsStream.map(Flow::elements).collect(Collectors.toSet());
     }
   }
 }

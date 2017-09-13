@@ -91,10 +91,10 @@ public class MethodYieldTest {
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
     Set<Flow> flowReturnValue = methodYield.flow(ImmutableList.of(-1), Lists.newArrayList(ObjectConstraint.class));
-    assertThat(flowReturnValue.iterator().next()).isNotEmpty();
+    assertThat(flowReturnValue.iterator().next().isEmpty()).isFalse();
 
     Set<Flow> flowFirstParam = methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
-    assertThat(flowFirstParam.iterator().next()).isNotEmpty();
+    assertThat(flowFirstParam.iterator().next().isEmpty()).isFalse();
   }
 
   @Test
