@@ -179,12 +179,7 @@ public class FlowComputation {
         break;
       }
     }
-    Stream<Flow> flowsAsStream = flows.stream();
-    if (flows.stream().anyMatch(Flow::isExceptional) && flows.stream().anyMatch(Flow::isNonExceptional)) {
-      // have both exceptional and non-exceptional paths, keep only the non-exceptional
-      flowsAsStream = flowsAsStream.filter(Flow::isNonExceptional);
-    }
-    return flowsAsStream.collect(Collectors.toSet());
+    return flows;
   }
 
   Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints) {
