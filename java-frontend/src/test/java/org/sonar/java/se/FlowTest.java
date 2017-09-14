@@ -35,8 +35,8 @@ public class FlowTest {
   @Test
   public void test_first_flow_location() {
     Flow flow1 = Flow.builder()
-      .add(new JavaFileScannerContext.Location("last", mock(Tree.class)))
-      .add(new JavaFileScannerContext.Location("first", mock(Tree.class)))
+      .add(locationWithMockTree("last"))
+      .add(locationWithMockTree("first"))
       .build();
     List<JavaFileScannerContext.Location> collect = flow1.firstFlowLocation().collect(Collectors.toList());
     assertThat(collect).hasSize(1);
@@ -44,6 +44,31 @@ public class FlowTest {
 
     Stream<JavaFileScannerContext.Location> empty = Flow.empty().firstFlowLocation();
     assertThat(empty).isEmpty();
+  }
+
+  @Test
+  public void testEquals() {
+
+    Flow flow = Flow.builder()
+      .add(locationWithMockTree("first"))
+      .add(locationWithMockTree("second"))
+      .build();
+
+    Flow flow1 = Flow.builder().addAll(flow).build();
+    Flow flow2 = Flow.builder().addAll(flow).setAsExceptional().build();
+
+    assertThat(flow1.equals(null)).isFalse();
+    assertThat(flow1.equals(new Object())).isFalse();
+
+    assertThat(flow1.equals(Flow.empty())).isFalse();
+    assertThat(flow1.equals(flow2)).isFalse();
+
+    assertThat(flow1.equals(flow1)).isTrue();
+    assertThat(flow1.equals(Flow.of(flow1))).isTrue();
+  }
+
+  private static JavaFileScannerContext.Location locationWithMockTree(String message) {
+    return new JavaFileScannerContext.Location(message, mock(Tree.class));
   }
 
 }
