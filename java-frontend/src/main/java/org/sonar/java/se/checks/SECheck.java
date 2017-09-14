@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -28,9 +29,11 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class SECheck implements JavaFileScanner {
 
@@ -65,10 +68,10 @@ public abstract class SECheck implements JavaFileScanner {
   }
 
   public void reportIssue(Tree tree, String message) {
-    reportIssue(tree, message, new HashSet<>());
+    reportIssue(tree, message, Collections.emptySet());
   }
 
-  public void reportIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> flows) {
+  public void reportIssue(Tree tree, String message, Set<Flow> flows) {
     issues.add(issues.stream()
       .filter(seIssue -> seIssue.tree.equals(tree))
       .findFirst()
@@ -86,9 +89,9 @@ public abstract class SECheck implements JavaFileScanner {
   protected static class SEIssue {
     private final Tree tree;
     private final String message;
-    private final Set<List<JavaFileScannerContext.Location>> flows;
+    private final Set<Flow> flows;
 
-    public SEIssue(Tree tree, String message, Set<List<JavaFileScannerContext.Location>> flows) {
+    public SEIssue(Tree tree, String message, Set<Flow> flows) {
       this.tree = tree;
       this.message = message;
       this.flows = new HashSet<>(flows);
@@ -103,7 +106,12 @@ public abstract class SECheck implements JavaFileScanner {
     }
 
     public Set<List<JavaFileScannerContext.Location>> getFlows() {
-      return flows;
+      Set<List<JavaFileScannerContext.Location>> nonExceptionalFlows = flows.stream().filter(Flow::isNonExceptional).map(Flow::elements).collect(Collectors.toSet());
+      if (!nonExceptionalFlows.isEmpty()) {
+        // keep only the non-exceptional flows and ignore exceptional ones
+        return nonExceptionalFlows;
+      }
+      return flows.stream().map(Flow::elements).collect(Collectors.toSet());
     }
   }
 }

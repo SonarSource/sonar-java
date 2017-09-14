@@ -28,6 +28,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -147,16 +148,20 @@ public class StreamConsumedCheck extends SECheck {
     return TERMINAL_OPERATIONS.anyMatch(methodInvocationTree);
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flow(SymbolicValue invocationTarget, ExplodedGraph.Node node) {
-    Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, Collections.singleton(invocationTarget), StreamPipelineConstraint.CONSUMED::equals, c -> false,
+  private static Set<Flow> flow(SymbolicValue invocationTarget, ExplodedGraph.Node node) {
+    Set<Flow> flows = FlowComputation.flow(node, Collections.singleton(invocationTarget), StreamPipelineConstraint.CONSUMED::equals, c -> false,
       Collections.singletonList(StreamPipelineConstraint.class), Collections.emptySet());
     // make copy with explicit message
     return flows.stream()
-      .map(f ->
-        f.stream().map(l -> new JavaFileScannerContext.Location("Pipeline is consumed here.", flowTree(l.syntaxNode))).collect(Collectors.toList()))
+      .map(StreamConsumedCheck::copyFlowWithExplicitMessage)
       .collect(Collectors.toSet());
   }
 
+  private static Flow copyFlowWithExplicitMessage(Flow flow) {
+    Flow.Builder flowBuilder = Flow.builder();
+    flow.stream().map(l -> new JavaFileScannerContext.Location("Pipeline is consumed here.", flowTree(l.syntaxNode))).forEach(flowBuilder::add);
+    return flowBuilder.build();
+  }
 
   private static Tree flowTree(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {

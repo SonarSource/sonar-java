@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -44,14 +45,13 @@ public class StreamNotConsumedCheck extends SECheck {
     ProgramState state = context.getState();
     List<SymbolicValue> notConsumed = state.getValuesWithConstraints(NOT_CONSUMED);
     notConsumed.forEach(sv -> {
-        Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(context.getNode(), Collections.singleton(sv),
-          NOT_CONSUMED::equals, NOT_CONSUMED::equals,
-          Collections.singletonList(StreamConsumedCheck.StreamPipelineConstraint.class),
-          Collections.emptySet());
-        List<JavaFileScannerContext.Location> flow = flows.iterator().next();
-        JavaFileScannerContext.Location location = flow.iterator().next();
-        reportIssue(location.syntaxNode, "Refactor the code so this stream pipeline is used.");
-      }
-    );
+      Set<Flow> flows = FlowComputation.flow(context.getNode(), Collections.singleton(sv),
+        NOT_CONSUMED::equals, NOT_CONSUMED::equals,
+        Collections.singletonList(StreamConsumedCheck.StreamPipelineConstraint.class),
+        Collections.emptySet());
+      Flow flow = flows.iterator().next();
+      JavaFileScannerContext.Location location = flow.elements().get(0);
+      reportIssue(location.syntaxNode, "Refactor the code so this stream pipeline is used.");
+    });
   }
 }

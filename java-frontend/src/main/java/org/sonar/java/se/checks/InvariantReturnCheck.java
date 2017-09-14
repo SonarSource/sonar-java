@@ -25,6 +25,7 @@ import com.google.common.collect.Multimap;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -48,7 +49,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3516")
 public class InvariantReturnCheck extends SECheck {
@@ -149,9 +149,12 @@ public class InvariantReturnCheck extends SECheck {
   }
 
   private void report(MethodInvariantContext methodInvariantContext) {
-    reportIssue(methodInvariantContext.methodTree.simpleName(), "Refactor this method to not always return the same value.",
-      Collections.singleton(methodInvariantContext.returnStatementTrees.stream().map(r -> new JavaFileScannerContext.Location("", r)).collect(Collectors.toList()))
-      );
+    Flow.Builder flowBuilder = Flow.builder();
+    methodInvariantContext.returnStatementTrees.stream().map(r -> new JavaFileScannerContext.Location("", r)).forEach(flowBuilder::add);
+    reportIssue(
+      methodInvariantContext.methodTree.simpleName(),
+      "Refactor this method to not always return the same value.",
+      Collections.singleton(flowBuilder.build()));
   }
 
   private static class ReturnExtractor extends BaseTreeVisitor {

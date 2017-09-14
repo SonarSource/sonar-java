@@ -1,3 +1,4 @@
+package org.foo;
 
 abstract class A {
 
@@ -13,14 +14,13 @@ abstract class A {
   }
 
   void test() {
-    // FIXME ex should be removed see SONARJAVA-2446
-    Object o = null; // flow@normal,ex {{Implies 'o' is null.}}
+    Object o = null; // flow@normal {{Implies 'o' is null.}}
     try {
-      methodA();  // flow@ex {{'ExA' is thrown.}}
-    } catch (ExA e) { // flow@ex {{'ExA' is caught.}}
+      methodA();
+    } catch (ExA e) {
 
     }
-    o.toString(); // Noncompliant [[flows=normal,ex]]  flow@normal,ex {{'o' is dereferenced.}}
+    o.toString(); // Noncompliant [[flows=normal]]  flow@normal {{'o' is dereferenced.}}
   }
 
   void test_multiple_ex_flows() {
@@ -51,6 +51,21 @@ abstract class A {
     o.toString(); // Noncompliant [[flows=nb1,nb2]]  flow@nb1,nb2 {{'o' is dereferenced.}}
   }
 
+  void foo() {
+    A a = null; // flow@single_flow
+    try {
+      doSomething(); // equivalent flow using exception thrown here discarded
+    } catch (MyException e) {
+      log(e.getMessage());
+    }
+    a.call(); // Noncompliant [[flows=single_flow]] flow@single_flow
+  }
+
+  abstract void doSomething() throws MyException;
+  abstract void log(String s);
+  abstract void call();
+
   class ExA extends Exception {}
   class ExB extends Exception {}
+  class MyException extends Exception {}
 }

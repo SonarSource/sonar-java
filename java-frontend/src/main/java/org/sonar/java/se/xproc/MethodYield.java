@@ -27,13 +27,13 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 
 public abstract class MethodYield {
   final ExplodedGraph.Node node;
-  private final Map<String, Map<String, Set<List<JavaFileScannerContext.Location>>>> cachedFlows = new HashMap<>();
+  private final Map<String, Map<String, Set<Flow>>> cachedFlows = new HashMap<>();
   private final MethodBehavior behavior;
   List<ConstraintsByDomain> parametersConstraints;
 
@@ -181,7 +181,7 @@ public abstract class MethodYield {
     return result.build();
   }
 
-  public Set<List<JavaFileScannerContext.Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
     Preconditions.checkArgument(!parameterIndices.isEmpty(), "computing flow on empty symbolic value list should never happen");
     if(node == null || behavior == null) {
       return Collections.emptySet();
@@ -189,7 +189,7 @@ public abstract class MethodYield {
     String key = parameterIndices.stream().sorted().map(Object::toString).collect(Collectors.joining(","));
     String domainKey = domains.stream().map(Class::getName).sorted().reduce("", String::concat);
 
-    Map<String, Set<List<JavaFileScannerContext.Location>>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
+    Map<String, Set<Flow>> flowByDomain = cachedFlows.computeIfAbsent(key, k -> new HashMap<>());
     return flowByDomain.computeIfAbsent(domainKey,
       k -> {
         Set<SymbolicValue> symbolicValues = getSymbolicValues(parameterIndices);

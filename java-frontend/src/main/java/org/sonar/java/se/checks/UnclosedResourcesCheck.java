@@ -29,6 +29,7 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -165,7 +166,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
     FlowComputation.flow(node, sv, OPEN::equals, RESOURCE_CONSTRAINT_DOMAIN).stream()
-      .flatMap(FlowComputation::firstFlowLocation)
+      .flatMap(Flow::firstFlowLocation)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }

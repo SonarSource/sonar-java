@@ -21,17 +21,17 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.se.ExplodedGraph.Node;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
@@ -156,15 +156,14 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
-  public Set<List<Location>> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
     return ImmutableSet.of();
   }
 
-  public Set<List<JavaFileScannerContext.Location>> exceptionFlows() {
+  public Set<Flow> exceptionFlows() {
     List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().collect(Collectors.toList());
     return FlowComputation.flow(node, svCausingException, domains);
   }
-
 
   @Override
   public boolean equals(Object obj) {

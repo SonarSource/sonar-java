@@ -19,11 +19,11 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -81,14 +81,14 @@ public class ExceptionalYieldChecker {
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
     }
 
-    List<JavaFileScannerContext.Location> argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
-    Set<List<JavaFileScannerContext.Location>> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex);
-    Set<List<JavaFileScannerContext.Location>> exceptionFlows = yield.exceptionFlows();
+    Flow argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
+    Set<Flow> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex);
+    Set<Flow> exceptionFlows = yield.exceptionFlows();
 
-    ImmutableSet.Builder<List<JavaFileScannerContext.Location>> flows = ImmutableSet.builder();
-    for (List<JavaFileScannerContext.Location> argumentFlow : argumentsFlows) {
-      for (List<JavaFileScannerContext.Location> exceptionFlow : exceptionFlows) {
-        flows.add(ImmutableList.<JavaFileScannerContext.Location>builder()
+    ImmutableSet.Builder<Flow> flows = ImmutableSet.builder();
+    for (Flow argumentFlow : argumentsFlows) {
+      for (Flow exceptionFlow : exceptionFlows) {
+        flows.add(Flow.builder()
           .addAll(exceptionFlow)
           .addAll(argumentChangingNameFlows)
           .add(methodInvocationMessage)
@@ -100,7 +100,7 @@ public class ExceptionalYieldChecker {
     check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex) {
+  private static Set<Flow> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex) {
     ProgramState programState = node.programState;
     List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
     SymbolicValue parameterCausingExceptionSV = arguments.get(parameterCausingExceptionIndex).symbolicValue();
@@ -140,7 +140,7 @@ public class ExceptionalYieldChecker {
       .collect(Collectors.toList());
   }
 
-  private static List<JavaFileScannerContext.Location> flowsForArgumentsChangingName(ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {
+  private static Flow flowsForArgumentsChangingName(ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {
     return FlowComputation.flowsForArgumentsChangingName(Collections.singletonList(yield.parameterCausingExceptionIndex()), mit);
   }
 }

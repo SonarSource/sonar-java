@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -62,7 +61,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
     return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
   }
 
-  public Set<List<JavaFileScannerContext.Location>> flowForExpression(Tree expression) {
+  public Set<Flow> flowForExpression(Tree expression) {
     Collection<ExplodedGraph.Node> nodes = getNodes(expression);
     return collectFlow(nodes);
   }
@@ -72,7 +71,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
     return falseNodes.isEmpty() ? trueEvaluations.get(expression) : falseNodes;
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> collectFlow(Collection<ExplodedGraph.Node> nodes) {
+  private static Set<Flow> collectFlow(Collection<ExplodedGraph.Node> nodes) {
     return nodes.stream()
       .map(AlwaysTrueOrFalseExpressionCollector::flowFromNode)
       .flatMap(Set::stream)
@@ -80,13 +79,13 @@ public class AlwaysTrueOrFalseExpressionCollector {
       .collect(Collectors.toSet());
   }
 
-  private static Set<List<JavaFileScannerContext.Location>> flowFromNode(ExplodedGraph.Node node) {
+  private static Set<Flow> flowFromNode(ExplodedGraph.Node node) {
     List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
     return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains, node.programState.peekValueSymbol().symbol);
   }
 
-  public static List<JavaFileScannerContext.Location> addIssueLocation(List<JavaFileScannerContext.Location> flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
-    return ImmutableList.<JavaFileScannerContext.Location>builder()
+  public static Flow addIssueLocation(Flow flow, Tree issueTree, boolean conditionIsAlwaysTrue) {
+    return Flow.builder()
       .add(new JavaFileScannerContext.Location("Expression is always " + conditionIsAlwaysTrue + ".", issueTree))
       .addAll(flow)
       .build();

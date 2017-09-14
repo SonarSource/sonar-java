@@ -31,6 +31,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -179,16 +180,15 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
         valueConstraint == ObjectConstraint.NULL ? "computeIfAbsent" : "computeIfPresent");
     }
 
-    private Set<List<JavaFileScannerContext.Location>> flows() {
+    private Set<Flow> flows() {
       // build nullness flows for value constraint
-      Set<List<JavaFileScannerContext.Location>> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class));
+      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class));
       // enrich each flow with both map method invocations
-      return flows.stream().map(flow -> {
-        List<JavaFileScannerContext.Location> newFlow = new ArrayList<>(flow);
-        newFlow.add(new JavaFileScannerContext.Location("'Map.get()' is invoked.", getInvocation.methodSelect()));
-        newFlow.add(0, new JavaFileScannerContext.Location("'Map.put()' is invoked with same key.", putInvocation.methodSelect()));
-        return Collections.unmodifiableList(newFlow);
-      }).collect(Collectors.toSet());
+      return flows.stream().map(flow -> Flow.builder()
+        .add(new JavaFileScannerContext.Location("'Map.put()' is invoked with same key.", putInvocation.methodSelect()))
+        .addAll(flow)
+        .add(new JavaFileScannerContext.Location("'Map.get()' is invoked.", getInvocation.methodSelect()))
+        .build()).collect(Collectors.toSet());
     }
   }
 

@@ -24,12 +24,11 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -79,11 +78,11 @@ public class CheckerDispatcher implements CheckerContext {
 
   @Override
   public void reportIssue(Tree tree, SECheck check, String message) {
-    reportIssue(tree, check, message, new HashSet<>());
+    reportIssue(tree, check, message, Collections.emptySet());
   }
 
   @Override
-  public void reportIssue(Tree tree, SECheck check, String message, Set<List<JavaFileScannerContext.Location>> flows) {
+  public void reportIssue(Tree tree, SECheck check, String message, Set<Flow> flows) {
     check.reportIssue(tree, message, flows);
   }
 

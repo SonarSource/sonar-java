@@ -28,12 +28,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -45,7 +45,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,7 +105,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     for (Map.Entry<AssignmentExpressionTree, Collection<AssignmentDataHolder>> assignmentForTree : assignmentsByMethod.pop().asMap().entrySet()) {
       Collection<AssignmentDataHolder> allAssignments = assignmentForTree.getValue();
       if (allAssignments.stream().allMatch(AssignmentDataHolder::isRedundant)) {
-        Set<List<Location>> flows = allAssignments.stream().map(AssignmentDataHolder::flows).flatMap(Set::stream).collect(Collectors.toSet());
+        Set<Flow> flows = allAssignments.stream().map(AssignmentDataHolder::flows).flatMap(Set::stream).collect(Collectors.toSet());
         reportIssue(assignmentForTree.getKey(),
           String.format("Remove this useless assignment; \"%s\" already holds the assigned value along all execution paths.",
             Iterables.getFirst(allAssignments, null).assignedSymbol.name()),
@@ -136,7 +135,7 @@ public class RedundantAssignmentsCheck extends SECheck {
       return oldValue == newValue;
     }
 
-    public Set<List<JavaFileScannerContext.Location>> flows() {
+    public Set<Flow> flows() {
       return FlowComputation.flow(node, newValue, Collections.emptyList(), fromSymbol);
     }
   }
