@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class SECheck implements JavaFileScanner {
 
@@ -107,12 +106,12 @@ public abstract class SECheck implements JavaFileScanner {
     }
 
     public Set<List<JavaFileScannerContext.Location>> getFlows() {
-      Stream<Flow> flowsAsStream = flows.stream();
-      if (flows.stream().anyMatch(Flow::isExceptional) && flows.stream().anyMatch(Flow::isNonExceptional)) {
-        // have both exceptional and non-exceptional paths, keep only the non-exceptional
-        flowsAsStream = flowsAsStream.filter(Flow::isNonExceptional);
+      Set<List<JavaFileScannerContext.Location>> nonExceptionalFlows = flows.stream().filter(Flow::isNonExceptional).map(Flow::elements).collect(Collectors.toSet());
+      if (!nonExceptionalFlows.isEmpty()) {
+        // keep only the non-exceptional flows and ignore exceptional ones
+        return nonExceptionalFlows;
       }
-      return flowsAsStream.map(Flow::elements).collect(Collectors.toSet());
+      return flows.stream().map(Flow::elements).collect(Collectors.toSet());
     }
   }
 }
