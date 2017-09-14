@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Preconditions;
 
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -204,7 +205,7 @@ public interface JavaFileScannerContext {
 
     public Location(String msg, Tree syntaxNode) {
       this.msg = msg;
-      this.syntaxNode = syntaxNode;
+      this.syntaxNode = Preconditions.checkNotNull(syntaxNode);
     }
 
     @Override
