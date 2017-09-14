@@ -26,23 +26,31 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S1166")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -54,7 +62,6 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       "java.net.MalformedURLException, " +
       "java.time.format.DateTimeParseException";
 
-
   @RuleProperty(
       key = "exceptions",
       description = "List of exceptions which should not be checked",
@@ -65,6 +72,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   private Deque<Collection<IdentifierTree>> validUsagesStack;
   private Iterable<String> exceptions;
   private List<String> exceptionIdentifiers;
+  private Set<CatchTree> excludedCatchTrees = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -78,11 +86,55 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
+    excludedCatchTrees.clear();
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    if (containsEnumValueOf(tree.block())) {
+      tree.catches().stream()
+        .filter(c -> c.parameter().symbol().type().is("java.lang.IllegalArgumentException"))
+        .findAny()
+        .ifPresent(excludedCatchTrees::add);
+    }
+    super.visitTryStatement(tree);
+  }
+
+  private static boolean containsEnumValueOf(Tree tree) {
+    EnumValueOfVisitor visitor = new EnumValueOfVisitor();
+    tree.accept(visitor);
+    return visitor.hasEnumValueOf;
+  }
+
+  private static class EnumValueOfVisitor extends BaseTreeVisitor {
+    private static final MethodMatcher ENUM_VALUE_OF = MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf("java.lang.Enum"))
+      .name("valueOf")
+      .withAnyParameters();
+    private boolean hasEnumValueOf = false;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (ENUM_VALUE_OF.matches(tree)) {
+        hasEnumValueOf = true;
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip anonymous classes
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    if (!isExcludedType(tree.parameter().type())) {
+    if (!isExcludedType(tree.parameter().type()) && !excludedCatchTrees.contains(tree)) {
       Symbol exception = tree.parameter().symbol();
       validUsagesStack.addFirst(Lists.newArrayList(exception.usages()));
       super.visitCatch(tree);

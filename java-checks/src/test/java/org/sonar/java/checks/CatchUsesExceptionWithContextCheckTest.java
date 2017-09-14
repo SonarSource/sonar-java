@@ -19,14 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CatchUsesExceptionWithContextCheckTest {
 
   @Test
   public void detected() {
     JavaCheckVerifier.verify("src/test/files/checks/CatchUsesExceptionWithContextCheck.java", new CatchUsesExceptionWithContextCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CatchUsesExceptionWithContextCheck.java", new CatchUsesExceptionWithContextCheck());
   }
 
 }

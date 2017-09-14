@@ -25,9 +25,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/ValidateAction.java':[
 101,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/Measure.java':[
-63,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStep.java':[
 158,
 ],
@@ -73,9 +70,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java':[
 290,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/MetricLevelTypeValidation.java':[
-40,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java':[
 43,
