@@ -950,9 +950,18 @@ public class ExplodedGraphWalker {
     } else {
       programState = programState.stackValue(unarySymbolicValue);
     }
-    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
-      && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
-      programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
+    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
+      ExpressionTree expr = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
+      Symbol symbol = null;
+      if (expr.is(Tree.Kind.IDENTIFIER)) {
+        symbol = ((IdentifierTree) expr).symbol();
+      } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) expr;
+        symbol = ExpressionUtils.isSelectOnThisOrSuper(mset) ? mset.identifier().symbol() : null;
+      }
+      if (symbol != null) {
+        programState = programState.put(symbol, unarySymbolicValue);
+      }
     }
   }
 
