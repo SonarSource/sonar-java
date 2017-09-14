@@ -161,4 +161,38 @@ class A {
       System.out.println("", e.getCause());
     }
   }
+
+  MyEnum foo() {
+    try {
+      return Enum.valueOf(MyEnum.class, "C");
+    } catch (IllegalArgumentException e) { // Compliant
+      return null;
+    }
+  }
+
+  MyEnum qix() {
+    try {
+      return MyEnum.valueOf("C");
+    } catch (IllegalArgumentException e) { // Compliant
+      return null;
+    }
+  }
+
+  MyEnum gul() {
+    try {
+      new A() {
+        void bul() throws Exception {
+          MyEnum.valueOf("C");
+        }
+      };
+      java.util.function.Function<String, MyEnum> getValue = (name) -> MyEnum.valueOf(name);
+      return MyEnum.valueOf("C");
+    } catch (IllegalArgumentException e) { // Compliant
+      return null;
+    }
+  }
+
+  private enum MyEnum {
+    A, B;
+  }
 }
