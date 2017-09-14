@@ -146,4 +146,10 @@ public class FlowComputationTest {
   public void test_exception_flows() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/ExceptionFlows.java", new NullDereferenceCheck());
   }
+
+  @Test
+  public void test_location_should_not_be_created_on_null_tree() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/ExceptionFlows.java", new NullDereferenceCheck());
+  }
+
 }

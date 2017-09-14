@@ -331,7 +331,10 @@ public class FlowComputation {
         return Optional.empty();
       }
       SymbolicValue peekValue = edge.child.programState.peekValue();
-      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue
+        // parent node should be either method invocation or throw statement, thus always having non null syntax tree associated
+        // however to avoid NPE when program state is incorrectly cleared we assert this explicitly
+        && edge.parent.programPoint.syntaxTree() != null) {
         Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
         String msg = String.format("%s is thrown.", exceptionName(type));
         return Optional.of(location(edge.parent, msg));
