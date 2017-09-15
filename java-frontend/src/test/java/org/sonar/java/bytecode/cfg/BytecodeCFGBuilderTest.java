@@ -209,4 +209,26 @@ public class BytecodeCFGBuilderTest {
     List<String> collect = Instructions.ASM_OPCODES.stream().map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
     assertThat(cfgOpcodes).containsAll(collect);
   }
+
+  @Test
+  public void visited_label_should_be_assigned_to_true_successor() throws Exception {
+    Label label0 = new Label();
+    Label label1 = new Label();
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
+      .visitVarInsn(Opcodes.ALOAD, 0)
+      .visitJumpInsn(Opcodes.IFNULL, label0)
+      .visitJumpInsn(Opcodes.IFEQ, label0)
+      .visitInsn(Opcodes.ICONST_0)
+      .visitJumpInsn(Opcodes.GOTO, label1)
+      .visitLabel(label0)
+      .visitInsn(Opcodes.ICONST_1)
+      .visitLabel(label1)
+      .visitInsn(Opcodes.IRETURN)
+      .cfg();
+
+    BytecodeCFGBuilder.Block block3 = cfg.blocks.get(3);
+    assertThat(block3.terminator.opcode).isEqualTo(Opcodes.IFEQ);
+    assertThat(block3.falseSuccessor()).isNotNull().isSameAs(cfg.blocks.get(4));
+    assertThat(block3.trueSuccessor()).isNotNull().isSameAs(cfg.blocks.get(2));
+  }
 }
