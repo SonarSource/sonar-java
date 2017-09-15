@@ -156,16 +156,6 @@ public class BytecodeCFGBuilder {
       return newBlock;
     }
 
-    Block createTrueSuccessor() {
-      trueBlock = createSuccessor();
-      return trueBlock;
-    }
-
-    Block createFalseSuccessor() {
-      falseBlock = createSuccessor();
-      return falseBlock;
-    }
-
     public Block trueSuccessor() {
       return trueBlock;
     }
@@ -224,6 +214,13 @@ public class BytecodeCFGBuilder {
     @Override
     public Set<Block> successors() {
       return new HashSet<>(successors);
+    }
+
+    void setTrueBlock(Block trueBlock) {
+      this.trueBlock = trueBlock;
+      if(!successors.contains(trueBlock)) {
+        successors.add(trueBlock);
+      }
     }
   }
 
@@ -314,14 +311,15 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitJumpInsn(int opcode, Label label) {
-      if(opcode == GOTO || opcode == JSR) {
+      if (opcode == GOTO || opcode == JSR) {
         currentBlock.terminator = new Instruction(opcode);
         currentBlock.successors = Collections.singletonList(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
         return;
       }
-      currentBlock.trueBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
+      currentBlock.setTrueBlock(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
       currentBlock.terminator = new Instruction(opcode);
-      currentBlock = currentBlock.createFalseSuccessor();
+      currentBlock.falseBlock = currentBlock.createSuccessor();
+      currentBlock = currentBlock.falseBlock;
     }
 
     @Override
