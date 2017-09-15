@@ -41,6 +41,7 @@ import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -315,7 +316,7 @@ public class BytecodeCFGBuilder {
     public void visitJumpInsn(int opcode, Label label) {
       if(opcode == GOTO || opcode == JSR) {
         currentBlock.terminator = new Instruction(opcode);
-        blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+        currentBlock.successors = Collections.singletonList(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
         return;
       }
       currentBlock.trueBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
