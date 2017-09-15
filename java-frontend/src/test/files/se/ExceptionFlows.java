@@ -68,4 +68,41 @@ abstract class A {
   class ExA extends Exception {}
   class ExB extends Exception {}
   class MyException extends Exception {}
+
+  void test_finally(Object o, boolean b2) {
+    try {
+      o = null; // flow@finally {{Implies 'o' is null.}}
+      call(); // flow@finally {{Exception is thrown.}}
+      o = "";
+    } finally {
+      Object x = o;
+      o.toString(); // Noncompliant [[flows=finally]] flow@finally {{'o' is dereferenced.}}
+    }
+  }
+
+  void test_finally2(Object o, boolean b2) {
+    try {
+      o = null; // flow@finally2 {{Implies 'o' is null.}}
+      call(); // flow@finally2 {{Exception is thrown.}}
+      o = "";
+    } finally {
+      call();
+      o.toString(); // Noncompliant [[flows=finally2]] flow@finally2 {{'o' is dereferenced.}}
+    }
+  }
+
+  void test_finally3(Object o, boolean b2) {
+    try {
+      o = null; // flow@finally3 {{Implies 'o' is null.}}
+      call(); // flow@finally3 {{Exception is thrown.}}
+      o = "";
+    } finally {
+      try {
+        call(); // flow@finally3 {{Exception is thrown.}}
+        o = "";
+      } finally {
+        o.toString(); // Noncompliant [[flows=finally3]] flow@finally3 {{'o' is dereferenced.}}
+      }
+    }
+  }
 }
