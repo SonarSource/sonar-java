@@ -149,7 +149,7 @@ public class FlowComputationTest {
 
   @Test
   public void test_location_should_not_be_created_on_null_tree() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/ExceptionFlows.java", new NullDereferenceCheck());
+    JavaCheckVerifier.verify("src/test/files/se/FlowNullTree.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck());
   }
 
 }
