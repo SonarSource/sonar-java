@@ -318,7 +318,7 @@ public class BytecodeCFGBuilder {
         blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
         return;
       }
-      blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
+      currentBlock.trueBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createTrueSuccessor());
       currentBlock.terminator = new Instruction(opcode);
       currentBlock = currentBlock.createFalseSuccessor();
     }
