@@ -28,10 +28,4 @@ Thumbs.db
 # Folder config file
 Desktop.ini
 
-# ---- Velocity templates
-velocity.log*
-
-# ---- Node modules
-node_modules/
-
 .java-version

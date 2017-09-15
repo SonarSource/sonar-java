@@ -54,7 +54,6 @@
   <modules>
     <module>java-maven-model</module>
     <module>java-frontend</module>
-    <module>java-viewer</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>sonar-java-plugin</module>
