@@ -183,8 +183,8 @@ public class BytecodeCFGBuilderTest {
 
     JUMP_INSN.forEach(i -> {
       Label jumpLabel = new Label();
-      ins.visitLabel(jumpLabel);
       ins.visitJumpInsn(i, jumpLabel);
+      ins.visitLabel(jumpLabel);
     });
 
     ins.visitLdcInsn("a");
@@ -230,5 +230,26 @@ public class BytecodeCFGBuilderTest {
     assertThat(block3.terminator.opcode).isEqualTo(Opcodes.IFEQ);
     assertThat(block3.falseSuccessor()).isNotNull().isSameAs(cfg.blocks.get(4));
     assertThat(block3.trueSuccessor()).isNotNull().isSameAs(cfg.blocks.get(2));
+  }
+  @Test
+  public void goto_successors() throws Exception {
+    Label label0 = new Label();
+    Label label1 = new Label();
+    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
+      .visitVarInsn(Opcodes.ALOAD, 0)
+      .visitJumpInsn(Opcodes.IFNULL, label0)
+      .visitVarInsn(Opcodes.ALOAD, 0)
+      .visitJumpInsn(Opcodes.IFNULL, label1)
+      .visitVarInsn(Opcodes.ALOAD, 0)
+      .visitVarInsn(Opcodes.ALOAD, 0)
+      .visitJumpInsn(Opcodes.IFEQ, label0)
+      .visitInsn(Opcodes.ICONST_0)
+      .visitJumpInsn(Opcodes.GOTO, label1)
+      .visitLabel(label0)
+      .visitInsn(Opcodes.ICONST_1)
+      .visitLabel(label1)
+      .visitInsn(Opcodes.IRETURN)
+      .cfg();
+      assertThat(cfg.blocks.get(6).successors).containsExactly(cfg.blocks.get(4));
   }
 }
