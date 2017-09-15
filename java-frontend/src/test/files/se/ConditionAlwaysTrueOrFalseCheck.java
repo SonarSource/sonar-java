@@ -2180,3 +2180,45 @@ class OptionalWrappedValue {
     }
   }
 }
+
+abstract class UnaryOperators {
+
+  private long x;
+
+  public void bar() {
+    if (x > 0) {
+      x--;
+      if (x == 0) { // Compliant
+        doSomething();
+      }
+    }
+  }
+
+  public void foo() {
+    if (this.x > 0) {
+      this.x--;
+      if (this.x == 0) { // Compliant
+        doSomething();
+      }
+    }
+  }
+
+  public void qix() {
+    if (this.x > 0) {
+      if (this.x == 0) { // Noncompliant
+        doSomething();
+      }
+    }
+  }
+
+  public void gul(UnaryOperators a) {
+    if (a.x > 0) {
+      a.x--;
+      if (a.x == 0) { // Compliant
+        doSomething();
+      }
+    }
+  }
+
+  abstract void doSomething();
+}
