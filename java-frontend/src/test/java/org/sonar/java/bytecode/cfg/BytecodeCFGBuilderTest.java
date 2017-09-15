@@ -230,6 +230,8 @@ public class BytecodeCFGBuilderTest {
     assertThat(block3.terminator.opcode).isEqualTo(Opcodes.IFEQ);
     assertThat(block3.falseSuccessor()).isNotNull().isSameAs(cfg.blocks.get(4));
     assertThat(block3.trueSuccessor()).isNotNull().isSameAs(cfg.blocks.get(2));
+    assertThat(block3.successors).hasSize(2);
+    assertThat(block3.successors()).hasSize(2);
   }
   @Test
   public void goto_successors() throws Exception {
