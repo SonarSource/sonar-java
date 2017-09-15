@@ -1,4 +1,10 @@
-class A {
+abstract class A {
+  private static final int NUMBER = 42;
+  private static int static_number = 42;
+  private final int final_number = 42;
+  private int field_number = 42;
+  private static final String STRING = "string";
+
   void foo() {
     int myInt = 4;
     boolean myBoolean = true;
@@ -26,21 +32,39 @@ class A {
     Integer.valueOf("4").toString(); // Compliant
     new Integer("4").toString(); // Noncompliant {{Use "Integer.toString" instead.}}
 
-    String myString = 4 + ""; // Noncompliant {{Use "Integer.toString" instead.}}
-    myString = "" + 4; // Noncompliant {{Use "Integer.toString" instead.}}
+    String myString = 4 + ""; // Compliant
+    myString = "" + 4; // Compliant
     myString = "foo" + 4; // compliant
     myString = "foo" + 4.0; // compliant
-    myString = "" + 4.0; // Noncompliant {{Use "Double.toString" instead.}}
-    myString = "" + true; // Noncompliant {{Use "Boolean.toString" instead.}}
-    foo("" + true); // Noncompliant {{Use "Boolean.toString" instead.}}
-    foo("Foo" + "" + true); // compliant true is added to the result of the concatenation of Foo and ""
-    foo("" + true + "Foo"); // Noncompliant {{Use "Boolean.toString" instead.}}
+    myString = "" + 4.0; // Compliant
+    myString = "" + true; // Compliant
 
+    foo("" + true); // Compliant
+    foo("Foo" + "" + true); // Compliant
+    foo("" + true + "Foo"); // Compliant
+
+    myString = NUMBER + ""; // Compliant
+    myString = A.NUMBER + ""; // Compliant
+    myString = this.NUMBER + ""; // Noncompliant
+    myString = "" + this.NUMBER; // Noncompliant
+    myString = NUMBER + "foo"; // Compliant
+
+    myString = static_number + ""; // Compliant
+    myString = final_number + ""; // Compliant
+    myString = field_number + ""; // Noncompliant
+
+    myString = myInt + ""; // Noncompliant
+    myString = null + ""; // Compliant
+    myString = getValue() + ""; // Noncompliant
+
+    myString = STRING + "";
   }
 
   static Integer returnInteger(int value) {
     return Integer.valueOf(value);
   }
+
+  abstract int getValue();
 
   @Foo(value = "" + 12) // Compliant
   void bar(String s) {
