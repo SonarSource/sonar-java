@@ -79,7 +79,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -944,24 +943,15 @@ public class ExplodedGraphWalker {
     programState = unstackUnary.state;
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.valuesAndSymbols);
+    ProgramState.SymbolicValueSymbol symbolicValueSymbol = unstackUnary.valuesAndSymbols.get(0);
     if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
-      ProgramState.SymbolicValueSymbol symbolicValueSymbol = unstackUnary.valuesAndSymbols.get(0);
       programState = programState.stackValue(symbolicValueSymbol.sv, symbolicValueSymbol.symbol);
     } else {
       programState = programState.stackValue(unarySymbolicValue);
     }
-    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
-      ExpressionTree expr = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
-      Symbol symbol = null;
-      if (expr.is(Tree.Kind.IDENTIFIER)) {
-        symbol = ((IdentifierTree) expr).symbol();
-      } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) expr;
-        symbol = ExpressionUtils.isSelectOnThisOrSuper(mset) ? mset.identifier().symbol() : null;
-      }
-      if (symbol != null) {
-        programState = programState.put(symbol, unarySymbolicValue);
-      }
+    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
+      && symbolicValueSymbol.symbol != null) {
+      programState = programState.put(symbolicValueSymbol.symbol, unarySymbolicValue);
     }
   }
 
