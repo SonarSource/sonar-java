@@ -326,15 +326,9 @@ public class FlowComputation {
     }
 
     private Optional<JavaFileScannerContext.Location> flowFromThrownException(ExplodedGraph.Edge edge) {
-      // don't add message on explicit throw statements
-      if (isThrowStatement(edge)) {
-        return Optional.empty();
-      }
       SymbolicValue peekValue = edge.child.programState.peekValue();
       if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue
-        // parent node should be either method invocation or throw statement, thus always having non null syntax tree associated
-        // however to avoid NPE when program state is incorrectly cleared we assert this explicitly
-        && edge.parent.programPoint.syntaxTree() != null) {
+        && (isMethodInvocationNode(edge.parent) || isDivByZeroExceptionalYield(edge))) {
         Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
         String msg = String.format("%s is thrown.", exceptionName(type));
         return Optional.of(location(edge.parent, msg));
@@ -342,9 +336,9 @@ public class FlowComputation {
       return Optional.empty();
     }
 
-    private boolean isThrowStatement(ExplodedGraph.Edge edge) {
+    private boolean isDivByZeroExceptionalYield(ExplodedGraph.Edge edge) {
       Tree tree = edge.parent.programPoint.syntaxTree();
-      return tree != null && tree.parent() != null && tree.parent().is(Tree.Kind.THROW_STATEMENT);
+      return tree != null && tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT);
     }
 
     private Optional<JavaFileScannerContext.Location> flowFromCaughtException(ExplodedGraph.Edge edge) {
