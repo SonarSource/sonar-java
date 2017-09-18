@@ -354,7 +354,10 @@ public class FlowComputation {
     }
 
     private String exceptionName(@Nullable Type type) {
-      return type == null ? "Exception" : ("'" + type.name() + "'");
+      if (type == null || type.isUnknown()) {
+        return "Exception";
+      }
+      return "'" + type.name() + "'";
     }
 
     private Set<LearnedConstraint> filterRedundantObjectDomain(Set<LearnedConstraint> learnedConstraints) {
