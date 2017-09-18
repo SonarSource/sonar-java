@@ -9,5 +9,6 @@
   "tags": [
     "tests"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2698"
 }

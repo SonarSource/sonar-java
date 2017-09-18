@@ -9,5 +9,6 @@
   "tags": [
     "sql"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2695"
 }

@@ -11,5 +11,6 @@
     "duplicate",
     "suspicious"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4144"
 }

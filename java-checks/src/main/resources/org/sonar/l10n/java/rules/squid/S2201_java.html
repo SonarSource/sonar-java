@@ -1,8 +1,35 @@
 <p>When the call to a function doesn't have any side effects, what is the point of making the call if the results are ignored? In such case, either
 the function call is useless and should be dropped or the source code doesn't behave as expected. </p>
 <p>To prevent generating any false-positives, this rule triggers an issues only on the following predefined list of immutable classes in the Java API
-: <code>String</code>, <code>Boolean</code>, <code>Integer</code>, <code>Double</code>, <code>Float</code>, <code>Byte</code>, <code>Character</code>,
-<code>Short</code>, <code>StackTraceElement</code>.</p>
+:</p>
+<ul>
+  <li> <code>java.lang.String</code> </li>
+  <li> <code>java.lang.Boolean</code> </li>
+  <li> <code>java.lang.Integer</code> </li>
+  <li> <code>java.lang.Double</code> </li>
+  <li> <code>java.lang.Float</code> </li>
+  <li> <code>java.lang.Byte</code> </li>
+  <li> <code>java.lang.Character</code> </li>
+  <li> <code>java.lang.Short</code> </li>
+  <li> <code>java.lang.StackTraceElement</code> </li>
+  <li> <code>java.time.DayOfWeek</code> </li>
+  <li> <code>java.time.Duration</code> </li>
+  <li> <code>java.time.Instant</code> </li>
+  <li> <code>java.time.LocalDate</code> </li>
+  <li> <code>java.time.LocalDateTime</code> </li>
+  <li> <code>java.time.LocalTime</code> </li>
+  <li> <code>java.time.Month</code> </li>
+  <li> <code>java.time.MonthDay</code> </li>
+  <li> <code>java.time.OffsetDateTime</code> </li>
+  <li> <code>java.time.OffsetTime</code> </li>
+  <li> <code>java.time.Period</code> </li>
+  <li> <code>java.time.Year</code> </li>
+  <li> <code>java.time.YearMonth</code> </li>
+  <li> <code>java.time.ZonedDateTime</code> </li>
+  <li> <code>java.math.BigInteger</code> </li>
+  <li> <code>java.math.BigDecimal</code> </li>
+  <li> <code>java.util.Optional</code> </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void handle(String command){

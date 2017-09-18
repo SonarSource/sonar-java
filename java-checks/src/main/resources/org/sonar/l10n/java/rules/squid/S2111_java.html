@@ -7,7 +7,8 @@
   binary fraction of any finite length). Thus, the value that is being passed in to the constructor is not exactly equal to 0.1, appearances
   notwithstanding.
 </blockquote>
-<p>Instead, you should use <code>BigDecimal.valueOf</code>, which uses a string under the covers to eliminate floating point rounding errors.</p>
+<p>Instead, you should use <code>BigDecimal.valueOf</code>, which uses a string under the covers to eliminate floating point rounding errors, or the
+constructor that takes a <code>String</code> argument.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 double d = 1.1;
@@ -20,7 +21,7 @@ BigDecimal bd2 = new BigDecimal(1.1); // Noncompliant; same result
 double d = 1.1;
 
 BigDecimal bd1 = BigDecimal.valueOf(d);
-BigDecimal bd2 = BigDecimal.valueOf(1.1);
+BigDecimal bd2 = new BigDecimal("1.1"); // using String constructor will result in precise value
 </pre>
 <h2>See</h2>
 <ul>

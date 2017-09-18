@@ -10,5 +10,6 @@
     "redundant",
     "clumsy"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1185"
 }

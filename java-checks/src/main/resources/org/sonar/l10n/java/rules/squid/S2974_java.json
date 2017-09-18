@@ -9,5 +9,6 @@
   "tags": [
     "design"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2974"
 }

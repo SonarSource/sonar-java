@@ -2,24 +2,24 @@
 intended for one of the arguments.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-if (compare(myPoint.x, myPoint.x) != 0) {  // Noncompliant
-  //...
+if (compare(myPoint.x, myPoint.x) != 0) { // Noncompliant
+&nbsp;&nbsp;//...
 }
 
 if (compare(getNextValue(), getNextValue()) != 0) { // Noncompliant
-  // ...
+&nbsp;&nbsp;// ...
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 if (compare(myPoint.x, myPoint.y) != 0) {
-  //...
+&nbsp;&nbsp;//...
 }
 
 Object v1 = getNextValue();
 Object v2 = getNextValue();
 if (compare(v1, v2) != 0) {
-  // ...
+&nbsp;&nbsp;// ...
 }
 </pre>
 

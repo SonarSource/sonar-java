@@ -9,5 +9,6 @@
   "tags": [
     "java8"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1612"
 }

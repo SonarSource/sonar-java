@@ -9,5 +9,6 @@
   "tags": [
     "performance"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2129"
 }

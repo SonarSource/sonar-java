@@ -12,5 +12,6 @@
     "finding",
     "clumsy"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2737"
 }

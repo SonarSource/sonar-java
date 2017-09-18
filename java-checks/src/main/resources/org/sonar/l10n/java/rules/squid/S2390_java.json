@@ -12,5 +12,6 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2390"
 }

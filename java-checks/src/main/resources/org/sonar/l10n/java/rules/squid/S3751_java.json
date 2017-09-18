@@ -9,5 +9,6 @@
   "tags": [
     "spring"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3751"
 }

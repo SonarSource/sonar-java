@@ -14,5 +14,6 @@
     "CWE",
     "CERT"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1444"
 }

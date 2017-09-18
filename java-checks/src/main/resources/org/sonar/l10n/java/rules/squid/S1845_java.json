@@ -9,5 +9,6 @@
   "tags": [
     "confusing"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-1845"
 }

@@ -12,5 +12,6 @@
   "standards": [
     "CWE"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3318"
 }

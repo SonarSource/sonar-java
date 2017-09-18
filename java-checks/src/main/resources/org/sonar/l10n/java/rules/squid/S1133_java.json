@@ -9,5 +9,6 @@
   "tags": [
     "obsolete"
   ],
-  "defaultSeverity": "Info"
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-1133"
 }

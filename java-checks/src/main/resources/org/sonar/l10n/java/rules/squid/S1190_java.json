@@ -10,5 +10,6 @@
     "obsolete",
     "pitfall"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-1190"
 }

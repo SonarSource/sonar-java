@@ -9,5 +9,6 @@
   "tags": [
     "redundant"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4087"
 }

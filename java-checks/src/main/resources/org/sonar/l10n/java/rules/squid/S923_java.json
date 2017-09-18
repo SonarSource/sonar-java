@@ -11,5 +11,6 @@
     "cert",
     "pitfall"
   ],
-  "defaultSeverity": "Info"
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-923"
 }

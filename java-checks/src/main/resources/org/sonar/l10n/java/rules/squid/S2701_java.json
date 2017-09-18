@@ -10,5 +10,6 @@
     "junit",
     "tests"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2701"
 }

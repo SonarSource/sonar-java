@@ -9,5 +9,6 @@
   "tags": [
     "unpredictable"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2200"
 }

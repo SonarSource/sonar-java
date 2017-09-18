@@ -17,5 +17,6 @@
     "CERT",
     "OWASP Top Ten"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1989"
 }

@@ -9,5 +9,6 @@
   "tags": [
     "serialization"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2055"
 }

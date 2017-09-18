@@ -10,5 +10,6 @@
     "multi-threading",
     "deadlock"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3046"
 }

@@ -10,5 +10,6 @@
     "confusing",
     "redundant"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1942"
 }

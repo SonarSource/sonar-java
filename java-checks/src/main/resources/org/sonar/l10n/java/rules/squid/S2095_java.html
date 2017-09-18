@@ -8,7 +8,7 @@ their knees.</p>
 <pre>
 private void readTheFile() throws IOException {
   Path path = Paths.get(this.fileName);
-  BufferedReader reader = Files.newBufferedReader(path, this.charset)) {
+  BufferedReader reader = Files.newBufferedReader(path, this.charset);
   // ...
   reader.close();  // Noncompliant
   // ...

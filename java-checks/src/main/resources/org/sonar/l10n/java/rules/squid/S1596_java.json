@@ -10,5 +10,6 @@
     "obsolete",
     "pitfall"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1596"
 }

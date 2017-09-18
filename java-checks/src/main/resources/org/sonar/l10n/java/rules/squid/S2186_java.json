@@ -9,5 +9,6 @@
   "tags": [
     "tests"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2186"
 }

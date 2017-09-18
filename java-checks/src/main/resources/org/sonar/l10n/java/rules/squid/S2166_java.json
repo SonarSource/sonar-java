@@ -10,5 +10,6 @@
     "convention",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2166"
 }

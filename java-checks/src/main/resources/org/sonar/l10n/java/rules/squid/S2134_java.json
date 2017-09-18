@@ -10,5 +10,6 @@
     "multi-threading",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2134"
 }

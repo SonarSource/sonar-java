@@ -3,9 +3,9 @@ However, when it happens on all paths through the logic, it is surely a bug.</p>
 <p>This rule raises an issue when a method contains several <code>return</code> statements that all return the same value.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-int foo(boolean a) {
+int foo(int a) {
   int b = 12;
-  if(a) {
+  if (a == 1) {
     return b;
   }
   return b;  // Noncompliant
