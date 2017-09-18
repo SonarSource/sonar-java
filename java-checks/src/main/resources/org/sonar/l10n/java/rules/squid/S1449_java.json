@@ -13,5 +13,6 @@
   "standards": [
     "CERT"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1449"
 }

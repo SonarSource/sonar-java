@@ -10,5 +10,6 @@
     "misra",
     "pitfall"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-127"
 }

@@ -10,5 +10,6 @@
     "serialization",
     "pitfall"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2063"
 }

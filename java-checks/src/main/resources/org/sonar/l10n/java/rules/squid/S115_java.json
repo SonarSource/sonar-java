@@ -9,5 +9,6 @@
   "tags": [
     "convention"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-115"
 }

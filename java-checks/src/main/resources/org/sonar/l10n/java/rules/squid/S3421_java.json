@@ -10,5 +10,6 @@
     "maven",
     "obsolete"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-3421"
 }

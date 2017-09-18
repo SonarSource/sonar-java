@@ -11,5 +11,6 @@
   "tags": [
     "design"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-1192"
 }

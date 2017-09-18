@@ -10,5 +10,6 @@
     "maven",
     "lock-in"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3422"
 }

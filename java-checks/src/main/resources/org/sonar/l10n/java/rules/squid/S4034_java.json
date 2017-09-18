@@ -1,5 +1,5 @@
 {
-  "title": "\"Stream.anyMatch()\" should be preferred",
+  "title": "\"Stream\" call chains should be simplified when possible",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -9,5 +9,6 @@
   "tags": [
     "clumsy"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4034"
 }

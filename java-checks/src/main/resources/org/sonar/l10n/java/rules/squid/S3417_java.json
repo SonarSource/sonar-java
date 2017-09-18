@@ -5,5 +5,6 @@
   "tags": [
     "maven"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3417"
 }

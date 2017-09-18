@@ -16,5 +16,6 @@
     "CERT",
     "OWASP Top Ten"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2245"
 }

@@ -9,5 +9,6 @@
   "tags": [
     "multi-threading"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2236"
 }

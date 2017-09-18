@@ -9,5 +9,6 @@
   "tags": [
     "api-design"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-3242"
 }

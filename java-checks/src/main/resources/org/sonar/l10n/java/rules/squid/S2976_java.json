@@ -9,5 +9,6 @@
   "tags": [
     "owasp-a9"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2976"
 }

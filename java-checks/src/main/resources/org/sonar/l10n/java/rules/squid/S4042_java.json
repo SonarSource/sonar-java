@@ -10,5 +10,6 @@
     "error-handling",
     "api-design"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4042"
 }

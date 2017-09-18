@@ -9,5 +9,6 @@
   "tags": [
     "spring"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3749"
 }

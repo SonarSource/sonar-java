@@ -18,5 +18,6 @@
     "OWASP Top Ten",
     "SANS Top 25"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2278"
 }

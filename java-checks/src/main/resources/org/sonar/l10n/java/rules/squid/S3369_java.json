@@ -16,5 +16,6 @@
     "CWE",
     "OWASP Top Ten"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3369"
 }

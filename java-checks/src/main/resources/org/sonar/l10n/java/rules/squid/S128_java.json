@@ -16,5 +16,6 @@
     "CWE",
     "CERT"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-128"
 }

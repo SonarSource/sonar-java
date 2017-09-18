@@ -10,5 +10,6 @@
     "convention",
     "api-design"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2157"
 }

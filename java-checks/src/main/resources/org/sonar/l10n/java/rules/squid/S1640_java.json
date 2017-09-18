@@ -9,5 +9,6 @@
   "tags": [
     "performance"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-1640"
 }

@@ -14,5 +14,6 @@
     "CWE",
     "CERT"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-1174"
 }

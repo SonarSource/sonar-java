@@ -9,5 +9,6 @@
   "tags": [
     "tests"
   ],
-  "defaultSeverity": "Blocker"
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2391"
 }
