@@ -165,7 +165,7 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    FlowComputation.flow(node, sv, OPEN::equals, RESOURCE_CONSTRAINT_DOMAIN).stream()
+    FlowComputation.flowWithoutExceptions(node, sv, OPEN::equals, RESOURCE_CONSTRAINT_DOMAIN).stream()
       .flatMap(Flow::firstFlowLocation)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
