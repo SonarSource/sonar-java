@@ -85,13 +85,15 @@ public class FlowComputation {
   private final Predicate<Constraint> terminateTraversal;
   private final Set<SymbolicValue> symbolicValues;
   private final List<Class<? extends Constraint>> domains;
+  private final boolean skipExceptionMessages;
 
   private FlowComputation(Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                          Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
+                          Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, boolean skipExceptionMessages) {
     this.addToFlow = addToFlow;
     this.terminateTraversal = terminateTraversal;
     this.symbolicValues = symbolicValues;
     this.domains = domains;
+    this.skipExceptionMessages = skipExceptionMessages;
   }
 
   private static Set<SymbolicValue> computedFrom(@Nullable SymbolicValue symbolicValue) {
@@ -106,8 +108,40 @@ public class FlowComputation {
 
   // FIXME It is assumed that this will always return set with at least one element, which could be empty, because result is consumed in other places and messages are
   // added to returned flows. This design should be improved.
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
+    List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
+    return flow(currentNode, symbolicValues, addToFlow, terminateTraversal, domains, symbols, false);
+  }
+
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, setFromNullable(currentVal), constraint -> true, c -> false, domains, Collections.emptySet(), false);
+  }
+
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol) {
+    return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol), false);
+  }
+
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow, List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), false);
+  }
+
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
+    List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), false);
+  }
+
+  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+    List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), true);
+  }
+
+  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), true);
+  }
+
+  private static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols, boolean skipExceptionMessages) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
       .flatMap(Set::stream)
@@ -125,27 +159,8 @@ public class FlowComputation {
         }
       }
     }
-    FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains);
+    FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains, skipExceptionMessages);
     return flowComputation.run(currentNode, trackedSymbols);
-  }
-
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, currentVal, constraint -> true, domains);
-  }
-
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains,
-                                                                @Nullable Symbol trackSymbol) {
-    return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol));
-  }
-
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-                                                                List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, currentVal, addToFlow, c -> false, domains);
-  }
-
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-                                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet());
   }
 
   private static <T> Set<T> setFromNullable(@Nullable T val) {
@@ -296,14 +311,16 @@ public class FlowComputation {
       PSet<Symbol> newTrackSymbols = newTrackedSymbols(edge);
       SameConstraints newSameConstraints = newTrackSymbols == trackedSymbols ? sameConstraints : new SameConstraints(sameConstraints, newTrackSymbols);
 
-      flowFromThrownException(edge).ifPresent(loc -> {
-        flowBuilder.setAsExceptional();
-        flowBuilder.add(loc);
-      });
-      flowFromCaughtException(edge).ifPresent(loc -> {
-        flowBuilder.setAsExceptional();
-        flowBuilder.add(loc);
-      });
+      if (!skipExceptionMessages) {
+        flowFromThrownException(edge).ifPresent(loc -> {
+          flowBuilder.setAsExceptional();
+          flowBuilder.add(loc);
+        });
+        flowFromCaughtException(edge).ifPresent(loc -> {
+          flowBuilder.setAsExceptional();
+          flowBuilder.add(loc);
+        });
+      }
 
       Set<LearnedConstraint> learnedConstraints = learnedConstraints(edge);
       Flow lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));

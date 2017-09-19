@@ -119,7 +119,8 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
     List<Class<? extends Constraint>> domains = Lists.newArrayList(CustomResourceConstraint.class);
-    FlowComputation.flow(node, sv, OPENED::equals, domains).stream().flatMap(Flow::stream)
+    FlowComputation.flowWithoutExceptions(node, sv, OPENED::equals, domains).stream()
+      .flatMap(Flow::firstFlowLocation)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))
       .forEach(this::reportIssue);
   }

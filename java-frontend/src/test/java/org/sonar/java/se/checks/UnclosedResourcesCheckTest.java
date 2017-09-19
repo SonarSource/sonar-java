@@ -68,4 +68,9 @@ public class UnclosedResourcesCheckTest {
   public void test_streams() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheckStreams.java", new UnclosedResourcesCheck());
   }
+
+  @Test
+  public void skip_exception_messages() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java", new UnclosedResourcesCheck());
+  }
 }
