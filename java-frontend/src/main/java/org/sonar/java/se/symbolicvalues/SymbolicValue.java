@@ -82,6 +82,30 @@ public class SymbolicValue {
     FALSE_LITERAL
   );
 
+  private static int idGenerator;
+  private int id;
+
+  public SymbolicValue() {
+    id = idGenerator;
+    idGenerator++;
+  }
+
+  @Override
+  public int hashCode() {
+    return 31 * id;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SymbolicValue that = (SymbolicValue) o;
+    return id == that.id;
+  }
 
   public static boolean isDisposable(SymbolicValue symbolicValue) {
     if (symbolicValue instanceof NotSymbolicValue) {
@@ -97,7 +121,7 @@ public class SymbolicValue {
 
   @Override
   public String toString() {
-    return "SV_" + hashCode() % 100;
+    return "SV_" + id;
   }
 
   public void computedFrom(List<ProgramState.SymbolicValueSymbol> symbolicValues) {
