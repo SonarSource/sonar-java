@@ -121,15 +121,6 @@ public class FlowComputation {
     return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol), false);
   }
 
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), false);
-  }
-
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
-    List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), false);
-  }
-
   public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
     List<Class<? extends Constraint>> domains) {
     return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), true);
