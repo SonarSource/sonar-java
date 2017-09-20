@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
@@ -57,11 +56,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
+import static org.sonar.java.se.constraint.BooleanConstraint.FALSE;
+import static org.sonar.java.se.constraint.BooleanConstraint.TRUE;
 import static org.sonar.java.se.symbolicvalues.RelationState.FULFILLED;
 import static org.sonar.java.se.symbolicvalues.RelationState.UNFULFILLED;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
+import static org.sonar.java.se.symbolicvalues.SymbolicValue.NULL_LITERAL;
 
 public class RelationalSymbolicValueTest {
 
@@ -169,7 +171,7 @@ public class RelationalSymbolicValueTest {
   private ProgramState stateWithRelations(RelationalSymbolicValue... known) {
     ProgramState ps = ProgramState.EMPTY_STATE;
     for (RelationalSymbolicValue rel : known) {
-      ps = Iterables.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
+      ps = Iterables.getOnlyElement(rel.setConstraint(ps, TRUE));
     }
     return ps;
   }
@@ -179,8 +181,8 @@ public class RelationalSymbolicValueTest {
     RelationalSymbolicValue aLEb = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, a, b);
     RelationalSymbolicValue bLEa = relationalSV(Tree.Kind.LESS_THAN_OR_EQUAL_TO, b, a);
     RelationalSymbolicValue aEb = relationalSV(Tree.Kind.EQUAL_TO, a, b);
-    ProgramState state = Iterables.getOnlyElement(aEb.setConstraint(stateWithRelations(aLEb, bLEa), BooleanConstraint.TRUE));
-    assertThat(state.getConstraint(aEb, BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
+    ProgramState state = Iterables.getOnlyElement(aEb.setConstraint(stateWithRelations(aLEb, bLEa), TRUE));
+    assertThat(state.getConstraint(aEb, BooleanConstraint.class)).isEqualTo(TRUE);
   }
 
   @Test
@@ -215,8 +217,8 @@ public class RelationalSymbolicValueTest {
       given[i - 1] = relationalSV(Tree.Kind.LESS_THAN, sv[i - 1], sv[i]);
     }
     RelationalSymbolicValue firstLessThanLast = relationalSV(Tree.Kind.LESS_THAN, sv[0], sv[chainLength - 1]);
-    ProgramState programState = Iterables.getOnlyElement(firstLessThanLast.setConstraint(stateWithRelations(given), BooleanConstraint.TRUE));
-    assertThat(programState.getConstraint(firstLessThanLast, BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
+    ProgramState programState = Iterables.getOnlyElement(firstLessThanLast.setConstraint(stateWithRelations(given), TRUE));
+    assertThat(programState.getConstraint(firstLessThanLast, BooleanConstraint.class)).isEqualTo(TRUE);
   }
 
   @Test
@@ -232,15 +234,15 @@ public class RelationalSymbolicValueTest {
     SymbolicValue aNEb = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a);
     SymbolicValue bNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, c, b);
     ProgramState programState = ProgramState.EMPTY_STATE;
-    List<ProgramState> programStates = aNEb.setConstraint(programState, BooleanConstraint.TRUE);
+    List<ProgramState> programStates = aNEb.setConstraint(programState, TRUE);
     programState = Iterables.getOnlyElement(programStates);
-    programStates = bNEc.setConstraint(programState, BooleanConstraint.TRUE);
+    programStates = bNEc.setConstraint(programState, TRUE);
     programState = Iterables.getOnlyElement(programStates);
 
     SymbolicValue aNEc = relationalSV(Tree.Kind.NOT_EQUAL_TO, c, a);
-    programStates = aNEc.setConstraint(programState, BooleanConstraint.FALSE);
+    programStates = aNEc.setConstraint(programState, FALSE);
     assertThat(programStates).hasSize(1);
-    programStates = aNEc.setConstraint(programState, BooleanConstraint.TRUE);
+    programStates = aNEc.setConstraint(programState, TRUE);
     assertThat(programStates).hasSize(1);
   }
 
@@ -289,7 +291,7 @@ public class RelationalSymbolicValueTest {
     ps = Iterables.getOnlyElement(newProgramStates);
     // 0 >= b
     SymbolicValue aGEb = relationalSV(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, b, a);
-    newProgramStates = aGEb.setConstraint(ps, BooleanConstraint.TRUE);
+    newProgramStates = aGEb.setConstraint(ps, TRUE);
     ps = Iterables.getOnlyElement(newProgramStates);
 
     // Zero constraint should stay when Zero is >= to SV without any constraint
@@ -365,7 +367,7 @@ public class RelationalSymbolicValueTest {
     assertNoConstraints(ps, c);
     assertNoConstraints(ps, d);
     assertNoConstraints(ps, e);
-    assertThat(ps.getConstraint(relationalSV(Tree.Kind.EQUAL_TO, c, e), BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
+    assertThat(ps.getConstraint(relationalSV(Tree.Kind.EQUAL_TO, c, e), BooleanConstraint.class)).isEqualTo(TRUE);
 
     // this relation will connect two distinct groups of relations (ab) -- (cde)
     RelationalSymbolicValue bc = relationalSV(Tree.Kind.EQUAL_TO, b, c);
@@ -377,13 +379,11 @@ public class RelationalSymbolicValueTest {
     assertNullConstraint(ps, e);
   }
 
-
   @Test
   public void relationships_transitivity_should_take_known_relationships_into_account() throws Exception {
     // Testcase in that file can fail with a stackoverflow if known relations in program state are not taken into account.
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/InifiniteTransitiveRelationshipConstraintCopy.java", new NullDereferenceCheck());
   }
-
 
   private void assertNullConstraint(ProgramState ps, SymbolicValue sv) {
     assertThat(ps.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
@@ -397,7 +397,7 @@ public class RelationalSymbolicValueTest {
   }
 
   private ProgramState setTrue(ProgramState ps, RelationalSymbolicValue ab) {
-    return Iterables.getOnlyElement(ab.setConstraint(ps, BooleanConstraint.TRUE));
+    return Iterables.getOnlyElement(ab.setConstraint(ps, TRUE));
   }
 
   private String relationToString(Tree.Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
@@ -478,21 +478,58 @@ public class RelationalSymbolicValueTest {
     SymbolicValue sv = new SymbolicValue();
     // sv != NOT_NULL
     RelationalSymbolicValue neq = new RelationalSymbolicValue(NOT_EQUAL, svNotNull, sv);
-    ProgramState result = setTrue(ps , neq);
+    ProgramState result = setTrue(ps, neq);
     assertNoConstraints(result, sv);
 
     // sv != NULL
-    neq = new RelationalSymbolicValue(NOT_EQUAL, SymbolicValue.NULL_LITERAL, sv);
+    neq = new RelationalSymbolicValue(NOT_EQUAL, NULL_LITERAL, sv);
     result = setTrue(ps, neq);
     assertThat(result.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
     // sv == NULL
-    RelationalSymbolicValue eq = new RelationalSymbolicValue(EQUAL, SymbolicValue.NULL_LITERAL, sv);
+    RelationalSymbolicValue eq = new RelationalSymbolicValue(EQUAL, NULL_LITERAL, sv);
     result = setTrue(ps, eq);
     assertNullConstraint(result, sv);
     // sv == NOT_NULL
     eq = new RelationalSymbolicValue(METHOD_EQUALS, sv, svNotNull);
     result = setTrue(ps, eq);
     assertThat(result.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+  }
+
+  @Test
+  public void recursion_on_copy_constraint_should_stop() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/RelationSV.java", new NullDereferenceCheck());
+  }
+
+  @Test
+  public void recursion_on_copy_constraint_should_stop_distilled() {
+    ProgramState ps = ProgramState.EMPTY_STATE;
+    SymbolicValue sv0 = new SymbolicValue();
+    ps = ps.addConstraint(sv0, TRUE);
+    ps = ps.addConstraint(neq(sv0, NULL_LITERAL), TRUE);
+
+    SymbolicValue sv1 = new SymbolicValue();
+    ps = ps.addConstraint(eq(sv1, NULL_LITERAL), TRUE);
+    ps = ps.addConstraint(neq(sv1, sv0), TRUE);
+
+    SymbolicValue sv2 = new SymbolicValue();
+    ps = ps.addConstraint(sv2, ObjectConstraint.NULL);
+    ps = ps.addConstraint(eq(sv2, sv1), TRUE);
+
+    RelationalSymbolicValue sv2NeqNull = neq(sv2, NULL_LITERAL);
+    ps = ps.addConstraint(eq(sv2, sv2NeqNull), TRUE);
+    ps = ps.addConstraint(eq(sv1, sv2NeqNull), TRUE);
+
+    List<ProgramState> result = sv2NeqNull.setConstraint(ps, FALSE);
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getConstraint(sv2, BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
+  }
+
+  private RelationalSymbolicValue eq(SymbolicValue op1, SymbolicValue op2) {
+    return new RelationalSymbolicValue(EQUAL, op1, op2);
+  }
+
+  private RelationalSymbolicValue neq(SymbolicValue op1, SymbolicValue op2) {
+    return new RelationalSymbolicValue(NOT_EQUAL, op1, op2);
   }
 }

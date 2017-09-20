@@ -102,11 +102,19 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    if (booleanConstraint == BooleanConstraint.FALSE) {
-      return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE);
+    return setConstraint(initialProgramState, booleanConstraint, knownRelations(initialProgramState));
+  }
+
+  @Override
+  protected List<ProgramState> setConstraint(ProgramState initialProgramState, Constraint constraint, Set<RelationalSymbolicValue> knownRelations) {
+    if (constraint == BooleanConstraint.FALSE) {
+      return inverse().setConstraint(initialProgramState, BooleanConstraint.TRUE, knownRelations);
     }
-    Set<RelationalSymbolicValue> knownRelations = knownRelations(initialProgramState);
-    if(knownRelations.contains(this)) {
+    if (constraint != BooleanConstraint.TRUE) {
+      // not a boolean constraint
+      return setConstraint(initialProgramState, constraint);
+    }
+    if (knownRelations.contains(this)) {
       return Collections.singletonList(initialProgramState);
     }
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
@@ -120,16 +128,18 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     if (unfulfilled) {
       return ImmutableList.of();
     }
-    return getNewProgramStates(initialProgramState, newRelations);
+    knownRelations.add(this);
+    return getNewProgramStates(initialProgramState, newRelations, knownRelations);
   }
 
-  private static List<ProgramState> getNewProgramStates(ProgramState initialProgramState, Set<RelationalSymbolicValue> newRelations) {
+  private static List<ProgramState> getNewProgramStates(ProgramState initialProgramState, Set<RelationalSymbolicValue> newRelations,
+                                                        Set<RelationalSymbolicValue> knownRelations) {
     List<ProgramState> programStates = new ArrayList<>();
     programStates.add(initialProgramState);
     for (RelationalSymbolicValue relationalSymbolicValue : newRelations) {
       List<ProgramState> intermediateStates = new ArrayList<>();
       for (ProgramState programState: programStates) {
-        intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(programState));
+        intermediateStates.addAll(relationalSymbolicValue.copyAllConstraints(programState, knownRelations));
       }
       programStates = intermediateStates;
     }
@@ -140,14 +150,18 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
   }
 
-  private List<ProgramState> copyAllConstraints(ProgramState programState) {
+  private List<ProgramState> copyAllConstraints(ProgramState initialState, Set<RelationalSymbolicValue> knownRelations) {
+    ProgramState programState = initialState;
+    if (programState.canReach(leftOp) || programState.canReach(rightOp)) {
+      programState = programState.addConstraint(this, BooleanConstraint.TRUE);
+    }
     List<ProgramState> results = new ArrayList<>();
-    List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState);
+    List<ProgramState> copiedConstraints = copyConstraintFromTo(leftOp, rightOp, programState, knownRelations);
     if (Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind) {
       copiedConstraints = addNullConstraintsForBooleanWrapper(programState, copiedConstraints);
     }
     for (ProgramState ps : copiedConstraints) {
-      List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps);
+      List<ProgramState> copiedConstraintsRightToLeft = copyConstraintFromTo(rightOp, leftOp, ps, knownRelations);
       if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
         results.add(programState.addConstraint(this, BooleanConstraint.TRUE));
       } else {
@@ -170,34 +184,28 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return copiedConstraints;
   }
 
-  private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState) {
-    ProgramState newState = programState;
-    if (programState.canReach(from) || programState.canReach(to)) {
-      newState = programState.addConstraint(this, BooleanConstraint.TRUE);
-    }
-    return copyConstraintFromTo(from, to, newState);
-  }
-
-  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState) {
+  private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState, Set<RelationalSymbolicValue> knownRelations) {
     List<ProgramState> states = new ArrayList<>();
     states.add(programState);
     ConstraintsByDomain leftConstraints = programState.getConstraints(from);
-    if (leftConstraints != null) {
-      leftConstraints.forEach((d, c) -> {
-        List<ProgramState> newStates = new ArrayList<>();
-        Constraint constraint = c.copyOver(kind);
-        states.forEach(state -> {
-          if (constraint == null) {
-            newStates.add(state);
-          } else {
-            newStates.addAll(to.setConstraint(state, constraint));
-          }
-        });
+    if (leftConstraints == null) {
+      return states;
+    }
+    leftConstraints.forEach((d, c) -> {
+      Constraint constraint = c.copyOver(kind);
+      if (constraint != null) {
+        List<ProgramState> newStates = applyConstraint(constraint, to, states, knownRelations);
         states.clear();
         states.addAll(newStates);
-      });
-    }
+      }
+    });
     return states;
+  }
+
+  private static List<ProgramState> applyConstraint(Constraint constraint, SymbolicValue to, List<ProgramState> states, Set<RelationalSymbolicValue> knownRelations) {
+    List<ProgramState> newStates = new ArrayList<>();
+    states.forEach(state -> newStates.addAll(to.setConstraint(state, constraint, knownRelations)));
+    return newStates;
   }
 
   @VisibleForTesting

@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class SymbolicValue {
 
@@ -179,6 +180,10 @@ public class SymbolicValue {
       throw new IllegalStateException("Only a single program state is expected at this location");
     }
     return states.get(0);
+  }
+
+  protected List<ProgramState> setConstraint(ProgramState state, Constraint constraint, Set<RelationalSymbolicValue> knownRelations) {
+    return setConstraint(state, constraint);
   }
 
   public SymbolicValue wrappedValue() {
