@@ -105,4 +105,16 @@ public class SymbolicValueTest {
 
     assertThat(caughtSV.exception()).isEqualTo(thrownSV);
   }
+
+  @Test
+  public void test_hashCode_equals() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    assertThat(sv1.equals(sv1)).isTrue();
+    assertThat(sv1.equals(null)).isFalse();
+    assertThat(sv1.equals(new Object())).isFalse();
+
+    SymbolicValue sv2 = new SymbolicValue();
+    assertThat(sv1).isNotEqualTo(sv2);
+    assertThat(sv1.hashCode()).isNotEqualTo(sv2.hashCode());
+  }
 }
