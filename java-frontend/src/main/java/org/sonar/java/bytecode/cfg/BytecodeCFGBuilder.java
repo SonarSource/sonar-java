@@ -38,6 +38,7 @@ import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Java9Support;
 
 import javax.annotation.CheckForNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -314,6 +315,7 @@ public class BytecodeCFGBuilder {
       if (opcode == GOTO || opcode == JSR) {
         currentBlock.terminator = new Instruction(opcode);
         currentBlock.successors = Collections.singletonList(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
+        currentBlock = null;
         return;
       }
       currentBlock.setTrueBlock(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
@@ -325,9 +327,18 @@ public class BytecodeCFGBuilder {
     @Override
     public void visitLabel(Label label) {
       Block previous = currentBlock;
-      currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
-      if(previous.successors.isEmpty()) {
-        previous.successors.add(currentBlock);
+      if (currentBlock == null) {
+        // previous instruction was unconditional jump : so create new block or use the one defined for the label
+        currentBlock = blockByLabel.computeIfAbsent(label, l -> {
+          Block block = new Block(cfg);
+          cfg.blocks.add(block);
+          return block;
+        });
+      } else {
+        currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
+        if (previous.successors.isEmpty()) {
+          previous.successors.add(currentBlock);
+        }
       }
     }
 

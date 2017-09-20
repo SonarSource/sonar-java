@@ -32,7 +32,6 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Printer;
-
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -253,5 +252,15 @@ public class BytecodeCFGBuilderTest {
       .visitInsn(Opcodes.IRETURN)
       .cfg();
       assertThat(cfg.blocks.get(6).successors).containsExactly(cfg.blocks.get(4));
+  }
+
+  @Test
+  public void isNotBlank_goto_followed_by_label() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/commons-lang-2.1")));
+    // apache commons 2.1 isNotBlank has a goto followed by an unreferenced label : see SONARJAVA-2461
+    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG("org.apache.commons.lang.StringUtils#isNotBlank(Ljava/lang/String;)Z", classLoader);
+    assertThat(bytecodeCFG).isNotNull();
+    assertThat(bytecodeCFG.blocks).hasSize(11);
+    assertThat(bytecodeCFG.blocks.get(4).successors).containsExactly(bytecodeCFG.blocks.get(6));
   }
 }
