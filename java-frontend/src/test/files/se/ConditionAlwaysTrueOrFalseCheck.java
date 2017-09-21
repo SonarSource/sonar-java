@@ -1011,11 +1011,11 @@ public class Class extends SuperClass {
       }
     }
     condition = null != object;
-    if (condition != null) {
+    if (condition != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } else {
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (false) { // unreachable statement
       }
     }
   }

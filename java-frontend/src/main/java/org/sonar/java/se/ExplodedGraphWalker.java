@@ -914,26 +914,7 @@ public class ExplodedGraphWalker {
     ProgramState.Pop unstackBinary = programState.unstackValue(2);
     programState = unstackBinary.state;
     SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, unstackBinary.valuesAndSymbols);
-    if(tree.is(Tree.Kind.PLUS)) {
-      BinaryExpressionTree bt = (BinaryExpressionTree) tree;
-      if (bt.leftOperand().symbolType().is("java.lang.String")) {
-        ObjectConstraint leftConstraint = programState.getConstraint(unstackBinary.values.get(1), ObjectConstraint.class);
-        if (leftConstraint != null && !leftConstraint.isNull()) {
-          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
-          Preconditions.checkState(programStates.size() == 1);
-          programState = programStates.get(0);
-        }
-
-      } else if(bt.rightOperand().symbolType().is("java.lang.String")) {
-        ObjectConstraint rightConstraint = programState.getConstraint(unstackBinary.values.get(0), ObjectConstraint.class);
-        if (rightConstraint != null && !rightConstraint.isNull()) {
-          List<ProgramState> programStates = symbolicValue.setConstraint(programState, ObjectConstraint.NOT_NULL);
-          Preconditions.checkState(programStates.size() == 1);
-          programState = programStates.get(0);
-        }
-
-      }
-    }
+    programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
     programState = programState.stackValue(symbolicValue);
   }
 

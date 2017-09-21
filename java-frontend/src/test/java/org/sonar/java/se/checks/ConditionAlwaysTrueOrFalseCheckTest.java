@@ -84,4 +84,9 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
     // see also SONARJAVA-2351
     JavaCheckVerifier.verify("src/test/files/se/ConstraintCopy.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
   }
+
+  @Test
+  public void test_binary_expressions_always_not_null() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/BinaryExpressionNotNull.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
 }
