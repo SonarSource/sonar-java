@@ -49,7 +49,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -465,15 +464,8 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void constraints_on_field_reset() {
-    List<File> classpath = Collections.singletonList(new File("target/test-classes"));
-    JavaCheckVerifier.verify(
-      "src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java",
-      new RedundantAssignmentsCheck(),
-      classpath);
-    JavaCheckVerifier.verify(
-      "src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java",
-      new RedundantAssignmentsCheck(),
-      classpath);
+    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java", seChecks());
+    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java", seChecks());
   }
 
   private static SECheck[] seChecks() {
@@ -486,7 +478,8 @@ public class ExplodedGraphWalkerTest {
       new CustomUnclosedResourcesCheck(),
       new LocksNotUnlockedCheck(),
       new NonNullSetToNullCheck(),
-      new OptionalGetBeforeIsPresentCheck()
+      new OptionalGetBeforeIsPresentCheck(),
+      new RedundantAssignmentsCheck()
     };
   }
 
