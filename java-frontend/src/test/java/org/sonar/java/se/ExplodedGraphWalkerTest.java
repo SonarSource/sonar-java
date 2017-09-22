@@ -38,11 +38,13 @@ import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,6 +55,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -373,6 +376,25 @@ public class ExplodedGraphWalkerTest {
         return state;
       }
     });
+  }
+
+  @Test
+  public void binary_expression_creates_not_null_value() throws Exception {
+    int[] counter = new int[1];
+    SECheck check = new SECheck() {
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        ProgramState state = context.getState();
+        if (syntaxNode instanceof BinaryExpressionTree) {
+          SymbolicValue sv = state.peekValue();
+          assertThat(state.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+          counter[0]++;
+        }
+        return state;
+      }
+    };
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/BinaryTreeExecution.java", check);
+    assertThat(counter[0]).isEqualTo(17);
   }
 
   @Test

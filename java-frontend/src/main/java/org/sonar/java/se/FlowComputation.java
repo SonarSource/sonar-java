@@ -429,25 +429,29 @@ public class FlowComputation {
     }
 
     private Flow flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
-      Flow.Builder flowBuilder = Flow.builder();
       ProgramState programState = node.programState;
       Preconditions.checkState(programState != null, "Learned association with null state in parent node of the edge.");
       Symbol rhsSymbol = symbolFromStack(learnedAssociation.symbolicValue(), programState);
       if (rhsSymbol != null) {
-        flowBuilder.add(location(node, String.format(IMPLIES_SAME_VALUE, learnedAssociation.symbol().name(), rhsSymbol.name())));
-      } else {
-        ConstraintsByDomain allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
-        Collection<Constraint> constraints = filterByDomains(allConstraints);
-        for (Constraint constraint : constraints) {
-          String symbolName = learnedAssociation.symbol().name();
-          String msg;
-          if (assigningNullFromTernary(node) || (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node))) {
-            msg = IMPLIES_CAN_BE_MSG;
-          } else {
-            msg = IMPLIES_IS_MSG;
-          }
-          flowBuilder.add(location(node, String.format(msg, symbolName, constraint.valueAsString())));
+        return Flow.of(location(node, String.format(IMPLIES_SAME_VALUE, learnedAssociation.symbol().name(), rhsSymbol.name())));
+      }
+      Flow.Builder flowBuilder = Flow.builder();
+      ConstraintsByDomain allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
+      Collection<Constraint> constraints = filterByDomains(allConstraints);
+      boolean isPrimitive = learnedAssociation.symbol.type().isPrimitive();
+      for (Constraint constraint : constraints) {
+        if (isPrimitive && constraint == ObjectConstraint.NOT_NULL) {
+          // don't add message about booleans being NOT_NULL, it's obvious
+          continue;
         }
+        String symbolName = learnedAssociation.symbol().name();
+        String msg;
+        if (assigningNullFromTernary(node) || (assigningFromMethodInvocation(node) && assignedFromYieldWithUncertainResult(constraint, node))) {
+          msg = IMPLIES_CAN_BE_MSG;
+        } else {
+          msg = IMPLIES_IS_MSG;
+        }
+        flowBuilder.add(location(node, String.format(msg, symbolName, constraint.valueAsString())));
       }
       return flowBuilder.build();
     }
@@ -569,6 +573,10 @@ public class FlowComputation {
     private Flow learnedConstraintFlow(LearnedConstraint learnedConstraint, ExplodedGraph.Edge edge) {
       Constraint constraint = learnedConstraint.constraint();
       if (!addToFlow.test(constraint)) {
+        return Flow.empty();
+      }
+      if (constraint == ObjectConstraint.NOT_NULL && learnedConstraint.sv instanceof BinarySymbolicValue) {
+        // don't report on binary expression to be not null, it's obvious
         return Flow.empty();
       }
       ExplodedGraph.Node parent = edge.parent;
