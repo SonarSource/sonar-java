@@ -48,7 +48,8 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
     return Collections.unmodifiableList(Arrays.asList(
       Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
       Tree.Kind.GREATER_THAN,
-      Tree.Kind.LESS_THAN));
+      Tree.Kind.LESS_THAN,
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO));
   }
 
   @Override
@@ -98,7 +99,7 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
   }
 
   private void reportIssue(BinaryExpressionTree bet, boolean leftIsZero, String message, String itemName) {
-    if ((leftIsZero && bet.is(Tree.Kind.GREATER_THAN))
+    if ((leftIsZero && bet.is(Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO))
       || (!leftIsZero && bet.is(Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO))) {
       reportIssue(bet, String.format(message, itemName));
     }
