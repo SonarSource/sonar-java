@@ -91,7 +91,8 @@ public class NonNullSetToNullCheck extends SECheck {
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     if (methodTree.is(Tree.Kind.CONSTRUCTOR)
       && !isDefaultConstructorForJpa(methodTree)
-      && !callsThisConstructor(methodTree)) {
+      && !callsThisConstructor(methodTree)
+      && !exitingWithException(context)) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       classTree.members().stream()
         .filter(m -> m.is(Tree.Kind.VARIABLE))
@@ -99,6 +100,10 @@ public class NonNullSetToNullCheck extends SECheck {
         .filter(v->v.initializer() == null)
         .forEach(v -> checkVariable(context, methodTree, v.symbol()));
     }
+  }
+
+  private static boolean exitingWithException(CheckerContext context) {
+    return context.getState().peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue;
   }
 
   private static boolean isDefaultConstructorForJpa(MethodTree methodTree) {

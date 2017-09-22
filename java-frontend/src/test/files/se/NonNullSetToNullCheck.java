@@ -1,6 +1,4 @@
-package javax.annotation;
-
-@interface Nonnull {}
+import javax.annotation.Nonnull;
 
 public class MainClass {
 
@@ -220,3 +218,29 @@ class CallingOtherConstructor {
 
   void foo(Object o) {}
 }
+
+class ExitWithException {
+
+  @Nonnull
+  private Object self;
+
+  public ExitWithException() {
+    self = getSelf(); // Compliant
+  }
+
+  public ExitWithException(int i) throws MyException {
+    self = getOtherSelf(); // Compliant
+  }
+
+  @Nonnull
+  public Object getSelf() throws IllegalArgumentException {
+    return self;
+  }
+
+  @Nonnull
+  public Object getOtherSelf() throws MyException {
+    return self;
+  }
+}
+
+class MyException extends Exception { }
