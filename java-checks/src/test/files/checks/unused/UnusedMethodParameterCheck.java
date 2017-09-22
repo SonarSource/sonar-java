@@ -200,4 +200,45 @@ class NotStrutsAction {
   }
 }
 
+class DocumentedMethod {
+  /**
+   * @param firstArg
+   * @param secondArg
+   * @param fourthArg
+   */
+  void foo(String firstArg, int secondArg, double thirdArg, float fourthArg) { // Noncompliant {{Remove this unused method parameter "thirdArg".}}
+    doSomething();
+  }
+
+  /**
+   * @param firstArg
+   */
+  private void nonOverrideableMethod(String firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+    doSomething();
+  }
+
+  /**
+   * @param firstArg
+   */
+  static void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+    doSomething();
+  }
+
+  /**
+   * @param firstArg
+   */
+  final void nonOverrideableMethod(Object firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+    doSomething();
+  }
+}
+
+final class FinalDocumentedMethod {
+  /**
+   * @param firstArg
+   */
+  void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
+    doSomething();
+  }
+}
+
 @interface MyAnnotation {}
