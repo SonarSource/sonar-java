@@ -47,6 +47,7 @@ public class PomElementOrderCheck implements PomCheck {
       project.getVersion(),
       project.getPackaging(),
       project.getName(),
+      project.getDescription(),
       project.getUrl(),
       project.getInceptionYear(),
       project.getOrganization(),
