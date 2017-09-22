@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -47,7 +48,11 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && methodTree.block() != null && isHasNextMethod(methodTree)) {
+    if (!hasSemantic()) {
+      return;
+    }
+    if (methodTree.block() != null && isHasNextMethod(methodTree)) {
+      hasNextBodyVisitor.setHasNextOwner(methodTree.symbol().owner());
       methodTree.block().accept(hasNextBodyVisitor);
     }
   }
@@ -63,13 +68,22 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
 
   private class HasNextBodyVisitor extends BaseTreeVisitor {
 
+    private Symbol hasNextOwner;
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol method = tree.symbol();
-      if ("next".equals(method.name()) && tree.arguments().isEmpty() && isIteratorMethod(method)) {
+      if ("next".equals(method.name())
+        && tree.arguments().isEmpty()
+        && isIteratorMethod(method)
+        && (hasNextOwner == method.owner() || hasNextOwner.type().isSubtypeOf(method.owner().type()))) {
         reportIssue(MethodsHelper.methodName(tree), "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
       }
       super.visitMethodInvocation(tree);
+    }
+
+    public void setHasNextOwner(Symbol hasNextOwner) {
+      this.hasNextOwner = hasNextOwner;
     }
 
     @Override
