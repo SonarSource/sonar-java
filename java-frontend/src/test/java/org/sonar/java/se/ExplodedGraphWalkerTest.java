@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 
 import org.junit.Test;
-
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
@@ -35,6 +34,7 @@ import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
+import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -462,6 +462,12 @@ public class ExplodedGraphWalkerTest {
     assertThat(visitedMethods).containsExactly("test", "privateMethod");
   }
 
+  @Test
+  public void constraints_on_field_reset() {
+    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java", seChecks());
+    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java", seChecks());
+  }
+
   private static SECheck[] seChecks() {
     return new SECheck[]{
       new NullDereferenceCheck(),
@@ -472,7 +478,8 @@ public class ExplodedGraphWalkerTest {
       new CustomUnclosedResourcesCheck(),
       new LocksNotUnlockedCheck(),
       new NonNullSetToNullCheck(),
-      new OptionalGetBeforeIsPresentCheck()
+      new OptionalGetBeforeIsPresentCheck(),
+      new RedundantAssignmentsCheck()
     };
   }
 

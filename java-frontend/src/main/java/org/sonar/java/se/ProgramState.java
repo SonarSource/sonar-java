@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
@@ -40,7 +41,6 @@ import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -451,31 +451,17 @@ public class ProgramState {
   }
 
   ProgramState resetFieldValues(ConstraintManager constraintManager, boolean resetOnlyStaticFields) {
-    final List<VariableTree> variableTrees = new ArrayList<>();
+    List<Symbol> fields = new ArrayList<>();
     values.forEach((symbol, symbolicValue) -> {
       if (isField(symbol) && !symbol.isFinal() && (symbol.isStatic() || !resetOnlyStaticFields) ) {
-        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-        if (variable != null) {
-          variableTrees.add(variable);
-        }
+        fields.add(symbol);
       }
     });
-    if (variableTrees.isEmpty()) {
-      return this;
+    ProgramState newProgramState = this;
+    for (Symbol field : fields) {
+      newProgramState = newProgramState.put(field, constraintManager.createDefaultSymbolicValue());
     }
-    PMap<Symbol, SymbolicValue> newValues = values;
-    PMap<SymbolicValue, Integer> newReferences = references;
-    for (VariableTree variableTree : variableTrees) {
-      Symbol symbol = variableTree.symbol();
-      SymbolicValue oldValue = newValues.get(symbol);
-      if (oldValue != null) {
-        newReferences = decreaseReference(newReferences, oldValue);
-      }
-      SymbolicValue newValue = constraintManager.createSymbolicValue(variableTree);
-      newValues = newValues.put(symbol, newValue);
-      newReferences = increaseReference(newReferences, newValue);
-    }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, exitSymbolicValue);
+    return newProgramState;
   }
 
   public static boolean isField(Symbol symbol) {

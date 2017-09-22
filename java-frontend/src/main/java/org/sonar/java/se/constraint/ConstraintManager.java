@@ -173,7 +173,7 @@ public class ConstraintManager {
     return createDefaultSymbolicValue();
   }
 
-  private SymbolicValue createDefaultSymbolicValue() {
+  public SymbolicValue createDefaultSymbolicValue() {
     SymbolicValue result;
     result = symbolicValueFactory == null ? new SymbolicValue() : symbolicValueFactory.createSymbolicValue();
     symbolicValueFactory = null;
