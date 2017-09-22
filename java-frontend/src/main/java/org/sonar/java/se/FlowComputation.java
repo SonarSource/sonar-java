@@ -438,9 +438,9 @@ public class FlowComputation {
       Flow.Builder flowBuilder = Flow.builder();
       ConstraintsByDomain allConstraints = programState.getConstraints(learnedAssociation.symbolicValue());
       Collection<Constraint> constraints = filterByDomains(allConstraints);
-      boolean isBoolean = learnedAssociation.symbol.type().is("boolean");
+      boolean isPrimitive = learnedAssociation.symbol.type().isPrimitive();
       for (Constraint constraint : constraints) {
-        if (isBoolean && constraint == ObjectConstraint.NOT_NULL) {
+        if (isPrimitive && constraint == ObjectConstraint.NOT_NULL) {
           // don't add message about booleans being NOT_NULL, it's obvious
           continue;
         }

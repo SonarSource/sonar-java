@@ -3,9 +3,9 @@ class A {
 
   // test that we compute flow not only on relational SV both also on SVs from which relational SV was computed (recursively)
   void rel() {
-    int c = 0; // flow@unary_rel,rel {{Implies 'c' is not null.}}
+    int c = 0;
     int a = c;  // flow@unary_rel,rel {{Implies 'a' has the same value as 'c'.}}
-    int b = 0;  // flow@unary_rel,rel {{Implies 'b' is not null.}}
+    int b = 0;
     boolean cond = (b == a) == true; // see SONARJAVA-1911
     if (cond) { // Noncompliant [[flows=rel]] flow@rel {{Expression is always true.}} flow@unary_rel {{Implies 'cond' is true.}}
 

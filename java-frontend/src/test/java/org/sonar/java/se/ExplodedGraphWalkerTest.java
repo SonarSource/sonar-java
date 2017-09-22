@@ -380,7 +380,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void binary_expression_creates_not_null_value() throws Exception {
-    AtomicInteger counter = new AtomicInteger(0);
+    int[] counter = new int[1];
     SECheck check = new SECheck() {
       @Override
       public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
@@ -388,13 +388,13 @@ public class ExplodedGraphWalkerTest {
         if (syntaxNode instanceof BinaryExpressionTree) {
           SymbolicValue sv = state.peekValue();
           assertThat(state.getConstraint(sv, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
-          counter.incrementAndGet();
+          counter[0]++;
         }
         return state;
       }
     };
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/BinaryTreeExecution.java", check);
-    assertThat(counter.get()).isEqualTo(17);
+    assertThat(counter[0]).isEqualTo(17);
   }
 
   @Test
