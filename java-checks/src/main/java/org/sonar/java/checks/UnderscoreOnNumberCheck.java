@@ -32,14 +32,16 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Locale;
 
 @Rule(key = "S2148")
 public class UnderscoreOnNumberCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private enum Base {
     BINARY("0b", 9),
+    OCTAL("0", 9),
     HEXADECIMAL("0x", 9),
-    DECIMAL("", 5);
+    DECIMAL("", 6);
 
     private final String prefix;
     private final int minimalLength;
@@ -50,12 +52,18 @@ public class UnderscoreOnNumberCheck extends IssuableSubscriptionVisitor impleme
     }
 
     private static final Base ofLiteralValue(String literalValue) {
-      if (literalValue.startsWith(BINARY.prefix)) {
+      if (BINARY.isFromBase(literalValue)) {
         return BINARY;
-      } else if (literalValue.startsWith(HEXADECIMAL.prefix)) {
-        return Base.HEXADECIMAL;
+      } else if (HEXADECIMAL.isFromBase(literalValue)) {
+        return HEXADECIMAL;
+      } else if (OCTAL.isFromBase(literalValue)) {
+        return OCTAL;
       }
-      return Base.DECIMAL;
+      return DECIMAL;
+    }
+
+    private boolean isFromBase(String value) {
+      return value.toLowerCase(Locale.ENGLISH).startsWith(prefix);
     }
   }
 
