@@ -27,6 +27,7 @@ public class HasNextCallingNextCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/HasNextCallingNextCheck.java", new HasNextCallingNextCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/HasNextCallingNextCheck.java", new HasNextCallingNextCheck());
   }
 
 }
