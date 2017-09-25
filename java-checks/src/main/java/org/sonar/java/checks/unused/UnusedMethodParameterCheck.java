@@ -21,8 +21,7 @@ package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.Collection;
-import java.util.List;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -32,6 +31,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -41,10 +41,18 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
@@ -58,7 +66,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
   private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping", 
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
-  
+  private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
@@ -66,24 +75,49 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
-      List<IdentifierTree> unused = Lists.newArrayList();
-      for (VariableTree var : methodTree.parameters()) {
-        Symbol symbol = var.symbol();
-        if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION) && !isStrutsActionParameter(var)) {
-          unused.add(var.simpleName());
-        }
-      }
-      if (!unused.isEmpty()) {
-        List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-        for (IdentifierTree identifier : unused.subList(1, unused.size())) {
-          locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter "+identifier.name()+"\".", identifier));
-        }
-        IdentifierTree firstUnused = unused.get(0);
-        reportIssue(firstUnused, "Remove this unused method parameter \"" + firstUnused.name() + "\".", locations, null);
-      }
+    if (!hasSemantic()) {
+      return;
     }
+    MethodTree methodTree = (MethodTree) tree;
+    if (methodTree.block() == null || isExcluded(methodTree)) {
+      return;
+    }
+    Set<String> documentedParameters = documentedParameters(methodTree);
+    boolean overideableMethod = overrideableMethod(methodTree.symbol());
+    List<IdentifierTree> unused = Lists.newArrayList();
+    for (VariableTree var : methodTree.parameters()) {
+      Symbol symbol = var.symbol();
+      if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION) && !isStrutsActionParameter(var)) {
+        if (overideableMethod && documentedParameters.contains(symbol.name())) {
+          continue;
+        }
+        unused.add(var.simpleName());
+      }
+
+    }
+    if (!unused.isEmpty()) {
+      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+      for (IdentifierTree identifier : unused.subList(1, unused.size())) {
+        locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter " + identifier.name() + "\".", identifier));
+      }
+      IdentifierTree firstUnused = unused.get(0);
+      reportIssue(firstUnused, "Remove this unused method parameter \"" + firstUnused.name() + "\".", locations, null);
+    }
+  }
+
+  private static boolean overrideableMethod(MethodSymbol symbol) {
+    return !(symbol.isPrivate() || symbol.isStatic() || symbol.isFinal() || symbol.owner().isFinal());
+  }
+
+  private static Set<String> documentedParameters(MethodTree methodTree) {
+    return methodTree.firstToken().trivias().stream()
+      .map(SyntaxTrivia::comment)
+      .map(c -> c.split("\\r?\\n"))
+      .flatMap(Arrays::stream)
+      .map(PARAMETER_JAVADOC_PATTERN::matcher)
+      .filter(Matcher::matches)
+      .map(matcher -> matcher.group("name"))
+      .collect(Collectors.toSet());
   }
 
   private static boolean isExcluded(MethodTree tree) {
