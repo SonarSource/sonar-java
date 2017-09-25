@@ -175,3 +175,37 @@ class G<T> {
     System.out.println(((String[])test3)[0]); // compliant
   }
 }
+
+abstract class MyClass {
+  abstract <U extends MyClass> U foo();
+
+  String qix1() {
+    return ((MyOtherClass) foo()).bar(); // Compliant
+  }
+
+  String qix2() {
+    return ((MyOtherClass) unknown()).bar(); // Compliant
+  }
+
+  MyClass qix3() {
+    return ((MyOtherClass) foo()); // Noncompliant
+  }
+}
+abstract class MyOtherClass extends MyClass {
+  abstract String bar();
+}
+
+class AWT {
+  private static java.awt.event.AWTEventListener deProxyAWTEventListener(java.awt.event.AWTEventListener l) {
+    java.awt.event.AWTEventListener localL = l;
+
+    if (localL == null) {
+      return null;
+    }
+    if (l instanceof java.awt.event.AWTEventListenerProxy) {
+      localL = (java.awt.event.AWTEventListener) // Noncompliant
+        ((java.awt.event.AWTEventListenerProxy) l).getListener(); // Compliant
+    }
+    return localL;
+  }
+}

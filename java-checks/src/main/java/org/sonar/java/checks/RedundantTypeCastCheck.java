@@ -21,12 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -66,13 +69,31 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Type cast = typeCastTree.type().symbolType();
     Type target = targetType(typeCastTree);
     Type expressionType = typeCastTree.expression().symbolType();
-    if(isPrimitiveWrapperInConditional(expressionType, typeCastTree)) {
-      // Excluded because covered by S2154
+    if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMethodInvocation(typeCastTree)) {
+      // Primitive wrappers excluded because covered by S2154
       return;
     }
     if(target != null && (isRedundantNumericalCast(cast, expressionType) || isSubtype(expressionType, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
     }
+  }
+
+  private static boolean requiredForMethodInvocation(TypeCastTree typeCastTree) {
+    ExpressionTree expression = typeCastTree.expression();
+    if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
+    }
+    Symbol symbol = ((MethodInvocationTree) expression).symbol();
+    if (!symbol.isMethodSymbol()) {
+      return false;
+    }
+    Type returnType = ((Symbol.MethodSymbol) symbol).returnType().type();
+    if (!(returnType instanceof TypeVariableJavaType) || ((TypeVariableJavaType) returnType).bounds().get(0).is("java.lang.Object")) {
+      return false;
+    }
+    // consider REQUIRED as soon as the parent expression is a method invocation (killing the noise), without checking if cast could have been avoided
+    Tree parent = skipParentheses(typeCastTree.parent());
+    return parent.is(Tree.Kind.MEMBER_SELECT) && skipParentheses(parent.parent()).is(Tree.Kind.METHOD_INVOCATION);
   }
 
   private static boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
