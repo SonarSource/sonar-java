@@ -106,6 +106,17 @@ class A {
     return 42;
   }
 
+  void baseStreamMethods(List<Boolean> list) {
+    list.stream().unordered(); // Noncompliant
+    list.stream().unordered().collect(Collectors.toList()); // Compliant
+    list.stream().parallel(); // Noncompliant
+    list.stream().parallel().collect(Collectors.toList()); // Compliant
+    list.stream().sequential(); // Noncompliant
+    list.stream().sequential().collect(Collectors.toList()); // Compliant
+    list.stream().onClose(() -> System.out.println("closed")); // Noncompliant
+    list.stream().onClose(() -> System.out.println("closed")).collect(Collectors.toList()); // Compliant
+  }
+
   void constructors() {
     new StreamParamInConstructor(IntStream.range(0, 10).filter(e -> true)); // Compliant
   }

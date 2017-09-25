@@ -68,8 +68,17 @@ public class StreamConsumedCheck extends SECheck {
 
     STREAM_TYPES.forEach(streamType -> terminalMethods.forEach(method ->
       TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
-    TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name("iterator").withoutParameter());
-    TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name("spliterator").withoutParameter());
+    TERMINAL_OPERATIONS.add(baseStreamMethod("iterator").withoutParameter());
+    TERMINAL_OPERATIONS.add(baseStreamMethod("spliterator").withoutParameter());
+  }
+  private static final MethodMatcherCollection BASE_STREAM_INTERMEDIATE_OPERATIONS = MethodMatcherCollection.create(
+    baseStreamMethod("sequential").withoutParameter(),
+    baseStreamMethod("parallel").withoutParameter(),
+    baseStreamMethod("unordered").withoutParameter(),
+    baseStreamMethod("onClose").withAnyParameters());
+
+  private static MethodMatcher baseStreamMethod(String methodName) {
+    return MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name(methodName);
   }
 
   @Override
@@ -132,6 +141,9 @@ public class StreamConsumedCheck extends SECheck {
   }
 
   private static boolean isIntermediateOperation(MethodInvocationTree mit) {
+    if (BASE_STREAM_INTERMEDIATE_OPERATIONS.anyMatch(mit)) {
+      return true;
+    }
     Symbol method = mit.symbol();
     return method.isMethodSymbol()
       && !method.isStatic()
