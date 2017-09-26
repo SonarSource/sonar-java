@@ -21,6 +21,8 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -41,6 +43,11 @@ import java.util.List;
 
 @Rule(key = "S2200")
 public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatcher COMPARE_TO = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("java.lang.Comparable"))
+    .name("compareTo")
+    .parameters(TypeCriteria.anyType());
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -63,19 +70,11 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   private boolean isCompareToResult(ExpressionTree expression) {
     if (hasSemantic()) {
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return isCompareToInvocation((MethodInvocationTree) expression);
+        return COMPARE_TO.matches((MethodInvocationTree) expression);
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         return isIdentifierContainingCompareToResult((IdentifierTree) expression);
       }
-    }
-    return false;
-  }
-
-  private static boolean isCompareToInvocation(MethodInvocationTree invocation) {
-    Symbol method = invocation.symbol();
-    if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
-      return method.owner().enclosingClass().type().isSubtypeOf("java.lang.Comparable");
     }
     return false;
   }
@@ -90,7 +89,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
       ExpressionTree initializer = variableDefinition.initializer();
       if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isMethodSymbol()) {
         MethodTree method = ((Symbol.MethodSymbol) variableSymbol.owner()).declaration();
-        return method != null && isCompareToInvocation((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
+        return method != null && COMPARE_TO.matches((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
       }
     }
     return false;
