@@ -80,9 +80,9 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       SyntaxToken currentToken = current.firstToken();
       int currentColumn = currentToken.column();
       int currentLine = currentToken.line();
-      if (previousColumn == currentColumn ||
+      if ((previousColumn == currentColumn && previousLine + 1 == currentLine) ||
         (previousLine == previous.firstToken().line()
-          && previous.firstToken().column() != currentColumn)) {
+          && previous.firstToken().column() < currentColumn)) {
         int lines = 1 + currentLine - previousLine;
         context.reportIssue(this, current, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, lines));
       }
