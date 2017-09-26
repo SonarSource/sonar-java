@@ -207,6 +207,7 @@ public class MethodMatcherTest {
     MethodMatcher objectToStringWithStringParam = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(NameCriteria.is("toString")).parameters("java.lang.String");
     MethodMatcher objectToStringWithAnyParam = MethodMatcher.create().typeDefinition(TypeCriteria.is("Test")).name("toString").withAnyParameters();
     MethodMatcher integerToString = MethodMatcher.create().typeDefinition("java.lang.Integer").name("toString").withoutParameter();
+    MethodMatcher foo = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("foo").withoutParameter();
     MethodMatcher callSiteIsTest = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(NameCriteria.any()).withAnyParameters().callSite(TypeCriteria.is("Test"));
 
     Map<MethodMatcher, List<Integer>> matches = new HashMap<>();
@@ -215,6 +216,7 @@ public class MethodMatcherTest {
     matches.put(objectToStringWithStringParam, new ArrayList<>());
     matches.put(objectToStringWithAnyParam, new ArrayList<>());
     matches.put(integerToString, new ArrayList<>());
+    matches.put(foo, new ArrayList<>());
     matches.put(callSiteIsTest, new ArrayList<>());
 
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/matcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
@@ -224,6 +226,7 @@ public class MethodMatcherTest {
     assertThat(matches.get(objectToStringWithStringParam)).containsExactly(11, 14);
     assertThat(matches.get(objectToStringWithAnyParam)).containsExactly(6, 10, 11, 14);
     assertThat(matches.get(integerToString)).containsExactly(19);
+    assertThat(matches.get(foo)).containsExactly(35, 36);
     assertThat(matches.get(callSiteIsTest)).containsExactly(6, 10, 11, 14, 18, 22);
   }
 
@@ -277,9 +280,23 @@ public class MethodMatcherTest {
         boolean match = false;
         MethodMatcher matcher = entry.getKey();
         if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-          match = matcher.matches((MethodInvocationTree) tree);
+          MethodInvocationTree mit = (MethodInvocationTree) tree;
+          Symbol symbol = mit.symbol();
+          if ("foo".equals(symbol.name())) {
+            // only 'foo' is tested with symbol
+            match = matcher.matches(symbol);
+          } else {
+            match = matcher.matches(mit);
+          }
         } else if (tree.is(Tree.Kind.METHOD)) {
-          match = matcher.matches((MethodTree) tree);
+          MethodTree methodTree = (MethodTree) tree;
+          Symbol.MethodSymbol symbol = methodTree.symbol();
+          if ("foo".equals(symbol.name())) {
+            // only 'foo' is tested with symbol
+            match = matcher.matches(symbol);
+          } else {
+            match = matcher.matches(methodTree);
+          }
         } else if (tree.is(Tree.Kind.NEW_CLASS)) {
           match = matcher.matches((NewClassTree) tree);
         }

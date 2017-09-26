@@ -32,4 +32,7 @@ class Test extends Object {
     }
   }
 
+  public int foo() {
+    return foo();
+  }
 }
