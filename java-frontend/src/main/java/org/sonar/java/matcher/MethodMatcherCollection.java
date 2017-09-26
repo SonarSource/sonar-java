@@ -20,6 +20,8 @@
 package org.sonar.java.matcher;
 
 import com.google.common.collect.Lists;
+
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -49,6 +51,19 @@ public class MethodMatcherCollection {
   public MethodMatcherCollection addAll(Collection<MethodMatcher> matchers) {
     this.matchers.addAll(matchers);
     return this;
+  }
+
+  public boolean anyMatch(Symbol symbol) {
+    if (!symbol.isMethodSymbol()) {
+      // prevent looping on all the matchers for no reason
+      return false;
+    }
+    for (MethodMatcher matcher : matchers) {
+      if (matcher.matches(symbol)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean anyMatch(MethodInvocationTree mit) {

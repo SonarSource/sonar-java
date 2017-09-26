@@ -150,7 +150,11 @@ public class MethodMatcher {
     return enclosingClass != null && matches(symbol, enclosingClass.type());
   }
 
-  private boolean matches(Symbol symbol, Type callSiteType) {
+  public boolean matches(Symbol symbol) {
+    return matches(symbol, null);
+  }
+
+  private boolean matches(Symbol symbol, @Nullable Type callSiteType) {
     return symbol.isMethodSymbol() && isSearchedMethod((MethodSymbol) symbol, callSiteType);
   }
 

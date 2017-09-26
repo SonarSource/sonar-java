@@ -21,6 +21,7 @@ package org.sonar.java.matcher;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -28,6 +29,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MethodMatcherCollectionTest {
@@ -82,7 +85,30 @@ public class MethodMatcherCollectionTest {
     when(matcher2.matches(any(NewClassTree.class))).thenReturn(true);
     assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
     assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
+  }
 
+  @Test
+  public void should_not_call_matchers_if_symbol_is_not_method_symbol() {
+    Symbol mockSymbol = mock(Symbol.class);
+    when(mockSymbol.isMethodSymbol()).thenReturn(false);
+    MethodMatcher mockMatcher = mock(MethodMatcher.class);
+    assertThat(MethodMatcherCollection.create(mockMatcher).anyMatch(mockSymbol)).isFalse();
+    verify(mockMatcher, never()).matches(mockSymbol);
+  }
+
+  @Test
+  public void should_match_if_any_of_the_matchers_match_symbol() {
+    Symbol mockSymbol = mock(Symbol.class);
+    when(mockSymbol.isMethodSymbol()).thenReturn(true);
+    MethodMatcher matcher1 = mock(MethodMatcher.class);
+    when(matcher1.matches(any(Symbol.class))).thenReturn(false);
+    MethodMatcher matcher2 = mock(MethodMatcher.class);
+    when(matcher2.matches(any(Symbol.class))).thenReturn(true);
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mockSymbol)).isTrue();
+
+    when(matcher1.matches(any(Symbol.class))).thenReturn(false);
+    when(matcher2.matches(any(Symbol.class))).thenReturn(false);
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mockSymbol)).isFalse();
   }
 
   @Test
