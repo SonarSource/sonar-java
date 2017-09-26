@@ -44,9 +44,6 @@ class MyClass extends Class3 {
   protected void foo() throws Throwable {       // Compliant
   }
 
-  boolean finalize() {                          // Compliant
-  }
-
   void finalize() {
     if (0) {
       super.finalize();
