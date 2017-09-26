@@ -20,7 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -32,6 +34,8 @@ import java.util.List;
 
 @Rule(key = "S2157")
 public class CloneableImplementingCloneCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatcher CLONE_MATCHER = MethodMatcher.create().name("clone").withoutParameter();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -48,24 +52,10 @@ public class CloneableImplementingCloneCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean declaresCloneMethod(Symbol.TypeSymbol classSymbol) {
-    for (Symbol memberSymbol : classSymbol.lookupSymbols("clone")) {
-      if (memberSymbol.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) memberSymbol;
-        if (methodSymbol.parameterTypes().isEmpty()) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return classSymbol.lookupSymbols("clone").stream().anyMatch(CLONE_MATCHER::matches);
   }
 
   private static boolean isCloneable(ClassTree classTree) {
-    for (TypeTree superInterface : classTree.superInterfaces()) {
-      if (superInterface.symbolType().is("java.lang.Cloneable")) {
-        return true;
-      }
-    }
-    return false;
+    return classTree.superInterfaces().stream().map(TypeTree::symbolType).anyMatch(t -> t.is("java.lang.Cloneable"));
   }
-
 }
