@@ -22,9 +22,9 @@ package org.sonar.java.checks.naming;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -32,6 +32,9 @@ import java.util.List;
 
 @Rule(key = "S1201")
 public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
+
+  private static final String EQUALS = "equals";
+  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name(EQUALS).parameters("java.lang.Object");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,24 +53,12 @@ public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean equalsWithSingleParam(MethodTree methodTree) {
-    return "equals".equalsIgnoreCase(methodTree.simpleName().name()) && methodTree.parameters().size() == 1;
+    return EQUALS.equalsIgnoreCase(methodTree.simpleName().name()) && methodTree.parameters().size() == 1;
   }
 
   private static boolean hasProperEquals(MethodTree methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    Symbol.TypeSymbol enclosingClass = symbol.enclosingClass();
-    return enclosingClass != null && enclosingClass.memberSymbols().stream().anyMatch(MethodNamedEqualsCheck::isEqualsMethod);
-  }
-
-  private static boolean isEqualsMethod(Symbol symbol) {
-    if (!symbol.isMethodSymbol()) {
-      return false;
-    }
-    if (!"equals".equals(symbol.name())) {
-      return false;
-    }
-    List<Type> parameters = ((Symbol.MethodSymbol) symbol).parameterTypes();
-    return parameters.size() == 1 && parameters.get(0).is("java.lang.Object");
+    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
+    return enclosingClass != null && enclosingClass.lookupSymbols(EQUALS).stream().anyMatch(EQUALS_MATCHER::matches);
   }
 
 }
