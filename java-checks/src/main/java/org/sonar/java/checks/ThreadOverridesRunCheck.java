@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,11 +36,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collection;
 import java.util.List;
 
 @Rule(key = "S2134")
 public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVA_LANG_THREAD = "java.lang.Thread";
+  private static final MethodMatcher RUN = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_THREAD)).name("run").withoutParameter();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -70,22 +73,11 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isDirectSubtypeOfThread(Symbol.TypeSymbol classSymbol) {
     Type superClass = classSymbol.superClass();
-    return superClass != null && superClass.is("java.lang.Thread");
+    return superClass != null && superClass.is(JAVA_LANG_THREAD);
   }
 
   private static boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
-    Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
-    boolean overridesRunMethod = false;
-    for (Symbol run : runSymbols) {
-      if (run.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) run;
-        if (methodSymbol.parameterTypes().isEmpty()) {
-          overridesRunMethod = true;
-          break;
-        }
-      }
-    }
-    return overridesRunMethod;
+    return classSymbol.lookupSymbols("run").stream().anyMatch(RUN::matches);
   }
 
   private static boolean hasConstructorCallingSuperWithRunnable(ClassTree classTree) {
@@ -113,7 +105,7 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
 
     private boolean callSuperWithRunnable = false;
 
-    private static final MethodMatcher SUPER_THREAD = MethodMatcher.create().typeDefinition("java.lang.Thread").name("<init>").withAnyParameters();
+    private static final MethodMatcher SUPER_THREAD = MethodMatcher.create().typeDefinition(JAVA_LANG_THREAD).name("<init>").withAnyParameters();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
