@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -33,6 +34,9 @@ import java.util.List;
 
 @Rule(key = "S2141")
 public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters("java.lang.Object");
+  private static final MethodMatcher HASHCODE_MATCHER = MethodMatcher.create().name("hashCode").withoutParameter();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -59,23 +63,10 @@ public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscripti
   }
 
   private static boolean implementsEquals(Symbol.TypeSymbol symbol) {
-    for (Symbol equals : symbol.lookupSymbols("equals")) {
-      if (equals.isMethodSymbol()) {
-        List<Type> params = ((Symbol.MethodSymbol) equals).parameterTypes();
-        if (params.size() == 1 && params.get(0).is("java.lang.Object")) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return symbol.lookupSymbols("equals").stream().anyMatch(EQUALS_MATCHER::matches);
   }
 
   private static boolean implementsHashCode(Symbol.TypeSymbol symbol) {
-    for (Symbol hashCode : symbol.lookupSymbols("hashCode")) {
-      if (hashCode.isMethodSymbol() && ((Symbol.MethodSymbol) hashCode).parameterTypes().isEmpty()) {
-        return true;
-      }
-    }
-    return false;
+    return symbol.lookupSymbols("hashCode").stream().anyMatch(HASHCODE_MATCHER::matches);
   }
 }
