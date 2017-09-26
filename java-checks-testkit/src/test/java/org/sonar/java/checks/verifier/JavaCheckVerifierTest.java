@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -361,6 +362,26 @@ public class JavaCheckVerifierTest {
     WrongJson check = new WrongJson();
     check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
+  }
+
+  @Test
+  public void rule_without_annotation_should_fail_with_a_clear_message() {
+    class NotAnnotatedCheck extends IssuableSubscriptionVisitor {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return Collections.singletonList(Tree.Kind.METHOD);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        reportIssue(tree, "yolo", Collections.emptyList(), 42);
+      }
+    }
+    NotAnnotatedCheck check = new NotAnnotatedCheck();
+    Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoIssue.java", check));
+    assertThat(throwable)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
   }
 
   @RspecKey("Dummy_fake_JSON")
