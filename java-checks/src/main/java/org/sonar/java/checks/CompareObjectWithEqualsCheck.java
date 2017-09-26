@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -34,13 +35,13 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
 import java.util.Optional;
 
 @Rule(key = "S1698")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
   private JavaFileScannerContext context;
 
   @Override
@@ -161,14 +162,6 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean hasEqualsMethod(Symbol.TypeSymbol symbol) {
-    return symbol.lookupSymbols("equals").stream().anyMatch(CompareObjectWithEqualsCheck::isEqualsMethod);
-  }
-
-  private static boolean isEqualsMethod(Symbol symbol) {
-    if (symbol.isMethodSymbol()) {
-      List<Type> parameterTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
-      return parameterTypes.size() == 1 && parameterTypes.get(0).is(JAVA_LANG_OBJECT);
-    }
-    return false;
+    return symbol.lookupSymbols("equals").stream().anyMatch(EQUALS_MATCHER::matches);
   }
 }
