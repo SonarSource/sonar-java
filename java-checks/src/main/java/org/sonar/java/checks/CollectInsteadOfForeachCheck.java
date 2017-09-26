@@ -23,7 +23,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -65,16 +64,9 @@ public class CollectInsteadOfForeachCheck extends AbstractMethodDetection {
 
   private void handleMethodReference(MethodReferenceTree methodRef) {
     Tree expression = methodRef.expression();
-    if (isAddMethod(methodRef.method())) {
+    if (ADD.matches(methodRef.method().symbol())) {
       checkExpression(methodRef, expression);
     }
-  }
-
-  private static boolean isAddMethod(IdentifierTree methodRefIdentifier) {
-    Symbol method = methodRefIdentifier.symbol();
-    return method.isMethodSymbol()
-      && SUBTYPE_OF_LIST.test(method.owner().type())
-      && "add".equals(method.name());
   }
 
   private void handleLambdaExpression(LambdaExpressionTree lambda) {
