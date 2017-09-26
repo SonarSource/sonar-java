@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -83,6 +84,9 @@ public class StreamConsumedCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.METHOD_REFERENCE)) {
+      return handleMethodReference(context, (MethodReferenceTree) syntaxNode);
+    }
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return handleMethodInvocation(context, (MethodInvocationTree) syntaxNode);
     }
@@ -124,6 +128,26 @@ public class StreamConsumedCheck extends SECheck {
     if (mit.symbol().isUnknown()) {
       // lambdas used in pipelines are sometimes not resolved properly, this is to shutdown the noise
       programState = programState.removeConstraintsOnDomain(invocationTarget, StreamPipelineConstraint.class);
+    }
+    return programState;
+  }
+
+  private ProgramState handleMethodReference(CheckerContext context, MethodReferenceTree mrt) {
+    ProgramState programState = context.getState();
+    if (TERMINAL_OPERATIONS.anyMatch(mrt.method().symbol())) {
+      Tree expression = mrt.expression();
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        SymbolicValue ownerSV = programState.getValue(((IdentifierTree) expression).symbol());
+        if (ownerSV == null) {
+          return programState;
+        }
+        if (isPipelineConsumed(programState, ownerSV)) {
+          reportIssue(mrt, "Refactor this code so that this consumed stream pipeline is not reused.", flow(ownerSV, context.getNode()));
+          return null;
+        } else {
+          return Iterables.getOnlyElement(ownerSV.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
+        }
+      }
     }
     return programState;
   }

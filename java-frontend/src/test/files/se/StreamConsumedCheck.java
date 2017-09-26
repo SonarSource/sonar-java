@@ -1,7 +1,7 @@
 import java.util.stream.*;
 import java.util.List;
 
-class A {
+abstract class A {
 
   void test() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
@@ -51,6 +51,17 @@ class A {
       filtered.count(); // Noncompliant [[flows=cond]]
     }
   }
+
+  boolean useMethodReference1(List<Boolean> list) {
+    Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue);
+    java.util.Iterator<Boolean> itr = filter.iterator();
+    return consumes(filter::iterator); // Noncompliant
+  }
+  boolean useMethodReference2(List<Boolean> list) {
+    Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue);
+    return consumes(filter::iterator); // Compliant
+  }
+  abstract boolean consumes(Iterable<Boolean> iterable);
 
   List list;
 

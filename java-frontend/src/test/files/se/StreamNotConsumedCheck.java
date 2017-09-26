@@ -97,6 +97,32 @@ class A {
     stream.forEach(System.out::println);
   }
 
+  boolean useMethodReference1(List<Boolean> list) {
+    Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue); // Compliant
+    return consumes(filter::iterator);
+  }
+
+  Stream<Boolean> field;
+  boolean useMethodReference2(List<Boolean> list) {
+    this.field = list.stream().filter(Boolean::booleanValue); // Compliant
+    return consumes(this.field::iterator);
+  }
+
+  boolean useMethodReference3(List<Boolean> list) {
+    Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue); // Compliant
+    uses(filter);
+    return consumes(filter::iterator);
+  }
+
+  boolean useMethodReference4(List<Boolean> list) {
+    Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue); // Compliant
+    java.util.Iterator<Boolean> itr = filter.iterator();
+    return consumes(filter::iterator); // raise an issue on S3959 : consumed 2 times
+  }
+
+  abstract void uses(Stream<Boolean> stream);
+  abstract boolean consumes(Iterable<Boolean> iterable);
+
   void FN(Stream<Object> stream) {
     stream.filter(e -> true);  // FN - call to filter() is returning same SV as stream, so SV is set CONSUMED on next line
     stream.count();
