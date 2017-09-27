@@ -11,7 +11,7 @@ public class A {
     } else
       firstActionInBlock();
 
-      secondAction();  // Noncompliant {{This line will not be executed conditionally; only the first line of this 3-line block will be. The rest will execute unconditionally.}}
+      secondAction();  // Compliant because vertical whitespace
 
     if (condition)
       action();
@@ -33,7 +33,7 @@ public class A {
       firstActionInBlock();
       // comment
       // bla bla bla
-      secondAction();  // Noncompliant {{This line will not be executed in a loop; only the first line of this 4-line block will be. The rest will execute only once.}}
+      secondAction(); // Compliant because vertical whitespace
   }
 
   void compliant() {
@@ -82,5 +82,15 @@ public class A {
     for (int i = 0;i<10;i++)
       firstActionInBlock();
     secondAction();
+  }
+
+  void negativeIndent(boolean cond) {
+      if (cond) throw new NullPointerException();
+    if (cond) throw new NullPointerException();
+
+    if (cb.position() != 0)
+    cb = cb.slice();
+
+    boolean eof = false; // Compliant, because additional vertical whitespace
   }
 }
