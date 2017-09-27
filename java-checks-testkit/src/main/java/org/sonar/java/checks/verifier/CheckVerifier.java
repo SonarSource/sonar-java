@@ -260,7 +260,14 @@ public abstract class CheckVerifier {
     if(rspecKeyAnnotation != null) {
       ruleKey = rspecKeyAnnotation.value();
     } else {
-      ruleKey = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class).key();
+      Rule ruleAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class);
+      if (ruleAnnotation != null) {
+        ruleKey = ruleAnnotation.key();
+      } else {
+        Fail.fail("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
+        // unreachable
+        return null;
+      }
     }
     return ruleKey;
   }
