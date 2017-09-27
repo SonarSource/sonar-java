@@ -32,6 +32,7 @@ abstract class A {
     Integer.valueOf("4").toString(); // Compliant
     new Integer("4").toString(); // Noncompliant {{Use "Integer.toString" instead.}}
 
+    // Raising issue on string concatenation was removed from rule, kept for historical reason
     String myString = 4 + ""; // Compliant
     myString = "" + 4; // Compliant
     myString = "foo" + 4; // compliant
@@ -45,17 +46,17 @@ abstract class A {
 
     myString = NUMBER + ""; // Compliant
     myString = A.NUMBER + ""; // Compliant
-    myString = this.NUMBER + ""; // Noncompliant
-    myString = "" + this.NUMBER; // Noncompliant
+    myString = this.NUMBER + ""; // Compliant
+    myString = "" + this.NUMBER; // Compliant
     myString = NUMBER + "foo"; // Compliant
 
     myString = static_number + ""; // Compliant
     myString = final_number + ""; // Compliant
-    myString = field_number + ""; // Noncompliant
+    myString = field_number + ""; // Compliant
 
-    myString = myInt + ""; // Noncompliant
+    myString = myInt + ""; // Compliant
     myString = null + ""; // Compliant
-    myString = getValue() + ""; // Noncompliant
+    myString = getValue() + ""; // Compliant
 
     myString = STRING + "";
   }
@@ -69,6 +70,6 @@ abstract class A {
   @Foo(value = "" + 12) // Compliant
   void bar(String s) {
     s += "";
-    s += 12; // Noncompliant
+    s += 12; // Compliant
   }
 }

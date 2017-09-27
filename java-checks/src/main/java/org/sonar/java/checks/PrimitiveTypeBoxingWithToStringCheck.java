@@ -23,19 +23,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -85,22 +79,6 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     super.visitMethodInvocation(tree);
   }
 
-  @Override
-  public void visitBinaryExpression(BinaryExpressionTree tree) {
-    if (tree.is(Kind.PLUS)) {
-      checkConcatenation(tree, tree.leftOperand(), tree.rightOperand());
-    }
-    super.visitBinaryExpression(tree);
-  }
-
-  @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    Type wrapper = ((JavaType) tree.expression().symbolType()).primitiveWrapperType();
-    if (tree.is(Kind.PLUS_ASSIGNMENT) && tree.variable().symbolType().is("java.lang.String") && wrapper != null) {
-      createIssue(tree, wrapper.name());
-    }
-    super.visitAssignmentExpression(tree);
-  }
 
   private void createIssue(Tree reportingTree, String wrapperName) {
     context.reportIssue(this, reportingTree, "Use \"" + wrapperName + ".toString\" instead.");
@@ -110,55 +88,6 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
   public void visitAnnotation(AnnotationTree annotationTree) {
     scan(annotationTree.annotationType());
     // skip arguments of annotation as it should be compile time constant so it is not relevant here.
-  }
-
-  private void checkConcatenation(Tree tree, ExpressionTree leftOperand, ExpressionTree rightOperand) {
-    Type wrapper = null;
-    ExpressionTree leftOp = ExpressionUtils.skipParentheses(leftOperand);
-    ExpressionTree rightOp = ExpressionUtils.skipParentheses(rightOperand);
-    if (LiteralUtils.isEmptyString(leftOp) && !isConstant(rightOp)) {
-      wrapper = ((JavaType) rightOp.symbolType()).primitiveWrapperType();
-    } else if (LiteralUtils.isEmptyString(rightOp) && !isConstant(leftOp)) {
-      wrapper = ((JavaType) leftOperand.symbolType()).primitiveWrapperType();
-    }
-    if (wrapper != null) {
-      createIssue(tree, wrapper.name());
-    }
-  }
-
-  private static boolean isConstant(ExpressionTree operand) {
-    switch (operand.kind()) {
-      case BOOLEAN_LITERAL:
-      case CHAR_LITERAL:
-      case DOUBLE_LITERAL:
-      case FLOAT_LITERAL:
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case STRING_LITERAL:
-        return true;
-      case NULL_LITERAL:
-        return false;
-      case IDENTIFIER:
-        return isPrimitiveConstant(((IdentifierTree) operand).symbol());
-      case MEMBER_SELECT:
-        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) operand;
-        if (ExpressionUtils.isSelectOnThisOrSuper(mset)) {
-          // using "this.MY_CONSTANT" in concatenation forces boxing, while using A.MY_CONSTANT allow compiler to optimize code
-          return false;
-        }
-        return isPrimitiveConstant(mset.identifier().symbol());
-      default:
-        return false;
-    }
-  }
-
-  private static boolean isPrimitiveConstant(Symbol symbol) {
-    // Static or final is enough to get optimization occurring when initializer is a literal,
-    // as long as it is not access with "this."
-    // For constants declared outside the current file, result will depend of the initializer,
-    // so ignoring initializers to not raise FPs (prefer FNs over FPs)
-    // JLS8 : §15.28 & §15.18.1
-    return (symbol.isStatic() || symbol.isFinal()) && symbol.type().isPrimitive();
   }
 
   private static boolean isValueOfInvocation(ExpressionTree abstractTypedTree) {
