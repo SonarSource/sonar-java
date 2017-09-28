@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -34,11 +35,15 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S2183")
 public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
+
+  private List<Tree> shiftTrees = new ArrayList<>();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -46,7 +51,20 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void scanFile(JavaFileScannerContext context) {
+    shiftTrees.clear();
+    super.scanFile(context);
+    for (int i = 0; i < shiftTrees.size(); i++) {
+      checkShiftTree(shiftTrees.get(i), i);
+    }
+  }
+
+  @Override
   public void visitNode(Tree tree) {
+    shiftTrees.add(tree);
+  }
+
+  private void checkShiftTree(Tree tree, int treeIndex) {
     String identifier;
     ExpressionTree shift;
     SyntaxToken operatorToken;
@@ -67,22 +85,43 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
       operatorToken = assignmentExpressionTree.operatorToken();
     }
 
-    checkShift((ExpressionTree) tree, shift, identifier, operatorToken);
+    checkShift((ExpressionTree) tree, shift, identifier, operatorToken, treeIndex);
   }
 
-  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier, SyntaxToken operatorToken) {
+  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier, SyntaxToken operatorToken,
+                          int treeIndex) {
     Long literalValue = LiteralUtils.longLiteralValue(shift);
     if (literalValue != null) {
       int numericalBase = getNumericalBase(tree);
       long reducedNumberBits = literalValue % numericalBase;
-      if (isInvalidShift(reducedNumberBits, literalValue, numericalBase)) {
+      if (isInvalidShift(reducedNumberBits, literalValue, numericalBase, operatorToken, treeIndex)) {
         reportIssue(operatorToken, getMessage(reducedNumberBits, numericalBase, identifier));
       }
     }
   }
 
-  private static boolean isInvalidShift(long reducedNumberBits, long numberBits, int base) {
-    return reducedNumberBits == 0L || tooManyBits(numberBits, base);
+  private boolean isInvalidShift(long reducedNumberBits, long numberBits, int base, SyntaxToken operatorToken, int treeIndex) {
+    return (reducedNumberBits == 0L && !aligned(operatorToken, treeIndex)) || tooManyBits(numberBits, base);
+  }
+
+  private boolean aligned(SyntaxToken operatorToken, int treeIndex) {
+    return (treeIndex > 0 && isAlignedWith(operatorToken, shiftTrees.get(treeIndex - 1)))
+      || (treeIndex + 1 < shiftTrees.size() && isAlignedWith(operatorToken, shiftTrees.get(treeIndex + 1)));
+  }
+
+  private static boolean isAlignedWith(SyntaxToken operatorToken, Tree other) {
+    SyntaxToken otherOperator = operatorToken(other);
+    return otherOperator.text().equals(operatorToken.text())
+      && operatorToken.column() == otherOperator.column()
+      // less than 2 lines distance
+      && Math.abs(operatorToken.line() - otherOperator.line()) < 2;
+  }
+
+  private static SyntaxToken operatorToken(Tree tree) {
+    if (tree instanceof BinaryExpressionTree) {
+      return ((BinaryExpressionTree) tree).operatorToken();
+    }
+    return ((AssignmentExpressionTree) tree).operatorToken();
   }
 
   private static boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
