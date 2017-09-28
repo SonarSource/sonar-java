@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -38,7 +39,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Rule(key = "S1192")
@@ -90,22 +90,21 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       String literal = tree.value();
-      isConstant(tree).ifPresent(constant -> constants.putIfAbsent(literal, constant));
       if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
         occurrences.put(literal, tree);
       }
     }
   }
 
-  private static Optional<VariableTree> isConstant(LiteralTree tree) {
-    Tree parent = tree.parent();
-    if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
-      VariableTree variable = ((VariableTree) parent);
-      if (ModifiersUtils.hasModifier(variable.modifiers(), Modifier.STATIC) && ModifiersUtils.hasModifier(variable.modifiers(), Modifier.FINAL)) {
-        return Optional.of(variable);
-      }
+  @Override
+  public void visitVariable(VariableTree tree) {
+    ExpressionTree initializer = tree.initializer();
+    if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL)
+      && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC)
+      && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
+      constants.putIfAbsent(((LiteralTree) initializer).value(), tree);
     }
-    return Optional.empty();
+    super.visitVariable(tree);
   }
 
   @Override
