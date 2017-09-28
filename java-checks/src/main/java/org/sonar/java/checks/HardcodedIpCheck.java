@@ -20,7 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Splitter;
+
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -33,7 +35,7 @@ import java.util.regex.Pattern;
 @Rule(key = "S1313")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Matcher IP = Pattern.compile("[^\\d.]*?((?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.)).*?").matcher("");
+  private static final Matcher IP = Pattern.compile("([^\\d.]*\\/)?(?<ip>(?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.))(\\/.*)?").matcher("");
 
   private JavaFileScannerContext context;
 
@@ -46,9 +48,10 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
-      IP.reset(tree.value());
+      String value = LiteralUtils.trimQuotes(tree.value());
+      IP.reset(value);
       if (IP.matches()) {
-        String ip = IP.group(1);
+        String ip = IP.group("ip");
         if (areAllBelow256(Splitter.on('.').split(ip))) {
           context.reportIssue(this, tree, "Make this IP \"" + ip + "\" address configurable.");
         }
