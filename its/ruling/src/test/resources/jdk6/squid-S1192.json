@@ -1,6 +1,8 @@
 {
 'jdk6:java/awt/BorderLayout.java':[
-247,
+422,
+429,
+431,
 ],
 'jdk6:java/awt/CardLayout.java':[
 105,
@@ -48,6 +50,7 @@
 266,
 338,
 343,
+439,
 791,
 ],
 'jdk6:java/awt/datatransfer/MimeType.java':[
@@ -348,6 +351,8 @@
 ],
 'jdk6:java/security/Signature.java':[
 91,
+148,
+149,
 149,
 524,
 653,
