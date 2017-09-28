@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
@@ -49,6 +50,13 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
   public void visitClass(ClassTree tree) {
     nestingLevel.push(new ArrayDeque<>());
     super.visitClass(tree);
+    nestingLevel.pop();
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    nestingLevel.push(new ArrayDeque<>());
+    super.visitLambdaExpression(lambdaExpressionTree);
     nestingLevel.pop();
   }
 
