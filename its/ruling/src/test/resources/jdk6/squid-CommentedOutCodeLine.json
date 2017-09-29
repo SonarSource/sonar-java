@@ -636,16 +636,11 @@
 ],
 'jdk6:java/util/Scanner.java':[
 334,
-455,
-506,
 833,
 915,
 ],
 'jdk6:java/util/ServiceLoader.java':[
 258,
-],
-'jdk6:java/util/concurrent/ConcurrentSkipListMap.java':[
-80,
 ],
 'jdk6:java/util/concurrent/CyclicBarrier.java':[
 329,

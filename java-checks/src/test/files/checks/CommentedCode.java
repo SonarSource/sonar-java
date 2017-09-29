@@ -104,4 +104,5 @@ public class CommentedCode {
     // FIXME: the following line calls {@link CommentedCode#method(String)} - javadoc links are accepted in comments
     method("");
   }
+  // C++
 }
