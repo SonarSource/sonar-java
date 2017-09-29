@@ -1,4 +1,10 @@
 class Shifts {
+  void ignoreZeroWhenAligned() {
+    byte b1, b2;
+    b2 = (byte) (value >> 0); // Compliant, because of formatting
+    b1 = (byte) (value >> 8);
+  }
+
   public int shift(int a) {
     int b;
     b = a <<  31;
@@ -91,5 +97,23 @@ class Shifts {
 
   public long returnLong() {
     return 0L;
+  }
+
+  void ignoreZeroWhenAligned() {
+    byte b1, b2;
+    b1 = (byte) (value >> 8);
+    b2 = (byte) (value >> 0); // Compliant, because of formatting
+  }
+
+  void aligned() {
+    b1 = (byte) (value >> 8);
+    b2 = (byte) (value >> 0); // Compliant
+    b2 = (byte) (value << 0); // Noncompliant - another type of shift
+    System.out.println();
+    b2 = (byte) (value >> 0); // Noncompliant - aligned but interrupted
+    System.out.println();
+    System.out.println();
+    b2 = (byte) (value >> 0); // Noncompliant  - aligned but interrupted
+    b2 = (byte) (value    >> 0); // Noncompliant  - aligned but interrupted
   }
 }
