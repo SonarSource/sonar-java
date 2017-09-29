@@ -1,6 +1,6 @@
 import java.lang.Object;
 
-class A { // Noncompliant [[sc=7;ec=8]] {{Add a constructor to the class.}}
+class A { // Noncompliant [[sc=7;ec=8;secondary=4]] {{Add a constructor to the class, or provide default values.}}
   private int field;
 }
 
@@ -22,7 +22,7 @@ class C {
   }
 }
 
-enum Enum { // Noncompliant {{Add a constructor to the enum.}}
+enum Enum { // Noncompliant [[secondary=27]] {{Add a constructor to the enum, or provide default values.}}
   A;
   private int field;
 }
