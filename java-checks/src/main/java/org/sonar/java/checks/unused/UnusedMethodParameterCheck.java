@@ -158,11 +158,15 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDesignedForExtension(MethodTree tree) {
+    if (tree.symbol().enclosingClass().isFinal()) {
+      // methods of final class can not be overridden, because the class can not be extended
+      return false;
+    }
     ModifiersTree modifiers = tree.modifiers();
     return ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT)
       || (!ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block()));
   }
-  
+
   private static boolean isStrutsActionParameter(VariableTree variableTree) {
     Type superClass = variableTree.symbol().enclosingClass().superClass();
     return superClass != null && superClass.isSubtypeOf(STRUTS_ACTION_SUPERCLASS)

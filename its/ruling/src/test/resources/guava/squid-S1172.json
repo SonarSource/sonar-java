@@ -8,4 +8,7 @@
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 2364,
 ],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+151,
+],
 }
