@@ -1,4 +1,5 @@
 class Parent {
+  static final Class<? extends Parent> IMPL = Child.class; // Compliant
   static int childVersion1 = Child.version; // Noncompliant [[sc=30;ec=35]] {{Remove this reference to "Child".}}
   static int childVersion2 = Child.getVersion(); // Noncompliant
   static Child value;

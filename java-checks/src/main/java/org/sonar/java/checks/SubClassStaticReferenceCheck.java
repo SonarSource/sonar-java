@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -28,6 +29,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -101,6 +103,15 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // skip lambdas
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      if (JavaKeyword.CLASS.getValue().equals(tree.identifier().name())) {
+        // skip visit of class literal (MyType.class)
+        return;
+      }
+      super.visitMemberSelectExpression(tree);
     }
 
     @Override
