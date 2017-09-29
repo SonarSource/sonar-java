@@ -83,29 +83,38 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Set<String> documentedParameters = documentedParameters(methodTree);
-    boolean overideableMethod = overrideableMethod(methodTree.symbol());
+    boolean overridableMethod = overridableMethod(methodTree.symbol());
     List<IdentifierTree> unused = Lists.newArrayList();
     for (VariableTree var : methodTree.parameters()) {
       Symbol symbol = var.symbol();
-      if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION) && !isStrutsActionParameter(var)) {
-        if (overideableMethod && documentedParameters.contains(symbol.name())) {
-          continue;
-        }
+      if (symbol.usages().isEmpty()
+        && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)
+        && !isStrutsActionParameter(var)
+        && (!overridableMethod || !documentedParameters.contains(symbol.name()))) {
         unused.add(var.simpleName());
       }
-
     }
     if (!unused.isEmpty()) {
-      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-      for (IdentifierTree identifier : unused.subList(1, unused.size())) {
-        locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter " + identifier.name() + "\".", identifier));
-      }
-      IdentifierTree firstUnused = unused.get(0);
-      reportIssue(firstUnused, "Remove this unused method parameter \"" + firstUnused.name() + "\".", locations, null);
+      reportUnusedParameters(unused);
     }
   }
 
-  private static boolean overrideableMethod(MethodSymbol symbol) {
+  private void reportUnusedParameters(List<IdentifierTree> unused) {
+    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+    for (IdentifierTree identifier : unused) {
+      locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter " + identifier.name() + "\".", identifier));
+    }
+    IdentifierTree firstUnused = unused.get(0);
+    String msg;
+    if (unused.size() > 1) {
+      msg = "Remove these unused method parameters.";
+    } else {
+      msg = "Remove this unused method parameter \"" + firstUnused.name() + "\".";
+    }
+    reportIssue(firstUnused, msg, locations, null);
+  }
+
+  private static boolean overridableMethod(MethodSymbol symbol) {
     return !(symbol.isPrivate() || symbol.isStatic() || symbol.isFinal() || symbol.owner().isFinal());
   }
 

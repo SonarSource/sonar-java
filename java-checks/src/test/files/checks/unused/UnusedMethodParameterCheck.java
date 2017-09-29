@@ -48,7 +48,8 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=51]]
+  void foo(int b, // Noncompliant {{Remove these unused method parameters.}} [[sc=16;ec=17;secondary=51,52]]
+           int a) {
     System.out.println("");
   }
 }
