@@ -242,4 +242,33 @@ final class FinalDocumentedMethod {
   }
 }
 
+class Parent {
+  public void foo(Object param) {
+    throw new Exception();
+  }
+}
+final class FinalClass extends Parent {
+
+  @Override
+  public void foo(Object param) { // Compliant
+    // do nothing
+  }
+
+  void barPackage(Object o) { // Noncompliant
+    // do something
+  }
+
+  protected void barProtected(Object o) { // Noncompliant
+    // do something
+  }
+
+  public void barPublic(Object o) {  // Noncompliant
+    // do something
+  }
+
+  private void barPrivate(Object o) { // Noncompliant
+    // do something
+  }
+}
+
 @interface MyAnnotation {}
