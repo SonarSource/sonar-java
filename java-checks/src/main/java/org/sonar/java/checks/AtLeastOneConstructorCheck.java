@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -31,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S1258")
@@ -52,20 +55,24 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
   private void checkClassTree(ClassTree tree) {
     IdentifierTree simpleName = tree.simpleName();
     if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT)) {
-      boolean hasPrivateMember = false;
+      List<JavaFileScannerContext.Location> uninitializedVariables = new ArrayList<>();
       for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
+          // there is a constructor, no need to check further
           return;
-        } else if (member.is(Kind.VARIABLE)) {
-          VariableTree variable = (VariableTree) member;
-          Symbol symbol = variable.symbol();
-          hasPrivateMember |= variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic();
+        } else if (member.is(Kind.VARIABLE) && requiresInitialization((VariableTree) member)) {
+          uninitializedVariables.add(new JavaFileScannerContext.Location("Uninitialized field", member));
         }
       }
-      if (hasPrivateMember) {
-        reportIssue(simpleName, "Add a constructor to the " + tree.declarationKeyword().text() + ".");
+      if (!uninitializedVariables.isEmpty()) {
+        reportIssue(simpleName, "Add a constructor to the " + tree.declarationKeyword().text() + ", or provide default values.", uninitializedVariables, null);
       }
     }
+  }
+
+  private static boolean requiresInitialization(VariableTree variable) {
+    Symbol symbol = variable.symbol();
+    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic();
   }
 
 }
