@@ -55,5 +55,11 @@ class A {
     BigDecimal.valueOf(12L).add(BigDecimal.valueOf(12563159)); // Noncompliant
     Optional<String> o = Optional.empty();
     o.map(o -> o.toString()); // Noncompliant
+
+    String s = "s";
+    s.intern(); // Compliant
+
+    Character c = Character.valueOf('c');
+    c.toChars(0, new char[42], 21); // Compliant
   }
 }

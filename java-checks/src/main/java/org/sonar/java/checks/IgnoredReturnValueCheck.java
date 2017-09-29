@@ -20,12 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -64,6 +69,10 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .add("java.util.Optional")
       .build();
 
+  private static final MethodMatcherCollection EXCLUDED = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("java.lang.Character").name("toChars").parameters("int", "char[]", "int"),
+    MethodMatcher.create().typeDefinition("java.lang.String").name("intern").withoutParameter());
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT);
@@ -71,11 +80,17 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionStatementTree est = (ExpressionStatementTree) tree;
-    if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) est.expression();
-      if (!isVoidOrUnknown(mit.symbolType()) && isCheckedType(mit.symbol().owner().type())
-        && mit.symbol().isPublic() && !((JavaSymbol.MethodJavaSymbol) mit.symbol()).isConstructor()) {
+    ExpressionTree expr = ((ExpressionStatementTree) tree).expression();
+    if (expr.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) expr;
+      if (EXCLUDED.anyMatch(mit)) {
+        return;
+      }
+      Symbol methodSymbol = mit.symbol();
+      if (!isVoidOrUnknown(mit.symbolType())
+        && isCheckedType(methodSymbol.owner().type())
+        && methodSymbol.isPublic()
+        && !isConstructor(methodSymbol)) {
         IdentifierTree methodName = MethodsHelper.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
@@ -90,4 +105,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     return methodType.isVoid() || methodType.isUnknown();
   }
 
+  private static boolean isConstructor(Symbol methodSymbol) {
+    return ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
+  }
 }
