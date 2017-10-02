@@ -73,6 +73,7 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isDirectSubtypeOfThread(Symbol.TypeSymbol classSymbol) {
     Type superClass = classSymbol.superClass();
+    // Only 'java.lang.Object' has no super class
     return superClass != null && superClass.is(JAVA_LANG_THREAD);
   }
 
