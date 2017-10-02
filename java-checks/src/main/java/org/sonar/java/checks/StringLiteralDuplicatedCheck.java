@@ -70,7 +70,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
         VariableTree constant = constants.get(entry);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).collect(Collectors.toList());
         context.reportIssue(this, duplications.iterator().next(),
-          "Use already defined constant '" + constant.simpleName() + "' instead of duplicating literal " + entry + ".",
+          "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
       } else if (literalOccurrence >= threshold) {
         context.reportIssue(
