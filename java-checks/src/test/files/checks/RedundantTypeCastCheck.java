@@ -177,7 +177,16 @@ class G<T> {
 }
 
 abstract class MyClass {
+  public String field;
   abstract <U extends MyClass> U foo();
+
+  String qix() {
+    return ((MyOtherClass) foo()).field; // Compliant - FN
+  }
+
+  String qix0() {
+    return ((MyOtherClass) foo()).otherField; // Compliant
+  }
 
   String qix1() {
     return ((MyOtherClass) foo()).bar(); // Compliant
@@ -192,6 +201,7 @@ abstract class MyClass {
   }
 }
 abstract class MyOtherClass extends MyClass {
+  public String otherField;
   abstract String bar();
 }
 

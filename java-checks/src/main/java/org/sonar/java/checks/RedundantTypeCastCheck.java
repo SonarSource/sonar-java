@@ -69,7 +69,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Type cast = typeCastTree.type().symbolType();
     Type target = targetType(typeCastTree);
     Type expressionType = typeCastTree.expression().symbolType();
-    if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMethodInvocation(typeCastTree)) {
+    if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMemberAccess(typeCastTree)) {
       // Primitive wrappers excluded because covered by S2154
       return;
     }
@@ -78,7 +78,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean requiredForMethodInvocation(TypeCastTree typeCastTree) {
+  private static boolean requiredForMemberAccess(TypeCastTree typeCastTree) {
     ExpressionTree expression = typeCastTree.expression();
     if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
       return false;
@@ -91,9 +91,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     if (!(returnType instanceof TypeVariableJavaType) || ((TypeVariableJavaType) returnType).bounds().get(0).is("java.lang.Object")) {
       return false;
     }
-    // consider REQUIRED as soon as the parent expression is a method invocation (killing the noise), without checking if cast could have been avoided
-    Tree parent = skipParentheses(typeCastTree.parent());
-    return parent.is(Tree.Kind.MEMBER_SELECT) && skipParentheses(parent.parent()).is(Tree.Kind.METHOD_INVOCATION);
+    // consider REQUIRED as soon as the parent expression is a member access (killing the noise), without checking if cast could have been avoided
+    // as the member accessed could have also been part of initial type
+    return skipParentheses(typeCastTree.parent()).is(Tree.Kind.MEMBER_SELECT);
   }
 
   private static boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
