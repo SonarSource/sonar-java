@@ -84,7 +84,7 @@ public class SymbolicValue {
   );
 
   private static int idGenerator;
-  private int id;
+  private final int id;
 
   public SymbolicValue() {
     id = idGenerator;
@@ -105,7 +105,8 @@ public class SymbolicValue {
       return false;
     }
     SymbolicValue that = (SymbolicValue) o;
-    return id == that.id;
+    Preconditions.checkState(id != that.id, "Impossible to have two SV with same id");
+    return false;
   }
 
   public static boolean isDisposable(SymbolicValue symbolicValue) {
