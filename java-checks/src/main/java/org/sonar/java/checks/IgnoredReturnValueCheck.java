@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
@@ -34,14 +34,17 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(key = "S2201")
 public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
-      .add("java.lang.String")
+      .add(JAVA_LANG_STRING)
       .add("java.lang.Boolean")
       .add("java.lang.Integer")
       .add("java.lang.Double")
@@ -69,9 +72,13 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .add("java.util.Optional")
       .build();
 
+  private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");
+
   private static final MethodMatcherCollection EXCLUDED = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("java.lang.Character").name("toChars").parameters("int", "char[]", "int"),
-    MethodMatcher.create().typeDefinition("java.lang.String").name("intern").withoutParameter());
+    MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("intern").withoutParameter());
+
+  private static final MethodMatcher STRING_GET_BYTES = MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("getBytes").parameters("java.nio.charset.Charset");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -83,7 +90,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expr = ((ExpressionStatementTree) tree).expression();
     if (expr.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expr;
-      if (EXCLUDED.anyMatch(mit)) {
+      if (isExcluded(mit)) {
         return;
       }
       Symbol methodSymbol = mit.symbol();
@@ -95,6 +102,20 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }
+  }
+
+  private static boolean isExcluded(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return mit.symbol().isUnknown() || EXCLUDED.anyMatch(mit) ||
+      (isInTryCatch(mit) && (EXCLUDED_PREFIX.stream().anyMatch(methodName::startsWith) || STRING_GET_BYTES.matches(mit)));
+  }
+
+  private static boolean isInTryCatch(MethodInvocationTree mit) {
+    Tree parent =  mit.parent();
+    while (parent != null && !parent.is(Tree.Kind.TRY_STATEMENT)) {
+      parent = parent.parent();
+    }
+    return parent != null && !((TryStatementTree) parent).catches().isEmpty();
   }
 
   private static boolean isCheckedType(Type ownerType) {
