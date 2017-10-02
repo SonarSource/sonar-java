@@ -61,6 +61,9 @@ abstract class A {
     Stream<Boolean> filter = list.stream().filter(Boolean::booleanValue);
     return consumes(filter::iterator); // Compliant
   }
+  boolean useMethodReference3(List<Stream<Boolean>> list) {
+    return list.stream().map(Stream::iterator).count() > 0; // Compliant
+  }
   abstract boolean consumes(Iterable<Boolean> iterable);
 
   List list;
