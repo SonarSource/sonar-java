@@ -48,6 +48,14 @@ class ConstantAlreadyDefined {
     setFieldValue("projectKey", projectKey);
     return this;
   }
+}
 
+class CompleteCoverage {
+  private final String notConstant = "blablah";  // Noncompliant {{Define a constant instead of duplicating this literal "blablah" 3 times.}}
+  private final String notConstant2 = "blablah";
+  static String notConstant3 = "blablah";
+  String notConstant4;
+  int notString = 42;
 
+  private static final String NOT_USED = "this constant is not used anywhere";
 }
