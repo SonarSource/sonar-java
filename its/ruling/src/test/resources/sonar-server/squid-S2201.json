@@ -17,10 +17,4 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java':[
 102,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/FloatTypeValidation.java':[
-39,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/IntegerTypeValidation.java':[
-39,
-],
 }

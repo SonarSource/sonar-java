@@ -61,5 +61,24 @@ class A {
 
     Character c = Character.valueOf('c');
     c.toChars(0, new char[42], 21); // Compliant
+    s.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant not within a try/catch
+  }
+
+  private boolean textIsInteger(String textToCheck) {
+
+    try {
+      Integer.parseInt(textToCheck, 10); // OK
+      textToCheck.getBytes(java.nio.charset.Charset.forName("UTF-8"));
+      return true;
+    } catch (NumberFormatException ignored) {
+      return false;
+    }
+    try {
+      Integer.parseInt(textToCheck, 10); // Noncompliant
+      textToCheck.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant
+      return true;
+    }finally {
+      // do something
+    }
   }
 }
