@@ -38,17 +38,18 @@ import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.Java9Support;
 
 import javax.annotation.CheckForNull;
-
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
@@ -123,6 +124,7 @@ public class BytecodeCFGBuilder {
     BytecodeCFG cfg;
     List<Instruction> instructions;
     List<Block> successors;
+    String exceptionType;
     Instruction terminator;
     private Block trueBlock;
     private Block falseBlock;
@@ -182,13 +184,16 @@ public class BytecodeCFGBuilder {
         sb.append(Printer.OPCODES[terminator.opcode]).append(" ");
       }
       sb.append("Jumps to: ");
-      successors.forEach(s -> {
+      successors().stream().sorted(Comparator.comparingInt(s -> s.id)).forEachOrdered(s -> {
         sb.append("B").append(s.id);
         if(s == trueBlock) {
           sb.append("(true)");
         }
         if(s == falseBlock) {
           sb.append("(false)");
+        }
+        if(s.exceptionType != null) {
+          sb.append("(Exception:").append(s.exceptionType).append(")");
         }
         sb.append(" ");
       });
@@ -231,6 +236,7 @@ public class BytecodeCFGBuilder {
     private BytecodeCFG cfg;
     private boolean isStaticMethod;
     private boolean isVarArgs;
+    private List<TryCatchBlock> tryCatchBlocks = new ArrayList<>();
 
     BytecodeCFGMethodVisitor() {
       super(Opcodes.ASM5);
@@ -314,7 +320,9 @@ public class BytecodeCFGBuilder {
     public void visitJumpInsn(int opcode, Label label) {
       if (opcode == GOTO || opcode == JSR) {
         currentBlock.terminator = new Instruction(opcode);
-        currentBlock.successors = Collections.singletonList(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
+        List<Block> successors = new ArrayList<>();
+        successors.add(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));
+        currentBlock.successors = successors;
         currentBlock = null;
         return;
       }
@@ -343,12 +351,71 @@ public class BytecodeCFGBuilder {
     }
 
     @Override
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+      tryCatchBlocks.add(new TryCatchBlock(start, end, handler, type));
+    }
+
+    private static class TryCatchBlock {
+      private final Label start;
+      private Block blockStart;
+      private final Label end;
+      private Block blockEnd;
+      private final Label handler;
+      private Block blockHandler;
+      @Nullable
+      private final String type;
+
+      TryCatchBlock(Label start, Label end, Label handler, String type) {
+        this.start = start;
+        this.end = end;
+        this.handler = handler;
+        this.type = type;
+      }
+
+      TryCatchBlock computeBlocks(Map<Label, Block> blockByLabel) {
+        blockStart = blockByLabel.get(start);
+        blockEnd = blockByLabel.get(end);
+        blockHandler = blockByLabel.get(handler);
+        String exType = type;
+        if(exType == null) {
+          exType = "!UncaughtException!";
+        }
+        blockHandler.exceptionType = exType;
+        return this;
+      }
+    }
+    @Override
     public void visitEnd() {
       // if last block ends up with no successors, it is returning or throwing, link it to exit block.
       if(currentBlock.successors.isEmpty()) {
         currentBlock.successors.add(cfg.blocks.get(0));
       }
+
+      tryCatchBlocks.forEach(h->h.computeBlocks(blockByLabel));
+      Block entry = (Block) cfg.entry();
+      wireHandlers(entry, new HashSet<>(), new HashSet<>());
     }
+
+    private void wireHandlers(Block from, Set<TryCatchBlock> tryCatchBlocks, Set<Block> visited) {
+      Set<TryCatchBlock> newTryCatchBlocks = new HashSet<>(tryCatchBlocks);
+      newTryCatchBlocks.removeAll(handlersEndingWith(from));
+      newTryCatchBlocks.addAll(handlersStartingWith(from));
+      Set<Block> newVisited = new HashSet<>(visited);
+      newVisited.add(from);
+      from.successors().stream()
+        .filter(b -> !newVisited.contains(b))
+        .forEach(b -> wireHandlers(b, newTryCatchBlocks, newVisited));
+      newTryCatchBlocks.forEach(tcb -> from.successors.add(tcb.blockHandler));
+    }
+
+    private List<TryCatchBlock> handlersStartingWith(Block block) {
+      return tryCatchBlocks.stream().filter(h -> h.blockStart == block).collect(Collectors.toList());
+    }
+
+    private List<TryCatchBlock> handlersEndingWith(Block block) {
+      return tryCatchBlocks.stream().filter(h -> h.blockEnd == block).collect(Collectors.toList());
+    }
+
 
     public BytecodeCFG cfg() {
       cfg.isStaticMethod = isStaticMethod;

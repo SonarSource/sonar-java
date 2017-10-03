@@ -330,6 +330,7 @@ public class BytecodeEGWalker {
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
       //  Table switch and lookup
+      // TODO : filter some node of the EG depending of the exceptionType in the successor.
       programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
     }
   }

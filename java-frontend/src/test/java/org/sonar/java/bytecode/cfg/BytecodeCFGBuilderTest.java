@@ -42,8 +42,10 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -262,5 +264,150 @@ public class BytecodeCFGBuilderTest {
     assertThat(bytecodeCFG).isNotNull();
     assertThat(bytecodeCFG.blocks).hasSize(11);
     assertThat(bytecodeCFG.blocks.get(4).successors).containsExactly(bytecodeCFG.blocks.get(6));
+  }
+
+  @Test
+  public void try_catch_finally() throws Exception {
+    String methodName = "tryCatch";
+    String expectedCFG = "B0(Exit)\n" +
+      "B1\n" +
+      "Jumps to: B2 \n" +
+      "B2\n" +
+      "0: ALOAD\n" +
+      "1: INVOKESPECIAL\n" +
+      "2: ALOAD\n" +
+      "3: INVOKESPECIAL\n" +
+      "Jumps to: B3 B5(Exception:java/io/IOException) B7(Exception:!UncaughtException!) \n" +
+      "B3\n" +
+      "0: GETSTATIC\n" +
+      "1: LDC\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "GOTO Jumps to: B4 \n" +
+      "B4\n" +
+      "0: RETURN\n" +
+      "Jumps to: B0 \n" +
+      "B5\n" +
+      "0: ASTORE\n" +
+      "1: ALOAD\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "Jumps to: B6 \n" +
+      "B6\n" +
+      "0: GETSTATIC\n" +
+      "1: LDC\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "GOTO Jumps to: B4 \n" +
+      "B7\n" +
+      "0: ASTORE\n" +
+      "1: GETSTATIC\n" +
+      "2: LDC\n" +
+      "3: INVOKEVIRTUAL\n" +
+      "4: ALOAD\n" +
+      "5: ATHROW\n" +
+      "Jumps to: B0 \n";
+    assertCFGforMethod(methodName, expectedCFG);
+  }
+
+  @Test
+  public void try_catch_finally_with_multiplePaths_in_try() throws Exception {
+    String methodName = "tryCatchWithMultiplePaths";
+    assertCFGforMethod(methodName, "B0(Exit)\n" +
+      "B1\n" +
+      "Jumps to: B2 \n" +
+      "B2\n" +
+      "0: ALOAD\n" +
+      "1: INVOKESPECIAL\n" +
+      "2: ILOAD\n" +
+      "IFNE Jumps to: B3(true) B4(false) B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B3\n" +
+      "0: ALOAD\n" +
+      "1: INVOKESPECIAL\n" +
+      "Jumps to: B5 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B4\n" +
+      "0: ALOAD\n" +
+      "1: INVOKESPECIAL\n" +
+      "GOTO Jumps to: B5 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B5\n" +
+      "0: GETSTATIC\n" +
+      "1: LDC\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "Jumps to: B6 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B6\n" +
+      "0: GETSTATIC\n" +
+      "1: LDC\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "GOTO Jumps to: B7 \n" +
+      "B7\n" +
+      "0: RETURN\n" +
+      "Jumps to: B0 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B8\n" +
+      "0: ASTORE\n" +
+      "1: ALOAD\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "Jumps to: B8(Exception:java/io/IOException) B9 B10(Exception:!UncaughtException!) \n" +
+      "B9\n" +
+      "0: GETSTATIC\n" +
+      "1: LDC\n" +
+      "2: INVOKEVIRTUAL\n" +
+      "GOTO Jumps to: B7 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n" +
+      "B10\n" +
+      "0: ASTORE\n" +
+      "1: GETSTATIC\n" +
+      "2: LDC\n" +
+      "3: INVOKEVIRTUAL\n" +
+      "4: ALOAD\n" +
+      "5: ATHROW\n" +
+      "Jumps to: B0 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n");
+  }
+
+  private void assertCFGforMethod(String methodName, String expectedCFG) {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    List<Tree> classMembers = ((ClassTree) tree.types().get(0)).members();
+    Symbol.MethodSymbol symbol = classMembers.stream()
+      .filter( m-> m instanceof MethodTree)
+      .map(m -> ((MethodTree) m).symbol())
+      .filter(s -> methodName.equals(s.name()))
+      .findFirst()
+      .orElseThrow(IllegalStateException::new);
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    StringBuilder sb = new StringBuilder();
+    cfg.blocks.forEach(b-> sb.append(b.printBlock()));
+    assertThat(sb.toString()).isEqualTo(expectedCFG);
+  }
+
+  private void tryCatch() {
+    try {
+      bar();
+      fun();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      System.out.println("finally");
+    }
+
+  }
+
+  private void tryCatchWithMultiplePaths(int i) {
+    try {
+      bar();
+      if(i==0) {
+        fun();
+      } else {
+        fun2();
+      }
+      System.out.println("endOfTry");
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      System.out.println("finally");
+    }
+  }
+  private void bar() {
+  }
+  private void fun() throws IOException {
+  }
+  private void fun2() throws IOException {
   }
 }
