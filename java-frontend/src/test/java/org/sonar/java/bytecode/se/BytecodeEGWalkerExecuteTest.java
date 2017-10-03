@@ -37,6 +37,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -125,6 +126,39 @@ public class BytecodeEGWalkerExecuteTest {
 
     programState = execute(new Instruction(Opcodes.SIPUSH, 0));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE}});
+  }
+
+  @Test
+  public void test_array_load() throws Exception {
+    int[] loadRefOpcodes = new int[] {Opcodes.IALOAD, Opcodes.LALOAD, Opcodes.FALOAD, Opcodes.DALOAD, Opcodes.AALOAD, Opcodes.BALOAD, Opcodes.CALOAD, Opcodes.SALOAD};
+    SymbolicValue array = new SymbolicValue();
+    SymbolicValue index = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(array).stackValue(index);
+    for (int opcode : loadRefOpcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      if (opcode != Opcodes.AALOAD) {
+        assertStack(programState, ObjectConstraint.NOT_NULL);
+      } else {
+        ProgramState.Pop result = programState.unstackValue(1);
+        assertThat(result.values).hasSize(1);
+        assertThat(result.state).isEqualTo(ProgramState.EMPTY_STATE);
+        assertThat(result.values.get(0)).isNotEqualTo(array);
+        assertThat(result.values.get(0)).isNotEqualTo(index);
+      }
+    }
+  }
+
+  @Test
+  public void test_array_store() throws  Exception {
+    int[] storeArrayOpcodes = new int[] {Opcodes.IASTORE, Opcodes.LASTORE, Opcodes.FASTORE, Opcodes.DASTORE, Opcodes.AASTORE, Opcodes.BASTORE, Opcodes.CASTORE, Opcodes.SASTORE};
+    SymbolicValue array = new SymbolicValue();
+    SymbolicValue index = new SymbolicValue();
+    SymbolicValue value = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(array).stackValue(index).stackValue(value);
+    for (int opcode : storeArrayOpcodes) {
+      ProgramState ps = execute(new Instruction(opcode), initState);
+      assertEmptyStack(ps);
+    }
   }
 
   @Test

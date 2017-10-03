@@ -189,32 +189,46 @@ public class BytecodeEGWalker {
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
         programState.storeExitValue();
         break;
-      case ALOAD:
-      case DLOAD:
-      case FLOAD:
       case ILOAD:
       case LLOAD:
+      case FLOAD:
+      case DLOAD:
+      case ALOAD:
         SymbolicValue value = programState.getValue(instruction.operand);
         Preconditions.checkNotNull(value, "Loading a symbolic value unindexed");
         programState = programState.stackValue(value);
         break;
-      case AALOAD:
-        break;
-      case BALOAD:
-      case CALOAD:
-      case DALOAD:
-      case FALOAD:
       case IALOAD:
       case LALOAD:
+      case FALOAD:
+      case DALOAD:
+      case AALOAD:
+      case BALOAD:
+      case CALOAD:
       case SALOAD:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.unstackValue(2).state.stackValue(sv);
+        if (instruction.opcode != AALOAD) {
+          programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+        }
         break;
-      case ASTORE:
-      case DSTORE:
-      case FSTORE:
       case ISTORE:
       case LSTORE:
+      case FSTORE:
+      case DSTORE:
+      case ASTORE:
         pop = programState.unstackValue(1);
         programState = pop.state.put(instruction.operand, pop.values.get(0));
+        break;
+      case IASTORE:
+      case LASTORE:
+      case FASTORE:
+      case DASTORE:
+      case AASTORE:
+      case BASTORE:
+      case CASTORE:
+      case SASTORE:
+        programState = programState.unstackValue(3).state;
         break;
       case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
