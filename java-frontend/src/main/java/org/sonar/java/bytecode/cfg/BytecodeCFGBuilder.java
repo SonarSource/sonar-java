@@ -286,7 +286,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitIincInsn(int var, int increment) {
-      currentBlock.addInsn(Opcodes.IINC);
+      currentBlock.addInsn(Opcodes.IINC, var);
     }
 
     @Override

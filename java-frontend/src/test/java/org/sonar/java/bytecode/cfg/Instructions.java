@@ -217,7 +217,7 @@ public class Instructions {
           visitLdcInsn("a");
           break;
         case IINC:
-          visitIincInsn(0, 1);
+          visitIincInsn(operand, 1);
           break;
         case INVOKEDYNAMIC:
           visitInvokeDynamicInsn("sleep", "()V", new Handle(H_INVOKESTATIC, "", "", "()V", false));

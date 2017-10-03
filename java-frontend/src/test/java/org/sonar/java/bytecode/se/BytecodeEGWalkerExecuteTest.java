@@ -304,6 +304,161 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
+  public void test_add_sub_mul_div_rem() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    int[] addOpcodes = new int[] {
+      Opcodes.IADD, Opcodes.LADD, Opcodes.FADD, Opcodes.DADD,
+      Opcodes.ISUB, Opcodes.LSUB, Opcodes.FSUB, Opcodes.DSUB,
+      Opcodes.IMUL, Opcodes.LMUL, Opcodes.FMUL, Opcodes.DMUL,
+      Opcodes.IDIV, Opcodes.LDIV, Opcodes.FDIV, Opcodes.DDIV,
+      Opcodes.IREM, Opcodes.LREM, Opcodes.FREM, Opcodes.DREM,
+    };
+    for (int opcode : addOpcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+    }
+
+    for (int opcode : addOpcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
+        .hasMessage("Arithmetic instruction needs 2 values on stack");
+    }
+  }
+
+  @Test
+  public void test_neg() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+
+    int[] negOpcodes = new int[] { Opcodes.INEG, Opcodes.LNEG, Opcodes.FNEG, Opcodes.DNEG };
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv);
+    for (int negOpcode : negOpcodes) {
+      ProgramState programState = execute(new Instruction(negOpcode), initState);
+      assertStack(programState, new Constraint[][]{{ ObjectConstraint.NOT_NULL }});
+      assertThat(programState.peekValue()).isNotEqualTo(sv);
+    }
+
+    for (int opcode : negOpcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE))
+        .hasMessage("NEG needs value on stack");
+    }
+  }
+
+  @Test
+  public void test_shift() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    int[] shiftOpcodes = new int[] {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
+    for (int opcode : shiftOpcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+    }
+
+    for (int opcode : shiftOpcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
+        .hasMessage("Arithmetic instruction needs 2 values on stack");
+    }
+  }
+
+  @Test
+  public void test_and() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    int[] opcodes = new int[] {Opcodes.IAND, Opcodes.LAND};
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+      assertThat(result).isInstanceOf(SymbolicValue.AndSymbolicValue.class);
+      SymbolicValue.AndSymbolicValue andSv = (SymbolicValue.AndSymbolicValue) result;
+      assertThat(andSv.getRightOp()).isEqualTo(sv1);
+      assertThat(andSv.getLeftOp()).isEqualTo(sv2);
+    }
+
+    for (int opcode : opcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
+        .hasMessage("Bitwise instruction needs 2 values on stack");
+    }
+  }
+
+  @Test
+  public void test_or() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    int[] opcodes = new int[] {Opcodes.IOR, Opcodes.LOR};
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+      assertThat(result).isInstanceOf(SymbolicValue.OrSymbolicValue.class);
+      SymbolicValue.OrSymbolicValue orSv = (SymbolicValue.OrSymbolicValue) result;
+      assertThat(orSv.getRightOp()).isEqualTo(sv1);
+      assertThat(orSv.getLeftOp()).isEqualTo(sv2);
+    }
+
+    for (int opcode : opcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
+        .hasMessage("Bitwise instruction needs 2 values on stack");
+    }
+  }
+
+  @Test
+  public void test_xor() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    int[] opcodes = new int[] {Opcodes.IXOR, Opcodes.LXOR};
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+      assertThat(result).isInstanceOf(SymbolicValue.XorSymbolicValue.class);
+      SymbolicValue.XorSymbolicValue xorSv = (SymbolicValue.XorSymbolicValue) result;
+      assertThat(xorSv.getRightOp()).isEqualTo(sv1);
+      assertThat(xorSv.getLeftOp()).isEqualTo(sv2);
+    }
+
+    for (int opcode : opcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
+        .hasMessage("Bitwise instruction needs 2 values on stack");
+    }
+  }
+
+  @Test
+  public void test_iinc() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+    ProgramState programState = ProgramState.EMPTY_STATE.put(2, sv);
+    programState = execute(new Instruction(Opcodes.IINC, 2), programState);
+    SymbolicValue result = programState.getValue(2);
+    assertThat(result).isNotEqualTo(sv);
+    assertThat(programState.getConstraint(result, ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    assertEmptyStack(programState);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.IINC, 1), ProgramState.EMPTY_STATE))
+      .hasMessage("Local variable 1 not found");
+  }
+
+  @Test
   public void test_invoke_instance_method() throws Exception {
     int[] opcodes = new int[] {Opcodes.INVOKESPECIAL, Opcodes.INVOKEVIRTUAL, Opcodes.INVOKEINTERFACE};
     for (int opcode: opcodes) {

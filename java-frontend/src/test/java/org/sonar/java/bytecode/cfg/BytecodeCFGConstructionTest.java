@@ -111,7 +111,7 @@ public class BytecodeCFGConstructionTest {
 
     // The rest
     testData.add(new Object[] {new TestInput(LDC), null});
-    testData.add(new Object[] {new TestInput(IINC), null});
+    testData.add(new Object[] {new TestInput(IINC, 2), inst(IINC, 2)});
     testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), null});
     testData.add(new Object[] {new TestInput(TABLESWITCH), null});
     testData.add(new Object[] {new TestInput(LOOKUPSWITCH), null});

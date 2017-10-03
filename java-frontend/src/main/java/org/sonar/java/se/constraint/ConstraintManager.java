@@ -197,6 +197,21 @@ public class ConstraintManager {
   public SymbolicValue createBinarySymbolicValue(BytecodeCFGBuilder.Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     SymbolicValue result;
     switch (inst.opcode) {
+      case IAND:
+      case LAND:
+        result = new SymbolicValue.AndSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
+      case IOR:
+      case LOR:
+        result = new SymbolicValue.OrSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
+      case IXOR:
+      case LXOR:
+        result = new SymbolicValue.XorSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
       case IF_ICMPEQ:
       case IF_ACMPEQ:
       case IFEQ:

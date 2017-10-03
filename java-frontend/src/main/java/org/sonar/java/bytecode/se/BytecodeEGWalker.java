@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
@@ -271,6 +272,63 @@ public class BytecodeEGWalker {
         Preconditions.checkState(pop.values.size() == 2, "SWAP needs 2 values on stack");
         programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1));
         break;
+      case IADD:
+      case LADD:
+      case FADD:
+      case DADD:
+      case ISUB:
+      case LSUB:
+      case FSUB:
+      case DSUB:
+      case IMUL:
+      case LMUL:
+      case FMUL:
+      case DMUL:
+      case IDIV:
+      case LDIV:
+      case FDIV:
+      case DDIV:
+      case IREM:
+      case LREM:
+      case FREM:
+      case DREM:
+        handleArithmetic(instruction);
+        break;
+      case INEG:
+      case LNEG:
+      case FNEG:
+      case DNEG:
+        sv = constraintManager.createSymbolicValue(instruction);
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, "NEG needs value on stack");
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case ISHL:
+      case LSHL:
+      case ISHR:
+      case LSHR:
+      case IUSHR:
+      case LUSHR:
+        handleArithmetic(instruction);
+        break;
+      case IAND:
+      case LAND:
+      case IOR:
+      case LOR:
+      case IXOR:
+      case LXOR:
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "Bitwise instruction needs 2 values on stack");
+        sv = constraintManager.createBinarySymbolicValue(instruction, pop.valuesAndSymbols);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case IINC:
+        int index = instruction.operand;
+        SymbolicValue existing = programState.getValue(index);
+        Preconditions.checkNotNull(existing, "Local variable " + index + " not found");
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.put(index, sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
       case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
@@ -322,6 +380,15 @@ public class BytecodeEGWalker {
         // do nothing
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
+  }
+
+  private void handleArithmetic(BytecodeCFGBuilder.Instruction instruction) {
+    SymbolicValue sv;
+    ProgramState.Pop pop;
+    sv = constraintManager.createSymbolicValue(instruction);
+    pop = programState.unstackValue(2);
+    Preconditions.checkState(pop.values.size() == 2, "Arithmetic instruction needs 2 values on stack");
+    programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
   private void handleBlockExit(ProgramPoint programPosition) {
