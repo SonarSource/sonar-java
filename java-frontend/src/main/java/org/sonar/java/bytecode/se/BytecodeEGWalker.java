@@ -147,16 +147,38 @@ public class BytecodeEGWalker {
       case ICONST_3:
       case ICONST_4:
       case ICONST_5:
+      case LCONST_0:
+      case LCONST_1:
+      case FCONST_0:
+      case FCONST_1:
+      case FCONST_2:
+      case DCONST_0:
+      case DCONST_1:
         sv = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
-        if (instruction.opcode == ICONST_1) {
+        if (instruction.opcode == ICONST_1 || instruction.opcode == LCONST_1 || instruction.opcode == FCONST_1 || instruction.opcode == DCONST_1) {
           programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
         }
-        if (instruction.opcode == ICONST_0) {
+        if (instruction.opcode == ICONST_0 || instruction.opcode == LCONST_0 || instruction.opcode == FCONST_0  || instruction.opcode == DCONST_0  ) {
           programState = programState.addConstraint(sv, BooleanConstraint.FALSE).addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.ZERO);
         } else {
           programState = programState.addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
         }
+        break;
+      case BIPUSH:
+      case SIPUSH:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL).addConstraint(sv,DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+        if(instruction.operand == 0) {
+          programState = programState.addConstraint(sv, BooleanConstraint.FALSE).addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.ZERO);
+        } else if (instruction.operand == 1) {
+          programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
+        }
+        break;
+      case LDC:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv);
+        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case ARETURN:
       case IRETURN:
@@ -194,7 +216,6 @@ public class BytecodeEGWalker {
         pop = programState.unstackValue(1);
         programState = pop.state.put(instruction.operand, pop.values.get(0));
         break;
-      case LDC:
       case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);

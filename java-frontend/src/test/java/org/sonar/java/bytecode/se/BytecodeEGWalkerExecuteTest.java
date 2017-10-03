@@ -83,6 +83,60 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
+  public void test_lconst() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.LCONST_0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.LCONST_1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE, ObjectConstraint.NOT_NULL}});
+  }
+
+  @Test
+  public void test_fconst() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.FCONST_0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.FCONST_1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.FCONST_2));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
+  }
+
+  @Test
+  public void test_bipush() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.BIPUSH, 42));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.BIPUSH, 1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL, BooleanConstraint.TRUE}});
+
+    programState = execute(new Instruction(Opcodes.BIPUSH, 0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE}});
+  }
+
+  @Test
+  public void test_sipush() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.SIPUSH, 42));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.SIPUSH, 1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL, BooleanConstraint.TRUE}});
+
+    programState = execute(new Instruction(Opcodes.SIPUSH, 0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE}});
+  }
+
+  @Test
+  public void test_dconst() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.DCONST_0));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
+
+    programState = execute(new Instruction(Opcodes.DCONST_1));
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE, ObjectConstraint.NOT_NULL}});
+  }
+
+  @Test
   public void test_load() throws Exception {
     int[] loadRefOpcodes = new int[] {Opcodes.ILOAD, Opcodes.LLOAD, Opcodes.FLOAD, Opcodes.DLOAD, Opcodes.ALOAD};
     for (int loadRefOpcode : loadRefOpcodes) {
