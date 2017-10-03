@@ -329,6 +329,33 @@ public class BytecodeEGWalker {
         sv = constraintManager.createSymbolicValue(instruction);
         programState = programState.put(index, sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
+      case I2L:
+      case I2F:
+      case I2D:
+      case L2I:
+      case L2F:
+      case L2D:
+      case F2I:
+      case F2L:
+      case F2D:
+      case D2I:
+      case D2L:
+      case D2F:
+      case I2B:
+      case I2C:
+      case I2S:
+        // do nothing
+        break;
+      case LCMP:
+      case FCMPL:
+      case FCMPG:
+      case DCMPL:
+      case DCMPG:
+        sv = constraintManager.createSymbolicValue(instruction);
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "CMP needs 2 values on stack");
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
       case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
@@ -383,10 +410,8 @@ public class BytecodeEGWalker {
   }
 
   private void handleArithmetic(BytecodeCFGBuilder.Instruction instruction) {
-    SymbolicValue sv;
-    ProgramState.Pop pop;
-    sv = constraintManager.createSymbolicValue(instruction);
-    pop = programState.unstackValue(2);
+    SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
+    ProgramState.Pop pop = programState.unstackValue(2);
     Preconditions.checkState(pop.values.size() == 2, "Arithmetic instruction needs 2 values on stack");
     programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
   }

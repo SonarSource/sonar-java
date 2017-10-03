@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 
@@ -37,8 +38,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.extractProperty;
-import static org.mockito.ArgumentMatchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -305,29 +304,16 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_add_sub_mul_div_rem() throws Exception {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
-    int[] addOpcodes = new int[] {
+    int[] opcodes = new int[] {
       Opcodes.IADD, Opcodes.LADD, Opcodes.FADD, Opcodes.DADD,
       Opcodes.ISUB, Opcodes.LSUB, Opcodes.FSUB, Opcodes.DSUB,
       Opcodes.IMUL, Opcodes.LMUL, Opcodes.FMUL, Opcodes.DMUL,
       Opcodes.IDIV, Opcodes.LDIV, Opcodes.FDIV, Opcodes.DDIV,
       Opcodes.IREM, Opcodes.LREM, Opcodes.FREM, Opcodes.DREM,
     };
-    for (int opcode : addOpcodes) {
-      ProgramState programState = execute(new Instruction(opcode), initState);
-      ProgramState.Pop pop = programState.unstackValue(1);
-      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
-      SymbolicValue result = pop.values.get(0);
-      assertThat(result).isNotEqualTo(sv1);
-      assertThat(result).isNotEqualTo(sv2);
-    }
+    assertConsume2produceNotNull(opcodes);
 
-    for (int opcode : addOpcodes) {
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
-        .hasMessage("Arithmetic instruction needs 2 values on stack");
-    }
+    assertThrowWhenInvalidStack(opcodes, "Arithmetic instruction needs 2 values on stack");
   }
 
   @Test
@@ -350,31 +336,31 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_shift() throws Exception {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
     int[] shiftOpcodes = new int[] {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
-    for (int opcode : shiftOpcodes) {
-      ProgramState programState = execute(new Instruction(opcode), initState);
-      ProgramState.Pop pop = programState.unstackValue(1);
-      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
-      SymbolicValue result = pop.values.get(0);
-      assertThat(result).isNotEqualTo(sv1);
-      assertThat(result).isNotEqualTo(sv2);
-    }
+    assertConsume2produceNotNull(shiftOpcodes);
 
-    for (int opcode : shiftOpcodes) {
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
-        .hasMessage("Arithmetic instruction needs 2 values on stack");
-    }
+    assertThrowWhenInvalidStack(shiftOpcodes, "Arithmetic instruction needs 2 values on stack");
   }
 
   @Test
   public void test_and() throws Exception {
+    int[] opcodes = new int[] {Opcodes.IAND, Opcodes.LAND};
+    assertBinarySymbolicValue(opcodes, SymbolicValue.AndSymbolicValue.class);
+
+    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
+  }
+
+  private void assertThrowWhenInvalidStack(int[] opcodes, String message) {
+    for (int opcode : opcodes) {
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue())))
+        .hasMessage(message);
+    }
+  }
+
+  private void assertBinarySymbolicValue(int[] opcodes, Class<? extends BinarySymbolicValue> binarySvClass) {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
-    int[] opcodes = new int[] {Opcodes.IAND, Opcodes.LAND};
     for (int opcode : opcodes) {
       ProgramState programState = execute(new Instruction(opcode), initState);
       ProgramState.Pop pop = programState.unstackValue(1);
@@ -382,66 +368,27 @@ public class BytecodeEGWalkerExecuteTest {
       SymbolicValue result = pop.values.get(0);
       assertThat(result).isNotEqualTo(sv1);
       assertThat(result).isNotEqualTo(sv2);
-      assertThat(result).isInstanceOf(SymbolicValue.AndSymbolicValue.class);
-      SymbolicValue.AndSymbolicValue andSv = (SymbolicValue.AndSymbolicValue) result;
+      assertThat(result).isInstanceOf(binarySvClass);
+      BinarySymbolicValue andSv = (BinarySymbolicValue) result;
       assertThat(andSv.getRightOp()).isEqualTo(sv1);
       assertThat(andSv.getLeftOp()).isEqualTo(sv2);
-    }
-
-    for (int opcode : opcodes) {
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
-        .hasMessage("Bitwise instruction needs 2 values on stack");
     }
   }
 
   @Test
   public void test_or() throws Exception {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
     int[] opcodes = new int[] {Opcodes.IOR, Opcodes.LOR};
-    for (int opcode : opcodes) {
-      ProgramState programState = execute(new Instruction(opcode), initState);
-      ProgramState.Pop pop = programState.unstackValue(1);
-      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
-      SymbolicValue result = pop.values.get(0);
-      assertThat(result).isNotEqualTo(sv1);
-      assertThat(result).isNotEqualTo(sv2);
-      assertThat(result).isInstanceOf(SymbolicValue.OrSymbolicValue.class);
-      SymbolicValue.OrSymbolicValue orSv = (SymbolicValue.OrSymbolicValue) result;
-      assertThat(orSv.getRightOp()).isEqualTo(sv1);
-      assertThat(orSv.getLeftOp()).isEqualTo(sv2);
-    }
+    assertBinarySymbolicValue(opcodes, SymbolicValue.OrSymbolicValue.class);
 
-    for (int opcode : opcodes) {
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
-        .hasMessage("Bitwise instruction needs 2 values on stack");
-    }
+    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
   }
 
   @Test
   public void test_xor() throws Exception {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
     int[] opcodes = new int[] {Opcodes.IXOR, Opcodes.LXOR};
-    for (int opcode : opcodes) {
-      ProgramState programState = execute(new Instruction(opcode), initState);
-      ProgramState.Pop pop = programState.unstackValue(1);
-      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
-      SymbolicValue result = pop.values.get(0);
-      assertThat(result).isNotEqualTo(sv1);
-      assertThat(result).isNotEqualTo(sv2);
-      assertThat(result).isInstanceOf(SymbolicValue.XorSymbolicValue.class);
-      SymbolicValue.XorSymbolicValue xorSv = (SymbolicValue.XorSymbolicValue) result;
-      assertThat(xorSv.getRightOp()).isEqualTo(sv1);
-      assertThat(xorSv.getLeftOp()).isEqualTo(sv2);
-    }
+    assertBinarySymbolicValue(opcodes, SymbolicValue.XorSymbolicValue.class);
 
-    for (int opcode : opcodes) {
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv1)))
-        .hasMessage("Bitwise instruction needs 2 values on stack");
-    }
+    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
   }
 
   @Test
@@ -456,6 +403,28 @@ public class BytecodeEGWalkerExecuteTest {
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.IINC, 1), ProgramState.EMPTY_STATE))
       .hasMessage("Local variable 1 not found");
+  }
+
+  @Test
+  public void test_cmp() throws Exception {
+    int[] opcodes = new int[] {Opcodes.LCMP, Opcodes.FCMPG, Opcodes.FCMPL, Opcodes.DCMPG, Opcodes.FCMPL};
+    assertConsume2produceNotNull(opcodes);
+
+    assertThrowWhenInvalidStack(opcodes, "CMP needs 2 values on stack");
+  }
+
+  private void assertConsume2produceNotNull(int... opcodes) {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1);
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), initState);
+      ProgramState.Pop pop = programState.unstackValue(1);
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
+      SymbolicValue result = pop.values.get(0);
+      assertThat(result).isNotEqualTo(sv1);
+      assertThat(result).isNotEqualTo(sv2);
+    }
   }
 
   @Test
