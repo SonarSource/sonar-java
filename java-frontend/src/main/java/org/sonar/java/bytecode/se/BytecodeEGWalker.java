@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
@@ -177,9 +176,7 @@ public class BytecodeEGWalker {
         }
         break;
       case LDC:
-        sv = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(sv);
-        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+        createNonNullValue(instruction);
         break;
       case ARETURN:
       case IRETURN:
@@ -260,12 +257,23 @@ public class BytecodeEGWalker {
       case DUP2_X1:
         pop = programState.unstackValue(3);
         Preconditions.checkState(pop.values.size() == 3, "DUP2_X1 needs 3 values on stack");
-        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        programState = pop.state
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0))
+          .stackValue(pop.values.get(2))
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0));
         break;
       case DUP2_X2:
         pop = programState.unstackValue(4);
         Preconditions.checkState(pop.values.size() == 4, "DUP2_X2 needs 4 values on stack");
-        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(3)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        programState = pop.state
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0))
+          .stackValue(pop.values.get(3))
+          .stackValue(pop.values.get(2))
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0));
         break;
       case SWAP:
         pop = programState.unstackValue(2);
@@ -356,12 +364,9 @@ public class BytecodeEGWalker {
         Preconditions.checkState(pop.values.size() == 2, "CMP needs 2 values on stack");
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
-      case NEW: {
-        SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(symbolicValue);
-        programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
+      case NEW:
+        createNonNullValue(instruction);
         break;
-      }
       case INVOKESPECIAL:
       case INVOKESTATIC:
       case INVOKEVIRTUAL:
@@ -395,7 +400,6 @@ public class BytecodeEGWalker {
                 }));
             return;
           }
-
         }
         if (instruction.hasReturnValue()) {
           programState = pop.state;
@@ -407,6 +411,12 @@ public class BytecodeEGWalker {
         // do nothing
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
+  }
+
+  private void createNonNullValue(BytecodeCFGBuilder.Instruction instruction) {
+    SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
+    programState = programState.stackValue(sv);
+    programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
   private void handleArithmetic(BytecodeCFGBuilder.Instruction instruction) {
@@ -472,7 +482,6 @@ public class BytecodeEGWalker {
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
-      //  Table switch and lookup
       // TODO : filter some node of the EG depending of the exceptionType in the successor.
       programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
     }
