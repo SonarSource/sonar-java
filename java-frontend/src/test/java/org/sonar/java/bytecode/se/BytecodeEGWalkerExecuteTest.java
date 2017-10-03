@@ -70,15 +70,15 @@ public class BytecodeEGWalkerExecuteTest {
   @Test
   public void test_iconst() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.ICONST_0));
-    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE}});
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
 
     programState = execute(new Instruction(Opcodes.ICONST_1));
-    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE}});
+    assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, BooleanConstraint.TRUE, ObjectConstraint.NOT_NULL}});
 
     int[] opCodesConst = new int[] {Opcodes.ICONST_M1, Opcodes.ICONST_2, Opcodes.ICONST_3, Opcodes.ICONST_4, Opcodes.ICONST_5};
     for (int opcode : opCodesConst) {
       programState = execute(new Instruction(opcode));
-      assertStack(programState, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+      assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
     }
   }
 

@@ -47,31 +47,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.ICONST_0;
-import static org.objectweb.asm.Opcodes.ICONST_1;
-import static org.objectweb.asm.Opcodes.ICONST_2;
-import static org.objectweb.asm.Opcodes.ICONST_3;
-import static org.objectweb.asm.Opcodes.ICONST_4;
-import static org.objectweb.asm.Opcodes.ICONST_5;
-import static org.objectweb.asm.Opcodes.ICONST_M1;
-import static org.objectweb.asm.Opcodes.IFEQ;
-import static org.objectweb.asm.Opcodes.IFGE;
-import static org.objectweb.asm.Opcodes.IFGT;
-import static org.objectweb.asm.Opcodes.IFLE;
-import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.IFNE;
-import static org.objectweb.asm.Opcodes.IFNONNULL;
-import static org.objectweb.asm.Opcodes.IFNULL;
-import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ACMPNE;
-import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ICMPGE;
-import static org.objectweb.asm.Opcodes.IF_ICMPGT;
-import static org.objectweb.asm.Opcodes.IF_ICMPLE;
-import static org.objectweb.asm.Opcodes.IF_ICMPLT;
-import static org.objectweb.asm.Opcodes.IF_ICMPNE;
-import static org.objectweb.asm.Opcodes.JSR;
+import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeEGWalker {
 
@@ -157,79 +133,84 @@ public class BytecodeEGWalker {
       return;
     }
     ProgramState.Pop pop;
+    SymbolicValue sv;
     switch (instruction.opcode) {
-      case ICONST_0:
-        SymbolicValue svZero = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(svZero).addConstraint(svZero, DivisionByZeroCheck.ZeroConstraint.ZERO).addConstraint(svZero, BooleanConstraint.FALSE);
+      case NOP:
+        break;
+      case ACONST_NULL:
+        programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;
       case ICONST_M1:
+      case ICONST_0:
       case ICONST_1:
       case ICONST_2:
       case ICONST_3:
       case ICONST_4:
       case ICONST_5:
-        SymbolicValue svNonZero = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(svNonZero).addConstraint(svNonZero, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         if (instruction.opcode == ICONST_1) {
-          programState = programState.addConstraint(svNonZero, BooleanConstraint.TRUE);
+          programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
+        }
+        if (instruction.opcode == ICONST_0) {
+          programState = programState.addConstraint(sv, BooleanConstraint.FALSE).addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.ZERO);
+        } else {
+          programState = programState.addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
         }
         break;
-      case Opcodes.ARETURN:
-      case Opcodes.IRETURN:
+      case ARETURN:
+      case IRETURN:
         programState.storeExitValue();
         break;
-      case Opcodes.ATHROW:
+      case ATHROW:
         pop = programState.unstackValue(1);
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
         programState.storeExitValue();
         break;
-      case Opcodes.ACONST_NULL:
-        programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
-        break;
-      case Opcodes.ALOAD:
-      case Opcodes.DLOAD:
-      case Opcodes.FLOAD:
-      case Opcodes.ILOAD:
-      case Opcodes.LLOAD:
+      case ALOAD:
+      case DLOAD:
+      case FLOAD:
+      case ILOAD:
+      case LLOAD:
         SymbolicValue value = programState.getValue(instruction.operand);
         Preconditions.checkNotNull(value, "Loading a symbolic value unindexed");
         programState = programState.stackValue(value);
         break;
-      case Opcodes.AALOAD:
+      case AALOAD:
         break;
-      case Opcodes.BALOAD:
-      case Opcodes.CALOAD:
-      case Opcodes.DALOAD:
-      case Opcodes.FALOAD:
-      case Opcodes.IALOAD:
-      case Opcodes.LALOAD:
-      case Opcodes.SALOAD:
+      case BALOAD:
+      case CALOAD:
+      case DALOAD:
+      case FALOAD:
+      case IALOAD:
+      case LALOAD:
+      case SALOAD:
         break;
-      case Opcodes.ASTORE:
-      case Opcodes.DSTORE:
-      case Opcodes.FSTORE:
-      case Opcodes.ISTORE:
-      case Opcodes.LSTORE:
+      case ASTORE:
+      case DSTORE:
+      case FSTORE:
+      case ISTORE:
+      case LSTORE:
         pop = programState.unstackValue(1);
         programState = pop.state.put(instruction.operand, pop.values.get(0));
         break;
-      case Opcodes.LDC:
-      case Opcodes.NEW: {
+      case LDC:
+      case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
         programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
         break;
       }
-      case Opcodes.DUP: {
+      case DUP: {
         SymbolicValue symbolicValue = programState.peekValue();
         Preconditions.checkNotNull(symbolicValue, "DUP on empty stack");
         programState = programState.stackValue(symbolicValue);
         break;
       }
-      case Opcodes.INVOKESPECIAL:
-      case Opcodes.INVOKESTATIC:
-      case Opcodes.INVOKEVIRTUAL:
-      case Opcodes.INVOKEINTERFACE:
+      case INVOKESPECIAL:
+      case INVOKESTATIC:
+      case INVOKEVIRTUAL:
+      case INVOKEINTERFACE:
         boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
         int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
         pop = programState.unstackValue(arity);
