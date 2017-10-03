@@ -37,6 +37,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.extractProperty;
 import static org.mockito.ArgumentMatchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -183,6 +184,25 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
+  public void test_pop() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.POP), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2));
+    assertThat(programState.peekValue()).isEqualTo(sv1);
+    programState = execute(new Instruction(Opcodes.POP));
+    assertEmptyStack(programState);
+  }
+
+  @Test
+  public void test_pop2() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.POP2), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2).stackValue(sv3));
+    assertThat(programState.peekValue()).isEqualTo(sv1);
+  }
+
+  @Test
   public void test_new() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NEW));
     assertStack(programState, ObjectConstraint.NOT_NULL);
@@ -198,6 +218,89 @@ public class BytecodeEGWalkerExecuteTest {
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP)))
       .hasMessage("DUP on empty stack");
+  }
+
+  @Test
+  public void test_dup_x1() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP_X1), ProgramState.EMPTY_STATE.stackValue(sv3).stackValue(sv2).stackValue(sv1));
+    ProgramState.Pop pop = programState.unstackValue(4);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv1, sv3);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP_X1), ProgramState.EMPTY_STATE.stackValue(sv1)))
+      .hasMessage("DUP_X1 needs 2 values on stack");
+  }
+
+  @Test
+  public void test_dup_x2() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP_X2), ProgramState.EMPTY_STATE.stackValue(sv3).stackValue(sv2).stackValue(sv1));
+    ProgramState.Pop pop = programState.unstackValue(4);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv1);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP_X2), ProgramState.EMPTY_STATE.stackValue(sv1)))
+      .hasMessage("DUP_X2 needs 3 values on stack");
+  }
+
+  @Test
+  public void test_dup2() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2), ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1));
+    ProgramState.Pop pop = programState.unstackValue(4);
+    assertThat(pop.values).containsOnly(sv1, sv2, sv1, sv2);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2)))
+      .hasMessage("DUP2 needs 2 values on stack");
+  }
+
+  @Test
+  public void test_dup2_x1() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X1), ProgramState.EMPTY_STATE.stackValue(sv3).stackValue(sv2).stackValue(sv1));
+    ProgramState.Pop pop = programState.unstackValue(5);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv1, sv2);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2_X1), ProgramState.EMPTY_STATE.stackValue(sv1)))
+      .hasMessage("DUP2_X1 needs 3 values on stack");
+  }
+
+  @Test
+  public void test_swap() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.SWAP), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2));
+    ProgramState.Pop pop = programState.unstackValue(2);
+    assertThat(pop.values).containsExactly(sv1, sv2);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.SWAP), ProgramState.EMPTY_STATE.stackValue(sv1)))
+      .hasMessage("SWAP needs 2 values on stack");
+  }
+
+  @Test
+  public void test_dup2_x2() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    SymbolicValue sv4 = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X2), ProgramState.EMPTY_STATE.stackValue(sv4).stackValue(sv3).stackValue(sv2).stackValue(sv1));
+    ProgramState.Pop pop = programState.unstackValue(6);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv4, sv1, sv2);
+    assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2_X2), ProgramState.EMPTY_STATE.stackValue(sv1)))
+      .hasMessage("DUP2_X2 needs 4 values on stack");
   }
 
   @Test

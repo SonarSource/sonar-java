@@ -230,16 +230,51 @@ public class BytecodeEGWalker {
       case SASTORE:
         programState = programState.unstackValue(3).state;
         break;
+      case POP:
+        programState = programState.unstackValue(1).state;
+        break;
+      case POP2:
+        programState = programState.unstackValue(2).state;
+        break;
+      case DUP:
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "DUP on empty stack");
+        programState = programState.stackValue(sv);
+        break;
+      case DUP_X1:
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "DUP_X1 needs 2 values on stack");
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP_X2:
+        pop = programState.unstackValue(3);
+        Preconditions.checkState(pop.values.size() == 3, "DUP_X2 needs 3 values on stack");
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP2:
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "DUP2 needs 2 values on stack");
+        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP2_X1:
+        pop = programState.unstackValue(3);
+        Preconditions.checkState(pop.values.size() == 3, "DUP2_X1 needs 3 values on stack");
+        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP2_X2:
+        pop = programState.unstackValue(4);
+        Preconditions.checkState(pop.values.size() == 4, "DUP2_X2 needs 4 values on stack");
+        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(3)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case SWAP:
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "SWAP needs 2 values on stack");
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1));
+        break;
       case NEW: {
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
         programState = programState.stackValue(symbolicValue);
         programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
-        break;
-      }
-      case DUP: {
-        SymbolicValue symbolicValue = programState.peekValue();
-        Preconditions.checkNotNull(symbolicValue, "DUP on empty stack");
-        programState = programState.stackValue(symbolicValue);
         break;
       }
       case INVOKESPECIAL:
