@@ -66,10 +66,21 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_areturn() throws Exception {
+  public void test_xReturn() throws Exception {
     SymbolicValue returnValue = new SymbolicValue();
-    ProgramState programState = execute(new Instruction(Opcodes.ARETURN), ProgramState.EMPTY_STATE.stackValue(returnValue));
-    assertThat(programState.peekValue()).isEqualTo(returnValue);
+    int[] opcodes = {Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN};
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(returnValue));
+      assertThat(programState.peekValue()).isNull();
+      assertThat(programState.exitValue()).isEqualTo(returnValue);
+    }
+  }
+
+  @Test
+  public void test_return() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.RETURN), ProgramState.EMPTY_STATE);
+    assertThat(programState.peekValue()).isNull();
+    assertThat(programState.exitValue()).isNull();
   }
 
   @Test
@@ -584,6 +595,41 @@ public class BytecodeEGWalkerExecuteTest {
       assertThat(entry.successors().contains(node.programPoint.block)).isTrue();
     });
   }
+
+  @Test
+  public void test_getstatic() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.GETSTATIC));
+    assertThat(programState.peekValue()).isNotNull();
+  }
+
+  @Test
+  public void test_putstatic() throws Exception {
+    ProgramState programState = execute(new Instruction(Opcodes.PUTSTATIC), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+    assertThat(programState.peekValue()).isNull();
+  }
+
+  @Test
+  public void test_getfield() throws Exception {
+    SymbolicValue objectRef = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.GETFIELD), ProgramState.EMPTY_STATE.stackValue(objectRef));
+    SymbolicValue fieldValue = programState.peekValue();
+    assertThat(fieldValue).isNotNull();
+    assertThat(fieldValue).isNotEqualTo(objectRef);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.GETFIELD))).hasMessage("GETFIELD needs 1 value on stack");
+  }
+
+  @Test
+  public void test_putfield() throws Exception {
+    SymbolicValue objectRef = new SymbolicValue();
+    SymbolicValue value = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.PUTFIELD), ProgramState.EMPTY_STATE.stackValue(objectRef).stackValue(value));
+    assertThat(programState.peekValue()).isNull();
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.PUTFIELD), ProgramState.EMPTY_STATE.stackValue(value))).hasMessage("PUTFIELD needs 2 values on stack");
+  }
+
+
 
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));

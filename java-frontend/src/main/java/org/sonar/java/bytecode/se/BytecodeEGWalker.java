@@ -179,10 +179,6 @@ public class BytecodeEGWalker {
       case LDC:
         createNonNullValue(instruction);
         break;
-      case ARETURN:
-      case IRETURN:
-        programState.storeExitValue();
-        break;
       case ATHROW:
         pop = programState.unstackValue(1);
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
@@ -364,6 +360,35 @@ public class BytecodeEGWalker {
         pop = programState.unstackValue(2);
         Preconditions.checkState(pop.values.size() == 2, "CMP needs 2 values on stack");
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case IRETURN:
+      case LRETURN:
+      case FRETURN:
+      case DRETURN:
+      case ARETURN:
+        programState.storeExitValue();
+        programState = programState.unstackValue(1).state;
+        break;
+      case RETURN:
+        // do nothing
+        break;
+      case GETSTATIC:
+        // TODO SONARJAVA-2510 associated symbolic value with symbol
+        programState = programState.stackValue(constraintManager.createSymbolicValue(instruction));
+        break;
+      case PUTSTATIC:
+        pop = programState.unstackValue(1);
+        programState = pop.state;
+        break;
+      case GETFIELD:
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, "GETFIELD needs 1 value on stack");
+        programState = pop.state.stackValue(constraintManager.createSymbolicValue(instruction));
+        break;
+      case PUTFIELD:
+        pop = programState.unstackValue(2);
+        Preconditions.checkState(pop.values.size() == 2, "PUTFIELD needs 2 values on stack");
+        programState = pop.state;
         break;
       case NEW:
         createNonNullValue(instruction);
