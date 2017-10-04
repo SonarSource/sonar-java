@@ -179,11 +179,6 @@ public class BytecodeEGWalker {
       case LDC:
         createNonNullValue(instruction);
         break;
-      case ATHROW:
-        pop = programState.unstackValue(1);
-        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
-        programState.storeExitValue();
-        break;
       case ILOAD:
       case LLOAD:
       case FLOAD:
@@ -390,12 +385,9 @@ public class BytecodeEGWalker {
         Preconditions.checkState(pop.values.size() == 2, "PUTFIELD needs 2 values on stack");
         programState = pop.state;
         break;
-      case NEW:
-        createNonNullValue(instruction);
-        break;
+      case INVOKEVIRTUAL:
       case INVOKESPECIAL:
       case INVOKESTATIC:
-      case INVOKEVIRTUAL:
       case INVOKEINTERFACE:
         boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
         int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
@@ -432,6 +424,33 @@ public class BytecodeEGWalker {
         } else {
           programState = pop.state.stackValue(returnSV);
         }
+        break;
+      case INVOKEDYNAMIC:
+        // do nothing
+        break;
+      case NEW:
+        createNonNullValue(instruction);
+        break;
+      case NEWARRAY:
+      case ANEWARRAY:
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, "NEWARRAY needs 1 value on stack");
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case ARRAYLENGTH:
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, "ARRAYLENGTH needs 1 value on stack");
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case ATHROW:
+        pop = programState.unstackValue(1);
+        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
+        programState.storeExitValue();
+        break;
+      case CHECKCAST:
+        Preconditions.checkState(programState.peekValue() != null, "CHECKCAST needs 1 value on stack");
         break;
       default:
         // do nothing

@@ -629,7 +629,38 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.PUTFIELD), ProgramState.EMPTY_STATE.stackValue(value))).hasMessage("PUTFIELD needs 2 values on stack");
   }
 
+  @Test
+  public void test_newarray() throws Exception {
+    SymbolicValue size = new SymbolicValue();
+    int[] opcodes = {Opcodes.NEWARRAY, Opcodes.ANEWARRAY};
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(size));
+      assertThat(programState.peekValue()).isNotEqualTo(size);
+      assertStack(programState, ObjectConstraint.NOT_NULL);
 
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE)).hasMessage("NEWARRAY needs 1 value on stack");
+    }
+  }
+
+  @Test
+  public void test_arraylength() throws Exception {
+    SymbolicValue arrayRef = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE.stackValue(arrayRef));
+    SymbolicValue length = programState.peekValue();
+    assertStack(programState, ObjectConstraint.NOT_NULL);
+    assertThat(length).isNotEqualTo(arrayRef);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE)).hasMessage("ARRAYLENGTH needs 1 value on stack");
+  }
+
+  @Test
+  public void test_checkcast() throws Exception {
+    SymbolicValue objectRef = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.CHECKCAST), ProgramState.EMPTY_STATE.stackValue(objectRef));
+    assertThat(programState.peekValue()).isEqualTo(objectRef);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.CHECKCAST), ProgramState.EMPTY_STATE)).hasMessage("CHECKCAST needs 1 value on stack");
+  }
 
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
