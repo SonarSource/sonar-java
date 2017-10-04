@@ -93,7 +93,8 @@ public class BytecodeCFGBuilder {
   }
 
   public static class BytecodeCFG {
-    List<Block> blocks;
+    @VisibleForTesting
+    public List<Block> blocks;
     boolean isStaticMethod;
     boolean isVarArgs;
 

@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
@@ -426,7 +427,8 @@ public class BytecodeEGWalker {
     programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
-  private void handleBlockExit(ProgramPoint programPosition) {
+  @VisibleForTesting
+  void handleBlockExit(ProgramPoint programPosition) {
     BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
     BytecodeCFGBuilder.Instruction terminator = block.terminator();
     ProgramState.Pop pop;
@@ -472,8 +474,13 @@ public class BytecodeEGWalker {
           symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
           ps = pop.state;
           break;
+        case TABLESWITCH:
+        case LOOKUPSWITCH:
+          pop = programState.unstackValue(1);
+          programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), pop.state));
+          return;
         default:
-          throw new IllegalStateException("Unexpected terminator " + terminator.opcode);
+          throw new IllegalStateException("Unexpected terminator " + Printer.OPCODES[terminator.opcode]);
       }
       programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
       Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);

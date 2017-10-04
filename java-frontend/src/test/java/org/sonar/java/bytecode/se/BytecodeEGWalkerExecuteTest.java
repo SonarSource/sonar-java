@@ -20,9 +20,12 @@
 package org.sonar.java.bytecode.se;
 
 import org.junit.Test;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
+import org.sonar.java.bytecode.cfg.Instructions;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -40,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeEGWalkerExecuteTest {
 
@@ -504,6 +508,81 @@ public class BytecodeEGWalkerExecuteTest {
       ProgramState programState = execute(new Instruction(opcode, 67), startState);
       assertThat(programState.getValue(67)).isEqualTo(sv);
     }
+  }
+
+  @Test
+  public void test_tableswitch() throws Exception {
+    Instructions instr = new Instructions();
+    instr.visitVarInsn(ILOAD, 0);
+    Label l0 = new Label();
+    Label l1 = new Label();
+    Label l2 = new Label();
+    Label l3 = new Label();
+    instr.visitTableSwitchInsn(0, 2, l3, new Label[] { l0, l1, l2 });
+    instr.visitLabel(l0);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 1);
+    instr.visitJumpInsn(GOTO, l3);
+    instr.visitLabel(l1);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 2);
+    instr.visitJumpInsn(GOTO, l3);
+    instr.visitLabel(l2);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 3);
+    instr.visitLabel(l3);
+    instr.visitInsn(RETURN);
+    BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
+
+    CFG.IBlock<Instruction> entry = cfg.entry();
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
+    walker.handleBlockExit(new ProgramPoint(entry));
+
+    assertThat(walker.workList).hasSize(entry.successors().size());
+
+    walker.workList.forEach(node -> {
+      assertThat(node.programState.peekValue()).isNull();
+      assertThat(entry.successors().contains(node.programPoint.block)).isTrue();
+    });
+  }
+
+  @Test
+  public void test_lookupswitch() throws Exception {
+    Instructions instr = new Instructions();
+    instr.visitVarInsn(ILOAD, 0);
+    Label l0 = new Label();
+    Label l1 = new Label();
+    Label l2 = new Label();
+    Label l3 = new Label();
+    instr.visitLookupSwitchInsn(l3, new int[] { 0, 1, 2, 50 }, new Label[] { l0, l1, l2, l3 });
+    instr.visitLabel(l0);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 1);
+    instr.visitJumpInsn(GOTO, l3);
+    instr.visitLabel(l1);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 2);
+    instr.visitJumpInsn(GOTO, l3);
+    instr.visitLabel(l2);
+    instr.visitInsn(ICONST_0);
+    instr.visitVarInsn(ISTORE, 3);
+    instr.visitJumpInsn(GOTO, l3);
+    instr.visitLabel(l3);
+    instr.visitInsn(RETURN);
+    BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
+
+    CFG.IBlock<Instruction> entry = cfg.entry();
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
+    walker.handleBlockExit(new ProgramPoint(entry));
+
+    assertThat(walker.workList).hasSize(entry.successors().size());
+
+    walker.workList.forEach(node -> {
+      assertThat(node.programState.peekValue()).isNull();
+      assertThat(entry.successors().contains(node.programPoint.block)).isTrue();
+    });
   }
 
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
