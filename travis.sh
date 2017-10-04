@@ -17,16 +17,21 @@ case "$TEST" in
 
 CI)
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    strongEcho "Build and analyze commit in master"
     SONAR_PROJECT_VERSION=`maven_expression "project.version"`
 
     # Do not deploy a SNAPSHOT version but the release version related to this build
     . set_maven_build_version $TRAVIS_BUILD_NUMBER
     # integration of jacoco report is quite memory-consuming
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
-    git fetch --unshallow
-    mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B -e -V \
-       -Pcoverage-per-test,deploy-sonarsource,release \
+    git fetch --unshallow || true
+
+    strongEcho "Build commit in master"
+    mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy -B -e -V \
+       -Pcoverage-per-test,deploy-sonarsource,release
+
+    strongEcho "Analyze commit in master"
+    # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
+    mvn sonar:sonar -B -e -V \
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
        -Dsonar.login=$SONAR_TOKEN
@@ -64,11 +69,16 @@ CI)
     SONAR_PROJECT_VERSION=`maven_expression "project.version"`
 
     if [ -n "${GITHUB_TOKEN-}" ]; then
-      strongEcho "SonarSource pull request"
+      strongEcho "Build SonarSource pull request"
+
       # Do not deploy a SNAPSHOT version but the release version related to this build
       . set_maven_build_version $TRAVIS_BUILD_NUMBER
-      mvn deploy sonar:sonar -B -e -V \
-          -Pdeploy-sonarsource \
+      mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy -B -e -V \
+          -Pcoverage-per-test,deploy-sonarsource
+
+      strongEcho "Github analysis"
+      # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
+      mvn sonar:sonar -B -e -V \
           -Dsonar.analysis.mode=issues \
           -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
           -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
@@ -77,6 +87,7 @@ CI)
           -Dsonar.login=$SONAR_TOKEN
 
       if [ "$TRAVIS_BRANCH" == "master" ]; then
+        strongEcho "Branch analysis"
         # analysis of short-living branch directly on master
         mvn sonar:sonar -B -e -V \
             -Dsonar.host.url=$SONAR_HOST_URL \
