@@ -465,6 +465,13 @@ public class BytecodeEGWalker {
         Preconditions.checkState(pop.values.size() == 1, Printer.OPCODES[instruction.opcode] + " needs 1 value on stack");
         programState = pop.state;
         break;
+      case MULTIANEWARRAY:
+        BytecodeCFGBuilder.MultiANewArrayInsn multiANewArrayInsn = (BytecodeCFGBuilder.MultiANewArrayInsn) instruction;
+        pop = programState.unstackValue(multiANewArrayInsn.dim);
+        Preconditions.checkState(pop.values.size() == multiANewArrayInsn.dim, "MULTIANEWARRAY needs " + multiANewArrayInsn.dim + " values on stack");
+        SymbolicValue arrayRef = new SymbolicValue();
+        programState = pop.state.stackValue(arrayRef).addConstraint(arrayRef, ObjectConstraint.NOT_NULL);
+        break;
       default:
         // do nothing
     }

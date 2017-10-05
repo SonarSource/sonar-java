@@ -115,7 +115,7 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), null});
     testData.add(new Object[] {new TestInput(TABLESWITCH), null});
     testData.add(new Object[] {new TestInput(LOOKUPSWITCH), null});
-    testData.add(new Object[] {new TestInput(MULTIANEWARRAY), null});
+    testData.add(new Object[] {new TestInput(MULTIANEWARRAY), new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2)});
 
     return testData.build();
   }

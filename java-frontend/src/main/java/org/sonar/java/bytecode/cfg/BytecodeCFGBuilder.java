@@ -137,6 +137,10 @@ public class BytecodeCFGBuilder {
       successors = new ArrayList<>();
     }
 
+    void addInsn(Instruction insn) {
+      instructions.add(insn);
+    }
+
     void addInsn(int opcode) {
       instructions.add(new Instruction(opcode));
     }
@@ -292,7 +296,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitMultiANewArrayInsn(String desc, int dims) {
-      currentBlock.addInsn(Opcodes.MULTIANEWARRAY);
+      currentBlock.addInsn(new MultiANewArrayInsn(desc, dims));
     }
 
     @Override
@@ -517,5 +521,16 @@ public class BytecodeCFGBuilder {
         return Type.getObjectType(owner).getClassName() + "#" + name + desc;
       }
     }
+  }
+
+  public static class MultiANewArrayInsn extends Instruction {
+
+    public final int dim;
+
+    public MultiANewArrayInsn(String className, int dim) {
+      super(Opcodes.MULTIANEWARRAY, className);
+      this.dim = dim;
+    }
+
   }
 }

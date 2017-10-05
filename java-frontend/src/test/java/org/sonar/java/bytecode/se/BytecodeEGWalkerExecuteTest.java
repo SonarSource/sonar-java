@@ -686,6 +686,18 @@ public class BytecodeEGWalkerExecuteTest {
     }
   }
 
+  @Test
+  public void test_multianewarray() throws Exception {
+    ProgramState programState = execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 1), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+    assertStack(programState, ObjectConstraint.NOT_NULL);
+    programState = execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2), ProgramState.EMPTY_STATE
+      .stackValue(new SymbolicValue())
+      .stackValue(new SymbolicValue()));
+    assertStack(programState, ObjectConstraint.NOT_NULL);
+
+    assertThatThrownBy(() -> execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2))).hasMessage("MULTIANEWARRAY needs 2 values on stack");
+  }
+
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
