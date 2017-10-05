@@ -452,6 +452,13 @@ public class BytecodeEGWalker {
       case CHECKCAST:
         Preconditions.checkState(programState.peekValue() != null, "CHECKCAST needs 1 value on stack");
         break;
+      case INSTANCEOF:
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, "INSTANCEOF needs 1 value on stack");
+        SymbolicValue.InstanceOfSymbolicValue instanceOf = new SymbolicValue.InstanceOfSymbolicValue();
+        instanceOf.computedFrom(pop.valuesAndSymbols);
+        programState = pop.state.stackValue(instanceOf);
+        break;
       default:
         // do nothing
     }

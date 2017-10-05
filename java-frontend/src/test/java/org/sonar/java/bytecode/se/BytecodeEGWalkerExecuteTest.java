@@ -662,6 +662,17 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.CHECKCAST), ProgramState.EMPTY_STATE)).hasMessage("CHECKCAST needs 1 value on stack");
   }
 
+  @Test
+  public void test_instanceof() throws Exception {
+    SymbolicValue sv = new SymbolicValue();
+    ProgramState programState = execute(new Instruction(Opcodes.INSTANCEOF), ProgramState.EMPTY_STATE.stackValue(sv));
+    SymbolicValue result = programState.peekValue();
+    assertThat(result).isInstanceOf(SymbolicValue.InstanceOfSymbolicValue.class);
+    assertThat(result.computedFrom().get(0)).isEqualTo(sv);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.INSTANCEOF))).hasMessage("INSTANCEOF needs 1 value on stack");
+  }
+
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
