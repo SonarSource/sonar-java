@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S2160")
 public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
@@ -54,16 +55,11 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean shouldImplementEquals(ClassTree classTree) {
-    return hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree);
+    return hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsNonFinalEquals(classTree);
   }
 
   private static boolean hasAtLeastOneField(ClassTree classTree) {
-    for (Tree member : classTree.members()) {
-      if (isField(member)) {
-        return true;
-      }
-    }
-    return false;
+    return classTree.members().stream().anyMatch(EqualsNotOverriddenInSubclassCheck::isField);
   }
 
   private static boolean isField(Tree tree) {
@@ -71,17 +67,19 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean implementsEquals(ClassTree classTree) {
-    return hasNotFinalEqualsMethod(classTree.symbol());
+    return findEqualsMethod(classTree.symbol()).isPresent();
   }
 
-  private static boolean parentClassImplementsEquals(ClassTree tree) {
+  private static boolean parentClassImplementsNonFinalEquals(ClassTree tree) {
     TypeTree superClass = tree.superClass();
     if (superClass != null) {
       Type superClassType = superClass.symbolType();
       while (superClassType.symbol().isTypeSymbol() && !superClassType.is("java.lang.Object")) {
         Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
-        if (hasNotFinalEqualsMethod(superClassSymbol)) {
-          return true;
+
+        Optional<Symbol> equalsSymbol = findEqualsMethod(superClassSymbol);
+        if(equalsSymbol.isPresent()) {
+          return !equalsSymbol.get().isFinal();
         }
         superClassType = superClassSymbol.superClass();
       }
@@ -89,7 +87,7 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
     return false;
   }
 
-  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
-    return superClassSymbol.lookupSymbols("equals").stream().anyMatch(symbol -> EQUALS_MATCHER.matches(symbol) && !symbol.isFinal());
+  private static Optional<Symbol> findEqualsMethod(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.lookupSymbols("equals").stream().filter(EQUALS_MATCHER::matches).findFirst();
   }
 }
