@@ -473,7 +473,7 @@ public class BytecodeEGWalker {
         programState = pop.state.stackValue(arrayRef).addConstraint(arrayRef, ObjectConstraint.NOT_NULL);
         break;
       default:
-        // do nothing
+        throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
   }
