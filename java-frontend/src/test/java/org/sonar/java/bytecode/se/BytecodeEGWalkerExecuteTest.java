@@ -24,7 +24,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.ProgramPoint;
@@ -688,17 +688,17 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_multianewarray() throws Exception {
-    ProgramState programState = execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 1), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+    ProgramState programState = execute(new Instruction.MultiANewArrayInsn("B", 1), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
     assertStack(programState, ObjectConstraint.NOT_NULL);
-    programState = execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2), ProgramState.EMPTY_STATE
+    programState = execute(new Instruction.MultiANewArrayInsn("B", 2), ProgramState.EMPTY_STATE
       .stackValue(new SymbolicValue())
       .stackValue(new SymbolicValue()));
     assertStack(programState, ObjectConstraint.NOT_NULL);
 
-    assertThatThrownBy(() -> execute(new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2))).hasMessage("MULTIANEWARRAY needs 2 values on stack");
+    assertThatThrownBy(() -> execute(new Instruction.MultiANewArrayInsn("B", 2))).hasMessage("MULTIANEWARRAY needs 2 values on stack");
   }
 
-  private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {
+  private Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
 
@@ -707,7 +707,7 @@ public class BytecodeEGWalkerExecuteTest {
     return constraints != null && constraints.get(constraint.getClass()) == constraint;
   }
 
-  private BytecodeCFGBuilder.Instruction invokeStatic(String desc) {
+  private Instruction invokeStatic(String desc) {
     return new Instruction(Opcodes.INVOKESTATIC, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
 

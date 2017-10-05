@@ -28,7 +28,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction.FieldOrMethod;
+import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +50,7 @@ public class BytecodeCFGConstructionTest {
     // Instructions without operand
     testData.addAll(
       Instructions.NO_OPERAND_INSN.stream()
-        .map(opcode -> new Object[] {new TestInput(opcode), new BytecodeCFGBuilder.Instruction(opcode)})
+        .map(opcode -> new Object[] {new TestInput(opcode), new Instruction(opcode)})
         .collect(Collectors.toList()));
 
     // Instructions with int operand
@@ -115,7 +115,7 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), null});
     testData.add(new Object[] {new TestInput(TABLESWITCH), null});
     testData.add(new Object[] {new TestInput(LOOKUPSWITCH), null});
-    testData.add(new Object[] {new TestInput(MULTIANEWARRAY), new BytecodeCFGBuilder.MultiANewArrayInsn("B", 2)});
+    testData.add(new Object[] {new TestInput(MULTIANEWARRAY), new Instruction.MultiANewArrayInsn("B", 2)});
 
     return testData.build();
   }
@@ -124,20 +124,20 @@ public class BytecodeCFGConstructionTest {
     return new TestInput(opcode, operand);
   }
 
-  private static BytecodeCFGBuilder.Instruction inst(int opcode) {
-    return new BytecodeCFGBuilder.Instruction(opcode);
+  private static Instruction inst(int opcode) {
+    return new Instruction(opcode);
   }
 
-  private static BytecodeCFGBuilder.Instruction inst(int opcode, int operand) {
-    return new BytecodeCFGBuilder.Instruction(opcode, operand);
+  private static Instruction inst(int opcode, int operand) {
+    return new Instruction(opcode, operand);
   }
 
-  private static BytecodeCFGBuilder.Instruction inst(int opcode, String type) {
-    return new BytecodeCFGBuilder.Instruction(opcode, type);
+  private static Instruction inst(int opcode, String type) {
+    return new Instruction(opcode, type);
   }
 
-  private static BytecodeCFGBuilder.Instruction inst(int opcode, String owner, String name, String desc, boolean itf) {
-    return new BytecodeCFGBuilder.Instruction(opcode, new FieldOrMethod(owner, name, desc, itf));
+  private static Instruction inst(int opcode, String owner, String name, String desc, boolean itf) {
+    return new Instruction(opcode, new FieldOrMethod(owner, name, desc, itf));
   }
 
   static class TestInput {
@@ -176,7 +176,7 @@ public class BytecodeCFGConstructionTest {
   }
 
   private TestInput testInput;
-  private BytecodeCFGBuilder.Instruction expected;
+  private Instruction expected;
 
   @BeforeClass
   public static void verifyTestData() {
@@ -184,7 +184,7 @@ public class BytecodeCFGConstructionTest {
     assertThat(opcodes).containsAll(Instructions.ASM_OPCODES);
   }
 
-  public BytecodeCFGConstructionTest(TestInput testInput, BytecodeCFGBuilder.Instruction expected) {
+  public BytecodeCFGConstructionTest(TestInput testInput, Instruction expected) {
     this.testInput = testInput;
     this.expected = expected;
   }
@@ -200,7 +200,7 @@ public class BytecodeCFGConstructionTest {
     if(expected == null) {
       expected = inst(testInput.opcode);
     }
-    BytecodeCFGBuilder.Instruction actual = cfg.blocks.get(1).instructions.get(0);
+    Instruction actual = cfg.blocks.get(1).instructions.get(0);
     assertThat(isEquivalentInstruction(actual, expected)).isTrue();
   }
 
@@ -208,7 +208,7 @@ public class BytecodeCFGConstructionTest {
     return Opcodes.IFEQ <= opcode && opcode <= LOOKUPSWITCH && opcode != RET || opcode==IFNULL || opcode==IFNONNULL;
   }
 
-  private static boolean isEquivalentInstruction(BytecodeCFGBuilder.Instruction i1, BytecodeCFGBuilder.Instruction i2) {
+  private static boolean isEquivalentInstruction(Instruction i1, Instruction i2) {
     return i1.opcode == i2.opcode
       && Objects.equals(i1.operand, i2.operand)
       && Objects.equals(i1.className, i2.className)

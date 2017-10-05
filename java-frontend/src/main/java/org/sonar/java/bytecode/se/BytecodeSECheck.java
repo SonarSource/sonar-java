@@ -20,25 +20,25 @@
 package org.sonar.java.bytecode.se;
 
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 public interface BytecodeSECheck {
 
-  default ProgramState checkPreStatement(CheckerDispatcher dispatcher, BytecodeCFGBuilder.Instruction inst) {
+  default ProgramState checkPreStatement(CheckerDispatcher dispatcher, Instruction inst) {
     return dispatcher.getState();
   }
 
-  default ProgramState checkPostStatement(CheckerDispatcher dispatcher, BytecodeCFGBuilder.Instruction inst) {
+  default ProgramState checkPostStatement(CheckerDispatcher dispatcher, Instruction inst) {
     return dispatcher.getState();
   }
 
   class NullnessCheck implements BytecodeSECheck {
 
     @Override
-    public ProgramState checkPreStatement(CheckerDispatcher dispatcher, BytecodeCFGBuilder.Instruction inst) {
+    public ProgramState checkPreStatement(CheckerDispatcher dispatcher, Instruction inst) {
       ProgramState state = dispatcher.getState();
       if (isInvokeOnObjectRef(inst)) {
         SymbolicValue objectRef = state.peekValue(inst.arity());
@@ -57,7 +57,7 @@ public interface BytecodeSECheck {
       return state;
     }
 
-    private static boolean isInvokeOnObjectRef(BytecodeCFGBuilder.Instruction inst) {
+    private static boolean isInvokeOnObjectRef(Instruction inst) {
       return inst.opcode == Opcodes.INVOKEINTERFACE || inst.opcode == Opcodes.INVOKESPECIAL || inst.opcode == Opcodes.INVOKEVIRTUAL;
     }
   }

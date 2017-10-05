@@ -167,7 +167,7 @@ public class BytecodeCFGBuilderTest {
     return bytecodeCFG.blocks.stream()
           .flatMap(block -> Stream.concat(block.instructions.stream(), Stream.of(block.terminator)))
           .filter(Objects::nonNull)
-          .map(BytecodeCFGBuilder.Instruction::opcode)
+          .map(Instruction::opcode)
           .map(opcode -> Printer.OPCODES[opcode])
           .collect(Collectors.toCollection(HashMultiset::create));
   }

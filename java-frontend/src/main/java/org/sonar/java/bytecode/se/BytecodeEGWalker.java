@@ -26,6 +26,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Pair;
@@ -112,7 +113,7 @@ public class BytecodeEGWalker {
 
       if (programPosition.i < programPosition.block.elements().size()) {
         // process block element
-        executeInstruction((BytecodeCFGBuilder.Instruction) programPosition.block.elements().get(programPosition.i));
+        executeInstruction((Instruction) programPosition.block.elements().get(programPosition.i));
       } else {
         // process block exit, which is unconditional jump such as goto-statement or return-statement
         handleBlockExit(programPosition);
@@ -129,7 +130,7 @@ public class BytecodeEGWalker {
   }
 
   @VisibleForTesting
-  void executeInstruction(BytecodeCFGBuilder.Instruction instruction) {
+  void executeInstruction(Instruction instruction) {
     if(!checkerDispatcher.executeCheckPreStatement(instruction)) {
       return;
     }
@@ -466,7 +467,7 @@ public class BytecodeEGWalker {
         programState = pop.state;
         break;
       case MULTIANEWARRAY:
-        BytecodeCFGBuilder.MultiANewArrayInsn multiANewArrayInsn = (BytecodeCFGBuilder.MultiANewArrayInsn) instruction;
+        Instruction.MultiANewArrayInsn multiANewArrayInsn = (Instruction.MultiANewArrayInsn) instruction;
         pop = programState.unstackValue(multiANewArrayInsn.dim);
         Preconditions.checkState(pop.values.size() == multiANewArrayInsn.dim, "MULTIANEWARRAY needs " + multiANewArrayInsn.dim + " values on stack");
         SymbolicValue arrayRef = new SymbolicValue();
@@ -478,13 +479,13 @@ public class BytecodeEGWalker {
     checkerDispatcher.executeCheckPostStatement(instruction);
   }
 
-  private void createNonNullValue(BytecodeCFGBuilder.Instruction instruction) {
+  private void createNonNullValue(Instruction instruction) {
     SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
     programState = programState.stackValue(sv);
     programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
-  private void handleArithmetic(BytecodeCFGBuilder.Instruction instruction) {
+  private void handleArithmetic(Instruction instruction) {
     SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
     ProgramState.Pop pop = programState.unstackValue(2);
     Preconditions.checkState(pop.values.size() == 2, "Arithmetic instruction needs 2 values on stack");
@@ -494,7 +495,7 @@ public class BytecodeEGWalker {
   @VisibleForTesting
   void handleBlockExit(ProgramPoint programPosition) {
     BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
-    BytecodeCFGBuilder.Instruction terminator = block.terminator();
+    Instruction terminator = block.terminator();
     ProgramState.Pop pop;
     ProgramState ps;
     List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
@@ -569,14 +570,14 @@ public class BytecodeEGWalker {
     ProgramState state = currentState;
     if(!methodBehavior.isStaticMethod()) {
       // Add a sv for "this"
-      SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(thisSV);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
       parameterIdx = 1;
     }
     Type[] argumentTypes = Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
     for (Type argumentType: argumentTypes) {
-      SymbolicValue sv = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      SymbolicValue sv = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(sv);
       state = state.put(parameterIdx, sv);
       parameterIdx += argumentType.getSize();

@@ -29,7 +29,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction.FieldOrMethod;
+import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 import org.sonar.java.resolve.JavaSymbol;
 
 import javax.annotation.Nullable;

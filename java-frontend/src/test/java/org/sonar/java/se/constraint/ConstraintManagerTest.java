@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -99,7 +99,7 @@ public class ConstraintManagerTest {
   private static SymbolicValue createBinarySV(int opcode, SymbolicValue sv1, SymbolicValue sv2) {
     ConstraintManager constraintManager = new ConstraintManager();
     List<ProgramState.SymbolicValueSymbol> computedFrom = Arrays.asList(new ProgramState.SymbolicValueSymbol(sv1, null), new ProgramState.SymbolicValueSymbol(sv2, null));
-    BytecodeCFGBuilder.Instruction inst = new BytecodeCFGBuilder.Instruction(opcode);
+    Instruction inst = new Instruction(opcode);
     return constraintManager.createBinarySymbolicValue(inst, computedFrom);
   }
 
