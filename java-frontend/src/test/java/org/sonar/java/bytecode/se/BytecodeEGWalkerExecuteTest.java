@@ -22,6 +22,7 @@ package org.sonar.java.bytecode.se;
 import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
@@ -671,6 +672,18 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(result.computedFrom().get(0)).isEqualTo(sv);
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.INSTANCEOF))).hasMessage("INSTANCEOF needs 1 value on stack");
+  }
+
+  @Test
+  public void test_monitor_enter_exit() throws Exception {
+    int opcodes[] = {Opcodes.MONITORENTER, Opcodes.MONITOREXIT};
+
+    for (int opcode : opcodes) {
+      ProgramState programState = execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+      assertEmptyStack(programState);
+
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs 1 value on stack");
+    }
   }
 
   private BytecodeCFGBuilder.Instruction invokeMethod(int opcode, String desc) {

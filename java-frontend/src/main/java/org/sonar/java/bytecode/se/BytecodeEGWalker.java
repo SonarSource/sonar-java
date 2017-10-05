@@ -459,6 +459,12 @@ public class BytecodeEGWalker {
         instanceOf.computedFrom(pop.valuesAndSymbols);
         programState = pop.state.stackValue(instanceOf);
         break;
+      case MONITORENTER:
+      case MONITOREXIT:
+        pop = programState.unstackValue(1);
+        Preconditions.checkState(pop.values.size() == 1, Printer.OPCODES[instruction.opcode] + " needs 1 value on stack");
+        programState = pop.state;
+        break;
       default:
         // do nothing
     }
