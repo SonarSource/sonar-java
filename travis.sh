@@ -23,7 +23,7 @@ CI)
     . set_maven_build_version $TRAVIS_BUILD_NUMBER
     # integration of jacoco report is quite memory-consuming
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
-    git fetch --unshallow || true
+    git fetch --unshallow
 
     strongEcho "Build commit in master"
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy -B -e -V \
