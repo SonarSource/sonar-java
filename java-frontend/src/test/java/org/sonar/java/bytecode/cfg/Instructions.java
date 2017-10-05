@@ -238,7 +238,7 @@ public class Instructions {
         }
           break;
         case MULTIANEWARRAY:
-          visitMultiANewArrayInsn("B", 1);
+          visitMultiANewArrayInsn("B", 2);
           break;
         default:
           throw new IllegalStateException("unknown opcode " + opcode);

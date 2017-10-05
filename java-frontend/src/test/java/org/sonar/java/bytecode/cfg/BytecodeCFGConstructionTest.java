@@ -201,18 +201,11 @@ public class BytecodeCFGConstructionTest {
       expected = inst(testInput.opcode);
     }
     Instruction actual = cfg.blocks.get(1).instructions.get(0);
-    assertThat(isEquivalentInstruction(actual, expected)).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
   private static boolean isJumpInstruction(int opcode) {
     return Opcodes.IFEQ <= opcode && opcode <= LOOKUPSWITCH && opcode != RET || opcode==IFNULL || opcode==IFNONNULL;
-  }
-
-  private static boolean isEquivalentInstruction(Instruction i1, Instruction i2) {
-    return i1.opcode == i2.opcode
-      && Objects.equals(i1.operand, i2.operand)
-      && Objects.equals(i1.className, i2.className)
-      && Objects.equals(i1.fieldOrMethod, i2.fieldOrMethod);
   }
 
   private void test_jumps() {

@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Printer;
 
 import java.util.Objects;
 
@@ -81,6 +82,31 @@ public class Instruction {
     return Type.getMethodType(fieldOrMethod.desc).getReturnType() == Type.VOID_TYPE;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Instruction that = (Instruction) o;
+    return opcode == that.opcode &&
+      Objects.equals(operand, that.operand) &&
+      Objects.equals(className, that.className) &&
+      Objects.equals(fieldOrMethod, that.fieldOrMethod);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(opcode, operand, className, fieldOrMethod);
+  }
+
+  @Override
+  public String toString() {
+    return Printer.OPCODES[opcode];
+  }
+
   public static class FieldOrMethod {
     public final String owner;
     public final String name;
@@ -128,5 +154,24 @@ public class Instruction {
       this.dim = dim;
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      MultiANewArrayInsn that = (MultiANewArrayInsn) o;
+      return dim == that.dim;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), dim);
+    }
   }
 }
