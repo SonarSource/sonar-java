@@ -26,8 +26,11 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class JavaParser extends ActionParser<Tree> {
+  private Deque<JavaTree> parentList = new LinkedList<>();
 
   private JavaParser(LexerlessGrammarBuilder grammarBuilder, Class<JavaGrammar> javaGrammarClass,
     TreeFactory treeFactory, JavaNodeBuilder javaNodeBuilder, JavaLexer compilationUnit) {
@@ -52,16 +55,20 @@ public class JavaParser extends ActionParser<Tree> {
     return createParentLink((JavaTree) super.parse(source));
   }
 
-  private static Tree createParentLink(JavaTree parent) {
-    if (!parent.isLeaf()) {
-      for (Tree nextTree : parent.getChildren()) {
-        JavaTree next = (JavaTree) nextTree;
-        if (next != null) {
-          next.setParent(parent);
-          createParentLink(next);
+  private Tree createParentLink(JavaTree topParent) {
+    parentList.push(topParent);
+    while (!parentList.isEmpty()) {
+      JavaTree parent = parentList.pop();
+      if (!parent.isLeaf()) {
+        for (Tree nextTree : parent.getChildren()) {
+          JavaTree next = (JavaTree) nextTree;
+          if (next != null) {
+            next.setParent(parent);
+            parentList.push(next);
+          }
         }
       }
     }
-    return parent;
+    return topParent;
   }
 }

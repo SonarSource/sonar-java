@@ -21,6 +21,7 @@ package org.sonar.java.se.checks;
 
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -47,6 +48,11 @@ public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(ListTree<? extends Tree> listTree) {
     // Cut recursive processing
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    // as this specific call does not use scan : cut recursive processing
   }
 }
 
