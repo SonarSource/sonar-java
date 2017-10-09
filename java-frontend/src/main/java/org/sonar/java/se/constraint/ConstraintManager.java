@@ -22,7 +22,7 @@ package org.sonar.java.se.constraint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -194,9 +194,24 @@ public class ConstraintManager {
     return new Pair<>(falseConstraint, trueConstraint);
   }
 
-  public SymbolicValue createBinarySymbolicValue(BytecodeCFGBuilder.Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
+  public SymbolicValue createBinarySymbolicValue(Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     SymbolicValue result;
     switch (inst.opcode) {
+      case IAND:
+      case LAND:
+        result = new SymbolicValue.AndSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
+      case IOR:
+      case LOR:
+        result = new SymbolicValue.OrSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
+      case IXOR:
+      case LXOR:
+        result = new SymbolicValue.XorSymbolicValue();
+        result.computedFrom(computedFrom);
+        break;
       case IF_ICMPEQ:
       case IF_ACMPEQ:
       case IFEQ:
@@ -231,7 +246,7 @@ public class ConstraintManager {
     return result;
   }
 
-  public SymbolicValue createSymbolicValue(BytecodeCFGBuilder.Instruction inst) {
+  public SymbolicValue createSymbolicValue(Instruction inst) {
     return createDefaultSymbolicValue();
   }
 }

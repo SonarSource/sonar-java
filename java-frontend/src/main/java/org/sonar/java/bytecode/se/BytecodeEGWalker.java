@@ -24,7 +24,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Pair;
@@ -47,31 +49,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.ICONST_0;
-import static org.objectweb.asm.Opcodes.ICONST_1;
-import static org.objectweb.asm.Opcodes.ICONST_2;
-import static org.objectweb.asm.Opcodes.ICONST_3;
-import static org.objectweb.asm.Opcodes.ICONST_4;
-import static org.objectweb.asm.Opcodes.ICONST_5;
-import static org.objectweb.asm.Opcodes.ICONST_M1;
-import static org.objectweb.asm.Opcodes.IFEQ;
-import static org.objectweb.asm.Opcodes.IFGE;
-import static org.objectweb.asm.Opcodes.IFGT;
-import static org.objectweb.asm.Opcodes.IFLE;
-import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.IFNE;
-import static org.objectweb.asm.Opcodes.IFNONNULL;
-import static org.objectweb.asm.Opcodes.IFNULL;
-import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ACMPNE;
-import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ICMPGE;
-import static org.objectweb.asm.Opcodes.IF_ICMPGT;
-import static org.objectweb.asm.Opcodes.IF_ICMPLE;
-import static org.objectweb.asm.Opcodes.IF_ICMPLT;
-import static org.objectweb.asm.Opcodes.IF_ICMPNE;
-import static org.objectweb.asm.Opcodes.JSR;
+import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeEGWalker {
 
@@ -135,7 +113,7 @@ public class BytecodeEGWalker {
 
       if (programPosition.i < programPosition.block.elements().size()) {
         // process block element
-        executeInstruction((BytecodeCFGBuilder.Instruction) programPosition.block.elements().get(programPosition.i));
+        executeInstruction((Instruction) programPosition.block.elements().get(programPosition.i));
       } else {
         // process block exit, which is unconditional jump such as goto-statement or return-statement
         handleBlockExit(programPosition);
@@ -152,130 +130,358 @@ public class BytecodeEGWalker {
   }
 
   @VisibleForTesting
-  void executeInstruction(BytecodeCFGBuilder.Instruction instruction) {
+  void executeInstruction(Instruction instruction) {
     if(!checkerDispatcher.executeCheckPreStatement(instruction)) {
       return;
     }
     ProgramState.Pop pop;
+    SymbolicValue sv;
     switch (instruction.opcode) {
-      case ICONST_0:
-        SymbolicValue svZero = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(svZero).addConstraint(svZero, DivisionByZeroCheck.ZeroConstraint.ZERO).addConstraint(svZero, BooleanConstraint.FALSE);
+      case NOP:
+        break;
+      case ACONST_NULL:
+        programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;
       case ICONST_M1:
+      case ICONST_0:
       case ICONST_1:
       case ICONST_2:
       case ICONST_3:
       case ICONST_4:
       case ICONST_5:
-        SymbolicValue svNonZero = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(svNonZero).addConstraint(svNonZero, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
-        if (instruction.opcode == ICONST_1) {
-          programState = programState.addConstraint(svNonZero, BooleanConstraint.TRUE);
+      case LCONST_0:
+      case LCONST_1:
+      case FCONST_0:
+      case FCONST_1:
+      case FCONST_2:
+      case DCONST_0:
+      case DCONST_1:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        if (instruction.opcode == ICONST_1 || instruction.opcode == LCONST_1 || instruction.opcode == FCONST_1 || instruction.opcode == DCONST_1) {
+          programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
+        }
+        if (instruction.opcode == ICONST_0 || instruction.opcode == LCONST_0 || instruction.opcode == FCONST_0  || instruction.opcode == DCONST_0  ) {
+          programState = programState.addConstraint(sv, BooleanConstraint.FALSE).addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.ZERO);
+        } else {
+          programState = programState.addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
         }
         break;
-      case Opcodes.ARETURN:
-      case Opcodes.IRETURN:
-        programState.storeExitValue();
+      case BIPUSH:
+      case SIPUSH:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL).addConstraint(sv,DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+        if(instruction.operand == 0) {
+          programState = programState.addConstraint(sv, BooleanConstraint.FALSE).addConstraint(sv, DivisionByZeroCheck.ZeroConstraint.ZERO);
+        } else if (instruction.operand == 1) {
+          programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
+        }
         break;
-      case Opcodes.ATHROW:
-        pop = programState.unstackValue(1);
-        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
-        programState.storeExitValue();
+      case LDC:
+        createNonNullValue(instruction);
         break;
-      case Opcodes.ACONST_NULL:
-        programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
-        break;
-      case Opcodes.ALOAD:
-      case Opcodes.DLOAD:
-      case Opcodes.FLOAD:
-      case Opcodes.ILOAD:
-      case Opcodes.LLOAD:
+      case ILOAD:
+      case LLOAD:
+      case FLOAD:
+      case DLOAD:
+      case ALOAD:
         SymbolicValue value = programState.getValue(instruction.operand);
         Preconditions.checkNotNull(value, "Loading a symbolic value unindexed");
         programState = programState.stackValue(value);
         break;
-      case Opcodes.AALOAD:
+      case IALOAD:
+      case LALOAD:
+      case FALOAD:
+      case DALOAD:
+      case AALOAD:
+      case BALOAD:
+      case CALOAD:
+      case SALOAD:
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.unstackValue(2).state.stackValue(sv);
+        if (instruction.opcode != AALOAD) {
+          programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+        }
         break;
-      case Opcodes.BALOAD:
-      case Opcodes.CALOAD:
-      case Opcodes.DALOAD:
-      case Opcodes.FALOAD:
-      case Opcodes.IALOAD:
-      case Opcodes.LALOAD:
-      case Opcodes.SALOAD:
-        break;
-      case Opcodes.ASTORE:
-      case Opcodes.DSTORE:
-      case Opcodes.FSTORE:
-      case Opcodes.ISTORE:
-      case Opcodes.LSTORE:
-        pop = programState.unstackValue(1);
+      case ISTORE:
+      case LSTORE:
+      case FSTORE:
+      case DSTORE:
+      case ASTORE:
+        pop = popStack(1, instruction.opcode);
         programState = pop.state.put(instruction.operand, pop.values.get(0));
         break;
-      case Opcodes.LDC:
-      case Opcodes.NEW: {
-        SymbolicValue symbolicValue = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(symbolicValue);
-        programState = programState.addConstraint(symbolicValue, ObjectConstraint.NOT_NULL);
+      case IASTORE:
+      case LASTORE:
+      case FASTORE:
+      case DASTORE:
+      case AASTORE:
+      case BASTORE:
+      case CASTORE:
+      case SASTORE:
+        programState = programState.unstackValue(3).state;
         break;
-      }
-      case Opcodes.DUP: {
-        SymbolicValue symbolicValue = programState.peekValue();
-        Preconditions.checkNotNull(symbolicValue, "DUP on empty stack");
-        programState = programState.stackValue(symbolicValue);
+      case POP:
+        programState = programState.unstackValue(1).state;
         break;
-      }
-      case Opcodes.INVOKESPECIAL:
-      case Opcodes.INVOKESTATIC:
-      case Opcodes.INVOKEVIRTUAL:
-      case Opcodes.INVOKEINTERFACE:
-        boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
-        int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
-        pop = programState.unstackValue(arity);
-        Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
-        // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
-        SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
-        if (isStatic) {
-          // follow only static invocations for now.
-          String signature = instruction.fieldOrMethod.completeSignature();
-          MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
-          if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
-            methodInvokedBehavior
-              .happyPathYields()
-              .forEach(yield ->
-                yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
-                  checkerDispatcher.methodYield = yield;
-                  checkerDispatcher.addTransition(ps);
-                  checkerDispatcher.methodYield = null;
-                }));
-            methodInvokedBehavior
-              .exceptionalPathYields()
-              .forEach(yield ->
-                yield.statesAfterInvocation(
-                  Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
-                  ps.storeExitValue();
-                  enqueue(new ProgramPoint(exitBlock), ps);
-                }));
-            return;
-          }
-
+      case POP2:
+        programState = programState.unstackValue(2).state;
+        break;
+      case DUP:
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "DUP on empty stack");
+        programState = programState.stackValue(sv);
+        break;
+      case DUP_X1:
+        pop = popStack(2, instruction.opcode);
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP_X2:
+        pop = popStack(3, instruction.opcode);
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP2:
+        pop = popStack(2, instruction.opcode);
+        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        break;
+      case DUP2_X1:
+        pop = popStack(3, instruction.opcode);
+        programState = pop.state
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0))
+          .stackValue(pop.values.get(2))
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0));
+        break;
+      case DUP2_X2:
+        pop = popStack(4, instruction.opcode);
+        programState = pop.state
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0))
+          .stackValue(pop.values.get(3))
+          .stackValue(pop.values.get(2))
+          .stackValue(pop.values.get(1))
+          .stackValue(pop.values.get(0));
+        break;
+      case SWAP:
+        pop = popStack(2, instruction.opcode);
+        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1));
+        break;
+      case IADD:
+      case LADD:
+      case FADD:
+      case DADD:
+      case ISUB:
+      case LSUB:
+      case FSUB:
+      case DSUB:
+      case IMUL:
+      case LMUL:
+      case FMUL:
+      case DMUL:
+      case IDIV:
+      case LDIV:
+      case FDIV:
+      case DDIV:
+      case IREM:
+      case LREM:
+      case FREM:
+      case DREM:
+      case ISHL:
+      case LSHL:
+      case ISHR:
+      case LSHR:
+      case IUSHR:
+      case LUSHR:
+        pop = popStack(2, instruction.opcode);
+        SymbolicValue sv1 = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv1).addConstraint(sv1, ObjectConstraint.NOT_NULL);
+        break;
+      case INEG:
+      case LNEG:
+      case FNEG:
+      case DNEG:
+        pop = popStack(1, instruction.opcode);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case IAND:
+      case LAND:
+      case IOR:
+      case LOR:
+      case IXOR:
+      case LXOR:
+        pop = popStack(2, instruction.opcode);
+        sv = constraintManager.createBinarySymbolicValue(instruction, pop.valuesAndSymbols);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case IINC:
+        int index = instruction.operand;
+        SymbolicValue existing = programState.getValue(index);
+        Preconditions.checkNotNull(existing, "Local variable " + index + " not found");
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.put(index, sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case I2L:
+      case I2F:
+      case I2D:
+      case L2I:
+      case L2F:
+      case L2D:
+      case F2I:
+      case F2L:
+      case F2D:
+      case D2I:
+      case D2L:
+      case D2F:
+      case I2B:
+      case I2C:
+      case I2S:
+        // TODO SONARJAVA-2508 handle value conversion
+        break;
+      case LCMP:
+      case FCMPL:
+      case FCMPG:
+      case DCMPL:
+      case DCMPG:
+        pop = popStack(2, instruction.opcode);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case IRETURN:
+      case LRETURN:
+      case FRETURN:
+      case DRETURN:
+      case ARETURN:
+        programState.storeExitValue();
+        programState = programState.unstackValue(1).state;
+        break;
+      case RETURN:
+        // do nothing
+        break;
+      case GETSTATIC:
+        // TODO SONARJAVA-2510 associated symbolic value with symbol
+        programState = programState.stackValue(constraintManager.createSymbolicValue(instruction));
+        break;
+      case PUTSTATIC:
+        pop = programState.unstackValue(1);
+        programState = pop.state;
+        break;
+      case GETFIELD:
+        pop = popStack(1, instruction.opcode);
+        programState = pop.state.stackValue(constraintManager.createSymbolicValue(instruction));
+        break;
+      case PUTFIELD:
+        pop = popStack(2, instruction.opcode);
+        programState = pop.state;
+        break;
+      case INVOKEVIRTUAL:
+      case INVOKESPECIAL:
+      case INVOKESTATIC:
+      case INVOKEINTERFACE:
+        if (handleMethodInvocation(instruction)) {
+          // when yields are available, do not execute post check on this node
+          return;
         }
-        if (instruction.hasReturnValue()) {
-          programState = pop.state;
-        } else {
-          programState = pop.state.stackValue(returnSV);
-        }
+        break;
+      case INVOKEDYNAMIC:
+        // TODO SONARJAVA-2512
+        break;
+      case NEW:
+        createNonNullValue(instruction);
+        break;
+      case NEWARRAY:
+      case ANEWARRAY:
+      case ARRAYLENGTH:
+        pop = popStack(1, instruction.opcode);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        break;
+      case ATHROW:
+        pop = popStack(1, instruction.opcode);
+        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
+        programState.storeExitValue();
+        break;
+      case CHECKCAST:
+        Preconditions.checkState(programState.peekValue() != null, "CHECKCAST needs 1 value on stack");
+        break;
+      case INSTANCEOF:
+        pop = popStack(1, instruction.opcode);
+        SymbolicValue.InstanceOfSymbolicValue instanceOf = new SymbolicValue.InstanceOfSymbolicValue();
+        instanceOf.computedFrom(pop.valuesAndSymbols);
+        programState = pop.state.stackValue(instanceOf);
+        break;
+      case MONITORENTER:
+      case MONITOREXIT:
+        pop = popStack(1, instruction.opcode);
+        programState = pop.state;
+        break;
+      case MULTIANEWARRAY:
+        Instruction.MultiANewArrayInsn multiANewArrayInsn = (Instruction.MultiANewArrayInsn) instruction;
+        pop = popStack(multiANewArrayInsn.dim, instruction.opcode);
+        SymbolicValue arrayRef = new SymbolicValue();
+        programState = pop.state.stackValue(arrayRef).addConstraint(arrayRef, ObjectConstraint.NOT_NULL);
         break;
       default:
-        // do nothing
+        throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
   }
 
-  private void handleBlockExit(ProgramPoint programPosition) {
+  private ProgramState.Pop popStack(int nbOfValues, int opcode) {
+    ProgramState.Pop pop = programState.unstackValue(nbOfValues);
+    Preconditions.checkState(pop.values.size() == nbOfValues, "%s needs %s values on stack", Printer.OPCODES[opcode], nbOfValues);
+    return pop;
+  }
+
+  private boolean handleMethodInvocation(Instruction instruction) {
+    boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
+    int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
+    ProgramState.Pop pop = programState.unstackValue(arity);
+    Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
+    // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
+    SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
+    if (isStatic) {
+      // follow only static invocations for now.
+      String signature = instruction.fieldOrMethod.completeSignature();
+      MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+      if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+        methodInvokedBehavior
+          .happyPathYields()
+          .forEach(yield ->
+            yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+              checkerDispatcher.methodYield = yield;
+              checkerDispatcher.addTransition(ps);
+              checkerDispatcher.methodYield = null;
+            }));
+        methodInvokedBehavior
+          .exceptionalPathYields()
+          .forEach(yield ->
+            yield.statesAfterInvocation(
+              Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
+              ps.storeExitValue();
+              enqueue(new ProgramPoint(exitBlock), ps);
+            }));
+        return true;
+      }
+    }
+    programState = pop.state;
+    if (instruction.hasReturnValue()) {
+      programState = programState.stackValue(returnSV);
+    }
+    return false;
+  }
+
+  private void createNonNullValue(Instruction instruction) {
+    SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
+    programState = programState.stackValue(sv);
+    programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+  }
+
+  @VisibleForTesting
+  void handleBlockExit(ProgramPoint programPosition) {
     BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
-    BytecodeCFGBuilder.Instruction terminator = block.terminator();
+    Instruction terminator = block.terminator();
     ProgramState.Pop pop;
     ProgramState ps;
     List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
@@ -319,8 +525,13 @@ public class BytecodeEGWalker {
           symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
           ps = pop.state;
           break;
+        case TABLESWITCH:
+        case LOOKUPSWITCH:
+          pop = programState.unstackValue(1);
+          programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), pop.state));
+          return;
         default:
-          throw new IllegalStateException("Unexpected terminator " + terminator.opcode);
+          throw new IllegalStateException("Unexpected terminator " + Printer.OPCODES[terminator.opcode]);
       }
       programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
       Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
@@ -329,7 +540,6 @@ public class BytecodeEGWalker {
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
-      //  Table switch and lookup
       // TODO : filter some node of the EG depending of the exceptionType in the successor.
       programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
     }
@@ -346,14 +556,14 @@ public class BytecodeEGWalker {
     ProgramState state = currentState;
     if(!methodBehavior.isStaticMethod()) {
       // Add a sv for "this"
-      SymbolicValue thisSV = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(thisSV);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
       parameterIdx = 1;
     }
     Type[] argumentTypes = Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
     for (Type argumentType: argumentTypes) {
-      SymbolicValue sv = constraintManager.createSymbolicValue((BytecodeCFGBuilder.Instruction) null);
+      SymbolicValue sv = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(sv);
       state = state.put(parameterIdx, sv);
       parameterIdx += argumentType.getSize();

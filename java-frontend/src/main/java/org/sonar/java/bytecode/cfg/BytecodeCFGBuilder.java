@@ -20,7 +20,6 @@
 package org.sonar.java.bytecode.cfg;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import org.objectweb.asm.ClassReader;
@@ -47,13 +46,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.JSR;
 
 public class BytecodeCFGBuilder {
@@ -134,6 +130,10 @@ public class BytecodeCFGBuilder {
       this.id = cfg.blocks.size();
       instructions = new ArrayList<>();
       successors = new ArrayList<>();
+    }
+
+    void addInsn(Instruction insn) {
+      instructions.add(insn);
     }
 
     void addInsn(int opcode) {
@@ -270,7 +270,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-      currentBlock.addInsn(opcode, new BytecodeCFGBuilder.Instruction.FieldOrMethod(owner, name, desc, itf));
+      currentBlock.addInsn(opcode, new Instruction.FieldOrMethod(owner, name, desc, itf));
     }
 
     @Override
@@ -286,12 +286,12 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitIincInsn(int var, int increment) {
-      currentBlock.addInsn(Opcodes.IINC);
+      currentBlock.addInsn(Opcodes.IINC, var);
     }
 
     @Override
     public void visitMultiANewArrayInsn(String desc, int dims) {
-      currentBlock.addInsn(Opcodes.MULTIANEWARRAY);
+      currentBlock.addInsn(new Instruction.MultiANewArrayInsn(desc, dims));
     }
 
     @Override
@@ -424,97 +424,4 @@ public class BytecodeCFGBuilder {
     }
   }
 
-  /**
-   * Bytecode instruction.
-   */
-  public static class Instruction {
-
-    public final int opcode;
-    public final Integer operand;
-    public final String className;
-    public final FieldOrMethod fieldOrMethod;
-
-    @VisibleForTesting
-    public Instruction(int opcode, int operand) {
-      this.opcode = opcode;
-      this.operand = operand;
-      this.className = null;
-      this.fieldOrMethod = null;
-    }
-
-    public Instruction(int opcode) {
-      this.opcode = opcode;
-      this.operand = null;
-      this.className = null;
-      this.fieldOrMethod = null;
-    }
-
-    public Instruction(int opcode, String className) {
-      this.opcode = opcode;
-      this.className = className;
-      this.operand = null;
-      this.fieldOrMethod = null;
-    }
-
-    public Instruction(int opcode, FieldOrMethod fieldOrMethod) {
-      this.opcode = opcode;
-      this.fieldOrMethod = fieldOrMethod;
-      this.operand = null;
-      this.className = null;
-    }
-
-    int opcode() {
-      return opcode;
-    }
-
-
-    public int arity() {
-      Preconditions.checkState(INVOKEVIRTUAL <= opcode && opcode <= INVOKEDYNAMIC, "Not an INVOKE opcode");
-      Type methodType = Type.getMethodType(fieldOrMethod.desc);
-      return methodType.getArgumentTypes().length;
-    }
-
-    public boolean hasReturnValue() {
-      Preconditions.checkState(INVOKEVIRTUAL <= opcode && opcode <= INVOKEDYNAMIC, "Not an INVOKE opcode");
-      return Type.getMethodType(fieldOrMethod.desc).getReturnType() == Type.VOID_TYPE;
-    }
-
-    public static class FieldOrMethod {
-      public final String owner;
-      public final String name;
-      public final String desc;
-      public final boolean ownerIsInterface;
-
-      public FieldOrMethod(String owner, String name, String desc, boolean ownerIsInterface) {
-        this.owner = owner;
-        this.name = name;
-        this.desc = desc;
-        this.ownerIsInterface = ownerIsInterface;
-      }
-
-      @Override
-      public boolean equals(Object o) {
-        if (this == o) {
-          return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-          return false;
-        }
-        FieldOrMethod that = (FieldOrMethod) o;
-        return ownerIsInterface == that.ownerIsInterface &&
-          Objects.equals(owner, that.owner) &&
-          Objects.equals(name, that.name) &&
-          Objects.equals(desc, that.desc);
-      }
-
-      @Override
-      public int hashCode() {
-        return Objects.hash(owner, name, desc, ownerIsInterface);
-      }
-
-      public String completeSignature() {
-        return Type.getObjectType(owner).getClassName() + "#" + name + desc;
-      }
-    }
-  }
 }

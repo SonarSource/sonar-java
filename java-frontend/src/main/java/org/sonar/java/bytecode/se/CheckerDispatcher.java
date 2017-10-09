@@ -19,7 +19,7 @@
  */
 package org.sonar.java.bytecode.se;
 
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -32,7 +32,7 @@ import java.util.List;
 public class CheckerDispatcher {
   private final BytecodeEGWalker explodedGraphWalker;
   private final List<BytecodeSECheck> checks;
-  BytecodeCFGBuilder.Instruction currentInstruction;
+  Instruction currentInstruction;
   // used by walker to store chosen yield when adding a transition from MIT
   @Nullable
   MethodYield methodYield = null;
@@ -44,7 +44,7 @@ public class CheckerDispatcher {
     this.checks = checks;
   }
 
-  public boolean executeCheckPreStatement(BytecodeCFGBuilder.Instruction instruction) {
+  public boolean executeCheckPreStatement(Instruction instruction) {
     this.currentInstruction = instruction;
     ProgramState ps;
     for (BytecodeSECheck checker : checks) {
@@ -57,7 +57,7 @@ public class CheckerDispatcher {
     return true;
   }
 
-  public void executeCheckPostStatement(BytecodeCFGBuilder.Instruction instruction) {
+  public void executeCheckPostStatement(Instruction instruction) {
     this.currentInstruction = instruction;
     addTransition(explodedGraphWalker.programState);
   }

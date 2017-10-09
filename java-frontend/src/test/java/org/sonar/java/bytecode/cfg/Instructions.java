@@ -29,7 +29,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder.Instruction.FieldOrMethod;
+import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 import org.sonar.java.resolve.JavaSymbol;
 
 import javax.annotation.Nullable;
@@ -217,7 +217,7 @@ public class Instructions {
           visitLdcInsn("a");
           break;
         case IINC:
-          visitIincInsn(0, 1);
+          visitIincInsn(operand, 1);
           break;
         case INVOKEDYNAMIC:
           visitInvokeDynamicInsn("sleep", "()V", new Handle(H_INVOKESTATIC, "", "", "()V", false));
@@ -238,7 +238,7 @@ public class Instructions {
         }
           break;
         case MULTIANEWARRAY:
-          visitMultiANewArrayInsn("B", 1);
+          visitMultiANewArrayInsn("B", 2);
           break;
         default:
           throw new IllegalStateException("unknown opcode " + opcode);
