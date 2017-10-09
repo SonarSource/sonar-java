@@ -329,7 +329,7 @@ public class BytecodeEGWalkerExecuteTest {
     };
     assertConsume2produceNotNull(opcodes);
 
-    assertThrowWhenInvalidStack(opcodes, "Arithmetic instruction needs 2 values on stack");
+    assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   @Test
@@ -346,7 +346,7 @@ public class BytecodeEGWalkerExecuteTest {
 
     for (int opcode : negOpcodes) {
       assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE))
-        .hasMessage("NEG needs value on stack");
+        .hasMessage(Printer.OPCODES[opcode] + " needs 1 values on stack");
     }
   }
 
@@ -355,7 +355,7 @@ public class BytecodeEGWalkerExecuteTest {
     int[] shiftOpcodes = new int[] {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
     assertConsume2produceNotNull(shiftOpcodes);
 
-    assertThrowWhenInvalidStack(shiftOpcodes, "Arithmetic instruction needs 2 values on stack");
+    assertThrowWhenInvalidStack(shiftOpcodes, " needs 2 values on stack");
   }
 
   @Test
@@ -363,13 +363,13 @@ public class BytecodeEGWalkerExecuteTest {
     int[] opcodes = new int[] {Opcodes.IAND, Opcodes.LAND};
     assertBinarySymbolicValue(opcodes, SymbolicValue.AndSymbolicValue.class);
 
-    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
+    assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   private void assertThrowWhenInvalidStack(int[] opcodes, String message) {
     for (int opcode : opcodes) {
       assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue())))
-        .hasMessage(message);
+        .hasMessage(Printer.OPCODES[opcode] + message);
     }
   }
 
@@ -396,7 +396,7 @@ public class BytecodeEGWalkerExecuteTest {
     int[] opcodes = new int[] {Opcodes.IOR, Opcodes.LOR};
     assertBinarySymbolicValue(opcodes, SymbolicValue.OrSymbolicValue.class);
 
-    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
+    assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   @Test
@@ -404,7 +404,7 @@ public class BytecodeEGWalkerExecuteTest {
     int[] opcodes = new int[] {Opcodes.IXOR, Opcodes.LXOR};
     assertBinarySymbolicValue(opcodes, SymbolicValue.XorSymbolicValue.class);
 
-    assertThrowWhenInvalidStack(opcodes, "Bitwise instruction needs 2 values on stack");
+    assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   @Test
@@ -426,7 +426,7 @@ public class BytecodeEGWalkerExecuteTest {
     int[] opcodes = new int[] {Opcodes.LCMP, Opcodes.FCMPG, Opcodes.FCMPL, Opcodes.DCMPG, Opcodes.FCMPL};
     assertConsume2produceNotNull(opcodes);
 
-    assertThrowWhenInvalidStack(opcodes, "CMP needs 2 values on stack");
+    assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   private void assertConsume2produceNotNull(int... opcodes) {
@@ -617,7 +617,7 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(fieldValue).isNotNull();
     assertThat(fieldValue).isNotEqualTo(objectRef);
 
-    assertThatThrownBy(() -> execute(new Instruction(Opcodes.GETFIELD))).hasMessage("GETFIELD needs 1 value on stack");
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.GETFIELD))).hasMessage("GETFIELD needs 1 values on stack");
   }
 
   @Test
@@ -639,7 +639,7 @@ public class BytecodeEGWalkerExecuteTest {
       assertThat(programState.peekValue()).isNotEqualTo(size);
       assertStack(programState, ObjectConstraint.NOT_NULL);
 
-      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE)).hasMessage("NEWARRAY needs 1 value on stack");
+      assertThatThrownBy(() -> execute(new Instruction(opcode), ProgramState.EMPTY_STATE)).hasMessage(Printer.OPCODES[opcode] + " needs 1 values on stack");
     }
   }
 
@@ -651,7 +651,7 @@ public class BytecodeEGWalkerExecuteTest {
     assertStack(programState, ObjectConstraint.NOT_NULL);
     assertThat(length).isNotEqualTo(arrayRef);
 
-    assertThatThrownBy(() -> execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE)).hasMessage("ARRAYLENGTH needs 1 value on stack");
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE)).hasMessage("ARRAYLENGTH needs 1 values on stack");
   }
 
   @Test
@@ -671,7 +671,7 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(result).isInstanceOf(SymbolicValue.InstanceOfSymbolicValue.class);
     assertThat(result.computedFrom().get(0)).isEqualTo(sv);
 
-    assertThatThrownBy(() -> execute(new Instruction(Opcodes.INSTANCEOF))).hasMessage("INSTANCEOF needs 1 value on stack");
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.INSTANCEOF))).hasMessage("INSTANCEOF needs 1 values on stack");
   }
 
   @Test
@@ -682,7 +682,7 @@ public class BytecodeEGWalkerExecuteTest {
       ProgramState programState = execute(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
       assertEmptyStack(programState);
 
-      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs 1 value on stack");
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs 1 values on stack");
     }
   }
 

@@ -79,7 +79,7 @@ public class Instruction {
 
   public boolean hasReturnValue() {
     Preconditions.checkState(Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC, "Not an INVOKE opcode");
-    return Type.getMethodType(fieldOrMethod.desc).getReturnType() == Type.VOID_TYPE;
+    return Type.getMethodType(fieldOrMethod.desc).getReturnType() != Type.VOID_TYPE;
   }
 
   @Override

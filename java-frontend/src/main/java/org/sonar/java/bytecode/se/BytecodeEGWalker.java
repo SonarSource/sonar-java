@@ -208,7 +208,7 @@ public class BytecodeEGWalker {
       case FSTORE:
       case DSTORE:
       case ASTORE:
-        pop = programState.unstackValue(1);
+        pop = popStack(1, instruction.opcode);
         programState = pop.state.put(instruction.operand, pop.values.get(0));
         break;
       case IASTORE:
@@ -233,23 +233,19 @@ public class BytecodeEGWalker {
         programState = programState.stackValue(sv);
         break;
       case DUP_X1:
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "DUP_X1 needs 2 values on stack");
+        pop = popStack(2, instruction.opcode);
         programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
         break;
       case DUP_X2:
-        pop = programState.unstackValue(3);
-        Preconditions.checkState(pop.values.size() == 3, "DUP_X2 needs 3 values on stack");
+        pop = popStack(3, instruction.opcode);
         programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
         break;
       case DUP2:
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "DUP2 needs 2 values on stack");
+        pop = popStack(2, instruction.opcode);
         programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
         break;
       case DUP2_X1:
-        pop = programState.unstackValue(3);
-        Preconditions.checkState(pop.values.size() == 3, "DUP2_X1 needs 3 values on stack");
+        pop = popStack(3, instruction.opcode);
         programState = pop.state
           .stackValue(pop.values.get(1))
           .stackValue(pop.values.get(0))
@@ -258,8 +254,7 @@ public class BytecodeEGWalker {
           .stackValue(pop.values.get(0));
         break;
       case DUP2_X2:
-        pop = programState.unstackValue(4);
-        Preconditions.checkState(pop.values.size() == 4, "DUP2_X2 needs 4 values on stack");
+        pop = popStack(4, instruction.opcode);
         programState = pop.state
           .stackValue(pop.values.get(1))
           .stackValue(pop.values.get(0))
@@ -269,8 +264,7 @@ public class BytecodeEGWalker {
           .stackValue(pop.values.get(0));
         break;
       case SWAP:
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "SWAP needs 2 values on stack");
+        pop = popStack(2, instruction.opcode);
         programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1));
         break;
       case IADD:
@@ -293,24 +287,23 @@ public class BytecodeEGWalker {
       case LREM:
       case FREM:
       case DREM:
-        handleArithmetic(instruction);
-        break;
-      case INEG:
-      case LNEG:
-      case FNEG:
-      case DNEG:
-        sv = constraintManager.createSymbolicValue(instruction);
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, "NEG needs value on stack");
-        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
-        break;
       case ISHL:
       case LSHL:
       case ISHR:
       case LSHR:
       case IUSHR:
       case LUSHR:
-        handleArithmetic(instruction);
+        pop = popStack(2, instruction.opcode);
+        SymbolicValue sv1 = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv1).addConstraint(sv1, ObjectConstraint.NOT_NULL);
+        break;
+      case INEG:
+      case LNEG:
+      case FNEG:
+      case DNEG:
+        pop = popStack(1, instruction.opcode);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case IAND:
       case LAND:
@@ -318,8 +311,7 @@ public class BytecodeEGWalker {
       case LOR:
       case IXOR:
       case LXOR:
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "Bitwise instruction needs 2 values on stack");
+        pop = popStack(2, instruction.opcode);
         sv = constraintManager.createBinarySymbolicValue(instruction, pop.valuesAndSymbols);
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
@@ -345,16 +337,15 @@ public class BytecodeEGWalker {
       case I2B:
       case I2C:
       case I2S:
-        // do nothing
+        // TODO SONARJAVA-2508 handle value conversion
         break;
       case LCMP:
       case FCMPL:
       case FCMPG:
       case DCMPL:
       case DCMPG:
+        pop = popStack(2, instruction.opcode);
         sv = constraintManager.createSymbolicValue(instruction);
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "CMP needs 2 values on stack");
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case IRETURN:
@@ -377,13 +368,11 @@ public class BytecodeEGWalker {
         programState = pop.state;
         break;
       case GETFIELD:
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, "GETFIELD needs 1 value on stack");
+        pop = popStack(1, instruction.opcode);
         programState = pop.state.stackValue(constraintManager.createSymbolicValue(instruction));
         break;
       case PUTFIELD:
-        pop = programState.unstackValue(2);
-        Preconditions.checkState(pop.values.size() == 2, "PUTFIELD needs 2 values on stack");
+        pop = popStack(2, instruction.opcode);
         programState = pop.state;
         break;
       case INVOKEVIRTUAL:
@@ -403,19 +392,13 @@ public class BytecodeEGWalker {
         break;
       case NEWARRAY:
       case ANEWARRAY:
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, "NEWARRAY needs 1 value on stack");
-        sv = constraintManager.createSymbolicValue(instruction);
-        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
-        break;
       case ARRAYLENGTH:
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, "ARRAYLENGTH needs 1 value on stack");
+        pop = popStack(1, instruction.opcode);
         sv = constraintManager.createSymbolicValue(instruction);
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case ATHROW:
-        pop = programState.unstackValue(1);
+        pop = popStack(1, instruction.opcode);
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
         programState.storeExitValue();
         break;
@@ -423,22 +406,19 @@ public class BytecodeEGWalker {
         Preconditions.checkState(programState.peekValue() != null, "CHECKCAST needs 1 value on stack");
         break;
       case INSTANCEOF:
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, "INSTANCEOF needs 1 value on stack");
+        pop = popStack(1, instruction.opcode);
         SymbolicValue.InstanceOfSymbolicValue instanceOf = new SymbolicValue.InstanceOfSymbolicValue();
         instanceOf.computedFrom(pop.valuesAndSymbols);
         programState = pop.state.stackValue(instanceOf);
         break;
       case MONITORENTER:
       case MONITOREXIT:
-        pop = programState.unstackValue(1);
-        Preconditions.checkState(pop.values.size() == 1, Printer.OPCODES[instruction.opcode] + " needs 1 value on stack");
+        pop = popStack(1, instruction.opcode);
         programState = pop.state;
         break;
       case MULTIANEWARRAY:
         Instruction.MultiANewArrayInsn multiANewArrayInsn = (Instruction.MultiANewArrayInsn) instruction;
-        pop = programState.unstackValue(multiANewArrayInsn.dim);
-        Preconditions.checkState(pop.values.size() == multiANewArrayInsn.dim, "MULTIANEWARRAY needs " + multiANewArrayInsn.dim + " values on stack");
+        pop = popStack(multiANewArrayInsn.dim, instruction.opcode);
         SymbolicValue arrayRef = new SymbolicValue();
         programState = pop.state.stackValue(arrayRef).addConstraint(arrayRef, ObjectConstraint.NOT_NULL);
         break;
@@ -446,6 +426,12 @@ public class BytecodeEGWalker {
         throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
+  }
+
+  private ProgramState.Pop popStack(int nbOfValues, int opcode) {
+    ProgramState.Pop pop = programState.unstackValue(nbOfValues);
+    Preconditions.checkState(pop.values.size() == nbOfValues, "%s needs %s values on stack", Printer.OPCODES[opcode], nbOfValues);
+    return pop;
   }
 
   private boolean handleMethodInvocation(Instruction instruction) {
@@ -479,10 +465,9 @@ public class BytecodeEGWalker {
         return true;
       }
     }
+    programState = pop.state;
     if (instruction.hasReturnValue()) {
-      programState = pop.state;
-    } else {
-      programState = pop.state.stackValue(returnSV);
+      programState = programState.stackValue(returnSV);
     }
     return false;
   }
@@ -491,13 +476,6 @@ public class BytecodeEGWalker {
     SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
     programState = programState.stackValue(sv);
     programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
-  }
-
-  private void handleArithmetic(Instruction instruction) {
-    SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
-    ProgramState.Pop pop = programState.unstackValue(2);
-    Preconditions.checkState(pop.values.size() == 2, "Arithmetic instruction needs 2 values on stack");
-    programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
   @VisibleForTesting
