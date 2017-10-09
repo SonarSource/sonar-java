@@ -174,4 +174,45 @@ public class Instruction {
       return Objects.hash(super.hashCode(), dim);
     }
   }
+
+  public static class InvokeDynamicInsn extends Instruction {
+
+    private final String desc;
+
+    public InvokeDynamicInsn(String desc) {
+      super(Opcodes.INVOKEDYNAMIC);
+      this.desc = desc;
+    }
+
+    @Override
+    public int arity() {
+      Type methodType = Type.getMethodType(desc);
+      return methodType.getArgumentTypes().length;
+    }
+
+    @Override
+    public boolean hasReturnValue() {
+      return Type.getMethodType(desc).getReturnType() != Type.VOID_TYPE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      InvokeDynamicInsn that = (InvokeDynamicInsn) o;
+      return Objects.equals(desc, that.desc);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), desc);
+    }
+  }
 }

@@ -698,6 +698,21 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction.MultiANewArrayInsn("B", 2))).hasMessage("MULTIANEWARRAY needs 2 values on stack");
   }
 
+  @Test
+  public void test_invoke_dynamic() throws Exception {
+    SymbolicValue lambdaArg = new SymbolicValue();
+    ProgramState programState = execute(new Instruction.InvokeDynamicInsn("(I)Ljava/util/function/Supplier;"), ProgramState.EMPTY_STATE.stackValue(lambdaArg));
+    assertThat(programState.peekValue()).isNotNull();
+    assertThat(programState.peekValue()).isNotEqualTo(lambdaArg);
+
+    programState = execute(new Instruction.InvokeDynamicInsn("()Ljava/util/function/Supplier;"), ProgramState.EMPTY_STATE);
+    assertThat(programState.peekValue()).isNotNull();
+
+    // this is theoretical, in practice lambda will always evaluate to target
+    programState = execute(new Instruction.InvokeDynamicInsn("()V"), ProgramState.EMPTY_STATE);
+    assertThat(programState.peekValue()).isNull();
+  }
+
   private Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }

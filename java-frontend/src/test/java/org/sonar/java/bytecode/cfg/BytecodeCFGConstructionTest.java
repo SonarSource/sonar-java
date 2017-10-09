@@ -32,7 +32,6 @@ import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,7 +111,7 @@ public class BytecodeCFGConstructionTest {
     // The rest
     testData.add(new Object[] {new TestInput(LDC), null});
     testData.add(new Object[] {new TestInput(IINC, 2), inst(IINC, 2)});
-    testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), null});
+    testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), new Instruction.InvokeDynamicInsn("()Ljava/util/function/Supplier;")});
     testData.add(new Object[] {new TestInput(TABLESWITCH), null});
     testData.add(new Object[] {new TestInput(LOOKUPSWITCH), null});
     testData.add(new Object[] {new TestInput(MULTIANEWARRAY), new Instruction.MultiANewArrayInsn("B", 2)});
