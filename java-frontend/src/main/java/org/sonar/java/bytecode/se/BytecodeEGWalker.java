@@ -427,7 +427,7 @@ public class BytecodeEGWalker {
         }
         break;
       case INVOKEDYNAMIC:
-        // do nothing
+        // TODO SONARJAVA-2512
         break;
       case NEW:
         createNonNullValue(instruction);
