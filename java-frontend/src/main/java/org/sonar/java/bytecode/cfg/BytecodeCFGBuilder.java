@@ -275,7 +275,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
-      currentBlock.addInsn(Opcodes.INVOKEDYNAMIC);
+      currentBlock.addInsn(new Instruction.InvokeDynamicInsn(desc));
     }
 
     @Override

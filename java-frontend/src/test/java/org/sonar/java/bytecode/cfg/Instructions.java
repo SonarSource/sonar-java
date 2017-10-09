@@ -221,7 +221,7 @@ public class Instructions {
           visitIincInsn(operand, 1);
           break;
         case INVOKEDYNAMIC:
-          visitInvokeDynamicInsn("sleep", "()V", new Handle(H_INVOKESTATIC, "", "", "()V", false));
+          visitInvokeDynamicInsn("sleep", "()Ljava/util/function/Supplier;", new Handle(H_INVOKESTATIC, "", "", "()V", false));
           break;
         case LOOKUPSWITCH:
           Label dflt1 = new Label();

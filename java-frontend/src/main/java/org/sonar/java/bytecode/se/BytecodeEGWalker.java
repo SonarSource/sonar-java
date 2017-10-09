@@ -385,7 +385,9 @@ public class BytecodeEGWalker {
         }
         break;
       case INVOKEDYNAMIC:
-        // TODO SONARJAVA-2512
+        Instruction.InvokeDynamicInsn invokeDynamicInsn = (Instruction.InvokeDynamicInsn) instruction;
+        pop = popStack(invokeDynamicInsn.arity(), instruction.opcode);
+        programState = invokeDynamicInsn.hasReturnValue() ? pop.state.stackValue(new SymbolicValue()) : pop.state;
         break;
       case NEW:
         createNonNullValue(instruction);
