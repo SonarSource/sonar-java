@@ -390,40 +390,9 @@ public class BytecodeEGWalker {
       case INVOKESPECIAL:
       case INVOKESTATIC:
       case INVOKEINTERFACE:
-        boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
-        int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
-        pop = programState.unstackValue(arity);
-        Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
-        // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
-        SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
-        if (isStatic) {
-          // follow only static invocations for now.
-          String signature = instruction.fieldOrMethod.completeSignature();
-          MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
-          if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
-            methodInvokedBehavior
-              .happyPathYields()
-              .forEach(yield ->
-                yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
-                  checkerDispatcher.methodYield = yield;
-                  checkerDispatcher.addTransition(ps);
-                  checkerDispatcher.methodYield = null;
-                }));
-            methodInvokedBehavior
-              .exceptionalPathYields()
-              .forEach(yield ->
-                yield.statesAfterInvocation(
-                  Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
-                  ps.storeExitValue();
-                  enqueue(new ProgramPoint(exitBlock), ps);
-                }));
-            return;
-          }
-        }
-        if (instruction.hasReturnValue()) {
-          programState = pop.state;
-        } else {
-          programState = pop.state.stackValue(returnSV);
+        if (handleMethodInvocation(instruction)) {
+          // when yields are available, do not execute post check on this node
+          return;
         }
         break;
       case INVOKEDYNAMIC:
@@ -477,6 +446,45 @@ public class BytecodeEGWalker {
         throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
+  }
+
+  private boolean handleMethodInvocation(Instruction instruction) {
+    boolean isStatic = instruction.opcode == Opcodes.INVOKESTATIC;
+    int arity = isStatic ? instruction.arity() : (instruction.arity() + 1);
+    ProgramState.Pop pop = programState.unstackValue(arity);
+    Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
+    // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
+    SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
+    if (isStatic) {
+      // follow only static invocations for now.
+      String signature = instruction.fieldOrMethod.completeSignature();
+      MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+      if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+        methodInvokedBehavior
+          .happyPathYields()
+          .forEach(yield ->
+            yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+              checkerDispatcher.methodYield = yield;
+              checkerDispatcher.addTransition(ps);
+              checkerDispatcher.methodYield = null;
+            }));
+        methodInvokedBehavior
+          .exceptionalPathYields()
+          .forEach(yield ->
+            yield.statesAfterInvocation(
+              Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
+              ps.storeExitValue();
+              enqueue(new ProgramPoint(exitBlock), ps);
+            }));
+        return true;
+      }
+    }
+    if (instruction.hasReturnValue()) {
+      programState = pop.state;
+    } else {
+      programState = pop.state.stackValue(returnSV);
+    }
+    return false;
   }
 
   private void createNonNullValue(Instruction instruction) {
