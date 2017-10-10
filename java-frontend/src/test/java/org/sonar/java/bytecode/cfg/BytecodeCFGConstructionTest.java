@@ -102,9 +102,9 @@ public class BytecodeCFGConstructionTest {
         .collect(Collectors.toList()));
 
     // Instructions with int operand
-    testData.add(new Object[] {intOp(BIPUSH, 1), inst(BIPUSH)});
-    testData.add(new Object[] {intOp(SIPUSH, 1), inst(SIPUSH)});
-    testData.add(new Object[] {intOp(NEWARRAY, 1), inst(NEWARRAY)});
+    testData.add(new Object[] {intOp(BIPUSH, 1), inst(BIPUSH, 1)});
+    testData.add(new Object[] {intOp(SIPUSH, 1), inst(SIPUSH, 1)});
+    testData.add(new Object[] {intOp(NEWARRAY, 1), inst(NEWARRAY, 1)});
 
     // LOAD STORE
     testData.add(new Object[] {intOp(ILOAD, 42), inst(ILOAD, 42)});
