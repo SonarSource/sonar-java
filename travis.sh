@@ -4,7 +4,7 @@ set -euo pipefail
 
 function configureTravis {
   mkdir -p ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v36 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v38 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
 configureTravis
@@ -32,6 +32,10 @@ CI)
     strongEcho "Analyze commit in master"
     # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
     mvn sonar:sonar -B -e -V \
+      -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+      -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+      -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
+      -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
        -Dsonar.login=$SONAR_TOKEN
@@ -79,6 +83,10 @@ CI)
       strongEcho "Github analysis"
       # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
       mvn sonar:sonar -B -e -V \
+          -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
+          -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
           -Dsonar.analysis.mode=issues \
           -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
           -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
@@ -90,6 +98,10 @@ CI)
         strongEcho "Branch analysis"
         # analysis of short-living branch directly on master
         mvn sonar:sonar -B -e -V \
+            -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+            -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+            -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
+            -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
