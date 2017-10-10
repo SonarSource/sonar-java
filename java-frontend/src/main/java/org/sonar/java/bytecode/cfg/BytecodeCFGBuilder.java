@@ -255,7 +255,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitIntInsn(int opcode, int operand) {
-      currentBlock.addInsn(opcode);
+      currentBlock.addInsn(opcode, operand);
     }
 
     @Override
