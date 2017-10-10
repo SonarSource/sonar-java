@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +86,7 @@ public class MethodMatcherFactoryTest {
     MethodMatcher anyArg = MethodMatcherFactory.methodMatcher("org.sonar.test.Outer$Inner#foo");
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/matcher/InnerClass.java"), new VisitorsBridge(visitor));
+    scanWithVisitor(visitor, new File("src/test/files/matcher/InnerClass.java"));
     assertThat(visitor.count(anyArg)).isEqualTo(1);
   }
 
@@ -118,7 +120,7 @@ public class MethodMatcherFactoryTest {
       "      match(3, 5);",
       "   }",
       "}");
-    JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(visitor));
+    scanWithVisitor(visitor, testFile);
 
     assertThat(visitor.count(anyArg)).isEqualTo(6);
     assertThat(visitor.count(stringOnly)).isEqualTo(1);
@@ -150,12 +152,16 @@ public class MethodMatcherFactoryTest {
       "      new String(bytes, 0, 5);",
       "   }",
       "}");
-    JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(visitor));
+    scanWithVisitor(visitor, testFile);
 
     assertThat(visitor.count(anyArg)).isEqualTo(4);
     assertThat(visitor.count(noArg)).isEqualTo(1);
     assertThat(visitor.count(stringBuilder)).isEqualTo(1);
     assertThat(visitor.count(stringBytes)).isEqualTo(2);
+  }
+
+  private void scanWithVisitor(MethodVisitor visitor, File testFile) {
+    JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), null, false));
   }
 
   public static File buildTestFile(String... codeLines) {
