@@ -27,7 +27,7 @@ CI)
 
     strongEcho "Build commit in master"
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy -B -e -V \
-       -Dmaven.test.redirectTestOutputToFile=false
+       -Dmaven.test.redirectTestOutputToFile=false \
        -Pcoverage-per-test,deploy-sonarsource,release
 
     strongEcho "Analyze commit in master"
