@@ -219,7 +219,9 @@ public class MethodMatcherTest {
     matches.put(foo, new ArrayList<>());
     matches.put(callSiteIsTest, new ArrayList<>());
 
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/matcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
+    JavaAstScanner.scanSingleFileForTests(
+      new File("src/test/files/matcher/Test.java"),
+      new VisitorsBridge(Collections.singletonList(new Visitor(matches)), new ArrayList<>(), null, false));
 
     assertThat(matches.get(objectToString)).containsExactly(6, 19, 27);
     assertThat(matches.get(objectToStringWithIntParam)).containsExactly(10);
