@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -672,7 +671,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    super.visitBinaryExpression(tree);
+    tree.leftOperand().accept(this);
+    tree.rightOperand().accept(this);
+    registerBinaryExpressionType(tree);
+  }
+
+  private void registerBinaryExpressionType(BinaryExpressionTree tree) {
     JavaType left = getType(tree.leftOperand());
     JavaType right = getType(tree.rightOperand());
     // TODO avoid nulls
@@ -680,17 +684,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, Symbols.unknownType);
       return;
     }
-    if("+".equals(tree.operatorToken().text()) && (left == symbols.stringType || right == symbols.stringType)) {
+    if ("+".equals(tree.operatorToken().text()) && (left == symbols.stringType || right == symbols.stringType)) {
       registerType(tree, symbols.stringType);
       return;
     }
+    registerType(tree, binaryExpressionType(tree, left, right));
+  }
+
+  private JavaType binaryExpressionType(BinaryExpressionTree tree, JavaType left, JavaType right) {
     JavaSymbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass.type, tree.operatorToken().text(), ImmutableList.of(left, right)).symbol();
     if (symbol.kind != JavaSymbol.MTH) {
       // not found
-      registerType(tree, Symbols.unknownType);
-      return;
+      return Symbols.unknownType;
     }
-    registerType(tree, ((MethodJavaType) symbol.type).resultType);
+    return ((MethodJavaType) symbol.type).resultType;
   }
 
   @Override

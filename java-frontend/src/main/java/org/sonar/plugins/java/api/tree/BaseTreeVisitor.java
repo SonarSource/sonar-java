@@ -206,8 +206,8 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    scan(tree.leftOperand());
-    scan(tree.rightOperand());
+    tree.leftOperand().accept(this);
+    tree.rightOperand().accept(this);
   }
 
   @Override

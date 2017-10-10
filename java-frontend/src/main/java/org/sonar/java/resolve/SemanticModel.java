@@ -25,16 +25,17 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,23 +73,31 @@ public class SemanticModel {
    */
   public static void handleMissingTypes(Tree tree) {
     // (Godin): Another and probably better (safer) way to do the same - is to assign default value during creation of nodes, so that to guarantee that this step won't be skipped.
-    tree.accept(new BaseTreeVisitor() {
+    new MissingTypeHandler().handleMissingTypes(tree);
+  }
 
-      @Override
-      protected void scan(@Nullable Tree tree) {
-        if (tree instanceof AbstractTypedTree) {
-          ((AbstractTypedTree) tree).completeMissingType();
-        }
-        super.scan(tree);
-      }
 
-      @Override
-      protected void scan(@Nullable ListTree<? extends Tree> listTree) {
-        if (listTree != null) {
-          listTree.forEach(this::scan);
+  private static class MissingTypeHandler {
+    private Deque<JavaTree> parentList = new LinkedList<>();
+
+    void handleMissingTypes(Tree tree) {
+      parentList.push((JavaTree) tree);
+      while (!parentList.isEmpty()) {
+        JavaTree parent = parentList.pop();
+        if (parent instanceof AbstractTypedTree) {
+          ((AbstractTypedTree) parent).completeMissingType();
+        }
+        if (!parent.isLeaf()) {
+          for (Tree nextTree : parent.getChildren()) {
+            JavaTree next = (JavaTree) nextTree;
+            if (next != null) {
+              next.setParent(parent);
+              parentList.push(next);
+            }
+          }
         }
       }
-    });
+    }
   }
 
   public void saveEnv(Symbol symbol, Resolve.Env env) {
