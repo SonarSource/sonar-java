@@ -76,16 +76,31 @@ class L<T> extends com.tst.MyList<T> {
 
 class M {
   @Override
-  public boolean equals(Object obj) { return false; }
+  public final boolean equals(Object obj) {
+    return false;
+  }
 }
 
-class N extends M {
+class N extends M { // Compliant - M.equals() is final
+  int i;
+}
+
+class O {
+  Object o;
+  @Override
+  public boolean equals(Object obj) {
+    return false;
+  }
+}
+
+class P extends O {
+  Object p;
   @Override
   public final boolean equals(Object obj) {
     return false;
   }
 }
 
-class O extends N { // Compliant - M.equals() is final
-  int i;
+class Q extends P { // Compliant - P.equals() is final
+  Object q;
 }
