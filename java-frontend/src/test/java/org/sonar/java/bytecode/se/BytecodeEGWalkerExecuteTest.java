@@ -702,15 +702,14 @@ public class BytecodeEGWalkerExecuteTest {
   public void test_invoke_dynamic() throws Exception {
     SymbolicValue lambdaArg = new SymbolicValue();
     ProgramState programState = execute(new Instruction.InvokeDynamicInsn("(I)Ljava/util/function/Supplier;"), ProgramState.EMPTY_STATE.stackValue(lambdaArg));
-    assertThat(programState.peekValue()).isNotNull();
+    assertStack(programState, ObjectConstraint.NOT_NULL);
     assertThat(programState.peekValue()).isNotEqualTo(lambdaArg);
 
     programState = execute(new Instruction.InvokeDynamicInsn("()Ljava/util/function/Supplier;"), ProgramState.EMPTY_STATE);
-    assertThat(programState.peekValue()).isNotNull();
+    assertStack(programState, ObjectConstraint.NOT_NULL);
 
-    // this is theoretical, in practice lambda will always evaluate to target
-    programState = execute(new Instruction.InvokeDynamicInsn("()V"), ProgramState.EMPTY_STATE);
-    assertThat(programState.peekValue()).isNull();
+    assertThatThrownBy(() -> execute(new Instruction.InvokeDynamicInsn("()V"), ProgramState.EMPTY_STATE))
+      .hasMessage("Lambda should always evaluate to target functional interface");
   }
 
   private Instruction invokeMethod(int opcode, String desc) {

@@ -385,9 +385,10 @@ public class BytecodeEGWalker {
         }
         break;
       case INVOKEDYNAMIC:
-        Instruction.InvokeDynamicInsn invokeDynamicInsn = (Instruction.InvokeDynamicInsn) instruction;
-        pop = popStack(invokeDynamicInsn.arity(), instruction.opcode);
-        programState = invokeDynamicInsn.hasReturnValue() ? pop.state.stackValue(new SymbolicValue()) : pop.state;
+        pop = popStack(instruction.arity(), instruction.opcode);
+        Preconditions.checkState(instruction.hasReturnValue(), "Lambda should always evaluate to target functional interface");
+        SymbolicValue lambdaTargetInterface = new SymbolicValue();
+        programState = pop.state.stackValue(lambdaTargetInterface).addConstraint(lambdaTargetInterface, ObjectConstraint.NOT_NULL);
         break;
       case NEW:
         createNonNullValue(instruction);
