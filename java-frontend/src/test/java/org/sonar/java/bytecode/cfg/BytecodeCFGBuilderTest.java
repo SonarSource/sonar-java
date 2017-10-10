@@ -267,6 +267,13 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
+  public void supportJSRandRET() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/JsrRet")));
+    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG("jdk3.AllInstructions#jsrAndRetInstructions(I)I", classLoader);
+    assertThat(bytecodeCFG).isNotNull();
+  }
+
+  @Test
   public void try_catch_finally() throws Exception {
     String methodName = "tryCatch";
     String expectedCFG = "B0(Exit)\n" +

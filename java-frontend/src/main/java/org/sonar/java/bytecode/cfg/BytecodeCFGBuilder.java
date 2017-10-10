@@ -29,6 +29,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
@@ -50,7 +51,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.JSR;
 
 public class BytecodeCFGBuilder {
 
@@ -80,7 +80,7 @@ public class BytecodeCFGBuilder {
         if (name.equals(sign.substring(sign.indexOf('#') + 1, sign.indexOf('('))) && desc.equals(sign.substring(sign.indexOf('(')))) {
           methodVisitor.isStaticMethod = (access & Flags.STATIC) != 0;
           methodVisitor.isVarArgs = (access & Flags.VARARGS) != 0;
-          return methodVisitor;
+          return new JSRInlinerAdapter(methodVisitor, access, name, desc, signature, exceptions);
         }
         return null;
       }
@@ -318,7 +318,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitJumpInsn(int opcode, Label label) {
-      if (opcode == GOTO || opcode == JSR) {
+      if (opcode == GOTO) {
         currentBlock.terminator = new Instruction(opcode);
         List<Block> successors = new ArrayList<>();
         successors.add(blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor()));

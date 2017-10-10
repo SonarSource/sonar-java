@@ -65,7 +65,7 @@ public class Instructions {
   static final ImmutableSet<Integer> FIELD_INSN = ImmutableSet.of(GETSTATIC, PUTSTATIC, GETFIELD, PUTFIELD);
   static final ImmutableSet<Integer> METHOD_INSN = ImmutableSet.of(INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC, INVOKEINTERFACE);
   static final ImmutableSet<Integer> JUMP_INSN = ImmutableSet.of(IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ,
-    IF_ACMPNE, GOTO, JSR, IFNULL, IFNONNULL);
+    IF_ACMPNE, GOTO, IFNULL, IFNONNULL);
 
   static final ImmutableSet<Integer> OTHER_INSN = ImmutableSet.of(LDC, IINC, TABLESWITCH, LOOKUPSWITCH, MULTIANEWARRAY, INVOKEDYNAMIC);
 
@@ -82,6 +82,7 @@ public class Instructions {
 
   static final Set<Integer> ASM_OPCODES = ImmutableSet.copyOf(IntStream.range(0, Printer.OPCODES.length)
     .filter(i -> !Printer.OPCODES[i].isEmpty())
+    .filter(i -> i != JSR)
     .boxed()
     .collect(Collectors.toSet()));
 
