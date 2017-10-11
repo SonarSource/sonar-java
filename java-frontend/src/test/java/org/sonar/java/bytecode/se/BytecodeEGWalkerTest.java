@@ -190,13 +190,18 @@ public class BytecodeEGWalkerTest {
     startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
     assertThat(startingState).isEqualTo(ProgramState.EMPTY_STATE);
 
-    signature = "(DI)V";
+    signature = "(DIJ)V";
     walker.methodBehavior = new MethodBehavior(signature);
     walker.methodBehavior.setStaticMethod(true);
     startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
     assertThat(startingState.getValue(0)).isNotNull();
+    SymbolicValue doubleArg = startingState.getValue(0);
+    assertThat(startingState.getConstraint(doubleArg, BytecodeEGWalker.StackValueCategoryConstraint.class)).isEqualTo(BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE);
     assertThat(startingState.getValue(1)).isNull();
     assertThat(startingState.getValue(2)).isNotNull();
+    SymbolicValue longArg = startingState.getValue(3);
+    assertThat(longArg).isNotNull();
+    assertThat(startingState.getConstraint(longArg, BytecodeEGWalker.StackValueCategoryConstraint.class)).isEqualTo(BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE);
   }
 
   private MethodBehavior getMethodBehavior(int index) {

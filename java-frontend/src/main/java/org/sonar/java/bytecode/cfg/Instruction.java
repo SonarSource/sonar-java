@@ -21,16 +21,49 @@ package org.sonar.java.bytecode.cfg;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Printer;
 
 import java.util.Objects;
+import java.util.Set;
+
+import static org.objectweb.asm.Opcodes.DADD;
+import static org.objectweb.asm.Opcodes.DALOAD;
+import static org.objectweb.asm.Opcodes.DCONST_0;
+import static org.objectweb.asm.Opcodes.DCONST_1;
+import static org.objectweb.asm.Opcodes.DDIV;
+import static org.objectweb.asm.Opcodes.DMUL;
+import static org.objectweb.asm.Opcodes.DNEG;
+import static org.objectweb.asm.Opcodes.DREM;
+import static org.objectweb.asm.Opcodes.DSUB;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
+import static org.objectweb.asm.Opcodes.LADD;
+import static org.objectweb.asm.Opcodes.LALOAD;
+import static org.objectweb.asm.Opcodes.LAND;
+import static org.objectweb.asm.Opcodes.LCONST_0;
+import static org.objectweb.asm.Opcodes.LCONST_1;
+import static org.objectweb.asm.Opcodes.LDIV;
+import static org.objectweb.asm.Opcodes.LMUL;
+import static org.objectweb.asm.Opcodes.LNEG;
+import static org.objectweb.asm.Opcodes.LOR;
+import static org.objectweb.asm.Opcodes.LREM;
+import static org.objectweb.asm.Opcodes.LSHL;
+import static org.objectweb.asm.Opcodes.LSHR;
+import static org.objectweb.asm.Opcodes.LSUB;
+import static org.objectweb.asm.Opcodes.LUSHR;
+import static org.objectweb.asm.Opcodes.LXOR;
 
 /**
  * Bytecode instruction.
  */
 public class Instruction {
+
+
+  private static final Set<Integer> LONG_DOUBLE_OPCODES = ImmutableSet.of(LADD, LSUB, LMUL, LDIV, LAND, LOR, LXOR, LREM, LSHL, LSHR, LUSHR,
+    DADD, DSUB, DMUL, DDIV, DREM, DCONST_0, DCONST_1, LCONST_0, LCONST_1, LALOAD, DALOAD, DNEG, LNEG);
 
   public final int opcode;
   public final Integer operand;
@@ -80,6 +113,16 @@ public class Instruction {
   public boolean hasReturnValue() {
     Preconditions.checkState(Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC, "Not an INVOKE opcode");
     return Type.getMethodType(fieldOrMethod.desc).getReturnType() != Type.VOID_TYPE;
+  }
+
+  public boolean isLongOrDoubleValue() {
+    if (LONG_DOUBLE_OPCODES.contains(opcode)) {
+      return true;
+    }
+    if (opcode == GETFIELD || opcode == GETSTATIC) {
+      return Type.getType(fieldOrMethod.desc).getSize() == 2;
+    }
+    return false;
   }
 
   @Override
@@ -223,6 +266,11 @@ public class Instruction {
     public LdcInsn(Object cst) {
       super(Opcodes.LDC);
       this.cst = cst;
+    }
+
+    @Override
+    public boolean isLongOrDoubleValue() {
+      return cst instanceof Long || cst instanceof Double;
     }
 
     @Override

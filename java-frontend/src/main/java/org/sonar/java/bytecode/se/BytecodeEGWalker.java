@@ -34,11 +34,15 @@ import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
+
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +62,26 @@ public class BytecodeEGWalker {
   private final BehaviorCache behaviorCache;
 
   private ExplodedGraph explodedGraph;
+
+  /**
+   * Because some instructions manipulate stack differently depending on the type of the value, we need this constraint to know category of the value
+   * see https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-2.html#jvms-2.11.1 Table 2.11.1-B
+   */
+  enum StackValueCategoryConstraint implements Constraint {
+    LONG_OR_DOUBLE;
+
+    @Override
+    public String valueAsString() {
+      return toString();
+    }
+
+    @Nullable
+    @Override
+    public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
+      // don't copy this constraint over any relation
+      return null;
+    }
+  }
 
   @VisibleForTesting
   Deque<ExplodedGraph.Node> workList;
@@ -157,6 +181,7 @@ public class BytecodeEGWalker {
       case DCONST_0:
       case DCONST_1:
         sv = constraintManager.createSymbolicValue(instruction);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         if (instruction.opcode == ICONST_1 || instruction.opcode == LCONST_1 || instruction.opcode == FCONST_1 || instruction.opcode == DCONST_1) {
           programState = programState.addConstraint(sv, BooleanConstraint.TRUE);
@@ -178,7 +203,9 @@ public class BytecodeEGWalker {
         }
         break;
       case LDC:
-        createNonNullValue(instruction);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case ILOAD:
       case LLOAD:
@@ -225,7 +252,10 @@ public class BytecodeEGWalker {
         programState = programState.unstackValue(1).state;
         break;
       case POP2:
-        programState = programState.unstackValue(2).state;
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "POP2 on empty stack");
+        pop = isDoubleOrLong(sv) ? popStack(1, instruction.opcode) : popStack(2, instruction.opcode);
+        programState = pop.state;
         break;
       case DUP:
         sv = programState.peekValue();
@@ -234,34 +264,54 @@ public class BytecodeEGWalker {
         break;
       case DUP_X1:
         pop = popStack(2, instruction.opcode);
-        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        programState = stackValues(pop, 0, 1, 0);
         break;
       case DUP_X2:
-        pop = popStack(3, instruction.opcode);
-        programState = pop.state.stackValue(pop.values.get(0)).stackValue(pop.values.get(2)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        sv = programState.peekValue(1);
+        if (isDoubleOrLong(sv)) {
+          pop = popStack(2, instruction.opcode);
+          programState = stackValues(pop, 0, 1, 0);
+        } else {
+          pop = popStack(3, instruction.opcode);
+          programState = stackValues(pop, 0, 2, 1, 0);
+        }
         break;
       case DUP2:
-        pop = popStack(2, instruction.opcode);
-        programState = pop.state.stackValue(pop.values.get(1)).stackValue(pop.values.get(0)).stackValue(pop.values.get(1)).stackValue(pop.values.get(0));
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "DUP2 needs at least 1 value on stack");
+        if (isDoubleOrLong(sv)) {
+          pop = popStack(1, instruction.opcode);
+          programState = stackValues(pop, 0, 0);
+        } else {
+          pop = popStack(2, instruction.opcode);
+          programState = stackValues(pop, 1, 0, 1, 0);
+        }
         break;
       case DUP2_X1:
-        pop = popStack(3, instruction.opcode);
-        programState = pop.state
-          .stackValue(pop.values.get(1))
-          .stackValue(pop.values.get(0))
-          .stackValue(pop.values.get(2))
-          .stackValue(pop.values.get(1))
-          .stackValue(pop.values.get(0));
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "DUP2_X1 needs at least 1 value on stack");
+        if (isDoubleOrLong(sv)) {
+          pop = popStack(2, instruction.opcode);
+          programState = stackValues(pop, 0, 1, 0);
+        } else {
+          pop = popStack(3, instruction.opcode);
+          programState = stackValues(pop, 1, 0, 2, 1, 0);
+        }
         break;
       case DUP2_X2:
-        pop = popStack(4, instruction.opcode);
-        programState = pop.state
-          .stackValue(pop.values.get(1))
-          .stackValue(pop.values.get(0))
-          .stackValue(pop.values.get(3))
-          .stackValue(pop.values.get(2))
-          .stackValue(pop.values.get(1))
-          .stackValue(pop.values.get(0));
+        if (isDoubleOrLong(programState.peekValue()) && isDoubleOrLong(programState.peekValue(1))) {
+          pop = popStack(2, instruction.opcode);
+          programState = stackValues(pop, 0, 1, 0);
+        } else if (isDoubleOrLong(programState.peekValue(2))) {
+          pop = popStack(3, instruction.opcode);
+          programState = stackValues(pop, 1, 0, 2, 1, 0);
+        } else if (isDoubleOrLong(programState.peekValue())) {
+          pop = popStack(3, instruction.opcode);
+          programState = stackValues(pop, 0, 2, 1, 0);
+        } else {
+          pop = popStack(4, instruction.opcode);
+          programState = stackValues(pop, 1, 0, 3, 2, 1, 0);
+        }
         break;
       case SWAP:
         pop = popStack(2, instruction.opcode);
@@ -294,8 +344,9 @@ public class BytecodeEGWalker {
       case IUSHR:
       case LUSHR:
         pop = popStack(2, instruction.opcode);
-        SymbolicValue sv1 = constraintManager.createSymbolicValue(instruction);
-        programState = pop.state.stackValue(sv1).addConstraint(sv1, ObjectConstraint.NOT_NULL);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case INEG:
       case LNEG:
@@ -304,6 +355,7 @@ public class BytecodeEGWalker {
         pop = popStack(1, instruction.opcode);
         sv = constraintManager.createSymbolicValue(instruction);
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case IAND:
       case LAND:
@@ -314,6 +366,7 @@ public class BytecodeEGWalker {
         pop = popStack(2, instruction.opcode);
         sv = constraintManager.createBinarySymbolicValue(instruction, pop.valuesAndSymbols);
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case IINC:
         int index = instruction.operand;
@@ -323,21 +376,28 @@ public class BytecodeEGWalker {
         programState = programState.put(index, sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case I2L:
-      case I2F:
       case I2D:
-      case L2I:
-      case L2F:
-      case L2D:
-      case F2I:
       case F2L:
       case F2D:
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction.opcode);
+        programState = setDoubleOrLong(sv);
+        break;
+      case L2I:
+      case L2F:
       case D2I:
-      case D2L:
       case D2F:
+        sv = programState.peekValue();
+        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction.opcode);
+        programState = setDoubleOrLong(sv, false);
+        break;
+      case D2L:
+      case I2F:
+      case L2D:
+      case F2I:
       case I2B:
       case I2C:
       case I2S:
-        // TODO SONARJAVA-2508 handle value conversion
         break;
       case LCMP:
       case FCMPL:
@@ -361,7 +421,9 @@ public class BytecodeEGWalker {
         break;
       case GETSTATIC:
         // TODO SONARJAVA-2510 associated symbolic value with symbol
-        programState = programState.stackValue(constraintManager.createSymbolicValue(instruction));
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case PUTSTATIC:
         pop = programState.unstackValue(1);
@@ -369,7 +431,9 @@ public class BytecodeEGWalker {
         break;
       case GETFIELD:
         pop = popStack(1, instruction.opcode);
-        programState = pop.state.stackValue(constraintManager.createSymbolicValue(instruction));
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv);
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case PUTFIELD:
         pop = popStack(2, instruction.opcode);
@@ -391,7 +455,9 @@ public class BytecodeEGWalker {
         programState = pop.state.stackValue(lambdaTargetInterface).addConstraint(lambdaTargetInterface, ObjectConstraint.NOT_NULL);
         break;
       case NEW:
-        createNonNullValue(instruction);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = programState.stackValue(sv);
+        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case NEWARRAY:
       case ANEWARRAY:
@@ -429,6 +495,34 @@ public class BytecodeEGWalker {
         throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
+  }
+
+  private static ProgramState stackValues(ProgramState.Pop pop, int... values) {
+    ProgramState ps = pop.state;
+    for (int value : values) {
+      ps = ps.stackValue(pop.values.get(value));
+    }
+    return ps;
+  }
+
+  private ProgramState setDoubleOrLong(SymbolicValue sv) {
+    return setDoubleOrLong(sv, true);
+  }
+
+  private ProgramState setDoubleOrLong(SymbolicValue sv, boolean value) {
+    return setDoubleOrLong(programState, sv, value);
+  }
+
+  private static ProgramState setDoubleOrLong(ProgramState programState, SymbolicValue sv, boolean value) {
+    if (value) {
+      return programState.addConstraint(sv, StackValueCategoryConstraint.LONG_OR_DOUBLE);
+    } else {
+      return programState.removeConstraintsOnDomain(sv, StackValueCategoryConstraint.class);
+    }
+  }
+
+  private boolean isDoubleOrLong(SymbolicValue sv) {
+    return programState.getConstraint(sv, StackValueCategoryConstraint.class) == StackValueCategoryConstraint.LONG_OR_DOUBLE;
   }
 
   private ProgramState.Pop popStack(int nbOfValues, int opcode) {
@@ -473,12 +567,6 @@ public class BytecodeEGWalker {
       programState = programState.stackValue(returnSV);
     }
     return false;
-  }
-
-  private void createNonNullValue(Instruction instruction) {
-    SymbolicValue sv = constraintManager.createSymbolicValue(instruction);
-    programState = programState.stackValue(sv);
-    programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
   }
 
   @VisibleForTesting
@@ -569,6 +657,7 @@ public class BytecodeEGWalker {
       SymbolicValue sv = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(sv);
       state = state.put(parameterIdx, sv);
+      state = setDoubleOrLong(state, sv, argumentType.getSize() == 2);
       parameterIdx += argumentType.getSize();
     }
     return Collections.singletonList(state);
