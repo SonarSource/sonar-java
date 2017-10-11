@@ -25,6 +25,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.BytecodeCFGBuilderTest;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;
@@ -925,5 +926,16 @@ public class BytecodeEGWalkerExecuteTest {
     } else {
       return programState.removeConstraintsOnDomain(sv, BytecodeEGWalker.StackValueCategoryConstraint.class);
     }
+  }
+
+  @Test
+  public void test_enqueuing_only_happy_path() {
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
+    walker.handleBlockExit(new ProgramPoint(b2));
+    assertThat(walker.workList).hasSize(1);
+    assertThat(walker.workList.getFirst().programPoint.block.id()).isEqualTo(3);
   }
 }

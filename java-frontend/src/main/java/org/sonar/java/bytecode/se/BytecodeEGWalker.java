@@ -635,8 +635,10 @@ public class BytecodeEGWalker {
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
-      // TODO : filter some node of the EG depending of the exceptionType in the successor.
-      programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
+      programPosition.block.successors().stream()
+        .map(b-> (BytecodeCFGBuilder.Block)b)
+        .filter(b-> b.getExceptionType() == null)
+        .forEach(b -> enqueue(new ProgramPoint(b), programState));
     }
   }
 
