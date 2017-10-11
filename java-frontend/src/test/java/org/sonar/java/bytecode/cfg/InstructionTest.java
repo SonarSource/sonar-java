@@ -77,6 +77,20 @@ public class InstructionTest {
   }
 
   @Test
+  public void test_ldc_equals() throws Exception {
+    Instruction nop = new Instruction(Opcodes.NOP);
+    Instruction.LdcInsn ldc1 = new Instruction.LdcInsn("a");
+    Instruction.LdcInsn ldc2 = new Instruction.LdcInsn("a");
+    Instruction.LdcInsn ldc3 = new Instruction.LdcInsn(1L);
+    assertThat(ldc1.equals(ldc1)).isTrue();
+    assertThat(ldc1.equals(null)).isFalse();
+    assertThat(ldc1.equals(nop)).isFalse();
+    assertThat(ldc1.equals(ldc2)).isTrue();
+    assertThat(ldc1.equals(ldc3)).isFalse();
+    assertThat(ldc1.hashCode()).isEqualTo(ldc2.hashCode());
+  }
+
+  @Test
   public void test_instruction_tostring() throws Exception {
     Instruction nop = new Instruction(Opcodes.NOP);
     assertThat(nop).hasToString("NOP");

@@ -215,4 +215,34 @@ public class Instruction {
       return Objects.hash(super.hashCode(), desc);
     }
   }
+
+  public static class LdcInsn extends Instruction {
+
+    public final Object cst;
+
+    public LdcInsn(Object cst) {
+      super(Opcodes.LDC);
+      this.cst = cst;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      LdcInsn ldcInsn = (LdcInsn) o;
+      return Objects.equals(cst, ldcInsn.cst);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), cst);
+    }
+  }
 }
