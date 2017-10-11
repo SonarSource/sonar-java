@@ -833,6 +833,7 @@ public class BytecodeEGWalkerExecuteTest {
       ProgramState initialPs = ProgramState.EMPTY_STATE.stackValue(sv);
       ProgramState ps = execute(new Instruction(opcode), initialPs);
       assertThat(isDoubleOrLong(ps, sv)).isTrue();
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs value on stack");
     }
     int[] fromLongOrDouble = {Opcodes.D2F, Opcodes.D2I, Opcodes.L2F, Opcodes.L2I};
     for (int opcode : fromLongOrDouble) {
@@ -841,6 +842,7 @@ public class BytecodeEGWalkerExecuteTest {
       initialPs = setDoubleOrLong(initialPs, sv, true);
       ProgramState ps = execute(new Instruction(opcode), initialPs);
       assertThat(isDoubleOrLong(ps, sv)).isFalse();
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs value on stack");
     }
   }
 

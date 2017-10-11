@@ -380,15 +380,15 @@ public class BytecodeEGWalker {
       case F2L:
       case F2D:
         sv = programState.peekValue();
-        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction.opcode);
-        programState = setDoubleOrLong(sv);
+        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction);
+        programState = setDoubleOrLong(sv, true);
         break;
       case L2I:
       case L2F:
       case D2I:
       case D2F:
         sv = programState.peekValue();
-        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction.opcode);
+        Preconditions.checkNotNull(sv, "%s needs value on stack", instruction);
         programState = setDoubleOrLong(sv, false);
         break;
       case D2L:
@@ -492,7 +492,7 @@ public class BytecodeEGWalker {
         programState = pop.state.stackValue(arrayRef).addConstraint(arrayRef, ObjectConstraint.NOT_NULL);
         break;
       default:
-        throw new IllegalStateException("Instruction not handled. " + Printer.OPCODES[instruction.opcode]);
+        throw new IllegalStateException("Instruction not handled. " + instruction);
     }
     checkerDispatcher.executeCheckPostStatement(instruction);
   }
@@ -503,10 +503,6 @@ public class BytecodeEGWalker {
       ps = ps.stackValue(pop.values.get(value));
     }
     return ps;
-  }
-
-  private ProgramState setDoubleOrLong(SymbolicValue sv) {
-    return setDoubleOrLong(sv, true);
   }
 
   private ProgramState setDoubleOrLong(SymbolicValue sv, boolean value) {
@@ -622,7 +618,7 @@ public class BytecodeEGWalker {
           programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), pop.state));
           return;
         default:
-          throw new IllegalStateException("Unexpected terminator " + Printer.OPCODES[terminator.opcode]);
+          throw new IllegalStateException("Unexpected terminator " + terminator);
       }
       programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
       Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
