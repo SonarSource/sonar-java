@@ -28,6 +28,8 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class MethodBehavior {
-  private final Symbol.MethodSymbol methodSymbol;
+  private Symbol.MethodSymbol methodSymbol;
   private boolean varArgs;
   private boolean isStaticMethod;
   private final int arity;
@@ -48,7 +50,7 @@ public class MethodBehavior {
 
   public MethodBehavior(Symbol.MethodSymbol methodSymbol) {
     this.methodSymbol = methodSymbol;
-    this.signature = null;
+    this.signature = ((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature();
     this.yields = new LinkedHashSet<>();
     this.parameters = new ArrayList<>();
     this.varArgs = ((JavaSymbol.MethodJavaSymbol) methodSymbol).isVarArgs();
@@ -173,8 +175,13 @@ public class MethodBehavior {
     visited = true;
   }
 
+  @Nullable
   public Symbol.MethodSymbol methodSymbol() {
     return methodSymbol;
+  }
+
+  public String signature() {
+    return signature;
   }
 
   public boolean isStaticMethod() {
@@ -187,5 +194,9 @@ public class MethodBehavior {
 
   public void setStaticMethod(boolean staticMethod) {
     isStaticMethod = staticMethod;
+  }
+
+  public void setMethodSymbol(Symbol.MethodSymbol methodSymbol) {
+    this.methodSymbol = methodSymbol;
   }
 }

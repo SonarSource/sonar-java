@@ -74,7 +74,7 @@ public class BehaviorCache {
         || isStringUtilsMethod(signature)
         || isEclipseAssert(signature)
         ) {
-        return new BytecodeEGWalker(this).getMethodBehavior(signature, classLoader);
+        return new BytecodeEGWalker(this).getMethodBehavior(signature, symbol, classLoader);
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
