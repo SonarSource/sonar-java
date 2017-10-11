@@ -114,12 +114,21 @@ public class BytecodeCFGBuilder {
     public Block exitBlock() {
       return blocks.get(0);
     }
+
+    public List<Block> blocks() {
+      return blocks;
+    }
   }
   public static class Block implements CFG.IBlock<Instruction> {
     int id;
     BytecodeCFG cfg;
     List<Instruction> instructions;
     List<Block> successors;
+
+    public String getExceptionType() {
+      return exceptionType;
+    }
+
     String exceptionType;
     Instruction terminator;
     private Block trueBlock;

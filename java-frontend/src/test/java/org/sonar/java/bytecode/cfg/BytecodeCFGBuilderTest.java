@@ -367,8 +367,15 @@ public class BytecodeCFGBuilderTest {
   }
 
   private void assertCFGforMethod(String methodName, String expectedCFG) {
+    BytecodeCFGBuilder.BytecodeCFG cfg = getBytecodeCFG(methodName, "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    StringBuilder sb = new StringBuilder();
+    cfg.blocks.forEach(b-> sb.append(b.printBlock()));
+    assertThat(sb.toString()).isEqualTo(expectedCFG);
+  }
+
+  public static BytecodeCFGBuilder.BytecodeCFG getBytecodeCFG(String methodName, String filename) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    File file = new File(filename);
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(tree, squidClassLoader);
     List<Tree> classMembers = ((ClassTree) tree.types().get(0)).members();
@@ -378,10 +385,7 @@ public class BytecodeCFGBuilderTest {
       .filter(s -> methodName.equals(s.name()))
       .findFirst()
       .orElseThrow(IllegalStateException::new);
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
-    StringBuilder sb = new StringBuilder();
-    cfg.blocks.forEach(b-> sb.append(b.printBlock()));
-    assertThat(sb.toString()).isEqualTo(expectedCFG);
+    return BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
   }
 
   private void tryCatch() {
