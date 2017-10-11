@@ -34,6 +34,19 @@ import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 public class MethodBehaviorTest {
 
   @Test
+  public void method_behavior_signature() {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
+
+    MethodBehavior mb = getMethodBehavior(sev, "method");
+
+    assertThat(mb.methodSymbol()).isNotNull();
+    assertThat(mb.methodSymbol().name()).isEqualTo("method");
+
+    assertThat(mb.signature()).isEqualTo("MethodYields#method(Ljava/lang/Object;Z)Z");
+    assertThat(mb.signature()).isNotNull();
+  }
+
+  @Test
   public void method_behavior_yields() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
 

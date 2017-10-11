@@ -55,11 +55,10 @@ public class BytecodeEGWalkerTest {
     MethodBehavior methodBehavior = getMethodBehavior(0);
     assertThat(methodBehavior.yields()).hasSize(2);
 
-    SymbolicValue svThis = new SymbolicValue();
     SymbolicValue svFirstArg = new SymbolicValue();
     SymbolicValue svsecondArg = new SymbolicValue();
     SymbolicValue svResult = new SymbolicValue();
-    List<SymbolicValue> invocationArguments = Lists.newArrayList(svThis, svFirstArg, svsecondArg);
+    List<SymbolicValue> invocationArguments = Lists.newArrayList(svFirstArg, svsecondArg);
     List<ObjectConstraint> collect = methodBehavior.yields().stream().map(my -> {
 
       Collection<ProgramState> ps = my.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
@@ -122,10 +121,9 @@ public class BytecodeEGWalkerTest {
     MethodBehavior methodBehavior = getMethodBehavior(1);
     assertThat(methodBehavior.yields()).hasSize(2);
 
-    SymbolicValue svThis = new SymbolicValue();
     SymbolicValue svFirstArg = new SymbolicValue();
     SymbolicValue svResult = new SymbolicValue();
-    List<SymbolicValue> invocationArguments = Lists.newArrayList(svThis, svFirstArg);
+    List<SymbolicValue> invocationArguments = Lists.newArrayList(svFirstArg);
     List<HappyPathYield> oneYield =
       methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
 
@@ -212,6 +210,6 @@ public class BytecodeEGWalkerTest {
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(index)).symbol();
     String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
-    return bytecodeEGWalker.getMethodBehavior(signature, squidClassLoader);
+    return bytecodeEGWalker.getMethodBehavior(signature, symbol, squidClassLoader);
   }
 }

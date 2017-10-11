@@ -41,6 +41,9 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.plugins.java.api.semantic.Symbol;
+
+import javax.annotation.Nullable;
 
 import javax.annotation.Nullable;
 
@@ -104,10 +107,13 @@ public class BytecodeEGWalker {
     endOfExecutionPath = new LinkedHashSet<>();
   }
 
-  public MethodBehavior getMethodBehavior(String signature, SquidClassLoader classLoader) {
+  public MethodBehavior getMethodBehavior(String signature, @Nullable Symbol.MethodSymbol methodSymbol, SquidClassLoader classLoader) {
     methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
     if(!methodBehavior.isComplete()) {
       execute(signature, classLoader);
+      if (methodSymbol != null) {
+        methodBehavior.setMethodSymbol(methodSymbol);
+      }
       methodBehavior.completed();
     }
     return methodBehavior;
@@ -557,6 +563,8 @@ public class BytecodeEGWalker {
             }));
         return true;
       }
+    } else {
+      // TODO remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments
     }
     programState = pop.state;
     if (instruction.hasReturnValue()) {
@@ -644,7 +652,6 @@ public class BytecodeEGWalker {
     if(!methodBehavior.isStaticMethod()) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
-      methodBehavior.addParameter(thisSV);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
       parameterIdx = 1;
     }
