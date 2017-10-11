@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.se;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -39,6 +40,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,6 +50,9 @@ import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeEGWalkerExecuteTest {
 
+  private static final Set<Integer> LONG_OPCODE = ImmutableSet.of(LADD, LSUB, LMUL, LDIV, LAND, LOR, LXOR, LREM, LSHL, LSHR, LUSHR,
+    DADD, DSUB, DMUL, DDIV, DREM);
+
   @Test
   public void test_nop() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NOP));
@@ -56,8 +61,16 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_ldc() throws Exception {
-    ProgramState programState = execute(new Instruction(Opcodes.LDC));
+    ProgramState programState = execute(new Instruction.LdcInsn("a"));
     assertStack(programState, ObjectConstraint.NOT_NULL);
+    SymbolicValue sv = programState.peekValue();
+    assertThat(isDoubleOrLong(programState, sv)).isFalse();
+    programState = execute(new Instruction.LdcInsn(1L));
+    sv = programState.peekValue();
+    assertThat(isDoubleOrLong(programState, sv)).isTrue();
+    programState = execute(new Instruction.LdcInsn(1D));
+    sv = programState.peekValue();
+    assertThat(isDoubleOrLong(programState, sv)).isTrue();
   }
 
   @Test
@@ -165,7 +178,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_array_store() throws  Exception {
+  public void test_array_store() throws Exception {
     int[] storeArrayOpcodes = new int[] {Opcodes.IASTORE, Opcodes.LASTORE, Opcodes.FASTORE, Opcodes.DASTORE, Opcodes.AASTORE, Opcodes.BASTORE, Opcodes.CASTORE, Opcodes.SASTORE};
     SymbolicValue array = new SymbolicValue();
     SymbolicValue index = new SymbolicValue();
@@ -215,6 +228,18 @@ public class BytecodeEGWalkerExecuteTest {
     SymbolicValue sv3 = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.POP2), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2).stackValue(sv3));
     assertThat(programState.peekValue()).isEqualTo(sv1);
+
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.POP2))).hasMessage("POP2 on empty stack");
+  }
+
+  @Test
+  public void test_pop2_long_double() throws Exception {
+    SymbolicValue normalSv = new SymbolicValue();
+    SymbolicValue longSv = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(normalSv).stackValue(longSv);
+    startingState = setDoubleOrLong(startingState, longSv, true);
+    ProgramState programState = execute(new Instruction(Opcodes.POP2), startingState);
+    assertThat(programState.peekValue()).isEqualTo(normalSv);
   }
 
   @Test
@@ -259,8 +284,20 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv1);
     assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
 
-    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP_X2), ProgramState.EMPTY_STATE.stackValue(sv1)))
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP_X2), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2)))
       .hasMessage("DUP_X2 needs 3 values on stack");
+  }
+
+  @Test
+  public void test_dup_x2_long_double() throws Exception {
+    SymbolicValue normalSv = new SymbolicValue();
+    SymbolicValue longSv = new SymbolicValue();
+    SymbolicValue another = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(another).stackValue(longSv).stackValue(normalSv);
+    startingState = setDoubleOrLong(startingState, longSv, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP_X2), startingState);
+    ProgramState.Pop pop = programState.unstackValue(4);
+    assertThat(pop.values).containsExactly(normalSv, longSv, normalSv, another);
   }
 
   @Test
@@ -269,11 +306,22 @@ public class BytecodeEGWalkerExecuteTest {
     SymbolicValue sv2 = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.DUP2), ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1));
     ProgramState.Pop pop = programState.unstackValue(4);
-    assertThat(pop.values).containsOnly(sv1, sv2, sv1, sv2);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv1, sv2);
     assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2)))
-      .hasMessage("DUP2 needs 2 values on stack");
+      .hasMessage("DUP2 needs at least 1 value on stack");
+  }
+
+  @Test
+  public void test_dup2_long_double() throws Exception {
+    SymbolicValue longSv = new SymbolicValue();
+    SymbolicValue another = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(another).stackValue(longSv);
+    startingState = setDoubleOrLong(startingState, longSv, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2), startingState);
+    ProgramState.Pop pop = programState.unstackValue(4);
+    assertThat(pop.values).containsExactly(longSv, longSv, another);
   }
 
   @Test
@@ -288,6 +336,18 @@ public class BytecodeEGWalkerExecuteTest {
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2_X1), ProgramState.EMPTY_STATE.stackValue(sv1)))
       .hasMessage("DUP2_X1 needs 3 values on stack");
+  }
+
+  @Test
+  public void test_dup2_x1_long_double() throws Exception {
+    SymbolicValue normalSv = new SymbolicValue();
+    SymbolicValue longSv = new SymbolicValue();
+    SymbolicValue another = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(another).stackValue(normalSv).stackValue(longSv);
+    startingState = setDoubleOrLong(startingState, longSv, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X1), startingState);
+    ProgramState.Pop pop = programState.unstackValue(5);
+    assertThat(pop.values).containsExactly(longSv, normalSv, longSv, another);
   }
 
   @Test
@@ -314,8 +374,49 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv4, sv1, sv2);
     assertThat(pop.state).isEqualTo(ProgramState.EMPTY_STATE);
 
-    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2_X2), ProgramState.EMPTY_STATE.stackValue(sv1)))
+    assertThatThrownBy(() -> execute(new Instruction(Opcodes.DUP2_X2), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2).stackValue(sv3)))
       .hasMessage("DUP2_X2 needs 4 values on stack");
+  }
+
+  // see https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-6.html#jvms-6.5.dup2_x2
+  @Test
+  public void test_dup2_x2_form2() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    SymbolicValue sv4 = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(sv4).stackValue(sv3).stackValue(sv2).stackValue(sv1);
+    startingState = setDoubleOrLong(startingState, sv1, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X2), startingState);
+    ProgramState.Pop pop = programState.unstackValue(6);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv1, sv4);
+  }
+
+  @Test
+  public void test_dup2_x2_form3() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    SymbolicValue sv4 = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(sv4).stackValue(sv3).stackValue(sv2).stackValue(sv1);
+    startingState = setDoubleOrLong(startingState, sv3, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X2), startingState);
+    ProgramState.Pop pop = programState.unstackValue(6);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv3, sv1, sv2, sv4);
+  }
+
+  @Test
+  public void test_dup2_x2_form4() throws Exception {
+    SymbolicValue sv1 = new SymbolicValue();
+    SymbolicValue sv2 = new SymbolicValue();
+    SymbolicValue sv3 = new SymbolicValue();
+    SymbolicValue sv4 = new SymbolicValue();
+    ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(sv4).stackValue(sv3).stackValue(sv2).stackValue(sv1);
+    startingState = setDoubleOrLong(startingState, sv1, true);
+    startingState = setDoubleOrLong(startingState, sv2, true);
+    ProgramState programState = execute(new Instruction(Opcodes.DUP2_X2), startingState);
+    ProgramState.Pop pop = programState.unstackValue(6);
+    assertThat(pop.values).containsExactly(sv1, sv2, sv1, sv3, sv4);
   }
 
   @Test
@@ -336,11 +437,11 @@ public class BytecodeEGWalkerExecuteTest {
   public void test_neg() throws Exception {
     SymbolicValue sv = new SymbolicValue();
 
-    int[] negOpcodes = new int[] { Opcodes.INEG, Opcodes.LNEG, Opcodes.FNEG, Opcodes.DNEG };
+    int[] negOpcodes = new int[] {Opcodes.INEG, Opcodes.LNEG, Opcodes.FNEG, Opcodes.DNEG};
     ProgramState initState = ProgramState.EMPTY_STATE.stackValue(sv);
     for (int negOpcode : negOpcodes) {
       ProgramState programState = execute(new Instruction(negOpcode), initState);
-      assertStack(programState, new Constraint[][]{{ ObjectConstraint.NOT_NULL }});
+      assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL}});
       assertThat(programState.peekValue()).isNotEqualTo(sv);
     }
 
@@ -385,6 +486,7 @@ public class BytecodeEGWalkerExecuteTest {
       assertThat(result).isNotEqualTo(sv1);
       assertThat(result).isNotEqualTo(sv2);
       assertThat(result).isInstanceOf(binarySvClass);
+      assertThat(isDoubleOrLong(programState, result)).isEqualTo(LONG_OPCODE.contains(opcode));
       BinarySymbolicValue andSv = (BinarySymbolicValue) result;
       assertThat(andSv.getRightOp()).isEqualTo(sv1);
       assertThat(andSv.getLeftOp()).isEqualTo(sv2);
@@ -440,13 +542,14 @@ public class BytecodeEGWalkerExecuteTest {
       SymbolicValue result = pop.values.get(0);
       assertThat(result).isNotEqualTo(sv1);
       assertThat(result).isNotEqualTo(sv2);
+      assertThat(isDoubleOrLong(programState, result)).isEqualTo(LONG_OPCODE.contains(opcode));
     }
   }
 
   @Test
   public void test_invoke_instance_method() throws Exception {
     int[] opcodes = new int[] {Opcodes.INVOKESPECIAL, Opcodes.INVOKEVIRTUAL, Opcodes.INVOKEINTERFACE};
-    for (int opcode: opcodes) {
+    for (int opcode : opcodes) {
       SymbolicValue thisSv = new SymbolicValue();
       ProgramState stateWithThis = ProgramState.EMPTY_STATE.stackValue(thisSv);
       ProgramState programState = execute(invokeMethod(opcode, "()V"), stateWithThis);
@@ -474,11 +577,11 @@ public class BytecodeEGWalkerExecuteTest {
     assertEmptyStack(programState);
 
     programState = execute(invokeStatic("()Z"));
-    assertStack(programState, new Constraint[]{null});
+    assertStack(programState, new Constraint[] {null});
 
     SymbolicValue arg = new SymbolicValue();
     programState = execute(invokeStatic("(I)I"), ProgramState.EMPTY_STATE.stackValue(arg));
-    assertStack(programState, new Constraint[]{null});
+    assertStack(programState, new Constraint[] {null});
     assertThat(programState.peekValue()).isNotEqualTo(arg);
 
     programState = execute(invokeStatic("(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
@@ -530,7 +633,7 @@ public class BytecodeEGWalkerExecuteTest {
     Label l1 = new Label();
     Label l2 = new Label();
     Label l3 = new Label();
-    instr.visitTableSwitchInsn(0, 2, l3, new Label[] { l0, l1, l2 });
+    instr.visitTableSwitchInsn(0, 2, l3, new Label[] {l0, l1, l2});
     instr.visitLabel(l0);
     instr.visitInsn(ICONST_0);
     instr.visitVarInsn(ISTORE, 1);
@@ -567,7 +670,7 @@ public class BytecodeEGWalkerExecuteTest {
     Label l1 = new Label();
     Label l2 = new Label();
     Label l3 = new Label();
-    instr.visitLookupSwitchInsn(l3, new int[] { 0, 1, 2, 50 }, new Label[] { l0, l1, l2, l3 });
+    instr.visitLookupSwitchInsn(l3, new int[] {0, 1, 2, 50}, new Label[] {l0, l1, l2, l3});
     instr.visitLabel(l0);
     instr.visitInsn(ICONST_0);
     instr.visitVarInsn(ISTORE, 1);
@@ -599,8 +702,12 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_getstatic() throws Exception {
-    ProgramState programState = execute(new Instruction(Opcodes.GETSTATIC));
+    ProgramState programState = execute(new Instruction(Opcodes.GETSTATIC, new Instruction.FieldOrMethod("", "", "D", false)));
     assertThat(programState.peekValue()).isNotNull();
+    assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
+    programState = execute(new Instruction(Opcodes.GETSTATIC, new Instruction.FieldOrMethod("", "", "I", false)));
+    assertThat(programState.peekValue()).isNotNull();
+    assertThat(isDoubleOrLong(programState, programState.peekValue())).isFalse();
   }
 
   @Test
@@ -612,10 +719,16 @@ public class BytecodeEGWalkerExecuteTest {
   @Test
   public void test_getfield() throws Exception {
     SymbolicValue objectRef = new SymbolicValue();
-    ProgramState programState = execute(new Instruction(Opcodes.GETFIELD), ProgramState.EMPTY_STATE.stackValue(objectRef));
+    ProgramState programState = execute(new Instruction(Opcodes.GETFIELD, new Instruction.FieldOrMethod("", "", "D", false)), ProgramState.EMPTY_STATE.stackValue(objectRef));
     SymbolicValue fieldValue = programState.peekValue();
     assertThat(fieldValue).isNotNull();
+    assertThat(isDoubleOrLong(programState, fieldValue)).isTrue();
     assertThat(fieldValue).isNotEqualTo(objectRef);
+
+    programState = execute(new Instruction(Opcodes.GETFIELD, new Instruction.FieldOrMethod("", "", "I", false)), ProgramState.EMPTY_STATE.stackValue(objectRef));
+    fieldValue = programState.peekValue();
+    assertThat(fieldValue).isNotNull();
+    assertThat(isDoubleOrLong(programState, fieldValue)).isFalse();
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.GETFIELD))).hasMessage("GETFIELD needs 1 values on stack");
   }
@@ -712,6 +825,27 @@ public class BytecodeEGWalkerExecuteTest {
       .hasMessage("Lambda should always evaluate to target functional interface");
   }
 
+  @Test
+  public void test_conversion() throws Exception {
+    int[] toLongOrDouble = {Opcodes.I2D, Opcodes.I2L, Opcodes.F2D, Opcodes.F2L};
+    for (int opcode : toLongOrDouble) {
+      SymbolicValue sv = new SymbolicValue();
+      ProgramState initialPs = ProgramState.EMPTY_STATE.stackValue(sv);
+      ProgramState ps = execute(new Instruction(opcode), initialPs);
+      assertThat(isDoubleOrLong(ps, sv)).isTrue();
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs value on stack");
+    }
+    int[] fromLongOrDouble = {Opcodes.D2F, Opcodes.D2I, Opcodes.L2F, Opcodes.L2I};
+    for (int opcode : fromLongOrDouble) {
+      SymbolicValue sv = new SymbolicValue();
+      ProgramState initialPs = ProgramState.EMPTY_STATE.stackValue(sv);
+      initialPs = setDoubleOrLong(initialPs, sv, true);
+      ProgramState ps = execute(new Instruction(opcode), initialPs);
+      assertThat(isDoubleOrLong(ps, sv)).isFalse();
+      assertThatThrownBy(() -> execute(new Instruction(opcode))).hasMessage(Printer.OPCODES[opcode] + " needs value on stack");
+    }
+  }
+
   private Instruction invokeMethod(int opcode, String desc) {
     return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
   }
@@ -743,6 +877,9 @@ public class BytecodeEGWalkerExecuteTest {
     int idx = 0;
     for (SymbolicValue sv : symbolicValues) {
       ConstraintsByDomain constraintsByDomain = ps.getConstraints(sv);
+      if (constraintsByDomain != null) {
+        constraintsByDomain = constraintsByDomain.remove(BytecodeEGWalker.StackValueCategoryConstraint.class);
+      }
       for (Constraint expectedConstraint : constraints[idx]) {
         if (expectedConstraint != null) {
           Class<? extends Constraint> expectedConstraintDomain = expectedConstraint.getClass();
@@ -753,7 +890,7 @@ public class BytecodeEGWalkerExecuteTest {
           assertThat(constraintsByDomain).isNull();
         }
       }
-      if(constraintsByDomain != null) {
+      if (constraintsByDomain != null) {
         assertThat(constraintsByDomain.isEmpty()).isTrue();
       }
       idx++;
@@ -776,5 +913,17 @@ public class BytecodeEGWalkerExecuteTest {
     walker.programState = startingState;
     walker.executeInstruction(instruction);
     return walker.programState;
+  }
+
+  private static boolean isDoubleOrLong(ProgramState programState, SymbolicValue sv) {
+    return programState.getConstraint(sv, BytecodeEGWalker.StackValueCategoryConstraint.class) == BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE;
+  }
+
+  private static ProgramState setDoubleOrLong(ProgramState programState, SymbolicValue sv, boolean value) {
+    if (value) {
+      return programState.addConstraint(sv, BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE);
+    } else {
+      return programState.removeConstraintsOnDomain(sv, BytecodeEGWalker.StackValueCategoryConstraint.class);
+    }
   }
 }

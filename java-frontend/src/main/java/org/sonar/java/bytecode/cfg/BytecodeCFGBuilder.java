@@ -280,8 +280,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitLdcInsn(Object cst) {
-      // FIXME (npe) LDC is generic information about constant but the real value of constant could be loaded into instructions
-      currentBlock.addInsn(Opcodes.LDC);
+      currentBlock.addInsn(new Instruction.LdcInsn(cst));
     }
 
     @Override

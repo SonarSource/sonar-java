@@ -157,7 +157,7 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(IFNONNULL), null});
 
     // The rest
-    testData.add(new Object[] {new TestInput(LDC), null});
+    testData.add(new Object[] {new TestInput(LDC), new Instruction.LdcInsn("a")});
     testData.add(new Object[] {new TestInput(IINC, 2), inst(IINC, 2)});
     testData.add(new Object[] {new TestInput(INVOKEDYNAMIC), new Instruction.InvokeDynamicInsn("()Ljava/util/function/Supplier;")});
     testData.add(new Object[] {new TestInput(TABLESWITCH), null});
