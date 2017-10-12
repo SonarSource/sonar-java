@@ -45,8 +45,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -56,7 +54,162 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.AALOAD;
+import static org.objectweb.asm.Opcodes.AASTORE;
+import static org.objectweb.asm.Opcodes.ACONST_NULL;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ANEWARRAY;
+import static org.objectweb.asm.Opcodes.ARETURN;
+import static org.objectweb.asm.Opcodes.ARRAYLENGTH;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.ATHROW;
+import static org.objectweb.asm.Opcodes.BALOAD;
+import static org.objectweb.asm.Opcodes.BASTORE;
+import static org.objectweb.asm.Opcodes.BIPUSH;
+import static org.objectweb.asm.Opcodes.CALOAD;
+import static org.objectweb.asm.Opcodes.CASTORE;
+import static org.objectweb.asm.Opcodes.CHECKCAST;
+import static org.objectweb.asm.Opcodes.D2F;
+import static org.objectweb.asm.Opcodes.D2I;
+import static org.objectweb.asm.Opcodes.D2L;
+import static org.objectweb.asm.Opcodes.DADD;
+import static org.objectweb.asm.Opcodes.DALOAD;
+import static org.objectweb.asm.Opcodes.DASTORE;
+import static org.objectweb.asm.Opcodes.DCMPG;
+import static org.objectweb.asm.Opcodes.DCMPL;
+import static org.objectweb.asm.Opcodes.DCONST_0;
+import static org.objectweb.asm.Opcodes.DCONST_1;
+import static org.objectweb.asm.Opcodes.DDIV;
+import static org.objectweb.asm.Opcodes.DLOAD;
+import static org.objectweb.asm.Opcodes.DMUL;
+import static org.objectweb.asm.Opcodes.DNEG;
+import static org.objectweb.asm.Opcodes.DREM;
+import static org.objectweb.asm.Opcodes.DRETURN;
+import static org.objectweb.asm.Opcodes.DSTORE;
+import static org.objectweb.asm.Opcodes.DSUB;
+import static org.objectweb.asm.Opcodes.DUP;
+import static org.objectweb.asm.Opcodes.DUP2;
+import static org.objectweb.asm.Opcodes.DUP2_X1;
+import static org.objectweb.asm.Opcodes.DUP2_X2;
+import static org.objectweb.asm.Opcodes.DUP_X1;
+import static org.objectweb.asm.Opcodes.DUP_X2;
+import static org.objectweb.asm.Opcodes.F2D;
+import static org.objectweb.asm.Opcodes.F2I;
+import static org.objectweb.asm.Opcodes.F2L;
+import static org.objectweb.asm.Opcodes.FADD;
+import static org.objectweb.asm.Opcodes.FALOAD;
+import static org.objectweb.asm.Opcodes.FASTORE;
+import static org.objectweb.asm.Opcodes.FCMPG;
+import static org.objectweb.asm.Opcodes.FCMPL;
+import static org.objectweb.asm.Opcodes.FCONST_0;
+import static org.objectweb.asm.Opcodes.FCONST_1;
+import static org.objectweb.asm.Opcodes.FCONST_2;
+import static org.objectweb.asm.Opcodes.FDIV;
+import static org.objectweb.asm.Opcodes.FLOAD;
+import static org.objectweb.asm.Opcodes.FMUL;
+import static org.objectweb.asm.Opcodes.FNEG;
+import static org.objectweb.asm.Opcodes.FREM;
+import static org.objectweb.asm.Opcodes.FRETURN;
+import static org.objectweb.asm.Opcodes.FSTORE;
+import static org.objectweb.asm.Opcodes.FSUB;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.I2B;
+import static org.objectweb.asm.Opcodes.I2C;
+import static org.objectweb.asm.Opcodes.I2D;
+import static org.objectweb.asm.Opcodes.I2F;
+import static org.objectweb.asm.Opcodes.I2L;
+import static org.objectweb.asm.Opcodes.I2S;
+import static org.objectweb.asm.Opcodes.IADD;
+import static org.objectweb.asm.Opcodes.IALOAD;
+import static org.objectweb.asm.Opcodes.IAND;
+import static org.objectweb.asm.Opcodes.IASTORE;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.ICONST_2;
+import static org.objectweb.asm.Opcodes.ICONST_3;
+import static org.objectweb.asm.Opcodes.ICONST_4;
+import static org.objectweb.asm.Opcodes.ICONST_5;
+import static org.objectweb.asm.Opcodes.ICONST_M1;
+import static org.objectweb.asm.Opcodes.IDIV;
+import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IFGE;
+import static org.objectweb.asm.Opcodes.IFGT;
+import static org.objectweb.asm.Opcodes.IFLE;
+import static org.objectweb.asm.Opcodes.IFLT;
+import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.IFNONNULL;
+import static org.objectweb.asm.Opcodes.IFNULL;
+import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ACMPNE;
+import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
+import static org.objectweb.asm.Opcodes.IF_ICMPGE;
+import static org.objectweb.asm.Opcodes.IF_ICMPGT;
+import static org.objectweb.asm.Opcodes.IF_ICMPLE;
+import static org.objectweb.asm.Opcodes.IF_ICMPLT;
+import static org.objectweb.asm.Opcodes.IF_ICMPNE;
+import static org.objectweb.asm.Opcodes.IINC;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.IMUL;
+import static org.objectweb.asm.Opcodes.INEG;
+import static org.objectweb.asm.Opcodes.INSTANCEOF;
+import static org.objectweb.asm.Opcodes.INVOKEDYNAMIC;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.IOR;
+import static org.objectweb.asm.Opcodes.IREM;
+import static org.objectweb.asm.Opcodes.IRETURN;
+import static org.objectweb.asm.Opcodes.ISHL;
+import static org.objectweb.asm.Opcodes.ISHR;
+import static org.objectweb.asm.Opcodes.ISTORE;
+import static org.objectweb.asm.Opcodes.ISUB;
+import static org.objectweb.asm.Opcodes.IUSHR;
+import static org.objectweb.asm.Opcodes.IXOR;
+import static org.objectweb.asm.Opcodes.JSR;
+import static org.objectweb.asm.Opcodes.L2D;
+import static org.objectweb.asm.Opcodes.L2F;
+import static org.objectweb.asm.Opcodes.L2I;
+import static org.objectweb.asm.Opcodes.LADD;
+import static org.objectweb.asm.Opcodes.LALOAD;
+import static org.objectweb.asm.Opcodes.LAND;
+import static org.objectweb.asm.Opcodes.LASTORE;
+import static org.objectweb.asm.Opcodes.LCMP;
+import static org.objectweb.asm.Opcodes.LCONST_0;
+import static org.objectweb.asm.Opcodes.LCONST_1;
+import static org.objectweb.asm.Opcodes.LDC;
+import static org.objectweb.asm.Opcodes.LDIV;
+import static org.objectweb.asm.Opcodes.LLOAD;
+import static org.objectweb.asm.Opcodes.LMUL;
+import static org.objectweb.asm.Opcodes.LNEG;
+import static org.objectweb.asm.Opcodes.LOOKUPSWITCH;
+import static org.objectweb.asm.Opcodes.LOR;
+import static org.objectweb.asm.Opcodes.LREM;
+import static org.objectweb.asm.Opcodes.LRETURN;
+import static org.objectweb.asm.Opcodes.LSHL;
+import static org.objectweb.asm.Opcodes.LSHR;
+import static org.objectweb.asm.Opcodes.LSTORE;
+import static org.objectweb.asm.Opcodes.LSUB;
+import static org.objectweb.asm.Opcodes.LUSHR;
+import static org.objectweb.asm.Opcodes.LXOR;
+import static org.objectweb.asm.Opcodes.MONITORENTER;
+import static org.objectweb.asm.Opcodes.MONITOREXIT;
+import static org.objectweb.asm.Opcodes.MULTIANEWARRAY;
+import static org.objectweb.asm.Opcodes.NEW;
+import static org.objectweb.asm.Opcodes.NEWARRAY;
+import static org.objectweb.asm.Opcodes.NOP;
+import static org.objectweb.asm.Opcodes.POP;
+import static org.objectweb.asm.Opcodes.POP2;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+import static org.objectweb.asm.Opcodes.PUTSTATIC;
+import static org.objectweb.asm.Opcodes.RETURN;
+import static org.objectweb.asm.Opcodes.SALOAD;
+import static org.objectweb.asm.Opcodes.SASTORE;
+import static org.objectweb.asm.Opcodes.SIPUSH;
+import static org.objectweb.asm.Opcodes.SWAP;
+import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
 public class BytecodeEGWalker {
 
@@ -96,7 +249,6 @@ public class BytecodeEGWalker {
   private ConstraintManager constraintManager;
   MethodBehavior methodBehavior;
   private CheckerDispatcher checkerDispatcher;
-  private BytecodeCFGBuilder.Block exitBlock;
 
   public BytecodeEGWalker(BehaviorCache behaviorCache){
     this.behaviorCache = behaviorCache;
@@ -123,7 +275,6 @@ public class BytecodeEGWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
-    exitBlock = bytecodeCFG.exitBlock();
     methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
     for (ProgramState startingState : startingStates(signature, programState)) {
@@ -555,12 +706,15 @@ public class BytecodeEGWalker {
             }));
         methodInvokedBehavior
           .exceptionalPathYields()
-          .forEach(yield ->
+          .forEach(yield -> {
+            org.sonar.plugins.java.api.semantic.Type exceptionType = yield.exceptionType();
             yield.statesAfterInvocation(
-              Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(yield.exceptionType())).forEach(ps -> {
-              ps.storeExitValue();
-              enqueue(new ProgramPoint(exitBlock), ps);
-            }));
+              Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)
+              ).forEach(ps -> {
+                ps.storeExitValue();
+                enqueueExceptionHandlers(exceptionType, ps);
+            });
+          });
         return true;
       }
     } else {
@@ -571,6 +725,16 @@ public class BytecodeEGWalker {
       programState = programState.stackValue(returnSV);
     }
     return false;
+  }
+
+  private void enqueueExceptionHandlers(org.sonar.plugins.java.api.semantic.Type exceptionType, ProgramState ps) {
+    programPosition.block.successors().stream()
+      .map(b -> (BytecodeCFGBuilder.Block) b)
+      .filter(b -> b.getExceptionType() != null)
+      .filter(b -> b.isUncaughtException()
+        ||/*required as long as there is no real type tracking*/ exceptionType == null
+        || exceptionType.isSubtypeOf(b.getExceptionType()))
+      .forEach(b -> enqueue(new ProgramPoint(b), ps));
   }
 
   @VisibleForTesting
@@ -635,11 +799,15 @@ public class BytecodeEGWalker {
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
-      programPosition.block.successors().stream()
-        .map(b-> (BytecodeCFGBuilder.Block)b)
-        .filter(b-> b.getExceptionType() == null)
-        .forEach(b -> enqueue(new ProgramPoint(b), programState));
+      enqueueHappyPath(programPosition);
     }
+  }
+
+  private void enqueueHappyPath(ProgramPoint programPosition) {
+    programPosition.block.successors().stream()
+      .map(b-> (BytecodeCFGBuilder.Block)b)
+      .filter(b-> b.getExceptionType() == null)
+      .forEach(b -> enqueue(new ProgramPoint(b), programState));
   }
 
   private void executeCheckEndOfExecution() {
