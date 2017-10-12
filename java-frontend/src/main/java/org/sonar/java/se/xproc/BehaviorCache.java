@@ -80,9 +80,18 @@ public class BehaviorCache {
         return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
-        if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
-          sev.execute(declaration);
+        if (SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
+          if (declaration != null) {
+            sev.execute(declaration);
+          } else {
+            return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
+          }
         }
+      } else {
+        // FIXME
+        // get(...) called from bytecode, method is necessarily static
+        // should handle other cases of non-overrideable methods
+        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
       }
     }
     return behaviors.get(signature);
