@@ -56,12 +56,17 @@ public class BehaviorCacheTest {
   @Test
   public void method_behavior_cache_should_be_filled() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
-    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(5);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
-    assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList()))
-      .containsSequence("MethodBehavior#topMethod(Z)Z", "MethodBehavior#bar(Z)Z", "MethodBehavior#foo(Z)Z", "MethodBehavior#independent()V");
+    assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList())).containsSequence(
+      "MethodBehavior#topMethod(Z)Z",
+      "MethodBehavior#bar(Z)Z",
+      // String is final, so length() can not be overridden
+      "java.lang.String#length()I",
+      "MethodBehavior#foo(Z)Z",
+      "MethodBehavior#independent()V");
 
     // method which can be overriden should not have behaviors: 'abstractMethod', 'publicMethod', 'nativeMethod'
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
@@ -102,19 +107,14 @@ public class BehaviorCacheTest {
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
-    assertThat(behavior.yields()).hasSize(5);
+    assertThat(behavior.yields()).hasSize(3);
 
     behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(pMap -> assertThat(pMap.get(ObjectConstraint.class) == ObjectConstraint.NULL).isFalse());
     assertThat(behavior.happyPathYields().count()).isEqualTo(2);
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(3);
+    assertThat(exceptionalYields).hasSize(1);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null)).hasSize(1);
-    // exception thrown by System.getProperty()
-    assertThat(exceptionalYields.stream()
-      .filter(y -> y.exceptionType() != null)
-      .map(y -> y.exceptionType().fullyQualifiedName()))
-        .containsOnly("java.lang.SecurityException", "java.lang.IllegalArgumentException");
   }
 
   @Test
