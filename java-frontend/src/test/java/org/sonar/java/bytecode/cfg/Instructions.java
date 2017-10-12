@@ -199,7 +199,11 @@ public class Instructions {
     } else if (TYPE_INSN.contains(opcode)) {
       visitTypeInsn(opcode, MoreObjects.firstNonNull(className, "SomeType"));
     } else if (FIELD_INSN.contains(opcode)) {
-      visitFieldInsn(opcode, "owner", "name", "desc");
+      if (fieldOrMethod != null) {
+        visitFieldInsn(opcode, fieldOrMethod.owner, fieldOrMethod.name, fieldOrMethod.desc);
+      } else {
+        visitFieldInsn(opcode, "owner", "name", "desc");
+      }
     } else if (METHOD_INSN.contains(opcode)) {
       if (fieldOrMethod != null) {
         visitMethodInsn(opcode, fieldOrMethod.owner, fieldOrMethod.name, fieldOrMethod.desc, fieldOrMethod.ownerIsInterface);

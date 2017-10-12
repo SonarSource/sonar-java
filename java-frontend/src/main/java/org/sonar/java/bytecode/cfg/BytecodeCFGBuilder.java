@@ -273,7 +273,7 @@ public class BytecodeCFGBuilder {
 
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-      currentBlock.addInsn(opcode);
+      currentBlock.addInsn(opcode, new Instruction.FieldOrMethod(owner, name, desc));
     }
 
     @Override
