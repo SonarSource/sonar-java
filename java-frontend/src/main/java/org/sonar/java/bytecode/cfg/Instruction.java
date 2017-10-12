@@ -163,6 +163,10 @@ public class Instruction {
       this.ownerIsInterface = ownerIsInterface;
     }
 
+    public FieldOrMethod(String owner, String name, String desc) {
+      this(owner, name, desc, false);
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) {

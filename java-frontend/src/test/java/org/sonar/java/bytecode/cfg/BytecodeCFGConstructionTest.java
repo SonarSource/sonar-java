@@ -126,10 +126,10 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(INSTANCEOF, JAVA_LANG_OBJECT), inst(INSTANCEOF, JAVA_LANG_OBJECT)});
 
     // Instructions with field argument
-    testData.add(new Object[] {new TestInput(GETSTATIC, JAVA_LANG_OBJECT, "field", ""), null});
-    testData.add(new Object[] {new TestInput(PUTSTATIC, JAVA_LANG_OBJECT, "field", ""), null});
-    testData.add(new Object[] {new TestInput(GETFIELD, JAVA_LANG_OBJECT, "field", ""), null});
-    testData.add(new Object[] {new TestInput(PUTFIELD, JAVA_LANG_OBJECT, "field", ""), null});
+    testData.add(new Object[] {new TestInput(GETSTATIC, JAVA_LANG_OBJECT, "field", ""), inst(GETSTATIC, JAVA_LANG_OBJECT, "field", "")});
+    testData.add(new Object[] {new TestInput(PUTSTATIC, JAVA_LANG_OBJECT, "field", ""), inst(PUTSTATIC, JAVA_LANG_OBJECT, "field", "")});
+    testData.add(new Object[] {new TestInput(GETFIELD, JAVA_LANG_OBJECT, "field", ""), inst(GETFIELD, JAVA_LANG_OBJECT, "field", "")});
+    testData.add(new Object[] {new TestInput(PUTFIELD, JAVA_LANG_OBJECT, "field", ""), inst(PUTFIELD, JAVA_LANG_OBJECT, "field", "")});
 
     // Instructions with method argument
     testData.add(new Object[] {new TestInput(INVOKESPECIAL, JAVA_LANG_OBJECT, "hashCode", "()I", false), inst(INVOKESPECIAL, JAVA_LANG_OBJECT, "hashCode", "()I", false)});
@@ -183,6 +183,9 @@ public class BytecodeCFGConstructionTest {
     return new Instruction(opcode, type);
   }
 
+  private static Instruction inst(int opcode, String owner, String name, String desc) {
+    return new Instruction(opcode, new FieldOrMethod(owner, name, desc));
+  }
   private static Instruction inst(int opcode, String owner, String name, String desc, boolean itf) {
     return new Instruction(opcode, new FieldOrMethod(owner, name, desc, itf));
   }
