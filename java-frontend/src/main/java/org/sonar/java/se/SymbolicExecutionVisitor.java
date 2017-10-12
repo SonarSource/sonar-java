@@ -87,7 +87,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
-    if ((((JavaSymbol.MethodJavaSymbol) methodSymbol).flags() & Flags.NATIVE) != 0) {
+    if (Flags.isFlagged(((JavaSymbol.MethodJavaSymbol) methodSymbol).flags(), Flags.NATIVE)) {
       return false;
     }
     return !methodSymbol.isAbstract() &&

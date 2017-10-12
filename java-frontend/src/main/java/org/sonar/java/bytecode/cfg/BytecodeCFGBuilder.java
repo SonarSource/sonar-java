@@ -78,8 +78,8 @@ public class BytecodeCFGBuilder {
       @Override
       public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (name.equals(sign.substring(sign.indexOf('#') + 1, sign.indexOf('('))) && desc.equals(sign.substring(sign.indexOf('(')))) {
-          methodVisitor.isStaticMethod = (access & Flags.STATIC) != 0;
-          methodVisitor.isVarArgs = (access & Flags.VARARGS) != 0;
+          methodVisitor.isStaticMethod = Flags.isFlagged(access, Flags.STATIC);
+          methodVisitor.isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
           return new JSRInlinerAdapter(methodVisitor, access, name, desc, signature, exceptions);
         }
         return null;

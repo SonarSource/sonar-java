@@ -845,7 +845,7 @@ public class Resolve {
     if (c == base) {
       // same class
       return true;
-    } else if ((base.flags() & Flags.INTERFACE) != 0) {
+    } else if (Flags.isFlagged(base.flags(), Flags.INTERFACE)) {
       // check if class implements base
       for (JavaType interfaceType : c.getInterfaces()) {
         if (isSubClass(interfaceType.symbol, base)) {

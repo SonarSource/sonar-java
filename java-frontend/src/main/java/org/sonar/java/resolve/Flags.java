@@ -72,7 +72,24 @@ public class Flags {
    */
   public static final int ACCESS_FLAGS = PUBLIC | PROTECTED | PRIVATE;
 
+  private static final int ACCEPTABLE_BYTECODE_FLAGS = ACCESS_FLAGS |
+    INTERFACE | ANNOTATION | ENUM |
+    STATIC | FINAL | SYNCHRONIZED | VOLATILE | TRANSIENT | VARARGS | NATIVE |
+    ABSTRACT | STRICTFP | DEPRECATED;
+
   private Flags() {
+  }
+
+  public static int filterAccessBytecodeFlags(int access) {
+    return access & ACCEPTABLE_BYTECODE_FLAGS;
+  }
+
+  public static boolean isFlagged(int flags, int targetFlag) {
+    return (flags & targetFlag) != 0;
+  }
+
+  public static boolean isNotFlagged(int flags, int targetFlag) {
+    return (flags & targetFlag) == 0;
   }
 
   public static int flagForModifier(Modifier modifier) {
