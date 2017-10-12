@@ -39,11 +39,6 @@ import java.util.TreeSet;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
 
-  private static final int ACCEPTABLE_BYTECODE_FLAGS = Flags.ACCESS_FLAGS |
-      Flags.INTERFACE | Flags.ANNOTATION | Flags.ENUM |
-      Flags.STATIC | Flags.FINAL | Flags.SYNCHRONIZED | Flags.VOLATILE | Flags.TRANSIENT | Flags.VARARGS | Flags.NATIVE |
-      Flags.ABSTRACT | Flags.STRICTFP | Flags.DEPRECATED;
-
   private Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;
   private final ClassLoader classLoader;
@@ -158,12 +153,13 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       if(owner == null) {
         owner = getEnclosingClass(shortName, packageName);
       }
+      int classFlags = Flags.filterAccessBytecodeFlags(flags);
       if (owner != null) {
         //handle innerClasses
         String name = Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName);
-        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), name, owner, bytecodeName);
+        symbol = new JavaSymbol.TypeJavaSymbol(classFlags, name, owner, bytecodeName);
       } else {
-        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
+        symbol = new JavaSymbol.TypeJavaSymbol(classFlags, shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
       symbol.typeParameters = new Scope(symbol);
@@ -210,10 +206,6 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     return owner;
   }
 
-  public int filterBytecodeFlags(int flags) {
-    return flags & ACCEPTABLE_BYTECODE_FLAGS;
-  }
-
   /**
    * <b>Note:</b> Attempt to find something like "java.class" on case-insensitive file system can result in unwanted loading of "JAVA.class".
    * This method performs check of class name within file in order to avoid such situation.
@@ -250,13 +242,6 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       pck.completer = this;
       return pck;
     });
-  }
-
-  /**
-   * Compiler marks all artifacts not presented in the source code as {@link Flags#SYNTHETIC}.
-   */
-  static boolean isSynthetic(int flags) {
-    return (flags & Flags.SYNTHETIC) != 0;
   }
 
   public Set<String> classesNotFound() {

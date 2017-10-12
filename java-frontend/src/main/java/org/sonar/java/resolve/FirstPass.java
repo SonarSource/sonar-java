@@ -172,7 +172,7 @@ public class FirstPass extends BaseTreeVisitor {
         resolved.stream()
           //add only static fields
           //TODO accessibility should be checked : package/public
-          .filter(symbol -> (symbol.flags & Flags.STATIC) != 0)
+          .filter(symbol -> Flags.isFlagged(symbol.flags, Flags.STATIC))
           //TODO only the first symbol found will be associated with the tree.
           .forEach(symbol -> enterSymbol(symbol, tree));
       }
@@ -299,7 +299,7 @@ public class FirstPass extends BaseTreeVisitor {
     String name = tree.returnType() == null ? CONSTRUCTOR_NAME : tree.simpleName().name();
     JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers(), tree), name, env.scope.owner);
     symbol.declaration = tree;
-    if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
+    if (Flags.isFlagged(env.scope.owner.flags, Flags.ENUM) && tree.returnType() == null) {
       //enum constructors are private.
       symbol.flags |= Flags.PRIVATE;
     }
@@ -372,7 +372,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   private int computeFlags(ModifiersTree modifiers, Tree tree) {
     int result = 0;
-    if ((env.scope.owner.flags & Flags.INTERFACE) != 0) {
+    if (Flags.isFlagged(env.scope.owner.flags, Flags.INTERFACE)) {
       result = computeFlagsForInterfaceMember(tree);
     }
     for (ModifierKeywordTree modifier : modifiers.modifiers()) {

@@ -247,13 +247,13 @@ public class JavaSymbol implements Symbol {
 
   protected boolean isFlag(int flag) {
     complete();
-    return (flags & flag) != 0;
+    return Flags.isFlagged(flags, flag);
   }
 
   @Override
   public boolean isPackageVisibility() {
     complete();
-    return (flags & (Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC)) == 0;
+    return Flags.isNotFlagged(flags, Flags.PROTECTED | Flags.PRIVATE | Flags.PUBLIC);
   }
 
   public void addUsage(IdentifierTree tree) {

@@ -75,7 +75,7 @@ public class BytecodeVisitor extends ClassVisitor {
   @Override
   public void visit(int version, int flags, String name, @Nullable String signature, @Nullable String superName, @Nullable String[] interfaces) {
     Preconditions.checkState(name.endsWith(classSymbol.name), "Name : '%s' should ends with %s", name, classSymbol.name);
-    Preconditions.checkState(name.endsWith("package-info") || !BytecodeCompleter.isSynthetic(flags), "%s is synthetic", name);
+    Preconditions.checkState(name.endsWith("package-info") || isNotSynthetic(flags), "%s is synthetic", name);
     className = name;
     if (signature != null) {
       SignatureReader signatureReader = new SignatureReader(signature);
@@ -96,12 +96,18 @@ public class BytecodeVisitor extends ClassVisitor {
     //if class has already access flags set (inner class) then do not reset those.
     //The important access flags are the one defined in the outer class.
     if ((classSymbol.flags & Flags.ACCESS_FLAGS) != 0) {
-      classSymbol.flags |= bytecodeCompleter.filterBytecodeFlags(flags & ~Flags.ACCESS_FLAGS);
+      classSymbol.flags |= Flags.filterAccessBytecodeFlags(flags & ~Flags.ACCESS_FLAGS);
     } else {
-      classSymbol.flags |= bytecodeCompleter.filterBytecodeFlags(flags);
+      classSymbol.flags |= Flags.filterAccessBytecodeFlags(flags);
     }
     classSymbol.members = new Scope(classSymbol);
+  }
 
+  /**
+   * Compiler marks all artifacts not presented in the source code as {@link Flags#SYNTHETIC}.
+   */
+  private static boolean isNotSynthetic(int flags) {
+    return Flags.isNotFlagged(flags, Flags.SYNTHETIC);
   }
 
   @Override
@@ -143,7 +149,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public void visitInnerClass(String name, @Nullable String outerName, @Nullable String innerName, int flags) {
-    if (!BytecodeCompleter.isSynthetic(flags)) {
+    if (isNotSynthetic(flags)) {
       // TODO what about flags?
       if (innerName == null) {
         // anonymous class
@@ -167,7 +173,7 @@ public class BytecodeVisitor extends ClassVisitor {
    */
   private void defineInnerClass(String bytecodeName, int flags) {
     JavaSymbol.TypeJavaSymbol innerClass = getClassSymbol(classSymbol, bytecodeName, flags);
-    innerClass.flags |= bytecodeCompleter.filterBytecodeFlags(flags);
+    innerClass.flags |= Flags.filterAccessBytecodeFlags(flags);
     Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass: " + innerClass.owner.getName() + " and classSymbol: " + classSymbol.getName() + " are not the same.");
     classSymbol.members.enter(innerClass);
   }
@@ -182,7 +188,7 @@ public class BytecodeVisitor extends ClassVisitor {
     JavaSymbol.TypeJavaSymbol outerClassSymbol = getClassSymbol(outerName, flags);
     Preconditions.checkState(outerClassSymbol.completer == null || outerClassSymbol.completer instanceof BytecodeCompleter);
     classSymbol.name = innerName;
-    classSymbol.flags = flags | bytecodeCompleter.filterBytecodeFlags(classSymbol.flags & ~Flags.ACCESS_FLAGS);
+    classSymbol.flags = flags | Flags.filterAccessBytecodeFlags(classSymbol.flags & ~Flags.ACCESS_FLAGS);
     classSymbol.owner = outerClassSymbol;
   }
 
@@ -190,9 +196,9 @@ public class BytecodeVisitor extends ClassVisitor {
   public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
     Preconditions.checkNotNull(name);
     Preconditions.checkNotNull(desc);
-    if (!BytecodeCompleter.isSynthetic(flags)) {
+    if (isNotSynthetic(flags)) {
       //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-      final JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(bytecodeCompleter.filterBytecodeFlags(flags),
+      final JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(Flags.filterAccessBytecodeFlags(flags),
           name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
       classSymbol.members.enter(symbol);
       if (signature != null) {
@@ -210,7 +216,7 @@ public class BytecodeVisitor extends ClassVisitor {
   public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
     Preconditions.checkNotNull(name);
     Preconditions.checkNotNull(desc);
-    if (!BytecodeCompleter.isSynthetic(flags)) {
+    if (isNotSynthetic(flags)) {
       if((flags & Opcodes.ACC_BRIDGE) != 0) {
         LOG.warn("bridge method {} not marked as synthetic in class {}", name, className);
         return null;
@@ -222,8 +228,8 @@ public class BytecodeVisitor extends ClassVisitor {
           getCompletedClassSymbolsType(exceptions),
           classSymbol
       );
-      int methodFlags = bytecodeCompleter.filterBytecodeFlags(flags);
-      if(classSymbol.isInterface() && (methodFlags & (Flags.ABSTRACT | Flags.PRIVATE | Flags.STATIC)) == 0) {
+      int methodFlags = Flags.filterAccessBytecodeFlags(flags);
+      if (classSymbol.isInterface() && Flags.isNotFlagged(methodFlags, Flags.ABSTRACT | Flags.PRIVATE | Flags.STATIC)) {
         // abstract, static nor private method of interface is a default method
         methodFlags |= Flags.DEFAULT;
       }

@@ -130,7 +130,7 @@ public class Scope {
           resolved.stream()
             // TODO check accessibility
             // TODO factorize with static named import ?
-            .filter(symbol -> symbol.kind < JavaSymbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0)
+            .filter(symbol -> symbol.kind < JavaSymbol.ERRONEOUS && Flags.isFlagged(symbol.flags, Flags.STATIC))
             .forEach(symbolsList::add);
         }
 
