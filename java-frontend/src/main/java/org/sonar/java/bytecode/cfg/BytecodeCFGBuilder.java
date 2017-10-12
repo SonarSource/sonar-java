@@ -74,17 +74,7 @@ public class BytecodeCFGBuilder {
   static BytecodeCFG buildCFG(String sign, byte[] bytes) {
     ClassReader cr = new ClassReader(bytes);
     BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor();
-    cr.accept(new ClassVisitor(Opcodes.ASM5) {
-      @Override
-      public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        if (name.equals(sign.substring(sign.indexOf('#') + 1, sign.indexOf('('))) && desc.equals(sign.substring(sign.indexOf('(')))) {
-          methodVisitor.isStaticMethod = Flags.isFlagged(access, Flags.STATIC);
-          methodVisitor.isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
-          return new JSRInlinerAdapter(methodVisitor, access, name, desc, signature, exceptions);
-        }
-        return null;
-      }
-    }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+    cr.accept(new BytecodeCFGClassVisitor(methodVisitor, sign), ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
     return methodVisitor.cfg();
   }
 
@@ -92,6 +82,7 @@ public class BytecodeCFGBuilder {
     List<Block> blocks;
     boolean isStaticMethod;
     boolean isVarArgs;
+    boolean isOverrideableOrNativeMethod;
 
     BytecodeCFG() {
       blocks = new ArrayList<>();
@@ -109,6 +100,10 @@ public class BytecodeCFGBuilder {
 
     public boolean isVarArgs() {
       return isVarArgs;
+    }
+
+    public boolean isOverrideableOrNativeMethod() {
+      return isOverrideableOrNativeMethod;
     }
 
     public List<Block> blocks() {
@@ -238,12 +233,51 @@ public class BytecodeCFGBuilder {
     }
   }
 
+  private static class BytecodeCFGClassVisitor extends ClassVisitor {
+
+    private final BytecodeCFGMethodVisitor methodVisitor;
+    private final String methodSignature;
+    private boolean isFinalClass = false;
+
+    public BytecodeCFGClassVisitor(BytecodeCFGMethodVisitor methodVisitor, String targetedMethodSignatures) {
+      super(Opcodes.ASM5);
+      this.methodVisitor = methodVisitor;
+      this.methodSignature = targetedMethodSignatures;
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+      isFinalClass = Flags.isFlagged(Flags.filterAccessBytecodeFlags(access), Flags.FINAL);
+      super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+      if (name.equals(methodSignature.substring(methodSignature.indexOf('#') + 1, methodSignature.indexOf('(')))
+        && desc.equals(methodSignature.substring(methodSignature.indexOf('(')))) {
+        methodVisitor.isStaticMethod = Flags.isFlagged(access, Flags.STATIC);
+        methodVisitor.isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
+        methodVisitor.isOverrideableOrNativeMethod = isOverrideableOrNativeMethod(access);
+        return new JSRInlinerAdapter(methodVisitor, access, name, desc, signature, exceptions);
+      }
+      return null;
+    }
+
+    private boolean isOverrideableOrNativeMethod(int methodFlags) {
+      if (Flags.isFlagged(methodFlags, Flags.NATIVE)) {
+        return true;
+      }
+      return Flags.isFlagged(methodFlags, Flags.ABSTRACT) || !(isFinalClass || Flags.isFlagged(methodFlags, Flags.PRIVATE | Flags.FINAL | Flags.STATIC));
+    }
+  }
+
   private static class BytecodeCFGMethodVisitor extends MethodVisitor {
     Map<Label, Block> blockByLabel = new HashMap<>();
     private Block currentBlock;
     private BytecodeCFG cfg;
     private boolean isStaticMethod;
     private boolean isVarArgs;
+    private boolean isOverrideableOrNativeMethod;
     private List<TryCatchBlock> tryCatchBlocks = new ArrayList<>();
 
     BytecodeCFGMethodVisitor() {
@@ -427,6 +461,7 @@ public class BytecodeCFGBuilder {
     public BytecodeCFG cfg() {
       cfg.isStaticMethod = isStaticMethod;
       cfg.isVarArgs = isVarArgs;
+      cfg.isOverrideableOrNativeMethod = isOverrideableOrNativeMethod;
       return cfg;
     }
   }

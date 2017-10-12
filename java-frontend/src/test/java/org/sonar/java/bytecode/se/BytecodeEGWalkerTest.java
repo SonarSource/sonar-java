@@ -40,10 +40,12 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -77,44 +79,7 @@ public class BytecodeEGWalkerTest {
     assertThat(ps).hasSize(1);
     ObjectConstraint constraint = ps.iterator().next().getConstraint(svsecondArg, ObjectConstraint.class);
     assertThat(constraint).isSameAs(ObjectConstraint.NULL);
-
-
   }
-
-  static class InnerClass {
-    Object fun(boolean a, Object b) {
-      if (b == null) {
-        return null;
-      }
-      return "";
-    }
-
-    Object fun2(boolean a) {
-      if (a) {
-        return null;
-      }
-      return "";
-    }
-
-    Object int_comparison(int a, int b) {
-      if (a < b) {
-        if(a < b) {
-          return null;
-        }
-        return "";
-      }
-      return null;
-    }
-
-    boolean gotoTerminator(Object o) {
-      return o==null;
-    }
-
-    void throw_exception() {
-      throw new RuntimeException();
-    }
-  }
-
 
   @Test
   public void verify_behavior_of_fun2_method() throws Exception {
@@ -173,6 +138,39 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
+  public void test_method_can_be_overriden() {
+    MethodBehavior nativeMethod = getMethodBehavior("nativeMethod");
+    assertThat(nativeMethod.isStaticMethod()).isTrue();
+    assertThat(nativeMethod.isComplete()).isTrue();
+    assertThat(nativeMethod.isOverrideableOrNative()).isTrue();
+
+    MethodBehavior abstractMethod = getMethodBehavior("abstractMethod");
+    assertThat(abstractMethod.isStaticMethod()).isFalse();
+    assertThat(abstractMethod.isComplete()).isTrue();
+    assertThat(abstractMethod.isOverrideableOrNative()).isTrue();
+
+    MethodBehavior finalMethod = getMethodBehavior("finalMethod");
+    assertThat(finalMethod.isStaticMethod()).isFalse();
+    assertThat(finalMethod.isComplete()).isTrue();
+    assertThat(finalMethod.isOverrideableOrNative()).isFalse();
+
+    MethodBehavior staticMethod = getMethodBehavior("staticMethod");
+    assertThat(staticMethod.isStaticMethod()).isTrue();
+    assertThat(staticMethod.isComplete()).isTrue();
+    assertThat(staticMethod.isOverrideableOrNative()).isFalse();
+
+    MethodBehavior privateMethod = getMethodBehavior("privateMethod");
+    assertThat(privateMethod.isStaticMethod()).isFalse();
+    assertThat(privateMethod.isComplete()).isTrue();
+    assertThat(privateMethod.isOverrideableOrNative()).isFalse();
+
+    MethodBehavior publicMethodInFinalClass = getMethodBehavior("FinalInnerClass", finalInnerClass -> ((MethodTree) finalInnerClass.members().get(0)).symbol());
+    assertThat(publicMethodInFinalClass.isStaticMethod()).isFalse();
+    assertThat(publicMethodInFinalClass.isComplete()).isTrue();
+    assertThat(publicMethodInFinalClass.isOverrideableOrNative()).isFalse();
+  }
+
+  @Test
   public void test_starting_states() throws Exception {
     BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
 
@@ -203,13 +201,78 @@ public class BytecodeEGWalkerTest {
   }
 
   private MethodBehavior getMethodBehavior(int index) {
+    return getMethodBehavior("InnerClass", innerClass -> ((MethodTree) innerClass.members().get(index)).symbol());
+  }
+
+  private static MethodBehavior getMethodBehavior(String methodName) {
+    return getMethodBehavior("InnerClass", innerClass -> (Symbol.MethodSymbol) innerClass.symbol().lookupSymbols(methodName).stream().findFirst().get());
+  }
+
+  private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader));
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(tree, squidClassLoader);
-    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(index)).symbol();
-    String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
-    return bytecodeEGWalker.getMethodBehavior(signature, symbol, squidClassLoader);
+    ClassTree innerClass = getClass(tree, targetClass);
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
+    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), methodSymbol, squidClassLoader);
+  }
+
+  private static ClassTree getClass(CompilationUnitTree cut, String className) {
+    ClassTree testClass = (ClassTree) cut.types().get(0);
+    return testClass.members().stream()
+      .filter(m -> m.is(Tree.Kind.CLASS))
+      .map(ClassTree.class::cast)
+      .filter(ct -> className.equals(ct.simpleName().name()))
+      .findFirst()
+      .get();
+  }
+
+  /**
+   * --------------------- following code is used for byte code ----------------------------------------------
+   */
+  abstract static class InnerClass {
+    Object fun(boolean a, Object b) {
+      if (b == null) {
+        return null;
+      }
+      return "";
+    }
+
+    Object fun2(boolean a) {
+      if (a) {
+        return null;
+      }
+      return "";
+    }
+
+    Object int_comparison(int a, int b) {
+      if (a < b) {
+        if (a < b) {
+          return null;
+        }
+        return "";
+      }
+      return null;
+    }
+
+    boolean gotoTerminator(Object o) {
+      return o == null;
+    }
+
+    void throw_exception() {
+      throw new RuntimeException();
+    }
+
+    abstract boolean abstractMethod(String s);
+    static native boolean nativeMethod(String s);
+    final boolean finalMethod(String s) { return true; }
+    static boolean staticMethod(String s) { return true; }
+    private boolean privateMethod(String s) { return true; }
+  }
+
+  final static class FinalInnerClass {
+    public boolean publicMethod(String s) { return true; }
   }
 }

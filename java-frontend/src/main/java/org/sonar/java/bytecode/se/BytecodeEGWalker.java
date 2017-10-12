@@ -277,6 +277,7 @@ public class BytecodeEGWalker {
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
     methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
+    methodBehavior.setOverrideableOrNative(bytecodeCFG.isOverrideableOrNativeMethod());
     for (ProgramState startingState : startingStates(signature, programState)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
@@ -695,7 +696,10 @@ public class BytecodeEGWalker {
       // follow only static invocations for now.
       String signature = instruction.fieldOrMethod.completeSignature();
       MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
-      if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+      if (methodInvokedBehavior != null
+        && methodInvokedBehavior.isComplete()
+        // static is not enough: implementation of native static method can still vary
+        && !methodInvokedBehavior.isOverrideableOrNative()) {
         methodInvokedBehavior
           .happyPathYields()
           .forEach(yield ->
