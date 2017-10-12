@@ -111,10 +111,6 @@ public class BytecodeCFGBuilder {
       return isVarArgs;
     }
 
-    public Block exitBlock() {
-      return blocks.get(0);
-    }
-
     public List<Block> blocks() {
       return blocks;
     }
@@ -124,21 +120,24 @@ public class BytecodeCFGBuilder {
     BytecodeCFG cfg;
     List<Instruction> instructions;
     List<Block> successors;
-
-    public String getExceptionType() {
-      return exceptionType;
-    }
-
     String exceptionType;
+
     Instruction terminator;
     private Block trueBlock;
     private Block falseBlock;
-
     Block(BytecodeCFG cfg) {
       this.cfg = cfg;
       this.id = cfg.blocks.size();
       instructions = new ArrayList<>();
       successors = new ArrayList<>();
+    }
+
+    public String getExceptionType() {
+      return exceptionType;
+    }
+
+    public boolean isUncaughtException() {
+      return exceptionType != null && exceptionType.charAt(0) == '!';
     }
 
     void addInsn(Instruction insn) {

@@ -19,7 +19,9 @@
  */
 package org.sonar.java.bytecode.se;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -28,6 +30,7 @@ import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilderTest;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -40,6 +43,8 @@ import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +52,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.DADD;
+import static org.objectweb.asm.Opcodes.DDIV;
+import static org.objectweb.asm.Opcodes.DMUL;
+import static org.objectweb.asm.Opcodes.DREM;
+import static org.objectweb.asm.Opcodes.DSUB;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.ISTORE;
+import static org.objectweb.asm.Opcodes.LADD;
+import static org.objectweb.asm.Opcodes.LAND;
+import static org.objectweb.asm.Opcodes.LDIV;
+import static org.objectweb.asm.Opcodes.LMUL;
+import static org.objectweb.asm.Opcodes.LOR;
+import static org.objectweb.asm.Opcodes.LREM;
+import static org.objectweb.asm.Opcodes.LSHL;
+import static org.objectweb.asm.Opcodes.LSHR;
+import static org.objectweb.asm.Opcodes.LSUB;
+import static org.objectweb.asm.Opcodes.LUSHR;
+import static org.objectweb.asm.Opcodes.LXOR;
+import static org.objectweb.asm.Opcodes.RETURN;
 
 public class BytecodeEGWalkerExecuteTest {
 
@@ -930,12 +955,62 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_only_happy_path() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
     BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(b2));
     assertThat(walker.workList).hasSize(1);
     assertThat(walker.workList.getFirst().programPoint.block.id()).isEqualTo(3);
+  }
+
+  @Test
+  public void test_enqueuing_exceptional_yields() {
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
+    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
+    SquidClassLoader squidClassLoader = new SquidClassLoader(new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true)));
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader));
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
+    walker.programPosition = new ProgramPoint(b2).next().next();
+    walker.executeInstruction(b2.elements().get(3));
+    assertThat(walker.workList).hasSize(3);
+
+
+    cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryWrongCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
+    b2 = cfg.blocks().get(2);
+    walker.workList.clear();
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
+    walker.programPosition = new ProgramPoint(b2).next().next();
+    walker.executeInstruction(b2.elements().get(3));
+    //FIXME should be 2 as the path to the catch should not be enqueued : should be fix by tracking properly exception types
+    assertThat(walker.workList).hasSize(3);
+    assertThat(walker.workList.pop().programState.exitValue()).isNotNull().isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
+    assertThat(walker.workList.pop().programState.exitValue()).isNotNull().isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
+    assertThat(walker.workList.pop().programState.exitValue()).isNull();
+  }
+
+  private void tryCatch(boolean param) {
+    try {
+      bar();
+      Preconditions.checkState(param);
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+    } finally {
+      System.out.println("finally");
+    }
+  }
+
+  private void tryWrongCatch(boolean param) {
+    try {
+      bar();
+      Preconditions.checkState(param);
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    } finally {
+      System.out.println("finally");
+    }
+  }
+
+  private void bar() {
   }
 }
