@@ -25,10 +25,13 @@ import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Printer;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -213,6 +216,7 @@ import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
 public class BytecodeEGWalker {
 
+  private static final Logger LOG = Loggers.get(BytecodeEGWalker.class);
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final int MAX_STEPS = 16_000;
   private final BehaviorCache behaviorCache;
@@ -261,14 +265,24 @@ public class BytecodeEGWalker {
 
   public MethodBehavior getMethodBehavior(String signature, @Nullable Symbol.MethodSymbol methodSymbol, SquidClassLoader classLoader) {
     methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
-    if(!methodBehavior.isComplete()) {
-      execute(signature, classLoader);
-      if (methodSymbol != null) {
-        methodBehavior.setMethodSymbol(methodSymbol);
+    if (!methodBehavior.isVisited()) {
+      try {
+        if (methodSymbol != null) {
+          methodBehavior.setMethodSymbol(methodSymbol);
+        }
+        execute(signature, classLoader);
+        methodBehavior.completed();
+      } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
+        LOG.debug("Dataflow analysis is incomplete for method {} : {}", signature, e.getMessage());
+        methodBehavior.visited();
       }
-      methodBehavior.completed();
     }
     return methodBehavior;
+  }
+
+  @VisibleForTesting
+  int maxSteps() {
+    return MAX_STEPS;
   }
 
   private void execute(String signature, SquidClassLoader classLoader) {
@@ -283,8 +297,8 @@ public class BytecodeEGWalker {
     }
     while (!workList.isEmpty()) {
       steps++;
-      if (steps > MAX_STEPS) {
-        throw new IllegalStateException("Too many steps");
+      if (steps > maxSteps()) {
+        throw new ExplodedGraphWalker.MaximumStepsReachedException("Too many steps resolving "+methodBehavior.signature());
       }
       // LIFO:
       setNode(workList.removeFirst());
