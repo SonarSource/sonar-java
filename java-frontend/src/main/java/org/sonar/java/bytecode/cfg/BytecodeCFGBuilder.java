@@ -427,8 +427,10 @@ public class BytecodeCFGBuilder {
     }
     @Override
     public void visitEnd() {
-      // if last block ends up with no successors, it is returning or throwing, link it to exit block.
-      if(currentBlock.successors.isEmpty()) {
+      // if the last block ends with GOTO, currentBlock will be null
+      if (currentBlock != null
+        // if last block ends up with no successors, it is returning or throwing, link it to exit block.
+        && currentBlock.successors.isEmpty()) {
         currentBlock.successors.add(cfg.blocks.get(0));
       }
 
