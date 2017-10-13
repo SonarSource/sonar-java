@@ -276,21 +276,21 @@ public class BytecodeEGWalkerTest {
    * --------------------- following code is used for byte code ----------------------------------------------
    */
   abstract static class InnerClass {
-    Object fun(boolean a, Object b) {
+    private Object fun(boolean a, Object b) {
       if (b == null) {
         return null;
       }
       return "";
     }
 
-    Object fun2(boolean a) {
+    private Object fun2(boolean a) {
       if (a) {
         return null;
       }
       return "";
     }
 
-    Object int_comparison(int a, int b) {
+    private Object int_comparison(int a, int b) {
       if (a < b) {
         if (a < b) {
           return null;
@@ -300,11 +300,11 @@ public class BytecodeEGWalkerTest {
       return null;
     }
 
-    boolean gotoTerminator(Object o) {
+    private boolean gotoTerminator(Object o) {
       return o == null;
     }
 
-    void throw_exception() {
+    private void throw_exception() {
       throw new RuntimeException();
     }
 

@@ -305,6 +305,9 @@ public class BytecodeEGWalker {
     methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
     methodBehavior.setOverrideableOrNative(bytecodeCFG.isOverrideableOrNativeMethod());
+    if (bytecodeCFG.isOverrideableOrNativeMethod()) {
+      return;
+    }
     for (ProgramState startingState : startingStates(signature, programState)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
