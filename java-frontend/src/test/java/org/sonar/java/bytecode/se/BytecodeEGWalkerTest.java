@@ -21,7 +21,10 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.JavaSymbol;
@@ -51,6 +54,10 @@ import java.util.stream.Collectors;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeEGWalkerTest {
+
+
+  @Rule
+  public LogTester logTester  = new LogTester();
 
   @Test
   public void generateMethodBehavior() throws Exception {
@@ -198,6 +205,27 @@ public class BytecodeEGWalkerTest {
     SymbolicValue longArg = startingState.getValue(3);
     assertThat(longArg).isNotNull();
     assertThat(startingState.getConstraint(longArg, BytecodeEGWalker.StackValueCategoryConstraint.class)).isEqualTo(BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE);
+  }
+
+  @Test
+  public void max_step_exception_should_log_warning_and_generate_behavior() {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader)) {
+      @Override
+      int maxSteps() {
+        return 2;
+      }
+    };
+    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    ClassTree innerClass = getClass(tree, "InnerClass");
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) innerClass.symbol().lookupSymbols("fun").stream().findFirst().get();
+    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), methodSymbol, squidClassLoader);
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .contains("Dataflow analysis is incomplete for method org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object; : Too many steps resolving org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;");
+    assertThat(methodBehavior.isComplete()).isFalse();
+    assertThat(methodBehavior.isVisited()).isTrue();
   }
 
   private MethodBehavior getMethodBehavior(int index) {
