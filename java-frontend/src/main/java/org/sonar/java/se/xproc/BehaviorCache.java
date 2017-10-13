@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class BehaviorCache {
 
@@ -69,16 +68,7 @@ public class BehaviorCache {
 
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
     if (!behaviors.containsKey(signature)) {
-      if (isRequireNonNullMethod(signature)
-        || isObjectsNullMethod(signature)
-        || isGuavaPrecondition(signature)
-        || isCollectionUtilsIsEmpty(signature)
-        || isSpringIsNull(signature)
-        || isStringUtilsMethod(signature)
-        || isEclipseAssert(signature)
-        ) {
-        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
-      } else if(symbol != null) {
+      if (symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
           if (declaration != null) {
@@ -88,70 +78,9 @@ public class BehaviorCache {
           }
         }
       } else {
-        // FIXME
-        // get(...) called from bytecode, method is necessarily static
-        // should handle other cases of non-overrideable methods
         return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
       }
     }
     return behaviors.get(signature);
   }
-
-  private static boolean isEclipseAssert(String signature) {
-    return signature.startsWith("org.eclipse.core.runtime.Assert#");
-  }
-
-  private static boolean isSpringIsNull(String signature) {
-    return signature.startsWith("org.springframework.util.Assert#isNull");
-  }
-
-  private static boolean isRequireNonNullMethod(String signature) {
-    return isObjectsRequireNonNullMethod(signature) || isValidateMethod(signature) || isLog4jOrSpringAssertNotNull(signature);
-  }
-
-  private static boolean isValidateMethod(String signature) {
-    return Stream.of(
-      "org.apache.commons.lang3.Validate#notEmpty",
-      "org.apache.commons.lang3.Validate#notNull",
-      "org.apache.commons.lang.Validate#notEmpty",
-      "org.apache.commons.lang.Validate#notNull").anyMatch(signature::startsWith);
-  }
-
-  private static boolean isCollectionUtilsIsEmpty(String signature) {
-    return Stream.of(
-      "org.springframework.util.CollectionUtils#isEmpty",
-      "org.apache.commons.collections4.CollectionUtils#isEmpty",
-      "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
-      "org.apache.commons.collections.CollectionUtils#isEmpty",
-      "org.apache.commons.collections.CollectionUtils#isNotEmpty").anyMatch(signature::startsWith);
-  }
-
-  private static boolean isGuavaPrecondition(String signature) {
-    return Stream.of(
-      "com.google.common.base.Preconditions#checkNotNull",
-      "com.google.common.base.Preconditions#checkArgument",
-      "com.google.common.base.Preconditions#checkState").anyMatch(signature::startsWith);
-  }
-
-  private static boolean isStringUtilsMethod(String signature) {
-    return Stream.of("isEmpty", "isNotEmpty", "isBlank", "isNotBlank")
-      .flatMap(m -> Stream.of("org.apache.commons.lang3.StringUtils#" + m, "org.apache.commons.lang.StringUtils#" + m))
-      .anyMatch(signature::startsWith);
-  }
-
-  private static boolean isObjectsNullMethod(String signature) {
-    return signature.startsWith("java.util.Objects#nonNull") || signature.startsWith("java.util.Objects#isNull");
-  }
-
-  private static boolean isObjectsRequireNonNullMethod(String signature) {
-    return signature.startsWith("java.util.Objects#requireNonNull");
-  }
-
-  private static boolean isLog4jOrSpringAssertNotNull(String signature) {
-    return Stream.of(
-      "org.apache.logging.log4j.core.util.Assert#requireNonNull",
-      "org.springframework.util.Assert#notNull",
-      "org.springframework.util.Assert#notEmpty").anyMatch(signature::startsWith);
-  }
-
 }

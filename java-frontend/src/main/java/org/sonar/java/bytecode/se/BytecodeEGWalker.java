@@ -725,37 +725,37 @@ public class BytecodeEGWalker {
     Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
     // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
     SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
-    if (isStatic) {
-      // follow only static invocations for now.
-      String signature = instruction.fieldOrMethod.completeSignature();
-      MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
-      if (methodInvokedBehavior != null
-        && methodInvokedBehavior.isComplete()
-        // static is not enough: implementation of native static method can still vary
-        && !methodInvokedBehavior.isOverrideableOrNative()) {
-        methodInvokedBehavior
-          .happyPathYields()
-          .forEach(yield ->
-            yield.statesAfterInvocation(Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
-              checkerDispatcher.methodYield = yield;
-              checkerDispatcher.addTransition(ps);
-              checkerDispatcher.methodYield = null;
-            }));
-        methodInvokedBehavior
-          .exceptionalPathYields()
-          .forEach(yield -> {
-            Type exceptionType = yield.exceptionType();
-            yield.statesAfterInvocation(
-              Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)
-              ).forEach(ps -> {
-                ps.storeExitValue();
-                enqueueExceptionHandlers(exceptionType, ps);
-            });
-          });
-        return true;
+    String signature = instruction.fieldOrMethod.completeSignature();
+    MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+    if (methodInvokedBehavior != null
+      && methodInvokedBehavior.isComplete()
+      && !methodInvokedBehavior.isOverrideableOrNative()) {
+
+      List<SymbolicValue> stack = pop.values;
+      if (!isStatic) {
+        // remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments
+        stack = stack.subList(1, stack.size());
       }
-    } else {
-      // TODO remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments
+      List<SymbolicValue> arguments = Lists.reverse(stack);
+
+      methodInvokedBehavior
+        .happyPathYields()
+        .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+          checkerDispatcher.methodYield = yield;
+          checkerDispatcher.addTransition(ps);
+          checkerDispatcher.methodYield = null;
+        }));
+      methodInvokedBehavior
+        .exceptionalPathYields()
+        .forEach(yield -> {
+          org.sonar.plugins.java.api.semantic.Type exceptionType = yield.exceptionType();
+          yield.statesAfterInvocation(
+            arguments, Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
+              ps.storeExitValue();
+              enqueueExceptionHandlers(exceptionType, ps);
+          });
+        });
+      return true;
     }
     programState = pop.state;
     if (instruction.hasReturnValue()) {
