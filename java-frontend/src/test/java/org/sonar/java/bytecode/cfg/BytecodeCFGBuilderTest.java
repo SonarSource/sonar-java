@@ -366,6 +366,30 @@ public class BytecodeCFGBuilderTest {
       "Jumps to: B0 B8(Exception:java/io/IOException) B10(Exception:!UncaughtException!) \n");
   }
 
+  @Test
+  public void last_block_is_ends_with_GOTO() throws Exception {
+    assertCFGforMethod("loopWithoutStopCondition", "B0(Exit)\n" +
+      "B1\n" +
+      "0: ICONST_0\n" +
+      "1: ISTORE\n" +
+      "Jumps to: B2 \n" +
+      "B2\n" +
+      "0: ILOAD\n" +
+      "1: GETSTATIC\n" +
+      "2: ILOAD\n" +
+      "3: IALOAD\n" +
+      "IF_ICMPGT Jumps to: B3(true) B4(false) \n" +
+      "B3\n" +
+      "0: IINC\n" +
+      "GOTO Jumps to: B2 \n" +
+      "B4\n" +
+      "0: ILOAD\n" +
+      "1: ICONST_1\n" +
+      "2: IADD\n" +
+      "3: IRETURN\n" +
+      "Jumps to: B0 \n");
+  }
+
   private void assertCFGforMethod(String methodName, String expectedCFG) {
     BytecodeCFGBuilder.BytecodeCFG cfg = getBytecodeCFG(methodName, "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
     StringBuilder sb = new StringBuilder();
@@ -420,5 +444,12 @@ public class BytecodeCFGBuilderTest {
   private void fun() throws IOException {
   }
   private void fun2() throws IOException {
+  }
+
+  final static int[] sizeTable = {9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999, Integer.MAX_VALUE};
+  static int loopWithoutStopCondition(int x) {
+    for (int i = 0;; i++)
+      if (x <= sizeTable[i])
+        return i + 1;
   }
 }
