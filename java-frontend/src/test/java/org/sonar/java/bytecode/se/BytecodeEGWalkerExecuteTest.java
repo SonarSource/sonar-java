@@ -602,42 +602,42 @@ public class BytecodeEGWalkerExecuteTest {
     for (int opcode : opcodes) {
       SymbolicValue thisSv = new SymbolicValue();
       ProgramState stateWithThis = ProgramState.EMPTY_STATE.stackValue(thisSv);
-      ProgramState programState = execute(invokeMethod(opcode, "()V"), stateWithThis);
+      ProgramState programState = execute(invokeMethod(opcode, "methodWithoutArgument", "()V"), stateWithThis);
       assertEmptyStack(programState);
       assertThat(programState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
-      programState = execute(invokeMethod(opcode, "()Z"), stateWithThis);
+      programState = execute(invokeMethod(opcode, "booleanMethod", "()Z"), stateWithThis);
       assertStack(programState, new Constraint[] {null});
 
       SymbolicValue arg = new SymbolicValue();
-      programState = execute(invokeMethod(opcode, "(I)I"), stateWithThis.stackValue(arg));
+      programState = execute(invokeMethod(opcode, "intMethodWithIntArgument", "(I)I"), stateWithThis.stackValue(arg));
       assertStack(programState, new Constraint[] {null});
       assertThat(programState.peekValue()).isNotEqualTo(arg);
 
-      programState = execute(invokeMethod(opcode, "(II)V"), stateWithThis.stackValue(arg).stackValue(arg));
+      programState = execute(invokeMethod(opcode, "methodWithIntIntArgument", "(II)V"), stateWithThis.stackValue(arg).stackValue(arg));
       assertEmptyStack(programState);
-      assertThatThrownBy(() -> execute(invokeMethod(opcode, "(II)V"), stateWithThis))
+      assertThatThrownBy(() -> execute(invokeMethod(opcode, "methodWithIntIntArgument", "(II)V"), stateWithThis))
         .isInstanceOf(IllegalStateException.class);
     }
   }
 
   @Test
   public void test_invoke_static() throws Exception {
-    ProgramState programState = execute(invokeStatic("foo", "()V"));
+    ProgramState programState = execute(invokeStatic("staticMethod", "()V"));
     assertStack(programState, new Constraint[] {null});
 
-    programState = execute(invokeStatic("bar", "()Z"));
+    programState = execute(invokeStatic("staticBooleanMethod", "()Z"));
     assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}});
 
     SymbolicValue arg = new SymbolicValue();
-    programState = execute(invokeStatic("qix", "(I)I"), ProgramState.EMPTY_STATE.stackValue(arg));
+    programState = execute(invokeStatic("staticIntMethodWithIntArgument", "(I)I"), ProgramState.EMPTY_STATE.stackValue(arg));
     assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}});
     assertThat(programState.peekValue()).isNotEqualTo(arg);
 
-    programState = execute(invokeStatic("gul", "(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
+    programState = execute(invokeStatic("staticMethodWithIntIntArgument", "(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
     assertStack(programState, new Constraint[] {null});
 
-    assertThatThrownBy(() -> execute(invokeStatic("tak", "(I)V")))
+    assertThatThrownBy(() -> execute(invokeStatic("staticBooleanMethodWithIntArgument", "(I)V")))
       .hasMessage("Arguments mismatch for INVOKE");
   }
 
@@ -659,13 +659,13 @@ public class BytecodeEGWalkerExecuteTest {
   public void test_nullness_check() throws Exception {
     SymbolicValue thisSv = new SymbolicValue();
     ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(thisSv);
-    ProgramState programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "()V"), startingState);
+    ProgramState programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "methodWithoutArgument", "()V"), startingState);
     assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
 
-    programState = execute(invokeStatic("bar", "()Z"), startingState);
+    programState = execute(invokeStatic("staticBooleanMethod", "()Z"), startingState);
     assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}, {null}});
 
-    programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "(I)V"), startingState.stackValue(new SymbolicValue()));
+    programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "methodWithIntArgument", "(I)V"), startingState.stackValue(new SymbolicValue()));
     assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
   }
 
@@ -901,17 +901,17 @@ public class BytecodeEGWalkerExecuteTest {
     }
   }
 
-  private Instruction invokeMethod(int opcode, String desc) {
-    return new Instruction(opcode, new Instruction.FieldOrMethod("owner", "name", desc, false));
-  }
-
   private boolean hasConstraint(SymbolicValue sv, ProgramState ps, Constraint constraint) {
     ConstraintsByDomain constraints = ps.getConstraints(sv);
     return constraints != null && constraints.get(constraint.getClass()) == constraint;
   }
 
   private Instruction invokeStatic(String methodName, String desc) {
-    return new Instruction(Opcodes.INVOKESTATIC, new Instruction.FieldOrMethod("org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest", methodName, desc, false));
+    return invokeMethod(Opcodes.INVOKESTATIC, methodName, desc);
+  }
+
+  private Instruction invokeMethod(int opcode, String methodName, String desc) {
+    return new Instruction(opcode, new Instruction.FieldOrMethod("org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest", methodName, desc, false));
   }
 
   private void assertStack(ProgramState ps, Constraint... constraints) {
@@ -1028,27 +1028,44 @@ public class BytecodeEGWalkerExecuteTest {
   /**
    * ---------------- used by test checking methods ---------
    */
-  static void foo() {
+  static void staticMethod() {
   }
 
-  static boolean bar() {
+  static boolean staticBooleanMethod() {
     return false;
   }
 
-  static int qix(int i) {
+  static int staticIntMethodWithIntArgument(int i) {
     return 0;
   }
 
-  static void gul(int i1, int i2) {
+  static void staticMethodWithIntIntArgument(int i1, int i2) {
   }
 
-  static boolean tak(int i) {
+  static boolean staticBooleanMethodWithIntArgument(int i) {
     return true;
+  }
+
+  void methodWithoutArgument() {
+  }
+
+  void methodWithIntArgument(int i) {
+  }
+
+  boolean booleanMethod() {
+    return false;
+  }
+
+  int intMethodWithIntArgument(int i) {
+    return 0;
+  }
+
+  void methodWithIntIntArgument(int i1, int i2) {
   }
 
   private void tryCatch(boolean param) {
     try {
-      bar();
+      staticBooleanMethod();
       Preconditions.checkState(param);
     } catch (IllegalStateException e) {
       e.printStackTrace();
@@ -1059,7 +1076,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   private void tryWrongCatch(boolean param) {
     try {
-      bar();
+      staticBooleanMethod();
       Preconditions.checkState(param);
     } catch (IllegalArgumentException e) {
       e.printStackTrace();
