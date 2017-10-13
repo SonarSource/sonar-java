@@ -111,7 +111,7 @@ public class VisitorsBridge {
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
-      new SymbolicExecutionVisitor(executableScanners, classLoader).scanFile(javaFileScannerContext);
+      new SymbolicExecutionVisitor(executableScanners, classLoader, semanticModel).scanFile(javaFileScannerContext);
     }
     for (JavaFileScanner scanner : executableScanners) {
       scanner.scanFile(javaFileScannerContext);

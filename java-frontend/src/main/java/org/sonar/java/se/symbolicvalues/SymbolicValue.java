@@ -280,7 +280,7 @@ public class SymbolicValue {
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
-          return ImmutableList.of(programState.addConstraint(this, new TypedConstraint()));
+          return ImmutableList.of(programState.addConstraint(this, new TypedConstraint(null)));
         }
         return ps;
       }

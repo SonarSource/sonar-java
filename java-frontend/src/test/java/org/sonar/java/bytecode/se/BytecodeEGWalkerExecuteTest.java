@@ -26,12 +26,13 @@ import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilderTest;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -39,9 +40,12 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,6 +82,25 @@ public class BytecodeEGWalkerExecuteTest {
 
   private static final Set<Integer> LONG_OPCODE = ImmutableSet.of(LADD, LSUB, LMUL, LDIV, LAND, LOR, LXOR, LREM, LSHL, LSHR, LUSHR,
     DADD, DSUB, DMUL, DDIV, DREM);
+
+  private static final String TRY_CATCH_SIGNATURE = BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#tryCatch(Z)V";
+  private static final String TRY_WRONG_CATCH_SIGNATURE = BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#tryWrongCatch(Z)V";
+
+
+  SemanticModel semanticModel;
+  BytecodeEGWalker walker;
+  private SquidClassLoader squidClassLoader;
+
+  public void setUp() {
+    List<File> files = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[]{"jar", "zip"}, true));
+    files.add(new File("target/classes"));
+    files.add(new File("target/test-classes"));
+    squidClassLoader = new SquidClassLoader(files);
+    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+    walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+  }
 
   @Test
   public void test_nop() throws Exception {
@@ -270,8 +293,9 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_new() throws Exception {
-    ProgramState programState = execute(new Instruction(Opcodes.NEW));
-    assertStack(programState, ObjectConstraint.NOT_NULL);
+    setUp();
+    ProgramState programState = execute(new Instruction(Opcodes.NEW, "java.lang.Object"));
+    assertStack(programState, new Constraint[][] {{ ObjectConstraint.NOT_NULL, new TypedConstraint(semanticModel.getClassType("java.lang.Object"))}});
   }
 
   @Test
@@ -619,10 +643,15 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_athrow() throws Exception {
-    ProgramState programState = execute(new Instruction(Opcodes.ATHROW), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
+    setUp();
+    SymbolicValue sv = new SymbolicValue();
+    Type exceptionType = semanticModel.getClassType("java.lang.RuntimeException");
+    ProgramState initialState = ProgramState.EMPTY_STATE.stackValue(sv)
+        .addConstraint(sv, new TypedConstraint(exceptionType));
+    ProgramState programState = execute(new Instruction(Opcodes.ATHROW), initialState);
     SymbolicValue exception = programState.peekValue();
     assertThat(exception).isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
-    assertThat(((SymbolicValue.ExceptionalSymbolicValue) exception).exceptionType()).isNull();
+    assertThat(((SymbolicValue.ExceptionalSymbolicValue) exception).exceptionType()).isEqualTo(exceptionType);
     assertThat(programState.exitValue()).isEqualTo(exception);
   }
 
@@ -676,7 +705,7 @@ public class BytecodeEGWalkerExecuteTest {
     BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null), null);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(entry));
 
@@ -714,7 +743,7 @@ public class BytecodeEGWalkerExecuteTest {
     BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null), null);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(entry));
 
@@ -932,7 +961,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   private ProgramState execute(Instruction instruction, ProgramState startingState) {
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    setUp();
     ProgramPoint programPoint = mock(ProgramPoint.class);
     when(programPoint.next()).thenReturn(programPoint);
     walker.programPosition = programPoint;
@@ -955,9 +984,9 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_only_happy_path() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
+    setUp();
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(b2));
     assertThat(walker.workList).hasSize(1);
@@ -966,25 +995,26 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_exceptional_yields() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
+    setUp();
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
-    SquidClassLoader squidClassLoader = new SquidClassLoader(new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true)));
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader));
+    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
+    walker.programPosition = new ProgramPoint(b2).next().next();
+
+    walker.executeInstruction(b2.elements().get(3));
+    assertThat(walker.workList).hasSize(3);
+  }
+
+  @Test
+  public void test_enqueuing_exceptional_yields2() {
+    setUp();
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_WRONG_CATCH_SIGNATURE, squidClassLoader);
+    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
     walker.programPosition = new ProgramPoint(b2).next().next();
     walker.executeInstruction(b2.elements().get(3));
-    assertThat(walker.workList).hasSize(3);
 
-
-    cfg = BytecodeCFGBuilderTest.getBytecodeCFG("tryWrongCatch", "src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
-    b2 = cfg.blocks().get(2);
-    walker.workList.clear();
-    walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
-    walker.programPosition = new ProgramPoint(b2).next().next();
-    walker.executeInstruction(b2.elements().get(3));
-    //FIXME should be 2 as the path to the catch should not be enqueued : should be fix by tracking properly exception types
-    assertThat(walker.workList).hasSize(3);
-    assertThat(walker.workList.pop().programState.exitValue()).isNotNull().isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
+    assertThat(walker.workList).hasSize(2);
     assertThat(walker.workList.pop().programState.exitValue()).isNotNull().isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
     assertThat(walker.workList.pop().programState.exitValue()).isNull();
   }

@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
@@ -44,13 +45,16 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @VisibleForTesting
   public final BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
+  private final SemanticModel semanticModel;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
-    this(executableScanners, new SquidClassLoader(Lists.newArrayList()));
+    this(executableScanners, new SquidClassLoader(Lists.newArrayList()), null);
   }
-  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader) {
-    behaviorCache = new BehaviorCache(this, classLoader);
+
+  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader, @Nullable SemanticModel semanticModel) {
+    behaviorCache = new BehaviorCache(this, classLoader, semanticModel);
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
+    this.semanticModel = semanticModel;
   }
 
   @Override
@@ -64,7 +68,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   public void execute(MethodTree methodTree) {
-    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
+    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, semanticModel);
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
       if (methodCanNotBeOverriden(methodSymbol)) {

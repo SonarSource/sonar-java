@@ -19,33 +19,28 @@
  */
 package org.sonar.java.se.constraint;
 
+import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import javax.annotation.Nullable;
-import java.util.Objects;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class TypedConstraint implements Constraint {
-  @Nullable
-  public final Type type;
+public class TypedConstraintTest {
 
-  public TypedConstraint(@Nullable Type type) {
-    this.type = type;
-  }
+  @Test
+  public void test_equals_hashcode() {
+    Type type = mock(Type.class);
+    TypedConstraint object1 = new TypedConstraint(type);
+    TypedConstraint object2 = new TypedConstraint(type);
+    assertThat(object1.equals(object1)).isTrue();
+    assertThat(object1.equals(object2)).isTrue();
+    assertThat(object1.equals(null)).isFalse();
+    assertThat(object1.equals("")).isFalse();
+    assertThat(object1.hashCode()).isEqualTo(object2.hashCode());
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    TypedConstraint that = (TypedConstraint) o;
-    return type != null && type.equals(that.type);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type);
+    TypedConstraint nullTC1 = new TypedConstraint(null);
+    TypedConstraint nullTC2 = new TypedConstraint(null);
+    assertThat(nullTC1.equals(nullTC2)).isFalse();
+    assertThat(object1.equals(nullTC1)).isFalse();
   }
 }

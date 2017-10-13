@@ -23,13 +23,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Printer;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
@@ -40,11 +40,13 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 
@@ -220,6 +222,7 @@ public class BytecodeEGWalker {
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final int MAX_STEPS = 16_000;
   private final BehaviorCache behaviorCache;
+  private final SemanticModel semanticModel;
 
   private ExplodedGraph explodedGraph;
 
@@ -254,8 +257,9 @@ public class BytecodeEGWalker {
   MethodBehavior methodBehavior;
   private CheckerDispatcher checkerDispatcher;
 
-  public BytecodeEGWalker(BehaviorCache behaviorCache){
+  public BytecodeEGWalker(BehaviorCache behaviorCache, SemanticModel semanticModel){
     this.behaviorCache = behaviorCache;
+    this.semanticModel = semanticModel;
     checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(new BytecodeSECheck.NullnessCheck()));
     constraintManager = new ConstraintManager();
     explodedGraph = new ExplodedGraph();
@@ -628,8 +632,11 @@ public class BytecodeEGWalker {
         break;
       case NEW:
         sv = constraintManager.createSymbolicValue(instruction);
-        programState = programState.stackValue(sv);
-        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+        Type classType = semanticModel.getClassType(instruction.className);
+        programState = programState
+            .stackValue(sv)
+            .addConstraint(sv, ObjectConstraint.NOT_NULL)
+            .addConstraint(sv, new TypedConstraint(classType));
         break;
       case NEWARRAY:
       case ANEWARRAY:
@@ -640,7 +647,10 @@ public class BytecodeEGWalker {
         break;
       case ATHROW:
         pop = popStack(1, instruction.opcode);
-        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(null));
+        sv = pop.values.get(0);
+        TypedConstraint typedConstraint = programState.getConstraint(sv, TypedConstraint.class);
+        Type type = typedConstraint != null ? typedConstraint.type : null;
+        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(type));
         programState.storeExitValue();
         break;
       case CHECKCAST:
@@ -725,7 +735,7 @@ public class BytecodeEGWalker {
         methodInvokedBehavior
           .exceptionalPathYields()
           .forEach(yield -> {
-            org.sonar.plugins.java.api.semantic.Type exceptionType = yield.exceptionType();
+            Type exceptionType = yield.exceptionType();
             yield.statesAfterInvocation(
               Lists.reverse(pop.values), Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)
               ).forEach(ps -> {
@@ -745,7 +755,7 @@ public class BytecodeEGWalker {
     return false;
   }
 
-  private void enqueueExceptionHandlers(org.sonar.plugins.java.api.semantic.Type exceptionType, ProgramState ps) {
+  private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {
     programPosition.block.successors().stream()
       .map(b -> (BytecodeCFGBuilder.Block) b)
       .filter(b -> b.getExceptionType() != null)
@@ -843,8 +853,8 @@ public class BytecodeEGWalker {
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
       parameterIdx = 1;
     }
-    Type[] argumentTypes = Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
-    for (Type argumentType: argumentTypes) {
+    org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
+    for (org.objectweb.asm.Type argumentType: argumentTypes) {
       SymbolicValue sv = constraintManager.createSymbolicValue((Instruction) null);
       methodBehavior.addParameter(sv);
       state = state.put(parameterIdx, sv);
