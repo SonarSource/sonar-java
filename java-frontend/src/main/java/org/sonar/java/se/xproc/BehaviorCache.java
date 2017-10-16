@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -38,12 +39,14 @@ public class BehaviorCache {
 
   private final SymbolicExecutionVisitor sev;
   private final SquidClassLoader classLoader;
+  private final SemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
 
-  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader) {
+  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
     this.sev = sev;
     this.classLoader = classLoader;
+    this.semanticModel = semanticModel;
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
@@ -74,7 +77,7 @@ public class BehaviorCache {
         || isStringUtilsMethod(signature)
         || isEclipseAssert(signature)
         ) {
-        return new BytecodeEGWalker(this).getMethodBehavior(signature, symbol, classLoader);
+        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
       } else if(symbol != null) {
         MethodTree declaration = symbol.declaration();
         if (declaration != null && SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {

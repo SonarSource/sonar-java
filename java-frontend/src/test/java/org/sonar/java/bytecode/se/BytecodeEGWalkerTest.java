@@ -179,7 +179,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void test_starting_states() throws Exception {
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null));
+    BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
 
     String signature = "()V";
     walker.methodBehavior = new MethodBehavior(signature);
@@ -210,7 +210,7 @@ public class BytecodeEGWalkerTest {
   @Test
   public void max_step_exception_should_log_warning_and_generate_behavior() {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader)) {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, null), null) {
       @Override
       int maxSteps() {
         return 2;
@@ -238,10 +238,10 @@ public class BytecodeEGWalkerTest {
 
   private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader));
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
+    SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
     return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), methodSymbol, squidClassLoader);

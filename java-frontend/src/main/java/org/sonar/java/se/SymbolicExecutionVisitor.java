@@ -32,6 +32,7 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,15 +43,23 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
-  public final BehaviorCache behaviorCache;
+  public BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
+  private SquidClassLoader classLoader;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
     this(executableScanners, new SquidClassLoader(Lists.newArrayList()));
   }
+
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader) {
-    behaviorCache = new BehaviorCache(this, classLoader);
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
+    this.classLoader = classLoader;
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    behaviorCache = new BehaviorCache(this, classLoader, (SemanticModel) context.getSemanticModel());
+    super.scanFile(context);
   }
 
   @Override
