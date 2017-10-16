@@ -49,6 +49,7 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -268,7 +269,12 @@ public class BytecodeEGWalker {
     endOfExecutionPath = new LinkedHashSet<>();
   }
 
+  @CheckForNull
   public MethodBehavior getMethodBehavior(String signature, @Nullable Symbol.MethodSymbol methodSymbol, SquidClassLoader classLoader) {
+    if (methodFromArray(signature)) {
+      // should not generate any method behavior
+      return null;
+    }
     methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
     if (!methodBehavior.isVisited()) {
       try {
@@ -283,6 +289,10 @@ public class BytecodeEGWalker {
       }
     }
     return methodBehavior;
+  }
+
+  private static boolean methodFromArray(String signature) {
+    return signature.substring(0, signature.indexOf('#')).endsWith("[]");
   }
 
   @VisibleForTesting
