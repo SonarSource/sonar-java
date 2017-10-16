@@ -20,6 +20,7 @@
 package org.sonar.java.se.constraint;
 
 import org.junit.Test;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +39,8 @@ public class TypedConstraintTest {
     assertThat(object1.equals("")).isFalse();
     assertThat(object1.hashCode()).isEqualTo(object2.hashCode());
 
-    TypedConstraint nullTC1 = new TypedConstraint(null);
-    TypedConstraint nullTC2 = new TypedConstraint(null);
+    TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType);
+    TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType);
     assertThat(nullTC1.equals(nullTC2)).isFalse();
     assertThat(object1.equals(nullTC1)).isFalse();
   }

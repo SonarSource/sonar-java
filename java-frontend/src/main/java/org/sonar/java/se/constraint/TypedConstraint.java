@@ -21,14 +21,13 @@ package org.sonar.java.se.constraint;
 
 import org.sonar.plugins.java.api.semantic.Type;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class TypedConstraint implements Constraint {
-  @Nullable
+
   public final Type type;
 
-  public TypedConstraint(@Nullable Type type) {
+  public TypedConstraint(Type type) {
     this.type = type;
   }
 
@@ -40,8 +39,11 @@ public class TypedConstraint implements Constraint {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (type.isUnknown()) {
+      return false;
+    }
     TypedConstraint that = (TypedConstraint) o;
-    return type != null && type.equals(that.type);
+    return type.equals(that.type);
   }
 
   @Override

@@ -30,6 +30,7 @@ import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
@@ -649,7 +650,7 @@ public class BytecodeEGWalker {
         pop = popStack(1, instruction.opcode);
         sv = pop.values.get(0);
         TypedConstraint typedConstraint = programState.getConstraint(sv, TypedConstraint.class);
-        Type type = typedConstraint != null ? typedConstraint.type : null;
+        Type type = typedConstraint != null ? typedConstraint.type : Symbols.unknownType;
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(type));
         programState.storeExitValue();
         break;

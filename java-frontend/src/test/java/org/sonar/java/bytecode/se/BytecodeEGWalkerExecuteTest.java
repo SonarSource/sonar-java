@@ -91,7 +91,7 @@ public class BytecodeEGWalkerExecuteTest {
   BytecodeEGWalker walker;
   private SquidClassLoader squidClassLoader;
 
-  public void setUp() {
+  private void initializeWalker() {
     List<File> files = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[]{"jar", "zip"}, true));
     files.add(new File("target/classes"));
     files.add(new File("target/test-classes"));
@@ -293,7 +293,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_new() throws Exception {
-    setUp();
+    initializeWalker();
     ProgramState programState = execute(new Instruction(Opcodes.NEW, "java.lang.Object"));
     assertStack(programState, new Constraint[][] {{ ObjectConstraint.NOT_NULL, new TypedConstraint(semanticModel.getClassType("java.lang.Object"))}});
   }
@@ -643,7 +643,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_athrow() throws Exception {
-    setUp();
+    initializeWalker();
     SymbolicValue sv = new SymbolicValue();
     Type exceptionType = semanticModel.getClassType("java.lang.RuntimeException");
     ProgramState initialState = ProgramState.EMPTY_STATE.stackValue(sv)
@@ -705,7 +705,7 @@ public class BytecodeEGWalkerExecuteTest {
     BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null), null);
+    BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(entry));
 
@@ -743,7 +743,7 @@ public class BytecodeEGWalkerExecuteTest {
     BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, null), null);
+    BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(entry));
 
@@ -961,7 +961,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   private ProgramState execute(Instruction instruction, ProgramState startingState) {
-    setUp();
+    initializeWalker();
     ProgramPoint programPoint = mock(ProgramPoint.class);
     when(programPoint.next()).thenReturn(programPoint);
     walker.programPosition = programPoint;
@@ -984,7 +984,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_only_happy_path() {
-    setUp();
+    initializeWalker();
     BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
@@ -995,7 +995,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_exceptional_yields() {
-    setUp();
+    initializeWalker();
     BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
@@ -1007,7 +1007,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_exceptional_yields2() {
-    setUp();
+    initializeWalker();
     BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_WRONG_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
@@ -1015,7 +1015,9 @@ public class BytecodeEGWalkerExecuteTest {
     walker.executeInstruction(b2.elements().get(3));
 
     assertThat(walker.workList).hasSize(2);
-    assertThat(walker.workList.pop().programState.exitValue()).isNotNull().isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
+    assertThat(walker.workList.pop().programState.exitValue()).isNotNull()
+      .isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class)
+      .extracting(sv -> ((SymbolicValue.ExceptionalSymbolicValue) sv).exceptionType().fullyQualifiedName()).containsExactly("java.lang.IllegalStateException");
     assertThat(walker.workList.pop().programState.exitValue()).isNull();
   }
 

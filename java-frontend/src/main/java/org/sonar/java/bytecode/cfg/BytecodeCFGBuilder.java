@@ -392,7 +392,7 @@ public class BytecodeCFGBuilder {
     }
 
     @Override
-    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+    public void visitTryCatchBlock(Label start, Label end, Label handler, @Nullable String type) {
       String exception = type == null ? null : Type.getObjectType(type).getClassName();
       tryCatchBlocks.add(new TryCatchBlock(start, end, handler, exception));
     }

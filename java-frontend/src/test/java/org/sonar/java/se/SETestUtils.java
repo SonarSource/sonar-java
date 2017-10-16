@@ -56,9 +56,10 @@ public class SETestUtils {
     ActionParser<Tree> p = JavaParser.createParser();
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>(CLASS_PATH)));
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(checks), new SquidClassLoader(CLASS_PATH), semanticModel);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(checks), new SquidClassLoader(CLASS_PATH));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
+    when(context.getSemanticModel()).thenReturn(semanticModel);
     sev.scanFile(context);
     return sev;
   }

@@ -32,29 +32,34 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
-  public final BehaviorCache behaviorCache;
+  public BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
-  private final SemanticModel semanticModel;
+  private SquidClassLoader classLoader;
 
   public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
-    this(executableScanners, new SquidClassLoader(Lists.newArrayList()), null);
+    this(executableScanners, new SquidClassLoader(Lists.newArrayList()));
   }
 
-  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader, @Nullable SemanticModel semanticModel) {
-    behaviorCache = new BehaviorCache(this, classLoader, semanticModel);
+  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader) {
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
-    this.semanticModel = semanticModel;
+    this.classLoader = classLoader;
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    behaviorCache = new BehaviorCache(this, classLoader, (SemanticModel) context.getSemanticModel());
+    super.scanFile(context);
   }
 
   @Override
@@ -68,7 +73,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   public void execute(MethodTree methodTree) {
-    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, semanticModel);
+    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
       if (methodCanNotBeOverriden(methodSymbol)) {

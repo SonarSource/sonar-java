@@ -43,11 +43,7 @@ public class BehaviorCache {
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
 
-  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader) {
-    this(sev, classLoader, null);
-  }
-
-  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, @Nullable SemanticModel semanticModel) {
+  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
     this.sev = sev;
     this.classLoader = classLoader;
     this.semanticModel = semanticModel;
