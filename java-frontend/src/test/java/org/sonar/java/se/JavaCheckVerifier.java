@@ -203,7 +203,9 @@ public class JavaCheckVerifier {
   }
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
-    Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
+    if (issues.isEmpty()) {
+      Fail.fail("At least one issue expected");
+    }
     List<Integer> unexpectedLines = Lists.newLinkedList();
     Multimap<Integer, Expectations.Issue> expected = expectations.issues;
 
@@ -212,7 +214,8 @@ public class JavaCheckVerifier {
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
-      String expectedMsg = !expected.isEmpty() ? ("Expected " + expected) : "";
+      List<Integer> expectedLines = expected.keys().stream().sorted().collect(Collectors.toList());
+      String expectedMsg = !expectedLines.isEmpty() ? ("Expected at " + expectedLines) : "";
       String unexpectedMsg = !unexpectedLines.isEmpty() ? ((expectedMsg.isEmpty() ? "" : ", ") + "Unexpected at " + unexpectedLines) : "";
       fail(expectedMsg + unexpectedMsg);
     }

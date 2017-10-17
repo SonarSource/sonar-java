@@ -85,7 +85,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected {1=[{LINE=1, MESSAGE=message}]}, Unexpected at [4]");
+      assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
     }
   }
 
@@ -97,7 +97,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected {1=[{LINE=1, MESSAGE=message}]}");
+      assertThat(e).hasMessage("Expected at [1]");
     }
   }
 
