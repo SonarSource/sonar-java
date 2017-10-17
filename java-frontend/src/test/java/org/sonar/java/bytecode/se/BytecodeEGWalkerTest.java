@@ -56,6 +56,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class BytecodeEGWalkerTest {
 
 
+  private static final List<File> CLASS_PATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
   @Rule
   public LogTester logTester  = new LogTester();
 
@@ -178,6 +179,16 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
+  public void method_array() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(CLASS_PATH);
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, classLoader, null), null);
+
+    MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", null, classLoader);
+
+    assertThat(behavior).isNull();
+  }
+
+  @Test
   public void test_starting_states() throws Exception {
     BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
 
@@ -209,7 +220,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void max_step_exception_should_log_warning_and_generate_behavior() {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
     BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, null), null) {
       @Override
       int maxSteps() {
@@ -237,14 +248,18 @@ public class BytecodeEGWalkerTest {
   }
 
   private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    return getMethodBehavior(targetClass, methodFinder, true);
+  }
+
+  private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder, boolean useSymbol) {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);
     BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
-    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), methodSymbol, squidClassLoader);
+    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), useSymbol ? methodSymbol : null, squidClassLoader);
   }
 
   private static ClassTree getClass(CompilationUnitTree cut, String className) {
