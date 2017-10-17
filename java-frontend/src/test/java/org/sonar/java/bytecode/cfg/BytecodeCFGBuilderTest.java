@@ -297,7 +297,7 @@ public class BytecodeCFGBuilderTest {
       "0: ASTORE\n" +
       "1: ALOAD\n" +
       "2: INVOKEVIRTUAL\n" +
-      "Jumps to: B6 \n" +
+      "Jumps to: B6 B7(Exception:!UncaughtException!) \n" +
       "B6\n" +
       "0: GETSTATIC\n" +
       "1: LDC\n" +
@@ -345,17 +345,17 @@ public class BytecodeCFGBuilderTest {
       "GOTO Jumps to: B7 \n" +
       "B7\n" +
       "0: RETURN\n" +
-      "Jumps to: B0 B8(Exception:java.io.IOException) B10(Exception:!UncaughtException!) \n" +
+      "Jumps to: B0 \n" +
       "B8\n" +
       "0: ASTORE\n" +
       "1: ALOAD\n" +
       "2: INVOKEVIRTUAL\n" +
-      "Jumps to: B8(Exception:java.io.IOException) B9 B10(Exception:!UncaughtException!) \n" +
+      "Jumps to: B9 B10(Exception:!UncaughtException!) \n" +
       "B9\n" +
       "0: GETSTATIC\n" +
       "1: LDC\n" +
       "2: INVOKEVIRTUAL\n" +
-      "GOTO Jumps to: B7 B8(Exception:java.io.IOException) B10(Exception:!UncaughtException!) \n" +
+      "GOTO Jumps to: B7 \n" +
       "B10\n" +
       "0: ASTORE\n" +
       "1: GETSTATIC\n" +
@@ -363,7 +363,7 @@ public class BytecodeCFGBuilderTest {
       "3: INVOKEVIRTUAL\n" +
       "4: ALOAD\n" +
       "5: ATHROW\n" +
-      "Jumps to: B0 B8(Exception:java.io.IOException) B10(Exception:!UncaughtException!) \n");
+      "Jumps to: B0 \n");
   }
 
   @Test
