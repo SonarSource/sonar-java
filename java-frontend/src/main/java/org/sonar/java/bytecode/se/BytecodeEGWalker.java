@@ -758,7 +758,8 @@ public class BytecodeEGWalker {
               enqueueExceptionHandlers(exceptionType, ps);
           });
         });
-      return true;
+      // FIXME : empty yields here should not happen, for now act as if behavior was not resolved.
+      return !methodInvokedBehavior.yields().isEmpty();
     }
     programState = pop.state;
     if (instruction.hasReturnValue()) {
