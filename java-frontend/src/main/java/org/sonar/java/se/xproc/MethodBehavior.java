@@ -40,7 +40,6 @@ public class MethodBehavior {
   private Symbol.MethodSymbol methodSymbol;
   private boolean varArgs;
   private boolean isStaticMethod;
-  private boolean isOverrideableOrNative;
   private final int arity;
 
   private final Set<MethodYield> yields;
@@ -189,20 +188,12 @@ public class MethodBehavior {
     return isStaticMethod;
   }
 
-  public boolean isOverrideableOrNative() {
-    return isOverrideableOrNative;
-  }
-
   public void setVarArgs(boolean varArgs) {
     this.varArgs = varArgs;
   }
 
   public void setStaticMethod(boolean staticMethod) {
     isStaticMethod = staticMethod;
-  }
-
-  public void setOverrideableOrNative(boolean isOverrideableOrNative) {
-    this.isOverrideableOrNative = isOverrideableOrNative;
   }
 
   public void setMethodSymbol(Symbol.MethodSymbol methodSymbol) {

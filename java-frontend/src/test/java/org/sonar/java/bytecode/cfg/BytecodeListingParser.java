@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.IINC;
 import static org.objectweb.asm.Opcodes.V1_8;
@@ -48,7 +49,7 @@ public class BytecodeListingParser {
     // Define class and method stub for instructions
     ClassWriter cw = new ClassWriter(Opcodes.ASM5);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
-    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "test", "()V", null, null);
+    MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "test", "()V", null, null);
     JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);
     Map<Integer, Label> labelIndexes =  new HashMap<>();
     String[] lines = bytecodeInstructions.split("\n");
