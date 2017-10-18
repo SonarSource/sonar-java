@@ -352,6 +352,7 @@ public class BytecodeCFGBuilder {
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
       currentBlock.terminator = new Instruction(Opcodes.LOOKUPSWITCH);
+      blockByLabel.computeIfAbsent(dflt, l -> currentBlock.createSuccessor());
       for (Label label : labels) {
         blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
       }

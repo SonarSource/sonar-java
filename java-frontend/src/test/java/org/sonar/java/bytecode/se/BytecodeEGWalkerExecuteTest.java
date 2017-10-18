@@ -56,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.DADD;
 import static org.objectweb.asm.Opcodes.DDIV;
 import static org.objectweb.asm.Opcodes.DMUL;
@@ -63,6 +64,10 @@ import static org.objectweb.asm.Opcodes.DREM;
 import static org.objectweb.asm.Opcodes.DSUB;
 import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.ICONST_2;
+import static org.objectweb.asm.Opcodes.ICONST_3;
+import static org.objectweb.asm.Opcodes.ICONST_4;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.LADD;
@@ -1023,6 +1028,96 @@ public class BytecodeEGWalkerExecuteTest {
       .isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class)
       .extracting(sv -> ((SymbolicValue.ExceptionalSymbolicValue) sv).exceptionType().fullyQualifiedName()).containsExactly("java.lang.IllegalStateException");
     assertThat(walker.workList.pop().programState.exitValue()).isNull();
+  }
+
+  @Test
+  public void test_switch_enqueuing_in_trycatch() throws Exception {
+    initializeWalker();
+
+    Instructions mv = new Instructions();
+    Label l0 = new Label();
+    Label l1 = new Label();
+    Label l2 = new Label();
+    mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
+    mv.visitLabel(l0);
+    mv.visitVarInsn(ILOAD, 1);
+    mv.visitLookupSwitchInsn(l1, new int[] {0}, new Label[] {l1});
+    mv.visitLabel(l1);
+    Label l3 = new Label();
+    mv.visitJumpInsn(GOTO, l3);
+    mv.visitLabel(l2);
+    mv.visitVarInsn(ASTORE, 2);
+    mv.visitLabel(l3);
+    mv.visitInsn(RETURN);
+
+    BytecodeCFGBuilder.BytecodeCFG cfg = mv.cfg();
+    BytecodeCFGBuilder.Block switchBlock = cfg.blocks().get(2);
+
+    assertThat(switchBlock.terminator().opcode).isEqualTo(Opcodes.LOOKUPSWITCH);
+    walker.programState = ProgramState.EMPTY_STATE;
+    walker.handleBlockExit(new ProgramPoint(switchBlock));
+    assertThat(walker.workList).hasSize(1);
+  }
+
+  @Test
+  public void test_goto_enqueuing_in_trycatch() throws Exception {
+    initializeWalker();
+
+    Instructions mv = new Instructions();
+    /*
+     void test_goto(int i) {
+       try {
+          switch (i) {
+            case 0:
+              i = 1; // GOTO within try-catch
+              break;
+            case 1:
+              i = 2;
+              break;
+          }
+          i = 3;
+        } catch (Exception e) {
+          i = 4;
+       }
+     }
+    */
+    Label l0 = new Label();
+    Label l1 = new Label();
+    Label l2 = new Label();
+    mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
+    mv.visitLabel(l0);
+    mv.visitVarInsn(ILOAD, 1);
+    Label l3 = new Label();
+    Label l4 = new Label();
+    Label l5 = new Label();
+    mv.visitLookupSwitchInsn(l5, new int[] {0, 1}, new Label[] {l3, l4});
+    mv.visitLabel(l3);
+    mv.visitInsn(ICONST_1);
+    mv.visitVarInsn(ISTORE, 1);
+    mv.visitJumpInsn(GOTO, l5); // tested GOTO instruction
+    mv.visitLabel(l4);
+    mv.visitInsn(ICONST_2);
+    mv.visitVarInsn(ISTORE, 1);
+    mv.visitLabel(l5);
+    mv.visitInsn(ICONST_3);
+    mv.visitVarInsn(ISTORE, 1);
+    mv.visitLabel(l1);
+    Label l6 = new Label();
+    mv.visitJumpInsn(GOTO, l6);
+    mv.visitLabel(l2);
+    mv.visitVarInsn(ASTORE, 2);
+    mv.visitInsn(ICONST_4);
+    mv.visitVarInsn(ISTORE, 1);
+    mv.visitLabel(l6);
+    mv.visitInsn(RETURN);
+    BytecodeCFGBuilder.BytecodeCFG cfg = mv.cfg();
+
+    BytecodeCFGBuilder.Block gotoBlock = cfg.blocks().get(4);
+    assertThat(gotoBlock.terminator().opcode).isEqualTo(GOTO);
+    walker.programState = ProgramState.EMPTY_STATE;
+    walker.handleBlockExit(new ProgramPoint(gotoBlock));
+
+    assertThat(walker.workList).hasSize(1);
   }
 
   /**
