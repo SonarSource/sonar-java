@@ -788,7 +788,7 @@ public class BytecodeEGWalker {
     if (terminator != null) {
       switch (terminator.opcode) {
         case GOTO:
-          programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
+          enqueueHappyPath(programPosition);
           return;
         case IFEQ:
         case IFNE:
@@ -827,7 +827,8 @@ public class BytecodeEGWalker {
         case TABLESWITCH:
         case LOOKUPSWITCH:
           pop = programState.unstackValue(1);
-          programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), pop.state));
+          programState = pop.state;
+          enqueueHappyPath(programPosition);
           return;
         default:
           throw new IllegalStateException("Unexpected terminator " + terminator);
