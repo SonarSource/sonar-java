@@ -23,15 +23,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.bytecode.cfg.Instruction;
+import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -132,7 +131,7 @@ public class ConstraintManager {
 
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<ProgramState.SymbolicValueSymbol> values) {
     SymbolicValue result;
-    if (isEqualsMethod(syntaxNode) || isObjectsEqualsMethod(syntaxNode.symbol())) {
+    if (ExplodedGraphWalker.EQUALS_METHODS.anyMatch(syntaxNode)) {
       result = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
       ProgramState.SymbolicValueSymbol leftOp = values.get(1);
       ProgramState.SymbolicValueSymbol rightOp = values.get(0);
@@ -141,24 +140,6 @@ public class ConstraintManager {
       result = createDefaultSymbolicValue();
     }
     return result;
-  }
-
-  private static boolean isObjectsEqualsMethod(Symbol symbol) {
-    return symbol.isMethodSymbol() && symbol.owner().type().is("java.util.Objects") && "equals".equals(symbol.name());
-  }
-
-  private static boolean isEqualsMethod(MethodInvocationTree syntaxNode) {
-    if (syntaxNode.arguments().size() == 1) {
-      ExpressionTree methodSelect = syntaxNode.methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree expression = (MemberSelectExpressionTree) methodSelect;
-        if ("equals".equals(expression.identifier().name()) && syntaxNode.symbol().isMethodSymbol()) {
-          Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) syntaxNode.symbol();
-          return symbol.parameterTypes().get(0).is("java.lang.Object");
-        }
-      }
-    }
-    return false;
   }
 
   private SymbolicValue createIdentifierSymbolicValue(IdentifierTree identifier) {
