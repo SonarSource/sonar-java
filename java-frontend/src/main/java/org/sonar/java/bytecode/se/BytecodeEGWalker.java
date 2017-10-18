@@ -51,7 +51,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -175,7 +174,6 @@ import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.ISUB;
 import static org.objectweb.asm.Opcodes.IUSHR;
 import static org.objectweb.asm.Opcodes.IXOR;
-import static org.objectweb.asm.Opcodes.JSR;
 import static org.objectweb.asm.Opcodes.L2D;
 import static org.objectweb.asm.Opcodes.L2F;
 import static org.objectweb.asm.Opcodes.L2I;
@@ -786,7 +784,6 @@ public class BytecodeEGWalker {
     if (terminator != null) {
       switch (terminator.opcode) {
         case GOTO:
-        case JSR:
           programPosition.block.successors().forEach(b -> enqueue(new ProgramPoint(b), programState));
           return;
         case IFEQ:
