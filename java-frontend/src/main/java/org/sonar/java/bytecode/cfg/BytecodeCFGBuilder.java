@@ -31,6 +31,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.util.Printer;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.Convert;
@@ -39,6 +41,7 @@ import org.sonar.java.resolve.Java9Support;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -55,11 +58,19 @@ import static org.objectweb.asm.Opcodes.GOTO;
 
 public class BytecodeCFGBuilder {
 
+  private static final Logger LOG = Loggers.get(BytecodeCFGBuilder.class);
+
   private BytecodeCFGBuilder() {
   }
 
+  @CheckForNull
   public static BytecodeCFG buildCFG(String signature, SquidClassLoader classLoader) {
-    try(InputStream is = classLoader.getResourceAsStream(Convert.bytecodeName(signature.substring(0, signature.indexOf('#'))) + ".class")) {
+    String className = signature.substring(0, signature.indexOf('#'));
+    try(InputStream is = classLoader.getResourceAsStream(Convert.bytecodeName(className) + ".class")) {
+      if (is == null) {
+        LOG.debug(".class not found for {}", className);
+        return null;
+      }
       byte[] bytes = ByteStreams.toByteArray(is);
       // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
       if (Java9Support.isJava9Class(bytes)) {
@@ -72,18 +83,18 @@ public class BytecodeCFGBuilder {
   }
 
   @VisibleForTesting
+  @CheckForNull
   static BytecodeCFG buildCFG(String sign, byte[] bytes) {
     ClassReader cr = new ClassReader(bytes);
     BytecodeCFGMethodVisitor methodVisitor = new BytecodeCFGMethodVisitor();
     cr.accept(new BytecodeCFGClassVisitor(methodVisitor, sign), ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-    return methodVisitor.cfg();
+    return methodVisitor.cfg;
   }
 
   public static class BytecodeCFG {
     List<Block> blocks;
     boolean isStaticMethod;
     boolean isVarArgs;
-    boolean isOverrideableOrNativeMethod;
 
     BytecodeCFG() {
       blocks = new ArrayList<>();
@@ -103,10 +114,6 @@ public class BytecodeCFGBuilder {
 
     public boolean isVarArgs() {
       return isVarArgs;
-    }
-
-    public boolean isOverrideableOrNativeMethod() {
-      return isOverrideableOrNativeMethod;
     }
 
     public List<Block> blocks() {
@@ -258,15 +265,17 @@ public class BytecodeCFGBuilder {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
       if (name.equals(methodSignature.substring(methodSignature.indexOf('#') + 1, methodSignature.indexOf('(')))
         && desc.equals(methodSignature.substring(methodSignature.indexOf('(')))) {
-        methodVisitor.isStaticMethod = Flags.isFlagged(access, Flags.STATIC);
-        methodVisitor.isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
-        methodVisitor.isOverrideableOrNativeMethod = isOverrideableOrNativeMethod(access);
+        if (isOverridableOrNativeMethod(access)) {
+          // avoid computing CFG when the method behavior won't be used
+          return null;
+        }
+        methodVisitor.initCFG(access);
         return new JSRInlinerAdapter(methodVisitor, access, name, desc, signature, exceptions);
       }
       return null;
     }
 
-    private boolean isOverrideableOrNativeMethod(int methodFlags) {
+    private boolean isOverridableOrNativeMethod(int methodFlags) {
       if (Flags.isFlagged(methodFlags, Flags.NATIVE)) {
         return true;
       }
@@ -278,18 +287,20 @@ public class BytecodeCFGBuilder {
     Map<Label, Block> blockByLabel = new HashMap<>();
     private Block currentBlock;
     private BytecodeCFG cfg;
-    private boolean isStaticMethod;
-    private boolean isVarArgs;
-    private boolean isOverrideableOrNativeMethod;
     private List<TryCatchBlock> tryCatchBlocks = new ArrayList<>();
     private List<TryCatchBlock> currentTryCatches = new ArrayList<>();
     private Map<Block, List<TryCatchBlock>> handlersToWire =  new HashMap<>();
 
     BytecodeCFGMethodVisitor() {
       super(Opcodes.ASM5);
+    }
+
+    private void initCFG(int access) {
       cfg = new BytecodeCFG();
       currentBlock = new Block(cfg);
       cfg.blocks.add(currentBlock);
+      cfg.isStaticMethod = Flags.isFlagged(access, Flags.STATIC);
+      cfg.isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
     }
 
     @Override
@@ -450,12 +461,6 @@ public class BytecodeCFGBuilder {
       return tryCatchBlocks.stream().filter(h -> h.end == label).collect(Collectors.toList());
     }
 
-    public BytecodeCFG cfg() {
-      cfg.isStaticMethod = isStaticMethod;
-      cfg.isVarArgs = isVarArgs;
-      cfg.isOverrideableOrNativeMethod = isOverrideableOrNativeMethod;
-      return cfg;
-    }
   }
 
 }
