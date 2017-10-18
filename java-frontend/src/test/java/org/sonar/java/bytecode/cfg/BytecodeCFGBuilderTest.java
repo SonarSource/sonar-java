@@ -23,6 +23,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+import org.junit.Rule;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Handle;
@@ -32,6 +33,8 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Printer;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -67,14 +70,12 @@ import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
 public class BytecodeCFGBuilderTest {
 
+  @Rule
+  public LogTester logTester = new LogTester();
+
   @Test
   public void test() throws Exception {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
-    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(0)).symbol();
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    BytecodeCFGBuilder.BytecodeCFG cfg = getCFGForMethod("fun");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo(
@@ -100,7 +101,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   static class InnerClass {
-    Object fun(boolean a, Object b) {
+    private Object fun(boolean a, Object b) {
       if (a) {
         if (b == null) {
           return null;
@@ -110,19 +111,14 @@ public class BytecodeCFGBuilderTest {
         return "not a";
       }
     }
-    boolean label_goto(Object b) {
+    private boolean label_goto(Object b) {
       return  b == null;
     }
   }
 
   @Test
   public void label_goto_successors() throws Exception {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
-    Symbol.MethodSymbol symbol = ((MethodTree) ((ClassTree) ((ClassTree) tree.types().get(0)).members().get(1)).members().get(1)).symbol();
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    BytecodeCFGBuilder.BytecodeCFG cfg = getCFGForMethod("label_goto");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo("B0(Exit)\n" +
@@ -138,6 +134,16 @@ public class BytecodeCFGBuilderTest {
       "B4\n" +
       "0: IRETURN\n" +
       "Jumps to: B0 \n");
+  }
+
+  private BytecodeCFGBuilder.BytecodeCFG getCFGForMethod(String methodName) {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    SemanticModel.createFor(tree, squidClassLoader);
+    Symbol.TypeSymbol innerClass = ((Symbol.TypeSymbol) ((ClassTree) tree.types().get(0)).symbol().lookupSymbols("InnerClass").iterator().next());
+    Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.lookupSymbols(methodName).iterator().next();
+    return BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
   }
 
   @Test
@@ -390,6 +396,14 @@ public class BytecodeCFGBuilderTest {
       "2: IADD\n" +
       "3: IRETURN\n" +
       "Jumps to: B0 \n");
+  }
+
+  @Test
+  public void test_class_not_found_logs() throws Exception {
+    SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG("nonsense#foo", squidClassLoader);
+    assertThat(cfg).isNull();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains(".class not found for nonsense");
   }
 
   private void assertCFGforMethod(String methodName, String expectedCFG) {
