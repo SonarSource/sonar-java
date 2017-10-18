@@ -264,7 +264,7 @@ public class BytecodeCFGConstructionTest {
     if(testInput.opcode == TABLESWITCH) {
       assertThat(cfg.blocks.size()).isEqualTo(5);
     } else if(testInput.opcode == LOOKUPSWITCH) {
-      assertThat(cfg.blocks.size()).isEqualTo(3);
+      assertThat(cfg.blocks.size()).isEqualTo(5);
     }else {
       // exit block, jump block, jump-to block, other block
       BytecodeCFGBuilder.Block block1 = cfg.blocks.get(1);

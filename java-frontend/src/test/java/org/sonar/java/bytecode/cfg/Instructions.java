@@ -169,6 +169,11 @@ public class Instructions {
     return this;
   }
 
+  public Instructions visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+    mv.visitTryCatchBlock(start, end, handler, type);
+    return this;
+  }
+
   public byte[] bytes() {
     mv.visitEnd();
     cw.visitEnd();
@@ -227,11 +232,22 @@ public class Instructions {
         case INVOKEDYNAMIC:
           visitInvokeDynamicInsn("sleep", "()Ljava/util/function/Supplier;", new Handle(H_INVOKESTATIC, "", "", "()V", false));
           break;
-        case LOOKUPSWITCH:
-          Label dflt1 = new Label();
-          visitLookupSwitchInsn(dflt1, new int[] {}, new Label[] {});
-          visitLabel(dflt1);
-          break;
+        case LOOKUPSWITCH: {
+          Label l0 = new Label();
+          Label l1 = new Label();
+          visitLookupSwitchInsn(l1, new int[] {0}, new Label[] {l0});
+          visitLabel(l0);
+          visitInsn(ICONST_1);
+          visitVarInsn(ISTORE, 1);
+          Label l2 = new Label();
+          visitJumpInsn(GOTO, l2);
+          visitLabel(l1);
+          visitInsn(ICONST_0);
+          visitVarInsn(ISTORE, 1);
+          visitLabel(l2);
+          visitInsn(RETURN);
+        }
+        break;
         case TABLESWITCH: {
           Label dflt = new Label();
           Label case0 = new Label();
