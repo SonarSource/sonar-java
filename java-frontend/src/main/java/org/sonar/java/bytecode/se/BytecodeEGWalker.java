@@ -416,6 +416,7 @@ public class BytecodeEGWalker {
         if (instruction.opcode != AALOAD) {
           programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
         }
+        programState = setDoubleOrLong(sv, instruction.isLongOrDoubleValue());
         break;
       case ISTORE:
       case LSTORE:

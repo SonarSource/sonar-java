@@ -221,12 +221,13 @@ public class BytecodeEGWalkerExecuteTest {
       ProgramState programState = execute(new Instruction(opcode), initState);
       if (opcode != Opcodes.AALOAD) {
         assertStack(programState, ObjectConstraint.NOT_NULL);
-      } else {
-        ProgramState.Pop result = programState.unstackValue(1);
-        assertThat(result.values).hasSize(1);
-        assertThat(result.state).isEqualTo(ProgramState.EMPTY_STATE);
-        assertThat(result.values.get(0)).isNotEqualTo(array);
-        assertThat(result.values.get(0)).isNotEqualTo(index);
+      }
+      ProgramState.Pop result = programState.unstackValue(1);
+      assertThat(result.values).hasSize(1);
+      assertThat(result.values.get(0)).isNotEqualTo(array);
+      assertThat(result.values.get(0)).isNotEqualTo(index);
+      if (opcode == Opcodes.DALOAD || opcode == Opcodes.LALOAD) {
+        assertThat(isDoubleOrLong(programState, result.values.get(0))).isTrue();
       }
     }
   }
