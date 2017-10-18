@@ -280,7 +280,6 @@ public class BytecodeEGWalker {
           methodBehavior.setMethodSymbol(methodSymbol);
         }
         execute(signature, classLoader);
-        methodBehavior.completed();
       } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
         LOG.debug("Dataflow analysis is incomplete for method {} : {}", signature, e.getMessage());
         methodBehavior.visited();
@@ -302,12 +301,11 @@ public class BytecodeEGWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
-    methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
-    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
-    methodBehavior.setOverrideableOrNative(bytecodeCFG.isOverrideableOrNativeMethod());
-    if (bytecodeCFG.isOverrideableOrNativeMethod()) {
+    if (bytecodeCFG == null) {
       return;
     }
+    methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
+    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
     for (ProgramState startingState : startingStates(signature, programState)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
@@ -334,6 +332,7 @@ public class BytecodeEGWalker {
 
     handleEndOfExecutionPath();
     executeCheckEndOfExecution();
+    methodBehavior.completed();
     // Cleanup:
     workList = null;
     node = null;
@@ -730,10 +729,7 @@ public class BytecodeEGWalker {
     SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
-    if (methodInvokedBehavior != null
-      && methodInvokedBehavior.isComplete()
-      && !methodInvokedBehavior.isOverrideableOrNative()) {
-
+    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
       List<SymbolicValue> stack = pop.values;
       if (!isStatic) {
         // remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments

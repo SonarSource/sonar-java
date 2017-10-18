@@ -20,7 +20,10 @@
 package org.sonar.java.bytecode.cfg.testdata;
 
 public class CFGTestData {
-  Object fun(boolean a, Object b) {
+
+  private CFGTestData() {}
+
+  private Object fun(boolean a, Object b) {
     if (a) {
       System.out.println("Hello World!");
       if (b == null) {

@@ -146,36 +146,28 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_method_can_be_overriden() {
+  public void test_method_is_complete() {
     MethodBehavior nativeMethod = getMethodBehavior("nativeMethod");
-    assertThat(nativeMethod.isStaticMethod()).isTrue();
-    assertThat(nativeMethod.isComplete()).isTrue();
-    assertThat(nativeMethod.isOverrideableOrNative()).isTrue();
+    assertThat(nativeMethod.isComplete()).isFalse();
 
     MethodBehavior abstractMethod = getMethodBehavior("abstractMethod");
-    assertThat(abstractMethod.isStaticMethod()).isFalse();
-    assertThat(abstractMethod.isComplete()).isTrue();
-    assertThat(abstractMethod.isOverrideableOrNative()).isTrue();
+    assertThat(abstractMethod.isComplete()).isFalse();
 
     MethodBehavior finalMethod = getMethodBehavior("finalMethod");
     assertThat(finalMethod.isStaticMethod()).isFalse();
     assertThat(finalMethod.isComplete()).isTrue();
-    assertThat(finalMethod.isOverrideableOrNative()).isFalse();
 
     MethodBehavior staticMethod = getMethodBehavior("staticMethod");
     assertThat(staticMethod.isStaticMethod()).isTrue();
     assertThat(staticMethod.isComplete()).isTrue();
-    assertThat(staticMethod.isOverrideableOrNative()).isFalse();
 
     MethodBehavior privateMethod = getMethodBehavior("privateMethod");
     assertThat(privateMethod.isStaticMethod()).isFalse();
     assertThat(privateMethod.isComplete()).isTrue();
-    assertThat(privateMethod.isOverrideableOrNative()).isFalse();
 
     MethodBehavior publicMethodInFinalClass = getMethodBehavior("FinalInnerClass", finalInnerClass -> ((MethodTree) finalInnerClass.members().get(0)).symbol());
     assertThat(publicMethodInFinalClass.isStaticMethod()).isFalse();
     assertThat(publicMethodInFinalClass.isComplete()).isTrue();
-    assertThat(publicMethodInFinalClass.isOverrideableOrNative()).isFalse();
   }
 
   @Test
