@@ -55,6 +55,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.JSR;
 import static org.objectweb.asm.Opcodes.NOP;
 import static org.sonar.java.bytecode.cfg.Instructions.FIELD_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.INT_INSN;
@@ -271,6 +272,7 @@ public class BytecodeCFGBuilderTest {
     SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/JsrRet")));
     BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG("jdk3.AllInstructions#jsrAndRetInstructions(I)I", classLoader);
     assertThat(bytecodeCFG).isNotNull();
+    bytecodeCFG.blocks.stream().map(b-> b.terminator).filter(Objects::nonNull).forEach(t -> assertThat(t.opcode).isNotEqualTo(JSR));
   }
 
   @Test
