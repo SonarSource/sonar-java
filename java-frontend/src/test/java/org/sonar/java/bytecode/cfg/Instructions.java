@@ -89,7 +89,7 @@ public class Instructions {
   public Instructions() {
     cw = new ClassWriter(Opcodes.ASM5);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
-    mv = cw.visitMethod(ACC_PUBLIC, "test", "()V", null, null);
+    mv = cw.visitMethod(ACC_PRIVATE, "test", "()V", null, null);
   }
 
   public Instructions visitInsn(int opcode) {
