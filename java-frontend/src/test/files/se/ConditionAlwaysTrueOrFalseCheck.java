@@ -1812,7 +1812,7 @@ class KeyboardFocusManager {
 
     Throwable caughtEx = null;
     try {
-      if (localLightweightRequests != null) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+      if (localLightweightRequests != null) { // FN - method is exploding in number of steps, should have been: {{Remove this expression which always evaluates to "true"}}
         Component lastFocusOwner = null;
         Component currentFocusOwner = null;
 

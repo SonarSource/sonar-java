@@ -31,6 +31,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.JavaSymbol;
@@ -102,7 +103,6 @@ import java.util.stream.Stream;
 
 public class ExplodedGraphWalker {
 
-  private static final String EQUALS_METHOD_NAME = "equals";
   /**
    * Arbitrary number to limit symbolic execution.
    */
@@ -114,11 +114,17 @@ public class ExplodedGraphWalker {
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
+
   private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("wait").withAnyParameters();
   private static final MethodMatcher GET_CLASS_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("getClass").withoutParameter();
   private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
+  private static final MethodMatcher EQUALS = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
+  public static final MethodMatcherCollection EQUALS_METHODS = MethodMatcherCollection.create(
+    EQUALS,
+    MethodMatcher.create().name("equals").typeDefinition("java.util.Objects").withAnyParameters());
+
   private final AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector;
   private MethodTree methodTree;
 
@@ -319,9 +325,7 @@ public class ExplodedGraphWalker {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
-    boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name())
-      && tree.parameters().size() == 1
-      && tree.parameters().get(0).symbol().type().is(JAVA_LANG_OBJECT);
+    boolean isEqualsMethod = EQUALS.matches(tree);
     SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
     boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
     boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
@@ -649,7 +653,9 @@ public class ExplodedGraphWalker {
     enqueueUncheckedExceptionalPaths(methodSymbol);
 
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.valuesAndSymbols);
-    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+    if (methodInvokedBehavior != null
+      && methodInvokedBehavior.isComplete()
+      && !EQUALS_METHODS.anyMatch(mit)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
 
