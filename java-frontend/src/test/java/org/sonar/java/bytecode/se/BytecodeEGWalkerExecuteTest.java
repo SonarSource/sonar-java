@@ -54,7 +54,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.DADD;
@@ -1119,6 +1122,19 @@ public class BytecodeEGWalkerExecuteTest {
     walker.handleBlockExit(new ProgramPoint(gotoBlock));
 
     assertThat(walker.workList).hasSize(1);
+  }
+
+  @Test
+  public void test_analysis_failure() throws Exception {
+    initializeWalker();
+    BytecodeEGWalker walkerSpy = spy(walker);
+    IllegalStateException ex = new IllegalStateException();
+    doThrow(ex).when(walkerSpy).executeInstruction(any());
+
+    assertThatThrownBy(() -> walkerSpy.getMethodBehavior("java.lang.String#length()I", null, squidClassLoader))
+      .isInstanceOf(BytecodeEGWalker.BytecodeAnalysisException.class)
+      .hasMessage("Failed dataflow analysis for java.lang.String#length()I")
+      .hasCause(ex);
   }
 
   /**
