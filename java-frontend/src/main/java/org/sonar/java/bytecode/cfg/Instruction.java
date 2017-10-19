@@ -105,14 +105,18 @@ public class Instruction {
 
 
   public int arity() {
-    Preconditions.checkState(Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC, "Not an INVOKE opcode");
+    Preconditions.checkState(isInvoke(), "Not an INVOKE opcode");
     Type methodType = Type.getMethodType(fieldOrMethod.desc);
     return methodType.getArgumentTypes().length;
   }
 
   public boolean hasReturnValue() {
-    Preconditions.checkState(Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC, "Not an INVOKE opcode");
+    Preconditions.checkState(isInvoke(), "Not an INVOKE opcode");
     return Type.getMethodType(fieldOrMethod.desc).getReturnType() != Type.VOID_TYPE;
+  }
+
+  private boolean isInvoke() {
+    return Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC;
   }
 
   public boolean isLongOrDoubleValue() {
@@ -121,6 +125,9 @@ public class Instruction {
     }
     if (opcode == GETFIELD || opcode == GETSTATIC) {
       return Type.getType(fieldOrMethod.desc).getSize() == 2;
+    }
+    if (isInvoke()) {
+      return Type.getReturnType(fieldOrMethod.desc).getSize() == 2;
     }
     return false;
   }
