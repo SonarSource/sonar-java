@@ -21,17 +21,32 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class TypeSubstitutionSolverTest {
 
@@ -344,5 +359,33 @@ public class TypeSubstitutionSolverTest {
     IdentifierTree barInvocation2 = result.referenceTree(24, 21);
     assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown).hasSize(1);
     assertThat(((MethodJavaType) barInvocation2.symbolType()).thrown.get(0).is("java.io.IOException")).isTrue();
+  }
+
+  @Test
+  public void type_hierarchy_visit_should_be_limited() {
+    ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(new ArrayList<>()), parametrizedTypeCache);
+    Symbols symbols = new Symbols(bytecodeCompleter);
+
+    ActionParser<Tree> parser = JavaParser.createParser();
+    SemanticModel semanticModel = new SemanticModel(bytecodeCompleter);
+    Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
+    TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
+    CompilationUnitTree tree = (CompilationUnitTree) parser.parse(new File("src/test/files/sym/ComplexHierarchy.java"));
+    new FirstPass(semanticModel, symbols, resolve, parametrizedTypeCache, typeAndReferenceSolver).visitCompilationUnit(tree);
+    typeAndReferenceSolver.visitCompilationUnit(tree);
+
+    ClassTree classTree = (ClassTree) tree.types().get(tree.types().size() - 1);
+    JavaType site = (JavaType) classTree.symbol().type();
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) ((MethodTree) classTree.members().get(0)).block().body().get(0)).expression();
+
+    TypeSubstitutionSolver typeSubstitutionSolver = Mockito.spy(new TypeSubstitutionSolver(parametrizedTypeCache, symbols));
+    // call with empty formals should return.
+    typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(new ArrayList<>(), site);
+    verify(typeSubstitutionSolver, times(0)).applySiteSubstitutionToFormalParameters(anyList(), any(JavaType.class), anySet());
+
+    JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
+    typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(((MethodJavaType) methodJavaSymbol.type).argTypes, site);
+    verify(typeSubstitutionSolver, times(11)).applySiteSubstitutionToFormalParameters(anyList(), any(JavaType.class), anySet());
   }
 }
