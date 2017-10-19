@@ -770,6 +770,7 @@ public class BytecodeEGWalker {
     programState = pop.state;
     if (instruction.hasReturnValue()) {
       programState = programState.stackValue(returnSV);
+      programState = setDoubleOrLong(returnSV, instruction.isLongOrDoubleValue());
     }
     return false;
   }
