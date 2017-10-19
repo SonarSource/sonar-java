@@ -246,6 +246,13 @@ public class BytecodeEGWalker {
     }
   }
 
+  static class BytecodeAnalysisException extends RuntimeException {
+
+    public BytecodeAnalysisException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
   @VisibleForTesting
   Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
@@ -279,10 +286,12 @@ public class BytecodeEGWalker {
         if (methodSymbol != null) {
           methodBehavior.setMethodSymbol(methodSymbol);
         }
+        methodBehavior.visited();
         execute(signature, classLoader);
       } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
         LOG.debug("Dataflow analysis is incomplete for method {} : {}", signature, e.getMessage());
-        methodBehavior.visited();
+      } catch (Exception e) {
+        throw new BytecodeAnalysisException("Failed dataflow analysis for " + signature, e);
       }
     }
     return methodBehavior;
