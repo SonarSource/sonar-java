@@ -9,6 +9,7 @@ class A {
       return false;
     }
     try {
+      // note that this signature is blacklisted and behavior is nor computed for methods from java.lang.Class
       return Class.forName("com.google.apphosting.api.ApiProxy")
         .getMethod("getCurrentEnvironment")
         .invoke(null) != null;
