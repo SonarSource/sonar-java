@@ -107,13 +107,13 @@ public class BehaviorCacheTest {
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
-    assertThat(behavior.yields()).hasSize(3);
+    assertThat(behavior.yields()).hasSize(4);
 
     behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(pMap -> assertThat(pMap.get(ObjectConstraint.class) == ObjectConstraint.NULL).isFalse());
     assertThat(behavior.happyPathYields().count()).isEqualTo(2);
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
-    assertThat(exceptionalYields).hasSize(1);
+    assertThat(exceptionalYields).hasSize(2);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null)).hasSize(1);
   }
 
@@ -151,6 +151,14 @@ public class BehaviorCacheTest {
   public void eclipse_aspectj_assert() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/EclipseAssert.java");
   }
+
+  @Test
+  public void test_blacklist() throws Exception {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCacheBlacklist.java");
+    assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;")).isNull();
+    assertThat(sev.behaviorCache.behaviors.keySet()).isEmpty();
+  }
+
 
   private static void verifyNoIssueOnFile(String fileName) {
     NullDereferenceCheck seCheck = new NullDereferenceCheck();
