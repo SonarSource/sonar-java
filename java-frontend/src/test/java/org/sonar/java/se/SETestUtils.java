@@ -21,6 +21,11 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
@@ -31,12 +36,6 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

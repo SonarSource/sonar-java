@@ -20,17 +20,16 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.se.ExplodedGraph;
-import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.ConstraintsByDomain;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Type;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class MethodBehavior {
   private boolean varArgs;
