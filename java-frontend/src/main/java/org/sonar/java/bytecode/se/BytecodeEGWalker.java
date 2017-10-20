@@ -223,7 +223,8 @@ public class BytecodeEGWalker {
   private final BehaviorCache behaviorCache;
   private final SemanticModel semanticModel;
 
-  private ExplodedGraph explodedGraph;
+  @VisibleForTesting
+  ExplodedGraph explodedGraph;
 
   /**
    * Because some instructions manipulate stack differently depending on the type of the value, we need this constraint to know category of the value
@@ -266,7 +267,9 @@ public class BytecodeEGWalker {
   public BytecodeEGWalker(BehaviorCache behaviorCache, SemanticModel semanticModel){
     this.behaviorCache = behaviorCache;
     this.semanticModel = semanticModel;
-    checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(new BytecodeSECheck.NullnessCheck()));
+    checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(
+      new BytecodeSECheck.NullnessCheck(),
+      new BytecodeSECheck.ZeronessCheck()));
     constraintManager = new ConstraintManager();
     explodedGraph = new ExplodedGraph();
     workList = new LinkedList<>();
@@ -879,7 +882,8 @@ public class BytecodeEGWalker {
     return Collections.singletonList(state);
   }
 
-  private void setNode(ExplodedGraph.Node node) {
+  @VisibleForTesting
+  void setNode(ExplodedGraph.Node node) {
     this.node = node;
     programPosition = this.node.programPoint;
     programState = this.node.programState;
