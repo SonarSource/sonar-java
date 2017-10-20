@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 public class MethodBehavior {
   private boolean varArgs;
-  private boolean isStaticMethod;
   private final int arity;
 
   private final Set<MethodYield> yields;
@@ -162,15 +161,7 @@ public class MethodBehavior {
     return signature;
   }
 
-  public boolean isStaticMethod() {
-    return isStaticMethod;
-  }
-
   public void setVarArgs(boolean varArgs) {
     this.varArgs = varArgs;
-  }
-
-  public void setStaticMethod(boolean staticMethod) {
-    isStaticMethod = staticMethod;
   }
 }

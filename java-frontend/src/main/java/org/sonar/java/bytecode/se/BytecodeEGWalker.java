@@ -309,9 +309,8 @@ public class BytecodeEGWalker {
     if (bytecodeCFG == null) {
       return;
     }
-    methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
-    for (ProgramState startingState : startingStates(signature, programState)) {
+    for (ProgramState startingState : startingStates(signature, programState, bytecodeCFG.isStaticMethod())) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
     while (!workList.isEmpty()) {
@@ -859,11 +858,11 @@ public class BytecodeEGWalker {
   }
 
   @VisibleForTesting
-  Iterable<ProgramState> startingStates(String signature, ProgramState currentState) {
+  Iterable<ProgramState> startingStates(String signature, ProgramState currentState, boolean isStaticMethod) {
     // TODO : deal with parameter annotations, equals methods etc.
     int parameterIdx = 0;
     ProgramState state = currentState;
-    if(!methodBehavior.isStaticMethod()) {
+    if(!isStaticMethod) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
