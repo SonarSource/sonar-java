@@ -20,6 +20,7 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableSet;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.resolve.JavaSymbol;
@@ -33,6 +34,7 @@ import javax.annotation.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class BehaviorCache {
 
@@ -41,6 +43,8 @@ public class BehaviorCache {
   private final SemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
+
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#");
 
   public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
     this.sev = sev;
@@ -62,11 +66,16 @@ public class BehaviorCache {
     return get(signature, symbol);
   }
 
+  @CheckForNull
   public MethodBehavior get(String signature) {
     return get(signature, null);
   }
 
+  @CheckForNull
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
+    if (SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith)) {
+      return null;
+    }
     if (!behaviors.containsKey(signature)) {
       if (symbol != null) {
         MethodTree declaration = symbol.declaration();
