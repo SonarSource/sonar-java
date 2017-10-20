@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.se;
 
 import org.sonar.java.bytecode.cfg.Instruction;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -80,6 +81,10 @@ public class CheckerDispatcher {
     this.transition = false;
     if (currentCheckerIndex < checks.size()) {
       explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, currentInstruction);
+      if (explodedGraphWalker.programState == null) {
+        // one of the check interrupted exploration
+        return;
+      }
     } else {
       explodedGraphWalker.enqueue(explodedGraphWalker.programPosition.next(), explodedGraphWalker.programState);
       return;
@@ -95,5 +100,9 @@ public class CheckerDispatcher {
 
   public ProgramState getState() {
     return explodedGraphWalker.programState;
+  }
+
+  public ExplodedGraph.Node getNode() {
+    return explodedGraphWalker.node;
   }
 }
