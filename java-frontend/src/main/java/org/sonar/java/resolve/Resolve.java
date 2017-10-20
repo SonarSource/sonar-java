@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -474,30 +475,37 @@ public class Resolve {
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams,
                                 boolean looseInvocation, boolean varArity) {
-    JavaType superclass = site.getSuperType();
-    Resolution bestSoFar = unresolved();
+    return findMethod(env, callSite, site, name, argTypes, typeParams, looseInvocation, varArity, new HashSet<>());
+  }
 
+  private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams,
+                                boolean looseInvocation, boolean varArity, Set<JavaType> visited) {
+
+    Resolution bestSoFar = unresolved();
+    if (!visited.add(site)) {
+      return bestSoFar;
+    }
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, varArity, site.getSymbol().members(), bestSoFar);
     if (name.equals(CONSTRUCTOR_NAME) && !site.symbol.isInterface()) {
       // Interfaces do not have constructors, but for anonymous classes of interfaces, the Object constructor should be resolved
       return bestSoFar;
     }
-
+    JavaType superclass = site.getSuperType();
     // FIXME SONARJAVA-2096: interrupt exploration if the most specific method has already been found by strict invocation context
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
-      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation, varArity);
-      method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
+      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams, looseInvocation, varArity, visited);
       Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
+        method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
         bestSoFar = method;
       }
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
-      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams, looseInvocation, varArity);
-      method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
+      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams, looseInvocation, varArity, visited);
       Resolution best = selectBest(env, interfaceType, callSite, argTypes, typeParams, method.symbol, bestSoFar, looseInvocation);
       if (best.symbol == method.symbol) {
+        method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
         bestSoFar = method;
       }
     }
