@@ -39,9 +39,6 @@ public class MethodBehaviorTest {
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
 
-    assertThat(mb.methodSymbol()).isNotNull();
-    assertThat(mb.methodSymbol().name()).isEqualTo("method");
-
     assertThat(mb.signature()).isEqualTo("MethodYields#method(Ljava/lang/Object;Z)Z");
     assertThat(mb.signature()).isNotNull();
   }

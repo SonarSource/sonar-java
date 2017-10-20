@@ -53,7 +53,9 @@ public class BehaviorCache {
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
-    return behaviors.computeIfAbsent(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), k -> new MethodBehavior(symbol));
+    String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
+    boolean varArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
+    return behaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature, varArgs));
   }
 
   public MethodBehavior methodBehaviorForSymbol(String signature) {

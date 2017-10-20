@@ -20,9 +20,9 @@
 package org.sonar.java.se;
 
 import com.google.common.reflect.ClassPath;
-
 import org.junit.Test;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
@@ -42,6 +42,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -55,7 +56,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,7 +77,7 @@ public class ExplodedGraphWalkerTest {
       @Override
       public void visitNode(Tree tree) {
         ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel(), false);
-        explodedGraphWalker.visitMethod((MethodTree) tree, new MethodBehavior(((MethodTree) tree).symbol()));
+        explodedGraphWalker.visitMethod((MethodTree) tree, methodBehaviorForSymbol(((MethodTree) tree).symbol()));
         steps[0] += explodedGraphWalker.steps;
       }
     });
@@ -86,7 +86,7 @@ public class ExplodedGraphWalkerTest {
       public void visitNode(Tree tree) {
         ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel());
         MethodTree methodTree = (MethodTree) tree;
-        explodedGraphWalker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+        explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
         steps[1] += explodedGraphWalker.steps;
       }
     });
@@ -155,7 +155,7 @@ public class ExplodedGraphWalkerTest {
 
         MethodTree methodTree = (MethodTree) tree;
         if ("foo".equals(methodTree.symbol().name())) {
-          explodedGraphWalker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+          explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
         } else {
           super.visitNode(methodTree);
         }
@@ -203,7 +203,7 @@ public class ExplodedGraphWalkerTest {
         }
 
         MethodTree methodTree = (MethodTree) tree;
-        explodedGraphWalker.visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+        explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
       }
     });
 
@@ -225,7 +225,7 @@ public class ExplodedGraphWalkerTest {
       public void visitNode(Tree tree) {
         try {
           MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
           fail("loop execution should be limited");
         }
@@ -240,7 +240,7 @@ public class ExplodedGraphWalkerTest {
       public void visitNode(Tree tree) {
         try {
           MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
           fail("Too many states were processed !");
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
           assertThat(exception.getMessage()).startsWith("reached limit of 16000 steps for method");
@@ -261,7 +261,7 @@ public class ExplodedGraphWalkerTest {
       public void visitNode(Tree tree) {
         try {
           MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, new MethodBehavior(methodTree.symbol()));
+          new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
           fail("Too many states were processed !");
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
           assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
@@ -483,4 +483,9 @@ public class ExplodedGraphWalkerTest {
     };
   }
 
+  private static MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
+    String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
+    boolean varArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
+    return new MethodBehavior(signature, varArgs);
+  }
 }

@@ -283,9 +283,6 @@ public class BytecodeEGWalker {
     methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
     if (!methodBehavior.isVisited()) {
       try {
-        if (methodSymbol != null) {
-          methodBehavior.setMethodSymbol(methodSymbol);
-        }
         methodBehavior.visited();
         execute(signature, classLoader);
       } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
