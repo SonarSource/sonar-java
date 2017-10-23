@@ -22,7 +22,7 @@ package org.sonar.java.bytecode.se;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.ast.parser.JavaParser;
@@ -46,8 +46,19 @@ import static org.mockito.Mockito.when;
 
 public class BytecodeSECheckTest implements BytecodeSECheck {
 
-  private SquidClassLoader squidClassLoader;
-  private BytecodeEGWalker walker;
+  private static SquidClassLoader squidClassLoader;
+  private static BytecodeEGWalker walker;
+  private static SemanticModel semanticModel;
+
+  @BeforeClass
+  public static void initializeWalker() {
+    List<File> files = new ArrayList<>();
+    files.add(new File("target/test-classes"));
+    squidClassLoader = new SquidClassLoader(files);
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {}");
+    semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+    walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+  }
 
   @Test
   public void zeroness_check_add() {
@@ -296,8 +307,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
 
   @Test
   public void method_with_numerical_operations() throws Exception {
-    initializeWalker();
-
+    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
     MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", null, squidClassLoader);
 
     assertThat(behavior).isNotNull();
@@ -305,8 +315,8 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     assertThat(behavior.yields()).isEmpty();
   }
 
-  private ProgramState execute(Instruction instruction, ProgramState startingState) {
-    initializeWalker();
+  private static ProgramState execute(Instruction instruction, ProgramState startingState) {
+    walker.workList.clear();
     ProgramPoint programPoint = mock(ProgramPoint.class);
     when(programPoint.next()).thenReturn(programPoint);
     ExplodedGraph.Node startingNode = walker.explodedGraph.node(programPoint, startingState);
@@ -316,17 +326,6 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
       return null;
     }
     return walker.workList.getFirst().programState;
-  }
-
-  private void initializeWalker() {
-    List<File> files = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
-    files.add(new File("target/classes"));
-    files.add(new File("target/test-classes"));
-    squidClassLoader = new SquidClassLoader(files);
-    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);
-    walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
   }
 
   // --------------------------- Methods used for behaviors -----------------------------------------------------------
