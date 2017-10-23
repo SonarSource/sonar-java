@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -27,6 +28,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -138,6 +140,16 @@ public class TypeSubstitutionSolver {
   }
 
   List<JavaType> applySiteSubstitutionToFormalParameters(List<JavaType> formals, JavaType site) {
+    if(formals.isEmpty()) {
+      return formals;
+    }
+    Set<Type> visited = new HashSet<>();
+    visited.add(site);
+    return applySiteSubstitutionToFormalParameters(formals, site, visited);
+  }
+
+  @VisibleForTesting
+  List<JavaType> applySiteSubstitutionToFormalParameters(List<JavaType> formals, JavaType site, Set<Type> visited) {
     TypeSubstitution typeSubstitution = new TypeSubstitution();
     if (site.isParameterized()) {
       typeSubstitution = ((ParametrizedTypeJavaType) site).typeSubstitution;
@@ -147,11 +159,15 @@ public class TypeSubstitutionSolver {
     Type superClass = siteSymbol.superClass();
     if (superClass != null) {
       JavaType newSuperClass = applySubstitution((JavaType) superClass, typeSubstitution);
-      newFormals = applySiteSubstitutionToFormalParameters(newFormals, newSuperClass);
+      if(visited.add(newSuperClass)) {
+        newFormals = applySiteSubstitutionToFormalParameters(newFormals, newSuperClass, visited);
+      }
     }
     for (Type interfaceType : siteSymbol.interfaces()) {
       JavaType newInterfaceType = applySubstitution((JavaType) interfaceType, typeSubstitution);
-      newFormals = applySiteSubstitutionToFormalParameters(newFormals, newInterfaceType);
+      if(visited.add(newInterfaceType)) {
+        newFormals = applySiteSubstitutionToFormalParameters(newFormals, newInterfaceType, visited);
+      }
     }
     return applySubstitutionToFormalParameters(newFormals, typeSubstitution);
   }

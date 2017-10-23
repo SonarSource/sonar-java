@@ -47,7 +47,8 @@ public class SemanticModel {
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
   private final BytecodeCompleter bytecodeCompleter;
 
-  private SemanticModel(BytecodeCompleter bytecodeCompleter) {
+  @VisibleForTesting
+  SemanticModel(BytecodeCompleter bytecodeCompleter) {
     this.bytecodeCompleter = bytecodeCompleter;
   }
 
