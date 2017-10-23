@@ -19,13 +19,12 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
@@ -38,9 +37,6 @@ public class MethodBehaviorTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
-
-    assertThat(mb.methodSymbol()).isNotNull();
-    assertThat(mb.methodSymbol().name()).isEqualTo("method");
 
     assertThat(mb.signature()).isEqualTo("MethodYields#method(Ljava/lang/Object;Z)Z");
     assertThat(mb.signature()).isNotNull();
