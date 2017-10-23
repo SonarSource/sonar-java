@@ -22,6 +22,7 @@ package org.sonar.java.bytecode.se;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
@@ -37,6 +38,8 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.ExceptionalYield;
+import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -311,8 +314,11 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", null, squidClassLoader);
 
     assertThat(behavior).isNotNull();
-    // FIXME current yields are wrong - should not have any constraints on parameters for happy path
-    assertThat(behavior.yields()).isEmpty();
+    assertThat(behavior.yields()).hasSize(3);
+    assertThat(behavior.happyPathYields().map(HappyPathYield::toString).collect(Collectors.toList())).containsExactly("{params: [[], []], result: null (0)}");
+    assertThat(behavior.exceptionalPathYields().map(ExceptionalYield::toString).collect(Collectors.toList()))
+      .containsExactly("{params: [[NON_ZERO], []], exceptional (java.lang.IndexOutOfBoundsException)}",
+        "{params: [[], [NON_ZERO]], exceptional (java.lang.IndexOutOfBoundsException)}");
   }
 
   private static ProgramState execute(Instruction instruction, ProgramState startingState) {
