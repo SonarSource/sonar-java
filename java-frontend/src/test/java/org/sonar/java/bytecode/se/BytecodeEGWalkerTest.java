@@ -154,19 +154,15 @@ public class BytecodeEGWalkerTest {
     assertThat(abstractMethod.isComplete()).isFalse();
 
     MethodBehavior finalMethod = getMethodBehavior("finalMethod");
-    assertThat(finalMethod.isStaticMethod()).isFalse();
     assertThat(finalMethod.isComplete()).isTrue();
 
     MethodBehavior staticMethod = getMethodBehavior("staticMethod");
-    assertThat(staticMethod.isStaticMethod()).isTrue();
     assertThat(staticMethod.isComplete()).isTrue();
 
     MethodBehavior privateMethod = getMethodBehavior("privateMethod");
-    assertThat(privateMethod.isStaticMethod()).isFalse();
     assertThat(privateMethod.isComplete()).isTrue();
 
     MethodBehavior publicMethodInFinalClass = getMethodBehavior("FinalInnerClass", finalInnerClass -> ((MethodTree) finalInnerClass.members().get(0)).symbol());
-    assertThat(publicMethodInFinalClass.isStaticMethod()).isFalse();
     assertThat(publicMethodInFinalClass.isComplete()).isTrue();
   }
 
@@ -186,20 +182,17 @@ public class BytecodeEGWalkerTest {
 
     String signature = "()V";
     walker.methodBehavior = new MethodBehavior(signature);
-    walker.methodBehavior.setStaticMethod(false);
-    ProgramState startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    ProgramState startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, false));
     SymbolicValue thisSv = startingState.getValue(0);
     assertThat(thisSv).isNotNull();
     assertThat(startingState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
-    walker.methodBehavior.setStaticMethod(true);
-    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, true));
     assertThat(startingState).isEqualTo(ProgramState.EMPTY_STATE);
 
     signature = "(DIJ)V";
     walker.methodBehavior = new MethodBehavior(signature);
-    walker.methodBehavior.setStaticMethod(true);
-    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE));
+    startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, true));
     assertThat(startingState.getValue(0)).isNotNull();
     SymbolicValue doubleArg = startingState.getValue(0);
     assertThat(startingState.getConstraint(doubleArg, BytecodeEGWalker.StackValueCategoryConstraint.class)).isEqualTo(BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE);
