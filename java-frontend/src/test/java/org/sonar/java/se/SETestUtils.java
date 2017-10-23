@@ -21,6 +21,11 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
@@ -29,16 +34,8 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -64,17 +61,13 @@ public class SETestUtils {
     return sev;
   }
 
-  public static Map.Entry<Symbol.MethodSymbol, MethodBehavior> getSymbolWithMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    Optional<AbstractMap.SimpleEntry<Symbol.MethodSymbol, MethodBehavior>> mb = sev.behaviorCache.behaviors.entrySet().stream()
+  public static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
+    Optional<MethodBehavior> mb = sev.behaviorCache.behaviors.entrySet().stream()
       .filter(e -> e.getKey().contains("#" + methodName))
-      .map(e -> new AbstractMap.SimpleEntry<>(e.getValue().methodSymbol(), e.getValue()))
+      .map(Map.Entry::getValue)
       .findFirst();
     assertThat(mb.isPresent()).isTrue();
     return mb.get();
-  }
-
-  public static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
-    return getSymbolWithMethodBehavior(sev, methodName).getValue();
   }
 
   public static MethodBehavior mockMethodBehavior(int arity, boolean varArgs) {
