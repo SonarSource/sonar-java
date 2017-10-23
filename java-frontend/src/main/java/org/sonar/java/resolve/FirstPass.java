@@ -125,7 +125,7 @@ public class FirstPass extends BaseTreeVisitor {
     env.staticStarImports = resolve.createStaticStarImportScope(compilationUnitPackage);
     semanticModel.associateEnv(tree, env);
 
-    super.visitCompilationUnit(tree);
+    scan(tree.types());
     restoreEnvironment(tree);
     resolveImports(tree.imports());
     completeSymbols();
@@ -164,7 +164,7 @@ public class FirstPass extends BaseTreeVisitor {
       //reset currentSymbol to default package
       currentSymbol = symbols.defaultPackage;
       isStatic = tree.isStatic();
-      super.visitImport(tree);
+      tree.qualifiedIdentifier().accept(this);
       //Associate symbol only if found.
       if (currentSymbol.kind < JavaSymbol.ERRONEOUS) {
         enterSymbol(currentSymbol, tree);
