@@ -50,7 +50,9 @@ public class PomParser {
   @CheckForNull
   public static MavenProject parseXML(File file) {
     try (FileInputStream is = new FileInputStream(file)) {
-      JAXBContext context = JAXBContext.newInstance(org.sonar.maven.model.maven2.ObjectFactory.class);
+      // it is necessary to provide classloader explicitly, otherwise Thread.contextClassLoader will be used,
+      // which doesn't include jar of plugin
+      JAXBContext context = JAXBContext.newInstance("org.sonar.maven.model.maven2", PomParser.class.getClassLoader());
       XMLInputFactory factory = XMLInputFactory.newInstance();
       enableLocationPropertyForIBM(factory);
       XMLStreamReader reader = factory.createXMLStreamReader(is);
