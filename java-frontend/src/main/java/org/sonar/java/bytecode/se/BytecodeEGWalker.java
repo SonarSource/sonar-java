@@ -22,6 +22,16 @@ package org.sonar.java.bytecode.se;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.api.utils.log.Logger;
@@ -48,17 +58,6 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.objectweb.asm.Opcodes.AALOAD;
 import static org.objectweb.asm.Opcodes.AASTORE;
@@ -283,9 +282,6 @@ public class BytecodeEGWalker {
     methodBehavior = behaviorCache.methodBehaviorForSymbol(signature);
     if (!methodBehavior.isVisited()) {
       try {
-        if (methodSymbol != null) {
-          methodBehavior.setMethodSymbol(methodSymbol);
-        }
         methodBehavior.visited();
         execute(signature, classLoader);
       } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
@@ -313,9 +309,8 @@ public class BytecodeEGWalker {
     if (bytecodeCFG == null) {
       return;
     }
-    methodBehavior.setStaticMethod(bytecodeCFG.isStaticMethod());
     methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
-    for (ProgramState startingState : startingStates(signature, programState)) {
+    for (ProgramState startingState : startingStates(signature, programState, bytecodeCFG.isStaticMethod())) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
     while (!workList.isEmpty()) {
@@ -863,11 +858,11 @@ public class BytecodeEGWalker {
   }
 
   @VisibleForTesting
-  Iterable<ProgramState> startingStates(String signature, ProgramState currentState) {
+  Iterable<ProgramState> startingStates(String signature, ProgramState currentState, boolean isStaticMethod) {
     // TODO : deal with parameter annotations, equals methods etc.
     int parameterIdx = 0;
     ProgramState state = currentState;
-    if(!methodBehavior.isStaticMethod()) {
+    if(!isStaticMethod) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
       state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
