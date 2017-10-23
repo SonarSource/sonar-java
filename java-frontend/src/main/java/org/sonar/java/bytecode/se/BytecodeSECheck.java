@@ -70,7 +70,7 @@ public interface BytecodeSECheck {
     return dispatcher.getState();
   }
 
-  static class NullnessCheck implements BytecodeSECheck {
+  class NullnessCheck implements BytecodeSECheck {
 
     @Override
     public ProgramState checkPreStatement(CheckerDispatcher dispatcher, Instruction inst) {
@@ -97,7 +97,7 @@ public interface BytecodeSECheck {
     }
   }
 
-  static class ZeronessCheck implements BytecodeSECheck {
+  class ZeronessCheck implements BytecodeSECheck {
 
     @Override
     public ProgramState checkPostStatement(CheckerDispatcher dispatcher, Instruction inst) {
@@ -156,15 +156,10 @@ public interface BytecodeSECheck {
       SymbolicValue op2 = operands.get(1);
       boolean op1Zero = isZero(currentState, op1);
       boolean op2Zero = isZero(currentState, op2);
-      if (op1Zero && op2Zero) {
-        // Reuse one of the zero
+      if (op2Zero) {
         return currentState.unstackValue(1).state.stackValue(op1);
       } else if (op1Zero) {
-        // Reuse other operand
         return currentState.unstackValue(1).state.stackValue(op2);
-      } else if (op2Zero) {
-        // Reuse other operand
-        return currentState.unstackValue(1).state.stackValue(op1);
       }
       // we know nothing about zero-ness
       return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
