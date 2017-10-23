@@ -21,10 +21,25 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramPoint;
@@ -36,48 +51,40 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.getSymbolWithMethodBehavior;
+import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class MethodYieldTest {
   @Test
   public void test_creation_of_states() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
-    Symbol.MethodSymbol methodSymbol = entry.getKey();
+    MethodBehavior mb = getMethodBehavior(sev, "foo");
 
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
-    Symbol sym = new JavaSymbol.VariableJavaSymbol(0, "myVar", (JavaSymbol) methodSymbol);
+    Symbol sym = new JavaSymbol.VariableJavaSymbol(0, "myVar", new JavaSymbol.MethodJavaSymbol(0, "dummy", null));
     ps = ps.put(sym, sv1);
 
-    MethodYield methodYield = entry.getValue().happyPathYields().findFirst().get();
+    MethodYield methodYield = mb.happyPathYields().findFirst().get();
     Stream<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
@@ -85,7 +92,7 @@ public class MethodYieldTest {
   @Test
   public void test_creation_of_flows() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
-    MethodBehavior mb = getSymbolWithMethodBehavior(sev, "foo").getValue();
+    MethodBehavior mb = getMethodBehavior(sev, "foo");
 
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
@@ -100,8 +107,7 @@ public class MethodYieldTest {
   @Test
   public void test_yield_on_reassignments() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "foo");
-    MethodBehavior mb = entry.getValue();
+    MethodBehavior mb = getMethodBehavior(sev, "foo");
     assertThat(mb.happyPathYields())
       .allMatch(y -> y.parametersConstraints.get(0) != null && !ObjectConstraint.NULL.equals(y.parametersConstraints.get(0).get(ObjectConstraint.class)));
   }
@@ -211,8 +217,7 @@ public class MethodYieldTest {
   @Test
   public void calling_varargs_method_with_no_arg() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java");
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "toArr");
-    MethodBehavior mb = entry.getValue();
+    MethodBehavior mb = getMethodBehavior(sev, "toArr");
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(1);
     assertThat(mb.isMethodVarArgs()).isTrue();
@@ -220,11 +225,17 @@ public class MethodYieldTest {
 
   @Test
   public void constraints_on_varargs() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsYields.java");
+    ActionParser<Tree> p = JavaParser.createParser();
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File("src/test/files/se/VarArgsYields.java"));
+    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>()));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new SECheck[]{}), new SquidClassLoader(new ArrayList<>()));
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    when(context.getTree()).thenReturn(cut);
+    when(context.getSemanticModel()).thenReturn(semanticModel);
+    sev.scanFile(context);
 
-    Map.Entry<MethodSymbol, MethodBehavior> entry = getSymbolWithMethodBehavior(sev, "varArgMethod");
-    Symbol.MethodSymbol methodSymbol = entry.getKey();
-    MethodBehavior mb = entry.getValue();
+    MethodSymbol methodSymbol = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0)).symbol();
+    MethodBehavior mb = getMethodBehavior(sev, "varArgMethod");
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(5);
     assertThat(mb.exceptionalPathYields()).hasSize(4);
