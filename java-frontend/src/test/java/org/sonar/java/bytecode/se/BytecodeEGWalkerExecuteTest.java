@@ -563,14 +563,8 @@ public class BytecodeEGWalkerExecuteTest {
   @Test
   public void test_xor() throws Exception {
     int[] opcodes = new int[] {Opcodes.IXOR, Opcodes.LXOR};
-    long start = System.currentTimeMillis();
     assertBinarySymbolicValue(opcodes, SymbolicValue.XorSymbolicValue.class);
-    long end1 = System.currentTimeMillis();
-    System.out.println("test_xor = "+(end1-start));
-
     assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
-    long end2 = System.currentTimeMillis();
-    System.out.println("test_xor2 = "+(end2-end1));
   }
 
   @Test
