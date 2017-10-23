@@ -20,6 +20,7 @@
 package org.sonar.java.se.constraint;
 
 import javax.annotation.Nullable;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 
 public enum BooleanConstraint implements Constraint {
   TRUE,
@@ -44,6 +45,21 @@ public enum BooleanConstraint implements Constraint {
       return "true";
     }
     return "false";
+  }
+
+  @Nullable
+  @Override
+  public Constraint copyOver(RelationalSymbolicValue.Kind kind) {
+    switch (kind) {
+      case LESS_THAN:
+      case GREATER_THAN_OR_EQUAL:
+        return null;
+      case EQUAL:
+      case METHOD_EQUALS:
+        return this;
+      default:
+        return inverse();
+    }
   }
 
   @Override
