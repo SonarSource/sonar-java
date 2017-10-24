@@ -24,7 +24,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
@@ -42,23 +51,11 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class ProgramState {
 
   private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = ImmutableSet.of(UnclosedResourcesCheck.ResourceConstraint.class,
     CustomUnclosedResourcesCheck.CustomResourceConstraint.class, LocksNotUnlockedCheck.LockConstraint.class, StreamConsumedCheck.StreamPipelineConstraint.class);
+  private Set<RelationalSymbolicValue> knownRelations;
 
   public static class Pop {
 
@@ -279,7 +276,7 @@ public class ProgramState {
   }
 
   public ProgramState addConstraintTransitively(SymbolicValue symbolicValue, Constraint constraint) {
-    List<SymbolicValue> transitiveSymbolicValues = knownRelations()
+    List<SymbolicValue> transitiveSymbolicValues = knownRelations().stream()
       .filter(rsv -> rsv.isEquality() && (rsv.getLeftOp() == symbolicValue || rsv.getRightOp() == symbolicValue))
       .map(rsv -> rsv.getLeftOp() == symbolicValue ? rsv.getRightOp() : rsv.getLeftOp())
       .collect(Collectors.toList());
@@ -290,11 +287,15 @@ public class ProgramState {
     return ps;
   }
 
-  private Stream<RelationalSymbolicValue> knownRelations() {
-    return getValuesWithConstraints(BooleanConstraint.TRUE)
-      .stream()
-      .filter(RelationalSymbolicValue.class::isInstance)
-      .map(RelationalSymbolicValue.class::cast);
+  public Set<RelationalSymbolicValue> knownRelations() {
+    if(knownRelations == null) {
+      knownRelations = Collections.unmodifiableSet(getValuesWithConstraints(BooleanConstraint.TRUE)
+        .stream()
+        .filter(RelationalSymbolicValue.class::isInstance)
+        .map(RelationalSymbolicValue.class::cast)
+        .collect(Collectors.toSet()));
+    }
+    return knownRelations;
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
