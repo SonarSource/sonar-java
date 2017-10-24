@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.List;
 
 public class ProgramPoint {
-  private int hashcode;
+  private final int hashcode;
   public final CFG.IBlock<?> block;
   public final int i;
 
@@ -43,6 +43,7 @@ public class ProgramPoint {
     Preconditions.checkState(i < blockSize + 2, "CFG Block has %s elements but PP at %s was requested", blockSize, i);
     this.block = block;
     this.i = i;
+    this.hashcode = block.id() * 31 + i;
   }
 
   public ProgramPoint next() {
@@ -52,9 +53,6 @@ public class ProgramPoint {
 
   @Override
   public int hashCode() {
-    if (hashcode == 0) {
-      hashcode = block.id() * 31 + i;
-    }
     return hashcode;
   }
 

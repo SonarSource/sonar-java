@@ -102,7 +102,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    return setConstraint(initialProgramState, booleanConstraint, knownRelations(initialProgramState));
+    return setConstraint(initialProgramState, booleanConstraint, new HashSet<>(initialProgramState.knownRelations()));
   }
 
   @Override
@@ -269,14 +269,6 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       }
     }
     return newRelations;
-  }
-
-  private static Set<RelationalSymbolicValue> knownRelations(ProgramState programState) {
-    return programState.getValuesWithConstraints(BooleanConstraint.TRUE)
-      .stream()
-      .filter(RelationalSymbolicValue.class::isInstance)
-      .map(RelationalSymbolicValue.class::cast)
-      .collect(Collectors.toSet());
   }
 
   @VisibleForTesting
