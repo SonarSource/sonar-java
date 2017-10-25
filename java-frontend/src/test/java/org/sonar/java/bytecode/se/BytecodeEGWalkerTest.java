@@ -171,7 +171,7 @@ public class BytecodeEGWalkerTest {
     SquidClassLoader classLoader = new SquidClassLoader(CLASS_PATH);
     BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, classLoader, null), null);
 
-    MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", null, classLoader);
+    MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", classLoader);
 
     assertThat(behavior).isNull();
   }
@@ -217,7 +217,7 @@ public class BytecodeEGWalkerTest {
     SemanticModel.createFor(tree, squidClassLoader);
     ClassTree innerClass = getClass(tree, "InnerClass");
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) innerClass.symbol().lookupSymbols("fun").stream().findFirst().get();
-    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), methodSymbol, squidClassLoader);
+    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
     assertThat(logTester.logs(LoggerLevel.DEBUG))
       .contains("Dataflow analysis is incomplete for method org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object; : Too many steps resolving org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;");
     assertThat(methodBehavior.isComplete()).isFalse();
@@ -233,10 +233,6 @@ public class BytecodeEGWalkerTest {
   }
 
   private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
-    return getMethodBehavior(targetClass, methodFinder, true);
-  }
-
-  private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder, boolean useSymbol) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
@@ -244,7 +240,7 @@ public class BytecodeEGWalkerTest {
     BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
-    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), useSymbol ? methodSymbol : null, squidClassLoader);
+    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
   }
 
   private static ClassTree getClass(CompilationUnitTree cut, String className) {

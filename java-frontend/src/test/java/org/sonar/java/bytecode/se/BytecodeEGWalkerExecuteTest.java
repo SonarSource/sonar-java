@@ -1140,7 +1140,7 @@ public class BytecodeEGWalkerExecuteTest {
     IllegalStateException ex = new IllegalStateException();
     doThrow(ex).when(walkerSpy).executeInstruction(any());
 
-    assertThatThrownBy(() -> walkerSpy.getMethodBehavior("java.lang.String#length()I", null, squidClassLoader))
+    assertThatThrownBy(() -> walkerSpy.getMethodBehavior("java.lang.String#length()I", squidClassLoader))
       .isInstanceOf(BytecodeEGWalker.BytecodeAnalysisException.class)
       .hasMessage("Failed dataflow analysis for java.lang.String#length()I")
       .hasCause(ex);
