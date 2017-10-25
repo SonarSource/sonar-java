@@ -75,6 +75,14 @@ public class BehaviorCacheTest {
   }
 
   @Test
+  public void cleanup_of_cache() throws Exception {
+      SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
+      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+      sev.behaviorCache.cleanup();
+      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
+    }
+
+  @Test
   public void compute_beahvior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = spy(createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java"));
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);

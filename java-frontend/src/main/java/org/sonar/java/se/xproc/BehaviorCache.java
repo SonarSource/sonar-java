@@ -36,18 +36,25 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 public class BehaviorCache {
 
-  private final SymbolicExecutionVisitor sev;
   private final SquidClassLoader classLoader;
-  private final SemanticModel semanticModel;
+  private  SymbolicExecutionVisitor sev;
+  private  SemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
 
   private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait");
 
-  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
-    this.sev = sev;
+  public BehaviorCache(SquidClassLoader classLoader) {
     this.classLoader = classLoader;
+  }
+
+  public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable SemanticModel semanticModel) {
+    this.sev = sev;
     this.semanticModel = semanticModel;
+  }
+
+  public void cleanup() {
+    behaviors.values().removeIf(MethodBehavior::isMarkedForEviction);
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {

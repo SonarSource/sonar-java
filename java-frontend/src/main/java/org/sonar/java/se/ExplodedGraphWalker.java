@@ -200,6 +200,11 @@ public class ExplodedGraphWalker {
   public MethodBehavior visitMethod(MethodTree tree, @Nullable MethodBehavior methodBehavior) {
     Preconditions.checkArgument(methodBehavior == null || !methodBehavior.isComplete() || !methodBehavior.isVisited(), "Trying to execute an already visited methodBehavior");
     this.methodBehavior = methodBehavior;
+    if(methodBehavior != null) {
+      // Mark all behaviors created from source to be cleaned up after file analysis because they hold flow references holding references to syntax tree
+      // This leads to memory leak if reference is kept to this behaviors.
+      methodBehavior.markForEviction();
+    }
     BlockTree body = tree.block();
     if (body != null) {
       execute(tree);

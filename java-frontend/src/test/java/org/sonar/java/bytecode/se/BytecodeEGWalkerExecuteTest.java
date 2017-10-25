@@ -116,7 +116,9 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Before
   public void initializeWalker() {
-    walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+    BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
+    behaviorCache.setFileContext(null, semanticModel);
+    walker = new BytecodeEGWalker(behaviorCache, semanticModel);
   }
 
   @Test

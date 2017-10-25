@@ -40,6 +40,7 @@ public class MethodBehavior {
   private final String signature;
   private boolean complete = false;
   private boolean visited = false;
+  private boolean markedForEviction = false;
 
   public MethodBehavior(String signature, boolean varArgs) {
     this.signature = signature;
@@ -163,5 +164,13 @@ public class MethodBehavior {
 
   public void setVarArgs(boolean varArgs) {
     this.varArgs = varArgs;
+  }
+
+  boolean isMarkedForEviction() {
+    return markedForEviction;
+  }
+
+  public void markForEviction() {
+    markedForEviction = true;
   }
 }
