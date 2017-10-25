@@ -115,7 +115,8 @@ public class Instruction {
     return Type.getMethodType(fieldOrMethod.desc).getReturnType() != Type.VOID_TYPE;
   }
 
-  private boolean isInvoke() {
+  @VisibleForTesting
+  public boolean isInvoke() {
     return Opcodes.INVOKEVIRTUAL <= opcode && opcode <= Opcodes.INVOKEDYNAMIC;
   }
 
