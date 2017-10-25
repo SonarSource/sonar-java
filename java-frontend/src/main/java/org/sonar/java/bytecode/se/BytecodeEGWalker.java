@@ -754,7 +754,7 @@ public class BytecodeEGWalker {
       methodInvokedBehavior
         .exceptionalPathYields()
         .forEach(yield -> {
-          org.sonar.plugins.java.api.semantic.Type exceptionType = yield.exceptionType();
+          Type exceptionType = yield.exceptionType();
           yield.statesAfterInvocation(
             arguments, Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
               ps.storeExitValue();
