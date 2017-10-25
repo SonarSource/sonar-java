@@ -42,7 +42,7 @@ public class BehaviorCache {
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
 
-  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#");
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait");
 
   public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
     this.sev = sev;
