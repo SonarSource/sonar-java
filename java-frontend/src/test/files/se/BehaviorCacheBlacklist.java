@@ -3,5 +3,6 @@ class A {
     ClassLoader cl = s.getClass().getClassLoader();
     cl.toString();
     Class.forName("blabal");
+    wait();
   }
 }
