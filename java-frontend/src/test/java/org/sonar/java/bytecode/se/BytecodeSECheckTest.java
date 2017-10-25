@@ -311,7 +311,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   @Test
   public void method_with_numerical_operations() throws Exception {
     BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
-    MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", null, squidClassLoader);
+    MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", squidClassLoader);
 
     assertThat(behavior).isNotNull();
     assertThat(behavior.yields()).hasSize(3);
