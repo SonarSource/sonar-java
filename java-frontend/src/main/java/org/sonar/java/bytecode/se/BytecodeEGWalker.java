@@ -737,12 +737,12 @@ public class BytecodeEGWalker {
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
-      List<SymbolicValue> stack = pop.values;
+      List<SymbolicValue> stack = Lists.reverse(pop.values);
       if (!isStatic) {
         // remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments
         stack = stack.subList(1, stack.size());
       }
-      List<SymbolicValue> arguments = Lists.reverse(stack);
+      List<SymbolicValue> arguments = stack;
 
       methodInvokedBehavior
         .happyPathYields()
