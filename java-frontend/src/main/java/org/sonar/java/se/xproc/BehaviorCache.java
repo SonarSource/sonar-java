@@ -83,11 +83,11 @@ public class BehaviorCache {
           if (declaration != null) {
             sev.execute(declaration);
           } else {
-            return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
+            return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
           }
         }
       } else {
-        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, symbol, classLoader);
+        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
       }
     }
     return behaviors.get(signature);
