@@ -632,6 +632,10 @@ public class BytecodeEGWalkerExecuteTest {
       assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
       programState = execute(invokeMethod(opcode, "returningDouble", "()D"), stateWithThis);
       assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
+
+      programState = execute(invokeMethod(opcode, "returnArg", "(Ljava/lang/Object;)Ljava/lang/Object;"), stateWithThis.stackValue(arg));
+      assertThat(programState.peekValue()).isNotEqualTo(thisSv);
+      assertThat(programState.peekValue()).isEqualTo(arg);
     }
   }
 
@@ -992,8 +996,8 @@ public class BytecodeEGWalkerExecuteTest {
     walker.programState = startingState;
     walker.executeInstruction(instruction);
     ProgramState programState = walker.programState;
-    if (instruction.opcode == Opcodes.INVOKESTATIC) {
-      // X-PROC on static methods generate new states
+    if (instruction.isInvoke()) {
+      // X-PROC will enqueue new nodes
        programState = walker.workList.getFirst().programState;
     }
     return programState;
@@ -1190,6 +1194,8 @@ public class BytecodeEGWalkerExecuteTest {
   long returningLong() { return 1L; }
 
   double returningDouble() { return 1.0d; }
+
+  final Object returnArg(Object o) { return o; }
 
   private void tryCatch(boolean param) {
     try {
