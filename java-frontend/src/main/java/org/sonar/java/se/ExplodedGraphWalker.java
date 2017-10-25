@@ -193,10 +193,6 @@ public class ExplodedGraphWalker {
     this.semanticModel = semanticModel;
   }
 
-  public ExplodedGraph getExplodedGraph() {
-    return explodedGraph;
-  }
-
   public MethodBehavior visitMethod(MethodTree tree) {
     return visitMethod(tree, null);
   }

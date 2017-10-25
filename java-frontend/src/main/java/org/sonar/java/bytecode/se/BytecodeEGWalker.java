@@ -56,7 +56,6 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.objectweb.asm.Opcodes.AALOAD;
@@ -277,7 +276,7 @@ public class BytecodeEGWalker {
   }
 
   @CheckForNull
-  public MethodBehavior getMethodBehavior(String signature, @Nullable Symbol.MethodSymbol methodSymbol, SquidClassLoader classLoader) {
+  public MethodBehavior getMethodBehavior(String signature, SquidClassLoader classLoader) {
     if (methodFromArray(signature)) {
       // should not generate any method behavior
       return null;
