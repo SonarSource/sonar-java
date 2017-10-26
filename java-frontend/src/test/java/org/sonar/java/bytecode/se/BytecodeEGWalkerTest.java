@@ -21,6 +21,12 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
@@ -45,20 +51,22 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeEGWalkerTest {
 
 
-  private static final List<File> CLASS_PATH = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+  private static SquidClassLoader squidClassLoader;
   @Rule
   public LogTester logTester  = new LogTester();
+
+  private static SemanticModel semanticModel;
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A {}"), squidClassLoader);
+  }
 
   @Test
   public void generateMethodBehavior() throws Exception {
@@ -168,19 +176,18 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void method_array() throws Exception {
-    SquidClassLoader classLoader = new SquidClassLoader(CLASS_PATH);
-    BytecodeEGWalker walker = getBytecodeEGWalker(classLoader, null);
+    BytecodeEGWalker walker = getBytecodeEGWalker(squidClassLoader, null);
 
-    MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", classLoader);
+    MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", squidClassLoader);
 
     assertThat(behavior).isNull();
   }
 
   @Test
   public void test_starting_states() throws Exception {
-    BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
+    BytecodeEGWalker walker = new BytecodeEGWalker(null, semanticModel);
 
-    String signature = "()V";
+    String signature = "type#foo()V";
     walker.methodBehavior = new MethodBehavior(signature);
     ProgramState startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, false));
     SymbolicValue thisSv = startingState.getValue(0);
@@ -190,7 +197,7 @@ public class BytecodeEGWalkerTest {
     startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, true));
     assertThat(startingState).isEqualTo(ProgramState.EMPTY_STATE);
 
-    signature = "(DIJ)V";
+    signature = "type#foo(DIJ)V";
     walker.methodBehavior = new MethodBehavior(signature);
     startingState = Iterables.getOnlyElement(walker.startingStates(signature, ProgramState.EMPTY_STATE, true));
     assertThat(startingState.getValue(0)).isNotNull();
@@ -205,8 +212,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void max_step_exception_should_log_warning_and_generate_behavior() {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(squidClassLoader), null) {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(squidClassLoader), semanticModel) {
       @Override
       int maxSteps() {
         return 2;
@@ -233,7 +239,6 @@ public class BytecodeEGWalkerTest {
   }
 
   private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
-    SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);

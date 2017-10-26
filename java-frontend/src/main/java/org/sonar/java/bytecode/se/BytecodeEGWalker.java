@@ -656,9 +656,13 @@ public class BytecodeEGWalker {
             .addConstraint(sv, ObjectConstraint.NOT_NULL)
             .addConstraint(sv, new TypedConstraint(classType));
         break;
+      case ARRAYLENGTH:
+        pop = popStack(1, instruction.opcode);
+        sv = constraintManager.createSymbolicValue(instruction);
+        programState = pop.state.stackValue(sv);
+        break;
       case NEWARRAY:
       case ANEWARRAY:
-      case ARRAYLENGTH:
         pop = popStack(1, instruction.opcode);
         sv = constraintManager.createSymbolicValue(instruction);
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
@@ -867,7 +871,8 @@ public class BytecodeEGWalker {
     if(!isStaticMethod) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
-      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).put(0, thisSV);
+      Type classType = semanticModel.getClassType(signature.substring(0, signature.indexOf('#')));
+      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).addConstraint(thisSV, new TypedConstraint(classType)).put(0, thisSV);
       parameterIdx = 1;
     }
     org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
