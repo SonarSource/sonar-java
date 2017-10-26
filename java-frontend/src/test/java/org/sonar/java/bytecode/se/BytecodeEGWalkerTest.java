@@ -169,7 +169,7 @@ public class BytecodeEGWalkerTest {
   @Test
   public void method_array() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(CLASS_PATH);
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, classLoader, null), null);
+    BytecodeEGWalker walker = getBytecodeEGWalker(classLoader, null);
 
     MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", classLoader);
 
@@ -206,7 +206,7 @@ public class BytecodeEGWalkerTest {
   @Test
   public void max_step_exception_should_log_warning_and_generate_behavior() {
     SquidClassLoader squidClassLoader = new SquidClassLoader(CLASS_PATH);
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, null), null) {
+    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(squidClassLoader), null) {
       @Override
       int maxSteps() {
         return 2;
@@ -237,10 +237,16 @@ public class BytecodeEGWalkerTest {
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);
-    BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+    BytecodeEGWalker bytecodeEGWalker = getBytecodeEGWalker(squidClassLoader, semanticModel);
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
     return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
+  }
+
+  private static BytecodeEGWalker getBytecodeEGWalker(SquidClassLoader squidClassLoader, SemanticModel semanticModel) {
+    BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
+    behaviorCache.setFileContext(null, semanticModel);
+    return new BytecodeEGWalker(behaviorCache, semanticModel);
   }
 
   private static ClassTree getClass(CompilationUnitTree cut, String className) {
