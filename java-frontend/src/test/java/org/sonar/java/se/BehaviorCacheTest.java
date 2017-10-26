@@ -56,15 +56,13 @@ public class BehaviorCacheTest {
   @Test
   public void method_behavior_cache_should_be_filled() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
-    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(5);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList())).containsSequence(
       "MethodBehavior#topMethod(Z)Z",
       "MethodBehavior#bar(Z)Z",
-      // String is final, so length() can not be overridden
-      "java.lang.String#length()I",
       "MethodBehavior#foo(Z)Z",
       "MethodBehavior#independent()V");
 
@@ -77,9 +75,9 @@ public class BehaviorCacheTest {
   @Test
   public void cleanup_of_cache() throws Exception {
       SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
       sev.behaviorCache.cleanup();
-      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
+      assertThat(sev.behaviorCache.behaviors.entrySet()).isEmpty();
     }
 
   @Test
