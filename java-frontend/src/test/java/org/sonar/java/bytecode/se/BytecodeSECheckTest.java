@@ -60,7 +60,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     squidClassLoader = new SquidClassLoader(files);
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {}");
     semanticModel = SemanticModel.createFor(tree, squidClassLoader);
-    walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+    walker = getEGWalker();
   }
 
   @Test
@@ -310,7 +310,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
 
   @Test
   public void method_with_numerical_operations() throws Exception {
-    BytecodeEGWalker walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
+    BytecodeEGWalker walker = getEGWalker();
     MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", squidClassLoader);
 
     assertThat(behavior).isNotNull();
@@ -319,6 +319,12 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     assertThat(behavior.exceptionalPathYields().map(ExceptionalYield::toString).collect(Collectors.toList()))
       .containsExactly("{params: [[NON_ZERO], []], exceptional (java.lang.IndexOutOfBoundsException)}",
         "{params: [[], [NON_ZERO]], exceptional (java.lang.IndexOutOfBoundsException)}");
+  }
+
+  private static BytecodeEGWalker getEGWalker() {
+    BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
+    behaviorCache.setFileContext(null, semanticModel);
+    return new BytecodeEGWalker(behaviorCache, semanticModel);
   }
 
   private static ProgramState execute(Instruction instruction, ProgramState startingState) {

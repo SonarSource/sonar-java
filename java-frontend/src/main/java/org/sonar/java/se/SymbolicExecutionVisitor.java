@@ -21,10 +21,10 @@ package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -37,28 +37,21 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
-
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   @VisibleForTesting
   public BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
-  private SquidClassLoader classLoader;
 
-  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners) {
-    this(executableScanners, new SquidClassLoader(Lists.newArrayList()));
-  }
-
-  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, SquidClassLoader classLoader) {
+  public SymbolicExecutionVisitor(List<JavaFileScanner> executableScanners, BehaviorCache behaviorCache) {
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
-    this.classLoader = classLoader;
+    this.behaviorCache = behaviorCache;
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    behaviorCache = new BehaviorCache(this, classLoader, (SemanticModel) context.getSemanticModel());
+    behaviorCache.setFileContext(this, (SemanticModel) context.getSemanticModel());
     super.scanFile(context);
   }
 

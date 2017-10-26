@@ -36,18 +36,26 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 public class BehaviorCache {
 
-  private final SymbolicExecutionVisitor sev;
   private final SquidClassLoader classLoader;
-  private final SemanticModel semanticModel;
+  private  SymbolicExecutionVisitor sev;
+  private  SemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
+  private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
 
   private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait");
 
-  public BehaviorCache(SymbolicExecutionVisitor sev, SquidClassLoader classLoader, SemanticModel semanticModel) {
-    this.sev = sev;
+  public BehaviorCache(SquidClassLoader classLoader) {
     this.classLoader = classLoader;
+  }
+
+  public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable SemanticModel semanticModel) {
+    this.sev = sev;
     this.semanticModel = semanticModel;
+  }
+
+  public void cleanup() {
+    behaviors.clear();
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
@@ -57,7 +65,7 @@ public class BehaviorCache {
   }
 
   public MethodBehavior methodBehaviorForSymbol(String signature) {
-    return behaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature));
+    return bytecodeBehaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature));
   }
 
   @CheckForNull
@@ -76,20 +84,21 @@ public class BehaviorCache {
     if (SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith)) {
       return null;
     }
-    if (!behaviors.containsKey(signature)) {
-      if (symbol != null) {
-        MethodTree declaration = symbol.declaration();
-        if (SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol)) {
-          if (declaration != null) {
-            sev.execute(declaration);
-          } else {
-            return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
-          }
-        }
-      } else {
-        return new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
+    MethodBehavior mb = behaviors.get(signature);
+    if(mb != null) {
+      return mb;
+    }
+    if (symbol != null) {
+      MethodTree declaration = symbol.declaration();
+      if (SymbolicExecutionVisitor.methodCanNotBeOverriden(symbol) && declaration != null) {
+        sev.execute(declaration);
+        return behaviors.get(signature);
       }
     }
-    return behaviors.get(signature);
+
+    if (!bytecodeBehaviors.containsKey(signature)) {
+      new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
+    }
+    return bytecodeBehaviors.get(signature);
   }
 }
