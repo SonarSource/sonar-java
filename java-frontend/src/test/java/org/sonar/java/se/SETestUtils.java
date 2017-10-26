@@ -32,6 +32,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -53,7 +54,7 @@ public class SETestUtils {
     ActionParser<Tree> p = JavaParser.createParser();
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>(CLASS_PATH)));
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(checks), new SquidClassLoader(CLASS_PATH));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(checks), new BehaviorCache(new SquidClassLoader(CLASS_PATH)));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);
