@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Label;
@@ -96,11 +97,11 @@ public class BytecodeEGWalkerExecuteTest {
 
 
   static SemanticModel semanticModel;
-  static BytecodeEGWalker walker;
+  private BytecodeEGWalker walker;
   private static SquidClassLoader squidClassLoader;
 
   @BeforeClass
-  public static void initializeWalker() {
+  public static void initializeClassLoaderAndSemanticModel() {
     List<File> files = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[]{"jar", "zip"}, true));
     files.add(new File("target/classes"));
     files.add(new File("target/test-classes"));
@@ -108,6 +109,10 @@ public class BytecodeEGWalkerExecuteTest {
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+  }
+
+  @Before
+  public void initializeWalker() {
     walker = new BytecodeEGWalker(new BehaviorCache(null, squidClassLoader, semanticModel), semanticModel);
   }
 
@@ -984,12 +989,11 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(programState.peekValue()).isNull();
   }
 
-  private static ProgramState execute(Instruction instruction) {
+  private ProgramState execute(Instruction instruction) {
     return execute(instruction, ProgramState.EMPTY_STATE);
   }
 
-  private static ProgramState execute(Instruction instruction, ProgramState startingState) {
-    walker.workList.clear();
+  private ProgramState execute(Instruction instruction, ProgramState startingState) {
     ProgramPoint programPoint = mock(ProgramPoint.class);
     when(programPoint.next()).thenReturn(programPoint);
     walker.programPosition = programPoint;
