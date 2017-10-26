@@ -50,6 +50,9 @@ import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.HappyPathYield;
+import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -619,6 +622,10 @@ public class BytecodeEGWalkerExecuteTest {
       assertEmptyStack(programState);
       assertThat(programState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
 
+      programState = execute(invokeMethod(opcode, "finalVoid", "()V"), stateWithThis);
+      assertEmptyStack(programState);
+      assertThat(programState.getConstraints(thisSv).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+
       programState = execute(invokeMethod(opcode, "booleanMethod", "()Z"), stateWithThis);
       assertStack(programState, new Constraint[] {null});
       assertThat(isDoubleOrLong(programState, programState.peekValue())).isFalse();
@@ -647,7 +654,7 @@ public class BytecodeEGWalkerExecuteTest {
   @Test
   public void test_invoke_static() throws Exception {
     ProgramState programState = execute(invokeStatic("staticMethod", "()V"));
-    assertStack(programState, new Constraint[] {null});
+    assertEmptyStack(programState);
 
     programState = execute(invokeStatic("staticBooleanMethod", "()Z"));
     assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}});
@@ -660,10 +667,10 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(isDoubleOrLong(programState, programState.peekValue())).isFalse();
 
     programState = execute(invokeStatic("staticMethodWithIntIntArgument", "(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
-    assertStack(programState, new Constraint[] {null});
+    assertEmptyStack(programState);
 
     programState = execute(invokeStatic("staticMethodWithIntIntArgument", "(II)V"), ProgramState.EMPTY_STATE.stackValue(arg).stackValue(arg));
-    assertStack(programState, new Constraint[] {null});
+    assertEmptyStack(programState);
 
     programState = execute(invokeStatic("staticReturningLong", "()J"), ProgramState.EMPTY_STATE);
     assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
@@ -1154,6 +1161,20 @@ public class BytecodeEGWalkerExecuteTest {
       .hasCause(ex);
   }
 
+  @Test
+  public void method_returning_new_should_have_not_null_result() {
+    MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#newObject()Ljava/lang/Object;", squidClassLoader);
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(1);
+    MethodYield yield = yields.get(0);
+    assertThat(yield).isInstanceOf(HappyPathYield.class);
+    ConstraintsByDomain resultConstraint = ((HappyPathYield) yield).resultConstraint();
+    assertThat(resultConstraint).isNotNull();
+    assertThat(resultConstraint.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
+    TypedConstraint typeConstraint = (TypedConstraint) resultConstraint.get(TypedConstraint.class);
+    assertThat(typeConstraint.type.is("java.lang.String")).isTrue();
+  }
+
   /**
    * ---------------- used by test checking methods ---------
    */
@@ -1200,6 +1221,10 @@ public class BytecodeEGWalkerExecuteTest {
   double returningDouble() { return 1.0d; }
 
   final Object returnArg(Object o) { return o; }
+
+  final void finalVoid() {}
+
+  static Object newObject() { return new String(); }
 
   private void tryCatch(boolean param) {
     try {

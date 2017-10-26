@@ -70,9 +70,12 @@ public class HappyPathYield extends MethodYield {
       // returned SV is the same as one of the arguments.
       sv = invocationArguments.get(resultIndex);
     }
-    results = results.map(s -> s.stackValue(sv));
-    if (resultConstraint != null) {
-      results = results.map(s -> s.addConstraints(sv, resultConstraint));
+    // sv can be null if method is void
+    if (sv != null) {
+      results = results.map(s -> s.stackValue(sv));
+      if (resultConstraint != null) {
+        results = results.map(s -> s.addConstraints(sv, resultConstraint));
+      }
     }
     return results.distinct();
   }
