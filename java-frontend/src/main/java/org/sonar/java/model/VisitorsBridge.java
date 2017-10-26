@@ -31,6 +31,7 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -52,6 +53,7 @@ public class VisitorsBridge {
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
   private final List<JavaFileScanner> scanners;
+  private final BehaviorCache behaviorCache;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
@@ -83,6 +85,7 @@ public class VisitorsBridge {
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
+    this.behaviorCache = new BehaviorCache(classLoader);
   }
 
   public void setJavaVersion(JavaVersion javaVersion) {
@@ -111,7 +114,8 @@ public class VisitorsBridge {
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
-      new SymbolicExecutionVisitor(executableScanners, classLoader).scanFile(javaFileScannerContext);
+      new SymbolicExecutionVisitor(executableScanners, behaviorCache).scanFile(javaFileScannerContext);
+      behaviorCache.cleanup();
     }
     for (JavaFileScanner scanner : executableScanners) {
       scanner.scanFile(javaFileScannerContext);
