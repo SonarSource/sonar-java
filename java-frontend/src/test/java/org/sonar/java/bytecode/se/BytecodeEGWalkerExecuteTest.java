@@ -858,7 +858,7 @@ public class BytecodeEGWalkerExecuteTest {
     SymbolicValue arrayRef = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE.stackValue(arrayRef));
     SymbolicValue length = programState.peekValue();
-    assertStack(programState, ObjectConstraint.NOT_NULL);
+    assertStack(programState, new Constraint[] {null});
     assertThat(length).isNotEqualTo(arrayRef);
 
     assertThatThrownBy(() -> execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE)).hasMessage("ARRAYLENGTH needs 1 values on stack");
