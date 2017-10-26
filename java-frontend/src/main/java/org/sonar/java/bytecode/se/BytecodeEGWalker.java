@@ -733,7 +733,7 @@ public class BytecodeEGWalker {
     ProgramState.Pop pop = programState.unstackValue(arity);
     Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
     // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
-    SymbolicValue returnSV = constraintManager.createSymbolicValue(instruction);
+    SymbolicValue returnSV = instruction.hasReturnValue() ? constraintManager.createSymbolicValue(instruction) : null;
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
