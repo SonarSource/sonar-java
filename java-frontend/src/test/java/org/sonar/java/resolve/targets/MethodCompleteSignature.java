@@ -24,4 +24,8 @@ public class MethodCompleteSignature {
   <T extends String> void test(short s, long l, boolean b, int i, byte[] bytes, Object o, char c, float f, double d, T t) {
     test(s, l, b, i, bytes, o, c, f, d, t);
   }
+
+  MethodCompleteSignature[] test2(MethodCompleteSignature[] a) {
+    return test2(a);
+  }
 }
