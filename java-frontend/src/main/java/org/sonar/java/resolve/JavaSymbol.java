@@ -534,7 +534,7 @@ public class JavaSymbol implements Symbol {
 
     private String desc() {
       if(desc == null) {
-        org.objectweb.asm.Type ret = returnType == null ? org.objectweb.asm.Type.VOID_TYPE : toAsmType(returnType.type);
+        org.objectweb.asm.Type ret = returnType == null ? org.objectweb.asm.Type.VOID_TYPE : toAsmType(((MethodJavaType) super.type).resultType);
         org.objectweb.asm.Type[] argTypes = new org.objectweb.asm.Type[0];
         if(super.type != null) {
           argTypes = getParametersTypes().stream().map(MethodJavaSymbol::toAsmType).toArray(org.objectweb.asm.Type[]::new);
