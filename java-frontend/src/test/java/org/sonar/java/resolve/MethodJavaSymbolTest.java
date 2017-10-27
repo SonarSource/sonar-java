@@ -127,8 +127,13 @@ public class MethodJavaSymbolTest {
         @Override
         public void visitNode(Tree tree) {
           Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) ((MethodInvocationTree) tree).symbol();
-          assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
-            .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test(SJZI[BLjava/lang/Object;CFDLjava/lang/String;)V");
+          if(methodSymbol.name().equals("test")) {
+            assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
+              .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test(SJZI[BLjava/lang/Object;CFDLjava/lang/String;)V");
+          } else {
+            assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
+              .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test2([Lorg/sonar/java/resolve/targets/MethodCompleteSignature;)[Lorg/sonar/java/resolve/targets/MethodCompleteSignature;");
+          }
         }
 
       }), Collections.singletonList(new File("target/test-classes")), null));
