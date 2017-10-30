@@ -69,7 +69,12 @@ public class MethodBehavior {
     if ((resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
       ExceptionalYield exceptionalYield = new ExceptionalYield(nodeForYield, this);
       if (resultSV != null) {
-        exceptionalYield.setExceptionType(((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType());
+        Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
+        String typeName = null;
+        if(type != null) {
+          typeName = type.fullyQualifiedName();
+        }
+        exceptionalYield.setExceptionType(typeName);
       }
       yield = exceptionalYield;
     } else {
@@ -94,7 +99,7 @@ public class MethodBehavior {
     }
   }
 
-  public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, Type exceptionType, SECheck check) {
+  public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, String exceptionType, SECheck check) {
     ExceptionalYield yield = new ExceptionalCheckBasedYield(target, exceptionType, check.getClass(), node, this);
     addParameterConstraints(node, yield);
     yields.add(yield);

@@ -49,8 +49,10 @@ public class SETestUtils {
   static {
     CLASS_PATH.add(new File("target/test-classes"));
   }
-
   public static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck... checks) {
+    return createSymbolicExecutionVisitorAndSemantic(fileName, checks).a;
+  }
+  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
     ActionParser<Tree> p = JavaParser.createParser();
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(fileName));
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>(CLASS_PATH)));
@@ -59,7 +61,7 @@ public class SETestUtils {
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);
     sev.scanFile(context);
-    return sev;
+    return new Pair<>(sev, semanticModel);
   }
 
   public static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {

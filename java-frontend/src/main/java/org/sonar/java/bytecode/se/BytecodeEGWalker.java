@@ -650,11 +650,10 @@ public class BytecodeEGWalker {
         break;
       case NEW:
         sv = constraintManager.createSymbolicValue(instruction);
-        Type classType = semanticModel.getClassType(instruction.className);
         programState = programState
             .stackValue(sv)
             .addConstraint(sv, ObjectConstraint.NOT_NULL)
-            .addConstraint(sv, new TypedConstraint(classType));
+            .addConstraint(sv, new TypedConstraint(instruction.className));
         break;
       case ARRAYLENGTH:
         pop = popStack(1, instruction.opcode);
@@ -671,7 +670,7 @@ public class BytecodeEGWalker {
         pop = popStack(1, instruction.opcode);
         sv = pop.values.get(0);
         TypedConstraint typedConstraint = programState.getConstraint(sv, TypedConstraint.class);
-        Type type = typedConstraint != null ? typedConstraint.type : Symbols.unknownType;
+        Type type = typedConstraint != null ? typedConstraint.getType(semanticModel) : Symbols.unknownType;
         programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(type));
         programState.storeExitValue();
         break;
@@ -758,7 +757,7 @@ public class BytecodeEGWalker {
       methodInvokedBehavior
         .exceptionalPathYields()
         .forEach(yield -> {
-          Type exceptionType = yield.exceptionType();
+          Type exceptionType = yield.exceptionType(semanticModel);
           yield.statesAfterInvocation(
             arguments, Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
               ps.storeExitValue();
@@ -871,8 +870,8 @@ public class BytecodeEGWalker {
     if(!isStaticMethod) {
       // Add a sv for "this"
       SymbolicValue thisSV = constraintManager.createSymbolicValue((Instruction) null);
-      Type classType = semanticModel.getClassType(signature.substring(0, signature.indexOf('#')));
-      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL).addConstraint(thisSV, new TypedConstraint(classType)).put(0, thisSV);
+      state = currentState.addConstraint(thisSV, ObjectConstraint.NOT_NULL)
+        .addConstraint(thisSV, new TypedConstraint(signature.substring(0, signature.indexOf('#')))).put(0, thisSV);
       parameterIdx = 1;
     }
     org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));

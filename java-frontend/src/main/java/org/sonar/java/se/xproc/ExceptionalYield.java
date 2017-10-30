@@ -21,6 +21,7 @@ package org.sonar.java.se.xproc;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 public class ExceptionalYield extends MethodYield {
 
   @Nullable
-  private Type exceptionType;
+  private String exceptionType;
 
   public ExceptionalYield(MethodBehavior behavior) {
     super(behavior);
@@ -57,20 +58,23 @@ public class ExceptionalYield extends MethodYield {
       .distinct();
   }
 
-  public void setExceptionType(Type exceptionType) {
+  public void setExceptionType(String exceptionType) {
     this.exceptionType = exceptionType;
   }
 
   @CheckForNull
-  public Type exceptionType() {
-    return exceptionType;
+  public Type exceptionType(SemanticModel semanticModel) {
+    if(exceptionType == null) {
+      return null;
+    }
+    return semanticModel.getClassType(exceptionType);
   }
 
   @Override
   public String toString() {
     return String.format("{params: %s, exceptional%s}",
       parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
-      exceptionType == null ? "" : (" (" + exceptionType.fullyQualifiedName() + ")"));
+      exceptionType == null ? "" : (" (" + exceptionType + ")"));
   }
 
   @Override
