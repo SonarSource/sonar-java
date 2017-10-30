@@ -10,5 +10,6 @@
     "multi-threading"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2444"
+  "ruleSpecification": "RSPEC-2444",
+  "sqKey": "S2444"
 }

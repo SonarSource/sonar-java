@@ -17,5 +17,6 @@
     "CERT"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2095"
+  "ruleSpecification": "RSPEC-2095",
+  "sqKey": "S2095"
 }

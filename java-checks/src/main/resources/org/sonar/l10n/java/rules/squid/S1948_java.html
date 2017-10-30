@@ -18,6 +18,19 @@ public class Person implements Serializable {
   private Address address;  // Noncompliant; Address isn't serializable
 }
 </pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class Address implements Serializable {
+  private static final long serialVersionUID = 2405172041950251807L;
+}
+
+public class Person implements Serializable {
+  private static final long serialVersionUID = 1905122041950251207L;
+
+  private String name;
+  private Address address;
+}
+</pre>
 <h2>Exceptions</h2>
 <p>The alternative to making all members <code>serializable</code> or <code>transient</code> is to implement special methods which take on the
 responsibility of properly serializing and de-serializing the object. This rule ignores classes which implement the following methods:</p>

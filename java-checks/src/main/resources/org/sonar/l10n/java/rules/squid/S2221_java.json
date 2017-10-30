@@ -14,5 +14,6 @@
     "CWE"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2221"
+  "ruleSpecification": "RSPEC-2221",
+  "sqKey": "S2221"
 }

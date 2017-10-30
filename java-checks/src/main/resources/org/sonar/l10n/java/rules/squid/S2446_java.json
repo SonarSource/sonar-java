@@ -14,5 +14,6 @@
     "CERT"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2446"
+  "ruleSpecification": "RSPEC-2446",
+  "sqKey": "S2446"
 }

@@ -20,6 +20,8 @@ void doSomething(int a) {
   <li> in non-private methods that only <code>throw</code> or that have empty bodies </li>
   <li> in annotated methods, unless the annotation is <code>@SuppressWarning("unchecked")</code> or <code>@SuppressWarning("rawtypes")</code>, in
   which case the annotation will be ignored </li>
+  <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the parameter is documented with a proper
+  javadoc. </li>
 </ul>
 <pre>
 @Override

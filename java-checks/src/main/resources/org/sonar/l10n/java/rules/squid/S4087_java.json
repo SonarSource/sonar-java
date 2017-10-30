@@ -10,5 +10,6 @@
     "redundant"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-4087"
+  "ruleSpecification": "RSPEC-4087",
+  "sqKey": "S4087"
 }

@@ -10,5 +10,6 @@
     "suspicious"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2160"
+  "ruleSpecification": "RSPEC-2160",
+  "sqKey": "S2160"
 }

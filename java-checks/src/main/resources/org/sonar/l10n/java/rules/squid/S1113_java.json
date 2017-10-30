@@ -14,5 +14,6 @@
     "CERT"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-1113"
+  "ruleSpecification": "RSPEC-1113",
+  "sqKey": "ObjectFinalizeOverridenCheck"
 }

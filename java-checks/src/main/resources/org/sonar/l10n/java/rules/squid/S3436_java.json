@@ -12,5 +12,6 @@
     "lock-in"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-3436"
+  "ruleSpecification": "RSPEC-3436",
+  "sqKey": "S3436"
 }

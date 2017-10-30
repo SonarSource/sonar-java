@@ -10,5 +10,6 @@
     "tests"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2699"
+  "ruleSpecification": "RSPEC-2699",
+  "sqKey": "S2699"
 }

@@ -17,5 +17,6 @@
     "SANS Top 25"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2258"
+  "ruleSpecification": "RSPEC-2258",
+  "sqKey": "S2258"
 }

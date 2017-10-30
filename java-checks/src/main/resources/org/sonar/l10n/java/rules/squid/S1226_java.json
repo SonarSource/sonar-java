@@ -10,5 +10,6 @@
     "misra"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1226"
+  "ruleSpecification": "RSPEC-1226",
+  "sqKey": "S1226"
 }

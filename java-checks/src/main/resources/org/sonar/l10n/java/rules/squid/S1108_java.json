@@ -10,5 +10,6 @@
     "convention"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1108"
+  "ruleSpecification": "RSPEC-1108",
+  "sqKey": "RightCurlyBraceDifferentLineAsNextBlockCheck"
 }

@@ -10,5 +10,6 @@
     "sql"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2695"
+  "ruleSpecification": "RSPEC-2695",
+  "sqKey": "S2695"
 }

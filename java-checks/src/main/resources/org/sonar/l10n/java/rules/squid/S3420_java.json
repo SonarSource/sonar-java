@@ -11,5 +11,6 @@
     "maven"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3420"
+  "ruleSpecification": "RSPEC-3420",
+  "sqKey": "S3420"
 }

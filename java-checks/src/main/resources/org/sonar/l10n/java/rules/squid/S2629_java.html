@@ -22,13 +22,13 @@ Preconditions.checkState(condition, "message: %s", formatMessage());  // Noncomp
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-logger.log(Level.SEVERE, "Something went wrong: %s ", message);  // String formatting only applied if needed
+logger.log(Level.SEVERE, "Something went wrong: {0} ", message);  // String formatting only applied if needed
 
-logger.log(Level.FINE, "An exception occurred with message: {}", message);
+logger.fine("An exception occurred with message: {}", message);  // SLF4J, Log4j
 
 logger.log(Level.SEVERE, () -&gt; "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
 
-LOG.error("Unable to open file {}", csvPath, e);
+LOG.error("Unable to open file {0}", csvPath, e);
 
 if (LOG.isDebugEnabled() {
   LOG.debug("Unable to open file " + csvPath, e);  // this is compliant, because it will not evaluate if log level is above debug.

@@ -10,5 +10,6 @@
     "multi-threading"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2273"
+  "ruleSpecification": "RSPEC-2273",
+  "sqKey": "S2273"
 }

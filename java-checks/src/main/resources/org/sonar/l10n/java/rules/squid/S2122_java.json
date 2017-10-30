@@ -10,5 +10,6 @@
     
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2122"
+  "ruleSpecification": "RSPEC-2122",
+  "sqKey": "S2122"
 }

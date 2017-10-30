@@ -10,5 +10,6 @@
     "cert"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2178"
+  "ruleSpecification": "RSPEC-2178",
+  "sqKey": "S2178"
 }

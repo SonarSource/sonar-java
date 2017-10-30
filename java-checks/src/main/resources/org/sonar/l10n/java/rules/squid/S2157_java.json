@@ -11,5 +11,6 @@
     "api-design"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2157"
+  "ruleSpecification": "RSPEC-2157",
+  "sqKey": "S2157"
 }

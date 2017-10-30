@@ -10,5 +10,6 @@
     "owasp-a9"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2976"
+  "ruleSpecification": "RSPEC-2976",
+  "sqKey": "S2976"
 }

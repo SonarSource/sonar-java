@@ -12,5 +12,6 @@
     "pitfall"
   ],
   "defaultSeverity": "Info",
-  "ruleSpecification": "RSPEC-923"
+  "ruleSpecification": "RSPEC-923",
+  "sqKey": "S923"
 }

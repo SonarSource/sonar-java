@@ -13,4 +13,14 @@ public int shift(int a) {
   return a &lt;&lt; 16;
 }
 </pre>
+<h2>Exceptions</h2>
+<p>This rule doesn't raise an issue when the shift by zero is obviously for cosmetic reasons:</p>
+<ul>
+  <li> When the value shifted is a literal. </li>
+  <li> When there is a similar shift at the same position on line before or after. E.g.: </li>
+</ul>
+<pre>
+bytes[loc+0] = (byte)(value &gt;&gt; 8);
+bytes[loc+1] = (byte)(value &gt;&gt; 0);
+</pre>
 

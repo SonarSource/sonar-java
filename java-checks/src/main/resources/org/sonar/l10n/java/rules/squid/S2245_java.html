@@ -9,6 +9,12 @@ Random random = new Random();
 byte bytes[] = new byte[20];
 random.nextBytes(bytes);
 </pre>
+<h2>Compliant Solution</h2>
+<pre>
+SecureRandom random = new SecureRandom();
+byte bytes[] = new byte[20];
+random.nextBytes(bytes);
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/338.html">MITRE, CWE-338</a> - Use of Cryptographically Weak Pseudo-Random Number Generator

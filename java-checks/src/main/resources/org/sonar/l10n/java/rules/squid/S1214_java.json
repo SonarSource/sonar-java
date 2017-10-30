@@ -10,5 +10,6 @@
     "bad-practice"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-1214"
+  "ruleSpecification": "RSPEC-1214",
+  "sqKey": "S1214"
 }

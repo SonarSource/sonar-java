@@ -16,5 +16,6 @@
     "OWASP Top Ten"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2092"
+  "ruleSpecification": "RSPEC-2092",
+  "sqKey": "S2092"
 }

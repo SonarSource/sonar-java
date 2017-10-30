@@ -13,5 +13,6 @@
     "clumsy"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2737"
+  "ruleSpecification": "RSPEC-2737",
+  "sqKey": "S2737"
 }

@@ -18,5 +18,6 @@
     "OWASP Top Ten"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1989"
+  "ruleSpecification": "RSPEC-1989",
+  "sqKey": "S1989"
 }

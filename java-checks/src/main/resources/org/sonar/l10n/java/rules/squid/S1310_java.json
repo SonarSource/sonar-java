@@ -10,5 +10,6 @@
     "bad-practice"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1310"
+  "ruleSpecification": "RSPEC-1310",
+  "sqKey": "S1310"
 }

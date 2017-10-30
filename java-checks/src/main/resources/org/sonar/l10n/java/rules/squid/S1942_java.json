@@ -11,5 +11,6 @@
     "redundant"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1942"
+  "ruleSpecification": "RSPEC-1942",
+  "sqKey": "S1942"
 }

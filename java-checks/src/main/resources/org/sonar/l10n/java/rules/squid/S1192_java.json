@@ -12,5 +12,6 @@
     "design"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-1192"
+  "ruleSpecification": "RSPEC-1192",
+  "sqKey": "S1192"
 }

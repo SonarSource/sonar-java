@@ -10,5 +10,6 @@
     "spring"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-3749"
+  "ruleSpecification": "RSPEC-3749",
+  "sqKey": "S3749"
 }

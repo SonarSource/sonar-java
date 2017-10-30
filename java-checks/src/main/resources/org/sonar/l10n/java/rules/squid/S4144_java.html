@@ -4,11 +4,13 @@ be confusing to maintainers. In the latter case, one implementation should invok
 <pre>
 private final static String CODE = "bounteous";
 
-public String getCode() {
+public String calculateCode() {
+  doTheThing();
   return CODE;
 }
 
 public String getName() {  // Noncompliant
+  doTheThing();
   return CODE;
 }
 </pre>
@@ -17,6 +19,7 @@ public String getName() {  // Noncompliant
 private final static String CODE = "bounteous";
 
 public String getCode() {
+  doTheThing();
   return CODE;
 }
 

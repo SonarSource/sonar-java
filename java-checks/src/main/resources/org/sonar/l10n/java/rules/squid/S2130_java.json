@@ -10,5 +10,6 @@
     "performance"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2130"
+  "ruleSpecification": "RSPEC-2130",
+  "sqKey": "S2130"
 }

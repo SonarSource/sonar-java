@@ -10,5 +10,6 @@
     "serialization"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2055"
+  "ruleSpecification": "RSPEC-2055",
+  "sqKey": "S2055"
 }

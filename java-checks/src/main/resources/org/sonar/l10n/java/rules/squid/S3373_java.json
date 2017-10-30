@@ -12,5 +12,6 @@
     "struts"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3373"
+  "ruleSpecification": "RSPEC-3373",
+  "sqKey": "S3373"
 }

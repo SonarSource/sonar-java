@@ -17,5 +17,6 @@
     "CERT"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-899"
+  "ruleSpecification": "RSPEC-899",
+  "sqKey": "S899"
 }

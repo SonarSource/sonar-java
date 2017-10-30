@@ -10,5 +10,6 @@
     "suspicious"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-1844"
+  "ruleSpecification": "RSPEC-1844",
+  "sqKey": "S1844"
 }

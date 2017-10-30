@@ -16,6 +16,13 @@ String lastName = getLastName();
 
 if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
 </pre>
+<h2>Exceptions</h2>
+<p>Comparing two instances of the <code>Class</code> object will not raise an issue.</p>
+<pre>
+Class c;
+if(c == Integer.class) { //No issue raised
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/595.html">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents </li>

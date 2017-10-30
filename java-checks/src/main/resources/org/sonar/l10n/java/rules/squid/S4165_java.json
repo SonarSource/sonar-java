@@ -10,5 +10,6 @@
     "redundant"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-4165"
+  "ruleSpecification": "RSPEC-4165",
+  "sqKey": "S4165"
 }

@@ -11,5 +11,6 @@
     "pitfall"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2143"
+  "ruleSpecification": "RSPEC-2143",
+  "sqKey": "S2143"
 }

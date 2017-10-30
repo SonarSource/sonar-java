@@ -10,5 +10,6 @@
     "unpredictable"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2272"
+  "ruleSpecification": "RSPEC-2272",
+  "sqKey": "S2272"
 }
