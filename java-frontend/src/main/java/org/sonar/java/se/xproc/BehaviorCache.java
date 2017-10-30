@@ -43,7 +43,7 @@ public class BehaviorCache {
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
 
-  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait");
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
 
   public BehaviorCache(SquidClassLoader classLoader) {
     this.classLoader = classLoader;
