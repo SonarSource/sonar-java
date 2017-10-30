@@ -22,6 +22,7 @@ package org.sonar.java.bytecode.se;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -246,6 +247,14 @@ public class BytecodeEGWalkerTest {
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
     return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
+  }
+
+  @Test
+  public void name() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(new ArrayList<>());
+    MethodBehavior methodBehavior = getBytecodeEGWalker(classLoader, null).getMethodBehavior("java.lang.Package#getPackages()L$Array", classLoader);
+    System.out.println(methodBehavior.yields());
+
   }
 
   private static BytecodeEGWalker getBytecodeEGWalker(SquidClassLoader squidClassLoader, SemanticModel semanticModel) {
