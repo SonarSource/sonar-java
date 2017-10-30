@@ -21,26 +21,23 @@ package org.sonar.java.se.constraint;
 
 import org.junit.Test;
 import org.sonar.java.resolve.Symbols;
-import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class TypedConstraintTest {
 
   @Test
   public void test_equals_hashcode() {
-    Type type = mock(Type.class);
-    TypedConstraint object1 = new TypedConstraint(type);
-    TypedConstraint object2 = new TypedConstraint(type);
+    TypedConstraint object1 = new TypedConstraint("java.lang.String");
+    TypedConstraint object2 = new TypedConstraint("java.lang.String");
     assertThat(object1.equals(object1)).isTrue();
     assertThat(object1.equals(object2)).isTrue();
     assertThat(object1.equals(null)).isFalse();
     assertThat(object1.equals("")).isFalse();
     assertThat(object1.hashCode()).isEqualTo(object2.hashCode());
 
-    TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType);
-    TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType);
+    TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
+    TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
     assertThat(nullTC1.equals(nullTC2)).isFalse();
     assertThat(object1.equals(nullTC1)).isFalse();
   }

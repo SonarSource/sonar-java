@@ -22,12 +22,15 @@ package org.sonar.java.se.xproc;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
 public class MethodBehaviorTest {
@@ -75,7 +78,9 @@ public class MethodBehaviorTest {
 
   @Test
   public void method_behavior_handling_finally() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ReturnAndFinally.java");
+    Pair<SymbolicExecutionVisitor, SemanticModel> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
+    SymbolicExecutionVisitor sev = visitorAndSemantic.a;
+    SemanticModel semanticModel = visitorAndSemantic.b;
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
@@ -110,9 +115,9 @@ public class MethodBehaviorTest {
     assertThat(rethrowingException.yields()).hasSize(4);
     assertThat(rethrowingException.happyPathYields()).hasSize(1);
     assertThat(rethrowingException.exceptionalPathYields()).hasSize(3);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() == null)).hasSize(1);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() != null && y.exceptionType().is("java.lang.Exception"))).hasSize(1);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException"))).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) == null)).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("java.lang.Exception"))).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException"))).hasSize(1);
 
   }
 

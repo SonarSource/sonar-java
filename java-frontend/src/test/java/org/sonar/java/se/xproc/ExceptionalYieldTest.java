@@ -19,21 +19,24 @@
  */
 package org.sonar.java.se.xproc;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.plugins.java.api.semantic.Type;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.Pair;
+import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
@@ -50,13 +53,13 @@ public class ExceptionalYieldTest {
     assertThat(yield).isEqualTo(yield);
     assertThat(yield).isEqualTo(otherYield);
 
-    Type exceptionType = Mockito.mock(Type.class);
-    otherYield.setExceptionType(exceptionType);
+    otherYield.setExceptionType("java.lang.Exception");
     assertThat(yield).isNotEqualTo(otherYield);
 
-    yield.setExceptionType(exceptionType);
+    yield.setExceptionType("java.lang.Exception");
     assertThat(yield).isEqualTo(otherYield);
-    assertThat(yield.exceptionType()).isEqualTo(otherYield.exceptionType());
+    SemanticModel semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A{}"), new SquidClassLoader(new ArrayList<>()));
+    assertThat(yield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
 
     // same arity and parameters but happy yield
     assertThat(yield).isNotEqualTo(new HappyPathYield(methodBehavior));
@@ -73,7 +76,7 @@ public class ExceptionalYieldTest {
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
 
     // different values for different yields
-    other.setExceptionType(mock(Type.class));
+    other.setExceptionType("java.lang.Exception");
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // happy Path Yield method yield
@@ -82,7 +85,9 @@ public class ExceptionalYieldTest {
 
   @Test
   public void exceptional_yields() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
+    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java");
+    SymbolicExecutionVisitor sev = sevAndSemantic.a;
+    SemanticModel semanticModel = sevAndSemantic.b;
 
     MethodBehavior mb = getMethodBehavior(sev, "myMethod");
     assertThat(mb.yields()).hasSize(4);
@@ -91,19 +96,19 @@ public class ExceptionalYieldTest {
     assertThat(exceptionalYields).hasSize(3);
 
     // runtime exception
-    Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType() == null).findFirst();
+    Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null).findFirst();
     assertThat(runtimeException.isPresent()).isTrue();
     MethodYield runtimeExceptionYield = runtimeException.get();
     assertThat(runtimeExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // exception from other method call
-    Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException2")).findFirst();
+    Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException2")).findFirst();
     assertThat(implicitException.isPresent()).isTrue();
     MethodYield implicitExceptionYield = implicitException.get();
     assertThat(implicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // explicitly thrown exception
-    Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException1")).findFirst();
+    Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException1")).findFirst();
     assertThat(explicitException.isPresent()).isTrue();
     MethodYield explicitExceptionYield = explicitException.get();
     assertThat(explicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
@@ -121,18 +126,20 @@ public class ExceptionalYieldTest {
 
   @Test
   public void exceptional_yields_void_method() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYieldsVoidMethod.java");
+    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java");
+    SymbolicExecutionVisitor sev = sevAndSemantic.a;
+    SemanticModel semanticModel = sevAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "myVoidMethod");
     assertThat(mb.yields()).hasSize(4);
 
     List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null).count()).isEqualTo(1);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null).count()).isEqualTo(1);
 
-    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException1")).findAny().get();
+    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException1")).findAny().get();
     assertThat(explicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
 
-    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType() != null && y.exceptionType().is("org.foo.MyException2")).findAny().get();
+    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException2")).findAny().get();
     assertThat(implicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
   }
 
