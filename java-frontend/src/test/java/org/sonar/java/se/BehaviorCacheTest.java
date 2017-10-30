@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
 
@@ -111,7 +113,9 @@ public class BehaviorCacheTest {
 
   @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/CleanStackWhenRaisingException.java");
+    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java");
+    SymbolicExecutionVisitor sev = sevAndSemantic.a;
+    SemanticModel semanticModel = sevAndSemantic.b;
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
     assertThat(behavior.yields()).hasSize(4);
 
@@ -120,7 +124,7 @@ public class BehaviorCacheTest {
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(2);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType() == null)).hasSize(1);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null)).hasSize(1);
   }
 
   @Test
