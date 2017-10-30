@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -49,7 +50,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   private final SymbolicValue svCausingException;
   private final boolean isMethodVarargs;
 
-  public ExceptionalCheckBasedYield(SymbolicValue svCausingException, Type exceptionType, Class<? extends SECheck> check, Node node, MethodBehavior behavior) {
+  public ExceptionalCheckBasedYield(SymbolicValue svCausingException, String exceptionType, Class<? extends SECheck> check, Node node, MethodBehavior behavior) {
     super(node, behavior);
     this.check = check;
     this.svCausingException = svCausingException;
@@ -122,14 +123,14 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
-  public void setExceptionType(Type exceptionType) {
+  public void setExceptionType(String exceptionType) {
     throw new UnsupportedOperationException("Exception type can not be changed");
   }
 
   @Nonnull
   @Override
-  public Type exceptionType() {
-    Type exceptionType = super.exceptionType();
+  public Type exceptionType(SemanticModel semanticModel) {
+    Type exceptionType = super.exceptionType(semanticModel);
     Preconditions.checkArgument(exceptionType != null, "Exception type is required");
     return exceptionType;
   }
@@ -140,11 +141,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   @Override
   public String toString() {
-    Type exceptionType = exceptionType();
-    Preconditions.checkState(exceptionType != null);
-    return String.format("{params: %s, exceptional (%s), check: %s}",
-      parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
-      exceptionType.fullyQualifiedName(), check.getSimpleName());
+    return super.toString().replace('}', ',')+" check: "+check.getSimpleName()+"}";
   }
 
   @Override

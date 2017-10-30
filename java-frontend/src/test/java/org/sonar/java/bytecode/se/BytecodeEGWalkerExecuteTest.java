@@ -314,7 +314,7 @@ public class BytecodeEGWalkerExecuteTest {
   @Test
   public void test_new() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NEW, "java.lang.Object"));
-    assertStack(programState, new Constraint[][] {{ ObjectConstraint.NOT_NULL, new TypedConstraint(semanticModel.getClassType("java.lang.Object"))}});
+    assertStack(programState, new Constraint[][] {{ ObjectConstraint.NOT_NULL, new TypedConstraint("java.lang.Object")}});
   }
 
   @Test
@@ -689,7 +689,7 @@ public class BytecodeEGWalkerExecuteTest {
     SymbolicValue sv = new SymbolicValue();
     Type exceptionType = semanticModel.getClassType("java.lang.RuntimeException");
     ProgramState initialState = ProgramState.EMPTY_STATE.stackValue(sv)
-        .addConstraint(sv, new TypedConstraint(exceptionType));
+        .addConstraint(sv, new TypedConstraint("java.lang.RuntimeException"));
     ProgramState programState = execute(new Instruction(Opcodes.ATHROW), initialState);
     SymbolicValue exception = programState.peekValue();
     assertThat(exception).isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class);
@@ -1174,7 +1174,7 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(resultConstraint).isNotNull();
     assertThat(resultConstraint.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     TypedConstraint typeConstraint = (TypedConstraint) resultConstraint.get(TypedConstraint.class);
-    assertThat(typeConstraint.type.is("java.lang.String")).isTrue();
+    assertThat(typeConstraint.type.equals("java.lang.String")).isTrue();
   }
 
   /**
