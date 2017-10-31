@@ -659,12 +659,12 @@ public class BytecodeEGWalkerExecuteTest {
     assertEmptyStack(programState);
 
     programState = execute(invokeStatic("staticBooleanMethod", "()Z"));
-    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}});
+    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE}});
     assertThat(isDoubleOrLong(programState, programState.peekValue())).isFalse();
 
     SymbolicValue arg = new SymbolicValue();
     programState = execute(invokeStatic("staticIntMethodWithIntArgument", "(I)I"), ProgramState.EMPTY_STATE.stackValue(arg));
-    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}});
+    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, DivisionByZeroCheck.ZeroConstraint.ZERO}});
     assertThat(programState.peekValue()).isNotEqualTo(arg);
     assertThat(isDoubleOrLong(programState, programState.peekValue())).isFalse();
 
@@ -705,7 +705,7 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();
 
     programState = execute(invokeStatic("staticBooleanMethod", "()Z"), startingState);
-    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE, DivisionByZeroCheck.ZeroConstraint.ZERO}, {null}});
+    assertStack(programState, new Constraint[][] {{ObjectConstraint.NOT_NULL, BooleanConstraint.FALSE}, {null}});
 
     programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "methodWithIntArgument", "(I)V"), startingState.stackValue(new SymbolicValue()));
     assertThat(hasConstraint(thisSv, programState, ObjectConstraint.NOT_NULL)).isTrue();

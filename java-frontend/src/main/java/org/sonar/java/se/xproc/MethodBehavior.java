@@ -21,13 +21,22 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.Pair;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -80,7 +89,11 @@ public class MethodBehavior {
     } else {
       HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
       if (expectReturnValue) {
-        happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraints(resultSV));
+        ConstraintsByDomain cleanup = cleanup(node.programState.getConstraints(resultSV), org.objectweb.asm.Type.getReturnType(signature.substring(signature.indexOf('('))));
+        if (cleanup.isEmpty()) {
+          cleanup = null;
+        }
+        happyPathYield.setResult(parameters.indexOf(resultSV), cleanup);
       }
       yield = happyPathYield;
     }
@@ -90,13 +103,32 @@ public class MethodBehavior {
 
   private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
     // add the constraints on all the parameters
+    int index = 0;
     for (SymbolicValue parameter : parameters) {
       ConstraintsByDomain constraints = node.programState.getConstraints(parameter);
       if (constraints == null) {
         constraints = ConstraintsByDomain.empty();
+      } else {
+        //cleanup based on signature
+        org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
+        constraints = cleanup(constraints, argumentTypes[index]);
       }
       yield.parametersConstraints.add(constraints);
+      index++;
     }
+  }
+
+  private static ConstraintsByDomain cleanup(ConstraintsByDomain constraints, org.objectweb.asm.Type argumentType) {
+    if (constraints == null || constraints.isEmpty()) {
+      return ConstraintsByDomain.empty();
+    }
+    ConstraintsByDomain result = constraints.remove(BytecodeEGWalker.StackValueCategoryConstraint.class);
+    if (argumentType.getSort() == org.objectweb.asm.Type.BOOLEAN) {
+      result = result.remove(DivisionByZeroCheck.ZeroConstraint.class);
+    } else {
+      result = result.remove(BooleanConstraint.class);
+    }
+    return result;
   }
 
   public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, String exceptionType, SECheck check) {
@@ -153,6 +185,58 @@ public class MethodBehavior {
   public void completed() {
     this.complete = true;
     this.visited = true;
+    reduceYields();
+  }
+
+  private void reduceYields() {
+    List<HappyPathYield> happyPathYields = happyPathYields().collect(Collectors.toList());
+    for (HappyPathYield yield : happyPathYields) {
+      if(yield.resultIndex() != -1) {
+        return;
+      }
+      List<HappyPathYield> samePre = happyPathYields.stream()
+        .filter(y -> y != yield)
+        .filter(y -> y.parametersConstraints.equals(yield.parametersConstraints))
+        .filter(y -> y.resultIndex() == -1)
+        .collect(Collectors.toList());
+
+      ConstraintsByDomain constraintsByDomain = yield.resultConstraint();
+      if(constraintsByDomain ==  null) {
+        constraintsByDomain = ConstraintsByDomain.empty();
+      }
+      Map<Class, Constraint> constraints = new HashMap<>();
+      constraintsByDomain.forEach(constraints::put);
+
+      for (HappyPathYield samePreconditions : samePre) {
+
+        Map<Class, Pair<Constraint,Constraint>> diff = new HashMap<>();
+        ConstraintsByDomain constraintsByDomain1 = samePreconditions.resultConstraint();
+        if(constraintsByDomain1 == null) {
+          constraintsByDomain1 = ConstraintsByDomain.empty();
+        }
+        constraintsByDomain1.forEach((aClass, constraint) -> {
+          Constraint c = constraints.get(aClass);
+          if(constraint != c) {
+            diff.put(aClass, new Pair<>(c, constraint));
+          }
+        });
+        constraints.keySet().forEach(clazz -> diff.computeIfAbsent(clazz, k -> new Pair<>(constraints.get(k), null)));
+
+        if (diff.size() == 1) {
+          Pair<Constraint, Constraint> next = diff.values().iterator().next();
+          Constraint c1 = next.a;
+          Constraint c2 = next.b;
+          if (c1 == ObjectConstraint.NOT_NULL || c2 == ObjectConstraint.NOT_NULL) {
+            if (c1 == null) {
+              yields.remove(samePreconditions);
+            } else if (c2 == null) {
+              yields.remove(yield);
+            }
+          }
+        }
+
+      }
+    }
   }
 
   public boolean isVisited() {
