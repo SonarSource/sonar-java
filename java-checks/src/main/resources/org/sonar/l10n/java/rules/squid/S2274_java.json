@@ -14,5 +14,6 @@
     "CERT"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2274"
+  "ruleSpecification": "RSPEC-2274",
+  "sqKey": "S2274"
 }

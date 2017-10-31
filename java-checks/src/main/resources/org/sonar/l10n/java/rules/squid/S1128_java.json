@@ -10,5 +10,6 @@
     "unused"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1128"
+  "ruleSpecification": "RSPEC-1128",
+  "sqKey": "UselessImportCheck"
 }

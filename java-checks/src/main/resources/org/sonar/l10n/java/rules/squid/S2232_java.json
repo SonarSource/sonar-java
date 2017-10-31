@@ -12,5 +12,6 @@
     "sql"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2232"
+  "ruleSpecification": "RSPEC-2232",
+  "sqKey": "S2232"
 }

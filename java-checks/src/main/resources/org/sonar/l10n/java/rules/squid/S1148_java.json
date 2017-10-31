@@ -10,5 +10,6 @@
     "error-handling"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1148"
+  "ruleSpecification": "RSPEC-1148",
+  "sqKey": "S1148"
 }

@@ -2,7 +2,8 @@
 best, such an exception will cause abrupt program termination. At worst, it could expose debugging information that would be useful to an attacker, or
 it could allow an attacker to bypass security measures.</p>
 <p>Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in <a
-href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable.</p>
+href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are and are not nullable except when <code>@Nonnull</code> is used
+on the parameter to <code>equals</code>, which by contract should always work with null.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @CheckForNull

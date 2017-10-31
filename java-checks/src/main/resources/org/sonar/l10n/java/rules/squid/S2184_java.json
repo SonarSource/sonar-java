@@ -19,5 +19,6 @@
     "SANS Top 25"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-2184"
+  "ruleSpecification": "RSPEC-2184",
+  "sqKey": "S2184"
 }

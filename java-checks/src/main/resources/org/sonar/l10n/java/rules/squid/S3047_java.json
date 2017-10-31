@@ -10,5 +10,6 @@
     "performance"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3047"
+  "ruleSpecification": "RSPEC-3047",
+  "sqKey": "S3047"
 }

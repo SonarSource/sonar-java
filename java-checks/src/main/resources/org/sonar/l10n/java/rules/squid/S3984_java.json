@@ -1,5 +1,5 @@
 {
-  "title": "Exception should not be created without being thrown ",
+  "title": "Exception should not be created without being thrown",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -10,5 +10,6 @@
     
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-3984"
+  "ruleSpecification": "RSPEC-3984",
+  "sqKey": "S3984"
 }

@@ -10,5 +10,6 @@
     "multi-threading"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2885"
+  "ruleSpecification": "RSPEC-2885",
+  "sqKey": "S2885"
 }

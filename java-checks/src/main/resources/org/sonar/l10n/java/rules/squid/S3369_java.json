@@ -17,5 +17,6 @@
     "OWASP Top Ten"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-3369"
+  "ruleSpecification": "RSPEC-3369",
+  "sqKey": "S3369"
 }

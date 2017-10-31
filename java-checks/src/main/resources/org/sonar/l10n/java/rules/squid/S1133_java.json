@@ -10,5 +10,6 @@
     "obsolete"
   ],
   "defaultSeverity": "Info",
-  "ruleSpecification": "RSPEC-1133"
+  "ruleSpecification": "RSPEC-1133",
+  "sqKey": "S1133"
 }

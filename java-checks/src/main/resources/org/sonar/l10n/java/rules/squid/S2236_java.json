@@ -10,5 +10,6 @@
     "multi-threading"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2236"
+  "ruleSpecification": "RSPEC-2236",
+  "sqKey": "S2236"
 }

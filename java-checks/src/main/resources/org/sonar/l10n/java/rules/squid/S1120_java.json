@@ -10,5 +10,6 @@
     "style"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1120"
+  "ruleSpecification": "RSPEC-1120",
+  "sqKey": "S1120"
 }

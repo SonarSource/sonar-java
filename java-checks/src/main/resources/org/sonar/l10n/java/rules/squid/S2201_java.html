@@ -44,6 +44,23 @@ public void handle(String command){
   ...
 }
 </pre>
+<h2>Exceptions</h2>
+<p>This rule will not raise an issue when both these conditions are met:</p>
+<ul>
+  <li> The method call is in a <code>try</code> block with an associated <code>catch</code> clause. </li>
+  <li> The method name starts with "parse", "format", "decode" or "valueOf" or the method is <code>String.getBytes(Charset)</code>. </li>
+</ul>
+<pre>
+private boolean textIsInteger(String textToCheck) {
+
+    try {
+        Integer.parseInt(textToCheck, 10); // OK
+        return true;
+    } catch (NumberFormatException ignored) {
+        return false;
+    }
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> MISRA C:2012, 17.7 - The value returned by a function having non-void return type shall be used </li>

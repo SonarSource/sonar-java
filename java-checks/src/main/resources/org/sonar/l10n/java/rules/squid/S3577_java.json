@@ -11,5 +11,6 @@
     "tests"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3577"
+  "ruleSpecification": "RSPEC-3577",
+  "sqKey": "S3577"
 }

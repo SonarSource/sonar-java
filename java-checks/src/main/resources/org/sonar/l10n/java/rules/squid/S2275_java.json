@@ -11,5 +11,6 @@
     "pitfall"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2275"
+  "ruleSpecification": "RSPEC-2275",
+  "sqKey": "S2275"
 }

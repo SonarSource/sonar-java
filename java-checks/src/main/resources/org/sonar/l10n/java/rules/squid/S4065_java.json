@@ -10,5 +10,6 @@
     "java8"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-4065"
+  "ruleSpecification": "RSPEC-4065",
+  "sqKey": "S4065"
 }

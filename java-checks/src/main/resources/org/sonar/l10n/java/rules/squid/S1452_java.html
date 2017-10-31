@@ -1,9 +1,19 @@
-<p>Using a wildcard as a return type implicitly means that the return value should be considered read-only, but without any way to enforce this
-contract. </p>
+<p>It is highly recommended <strong>not</strong> to use wildcard types as return types. Because the type inference rules are fairly complex it is
+unlikely the user of that API will know how to use it correctly. </p>
 <p>Let's take the example of method returning a "List&lt;? extends Animal&gt;". Is it possible on this list to add a Dog, a Cat, ... we simply don't
-know. The consumer of a method should not have to deal with such disruptive questions. </p>
+know. And neither does the compiler, which is why it will not allow such a direct use. The use of wildcard types should be limited to method
+parameters.</p>
+<p>This rule raises an issue when a method returns a wildcard type. </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 List&lt;? extends Animal&gt; getAnimals(){...}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+List&lt;Animal&gt; getAnimals(){...}
+</pre>
+<p>or</p>
+<pre>
+List&lt;Dog&gt; getAnimals(){...}
 </pre>
 

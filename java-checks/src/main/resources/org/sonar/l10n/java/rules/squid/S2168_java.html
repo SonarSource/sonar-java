@@ -45,6 +45,22 @@ public class SafeLazyInitialization {
     }
 }
 </pre>
+<p>With inner static holder:</p>
+<pre>
+@ThreadSafe
+public class ResourceFactory {
+    private static class ResourceHolder {
+        public static Resource resource = new Resource(); // This will be lazily initialised
+    }
+
+    public static Resource getResource() {
+        return ResourceFactory.ResourceHolder.resource;
+    }
+
+    static class Resource {
+    }
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a> </li>

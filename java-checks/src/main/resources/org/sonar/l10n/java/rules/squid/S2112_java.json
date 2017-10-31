@@ -10,5 +10,6 @@
     "performance"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2112"
+  "ruleSpecification": "RSPEC-2112",
+  "sqKey": "S2112"
 }

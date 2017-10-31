@@ -10,5 +10,6 @@
     "brain-overload"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-1200"
+  "ruleSpecification": "RSPEC-1200",
+  "sqKey": "S1200"
 }

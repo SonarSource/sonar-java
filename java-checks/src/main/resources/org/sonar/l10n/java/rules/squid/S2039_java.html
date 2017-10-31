@@ -1,5 +1,15 @@
 <p>Failing to explicitly declare the visibility of a member variable could result it in having a visibility you don't expect, and potentially leave it
 open to unexpected modification by other classes. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+class Ball {
+    String color="red";  // Noncompliant
+}
+enum A {
+  B;
+  int a;
+}
+</pre>
 <h2>Compliant Solution</h2>
 <pre>
 class Ball {

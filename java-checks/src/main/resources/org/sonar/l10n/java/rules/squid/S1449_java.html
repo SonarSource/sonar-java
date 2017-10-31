@@ -1,6 +1,7 @@
-<p>Failure to specify a locale when calling the methods <code>toLowerCase()</code> or <code>toUpperCase()</code> on <code>String</code> objects means
-the system default encoding will be used, possibly creating problems with international characters. For instance with the Turkish language, when
-converting the small letter 'i' to upper case, the result is capital letter 'I' with a dot over it.</p>
+<p>Failure to specify a locale when calling the methods <code>toLowerCase()</code>, <code>toUpperCase()</code> or <code>format()</code> on
+<code>String</code> objects means the system default encoding will be used, possibly creating problems with international characters or number
+representations. For instance with the Turkish language, when converting the small letter 'i' to upper case, the result is capital letter 'I' with a
+dot over it.</p>
 <p>Case conversion without a locale may work fine in its "home" environment, but break in ways that are extremely difficult to diagnose for customers
 who use different encodings. Such bugs can be nearly, if not completely, impossible to reproduce when it's time to fix them. For locale-sensitive
 strings, the correct locale should always be used, but <code>Locale.ENGLISH</code> can be used for case-insensitive ones.</p>

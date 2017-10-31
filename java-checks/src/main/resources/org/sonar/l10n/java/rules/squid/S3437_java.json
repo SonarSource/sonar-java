@@ -12,5 +12,6 @@
     "lock-in"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3437"
+  "ruleSpecification": "RSPEC-3437",
+  "sqKey": "S3437"
 }

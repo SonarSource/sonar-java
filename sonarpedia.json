@@ -1,0 +1,7 @@
+{
+  "rules-metadata-path": "./java-checks/src/main/resources/org/sonar/l10n/java/rules/squid",
+  "languages": [
+    "JAVA"
+  ],
+  "latest-update": "2017-10-30T15:58:50.027Z"
+}

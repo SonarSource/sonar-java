@@ -10,5 +10,6 @@
     "performance"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2308"
+  "ruleSpecification": "RSPEC-2308",
+  "sqKey": "CallToFileDeleteOnExitMethod"
 }

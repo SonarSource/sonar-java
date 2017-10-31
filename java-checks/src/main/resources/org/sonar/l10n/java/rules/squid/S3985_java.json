@@ -10,5 +10,6 @@
     "unused"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-3985"
+  "ruleSpecification": "RSPEC-3985",
+  "sqKey": "S3985"
 }

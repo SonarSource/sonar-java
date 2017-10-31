@@ -10,5 +10,6 @@
     "pitfall"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1940"
+  "ruleSpecification": "RSPEC-1940",
+  "sqKey": "S1940"
 }

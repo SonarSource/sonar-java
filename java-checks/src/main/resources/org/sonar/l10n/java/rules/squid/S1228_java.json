@@ -10,5 +10,6 @@
     "convention"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-1228"
+  "ruleSpecification": "RSPEC-1228",
+  "sqKey": "S1228"
 }

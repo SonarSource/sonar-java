@@ -1,2 +1,20 @@
 <p>For optimal code readability, annotation arguments should be specified in the same order that they were declared in the annotation definition.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@interface Pet {
+    String name();
+    String surname();
+}
+
+@Pet(surname ="", name="") // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@interface Pet {
+    String name();
+    String surname();
+}
+
+@Pet(name ="", surname="") // Compliant
+</pre>
 

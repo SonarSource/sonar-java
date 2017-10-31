@@ -10,5 +10,6 @@
     "api-design"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3242"
+  "ruleSpecification": "RSPEC-3242",
+  "sqKey": "S3242"
 }

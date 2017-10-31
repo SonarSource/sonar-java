@@ -10,5 +10,6 @@
     "spring"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-3751"
+  "ruleSpecification": "RSPEC-3751",
+  "sqKey": "S3751"
 }

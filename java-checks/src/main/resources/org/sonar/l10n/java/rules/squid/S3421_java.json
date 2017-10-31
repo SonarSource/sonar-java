@@ -11,5 +11,6 @@
     "obsolete"
   ],
   "defaultSeverity": "Minor",
-  "ruleSpecification": "RSPEC-3421"
+  "ruleSpecification": "RSPEC-3421",
+  "sqKey": "S3421"
 }

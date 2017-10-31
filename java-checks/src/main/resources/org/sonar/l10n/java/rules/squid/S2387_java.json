@@ -10,5 +10,6 @@
     "confusing"
   ],
   "defaultSeverity": "Blocker",
-  "ruleSpecification": "RSPEC-2387"
+  "ruleSpecification": "RSPEC-2387",
+  "sqKey": "S2387"
 }

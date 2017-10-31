@@ -10,5 +10,6 @@
     "design"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-2301"
+  "ruleSpecification": "RSPEC-2301",
+  "sqKey": "S2301"
 }

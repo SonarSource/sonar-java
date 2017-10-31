@@ -17,5 +17,6 @@
     "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-2245"
+  "ruleSpecification": "RSPEC-2245",
+  "sqKey": "S2245"
 }

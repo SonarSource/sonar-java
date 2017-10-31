@@ -10,5 +10,6 @@
     "confusing"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-1141"
+  "ruleSpecification": "RSPEC-1141",
+  "sqKey": "S1141"
 }
