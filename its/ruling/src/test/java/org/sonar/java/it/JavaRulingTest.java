@@ -233,6 +233,7 @@ public class JavaRulingTest {
       .setProperty("sonar.analysis.mode", "preview")
       .setProperty("sonar.issuesReport.html.enable", "true")
       .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
+      .setProperty("sonar.java.xfile", "true")
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName));

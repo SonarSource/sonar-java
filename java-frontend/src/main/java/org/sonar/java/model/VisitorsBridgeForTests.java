@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -52,16 +53,12 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable visitors, SonarComponents sonarComponents) {
-    this(visitors, new ArrayList<>(), sonarComponents, false);
+    super(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.DISABLED);
     enableSemantic = false;
   }
 
   public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, true);
-  }
-
-  public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
-    super(visitors, projectClasspath, sonarComponents, symbolicExecutionEnabled);
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.ENABLED);
   }
 
   @Override

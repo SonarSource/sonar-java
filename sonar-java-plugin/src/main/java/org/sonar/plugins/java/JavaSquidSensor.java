@@ -80,7 +80,7 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
   }
 
@@ -100,6 +100,10 @@ public class JavaSquidSensor implements Sensor {
     JavaVersion javaVersion = JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
     LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
     return javaVersion;
+  }
+
+  private boolean isXFileEnabled() {
+    return settings.getBoolean("sonar.java.xfile");
   }
 
   @Override
