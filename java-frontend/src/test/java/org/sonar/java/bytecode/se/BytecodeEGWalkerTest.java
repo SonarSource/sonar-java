@@ -22,7 +22,6 @@ package org.sonar.java.bytecode.se;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -116,7 +115,7 @@ public class BytecodeEGWalkerTest {
     ProgramState ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
     assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.TRUE);
-    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
 
     oneYield =
       methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NOT_NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
@@ -128,7 +127,7 @@ public class BytecodeEGWalkerTest {
     ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
     assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.FALSE);
-    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.ZERO);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
 
   }
 
@@ -247,14 +246,6 @@ public class BytecodeEGWalkerTest {
     ClassTree innerClass = getClass(tree, targetClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
     return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
-  }
-
-  @Test
-  public void name() throws Exception {
-    SquidClassLoader classLoader = new SquidClassLoader(new ArrayList<>());
-    MethodBehavior methodBehavior = getBytecodeEGWalker(classLoader, null).getMethodBehavior("java.lang.Package#getPackages()L$Array", classLoader);
-    System.out.println(methodBehavior.yields());
-
   }
 
   private static BytecodeEGWalker getBytecodeEGWalker(SquidClassLoader squidClassLoader, SemanticModel semanticModel) {
