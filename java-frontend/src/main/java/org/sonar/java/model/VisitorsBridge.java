@@ -30,6 +30,7 @@ import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -70,10 +71,10 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, true);
+    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED);
   }
 
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
+  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -84,8 +85,8 @@ public class VisitorsBridge {
     this.executableScanners = scanners;
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
-    this.symbolicExecutionEnabled = symbolicExecutionEnabled;
-    this.behaviorCache = new BehaviorCache(classLoader);
+    this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
+    this.behaviorCache = new BehaviorCache(classLoader, symbolicExecutionMode.isCrossFileEnabled());
   }
 
   public void setJavaVersion(JavaVersion javaVersion) {

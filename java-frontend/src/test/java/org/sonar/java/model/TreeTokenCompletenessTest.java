@@ -115,7 +115,7 @@ public class TreeTokenCompletenessTest {
 
   private static List<String> readFileFromSyntaxTree(File file) {
     TokenPrinter tokenPrinter = new TokenPrinter();
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(Lists.newArrayList(tokenPrinter), Lists.<File>newArrayList(), null, false));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(Lists.newArrayList(tokenPrinter), Lists.<File>newArrayList(), null));
     return tokenPrinter.getPrintedFile();
   }
 

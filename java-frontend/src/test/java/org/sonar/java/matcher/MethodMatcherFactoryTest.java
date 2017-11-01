@@ -161,7 +161,7 @@ public class MethodMatcherFactoryTest {
   }
 
   private void scanWithVisitor(MethodVisitor visitor, File testFile) {
-    JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), null, false));
+    JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), null));
   }
 
   public static File buildTestFile(String... codeLines) {
