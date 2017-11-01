@@ -149,18 +149,25 @@ public class JavaRulingTest {
 
   @Test
   public void guava() throws Exception {
-    test_project("com.google.guava:guava", "guava");
+    String projectName = "guava";
+    MavenBuild build = test_project("com.google.guava:guava", projectName);
+    executeBuildWithCommonProperties(build, projectName);
   }
 
   @Test
   public void apache_commons_beanutils() throws Exception {
-    test_project("commons-beanutils:commons-beanutils", "commons-beanutils");
+    String projectName = "commons-beanutils";
+    MavenBuild build = test_project("commons-beanutils:commons-beanutils", projectName);
+    executeBuildWithCommonProperties(build, projectName);
   }
 
   @Test
   public void sonarqube_server() throws Exception {
     // sonarqube-6.5-M1/server/sonar-server (v.6.5-M1)
-    test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5-M1/server", "sonar-server");
+    String projectName = "sonar-server";
+    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5-M1/server", projectName);
+    build.setProperty("sonar.java.xfile", "true");
+    executeBuildWithCommonProperties(build, projectName);
   }
 
   @Test
@@ -201,16 +208,15 @@ public class JavaRulingTest {
     executeBuildWithCommonProperties(build, projectName);
   }
 
-  private static void test_project(String projectKey, String projectName) throws IOException {
-    test_project(projectKey, null, projectName);
+  private static MavenBuild test_project(String projectKey, String projectName) throws IOException {
+    return test_project(projectKey, null, projectName);
   }
 
-  private static void test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
+  private static MavenBuild test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
     String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile();
     prepareProject(projectKey, projectName);
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
-    executeBuildWithCommonProperties(mavenBuild, projectName);
+    return MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
   }
 
   private static void prepareProject(String projectKey, String projectName) {

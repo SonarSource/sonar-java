@@ -37,16 +37,57 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 public class BehaviorCache {
 
   private final SquidClassLoader classLoader;
+  private final boolean crossFileEnabled;
   private  SymbolicExecutionVisitor sev;
   private  SemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
 
-  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
+  // methods or class generating method behaviors not fit for usage
+  private static final Set<String> BLACKLIST = ImmutableSet.of(
+    "java.lang.Class#",
+    "java.lang.Object#wait",
+    "java.util.Optional#");
+
+  // methods known to be well covered using bytecode-generated behavior
+  private static final Set<String> WHITELIST = ImmutableSet.of(
+    "java.util.Objects#requireNonNull",
+    "org.apache.commons.lang3.Validate#notEmpty",
+    "org.apache.commons.lang3.Validate#notNull",
+    "org.apache.commons.lang.Validate#notEmpty",
+    "org.apache.commons.lang.Validate#notNull",
+    "org.apache.logging.log4j.core.util.Assert#requireNonNull",
+    "org.springframework.util.Assert#notNull",
+    "org.springframework.util.Assert#notEmpty",
+    "java.util.Objects#nonNull",
+    "java.util.Objects#isNull",
+    "com.google.common.base.Preconditions#checkNotNull",
+    "com.google.common.base.Preconditions#checkArgument",
+    "com.google.common.base.Preconditions#checkState",
+    "org.springframework.util.CollectionUtils#isEmpty",
+    "org.apache.commons.collections4.CollectionUtils#isEmpty",
+    "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
+    "org.apache.commons.collections.CollectionUtils#isEmpty",
+    "org.apache.commons.collections.CollectionUtils#isNotEmpty",
+    "org.springframework.util.Assert#isNull",
+    "org.apache.commons.lang3.StringUtils#isEmpty",
+    "org.apache.commons.lang3.StringUtils#isNotEmpty",
+    "org.apache.commons.lang3.StringUtils#isBlank",
+    "org.apache.commons.lang3.StringUtils#isNotBlank",
+    "org.apache.commons.lang.StringUtils#isEmpty",
+    "org.apache.commons.lang.StringUtils#isNotEmpty",
+    "org.apache.commons.lang.StringUtils#isBlank",
+    "org.apache.commons.lang.StringUtils#isNotBlank",
+    "org.eclipse.core.runtime.Assert#");
 
   public BehaviorCache(SquidClassLoader classLoader) {
+    this(classLoader, true);
+  }
+
+  public BehaviorCache(SquidClassLoader classLoader, boolean crossFileEnabled) {
     this.classLoader = classLoader;
+    this.crossFileEnabled = crossFileEnabled;
   }
 
   public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable SemanticModel semanticModel) {
@@ -81,7 +122,7 @@ public class BehaviorCache {
 
   @CheckForNull
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
-    if (SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith)) {
+    if (isknownSignature(BLACKLIST, signature)) {
       return null;
     }
     MethodBehavior mb = behaviors.get(signature);
@@ -96,9 +137,19 @@ public class BehaviorCache {
       }
     }
 
+    // disabled x-file analysis, behavior based on source code can still be used
+    if (!crossFileEnabled && !isknownSignature(WHITELIST, signature)) {
+      return null;
+    }
+
     if (!bytecodeBehaviors.containsKey(signature)) {
       new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
     }
     return bytecodeBehaviors.get(signature);
   }
+
+  private static boolean isknownSignature(Set<String> list, String signature) {
+    return list.stream().anyMatch(signature::startsWith);
+  }
+
 }
