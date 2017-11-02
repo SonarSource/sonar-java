@@ -122,8 +122,7 @@ public class BehaviorCache {
 
   @CheckForNull
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
-    if (isknownSignature(BLACKLIST, signature)
-      || (!crossFileEnabled && !isknownSignature(WHITELIST, signature))) {
+    if (isknownSignature(BLACKLIST, signature)) {
       return null;
     }
     MethodBehavior mb = behaviors.get(signature);
@@ -136,6 +135,11 @@ public class BehaviorCache {
         sev.execute(declaration);
         return behaviors.get(signature);
       }
+    }
+
+    // disabled x-file analysis, behavior based on source code can still be used
+    if (!crossFileEnabled && !isknownSignature(WHITELIST, signature)) {
+      return null;
     }
 
     if (!bytecodeBehaviors.containsKey(signature)) {
