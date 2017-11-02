@@ -58,6 +58,9 @@
 115,
 116,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
+69,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java':[
 52,
 63,
@@ -105,11 +108,11 @@
 89,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
-192,
-193,
 194,
-198,
-199,
+195,
+196,
 200,
+201,
+202,
 ],
 }

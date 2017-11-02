@@ -163,9 +163,9 @@ public class JavaRulingTest {
 
   @Test
   public void sonarqube_server() throws Exception {
-    // sonarqube-6.5-M1/server/sonar-server (v.6.5-M1)
+    // sonarqube-6.5/server/sonar-server (v.6.5)
     String projectName = "sonar-server";
-    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5-M1/server", projectName);
+    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5/server", projectName);
     build.setProperty("sonar.java.xfile", "true");
     executeBuildWithCommonProperties(build, projectName);
   }

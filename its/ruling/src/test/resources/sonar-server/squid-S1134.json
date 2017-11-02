@@ -17,7 +17,7 @@
 184,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java':[
-66,
+65,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/BranchCoverageRule.java':[
 42,
@@ -29,7 +29,10 @@
 97,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java':[
-252,
+267,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
+27,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
 336,

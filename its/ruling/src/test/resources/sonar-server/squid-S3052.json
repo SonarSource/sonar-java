@@ -6,7 +6,7 @@
 120,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/SsoAuthenticator.java':[
-90,
+89,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/NewComponent.java':[
 85,
@@ -18,7 +18,7 @@
 214,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/IntegrateCrossProjectDuplications.java':[
-162,
+157,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/MatchesByScore.java':[
 46,
@@ -136,10 +136,13 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/util/InitializedProperty.java':[
 27,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
+29,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-204,
-205,
-206,
+200,
+201,
+202,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/Sorting.java':[
 87,

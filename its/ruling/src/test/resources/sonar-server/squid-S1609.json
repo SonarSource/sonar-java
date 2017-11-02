@@ -8,11 +8,11 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentCrawler.java':[
 25,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ConfigurationRepository.java':[
+27,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/DisabledComponentsHolder.java':[
 24,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/SettingsRepository.java':[
-27,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/container/ContainerFactory.java':[
 28,
@@ -80,6 +80,12 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinition.java':[
 29,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingListener.java':[
+24,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/ResilientIndexer.java':[
+30,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeature.java':[
 27,
 ],
@@ -111,7 +117,7 @@
 24,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileUpdate.java':[
-25,
+26,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileReset.java':[
 26,

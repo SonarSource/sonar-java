@@ -6,8 +6,8 @@
 106,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerContextImpl.java':[
-48,
-61,
+49,
+62,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImpl.java':[
 31,

@@ -6,10 +6,14 @@
 141,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexDefinition.java':[
-141,
+144,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexer.java':[
+162,
+243,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-150,
+152,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WebServiceReroutingFilter.java':[
 82,

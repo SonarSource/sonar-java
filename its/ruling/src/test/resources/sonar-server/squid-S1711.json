@@ -8,7 +8,4 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookPayloadFactory.java':[
 25,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BaseIndexer.java':[
-87,
-],
 }

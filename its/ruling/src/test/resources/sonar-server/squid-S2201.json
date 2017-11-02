@@ -9,7 +9,7 @@
 110,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SetDefaultAction.java':[
-70,
+71,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java':[
 87,

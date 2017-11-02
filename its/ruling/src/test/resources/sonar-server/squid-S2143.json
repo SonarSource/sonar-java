@@ -9,8 +9,8 @@
 132,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/SsoAuthenticator.java':[
-153,
-156,
+152,
+155,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java':[
 91,
@@ -109,8 +109,8 @@
 135,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java':[
-203,
-228,
+201,
+226,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/CreateTemplateAction.java':[
 130,
@@ -119,7 +119,7 @@
 136,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerImpl.java':[
-66,
+71,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/StartupMetadataPersister.java':[
 52,
@@ -136,6 +136,10 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java':[
 81,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTemplate.java':[
+66,
+68,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileFactoryImpl.java':[
 90,
@@ -155,10 +159,10 @@
 144,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/ws/LinesAction.java':[
-138,
+140,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/ws/ScmAction.java':[
-124,
+126,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/startup/RegisterPermissionTemplates.java':[
 78,
@@ -169,10 +173,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ui/ws/ComponentAction.java':[
 185,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserDoc.java':[
-125,
-130,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/ws/SearchAction.java':[
 97,
