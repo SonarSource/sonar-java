@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import org.junit.Test;
+import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
@@ -39,7 +40,7 @@ public class ProgramPointTest {
 
   @Test
   public void test_program_point_on_bytecode_cfg() throws Exception {
-    ProgramPoint pp = new ProgramPoint(new Instructions().cfg().entry());
+    ProgramPoint pp = new ProgramPoint(new Instructions().visitInsn(Opcodes.NOP).cfg().entry());
     assertThat(pp.toString()).isEqualTo("B1.0  ");
     assertThat(pp.syntaxTree()).isNull();
     assertThat(pp.equals("")).isFalse();

@@ -22,6 +22,8 @@ package org.sonar.java.bytecode.cfg;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
@@ -30,7 +32,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 
 import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
-import org.sonar.java.resolve.JavaSymbol;
 
 import javax.annotation.Nullable;
 
@@ -180,12 +181,11 @@ public class Instructions {
     return cw.toByteArray();
   }
 
-  public BytecodeCFGBuilder.BytecodeCFG cfg() {
-    JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);
-    return BytecodeCFGBuilder.buildCFG(methodStub.completeSignature(), bytes());
+  public BytecodeCFG cfg() {
+    return getBytecodeCFG(bytes());
   }
 
-  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode) {
+  public BytecodeCFG cfg(int opcode) {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else {
@@ -194,7 +194,7 @@ public class Instructions {
     return cfg();
   }
 
-  public BytecodeCFGBuilder.BytecodeCFG cfg(int opcode, int operand, @Nullable String className, @Nullable FieldOrMethod fieldOrMethod) {
+  public BytecodeCFG cfg(int opcode, int operand, @Nullable String className, @Nullable FieldOrMethod fieldOrMethod) {
     if (NO_OPERAND_INSN.contains(opcode)) {
       visitInsn(opcode);
     } else if (INT_INSN.contains(opcode)) {
@@ -267,5 +267,17 @@ public class Instructions {
 
     }
     return cfg();
+  }
+
+  static BytecodeCFG getBytecodeCFG(byte[] bytes) {
+    ClassReader cr = new ClassReader(bytes);
+    BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor();
+    cr.accept(new ClassVisitor(Opcodes.ASM5) {
+      @Override
+      public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return cfgMethodVisitor;
+      }
+    }, 0);
+    return cfgMethodVisitor.getCfg();
   }
 }

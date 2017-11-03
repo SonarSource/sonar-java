@@ -21,6 +21,7 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ public class MethodBehavior {
   private final String signature;
   private boolean complete = false;
   private boolean visited = false;
+  private List<String> declaredExceptions;
 
   public MethodBehavior(String signature, boolean varArgs) {
     this.signature = signature;
@@ -47,6 +49,7 @@ public class MethodBehavior {
     this.parameters = new ArrayList<>();
     this.varArgs = varArgs;
     this.arity = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('('))).length;
+    this.declaredExceptions = Collections.emptyList();
   }
 
   public MethodBehavior(String signature) {
@@ -168,5 +171,13 @@ public class MethodBehavior {
 
   public void setVarArgs(boolean varArgs) {
     this.varArgs = varArgs;
+  }
+
+  public List<String> getDeclaredExceptions() {
+    return declaredExceptions;
+  }
+
+  public void setDeclaredExceptions(List<String> declaredExceptions) {
+    this.declaredExceptions = declaredExceptions;
   }
 }

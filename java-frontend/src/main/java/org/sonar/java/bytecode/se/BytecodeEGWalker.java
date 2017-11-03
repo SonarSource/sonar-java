@@ -21,6 +21,7 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.BytecodeCFG;
+import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
@@ -219,6 +221,8 @@ public class BytecodeEGWalker {
   private static final Logger LOG = Loggers.get(BytecodeEGWalker.class);
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final int MAX_STEPS = 16_000;
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
+
   private final BehaviorCache behaviorCache;
   private final SemanticModel semanticModel;
 
@@ -305,14 +309,20 @@ public class BytecodeEGWalker {
   }
 
   private void execute(String signature, SquidClassLoader classLoader) {
-    programState = ProgramState.EMPTY_STATE;
-    steps = 0;
-    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(signature, classLoader);
-    if (bytecodeCFG == null) {
+    BytecodeCFGMethodVisitor cfgVisitor = new BytecodeCFGMethodVisitor();
+    MethodLookup lookup = MethodLookup.lookup(signature, classLoader, cfgVisitor);
+    if (lookup == null) {
+      LOG.debug("Method lookup failed for %s", signature);
       return;
     }
-    methodBehavior.setVarArgs(bytecodeCFG.isVarArgs());
-    for (ProgramState startingState : startingStates(signature, programState, bytecodeCFG.isStaticMethod())) {
+    methodBehavior.setDeclaredExceptions(lookup.declaredExceptions);
+    methodBehavior.setVarArgs(lookup.isVarArgs);
+    BytecodeCFG bytecodeCFG = cfgVisitor.getCfg();
+    if (bytecodeCFG == null || methodIsBlacklisted(signature)) {
+      return;
+    }
+    steps = 0;
+    for (ProgramState startingState : startingStates(signature, ProgramState.EMPTY_STATE, lookup.isStatic)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
     }
     while (!workList.isEmpty()) {
@@ -344,6 +354,10 @@ public class BytecodeEGWalker {
     node = null;
     programState = null;
     constraintManager = null;
+  }
+
+  private static boolean methodIsBlacklisted(String signature) {
+    return SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith);
   }
 
   @VisibleForTesting
@@ -768,6 +782,13 @@ public class BytecodeEGWalker {
       return !methodInvokedBehavior.yields().isEmpty();
     }
     programState = pop.state;
+    if (methodInvokedBehavior != null) {
+      methodInvokedBehavior.getDeclaredExceptions().forEach(exception -> {
+        Type exceptionType = semanticModel.getClassType(exception);
+        ProgramState ps = programState.stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
+        enqueueExceptionHandlers(exceptionType, ps);
+      });
+    }
     if (instruction.hasReturnValue()) {
       programState = programState.stackValue(returnSV);
       programState = setDoubleOrLong(returnSV, instruction.isLongOrDoubleValue());
@@ -777,7 +798,7 @@ public class BytecodeEGWalker {
 
   private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {
     programPosition.block.successors().stream()
-      .map(b -> (BytecodeCFGBuilder.Block) b)
+      .map(b -> (BytecodeCFG.Block) b)
       .filter(b -> b.getExceptionType() != null)
       .filter(b -> b.isUncaughtException()
         ||/*required as long as there is no real type tracking*/ exceptionType == null
@@ -787,7 +808,7 @@ public class BytecodeEGWalker {
 
   @VisibleForTesting
   void handleBlockExit(ProgramPoint programPosition) {
-    BytecodeCFGBuilder.Block block = (BytecodeCFGBuilder.Block) programPosition.block;
+    BytecodeCFG.Block block = (BytecodeCFG.Block) programPosition.block;
     Instruction terminator = block.terminator();
     ProgramState.Pop pop;
     ProgramState ps;
@@ -842,8 +863,8 @@ public class BytecodeEGWalker {
       }
       programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
       Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
-      ProgramPoint falsePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).falseSuccessor());
-      ProgramPoint truePP = new ProgramPoint(((BytecodeCFGBuilder.Block) programPosition.block).trueSuccessor());
+      ProgramPoint falsePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).falseSuccessor());
+      ProgramPoint truePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).trueSuccessor());
       pair.a.stream().forEach(s -> enqueue(falsePP, s));
       pair.b.stream().forEach(s -> enqueue(truePP, s));
     } else {
@@ -853,7 +874,7 @@ public class BytecodeEGWalker {
 
   private void enqueueHappyPath(ProgramPoint programPosition) {
     programPosition.block.successors().stream()
-      .map(b-> (BytecodeCFGBuilder.Block)b)
+      .map(b-> (BytecodeCFG.Block)b)
       .filter(b-> b.getExceptionType() == null)
       .forEach(b -> enqueue(new ProgramPoint(b), programState));
   }

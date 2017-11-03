@@ -44,12 +44,6 @@ public class BehaviorCache {
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
 
-  // methods or class generating method behaviors not fit for usage
-  private static final Set<String> BLACKLIST = ImmutableSet.of(
-    "java.lang.Class#",
-    "java.lang.Object#wait",
-    "java.util.Optional#");
-
   // methods known to be well covered using bytecode-generated behavior
   private static final Set<String> WHITELIST = ImmutableSet.of(
     "java.util.Objects#requireNonNull",
@@ -122,9 +116,6 @@ public class BehaviorCache {
 
   @CheckForNull
   private MethodBehavior get(String signature, @Nullable Symbol.MethodSymbol symbol) {
-    if (isknownSignature(BLACKLIST, signature)) {
-      return null;
-    }
     MethodBehavior mb = behaviors.get(signature);
     if(mb != null) {
       return mb;

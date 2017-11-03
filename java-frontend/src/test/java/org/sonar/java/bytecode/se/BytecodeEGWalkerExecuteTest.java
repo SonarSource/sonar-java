@@ -22,9 +22,11 @@ package org.sonar.java.bytecode.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,7 +35,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.cfg.BytecodeCFGBuilder;
+import org.sonar.java.bytecode.cfg.BytecodeCFG;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -41,6 +43,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -744,7 +747,7 @@ public class BytecodeEGWalkerExecuteTest {
     instr.visitVarInsn(ISTORE, 3);
     instr.visitLabel(l3);
     instr.visitInsn(RETURN);
-    BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
+    BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
     BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
@@ -782,7 +785,7 @@ public class BytecodeEGWalkerExecuteTest {
     instr.visitJumpInsn(GOTO, l3);
     instr.visitLabel(l3);
     instr.visitInsn(RETURN);
-    BytecodeCFGBuilder.BytecodeCFG cfg = instr.cfg();
+    BytecodeCFG cfg = instr.cfg();
 
     CFG.IBlock<Instruction> entry = cfg.entry();
     BytecodeEGWalker walker = new BytecodeEGWalker(null, null);
@@ -1030,8 +1033,8 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_only_happy_path() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
-    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
+    BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
+    BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.workList.clear();
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue());
     walker.handleBlockExit(new ProgramPoint(b2));
@@ -1041,8 +1044,8 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_exceptional_yields() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
-    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
+    BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
+    BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
     walker.programPosition = new ProgramPoint(b2).next().next();
 
@@ -1052,8 +1055,8 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void test_enqueuing_exceptional_yields2() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG(TRY_WRONG_CATCH_SIGNATURE, squidClassLoader);
-    BytecodeCFGBuilder.Block b2 = cfg.blocks().get(2);
+    BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_WRONG_CATCH_SIGNATURE, squidClassLoader);
+    BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
     walker.programPosition = new ProgramPoint(b2).next().next();
     walker.executeInstruction(b2.elements().get(3));
@@ -1083,8 +1086,8 @@ public class BytecodeEGWalkerExecuteTest {
     mv.visitLabel(l3);
     mv.visitInsn(RETURN);
 
-    BytecodeCFGBuilder.BytecodeCFG cfg = mv.cfg();
-    BytecodeCFGBuilder.Block switchBlock = cfg.blocks().get(2);
+    BytecodeCFG cfg = mv.cfg();
+    BytecodeCFG.Block switchBlock = cfg.blocks().get(2);
 
     assertThat(switchBlock.terminator().opcode).isEqualTo(Opcodes.LOOKUPSWITCH);
     walker.programState = ProgramState.EMPTY_STATE;
@@ -1141,9 +1144,9 @@ public class BytecodeEGWalkerExecuteTest {
     mv.visitVarInsn(ISTORE, 1);
     mv.visitLabel(l6);
     mv.visitInsn(RETURN);
-    BytecodeCFGBuilder.BytecodeCFG cfg = mv.cfg();
+    BytecodeCFG cfg = mv.cfg();
 
-    BytecodeCFGBuilder.Block gotoBlock = cfg.blocks().get(4);
+    BytecodeCFG.Block gotoBlock = cfg.blocks().get(4);
     assertThat(gotoBlock.terminator().opcode).isEqualTo(GOTO);
     walker.programState = ProgramState.EMPTY_STATE;
     walker.handleBlockExit(new ProgramPoint(gotoBlock));
@@ -1175,6 +1178,21 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(resultConstraint.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
     TypedConstraint typeConstraint = (TypedConstraint) resultConstraint.get(TypedConstraint.class);
     assertThat(typeConstraint.type.equals("java.lang.String")).isTrue();
+  }
+
+  @Test
+  public void behavior_should_have_declared_exceptions() {
+    MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#throwing()V", squidClassLoader);
+    assertThat(mb.isComplete()).isFalse();
+    assertThat(mb.getDeclaredExceptions()).containsExactly("java.io.IOException");
+  }
+
+  @Test
+  public void exceptional_paths_should_be_enqueued() {
+    MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#enqueue_exceptional_paths()Ljava/lang/Object;", squidClassLoader);
+    assertThat(mb.yields()).hasSize(2);
+    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint()).map(c -> c.get(ObjectConstraint.class)).collect(Collectors.toList());
+    assertThat(resultConstraints).contains(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
   }
 
   /**
@@ -1250,4 +1268,14 @@ public class BytecodeEGWalkerExecuteTest {
     }
   }
 
+  void throwing() throws IOException {}
+
+  private Object enqueue_exceptional_paths() {
+    try {
+      throwing();
+      return new Object();
+    } catch (IOException e) {
+      return null;
+    }
+  }
 }

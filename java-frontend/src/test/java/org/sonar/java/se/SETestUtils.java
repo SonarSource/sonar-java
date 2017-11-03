@@ -29,7 +29,10 @@ import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.cfg.BytecodeCFG;
+import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.bytecode.se.MethodLookup;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -82,5 +85,11 @@ public class SETestUtils {
 
   public static MethodBehavior mockMethodBehavior() {
     return mockMethodBehavior(0, false);
+  }
+
+  public static BytecodeCFG bytecodeCFG(String signature, SquidClassLoader classLoader) {
+    BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor();
+    MethodLookup.lookup(signature, classLoader, cfgMethodVisitor);
+    return cfgMethodVisitor.getCfg();
   }
 }
