@@ -43,20 +43,6 @@ public class ProfileGenerator {
         .append("<profile>")
         .append("<name>rules</name>")
         .append("<language>").append(language).append("</language>")
-        .append("<alerts>")
-        .append("<alert>")
-        .append("<metric>blocker_violations</metric>")
-        .append("<operator>&gt;</operator>")
-        .append("<warning></warning>")
-        .append("<error>0</error>")
-        .append("</alert>")
-        .append("<alert>")
-        .append("<metric>info_violations</metric>")
-        .append("<operator>&gt;</operator>")
-        .append("<warning></warning>")
-        .append("<error>0</error>")
-        .append("</alert>")
-        .append("</alerts>")
         .append("<rules>");
 
       List<String> ruleKeys = Lists.newArrayList();
