@@ -66,11 +66,6 @@
 150,
 186,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/CurrentAction.java':[
-84,
-90,
-110,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java':[
 159,
 159,

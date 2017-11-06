@@ -9,12 +9,12 @@
 124,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel4.java':[
-232,
+231,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
-212,
+214,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-202,
+203,
 ],
 }

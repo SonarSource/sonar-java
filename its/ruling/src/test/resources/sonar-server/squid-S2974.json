@@ -87,7 +87,7 @@
 168,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/IntegrateCrossProjectDuplications.java':[
-146,
+141,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/event/Event.java':[
 30,
@@ -117,7 +117,7 @@
 30,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java':[
-109,
+107,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/Changeset.java':[
 47,
@@ -183,12 +183,12 @@
 166,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitions.java':[
-70,
+71,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-95,
-201,
-304,
+91,
+197,
+300,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java':[
 125,
@@ -325,7 +325,7 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/EventValidator.java':[
 34,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchResults.java':[
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java':[
 36,
 58,
 ],
@@ -344,6 +344,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java':[
 201,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotification.java':[
+161,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivation.java':[
 32,
 ],
@@ -351,7 +354,7 @@
 27,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/InheritanceAction.java':[
-118,
+144,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/QProfileReference.java':[
 49,
@@ -369,8 +372,8 @@
 36,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java':[
-275,
-288,
+271,
+284,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleExtensionScope.java':[
 29,
@@ -403,9 +406,6 @@
 30,
 57,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserResultSetIterator.java':[
-41,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usergroups/ws/GroupId.java':[
 35,
 ],
@@ -419,7 +419,7 @@
 27,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/ClassLoaderUtils.java':[
-36,
+37,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/EnumUtils.java':[
 27,

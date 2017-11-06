@@ -21,14 +21,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java':[
 67,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexer.java':[
-83,
-105,
-116,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java':[
-493,
-505,
+500,
+512,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java':[
 154,

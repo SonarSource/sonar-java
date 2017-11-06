@@ -53,6 +53,9 @@
 229,
 230,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexingResult.java':[
+28,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/FavoriteUpdater.java':[
 34,
 ],
@@ -107,7 +110,7 @@
 34,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/SonarQubeMonitor.java':[
-47,
+45,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java':[
 31,
@@ -154,14 +157,13 @@
 71,
 72,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchResults.java':[
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java':[
 37,
 38,
 39,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java':[
-43,
-44,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesUpdateListener.java':[
+38,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexDefinition.java':[
 41,

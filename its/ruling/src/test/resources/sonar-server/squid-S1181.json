@@ -5,6 +5,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/step/ComputationStepExecutor.java':[
 72,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/RecoveryIndexer.java':[
+138,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/Platform.java':[
 376,
 ],
@@ -18,7 +21,7 @@
 63,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java':[
-71,
-84,
+86,
+99,
 ],
 }

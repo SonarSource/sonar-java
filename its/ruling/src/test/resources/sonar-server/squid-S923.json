@@ -60,7 +60,7 @@
 54,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-226,
+222,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/SearchOptions.java':[
 118,
@@ -116,10 +116,10 @@
 218,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java':[
-226,
+232,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
-135,
+136,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SettingsUpdater.java':[
 47,

@@ -18,10 +18,10 @@
 73,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/NewIndex.java':[
-106,
-265,
-266,
-266,
+102,
+261,
+262,
+262,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/CommentAction.java':[
 33,
@@ -68,8 +68,8 @@
 109,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java':[
-313,
-397,
+315,
+405,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexDefinition.java':[
 69,

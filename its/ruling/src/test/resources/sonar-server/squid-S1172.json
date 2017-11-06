@@ -9,4 +9,7 @@
 229,
 241,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/index/UserIndexer.java':[
+104,
+],
 }

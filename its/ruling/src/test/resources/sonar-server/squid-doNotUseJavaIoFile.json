@@ -6,11 +6,11 @@
 51,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/ProcessCommandWrapperImpl.java':[
-58,
+57,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/TomcatContexts.java':[
 60,
-120,
+122,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/WebServer.java':[
 34,
@@ -49,10 +49,10 @@
 36,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerFileSystemImpl.java':[
-36,
+34,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerImpl.java':[
-70,
+75,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerLogging.java':[
 66,
@@ -64,7 +64,7 @@
 60,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/monitoring/SonarQubeMonitor.java':[
-112,
+110,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/LogsAction.java':[
 74,

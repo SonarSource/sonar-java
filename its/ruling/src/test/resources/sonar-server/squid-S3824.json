@@ -2,8 +2,8 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepository.java':[
 163,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsJsonWriter.java':[
-71,
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/duplication/ws/ShowResponseBuilder.java':[
+77,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/Facets.java':[
 182,

@@ -39,9 +39,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BaseDoc.java':[
 31,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/BaseIndexer.java':[
-32,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Action.java':[
 41,
 ],
@@ -68,7 +65,7 @@
 35,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java':[
-39,
+44,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/DoPrivileged.java':[
 55,

@@ -3,7 +3,7 @@
 114,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
-62,
+65,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/ChangePasswordAction.java':[
 38,

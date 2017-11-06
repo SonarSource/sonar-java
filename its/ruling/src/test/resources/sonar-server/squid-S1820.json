@@ -3,4 +3,7 @@
 38,
 245,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java':[
+34,
+],
 }
