@@ -37,10 +37,10 @@ CI)
       -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
       -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
       -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
-       -Dsonar.host.url=$SONAR_HOST_URL \
-       -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
-       -Dsonar.login=$SONAR_TOKEN
-  
+      -Dsonar.host.url=$SONAR_HOST_URL \
+      -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
+      -Dsonar.login=$SONAR_TOKEN
+
   elif [[ "${TRAVIS_BRANCH}" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     # no dory analysis on release branch
 
@@ -99,12 +99,13 @@ CI)
         strongEcho "Branch analysis"
         # analysis of short-living branch directly on master
         mvn sonar:sonar -B -e -V \
-            -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
-            -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+            -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+            -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
+            -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
+            -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
             -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
             -Dsonar.branch.target=$TRAVIS_BRANCH
       fi
