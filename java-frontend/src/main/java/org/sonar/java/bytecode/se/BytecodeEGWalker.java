@@ -21,7 +21,6 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -221,7 +220,6 @@ public class BytecodeEGWalker {
   private static final Logger LOG = Loggers.get(BytecodeEGWalker.class);
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private static final int MAX_STEPS = 16_000;
-  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
 
   private final BehaviorCache behaviorCache;
   private final SemanticModel semanticModel;
@@ -318,7 +316,7 @@ public class BytecodeEGWalker {
     methodBehavior.setDeclaredExceptions(lookup.declaredExceptions);
     methodBehavior.setVarArgs(lookup.isVarArgs);
     BytecodeCFG bytecodeCFG = cfgVisitor.getCfg();
-    if (bytecodeCFG == null || methodIsBlacklisted(signature)) {
+    if (bytecodeCFG == null) {
       return;
     }
     steps = 0;
@@ -354,10 +352,6 @@ public class BytecodeEGWalker {
     node = null;
     programState = null;
     constraintManager = null;
-  }
-
-  private static boolean methodIsBlacklisted(String signature) {
-    return SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith);
   }
 
   @VisibleForTesting

@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.se;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -46,6 +48,8 @@ import org.sonar.java.resolve.Java9Support;
 public class MethodLookup {
 
   private static final Logger LOG = Loggers.get(MethodLookup.class);
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
+
   final boolean isStatic;
   final boolean isVarArgs;
   final List<String> declaredExceptions;
@@ -148,7 +152,7 @@ public class MethodLookup {
         declaredExceptions = convertExceptions(exceptions);
         isStatic = Flags.isFlagged(access, Flags.STATIC);
         isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
-        if (isOverridableOrNativeMethod(access)) {
+        if (isOverridableOrNativeMethod(access) || methodIsBlacklisted(methodSignature)) {
           // avoid computing CFG when the method behavior won't be used
           return null;
         }
@@ -169,6 +173,10 @@ public class MethodLookup {
         return true;
       }
       return Flags.isFlagged(methodFlags, Flags.ABSTRACT) || !(isFinalClass || Flags.isFlagged(methodFlags, Flags.PRIVATE | Flags.FINAL | Flags.STATIC));
+    }
+
+    private static boolean methodIsBlacklisted(String signature) {
+      return SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith);
     }
   }
 
