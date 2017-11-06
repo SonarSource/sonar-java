@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 /**
  * Test data for {@link org.sonar.java.bytecode.se.MethodLookup}
  */
-public class MethodLookup extends SuperClass implements Iface {
+public class MethodLookupTestData extends SuperClass implements Iface {
 
   void throwing() throws IOException {}
 

@@ -129,7 +129,7 @@ public class BehaviorCache {
     }
 
     // disabled x-file analysis, behavior based on source code can still be used
-    if (!crossFileEnabled && !isknownSignature(WHITELIST, signature)) {
+    if (!crossFileEnabled && !isKnownSignature(signature)) {
       return null;
     }
 
@@ -139,8 +139,8 @@ public class BehaviorCache {
     return bytecodeBehaviors.get(signature);
   }
 
-  private static boolean isknownSignature(Set<String> list, String signature) {
-    return list.stream().anyMatch(signature::startsWith);
+  private static boolean isKnownSignature(String signature) {
+    return WHITELIST.stream().anyMatch(signature::startsWith);
   }
 
 }

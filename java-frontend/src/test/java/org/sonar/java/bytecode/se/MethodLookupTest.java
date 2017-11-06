@@ -24,14 +24,13 @@ import java.io.File;
 import org.junit.Test;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodLookupTest {
 
-  private static final String TESTCLASS = "org.sonar.java.bytecode.cfg.testdata.MethodLookup#";
+  private static final String TESTCLASS = "org.sonar.java.bytecode.cfg.testdata.MethodLookupTestData#";
   private static final MethodVisitor NOP_VISITOR = new MethodVisitor(Opcodes.ASM5) {};
 
   SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
@@ -55,15 +54,5 @@ public class MethodLookupTest {
 
     lookup = MethodLookup.lookup(TESTCLASS + "ifaceMethod2()V", squidClassLoader, NOP_VISITOR);
     assertThat(lookup.declaredExceptions).containsExactly("java.lang.UnsupportedOperationException");
-  }
-
-  @Test
-  public void superclass_first() {
-    MethodLookup lookup = MethodLookup.lookup(TESTCLASS + "superClassFirst()I", squidClassLoader, new MethodVisitor(Opcodes.ASM5) {
-      @Override
-      public void visitInsn(int opcode) {
-        System.out.println(Printer.OPCODES[opcode]);
-      }
-    });
   }
 }
