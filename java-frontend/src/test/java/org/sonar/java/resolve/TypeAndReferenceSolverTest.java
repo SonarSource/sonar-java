@@ -129,7 +129,7 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void SOE_on_binary_expression() throws Exception {
     String code = "class A { String foo() { return ";
-    for (int i = 0; i < 4096; i++) {
+    for (int i = 0; i < 2048; i++) {
       code += "\"i\"+";
     }
     code+="i; }}";
