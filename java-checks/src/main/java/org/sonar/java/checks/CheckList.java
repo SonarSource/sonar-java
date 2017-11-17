@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -96,8 +96,6 @@ import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
-
-import java.util.List;
 
 public final class CheckList {
 
@@ -517,6 +515,7 @@ public final class CheckList {
       .add(PreferStreamAnyMatchCheck.class)
       .add(OverwrittenKeyCheck.class)
       .add(LeastSpecificTypeCheck.class)
+      .add(SwitchInsteadOfIfSequenceCheck.class)
       .build();
   }
 
@@ -535,7 +534,6 @@ public final class CheckList {
       .add(UnusedTestRuleCheck.class)
       .add(BadTestClassNameCheck.class)
       .add(BadTestMethodNameCheck.class)
-      .add(SwitchInsteadOfIfSequenceCheck.class)
       .add(AssertionFailInCatchBlockCheck.class)
       .add(AssertionArgumentOrderCheck.class)
       .build();

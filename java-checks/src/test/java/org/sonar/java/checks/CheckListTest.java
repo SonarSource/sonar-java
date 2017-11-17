@@ -22,6 +22,17 @@ package org.sonar.java.checks;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileReader;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,20 +43,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
+import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -55,6 +60,7 @@ public class CheckListTest {
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
   private static List<String> SE_CHEKS;
+  private final Gson gson = new Gson();
 
   @BeforeClass
   public static void before() throws Exception {
@@ -118,12 +124,8 @@ public class CheckListTest {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       String simpleName = cls.getSimpleName();
       // Handle legacy keys.
-      org.sonar.java.RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(cls, org.sonar.java.RspecKey.class);
-      org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, org.sonar.check.Rule.class);
-      String key = ruleAnnotation.key();
-      if (rspecKeyAnnotation != null) {
-        key = rspecKeyAnnotation.value();
-      }
+      Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, Rule.class);
+      String key = getKey(cls, ruleAnnotation);
       keyMap.put(ruleAnnotation.key(), key);
       if (SE_CHEKS.contains(simpleName)) {
         continue;
@@ -159,6 +161,15 @@ public class CheckListTest {
     }
   }
 
+  private static String getKey(Class cls, Rule ruleAnnotation) {
+    String key = ruleAnnotation.key();
+    RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(cls, RspecKey.class);
+    if (rspecKeyAnnotation != null) {
+      return rspecKeyAnnotation.value();
+    }
+    return key;
+  }
+
   @Test
   public void enforce_CheckList_registration() {
     List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[]{"java"}, false);
@@ -175,6 +186,31 @@ public class CheckListTest {
         }
       }
     }
+  }
+
+  @Test
+  public void rules_targeting_tests_should_have_tests_tag() throws Exception {
+    Set<Class> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
+
+    for (Class cls : CheckList.getChecks()) {
+      String key = getKey(cls, AnnotationUtils.getAnnotation(cls, Rule.class));
+      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + "_java.json");
+      File metadataFile = new File(metadataURL.toURI());
+      assertThat(metadataFile).exists();
+      try (FileReader jsonReader = new FileReader(metadataFile)) {
+        DummyMetatada metatada = gson.fromJson(jsonReader, DummyMetatada.class);
+        if (testChecks.contains(cls)) {
+          assertThat(metatada.tags).as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.").contains("tests");
+        } else {
+          assertThat(metatada.tags).as("Rule " + key + " is targeting main sources and should not contain the 'tests' tag.").doesNotContain("tests");
+        }
+      }
+    }
+  }
+
+  private static class DummyMetatada {
+    // ignore all the other fields
+    String[] tags;
   }
 
   /**
