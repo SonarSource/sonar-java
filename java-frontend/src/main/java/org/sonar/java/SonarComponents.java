@@ -22,8 +22,16 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Scanner;
+import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -37,31 +45,16 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Scanner;
-
 @BatchSide
 @SonarLintSide
 public class SonarComponents {
 
-  private static final Version SQ_6_0 = Version.create(6, 0);
-  private static final Version SQ_6_2 = Version.create(6, 2);
-  private static final Version SQ_6_4 = Version.create(6, 4);
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
@@ -229,34 +222,20 @@ public class SonarComponents {
   }
 
   public boolean reportAnalysisError(RecognitionException re, File file) {
-    if (context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0)) {
-      context.newAnalysisError()
-        .onFile(inputFromIOFile(file))
-        .message(re.getMessage())
-        .save();
-      return isSonarLintContext();
-    }
-    return false;
-  }
-
-  public boolean isSQGreaterThan62() {
-    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_2);
-  }
-
-  public boolean isSQGreaterThan64() {
-    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_4);
+    context.newAnalysisError()
+      .onFile(inputFromIOFile(file))
+      .message(re.getMessage())
+      .save();
+    return isSonarLintContext();
   }
 
   public boolean isSonarLintContext() {
-    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.runtime().getProduct() == SonarProduct.SONARLINT;
+    return context.runtime().getProduct() == SonarProduct.SONARLINT;
   }
 
   public String fileContent(File file) {
     try {
-      if(isSQGreaterThan62()) {
-        return inputFromIOFile(file).contents();
-      }
-      return Files.toString(file, getCharset(file));
+      return inputFromIOFile(file).contents();
     } catch (IOException e) {
       throw new AnalysisException("Unable to read file "+file, e);
     }
@@ -275,20 +254,14 @@ public class SonarComponents {
   }
 
   private InputStream getInputStream(File file) throws IOException {
-    if(isSQGreaterThan62()) {
-      return inputFromIOFile(file).inputStream();
-    }
-    return new FileInputStream(file);
+    return inputFromIOFile(file).inputStream();
   }
 
   private Charset getCharset(File file) {
-    if(context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0)) {
-      return inputFromIOFile(file).charset();
-    }
-    return fs.encoding();
+    return inputFromIOFile(file).charset();
   }
 
   public boolean analysisCancelled() {
-    return context.getSonarQubeVersion().isGreaterThanOrEqual(SQ_6_0) && context.isCancelled();
+    return context.isCancelled();
   }
 }

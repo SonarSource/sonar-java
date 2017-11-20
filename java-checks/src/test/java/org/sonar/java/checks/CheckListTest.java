@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -218,7 +221,9 @@ public class CheckListTest {
    */
   @Test
   public void should_not_fail_on_invalid_file() throws Exception {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(5, 6), SonarQubeSide.SCANNER));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
+    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/CheckListParseErrorTest.java").setCharset(StandardCharsets.UTF_8).build();
+    context.fileSystem().add(resource);
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
     for (Class check : CheckList.getChecks()) {

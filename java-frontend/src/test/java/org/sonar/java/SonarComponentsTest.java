@@ -23,6 +23,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.LexerException;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,13 +57,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
@@ -74,9 +73,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SonarComponentsTest {
 
-  private static final Version V6_2 = Version.create(6, 2);
-  private static final Version V5_6 = Version.create(5, 6);
-  private static final Version V6_0 = Version.create(6, 0);
+  private static final Version V6_7 = Version.create(6, 7);
 
   private static final String REPOSITORY_NAME = "custom";
 
@@ -278,17 +275,12 @@ public class SonarComponentsTest {
 
     RecognitionException parseError = new RecognitionException(new LexerException("parse error"));
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isTrue();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_0, SonarQubeSide.SCANNER));
-    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
-
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(V5_6, SonarQubeSide.SCANNER));
-    assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
   }
 
   @Test
@@ -324,35 +316,17 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void verify_sq_version() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    sonarComponents.setSensorContext(context);
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
-    assertThat(sonarComponents.isSQGreaterThan62()).isFalse();
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_2));
-    assertThat(sonarComponents.isSQGreaterThan62()).isTrue();
-  }
-
-  @Test
   public void cancellation() {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
-    assertThat(sonarComponents.analysisCancelled()).isFalse();
-
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     assertThat(sonarComponents.analysisCancelled()).isFalse();
 
     // cancellation only handled from SQ 6.0
     context.setCancelled(true);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
-    assertThat(sonarComponents.analysisCancelled()).isFalse();
-
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
     assertThat(sonarComponents.analysisCancelled()).isTrue();
   }
 
@@ -371,7 +345,7 @@ public class SonarComponentsTest {
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_2));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     sonarComponents.setSensorContext(context);
 
     String fileContent = sonarComponents.fileContent(file);
@@ -382,29 +356,6 @@ public class SonarComponentsTest {
 
     verify(inputFile, times(1)).contents();
     reset(inputFile);
-
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
-    sonarComponents.setSensorContext(context);
-
-    assertThat(sonarComponents.fileContent(file)).hasSize(59);
-    fileLines = sonarComponents.fileLines(file);
-    assertThat(fileLines).hasSize(5);
-    assertThat(fileLines.get(0)).hasSize(11);
-
-    verify(inputFile, never()).contents();
-    reset(inputFile);
-
-    // rely on default filesystem charset for version prior to 6.0
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V5_6));
-    sonarComponents.setSensorContext(context);
-
-    assertThat(sonarComponents.fileContent(file)).hasSize(63);
-    fileLines = sonarComponents.fileLines(file);
-    assertThat(fileLines).hasSize(5);
-    assertThat(fileLines.get(0)).hasSize(15);
-
-    verify(inputFile, never()).contents();
-    reset(inputFile);
   }
 
   @Test
@@ -412,7 +363,7 @@ public class SonarComponentsTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(new TestInputFileBuilder("", "unknown_file.java").setCharset(StandardCharsets.UTF_8).build());
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_0));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
@@ -421,7 +372,7 @@ public class SonarComponentsTest {
       sonarComponents.fileContent(unknownFile);
       fail("reading file content should have failed");
     } catch (AnalysisException e) {
-      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(FileNotFoundException.class);
+      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(NoSuchFileException.class);
     } catch (Exception e) {
       fail("reading file content should have failed", e);
     }
@@ -429,7 +380,7 @@ public class SonarComponentsTest {
       sonarComponents.fileLines(unknownFile);
       fail("reading file lines should have failed");
     } catch (AnalysisException e) {
-      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(FileNotFoundException.class);
+      assertThat(e).hasMessage("Unable to read file unknown_file.java").hasCauseInstanceOf(NoSuchFileException.class);
     } catch (Exception e) {
       fail("reading file content should have failed");
     }

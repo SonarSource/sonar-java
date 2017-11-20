@@ -85,15 +85,13 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    if(sonarComponents.isSQGreaterThan62()) {
-      return ImmutableList.of(TOKEN,
-        METHOD, CONSTRUCTOR,
-        INITIALIZER, STATIC_INITIALIZER,
-        VARIABLE,
-        FOR_EACH_STATEMENT, FOR_STATEMENT, WHILE_STATEMENT, DO_STATEMENT,
-        LAMBDA_EXPRESSION);
-    }
-    return ImmutableList.of(TOKEN);
+    return ImmutableList.of(TOKEN,
+      METHOD, CONSTRUCTOR,
+      INITIALIZER, STATIC_INITIALIZER,
+      VARIABLE,
+      FOR_EACH_STATEMENT, FOR_STATEMENT, WHILE_STATEMENT, DO_STATEMENT,
+      LAMBDA_EXPRESSION);
+
   }
 
   @Override
@@ -105,9 +103,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
     for (int line = 1; line <= fileLength; line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
       fileLinesContext.setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, line, linesOfComments.contains(line) ? 1 : 0);
-      if(sonarComponents.isSQGreaterThan62()) {
-        fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
-      }
+      fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
     }
     fileLinesContext.save();
 
