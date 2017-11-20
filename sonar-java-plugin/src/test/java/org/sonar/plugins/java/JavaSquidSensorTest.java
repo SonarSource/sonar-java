@@ -21,6 +21,10 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -30,8 +34,8 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -47,11 +51,6 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -63,7 +62,7 @@ import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
-  private final DefaultFileSystem fileSystem = new DefaultFileSystem((File) null);
+  private final DefaultFileSystem fileSystem = new DefaultFileSystem(new File("src/test/java/").getAbsoluteFile());
   private JavaSquidSensor sensor;
 
   @Before
@@ -94,7 +93,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(81));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(80));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     context = createContext(onType);
@@ -119,7 +118,7 @@ public class JavaSquidSensorTest {
   }
 
   private static SensorContextTester createContext(InputFile.Type onType) throws IOException {
-    SensorContextTester context = SensorContextTester.create(new File("src/test/java/"));
+    SensorContextTester context = SensorContextTester.create(new File("src/test/java/").getAbsoluteFile());
     DefaultFileSystem fs = context.fileSystem();
 
     String effectiveKey = "org/sonar/plugins/java/JavaSquidSensorTest.java";

@@ -49,12 +49,11 @@ import static org.mockito.Mockito.when;
 
 public class XmlFileSensorTest {
 
-  private DefaultFileSystem fileSystem;
   private XmlFileSensor sensor;
 
   @Before
   public void setUp() {
-    fileSystem = new DefaultFileSystem((File)null);
+    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
     sensor = new XmlFileSensor(mock(SonarComponents.class), fileSystem);
   }
 
@@ -67,7 +66,7 @@ public class XmlFileSensorTest {
 
   @Test
   public void test_issues_creation() throws Exception {
-    SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/"));
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/").getAbsoluteFile());
     DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
     fs.add(new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).build());

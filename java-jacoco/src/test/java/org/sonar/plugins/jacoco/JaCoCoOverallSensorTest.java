@@ -60,7 +60,7 @@ public class JaCoCoOverallSensorTest {
     when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
     context = SensorContextTester.create(new File(""));
     fileSystem = context.fileSystem();
-    fileSystem.setWorkDir(new File("target/sonar"));
+    fileSystem.setWorkDir(new File("target/sonar").toPath());
     pathResolver = mock(PathResolver.class);
     perspectives = mock(ResourcePerspectives.class);
     sensor = new JaCoCoOverallSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);

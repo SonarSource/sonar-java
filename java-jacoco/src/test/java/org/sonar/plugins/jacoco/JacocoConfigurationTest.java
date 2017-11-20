@@ -21,9 +21,9 @@ package org.sonar.plugins.jacoco;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.utils.Version;
 
 import static org.assertj.core.api.Assertions.assertThat;
