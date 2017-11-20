@@ -92,21 +92,12 @@ public class Struts139Test {
   public void unit_test_metrics() {
     setCurrentProject();
     int linesToCover = 15498;
-    if (JavaTestSuite.sonarqube_version_is_prior_to_6_2()) {
-      linesToCover = 15474;
-    }
     assertThat(getProjectMeasureAsDouble("lines_to_cover")).isEqualTo(linesToCover, offset(10.0));
     assertThat(getProjectMeasureAsDouble("coverage")).isEqualTo(25.1, offset(0.1));
     assertThat(getCoreModuleMeasureAsDouble("coverage")).isEqualTo(36.8, offset(0.2));
     assertThat(getProjectMeasureAsDouble("line_coverage")).isEqualTo(25.5);
     assertThat(getProjectMeasureAsDouble("branch_coverage")).isEqualTo(24.1);
-    if (JavaTestSuite.sonarqube_version_is_prior_to_6_2()) {
-      // overall coverage is the same as UT if no IT.
-      assertThat(getCoreModuleMeasureAsDouble("overall_coverage")).isEqualTo(36.8, offset(0.2));
-      assertThat(getProjectMeasureAsDouble("overall_coverage")).isEqualTo(25.1, offset(0.1));
-      assertThat(getProjectMeasureAsDouble("overall_line_coverage")).isEqualTo(25.5);
-      assertThat(getProjectMeasureAsDouble("overall_branch_coverage")).isEqualTo(24.1);
-    }
+
     assertThat(getProjectMeasureAsInteger("tests")).isEqualTo(307);
     assertThat(getProjectMeasureAsInteger("test_execution_time")).isGreaterThan(200);
     assertThat(getProjectMeasureAsInteger("test_errors")).isEqualTo(0);

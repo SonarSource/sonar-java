@@ -79,10 +79,6 @@ public class JavaTestSuite {
     return projectKey + ":src/main/java/" + pkgDir + cls;
   }
 
-  public static boolean sonarqube_version_is_prior_to_6_2() {
-    return !ORCHESTRATOR.getServer().version().isGreaterThanOrEquals("6.2");
-  }
-
   @CheckForNull
   static Measure getMeasure(String componentKey, String metricKey) {
     WsMeasures.ComponentWsResponse response = TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentWsRequest()
