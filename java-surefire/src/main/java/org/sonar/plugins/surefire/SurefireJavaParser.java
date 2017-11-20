@@ -19,8 +19,15 @@
  */
 package org.sonar.plugins.surefire;
 
+import java.io.File;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.batch.BatchSide;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -36,18 +43,10 @@ import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * @since 2.4
  */
-@BatchSide
+@ScannerSide
 public class SurefireJavaParser {
 
   private static final Logger LOGGER = Loggers.get(SurefireJavaParser.class);
