@@ -20,6 +20,17 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,15 +44,6 @@ import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -78,7 +80,8 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of());
+    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S106", 4, inputFile.getPath(), "MAJOR"),
@@ -107,7 +110,7 @@ public class SonarLintTest {
       true);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       // tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
@@ -132,7 +135,7 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S3421", 7, inputFile.getPath(), "MINOR"));
@@ -153,7 +156,7 @@ public class SonarLintTest {
 
     final List<Issue> issues = new ArrayList<>();
     sonarlintEngine.analyze(
-      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
       tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
@@ -165,7 +168,7 @@ public class SonarLintTest {
     ClientInputFile inputFile = prepareInputFile("ParseError.java", "class ParseError {", false);
     final List<Issue> issues = new ArrayList<>();
     AnalysisResults analysisResults = sonarlintEngine.analyze(
-      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add);
+      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
     assertThat(issues).isEmpty();
     assertThat(analysisResults.failedAnalysisFiles()).hasSize(1);
   }
@@ -180,8 +183,8 @@ public class SonarLintTest {
     return new ClientInputFile() {
 
       @Override
-      public Path getPath() {
-        return path;
+      public String getPath() {
+        return path.toString();
       }
 
       @Override
@@ -197,6 +200,16 @@ public class SonarLintTest {
       @Override
       public <G> G getClientObject() {
         return null;
+      }
+
+      @Override
+      public InputStream inputStream() throws IOException {
+        return new FileInputStream(path.toFile());
+      }
+
+      @Override
+      public String contents() throws IOException {
+        return Files.toString(path.toFile(), StandardCharsets.UTF_8);
       }
     };
   }
