@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATHS_PROPERTY;
 
 public class JacocoSensorJava9Test {
 
@@ -53,7 +54,7 @@ public class JacocoSensorJava9Test {
     when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(baseDir.toFile()));
 
     SensorContextTester context = SensorContextTester.create(baseDir);
-    context.settings().setProperty(JacocoConfiguration.REPORT_PATHS_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
 
     JaCoCoSensor sensor = new JaCoCoSensor(null, javaResourceLocator, javaClasspath);
 

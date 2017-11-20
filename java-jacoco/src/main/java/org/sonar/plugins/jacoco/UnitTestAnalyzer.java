@@ -21,6 +21,12 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ICounter;
@@ -30,7 +36,6 @@ import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.test.MutableTestCase;
@@ -40,32 +45,21 @@ import org.sonar.api.test.Testable;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
-
-public abstract class AbstractAnalyzer {
+public class UnitTestAnalyzer {
 
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
-  private final boolean readCoveragePerTests;
 
   private Map<String, File> classFilesCache;
   private JavaClasspath javaClasspath;
   private JacocoReportReader jacocoReportReader;
+  private final File report;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
-    this(perspectives, javaResourceLocator, javaClasspath, true);
-  }
-
-  public AbstractAnalyzer(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
+  public UnitTestAnalyzer(File report, ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+    this.report = report;
     this.perspectives = perspectives;
     this.javaResourceLocator = javaResourceLocator;
-    this.readCoveragePerTests = readCoveragePerTests;
     this.javaClasspath = javaClasspath;
   }
 
@@ -98,8 +92,7 @@ public abstract class AbstractAnalyzer {
       JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no class files.");
       return;
     }
-    File jacocoExecutionData = getReport();
-    readExecutionData(jacocoExecutionData, context);
+    readExecutionData(report, context);
 
     classFilesCache = null;
   }
@@ -135,7 +128,7 @@ public abstract class AbstractAnalyzer {
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       InputFile inputFile = getResource(coverage);
       if (inputFile != null) {
-        NewCoverage newCoverage = context.newCoverage().onFile(inputFile).ofType(coverageType());
+        NewCoverage newCoverage = context.newCoverage().onFile(inputFile);
         analyzeFile(newCoverage, inputFile, coverage);
         newCoverage.save();
         analyzedResources++;
@@ -152,11 +145,9 @@ public abstract class AbstractAnalyzer {
 
   private boolean readCoveragePerTests(ExecutionDataVisitor executionDataVisitor) {
     boolean collectedCoveragePerTest = false;
-    if (readCoveragePerTests) {
-      for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue())) {
-          collectedCoveragePerTest = true;
-        }
+    for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
+      if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue())) {
+        collectedCoveragePerTest = true;
       }
     }
     return collectedCoveragePerTest;
@@ -262,9 +253,4 @@ public abstract class AbstractAnalyzer {
       }
     }
   }
-
-  protected abstract CoverageType coverageType();
-
-  protected abstract File getReport();
-
 }

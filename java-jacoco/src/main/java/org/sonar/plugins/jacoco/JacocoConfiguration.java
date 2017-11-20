@@ -19,34 +19,11 @@
  */
 package org.sonar.plugins.jacoco;
 
-import java.util.Collections;
-import java.util.List;
-import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
-import org.sonar.java.JavaConstants;
-
 public class JacocoConfiguration {
 
-  public static final String REPORT_PATHS_PROPERTY = "sonar.jacoco.reportPaths";
-  public static final String REPORT_PATHS_DEFAULT_VALUE = "target/jacoco.exec, target/jacoco-it.exec";
-  public static final String REPORT_PATH_PROPERTY = "sonar.jacoco.reportPath";
-  public static final String IT_REPORT_PATH_PROPERTY = "sonar.jacoco.itReportPath";
-  public static final String REPORT_MISSING_FORCE_ZERO = "sonar.jacoco.reportMissing.force.zero";
 
   private JacocoConfiguration() {
   }
 
-  public static List<PropertyDefinition> getPropertyDefinitions() {
-    return Collections.singletonList(
-      PropertyDefinition.builder(JacocoConfiguration.REPORT_PATHS_PROPERTY)
-        .defaultValue(JacocoConfiguration.REPORT_PATHS_DEFAULT_VALUE)
-        .category(JavaConstants.JAVA_CATEGORY)
-        .subCategory("JaCoCo")
-        .name("JaCoCo Reports")
-        .description("Path to the JaCoCo report files containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
-        .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
-        .build()
-    );
-  }
 
 }
