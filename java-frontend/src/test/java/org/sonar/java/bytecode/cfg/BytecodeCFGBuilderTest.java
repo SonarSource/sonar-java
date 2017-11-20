@@ -41,6 +41,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Convert;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SETestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -75,7 +76,7 @@ public class BytecodeCFGBuilderTest {
 
   @Test
   public void test() throws Exception {
-    BytecodeCFGBuilder.BytecodeCFG cfg = getCFGForMethod("fun");
+    BytecodeCFG cfg = getCFGForMethod("fun");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo(
@@ -118,7 +119,7 @@ public class BytecodeCFGBuilderTest {
 
   @Test
   public void label_goto_successors() throws Exception {
-    BytecodeCFGBuilder.BytecodeCFG cfg = getCFGForMethod("label_goto");
+    BytecodeCFG cfg = getCFGForMethod("label_goto");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo("B0(Exit)\n" +
@@ -136,14 +137,14 @@ public class BytecodeCFGBuilderTest {
       "Jumps to: B0 \n");
   }
 
-  private BytecodeCFGBuilder.BytecodeCFG getCFGForMethod(String methodName) {
+  private BytecodeCFG getCFGForMethod(String methodName) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.TypeSymbol innerClass = ((Symbol.TypeSymbol) ((ClassTree) tree.types().get(0)).symbol().lookupSymbols("InnerClass").iterator().next());
     Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.lookupSymbols(methodName).iterator().next();
-    return BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    return SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
   }
 
   @Test
@@ -164,13 +165,13 @@ public class BytecodeCFGBuilderTest {
         .collect(Collectors.toCollection(HashMultiset::create));
 
       Symbol methodSymbol = Iterables.getOnlyElement(testClazz.lookupSymbols(method.name));
-      BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature(), squidClassLoader);
+      BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature(), squidClassLoader);
       Multiset<String> cfgOpcodes = cfgOpcodes(bytecodeCFG);
       assertThat(cfgOpcodes).isEqualTo(opcodes);
     }
   }
 
-  private Multiset<String> cfgOpcodes(BytecodeCFGBuilder.BytecodeCFG bytecodeCFG) {
+  private Multiset<String> cfgOpcodes(BytecodeCFG bytecodeCFG) {
     return bytecodeCFG.blocks.stream()
           .flatMap(block -> Stream.concat(block.instructions.stream(), Stream.of(block.terminator)))
           .filter(Objects::nonNull)
@@ -212,7 +213,7 @@ public class BytecodeCFGBuilderTest {
     ins.visitInsn(NOP);
 
 
-    BytecodeCFGBuilder.BytecodeCFG cfg = ins.cfg();
+    BytecodeCFG cfg = ins.cfg();
     Multiset<String> cfgOpcodes = cfgOpcodes(cfg);
     List<String> collect = Instructions.ASM_OPCODES.stream().map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
     assertThat(cfgOpcodes).containsAll(collect);
@@ -222,7 +223,7 @@ public class BytecodeCFGBuilderTest {
   public void visited_label_should_be_assigned_to_true_successor() throws Exception {
     Label label0 = new Label();
     Label label1 = new Label();
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
+    BytecodeCFG cfg = new Instructions()
       .visitVarInsn(Opcodes.ALOAD, 0)
       .visitJumpInsn(Opcodes.IFNULL, label0)
       .visitJumpInsn(Opcodes.IFEQ, label0)
@@ -234,7 +235,7 @@ public class BytecodeCFGBuilderTest {
       .visitInsn(Opcodes.IRETURN)
       .cfg();
 
-    BytecodeCFGBuilder.Block block3 = cfg.blocks.get(3);
+    BytecodeCFG.Block block3 = cfg.blocks.get(3);
     assertThat(block3.terminator.opcode).isEqualTo(Opcodes.IFEQ);
     assertThat(block3.falseSuccessor()).isNotNull().isSameAs(cfg.blocks.get(4));
     assertThat(block3.trueSuccessor()).isNotNull().isSameAs(cfg.blocks.get(2));
@@ -245,7 +246,7 @@ public class BytecodeCFGBuilderTest {
   public void goto_successors() throws Exception {
     Label label0 = new Label();
     Label label1 = new Label();
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions()
+    BytecodeCFG cfg = new Instructions()
       .visitVarInsn(Opcodes.ALOAD, 0)
       .visitJumpInsn(Opcodes.IFNULL, label0)
       .visitVarInsn(Opcodes.ALOAD, 0)
@@ -267,7 +268,7 @@ public class BytecodeCFGBuilderTest {
   public void isNotBlank_goto_followed_by_label() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/commons-lang-2.1")));
     // apache commons 2.1 isNotBlank has a goto followed by an unreferenced label : see SONARJAVA-2461
-    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG("org.apache.commons.lang.StringUtils#isNotBlank(Ljava/lang/String;)Z", classLoader);
+    BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG("org.apache.commons.lang.StringUtils#isNotBlank(Ljava/lang/String;)Z", classLoader);
     assertThat(bytecodeCFG).isNotNull();
     assertThat(bytecodeCFG.blocks).hasSize(11);
     assertThat(bytecodeCFG.blocks.get(4).successors).containsExactly(bytecodeCFG.blocks.get(6));
@@ -276,7 +277,7 @@ public class BytecodeCFGBuilderTest {
   @Test
   public void supportJSRandRET() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/JsrRet")));
-    BytecodeCFGBuilder.BytecodeCFG bytecodeCFG = BytecodeCFGBuilder.buildCFG("jdk3.AllInstructions#jsrAndRetInstructions(I)I", classLoader);
+    BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG("jdk3.AllInstructions#jsrAndRetInstructions(I)I", classLoader);
     assertThat(bytecodeCFG).isNotNull();
     bytecodeCFG.blocks.stream().map(b-> b.terminator).filter(Objects::nonNull).forEach(t -> assertThat(t.opcode).isNotEqualTo(JSR));
   }
@@ -401,19 +402,19 @@ public class BytecodeCFGBuilderTest {
   @Test
   public void test_class_not_found_logs() throws Exception {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeCFGBuilder.buildCFG("nonsense#foo", squidClassLoader);
+    BytecodeCFG cfg = SETestUtils.bytecodeCFG("nonsense#foo", squidClassLoader);
     assertThat(cfg).isNull();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains(".class not found for nonsense");
   }
 
   private void assertCFGforMethod(String methodName, String expectedCFG) {
-    BytecodeCFGBuilder.BytecodeCFG cfg = getBytecodeCFG(methodName, "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
+    BytecodeCFG cfg = getBytecodeCFG(methodName, "src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo(expectedCFG);
   }
 
-  public static BytecodeCFGBuilder.BytecodeCFG getBytecodeCFG(String methodName, String filename) {
+  public static BytecodeCFG getBytecodeCFG(String methodName, String filename) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File(filename);
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
@@ -425,7 +426,7 @@ public class BytecodeCFGBuilderTest {
       .filter(s -> methodName.equals(s.name()))
       .findFirst()
       .orElseThrow(IllegalStateException::new);
-    return BytecodeCFGBuilder.buildCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    return SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
   }
 
   private void tryCatch() {

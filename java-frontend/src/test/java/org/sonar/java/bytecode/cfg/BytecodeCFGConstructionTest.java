@@ -245,7 +245,7 @@ public class BytecodeCFGConstructionTest {
       test_jumps();
       return;
     }
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type, testInput.fieldOrMethod);
+    BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type, testInput.fieldOrMethod);
     assertThat(cfg.blocks.size()).isEqualTo(2);
     if(expected == null) {
       expected = inst(testInput.opcode);
@@ -259,7 +259,7 @@ public class BytecodeCFGConstructionTest {
   }
 
   private void test_jumps() {
-    BytecodeCFGBuilder.BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
+    BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
     assertThat(expected).isNull();
     if(testInput.opcode == TABLESWITCH) {
       assertThat(cfg.blocks.size()).isEqualTo(5);
@@ -267,7 +267,7 @@ public class BytecodeCFGConstructionTest {
       assertThat(cfg.blocks.size()).isEqualTo(5);
     }else {
       // exit block, jump block, jump-to block, other block
-      BytecodeCFGBuilder.Block block1 = cfg.blocks.get(1);
+      BytecodeCFG.Block block1 = cfg.blocks.get(1);
       assertThat(block1.instructions).isEmpty();
       assertThat(block1.terminator().opcode()).isEqualTo(testInput.opcode);
       if(testInput.opcode == GOTO) {

@@ -45,7 +45,7 @@ import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 public class BytecodeListingParser {
 
 
-  public static BytecodeCFGBuilder.BytecodeCFG getCFG(String bytecodeInstructions) {
+  public static BytecodeCFG getCFG(String bytecodeInstructions) {
     // Define class and method stub for instructions
     ClassWriter cw = new ClassWriter(Opcodes.ASM5);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
@@ -59,7 +59,7 @@ public class BytecodeListingParser {
     mv.visitEnd();
     cw.visitEnd();
     byte[] bytes = cw.toByteArray();
-    return BytecodeCFGBuilder.buildCFG(methodStub.completeSignature(), bytes);
+    return Instructions.getBytecodeCFG(bytes);
   }
 
   private static void visitLine(String[] words, MethodVisitor mv, Map<Integer, Label> labelIndexes) {

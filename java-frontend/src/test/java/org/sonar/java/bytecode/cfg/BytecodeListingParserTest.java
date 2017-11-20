@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BytecodeListingParserTest {
 
   private static void assertCFG(String listing, String expected) {
-    BytecodeCFGBuilder.BytecodeCFG cfg = BytecodeListingParser.getCFG(listing);
+    BytecodeCFG cfg = BytecodeListingParser.getCFG(listing);
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b -> sb.append(b.printBlock()));
     assertThat(sb.toString()).isEqualTo(expected);

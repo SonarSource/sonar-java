@@ -165,10 +165,10 @@ public class BehaviorCacheTest {
   @Test
   public void test_blacklist() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCacheBlacklist.java");
-    assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;")).isNull();
-    assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;")).isNull();
-    assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;")).isNull();
-    assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z")).isNull();
+    assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z").isComplete()).isFalse();
     assertThat(sev.behaviorCache.behaviors.keySet()).isEmpty();
   }
 
