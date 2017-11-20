@@ -38,7 +38,6 @@ public class ParsingErrorCheckTest {
   @Test
   public void test() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.isSQGreaterThan62()).thenReturn(false);
     when(sonarComponents.fileContent(any())).thenCallRealMethod();
     when(sonarComponents.fileLength(any())).thenCallRealMethod();
 

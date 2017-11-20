@@ -22,6 +22,11 @@ package org.sonar.java.ast.visitors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
 import org.junit.Before;
@@ -35,17 +40,8 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,16 +54,11 @@ public class FileLinesVisitorTest {
     baseDir = new File("src/test/files/metrics");
   }
   private void checkLines(String filename, FileLinesContext context) {
-    checkLines(filename, context, false);
-  }
-
-  private void checkLines(String filename, FileLinesContext context, boolean sqGreaterThan62) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.fileLength(Mockito.any(File.class))).thenAnswer(invocation -> {
       File arg = (File) invocation.getArguments()[0];
       return Files.readLines(arg, StandardCharsets.UTF_8).size();
     });
-    when(sonarComponents.isSQGreaterThan62()).thenReturn(sqGreaterThan62);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
@@ -144,7 +135,7 @@ public class FileLinesVisitorTest {
   @Test
   public void executable_lines_should_be_counted_withSQGreaterThan62() throws Exception {
     FileLinesContext context = mock(FileLinesContext.class);
-    checkLines("ExecutableLines.java", context, true);
+    checkLines("ExecutableLines.java", context);
     int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,
       0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0};
     assertThat(expected).hasSize(56);
@@ -154,14 +145,6 @@ public class FileLinesVisitorTest {
     }
     verify(context).save();
   }
-  @Test
-  public void executable_lines_should_NOT_be_counted_withSQLessThan62() throws Exception {
-    FileLinesContext context = mock(FileLinesContext.class);
-    checkLines("ExecutableLines.java", context);
-    verify(context, times(0)).setIntValue(eq(CoreMetrics.EXECUTABLE_LINES_DATA_KEY), anyInt(), anyInt());
-    verify(context).save();
-  }
-
 
   private static void assertThatContainsAllLines(CommentsCounter counter, List<Integer> reportedCommentLines) {
     for (Integer line : reportedCommentLines) {

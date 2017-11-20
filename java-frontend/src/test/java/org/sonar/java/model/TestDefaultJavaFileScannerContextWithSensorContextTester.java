@@ -21,22 +21,24 @@ package org.sonar.java.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.Version;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
@@ -46,13 +48,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -133,17 +128,5 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
     scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);
     Issue issue = sensorContext.allIssues().iterator().next();
     assertThat(issue.flows()).hasSize(2);
-  }
-
-  @Test
-  public void test_report_se_issue_with_flow_SQ63() throws Exception {
-    ImmutableList<JavaFileScannerContext.Location> flow1 = ImmutableList.of(new JavaFileScannerContext.Location("SE flow1", tree));
-    ImmutableList<JavaFileScannerContext.Location> flow2 = ImmutableList.of(new JavaFileScannerContext.Location("SE flow2", tree));
-    ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
-
-    sensorContext.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 3), SonarQubeSide.SCANNER));
-    scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);
-    Issue issue = sensorContext.allIssues().iterator().next();
-    assertThat(issue.flows()).hasSize(1);
   }
 }
