@@ -19,13 +19,10 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.apache.commons.lang.StringUtils;
-
-import javax.annotation.CheckForNull;
-
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import javax.annotation.CheckForNull;
 
 public class TestUtils {
 
@@ -55,21 +52,4 @@ public class TestUtils {
     }
     return null;
   }
-
-  /**
-   * Search for a resource in the classpath. For example calling the method getResource(getClass(), "myTestName/foo.txt") from
-   * the class org.sonar.Foo loads the file $basedir/src/test/resources/org/sonar/Foo/myTestName/foo.txt
-   *
-   * @return the resource. Null if resource not found
-   */
-  @CheckForNull
-  public static File getResource(Class baseClass, String path) {
-    String resourcePath = StringUtils.replaceChars(baseClass.getCanonicalName(), '.', '/');
-    if (!path.startsWith("/")) {
-      resourcePath += "/";
-    }
-    resourcePath += path;
-    return getResource(resourcePath);
-  }
-
 }

@@ -30,36 +30,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaPluginTest {
 
-  private static final Version VERSION_6_0 = Version.create(6, 0);
-  private static final Version VERSION_5_6 = Version.create(5, 6);
+  private static final Version VERSION_6_7 = Version.create(6, 7);
   private JavaPlugin javaPlugin = new JavaPlugin();
 
   @Test
-  public void sonarqubeAPI_before_6_0_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_5_6, SonarQubeSide.SERVER);
-    Plugin.Context context = new Plugin.Context(runtime);
-    javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(26);
-    runtime = SonarRuntimeImpl.forSonarLint(VERSION_5_6);
-    context = new Plugin.Context(runtime);
-    javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(26);
-  }
-
-  @Test
-  public void sonarLint_6_0_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarLint(VERSION_6_0);
+  public void sonarLint_6_7_extensions() {
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarLint(VERSION_6_7);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).hasSize(14);
   }
 
   @Test
-  public void sonarqube_6_0_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_6_0, SonarQubeSide.SERVER);
+  public void sonarqube_6_7_extensions() {
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_6_7, SonarQubeSide.SERVER);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(26);
+    assertThat(context.getExtensions()).hasSize(22);
 
   }
 
