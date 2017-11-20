@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -95,6 +96,7 @@ import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 public final class CheckList {
@@ -516,6 +518,12 @@ public final class CheckList {
       .add(OverwrittenKeyCheck.class)
       .add(LeastSpecificTypeCheck.class)
       .add(SwitchInsteadOfIfSequenceCheck.class)
+      .build();
+  }
+
+  public static List<Class<? extends DebugCheck>> getDebugChecks() {
+    return ImmutableList.<Class<? extends DebugCheck>>builder()
+      .add(DebugMethodYieldsCheck.class)
       .build();
   }
 

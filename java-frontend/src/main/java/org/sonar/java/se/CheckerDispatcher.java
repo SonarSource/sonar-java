@@ -19,18 +19,19 @@
  */
 package org.sonar.java.se;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
@@ -157,5 +158,10 @@ public class CheckerDispatcher implements CheckerContext {
   @Override
   public AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions() {
     return explodedGraphWalker.alwaysTrueOrFalseExpressionCollector();
+  }
+
+  @CheckForNull
+  public MethodBehavior methodBehavior() {
+    return explodedGraphWalker.methodBehavior;
   }
 }

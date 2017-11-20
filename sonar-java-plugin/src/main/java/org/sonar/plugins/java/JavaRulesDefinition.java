@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Cardinality;
+import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
@@ -53,7 +55,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
-    List<Class> checks = CheckList.getChecks();
+    List<Class> checks = ImmutableList.<Class>builder()
+      .addAll(CheckList.getChecks())
+      .addAll(CheckList.getDebugChecks())
+      .build();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
@@ -78,11 +83,15 @@ public class JavaRulesDefinition implements RulesDefinition {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
     }
     String metadataKey = ruleMetadata(ruleClass, rule);
-    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
+    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey) || debugRuleEnabled(ruleClass));
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
       throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead for " + ruleClass);
     }
+  }
+
+  private static boolean debugRuleEnabled(Class<?> ruleClass) {
+    return DebugCheck.class.isAssignableFrom(ruleClass);
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {

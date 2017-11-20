@@ -17,12 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java.se.checks.debug;
 
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.junit.Test;
+import org.sonar.java.se.JavaCheckVerifier;
 
-/**
- * Marker interface for all checks of the java analyzer.
- */
-public interface JavaCheck extends CodeVisitor {
+public class DebugMethodYieldsCheckTest {
+
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/debug/DebugMethodYieldsCheck.java", new DebugMethodYieldsCheck());
+  }
+
 }

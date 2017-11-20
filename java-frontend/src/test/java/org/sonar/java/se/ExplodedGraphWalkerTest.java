@@ -47,6 +47,7 @@ import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -439,16 +440,19 @@ public class ExplodedGraphWalkerTest {
       .map(Class::getSimpleName)
       .collect(Collectors.toSet());
     // Compute the list of SEChecks defined in package
-    List<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
+    Set<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")
       .stream()
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
       .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
-      .collect(Collectors.toList());
+      .collect(Collectors.toSet());
+
+    seChecks.add(DebugMethodYieldsCheck.class.getSimpleName());
+
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
-    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toList())).isEqualTo(seChecks);
+    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toSet())).isEqualTo(seChecks);
   }
 
   @Test

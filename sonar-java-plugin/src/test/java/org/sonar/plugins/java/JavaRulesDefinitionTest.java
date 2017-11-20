@@ -43,7 +43,7 @@ public class JavaRulesDefinitionTest {
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size() + CheckList.getDebugChecks().size());
 
     RulesDefinition.Rule unusedLabelRule = repository.rule("S1065");
     assertThat(unusedLabelRule).isNotNull();
@@ -76,7 +76,7 @@ public class JavaRulesDefinitionTest {
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size() + CheckList.getDebugChecks().size());
     Locale.setDefault(defaultLocale);
   }
   

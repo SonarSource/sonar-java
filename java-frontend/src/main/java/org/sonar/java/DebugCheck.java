@@ -17,12 +17,11 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java;
 
-import org.sonar.squidbridge.api.CodeVisitor;
+import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.JavaCheck;
 
-/**
- * Marker interface for all checks of the java analyzer.
- */
-public interface JavaCheck extends CodeVisitor {
+@Beta
+public interface DebugCheck extends JavaCheck {
 }
