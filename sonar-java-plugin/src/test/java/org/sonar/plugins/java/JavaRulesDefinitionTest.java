@@ -19,36 +19,24 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.ArrayList;
+import java.util.Locale;
 import org.junit.Test;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.Version;
 import org.sonar.check.Cardinality;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.JavaCheck;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaRulesDefinitionTest {
-  private Version sqVersion60 = Version.create(6, 0);
-  private Version sqVersion56 = Version.create(5, 6);
+
 
   @Test
-  public void test_creation_of_rules_for_version_60() {
-    test_creation_of_rules_for(sqVersion60);
-  }
-
-  @Test
-  public void test_creation_of_rules_for_version_56() {
-    test_creation_of_rules_for(sqVersion56);
-  }
-
-  private void test_creation_of_rules_for(Version version) {
-    JavaRulesDefinition definition = new JavaRulesDefinition(version);
+  public void test_creation_of_rules() {
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -63,14 +51,14 @@ public class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
     assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
-    assertThat(repository.rule("S2095").activatedByDefault()).isEqualTo(version.isGreaterThanOrEqual(Version.create(6, 0)));
+    assertThat(repository.rule("S2095").activatedByDefault()).isEqualTo(true);
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
 
     // check if a rule using a legacy key is also enabled
     RulesDefinition.Rule unusedPrivateMethodRule = repository.rule("UnusedPrivateMethod");
-    assertThat(unusedPrivateMethodRule.activatedByDefault()).isEqualTo(version.isGreaterThanOrEqual(Version.create(6, 0)));
+    assertThat(unusedPrivateMethodRule.activatedByDefault()).isEqualTo(true);
 
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
@@ -81,7 +69,7 @@ public class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale= Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition(sqVersion60);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -98,7 +86,7 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("myCardinality");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition(sqVersion60);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {

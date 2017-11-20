@@ -38,7 +38,7 @@ public class VisitorsBridgeForTestsTest {
 
   @Test
   public void test_semantic_disabled() {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 0)));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 

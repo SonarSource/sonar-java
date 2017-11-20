@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.io.Files;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Rule;
@@ -56,10 +55,6 @@ public class JavaSquidTest {
 
   @Test
   public void number_of_visitors_in_sonarLint_context_LTS() throws Exception {
-    testVersion(Version.create(6, 7));
-  }
-
-  private void testVersion(Version version) throws IOException {
     SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
 
     // set up a file to analyze
@@ -73,7 +68,7 @@ public class JavaSquidTest {
     context.fileSystem().add(defaultFile);
 
     // Set sonarLint runtime
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(version));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
 
     // Mock visitor for metrics.
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
