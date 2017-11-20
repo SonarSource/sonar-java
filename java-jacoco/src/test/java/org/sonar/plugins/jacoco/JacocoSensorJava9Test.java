@@ -54,10 +54,8 @@ public class JacocoSensorJava9Test {
 
     SensorContextTester context = SensorContextTester.create(baseDir);
     context.settings().setProperty(JacocoConfiguration.REPORT_PATHS_PROPERTY, "jacoco.exec");
-    JacocoConfiguration configuration = new JacocoConfiguration(context.settings());
 
-    // null values are interfaces not used for SQ > 6.2
-    JaCoCoSensor sensor = new JaCoCoSensor(configuration, null, context.fileSystem(), null, javaResourceLocator, javaClasspath);
+    JaCoCoSensor sensor = new JaCoCoSensor(null, javaResourceLocator, javaClasspath);
 
     sensor.execute(context);
     assertThat(context.lineHits(resource.key(), 5)).isEqualTo(1);

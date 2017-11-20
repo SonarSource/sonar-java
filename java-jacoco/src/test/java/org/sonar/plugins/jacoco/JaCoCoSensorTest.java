@@ -34,10 +34,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.config.Settings;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
@@ -49,10 +46,8 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -62,17 +57,14 @@ import static org.mockito.Mockito.when;
 import static org.sonar.plugins.jacoco.JacocoConfiguration.IT_REPORT_PATH_PROPERTY;
 import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATHS_PROPERTY;
 import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATH_PROPERTY;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.SQ_6_2;
 
 public class JaCoCoSensorTest {
 
-  private static final Version SQ_5_6 = Version.create(5, 6);
+  private static final Version SQ_6_7 = Version.create(6, 7);
   private File jacocoExecutionData;
   private File outputDir;
-  private JacocoConfiguration configuration;
   private ResourcePerspectives perspectives;
   private SensorContextTester context;
-  private PathResolver pathResolver;
   private JaCoCoSensor sensor;
   private JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
   private JavaClasspath javaClasspath;
@@ -90,17 +82,13 @@ public class JaCoCoSensorTest {
     Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
 
     context = SensorContextTester.create(outputDir);
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));
     context.fileSystem().setWorkDir(temp.newFolder().toPath());
-    pathResolver = mock(PathResolver.class);
 
-    Settings settings = new MapSettings();
-    settings.setProperty(REPORT_PATH_PROPERTY, JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE);
-    context.settings().setProperty(REPORT_PATH_PROPERTY, JacocoConfiguration.REPORT_PATH_DEFAULT_VALUE);
-    configuration = new JacocoConfiguration(settings);
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     perspectives = mock(ResourcePerspectives.class);
     javaClasspath = mock(JavaClasspath.class);
-    sensor = new JaCoCoSensor(configuration, perspectives, context.fileSystem(), pathResolver, javaResourceLocator, javaClasspath);
+    sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath);
   }
 
   @Test
@@ -110,7 +98,6 @@ public class JaCoCoSensorTest {
 
   @Test
   public void logIfInvalidReportPath() {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(REPORT_PATH_PROPERTY, "unknown.exec");
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "unknownit.exec");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "unknown1.exec,unknown2.exec");
@@ -123,15 +110,7 @@ public class JaCoCoSensorTest {
    }
 
   @Test
-  public void test_read_execution_data_before_6_2() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
-    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
-    runAnalysis();
-  }
-
-  @Test
   public void test_read_execution_data_after_6_2_using_deprecated_prop() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.reportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
@@ -139,7 +118,6 @@ public class JaCoCoSensorTest {
 
   @Test
   public void no_warning_with_both_prop_set() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
@@ -150,7 +128,6 @@ public class JaCoCoSensorTest {
 
   @Test
   public void test_read_execution_data_after_6_2_using_deprecated_it_prop() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.itReportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
@@ -158,16 +135,15 @@ public class JaCoCoSensorTest {
 
   @Test
   public void test_read_execution_data_after_6_2_using_correct_prop() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     runAnalysis();
   }
 
   @Test
   public void test_read_execution_data_after_6_2_should_merge_reports() throws Exception {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
     String path1 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-0.7.5.exec").getPath();
     String path2 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-it-0.7.5.exec").getPath();
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, path1+","+path2);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     sensor.execute(context);
@@ -178,20 +154,15 @@ public class JaCoCoSensorTest {
 
   @Test
   public void should_execute_if_report_exists() {
-    JacocoConfiguration configuration = mock(JacocoConfiguration.class);
-    JaCoCoSensor sensor = new JaCoCoSensor(configuration, perspectives, context.fileSystem(), pathResolver, javaResourceLocator, javaClasspath);
+    JaCoCoSensor sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath);
     context.settings().setProperty(REPORT_PATH_PROPERTY, "ut.exec");
-    File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");
-    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.exec"));
-    when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
-    when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
     sensor.execute(context);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there is no class files.");
-    when(pathResolver.relativeFile(any(File.class), eq("ut.exec"))).thenReturn(new File(outputDir, "ut.not.found.exec"));
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "ut.notfound.exec");
     sensor.execute(context);
     List<String> logs = logTester.logs(LoggerLevel.INFO);
     assertThat(logs).hasSize(2);
-    assertThat(logs.get(1)).startsWith("JaCoCoSensor: JaCoCo report not found :");
+    assertThat(logs.get(1)).startsWith("JaCoCo UT report not found:");
   }
 
   private void runAnalysis() throws IOException {
@@ -199,7 +170,6 @@ public class JaCoCoSensorTest {
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
 
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     sensor.execute(context);
     int[] oneHitlines = new int[] {6, 7, 8, 11};
@@ -223,7 +193,6 @@ public class JaCoCoSensorTest {
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
     when(perspectives.as(eq(MutableTestable.class), eq(resource))).thenReturn(testAbleFile);
@@ -234,6 +203,7 @@ public class JaCoCoSensorTest {
     when(testPlan.testCasesByName("test")).thenReturn(newArrayList(testCase));
 
     when(perspectives.as(eq(MutableTestPlan.class), eq(resource))).thenReturn(testPlan);
+    context.settings().setProperty(REPORT_PATH_PROPERTY, jacocoExecutionData.getAbsolutePath());
     SensorContextTester spy = Mockito.spy(context);
     sensor.execute(spy);
     verify(spy, times(1)).newCoverage();
@@ -268,7 +238,6 @@ public class JaCoCoSensorTest {
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
     when(perspectives.as(eq(MutableTestable.class), eq(resource))).thenReturn(testAbleFile);
@@ -280,7 +249,7 @@ public class JaCoCoSensorTest {
     when(testPlan.testCasesByName("testFoo")).thenReturn(newArrayList(testCase));
 
     when(perspectives.as(eq(MutableTestPlan.class), eq(resource))).thenReturn(testPlan);
-
+    context.settings().setProperty(REPORT_PATH_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
     verify(testCase).setCoverageBlock(testAbleFile, linesExpected);
   }
@@ -288,7 +257,6 @@ public class JaCoCoSensorTest {
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), anyString())).thenReturn(jacocoExecutionData);
     SensorContextTester context = spy(SensorContextTester.create(new File("")));
     sensor.execute(context);
     verify(context, never()).newCoverage();
@@ -297,9 +265,8 @@ public class JaCoCoSensorTest {
   @Test
   public void should_do_nothing_if_output_dir_does_not_exists() {
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
-    when(pathResolver.relativeFile(any(File.class), isNull())).thenReturn(jacocoExecutionData);
     SensorContextTester context = SensorContextTester.create(new File(""));
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there is no class files.");
   }
