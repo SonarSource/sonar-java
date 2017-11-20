@@ -20,21 +20,22 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.SonarQubeSide;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
@@ -46,17 +47,12 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -95,7 +91,7 @@ public class JaCoCoSensorTest {
 
     context = SensorContextTester.create(outputDir);
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
-    context.fileSystem().setWorkDir(temp.newFolder());
+    context.fileSystem().setWorkDir(temp.newFolder().toPath());
     pathResolver = mock(PathResolver.class);
 
     Settings settings = new MapSettings();
@@ -287,44 +283,6 @@ public class JaCoCoSensorTest {
 
     sensor.execute(context);
     verify(testCase).setCoverageBlock(testAbleFile, linesExpected);
-  }
-
-  @Test
-  public void force_coverage_to_zero_when_no_report_lts() {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_5_6, SonarQubeSide.SCANNER));
-    Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", REPORT_PATH_PROPERTY, "foo");
-    DefaultFileSystem fileSystem = new DefaultFileSystem((File)null);
-    fileSystem.add(new TestInputFileBuilder("","foo").setLanguage("java").build());
-    JacocoConfiguration configuration = new JacocoConfiguration(new MapSettings().addProperties(props));
-    JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
-    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
-    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(new File("foo"));
-    sensor_force_coverage.execute(context);
-    int[] zeroHitlines = new int[] {6, 7, 8, 11, 15, 16, 18};
-    for (int zeroHitline : zeroHitlines) {
-      assertThat(context.lineHits(":", zeroHitline)).isEqualTo(0);
-    }
-  }
-
-  @Test
-  public void force_coverage_to_zero_is_deprecated_on_6_2() {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_2, SonarQubeSide.SCANNER));
-    Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", REPORT_PATHS_PROPERTY, "foo");
-    DefaultFileSystem fileSystem = new DefaultFileSystem((File)null);
-    fileSystem.add(new TestInputFileBuilder("","foo").setLanguage("java").build());
-    JacocoConfiguration configuration = new JacocoConfiguration(new MapSettings().addProperties(props));
-    JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
-    context.settings().addProperties(props);
-    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
-    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(new File("foo"));
-    sensor_force_coverage.execute(context);
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.reportMissing.force.zero' is deprecated and its value will be ignored.");
   }
 
   @Test

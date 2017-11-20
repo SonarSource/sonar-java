@@ -56,8 +56,9 @@ public class PostAnalysisIssueFilterTest {
 
   @Before
   public void setUp() {
-    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(MODULE_BASE_DIR));
-    DefaultInputFile inputFile = new TestInputFileBuilder("", new File(MODULE_BASE_DIR), new File(MODULE_BASE_DIR, FILE_KEY))
+    File absoluteBaseDir = new File(MODULE_BASE_DIR).getAbsoluteFile();
+    DefaultFileSystem fileSystem = new DefaultFileSystem(absoluteBaseDir);
+    DefaultInputFile inputFile = new TestInputFileBuilder("", absoluteBaseDir, new File(absoluteBaseDir, FILE_KEY))
     .setLanguage("java")
     .setType(InputFile.Type.MAIN).build();
     fileSystem.add(inputFile);

@@ -19,16 +19,15 @@
  */
 package org.sonar.java;
 
+import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
-
-import java.io.File;
+import org.sonar.api.config.internal.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;

@@ -69,7 +69,7 @@ public class JaCoCoItSensorTest {
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
     ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
-    FileSystem fileSystem = new DefaultFileSystem((File)null);
+    FileSystem fileSystem = new DefaultFileSystem(new File(""));
     pathResolver = mock(PathResolver.class);
     sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }
