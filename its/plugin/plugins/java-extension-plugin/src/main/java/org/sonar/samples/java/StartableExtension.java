@@ -19,11 +19,11 @@
  */
 package org.sonar.samples.java;
 
-import org.sonar.api.batch.BatchSide;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-@BatchSide
+@ScannerSide
 public class StartableExtension {
 
   private final FileSystem fileSystem;

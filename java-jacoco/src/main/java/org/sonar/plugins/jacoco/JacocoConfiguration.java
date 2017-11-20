@@ -20,17 +20,16 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.api.PropertyType;
-import org.sonar.api.batch.BatchSide;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.Version;
 import org.sonar.java.JavaConstants;
 
-import java.util.List;
-
-@BatchSide
+@ScannerSide
 public class JacocoConfiguration {
   public static final Version SQ_6_2 = Version.create(6, 2);
   public static final String REPORT_PATHS_PROPERTY = "sonar.jacoco.reportPaths";

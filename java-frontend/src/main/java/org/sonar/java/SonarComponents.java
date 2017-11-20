@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Scanner;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
-import org.sonar.api.batch.BatchSide;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
@@ -51,7 +51,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
-@BatchSide
+@ScannerSide
 @SonarLintSide
 public class SonarComponents {
 
