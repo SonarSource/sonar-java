@@ -27,17 +27,16 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.IT_REPORT_PATH_PROPERTY;
 import static org.sonar.plugins.jacoco.JaCoCoExtensions.LOG;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.IT_REPORT_PATH_PROPERTY;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_MISSING_FORCE_ZERO;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATHS_PROPERTY;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_MISSING_FORCE_ZERO;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATHS_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 
 public class JaCoCoSensor implements Sensor {
 
@@ -75,7 +74,7 @@ public class JaCoCoSensor implements Sensor {
       reportMerged.getParentFile().mkdirs();
       JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
     }
-    new UnitTestsAnalyzer(reportMerged).analyse(context);
+    new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath).analyse(context);
   }
 
   private static Set<File> getReportPaths(SensorContext context) {
@@ -92,56 +91,30 @@ public class JaCoCoSensor implements Sensor {
         reportPaths.add(report);
       }
     }
-    Optional<String> reportPathProp = settings.get(REPORT_PATH_PROPERTY);
+    getReport(settings, fs, REPORT_PATH_PROPERTY, "JaCoCo UT report not found: '{}'").ifPresent(reportPaths::add);
+    getReport(settings, fs, IT_REPORT_PATH_PROPERTY, "JaCoCo IT report not found: '{}'").ifPresent(reportPaths::add);
+    return reportPaths;
+  }
+
+  private static Optional<File> getReport(Configuration settings, FileSystem fs, String reportPathPropertyKey, String msg) {
+    Optional<String> reportPathProp = settings.get(reportPathPropertyKey);
     if (reportPathProp.isPresent()) {
+      warnUsageOfDeprecatedProperty(settings, reportPathPropertyKey);
       String reportPathProperty = reportPathProp.get();
-      warnUsageOfDeprecatedProperty(settings, REPORT_PATH_PROPERTY);
       File report = fs.resolvePath(reportPathProperty);
       if (!report.isFile()) {
-        LOG.info("JaCoCo UT report not found: '{}'", reportPathProperty);
+        LOG.info(msg, reportPathProperty);
       } else {
-        reportPaths.add(report);
+        return Optional.of(report);
       }
     }
-    Optional<String> itReportPathProp = settings.get(IT_REPORT_PATH_PROPERTY);
-    if (itReportPathProp.isPresent()) {
-      String itReportPathProperty = itReportPathProp.get();
-      warnUsageOfDeprecatedProperty(settings, IT_REPORT_PATH_PROPERTY);
-      File report = fs.resolvePath(itReportPathProperty);
-      if (!report.isFile()) {
-        LOG.info("JaCoCo IT report not found: '{}'", itReportPathProperty);
-      } else {
-        reportPaths.add(report);
-      }
-    }
-    return reportPaths;
+    return Optional.empty();
   }
 
   private static void warnUsageOfDeprecatedProperty(Configuration settings, String reportPathProperty) {
     if (!settings.hasKey(REPORT_PATHS_PROPERTY)) {
       LOG.warn("Property '{}' is deprecated. Please use '{}' instead.", reportPathProperty, REPORT_PATHS_PROPERTY);
     }
-  }
-
-
-  class UnitTestsAnalyzer extends AbstractAnalyzer {
-    private final File report;
-
-    public UnitTestsAnalyzer(File report) {
-      super(perspectives, javaResourceLocator, javaClasspath);
-      this.report = report;
-    }
-
-    @Override
-    protected CoverageType coverageType() {
-      return CoverageType.UNIT;
-    }
-
-    @Override
-    protected File getReport() {
-      return report;
-    }
-
   }
 
   @Override

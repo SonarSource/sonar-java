@@ -54,9 +54,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.IT_REPORT_PATH_PROPERTY;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATHS_PROPERTY;
-import static org.sonar.plugins.jacoco.JacocoConfiguration.REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.IT_REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATHS_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 
 public class JaCoCoSensorTest {
 
