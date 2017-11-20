@@ -20,26 +20,20 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-
+import java.io.File;
+import java.io.Serializable;
+import java.util.Collections;
+import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
-import org.sonar.api.utils.Version;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
-
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,7 +42,6 @@ public class MeasurerTest {
 
   private static final int NB_OF_METRICS = 11;
   private SensorContextTester context;
-  private JavaSquid squid;
   private File baseDir;
   private DefaultFileSystem fs;
 
@@ -77,12 +70,6 @@ public class MeasurerTest {
   @Test
   public void verify_cognitive_complexity_metric() {
     checkMetric("CognitiveComplexity.java", "cognitive_complexity", 25);
-  }
-
-  @Test
-  public void no_cognitive_complexity_metric_with_SQ_lower_than_6_3() {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 0), SonarQubeSide.SCANNER));
-    checkMetric("CognitiveComplexity.java", "cognitive_complexity", null, NB_OF_METRICS - 1);
   }
 
   @Test
@@ -125,7 +112,7 @@ public class MeasurerTest {
     inputFile.setModuleBaseDir(fs.baseDirPath());
     fs.add(inputFile.build());
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
-    squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new CodeVisitor[0]);
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     assertThat(context.measures("projectKey:" + relativePath)).hasSize(numberOfMetrics);
     Measure<Serializable> measure = context.measure("projectKey:" + relativePath, metric);

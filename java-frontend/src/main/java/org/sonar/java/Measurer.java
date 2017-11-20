@@ -20,7 +20,10 @@
 package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
-
+import java.io.Serializable;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -29,7 +32,6 @@ import org.sonar.api.ce.measure.RangeDistributionBuilder;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.utils.Version;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -41,11 +43,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.Serializable;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Measurer extends SubscriptionVisitor {
 
@@ -114,17 +111,11 @@ public class Measurer extends SubscriptionVisitor {
     RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
     saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
 
-    if (isSonarQubeGreaterThanOrEqualTo63()) {
-      saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
-    }
+    saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
   }
 
   private boolean isSonarLintContext() {
-    return sensorContext.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(6, 0)) && sensorContext.runtime().getProduct() == SonarProduct.SONARLINT;
-  }
-
-  private boolean isSonarQubeGreaterThanOrEqualTo63() {
-    return sensorContext.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(6, 3));
+    return sensorContext.runtime().getProduct() == SonarProduct.SONARLINT;
   }
 
   private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {

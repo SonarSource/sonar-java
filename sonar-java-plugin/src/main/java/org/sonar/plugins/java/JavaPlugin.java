@@ -60,7 +60,7 @@ public class JavaPlugin implements Plugin {
         .subCategory("General")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
-      new JavaRulesDefinition(context.getSonarQubeVersion()),
+      JavaRulesDefinition.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
