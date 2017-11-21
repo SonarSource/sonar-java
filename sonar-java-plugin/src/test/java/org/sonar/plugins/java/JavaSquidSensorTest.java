@@ -34,7 +34,6 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
@@ -70,7 +69,7 @@ public class JavaSquidSensorTest {
   @Before
   public void setUp() {
     sensor = new JavaSquidSensor(mock(SonarComponents.class), fileSystem,
-      mock(DefaultJavaResourceLocator.class), new MapSettings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
+      mock(DefaultJavaResourceLocator.class), new MapSettings().asConfig(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
   }
 
   @Test
@@ -85,17 +84,17 @@ public class JavaSquidSensorTest {
 
 
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
-    Settings settings = new MapSettings();
+    MapSettings settings = new MapSettings();
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings.asConfig(), fs));
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(82));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(81));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");

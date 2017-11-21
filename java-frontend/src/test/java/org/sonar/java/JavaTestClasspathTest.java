@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +34,7 @@ import static org.junit.Assert.fail;
 public class JavaTestClasspathTest {
 
   private DefaultFileSystem fs;
-  private Settings settings;
+  private MapSettings settings;
   private JavaTestClasspath javaTestClasspath;
 
   @Before
@@ -56,7 +55,7 @@ public class JavaTestClasspathTest {
   @Test
   public void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
-    javaTestClasspath = new JavaTestClasspath(settings, fs);
+    javaTestClasspath = new JavaTestClasspath(settings.asConfig(), fs);
     Mockito.verifyZeroInteractions(fs);
   }
 
@@ -108,7 +107,7 @@ public class JavaTestClasspathTest {
 
 
   private JavaTestClasspath createJavaClasspath() {
-    return new JavaTestClasspath(settings, fs);
+    return new JavaTestClasspath(settings.asConfig(), fs);
   }
 
 

@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.java;
 
+import java.io.File;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -27,7 +30,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -40,10 +43,6 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 
-import java.io.File;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 @Phase(name = Phase.Name.PRE)
 @DependsUpon("BEFORE_SQUID")
 @DependedUpon("squid")
@@ -54,12 +53,12 @@ public class JavaSquidSensor implements Sensor {
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
-  private final Settings settings;
+  private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
-    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+                         DefaultJavaResourceLocator javaResourceLocator, Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
@@ -97,13 +96,13 @@ public class JavaSquidSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
+    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.get(Java.SOURCE_VERSION).orElse(null));
     LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
     return javaVersion;
   }
 
   private boolean isXFileEnabled() {
-    return settings.getBoolean("sonar.java.xfile");
+    return settings.getBoolean("sonar.java.xfile").orElse(false);
   }
 
   @Override

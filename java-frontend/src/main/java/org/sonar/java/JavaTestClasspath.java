@@ -19,22 +19,21 @@
  */
 package org.sonar.java;
 
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.config.Settings;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.api.utils.log.Profiler;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.utils.log.Profiler;
 
 public class JavaTestClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaTestClasspath.class);
 
-  public JavaTestClasspath(Settings settings, FileSystem fs) {
+  public JavaTestClasspath(Configuration settings, FileSystem fs) {
     super(settings, fs, InputFile.Type.TEST);
   }
 
