@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,23 +36,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.SonarComponents;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -214,24 +202,6 @@ public class CheckListTest {
   private static class DummyMetatada {
     // ignore all the other fields
     String[] tags;
-  }
-
-  /**
-   * Ensures that all checks are able to deal with unparsable files
-   */
-  @Test
-  public void should_not_fail_on_invalid_file() throws Exception {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
-    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/CheckListParseErrorTest.java").setCharset(StandardCharsets.UTF_8).build();
-    context.fileSystem().add(resource);
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
-    sonarComponents.setSensorContext(context);
-    for (Class check : CheckList.getChecks()) {
-      CodeVisitor visitor = (CodeVisitor) check.newInstance();
-      if (visitor instanceof JavaFileScanner) {
-        JavaAstScanner.scanSingleFileForTests(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridgeForTests((JavaFileScanner) visitor, sonarComponents));
-      }
-    }
   }
 
   @Test
