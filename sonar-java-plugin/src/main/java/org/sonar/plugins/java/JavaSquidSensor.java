@@ -80,11 +80,11 @@ public class JavaSquidSensor implements Sensor {
     javaResourceLocator.setSensorContext(context);
     sonarComponents.setSensorContext(context);
 
-    List<Class<? extends JavaCheck>> javaChecks = ImmutableList.<Class<? extends JavaCheck>>builder()
+    List<Class<? extends JavaCheck>> checks = ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(CheckList.getJavaChecks())
       .addAll(CheckList.getDebugChecks())
       .build();
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, javaChecks);
+    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());

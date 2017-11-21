@@ -21,7 +21,10 @@ package org.sonar.plugins.java;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Cardinality;
@@ -33,17 +36,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaRulesDefinitionTest {
 
+  private Configuration settings;
+
+  @Before
+  public void setUp() {
+    settings = new MapSettings().asConfig();
+  }
 
   @Test
   public void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size() + CheckList.getDebugChecks().size());
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
 
     RulesDefinition.Rule unusedLabelRule = repository.rule("S1065");
     assertThat(unusedLabelRule).isNotNull();
@@ -69,7 +78,22 @@ public class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale= Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    assertThat(repository.name()).isEqualTo("SonarAnalyzer");
+    assertThat(repository.language()).isEqualTo("java");
+    assertThat(repository.rules()).hasSize(CheckList.getChecks().size());
+    Locale.setDefault(defaultLocale);
+  }
+
+  @Test
+  public void debug_rules() {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.debug", true);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -77,16 +101,15 @@ public class JavaRulesDefinitionTest {
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.rules()).hasSize(CheckList.getChecks().size() + CheckList.getDebugChecks().size());
-    Locale.setDefault(defaultLocale);
   }
-  
+
   @Test
   public void test_invalid_checks() throws Exception {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("myCardinality");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {

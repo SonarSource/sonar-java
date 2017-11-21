@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.debt.DebtRemediationFunction;
@@ -47,6 +48,12 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
  */
 public class JavaRulesDefinition implements RulesDefinition {
 
+  private final boolean isDebugEnabled;
+
+  public JavaRulesDefinition(Configuration settings) {
+    this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
+  }
+
   private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
   private final Gson gson = new Gson();
 
@@ -55,16 +62,21 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
-    List<Class> checks = ImmutableList.<Class>builder()
-      .addAll(CheckList.getChecks())
-      .addAll(CheckList.getDebugChecks())
-      .build();
+    List<Class> checks = getChecks();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
       newRule(ruleClass, repository, profile);
     }
     repository.done();
+  }
+
+  private List<Class> getChecks() {
+    ImmutableList.Builder<Class> checksBuilder = ImmutableList.<Class>builder().addAll(CheckList.getChecks());
+    if (isDebugEnabled) {
+      checksBuilder.addAll(CheckList.getDebugChecks());
+    }
+    return checksBuilder.build();
   }
 
   @VisibleForTesting
@@ -83,15 +95,15 @@ public class JavaRulesDefinition implements RulesDefinition {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
     }
     String metadataKey = ruleMetadata(ruleClass, rule);
-    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey) || debugRuleEnabled(ruleClass));
+    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey) || activateDebugRule(ruleClass));
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
       throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead for " + ruleClass);
     }
   }
 
-  private static boolean debugRuleEnabled(Class<?> ruleClass) {
-    return DebugCheck.class.isAssignableFrom(ruleClass);
+  private boolean activateDebugRule(Class<?> ruleClass) {
+    return isDebugEnabled && DebugCheck.class.isAssignableFrom(ruleClass);
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {

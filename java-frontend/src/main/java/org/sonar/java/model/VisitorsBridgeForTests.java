@@ -59,7 +59,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.toArray(visitors, CodeVisitor.class), true));
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<CodeVisitor>toArray(visitors, CodeVisitor.class), true));
   }
 
   @Override

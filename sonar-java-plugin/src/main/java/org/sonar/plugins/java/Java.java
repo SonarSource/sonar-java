@@ -59,6 +59,11 @@ public class Java extends AbstractLanguage {
   public static final String SOURCE_VERSION = "sonar.java.source";
 
   /**
+   * Turn ON debug rules
+   */
+  public static final String DEBUG_RULE_KEY = "sonar.java.debug";
+
+  /**
    * Settings of the plugin.
    */
   private final Configuration settings;

@@ -429,30 +429,29 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void eg_walker_factory_default_checks() throws IOException {
-    Set<String> nonDefaultChecks = Stream.of(
+    List<String> nonDefaultChecks = Stream.of(
       CustomUnclosedResourcesCheck.class,
       ConditionalUnreachableCodeCheck.class,
       BooleanGratuitousExpressionsCheck.class,
       InvariantReturnCheck.class,
       StreamNotConsumedCheck.class,
-      MapComputeIfAbsentOrPresentCheck.class
+      MapComputeIfAbsentOrPresentCheck.class,
+      DebugMethodYieldsCheck.class
       )
       .map(Class::getSimpleName)
-      .collect(Collectors.toSet());
+      .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package
-    Set<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
+    List<String> seChecks = ClassPath.from(ExplodedGraphWalkerTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")
       .stream()
       .map(ClassPath.ClassInfo::getSimpleName)
       .filter(name -> name.endsWith("Check") && !name.equals(SECheck.class.getSimpleName()))
       .filter(name -> !nonDefaultChecks.contains(name))
       .sorted()
-      .collect(Collectors.toSet());
-
-    seChecks.add(DebugMethodYieldsCheck.class.getSimpleName());
+      .collect(Collectors.toList());
 
     ExplodedGraphWalker.ExplodedGraphWalkerFactory factory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(new ArrayList<>());
-    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toSet())).isEqualTo(seChecks);
+    assertThat(factory.seChecks.stream().map(c -> c.getClass().getSimpleName()).sorted().collect(Collectors.toList())).isEqualTo(seChecks);
   }
 
   @Test

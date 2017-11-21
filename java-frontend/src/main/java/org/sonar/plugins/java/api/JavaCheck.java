@@ -24,5 +24,5 @@ import org.sonar.squidbridge.api.CodeVisitor;
 /**
  * Marker interface for all checks of the java analyzer.
  */
-public interface JavaCheck extends CodeVisitor {
+public interface JavaCheck extends CodeVisitor{
 }
