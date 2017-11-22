@@ -35,8 +35,6 @@ public class SafetyNetTest {
     "src/main/java",
     "src/test/java",
     "src/test/files",
-    "target/test-projects/struts-core-1.3.9/src",
-    "target/test-projects/commons-collections-3.2.1/src",
   };
 
   @Test
