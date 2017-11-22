@@ -36,11 +36,13 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -85,7 +87,7 @@ public class JavaSquidSensorTest {
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     Settings settings = new MapSettings();
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    SensorContextTester context = createContext(onType);
+    SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
@@ -93,25 +95,11 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(80));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(82));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
-
-    context = createContext(onType);
-    fs = context.fileSystem();
-    sonarComponents = createSonarComponentsMock(context);
-    javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
-    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
-
-    context = createContext(onType);
-    fs = context.fileSystem();
-    sonarComponents = createSonarComponentsMock(context);
-    javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings, fs));
-    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter);
 
     settings.setProperty(Java.SOURCE_VERSION, "1.7");
     jss.execute(context);
