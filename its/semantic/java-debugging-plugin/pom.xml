@@ -60,7 +60,6 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.17</version>
         <configuration>
           <pluginClass>${sonar.pluginClass}</pluginClass>
           <sonarLintSupported>false</sonarLintSupported>

@@ -51,9 +51,15 @@ public class JaCoCoControllerTest {
     String json = newAdminWsClient(orchestrator).wsConnector().call(new GetRequest("api/plugins/installed")).content();
     Optional<String> javaVersion = new Gson().fromJson(json, Plugins.class).getPlugins()
       .stream()
-      .filter(plugin -> plugin.getKey().equals("java"))
-      .map(Plugins.Plugin::getVersion)
-      .findFirst();
+      .filter(plugin -> plugin.key.equals("java"))
+      .map(p -> {
+        String f = p.filename;
+        if(f.contains("SNAPSHOT")) {
+          return p.version;
+        }
+        // when executed in SonarSource QA, snapshot version is replaced by built version
+        return f.substring(f.lastIndexOf('-') + 1, f.lastIndexOf('.'));
+      }).findFirst();
     assertThat(javaVersion).isPresent();
     this.javaVersion = javaVersion.get();
   }
@@ -102,14 +108,7 @@ public class JaCoCoControllerTest {
     static class Plugin {
       String key;
       String version;
-
-      String getKey() {
-        return key;
-      }
-
-      String getVersion() {
-        return version;
-      }
+      String filename;
     }
   }
 }
