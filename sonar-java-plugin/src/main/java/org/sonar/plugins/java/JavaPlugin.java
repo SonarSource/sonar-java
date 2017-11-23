@@ -44,7 +44,7 @@ public class JavaPlugin implements Plugin {
       builder.add(JavaSonarLintClasspath.class);
     } else {
       builder.addAll(SurefireExtensions.getExtensions());
-      builder.addAll(JaCoCoExtensions.getExtensions());
+      //builder.addAll(JaCoCoExtensions.getExtensions());
       builder.add(JavaSonarWayProfile.class);
       builder.add(JavaClasspath.class);
     }
