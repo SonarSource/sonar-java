@@ -19,10 +19,23 @@
  */
 package org.sonar.java;
 
+import com.google.common.base.Joiner;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.sonar.java.JavaFrontend.ScannedFile;
-import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.java.cfg.CFG;
+import org.sonar.java.cfg.CFG.Block;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public class JavaFrontendTest {
 
@@ -30,12 +43,57 @@ public class JavaFrontendTest {
 
   @Test
   public void parse() {
-    ScannedFile r = front.scan(new File("src/test/files/JavaFrontend.java"), this.getClass().getClassLoader());
+    ScannedFile src = front.scan(new File("src/test/files/JavaFrontend.java"), this.getClass().getClassLoader());
+    for (MethodTree m: getMethods(src.tree())) {
+      System.out.println("visiting: " + m.simpleName());
+      CFG cfg = CFG.build(m);
+      simplifyCFG(src, cfg);
+    }
+  }
 
-    ClassTree cls = (ClassTree) r.tree().types().get(0);
-    System.out.println(r.tree().types().get(0));
+  private static Collection<MethodTree> getMethods(Tree tree) {
+    List<MethodTree> result = new ArrayList<>();
+    new BaseTreeVisitor() {
+      {
+        scan(tree);
+      }
 
-    System.out.println(r.semantic().getSymbol(cls).type().fullyQualifiedName());
+      @Override public void visitMethod(MethodTree methodTree) {
+        super.visitMethod(methodTree);
+        result.add(methodTree);
+      }
+    };
+    return result;
+  }
+
+  private static void simplifyCFG(ScannedFile src, CFG cfg) {
+    Set<Block> visited = new HashSet<>();
+    Set<Block> worklist = new HashSet<>();
+
+    Block entry = cfg.entry();
+    worklist.add(entry);
+
+    while (!worklist.isEmpty()) {
+      Block block = worklist.iterator().next();
+      worklist.remove(block);
+      visited.add(block);
+
+      System.out.println("  B" + block.id() + " -> " + Joiner.on(", ").join(block.successors().stream().map(b -> "B" + b.id()).collect(Collectors.toList())));
+      for (Tree tree: block.elements()) {
+        if (tree instanceof ExpressionTree) {
+          ExpressionTree expr = (ExpressionTree) tree;
+          System.out.println("    " + expr + ", type = " + expr.symbolType().fullyQualifiedName());
+        } else {
+          System.out.println("    " + tree + ", type = " + src.semantic().getSymbol(tree).type().fullyQualifiedName());
+        }
+      }
+
+      for (Block successor: block.successors()) {
+        if (!visited.contains(successor)) {
+          worklist.add(successor);
+        }
+      }
+    }
   }
 
 }
