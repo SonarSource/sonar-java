@@ -71,7 +71,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void generateMethodBehavior() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior(0);
+    MethodBehavior methodBehavior = getMethodBehavior("fun");
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svFirstArg = new SymbolicValue();
@@ -100,7 +100,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void verify_behavior_of_fun2_method() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior(1);
+    MethodBehavior methodBehavior = getMethodBehavior("fun2");
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svFirstArg = new SymbolicValue();
@@ -134,7 +134,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void test_int_comparator() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior(2);
+    MethodBehavior methodBehavior = getMethodBehavior("int_comparison");
     assertThat(methodBehavior.yields()).hasSize(1);
     HappyPathYield methodYield = ((HappyPathYield) methodBehavior.yields().get(0));
     assertThat(methodYield.resultConstraint().get(ObjectConstraint.class)).isSameAs(ObjectConstraint.NULL);
@@ -142,13 +142,13 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void goto_terminator() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior(3);
+    MethodBehavior methodBehavior = getMethodBehavior("gotoTerminator");
     assertThat(methodBehavior.yields()).hasSize(2);
   }
 
   @Test
   public void test_method_throwing_exception() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior(4);
+    MethodBehavior methodBehavior = getMethodBehavior("throw_exception");
     assertThat(methodBehavior.yields()).hasSize(1);
     MethodYield methodYield = methodBehavior.yields().get(0);
     assertThat(methodYield).isInstanceOf(ExceptionalYield.class);
@@ -163,16 +163,16 @@ public class BytecodeEGWalkerTest {
     assertThat(abstractMethod.isComplete()).isFalse();
 
     MethodBehavior finalMethod = getMethodBehavior("finalMethod");
-    assertThat(finalMethod.isComplete()).isTrue();
+    assertThat(finalMethod.isComplete()).isFalse();
 
     MethodBehavior staticMethod = getMethodBehavior("staticMethod");
     assertThat(staticMethod.isComplete()).isTrue();
 
     MethodBehavior privateMethod = getMethodBehavior("privateMethod");
-    assertThat(privateMethod.isComplete()).isTrue();
+    assertThat(privateMethod.isComplete()).isFalse();
 
     MethodBehavior publicMethodInFinalClass = getMethodBehavior("FinalInnerClass", finalInnerClass -> ((MethodTree) finalInnerClass.members().get(0)).symbol());
-    assertThat(publicMethodInFinalClass.isComplete()).isTrue();
+    assertThat(publicMethodInFinalClass.isComplete()).isFalse();
   }
 
   @Test
@@ -231,10 +231,6 @@ public class BytecodeEGWalkerTest {
     assertThat(methodBehavior.isVisited()).isTrue();
   }
 
-  private MethodBehavior getMethodBehavior(int index) {
-    return getMethodBehavior("InnerClass", innerClass -> ((MethodTree) innerClass.members().get(index)).symbol());
-  }
-
   private static MethodBehavior getMethodBehavior(String methodName) {
     return getMethodBehavior("InnerClass", innerClass -> (Symbol.MethodSymbol) innerClass.symbol().lookupSymbols(methodName).stream().findFirst().get());
   }
@@ -277,21 +273,21 @@ public class BytecodeEGWalkerTest {
    * --------------------- following code is used for byte code ----------------------------------------------
    */
   abstract static class InnerClass {
-    private Object fun(boolean a, Object b) {
+    static Object fun(boolean a, Object b) {
       if (b == null) {
         return null;
       }
       return "";
     }
 
-    private Object fun2(boolean a) {
+    static Object fun2(boolean a) {
       if (a) {
         return null;
       }
       return "";
     }
 
-    private Object int_comparison(int a, int b) {
+    static Object int_comparison(int a, int b) {
       if (a < b) {
         if (a < b) {
           return null;
@@ -301,11 +297,11 @@ public class BytecodeEGWalkerTest {
       return null;
     }
 
-    private boolean gotoTerminator(Object o) {
+    static boolean gotoTerminator(Object o) {
       return o == null;
     }
 
-    private void throw_exception() {
+    static void throw_exception() {
       throw new RuntimeException();
     }
 

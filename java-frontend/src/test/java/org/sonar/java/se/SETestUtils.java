@@ -88,7 +88,13 @@ public class SETestUtils {
   }
 
   public static BytecodeCFG bytecodeCFG(String signature, SquidClassLoader classLoader) {
-    BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor();
+    BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor() {
+      @Override
+      public boolean shouldVisitMethod(int methodFlags, String methodSignature) {
+        return true;
+      }
+    };
+
     MethodLookup.lookup(signature, classLoader, cfgMethodVisitor);
     return cfgMethodVisitor.getCfg();
   }

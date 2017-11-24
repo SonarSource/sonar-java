@@ -22,8 +22,6 @@ package org.sonar.java.bytecode.se;
 import com.google.common.collect.Lists;
 import java.io.File;
 import org.junit.Test;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MethodLookupTest {
 
   private static final String TESTCLASS = "org.sonar.java.bytecode.cfg.testdata.MethodLookupTestData#";
-  private static final MethodVisitor NOP_VISITOR = new MethodVisitor(Opcodes.ASM5) {};
+  private static final MethodLookup.LookupMethodVisitor NOP_VISITOR = new MethodLookup.LookupMethodVisitor();
 
   SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
 

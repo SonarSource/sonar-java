@@ -20,7 +20,6 @@
 package org.sonar.java.bytecode.se;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -48,7 +46,6 @@ import org.sonar.java.resolve.Java9Support;
 public class MethodLookup {
 
   private static final Logger LOG = Loggers.get(MethodLookup.class);
-  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
 
   final boolean isStatic;
   final boolean isVarArgs;
@@ -68,12 +65,12 @@ public class MethodLookup {
    *
    */
   @CheckForNull
-  public static MethodLookup lookup(String signature, SquidClassLoader classLoader, MethodVisitor methodVisitor) {
+  public static MethodLookup lookup(String signature, SquidClassLoader classLoader, LookupMethodVisitor methodVisitor) {
     String className = signature.substring(0, signature.indexOf('#'));
     return lookup(className, signature, classLoader, methodVisitor);
   }
 
-  private static MethodLookup lookup(String className, String signature, SquidClassLoader classLoader, MethodVisitor methodVisitor) {
+  private static MethodLookup lookup(String className, String signature, SquidClassLoader classLoader, LookupMethodVisitor methodVisitor) {
     byte[] bytes = getClassBytes(className, classLoader);
     if (bytes == null) {
       return null;
@@ -118,11 +115,27 @@ public class MethodLookup {
     }
   }
 
+  public static class LookupMethodVisitor extends MethodVisitor {
+
+    public LookupMethodVisitor() {
+      super(Opcodes.ASM5);
+    }
+
+    /**
+     *
+     * @param methodFlags bytecode flags as provided by {@link ClassVisitor#visitMethod(int, String, String, String, String[])}
+     * @param methodSignature method signature
+     * @return true if method should be visited by visitor
+     */
+    public boolean shouldVisitMethod(int methodFlags, String methodSignature) {
+      return true;
+    }
+  }
+
   private static class LookupClassVisitor extends ClassVisitor {
 
-    private final MethodVisitor methodVisitor;
+    private final LookupMethodVisitor methodVisitor;
     private final String methodSignature;
-    private boolean isFinalClass = false;
     private boolean methodFound;
     private String superClassName;
     private String[] interfaces;
@@ -130,7 +143,7 @@ public class MethodLookup {
     private boolean isStatic;
     private boolean isVarArgs;
 
-    public LookupClassVisitor(MethodVisitor methodVisitor, String targetedMethodSignatures) {
+    public LookupClassVisitor(LookupMethodVisitor methodVisitor, String targetedMethodSignatures) {
       super(Opcodes.ASM5);
       this.methodVisitor = methodVisitor;
       this.methodSignature = targetedMethodSignatures;
@@ -138,7 +151,6 @@ public class MethodLookup {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-      isFinalClass = Flags.isFlagged(Flags.filterAccessBytecodeFlags(access), Flags.FINAL);
       superClassName = superName;
       this.interfaces = interfaces;
       super.visit(version, access, name, signature, superName, interfaces);
@@ -152,7 +164,7 @@ public class MethodLookup {
         declaredExceptions = convertExceptions(exceptions);
         isStatic = Flags.isFlagged(access, Flags.STATIC);
         isVarArgs = Flags.isFlagged(access, Flags.VARARGS);
-        if (isOverridableOrNativeMethod(access) || methodIsBlacklisted(methodSignature)) {
+        if (!methodVisitor.shouldVisitMethod(access, methodSignature)) {
           // avoid computing CFG when the method behavior won't be used
           return null;
         }
@@ -167,17 +179,5 @@ public class MethodLookup {
           .map(Type::getClassName)
           .collect(Collectors.toList());
     }
-
-    private boolean isOverridableOrNativeMethod(int methodFlags) {
-      if (Flags.isFlagged(methodFlags, Flags.NATIVE)) {
-        return true;
-      }
-      return Flags.isFlagged(methodFlags, Flags.ABSTRACT) || !(isFinalClass || Flags.isFlagged(methodFlags, Flags.PRIVATE | Flags.FINAL | Flags.STATIC));
-    }
-
-    private static boolean methodIsBlacklisted(String signature) {
-      return SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith);
-    }
   }
-
 }
