@@ -2,6 +2,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java':[
 183,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java':[
+157,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java':[
 217,
 ],
@@ -21,9 +24,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java':[
 151,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QualityGateDetailsFormatter.java':[
-55,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivatorContextFactory.java':[
 62,

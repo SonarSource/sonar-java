@@ -7,6 +7,7 @@
 'jdk6:java/awt/KeyboardFocusManager.java':[
 214,
 2226,
+2231,
 ],
 'jdk6:java/awt/MenuBar.java':[
 168,
@@ -17,6 +18,11 @@
 ],
 'jdk6:java/awt/geom/QuadCurve2D.java':[
 986,
+],
+'jdk6:java/beans/ReflectionUtils.java':[
+349,
+353,
+361,
 ],
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
@@ -44,6 +50,12 @@
 ],
 'jdk6:java/security/cert/X509CertSelector.java':[
 2402,
+],
+'jdk6:java/text/SimpleDateFormat.java':[
+2157,
+],
+'jdk6:java/util/Calendar.java':[
+2682,
 ],
 'jdk6:java/util/Scanner.java':[
 996,
