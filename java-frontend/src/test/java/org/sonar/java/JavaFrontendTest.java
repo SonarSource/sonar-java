@@ -20,10 +20,11 @@
 package org.sonar.java;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,6 +97,20 @@ public class JavaFrontendTest {
         }
       }
     }
+  }
+
+  private static class Taint {
+
+    private Multimap<Tree, Tree> directly = HashMultimap.create();
+    private Multimap<Tree, Tree> transitively = HashMultimap.create();
+
+    public boolean canBeTainted(Tree tree) {
+      return !transitively.isEmpty();
+    }
+
+    public void add(Tree target, Tree by) {
+    }
+
   }
 
 }
