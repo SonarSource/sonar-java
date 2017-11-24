@@ -20,6 +20,8 @@
 package org.sonar.java.se.checks.debug;
 
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Set;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -42,22 +44,28 @@ import org.sonar.plugins.java.api.tree.MethodTree;
   tags = "debug")
 public class DebugMethodYieldsCheck extends SECheck implements DebugCheck {
 
-  private IdentifierTree methodName;
+  private Deque<IdentifierTree> methodNames = new LinkedList<>();
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    this.methodName = methodTree.simpleName();
+    methodNames.push(methodTree.simpleName());
   }
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     MethodBehavior mb = ((CheckerDispatcher) context).methodBehavior();
+    IdentifierTree methodName = methodNames.pop();
     if (mb != null) {
-      reportIssue(methodName, String.format("Method '%s' has %d method yields.", methodName.name(), mb.yields().size()), flowFromYield(mb));
+      reportIssue(methodName, String.format("Method '%s' has %d method yields.", methodName.name(), mb.yields().size()), flowFromYield(mb, methodName));
     }
   }
 
-  private Set<Flow> flowFromYield(MethodBehavior mb) {
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    methodNames.pop();
+  }
+
+  private static Set<Flow> flowFromYield(MethodBehavior mb, IdentifierTree methodName) {
     Flow.Builder builder = Flow.builder();
     mb.yields().stream().map(yield -> new JavaFileScannerContext.Location(yield.toString(), methodName)).forEach(builder::add);
     return Collections.singleton(builder.build());
