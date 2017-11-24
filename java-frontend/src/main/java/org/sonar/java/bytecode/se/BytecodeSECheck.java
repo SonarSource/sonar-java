@@ -126,11 +126,12 @@ public interface BytecodeSECheck {
         case FDIV:
         case IDIV:
         case LDIV:
+          return handleDivision(previousState, currentState);
         case DREM:
         case FREM:
         case IREM:
         case LREM:
-          return handleDivisionRemainder(previousState, currentState);
+          return handleRemainder(previousState, currentState);
         case ISHL:
         case LSHL:
         case ISHR:
@@ -175,10 +176,13 @@ public interface BytecodeSECheck {
         // Reuse zero
         return currentState.unstackValue(1).state.stackValue(op1Zero ? op1 : op2);
       }
-      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      if (isNonZero(currentState, op1) && isNonZero(currentState, op2)) {
+        return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      }
+      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
     }
 
-    private static ProgramState handleDivisionRemainder(ProgramState previousState, ProgramState currentState) {
+    private static ProgramState handleDivision(ProgramState previousState, ProgramState currentState) {
       List<SymbolicValue> operands = previousState.peekValues(2);
       SymbolicValue result = currentState.peekValue();
       SymbolicValue op1 = operands.get(0);
@@ -191,7 +195,26 @@ public interface BytecodeSECheck {
         // Reuse zero
         return currentState.unstackValue(1).state.stackValue(op1);
       }
-      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      if (isNonZero(currentState, op1)) {
+        return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      }
+      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
+    }
+
+    private static ProgramState handleRemainder(ProgramState previousState, ProgramState currentState) {
+      List<SymbolicValue> operands = previousState.peekValues(2);
+      SymbolicValue result = currentState.peekValue();
+      SymbolicValue op1 = operands.get(0);
+      SymbolicValue op2 = operands.get(1);
+      if (isZero(currentState, op2)) {
+        // Division by zero
+        // TODO exceptional yield ?
+        return null;
+      } else if (isZero(currentState, op1)) {
+        // Reuse zero
+        return currentState.unstackValue(1).state.stackValue(op1);
+      }
+      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
     }
 
     private static ProgramState handleNegation(ProgramState previousState, ProgramState currentState) {
@@ -202,7 +225,10 @@ public interface BytecodeSECheck {
         // Reuse zero
         return currentState.unstackValue(1).state.stackValue(op1);
       }
-      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      if (isNonZero(currentState, op1)) {
+        return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
+      }
+      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
     }
 
     private static ProgramState handleShift(ProgramState previousState, ProgramState currentState) {
@@ -219,6 +245,10 @@ public interface BytecodeSECheck {
 
     private static boolean isZero(ProgramState state, SymbolicValue sv) {
       return state.getConstraint(sv, ZeroConstraint.class) == ZeroConstraint.ZERO;
+    }
+
+    private static boolean isNonZero(ProgramState state, SymbolicValue sv) {
+      return state.getConstraint(sv, ZeroConstraint.class) == ZeroConstraint.NON_ZERO;
     }
   }
 }

@@ -19,10 +19,15 @@
  */
 package org.sonar.java.bytecode.se;
 
+import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
@@ -52,6 +57,13 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   private static SquidClassLoader squidClassLoader;
   private static BytecodeEGWalker walker;
   private static SemanticModel semanticModel;
+  private SymbolicValue sv1;
+  private SymbolicValue sv2;
+  private ProgramState zeroZeroPs;
+  private ProgramState zeroNonZeroPs;
+  private ProgramState nonZeroZeroPs;
+  private ProgramState nonZeroNonZeroPs;
+  private ProgramState noConstraints;
 
   @BeforeClass
   public static void initializeWalker() {
@@ -63,28 +75,33 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     walker = getEGWalker();
   }
 
-  @Test
-  public void zeroness_check_add() {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
+  @Before
+  public void setUp() {
+    sv1 = new SymbolicValue();
+    sv2 = new SymbolicValue();
 
-    int[] opCodes = {Opcodes.DADD, Opcodes.FADD, Opcodes.IADD, Opcodes.LADD};
-
-    ProgramState zeroZeroPs = ProgramState.EMPTY_STATE;
+    zeroZeroPs = ProgramState.EMPTY_STATE;
     zeroZeroPs = zeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
     zeroZeroPs = zeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
 
-    ProgramState zeroNonZeroPs = ProgramState.EMPTY_STATE;
+    zeroNonZeroPs = ProgramState.EMPTY_STATE;
     zeroNonZeroPs = zeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
     zeroNonZeroPs = zeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
 
-    ProgramState nonZeroZeroPs = ProgramState.EMPTY_STATE;
+    nonZeroZeroPs = ProgramState.EMPTY_STATE;
     nonZeroZeroPs = nonZeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
     nonZeroZeroPs = nonZeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
 
-    ProgramState nonZeroNonZeroPs = ProgramState.EMPTY_STATE;
+    nonZeroNonZeroPs = ProgramState.EMPTY_STATE;
     nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO));
     nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO));
+
+    noConstraints = ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2);
+  }
+
+  @Test
+  public void zeroness_check_add() {
+    int[] opCodes = {Opcodes.DADD, Opcodes.FADD, Opcodes.IADD, Opcodes.LADD};
 
     for (int addOpCode : opCodes) {
       Instruction instruction = new Instruction(addOpCode);
@@ -120,26 +137,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
 
   @Test
   public void zeroness_check_mul() {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-
     int[] opCodes = {Opcodes.DMUL, Opcodes.FMUL, Opcodes.IMUL, Opcodes.LMUL};
-
-    ProgramState zeroZeroPs = ProgramState.EMPTY_STATE;
-    zeroZeroPs = zeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroZeroPs = zeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState zeroNonZeroPs = ProgramState.EMPTY_STATE;
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-
-    ProgramState nonZeroZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState nonZeroNonZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO));
 
     for (int mulOpCode : opCodes) {
       Instruction instruction = new Instruction(mulOpCode);
@@ -170,34 +168,24 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
       constraints = ps.getConstraints(peekValue);
       assertThat(constraints.get(ZeroConstraint.class)).isEqualTo(ZeroConstraint.NON_ZERO);
       assertThat(constraints.get(BooleanConstraint.class)).isNull();
+
+      ps = execute(instruction, noConstraints);
+      peekValue = ps.peekValue();
+      assertThat(peekValue).isNotIn(sv1, sv2);
+      constraints = ps.getConstraints(peekValue);
+      assertThat(constraints.get(ZeroConstraint.class)).isNull();
+      assertThat(constraints.get(BooleanConstraint.class)).isNull();
     }
   }
 
   @Test
   public void zeroness_check_div_rem() {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-
     int[] opCodes = {
       Opcodes.DDIV, Opcodes.FDIV, Opcodes.IDIV, Opcodes.LDIV,
       Opcodes.DREM, Opcodes.FREM, Opcodes.IREM, Opcodes.LREM
     };
 
-    ProgramState zeroZeroPs = ProgramState.EMPTY_STATE;
-    zeroZeroPs = zeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroZeroPs = zeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState zeroNonZeroPs = ProgramState.EMPTY_STATE;
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-
-    ProgramState nonZeroZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState nonZeroNonZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO));
+    Set<Integer> remOpcodes = ImmutableSet.of(Opcodes.DREM, Opcodes.FREM, Opcodes.IREM, Opcodes.LREM);
 
     for (int divOpCode : opCodes) {
       Instruction instruction = new Instruction(divOpCode);
@@ -208,17 +196,28 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
       assertThat(ps).isNull();
 
       ps = execute(instruction, nonZeroZeroPs);
-      SymbolicValue peekValue = ps.peekValue();
-      assertThat(peekValue).isEqualTo(sv2);
-      ConstraintsByDomain constraints = ps.getConstraints(peekValue);
+      SymbolicValue result = ps.peekValue();
+      assertThat(result).isEqualTo(sv2);
+      ConstraintsByDomain constraints = ps.getConstraints(result);
       assertThat(constraints.get(ZeroConstraint.class)).isEqualTo(ZeroConstraint.ZERO);
       assertThat(constraints.get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
       ps = execute(instruction, nonZeroNonZeroPs);
-      peekValue = ps.peekValue();
-      assertThat(peekValue).isNotIn(sv1, sv2);
-      constraints = ps.getConstraints(peekValue);
-      assertThat(constraints.get(ZeroConstraint.class)).isEqualTo(ZeroConstraint.NON_ZERO);
+      result = ps.peekValue();
+      assertThat(result).isNotIn(sv1, sv2);
+      constraints = ps.getConstraints(result);
+      if (remOpcodes.contains(divOpCode)) {
+        assertThat(constraints.get(ZeroConstraint.class)).isNull();
+      } else {
+        assertThat(constraints.get(ZeroConstraint.class)).isEqualTo(ZeroConstraint.NON_ZERO);
+      }
+      assertThat(constraints.get(BooleanConstraint.class)).isNull();
+
+      ps = execute(instruction, noConstraints);
+      result = ps.peekValue();
+      assertThat(result).isNotIn(sv1, sv2);
+      constraints = ps.getConstraints(result);
+      assertThat(constraints.get(ZeroConstraint.class)).isNull();
       assertThat(constraints.get(BooleanConstraint.class)).isNull();
     }
   }
@@ -235,6 +234,8 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     ProgramState nonZeroPs = ProgramState.EMPTY_STATE;
     nonZeroPs = nonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
 
+    ProgramState noConstraint = ProgramState.EMPTY_STATE.stackValue(sv1);
+
     for (int negOpCode : opCodes) {
       Instruction instruction = new Instruction(negOpCode);
       ProgramState ps = execute(instruction, zeroPs);
@@ -250,31 +251,19 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
       constraints = ps.getConstraints(peekValue);
       assertThat(constraints.get(ZeroConstraint.class)).isEqualTo(ZeroConstraint.NON_ZERO);
       assertThat(constraints.get(BooleanConstraint.class)).isNull();
+
+      ps = execute(instruction, noConstraint);
+      peekValue = ps.peekValue();
+      assertThat(peekValue).isNotEqualTo(sv1);
+      constraints = ps.getConstraints(peekValue);
+      assertThat(constraints.get(ZeroConstraint.class)).isNull();
+      assertThat(constraints.get(BooleanConstraint.class)).isNull();
     }
   }
 
   @Test
   public void zeroness_check_shifts() {
-    SymbolicValue sv1 = new SymbolicValue();
-    SymbolicValue sv2 = new SymbolicValue();
-
     int[] opCodes = {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
-
-    ProgramState zeroZeroPs = ProgramState.EMPTY_STATE;
-    zeroZeroPs = zeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroZeroPs = zeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState zeroNonZeroPs = ProgramState.EMPTY_STATE;
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-    zeroNonZeroPs = zeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-
-    ProgramState nonZeroZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroZeroPs = nonZeroZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.ZERO).put(BooleanConstraint.FALSE));
-
-    ProgramState nonZeroNonZeroPs = ProgramState.EMPTY_STATE;
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv1).addConstraints(sv1, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO).put(BooleanConstraint.TRUE));
-    nonZeroNonZeroPs = nonZeroNonZeroPs.stackValue(sv2).addConstraints(sv2, ConstraintsByDomain.empty().put(ZeroConstraint.NON_ZERO));
 
     for (int shiftOpCode : opCodes) {
       Instruction instruction = new Instruction(shiftOpCode);
