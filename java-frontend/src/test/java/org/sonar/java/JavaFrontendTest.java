@@ -80,12 +80,14 @@ public class JavaFrontendTest {
 
       System.out.println("  B" + block.id() + " -> " + Joiner.on(", ").join(block.successors().stream().map(b -> "B" + b.id()).collect(Collectors.toList())));
       for (Tree tree: block.elements()) {
+        String fqtn;
         if (tree instanceof ExpressionTree) {
           ExpressionTree expr = (ExpressionTree) tree;
-          System.out.println("    " + expr + ", type = " + expr.symbolType().fullyQualifiedName());
+          fqtn = expr.symbolType().fullyQualifiedName();
         } else {
-          System.out.println("    " + tree + ", type = " + src.semantic().getSymbol(tree).type().fullyQualifiedName());
+          fqtn = src.semantic().getSymbol(tree).type().fullyQualifiedName();
         }
+        System.out.println(String.format("    %s: %s of type %s", tree.kind(), tree, fqtn));
       }
 
       for (Block successor: block.successors()) {
