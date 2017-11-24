@@ -39,7 +39,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Cardinality;
-import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
@@ -49,6 +48,14 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 public class JavaRulesDefinition implements RulesDefinition {
 
   private final boolean isDebugEnabled;
+
+  /**
+   * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
+   * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
+   */
+  public JavaRulesDefinition() {
+    this.isDebugEnabled = false;
+  }
 
   public JavaRulesDefinition(Configuration settings) {
     this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
@@ -95,15 +102,12 @@ public class JavaRulesDefinition implements RulesDefinition {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
     }
     String metadataKey = ruleMetadata(ruleClass, rule);
-    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey) || activateDebugRule(ruleClass));
+    // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
+    rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
       throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead for " + ruleClass);
     }
-  }
-
-  private boolean activateDebugRule(Class<?> ruleClass) {
-    return isDebugEnabled && DebugCheck.class.isAssignableFrom(ruleClass);
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {
