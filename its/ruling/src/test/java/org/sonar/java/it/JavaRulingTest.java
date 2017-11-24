@@ -166,7 +166,6 @@ public class JavaRulingTest {
     // sonarqube-6.5/server/sonar-server (v.6.5)
     String projectName = "sonar-server";
     MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5/server", projectName);
-    build.setProperty("sonar.java.xfile", "true");
     executeBuildWithCommonProperties(build, projectName);
   }
 
@@ -241,7 +240,8 @@ public class JavaRulingTest {
       .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
-      .setProperty("lits.differences", litsDifferencesPath(projectName));
+      .setProperty("lits.differences", litsDifferencesPath(projectName))
+      .setProperty("sonar.java.xfile", "true");
     BuildResult buildResult;
     if (buildQuietly) {
       // if build fail, ruling job is not violently interrupted, allowing time to dump SQ logs

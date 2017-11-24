@@ -649,10 +649,6 @@ public class BytecodeEGWalkerExecuteTest {
       assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
       programState = execute(invokeMethod(opcode, "returningDouble", "()D"), stateWithThis);
       assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
-
-      programState = execute(invokeMethod(opcode, "returnArg", "(Ljava/lang/Object;)Ljava/lang/Object;"), stateWithThis.stackValue(arg));
-      assertThat(programState.peekValue()).isNotEqualTo(thisSv);
-      assertThat(programState.peekValue()).isEqualTo(arg);
     }
   }
 
@@ -1160,9 +1156,9 @@ public class BytecodeEGWalkerExecuteTest {
     IllegalStateException ex = new IllegalStateException();
     doThrow(ex).when(walkerSpy).executeInstruction(any());
 
-    assertThatThrownBy(() -> walkerSpy.getMethodBehavior("java.lang.String#length()I", squidClassLoader))
+    assertThatThrownBy(() -> walkerSpy.getMethodBehavior("java.lang.String#valueOf(Z)Ljava/lang/String;", squidClassLoader))
       .isInstanceOf(BytecodeEGWalker.BytecodeAnalysisException.class)
-      .hasMessage("Failed dataflow analysis for java.lang.String#length()I")
+      .hasMessage("Failed dataflow analysis for java.lang.String#valueOf(Z)Ljava/lang/String;")
       .hasCause(ex);
   }
 
@@ -1189,7 +1185,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void exceptional_paths_should_be_enqueued() {
-    MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#enqueue_exceptional_paths()Ljava/lang/Object;", squidClassLoader);
+    MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#enqueue_exceptional_paths(Lorg/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest;)Ljava/lang/Object;", squidClassLoader);
     assertThat(mb.yields()).hasSize(2);
     List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint()).map(c -> c.get(ObjectConstraint.class)).collect(Collectors.toList());
     assertThat(resultConstraints).contains(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
@@ -1240,7 +1236,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   double returningDouble() { return 1.0d; }
 
-  final Object returnArg(Object o) { return o; }
+  static Object returnArg(Object o) { return o; }
 
   final void finalVoid() {}
 
@@ -1270,9 +1266,9 @@ public class BytecodeEGWalkerExecuteTest {
 
   void throwing() throws IOException {}
 
-  private Object enqueue_exceptional_paths() {
+  static Object enqueue_exceptional_paths(BytecodeEGWalkerExecuteTest o) {
     try {
-      throwing();
+      o.throwing();
       return new Object();
     } catch (IOException e) {
       return null;

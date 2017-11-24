@@ -19,22 +19,28 @@
  */
 package org.sonar.java.bytecode.cfg;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.sonar.java.bytecode.se.MethodLookup;
+import org.sonar.java.resolve.Flags;
 
 import static org.objectweb.asm.Opcodes.GOTO;
 
-public class BytecodeCFGMethodVisitor extends MethodVisitor {
+public class BytecodeCFGMethodVisitor extends MethodLookup.LookupMethodVisitor {
+
+  private static final Set<String> SIGNATURE_BLACKLIST = ImmutableSet.of("java.lang.Class#", "java.lang.Object#wait", "java.util.Optional#");
+
   Map<Label, BytecodeCFG.Block> blockByLabel = new HashMap<>();
   private BytecodeCFG.Block currentBlock;
   private BytecodeCFG cfg;
@@ -42,8 +48,17 @@ public class BytecodeCFGMethodVisitor extends MethodVisitor {
   private List<TryCatchBlock> currentTryCatches = new ArrayList<>();
   private Map<BytecodeCFG.Block, List<TryCatchBlock>> handlersToWire =  new HashMap<>();
 
-  public BytecodeCFGMethodVisitor() {
-    super(Opcodes.ASM5);
+  @Override
+  public boolean shouldVisitMethod(int methodFlags, String methodSignature) {
+    return isStatic(methodFlags) && !methodIsBlacklisted(methodSignature);
+  }
+
+  private static boolean isStatic(int methodFlags) {
+    return Flags.isFlagged(methodFlags, Flags.STATIC);
+  }
+
+  private static boolean methodIsBlacklisted(String signature) {
+    return SIGNATURE_BLACKLIST.stream().anyMatch(signature::startsWith);
   }
 
   @CheckForNull
