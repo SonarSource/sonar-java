@@ -272,29 +272,32 @@ public class ExplodedGraphWalker {
   }
 
   private void throwTooManyTransitiveRelationsException(MethodTree tree, RelationalSymbolicValue.TransitiveRelationExceededException e) {
-    interrupted();
-    String message = String.format("reached maximum number transitive relations for method %s in class %s",
+    String message = String.format("reached maximum number of transitive relations generated for method %s in class %s",
       tree.simpleName().name(), tree.symbol().owner().name());
-    throw new MaximumStepsReachedException(message, e);
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message, e);
+    interrupted(cause);
+    throw cause;
   }
 
   private void throwTooManyBooleanStates(MethodTree tree, TooManyNestedBooleanStatesException e) {
-    interrupted();
     String message = String.format("reached maximum number of %d branched states for method %s in class %s",
       MAX_NESTED_BOOLEAN_STATES, tree.simpleName().name(), tree.symbol().owner().name());
-    throw new MaximumStepsReachedException(message, e);
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message, e);
+    interrupted(cause);
+    throw cause;
   }
 
   private void throwMaxSteps(MethodTree tree) {
-    interrupted();
     String message = String.format("reached limit of %d steps for method %s#%d in class %s",
       maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
-    throw new MaximumStepsReachedException(message);
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
+    interrupted(cause);
+    throw cause;
   }
 
-  private void interrupted() {
+  private void interrupted(Exception cause) {
     handleEndOfExecutionPath(true);
-    checkerDispatcher.interruptedExecution();
+    checkerDispatcher.interruptedExecution(cause);
   }
 
   private void setNode(ExplodedGraph.Node node) {

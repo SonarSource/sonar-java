@@ -106,7 +106,7 @@ public class CheckListTest {
 
   @Test
   public void debugTests() {
-    assertThat(CheckList.getDebugChecks()).hasSize(1);
+    assertThat(CheckList.getDebugChecks()).hasSize(2);
   }
 
   /**
