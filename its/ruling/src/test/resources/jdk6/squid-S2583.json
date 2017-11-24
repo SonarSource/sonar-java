@@ -25,6 +25,10 @@
 'jdk6:java/awt/image/Raster.java':[
 368,
 ],
+'jdk6:java/beans/Introspector.java':[
+153,
+1278,
+],
 'jdk6:java/beans/ReflectionUtils.java':[
 217,
 ],
@@ -324,6 +328,9 @@
 ],
 'jdk6:java/util/ArrayList.java':[
 572,
+],
+'jdk6:java/util/JapaneseImperialCalendar.java':[
+2185,
 ],
 'jdk6:java/util/concurrent/CyclicBarrier.java':[
 217,

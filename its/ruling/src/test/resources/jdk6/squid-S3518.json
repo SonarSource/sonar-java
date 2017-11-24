@@ -2,6 +2,9 @@
 'jdk6:java/awt/font/TextJustifier.java':[
 140,
 ],
+'jdk6:java/math/MutableBigInteger.java':[
+851,
+],
 'jdk6:java/text/DecimalFormat.java':[
 539,
 1338,
