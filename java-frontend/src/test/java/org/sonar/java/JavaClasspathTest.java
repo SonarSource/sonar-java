@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -39,7 +38,7 @@ import static org.junit.Assert.fail;
 public class JavaClasspathTest {
 
   private DefaultFileSystem fs;
-  private Settings settings;
+  private MapSettings settings;
   private JavaClasspath javaClasspath;
   @Rule
   public LogTester logTester = new LogTester();
@@ -62,7 +61,7 @@ public class JavaClasspathTest {
   @Test
   public void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
-    javaClasspath = new JavaClasspath(settings, fs);
+    javaClasspath = new JavaClasspath(settings.asConfig(), fs);
     Mockito.verifyZeroInteractions(fs);
   }
 
@@ -309,7 +308,7 @@ public class JavaClasspathTest {
   public void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() throws Exception {
     createTwoFilesInFileSystem();
     try {
-      javaClasspath = new JavaClasspath(settings, fs);
+      javaClasspath = new JavaClasspath(settings.asConfig(), fs);
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
@@ -322,7 +321,7 @@ public class JavaClasspathTest {
   public void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() throws Exception {
     createTwoFilesInFileSystem();
     try {
-      javaClasspath = new JavaSonarLintClasspath(settings, fs);
+      javaClasspath = new JavaSonarLintClasspath(settings.asConfig(), fs);
       javaClasspath.getElements();
 
       logTester.logs(LoggerLevel.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
@@ -383,6 +382,6 @@ public class JavaClasspathTest {
   }
 
   private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(settings, fs);
+    return new JavaClasspath(settings.asConfig(), fs);
   }
 }

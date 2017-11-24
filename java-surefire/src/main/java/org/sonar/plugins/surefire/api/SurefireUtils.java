@@ -19,20 +19,18 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Settings;
-import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-
-import javax.annotation.CheckForNull;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 /**
  * @since 2.4
@@ -60,7 +58,7 @@ public final class SurefireUtils {
    * @param pathResolver Path solver.
    * @return The directories containing the surefire reports or default one (target/surefire-reports) if not found (not configured or not found).
    */
-  public static List<File> getReportsDirectories(Settings settings, FileSystem fs, PathResolver pathResolver) {
+  public static List<File> getReportsDirectories(Configuration settings, FileSystem fs, PathResolver pathResolver) {
     File dir = getReportsDirectoryFromDeprecatedProperty(settings, fs, pathResolver);
     List<File> dirs = getReportsDirectoriesFromProperty(settings, fs, pathResolver);
     if (dirs != null) {
@@ -78,9 +76,9 @@ public final class SurefireUtils {
   }
 
   @CheckForNull
-  private static List<File> getReportsDirectoriesFromProperty(Settings settings, FileSystem fs, PathResolver pathResolver) {
+  private static List<File> getReportsDirectoriesFromProperty(Configuration settings, FileSystem fs, PathResolver pathResolver) {
     if(settings.hasKey(SUREFIRE_REPORT_PATHS_PROPERTY)) {
-      String paths = settings.getString(SUREFIRE_REPORT_PATHS_PROPERTY);
+      String paths = settings.get(SUREFIRE_REPORT_PATHS_PROPERTY).orElse(null);
       if (paths != null) {
         return Arrays.stream(paths.split(","))
           .map(String::trim)
@@ -93,10 +91,10 @@ public final class SurefireUtils {
   }
 
   @CheckForNull
-  private static File getReportsDirectoryFromDeprecatedProperty(Settings settings, FileSystem fs, PathResolver pathResolver) {
+  private static File getReportsDirectoryFromDeprecatedProperty(Configuration settings, FileSystem fs, PathResolver pathResolver) {
     if(settings.hasKey(SUREFIRE_REPORTS_PATH_PROPERTY)) {
       LOGGER.info("Property '{}' is deprecated. Use property '{}' instead.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
-      String path = settings.getString(SUREFIRE_REPORTS_PATH_PROPERTY);
+      String path = settings.get(SUREFIRE_REPORTS_PATH_PROPERTY).orElse(null);
       if (path != null) {
         return getFileFromPath(fs, pathResolver, path);
       }

@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.surefire;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -29,15 +32,11 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.SurefireUtils;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -62,7 +61,7 @@ public class SurefireSensorTest {
     javaResourceLocator = mock(JavaResourceLocator.class);
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> resource((String) invocation.getArguments()[0]));
 
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs, pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
   }
 
   private DefaultInputFile resource(String key) {
@@ -71,7 +70,7 @@ public class SurefireSensorTest {
 
   @Test
   public void should_execute_if_filesystem_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs, pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
     DefaultSensorDescriptor defaultSensorDescriptor = new DefaultSensorDescriptor();
     surefireSensor.describe(defaultSensorDescriptor);
     assertThat(defaultSensorDescriptor.languages()).containsOnly("java");
@@ -79,10 +78,10 @@ public class SurefireSensorTest {
 
   @Test
   public void shouldNotFailIfReportsNotFound() {
-    Settings settings = mock(Settings.class);
-    when(settings.getString(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)).thenReturn("unknown");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY, "unknown");
 
-    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs, pathResolver);
+    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings.asConfig(), fs, pathResolver);
     surefireSensor.execute(mock(SensorContext.class));
   }
 

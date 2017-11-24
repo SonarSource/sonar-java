@@ -21,10 +21,9 @@ package org.sonar.plugins.java;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import org.sonar.api.config.Settings;
-import org.sonar.api.resources.AbstractLanguage;
-
 import java.util.Arrays;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.resources.AbstractLanguage;
 
 /**
  * Java language implementation
@@ -62,12 +61,12 @@ public class Java extends AbstractLanguage {
   /**
    * Settings of the plugin.
    */
-  private final Settings settings;
+  private final Configuration settings;
 
   /**
    * Default constructor
    */
-  public Java(Settings settings) {
+  public Java(Configuration settings) {
     super(KEY, NAME);
     this.settings = settings;
   }

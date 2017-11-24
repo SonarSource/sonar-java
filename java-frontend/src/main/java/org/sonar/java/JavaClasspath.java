@@ -20,23 +20,22 @@
 package org.sonar.java;
 
 import com.google.common.base.Strings;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Set;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
 import org.sonar.squidbridge.api.AnalysisException;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Set;
-
 public class JavaClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaClasspath.class);
 
-  public JavaClasspath(Settings settings, FileSystem fs) {
+  public JavaClasspath(Configuration settings, FileSystem fs) {
     super(settings, fs, InputFile.Type.MAIN);
   }
 
@@ -74,7 +73,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
   }
 
   private boolean useDeprecatedProperties() {
-    return !Strings.isNullOrEmpty(settings.getString("sonar.binaries")) && !Strings.isNullOrEmpty(settings.getString("sonar.libraries"));
+    return !Strings.isNullOrEmpty(settings.get("sonar.binaries").orElse(null)) && !Strings.isNullOrEmpty(settings.get("sonar.libraries").orElse(null));
   }
 
 }

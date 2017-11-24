@@ -20,11 +20,11 @@
 package org.sonar.java;
 
 import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 
 public class JavaSonarLintClasspath extends JavaClasspath {
 
-  public JavaSonarLintClasspath(Settings settings, FileSystem fs) {
+  public JavaSonarLintClasspath(Configuration settings, FileSystem fs) {
     super(settings, fs);
   }
 
