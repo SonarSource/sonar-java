@@ -65,4 +65,7 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
     return Collections.<Tree>singletonList(token);
   }
 
+  @Override public String toString() {
+    return value();
+  }
 }
