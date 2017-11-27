@@ -19,6 +19,9 @@
  */
 package org.sonar.java.se;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
@@ -31,10 +34,6 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -43,7 +42,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
@@ -54,9 +52,10 @@ public class BehaviorCacheTest {
 
   @Rule
   public LogTester logTester  = new LogTester();
+  private static NullDereferenceCheck nullDereferenceCheck = new NullDereferenceCheck();
 
   @Test
-  public void method_behavior_cache_should_be_filled() {
+  public void method_behavior_cache_should_be_filled_and_cleanup() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
     assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
@@ -72,19 +71,15 @@ public class BehaviorCacheTest {
     assertThat(sev.behaviorCache.behaviors.keySet().stream()
       .filter(s -> s.equals("#nativeMethod") || s.contains("#abstractMethod") || s.contains("#publicMethod"))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
+
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    sev.behaviorCache.cleanup();
+    assertThat(sev.behaviorCache.behaviors.entrySet()).isEmpty();
   }
 
   @Test
-  public void cleanup_of_cache() throws Exception {
-      SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-      assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
-      sev.behaviorCache.cleanup();
-      assertThat(sev.behaviorCache.behaviors.entrySet()).isEmpty();
-    }
-
-  @Test
   public void compute_beahvior_only_once() throws Exception {
-    SymbolicExecutionVisitor sev = spy(createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java"));
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
@@ -174,12 +169,11 @@ public class BehaviorCacheTest {
 
 
   private static void verifyNoIssueOnFile(String fileName) {
-    NullDereferenceCheck seCheck = new NullDereferenceCheck();
-    createSymbolicExecutionVisitor(fileName, seCheck);
+    createSymbolicExecutionVisitor(fileName, nullDereferenceCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
-    seCheck.scanFile(context);
-    verify(context, never()).reportIssueWithFlow(eq(seCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
+    nullDereferenceCheck.scanFile(context);
+    verify(context, never()).reportIssueWithFlow(eq(nullDereferenceCheck), any(Tree.class), anyString(), anySet(), nullable(Integer.class));
   }
 
 }

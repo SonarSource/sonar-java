@@ -19,13 +19,11 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -34,6 +32,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
@@ -63,13 +62,17 @@ import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
-  private final DefaultFileSystem fileSystem = new DefaultFileSystem(new File("src/test/java/").getAbsoluteFile());
-  private JavaSquidSensor sensor;
+  private static final CheckFactory checkFactory = mock(CheckFactory.class);
+  private static final Checks<Object> checks = mock(Checks.class);
 
-  @Before
-  public void setUp() {
-    sensor = new JavaSquidSensor(mock(SonarComponents.class), fileSystem,
-      mock(DefaultJavaResourceLocator.class), new MapSettings().asConfig(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter(fileSystem));
+  static {
+    when(checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(checks);
+    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
+    when(checkFactory.create(anyString())).thenReturn(checks);
+  }
+  @Test
+  public void test_toString() {
+    assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
   }
 
   @Test
@@ -94,7 +97,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(81));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(84));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -120,33 +123,19 @@ public class JavaSquidSensorTest {
   }
 
   private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
-
-    CheckFactory checkFactory = mock(CheckFactory.class);
-    Checks<Object> checks = mock(Checks.class);
-    when(checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(checks);
-    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
-
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    when(javaTestClasspath.getElements()).thenReturn(ImmutableList.of());
-
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
-    when(javaClasspath.getElements()).thenReturn(ImmutableList.of());
-    when(checkFactory.create(anyString())).thenReturn(checks);
+    Configuration settings = new MapSettings().asConfig();
+    DefaultFileSystem fs = contextTester.fileSystem();
+    JavaTestClasspath javaTestClasspath = new JavaTestClasspath(settings, fs);
+    JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
 
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, contextTester.fileSystem(), javaClasspath, javaTestClasspath, checkFactory));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
     return sonarComponents;
   }
-
-  @Test
-  public void test_toString() {
-    assertThat(sensor.toString()).isEqualTo("JavaSquidSensor");
-  }
-
 }

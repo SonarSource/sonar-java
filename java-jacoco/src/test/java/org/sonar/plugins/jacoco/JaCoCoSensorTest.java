@@ -73,6 +73,9 @@ public class JaCoCoSensorTest {
 
   @Rule
   public LogTester logTester = new LogTester();
+  private int[] oneHitlines = new int[] {6, 7, 8, 11};
+  private int[] zeroHitlines = new int[] {15, 16, 18};
+  private DefaultInputFile resource = new TestInputFileBuilder("", "org/sonar/plugins/jacoco/tests/Hello").setLines(19).build();
 
   @Before
   public void setUp() throws Exception {
@@ -166,14 +169,11 @@ public class JaCoCoSensorTest {
   }
 
   private void runAnalysis() throws IOException {
-    DefaultInputFile resource = new TestInputFileBuilder("", "org/sonar/plugins/jacoco/tests/Hello").setLines(19).build();
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
 
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
 
     sensor.execute(context);
-    int[] oneHitlines = new int[] {6, 7, 8, 11};
-    int[] zeroHitlines = new int[] {15, 16, 18};
     for (int zeroHitline : zeroHitlines) {
       assertThat(context.lineHits(resource.key(), zeroHitline)).isEqualTo(0);
     }

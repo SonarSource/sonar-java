@@ -20,9 +20,8 @@
 package org.sonar.java.model;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.typed.ActionParser;
-import org.apache.commons.io.FileUtils;
+import java.util.List;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -32,7 +31,6 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -91,10 +89,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTreeModelTest {
@@ -108,20 +102,6 @@ public class JavaTreeModelTest {
     ClassTree classTree = firstType("class A {}");
     assertThat(((JavaTree) classTree).getLine()).isEqualTo(1);
     assertThat(((JavaTree) classTree.modifiers()).getLine()).isEqualTo(-1);
-  }
-
-  @Test
-  public void integration_test() {
-    Iterable<File> files = Iterables.concat(
-        FileUtils.listFiles(new File("src/main/java/"), new String[]{"java"}, true),
-        FileUtils.listFiles(new File("src/test/java/"), new String[]{"java"}, true),
-        FileUtils.listFiles(new File("src/test/files/"), new String[]{"java"}, true)
-    );
-    BaseTreeVisitor visitor = new BaseTreeVisitor();
-    for (File file : files) {
-      Tree tree = p.parse(file);
-      tree.accept(visitor);
-    }
   }
 
   @Test
