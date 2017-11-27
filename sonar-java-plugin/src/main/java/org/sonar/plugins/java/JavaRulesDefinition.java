@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.debt.DebtRemediationFunction;
@@ -45,6 +47,20 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
  */
 public class JavaRulesDefinition implements RulesDefinition {
 
+  private final boolean isDebugEnabled;
+
+  /**
+   * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
+   * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
+   */
+  public JavaRulesDefinition() {
+    this.isDebugEnabled = false;
+  }
+
+  public JavaRulesDefinition(Configuration settings) {
+    this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
+  }
+
   private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
   private final Gson gson = new Gson();
 
@@ -53,13 +69,21 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
-    List<Class> checks = CheckList.getChecks();
+    List<Class> checks = getChecks();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
       newRule(ruleClass, repository, profile);
     }
     repository.done();
+  }
+
+  private List<Class> getChecks() {
+    ImmutableList.Builder<Class> checksBuilder = ImmutableList.<Class>builder().addAll(CheckList.getChecks());
+    if (isDebugEnabled) {
+      checksBuilder.addAll(CheckList.getDebugChecks());
+    }
+    return checksBuilder.build();
   }
 
   @VisibleForTesting
@@ -78,6 +102,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
     }
     String metadataKey = ruleMetadata(ruleClass, rule);
+    // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
     rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {

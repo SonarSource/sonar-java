@@ -186,7 +186,8 @@ public class ExplodedGraphWalker {
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, SemanticModel semanticModel) {
+  @VisibleForTesting
+  protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, SemanticModel semanticModel) {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.behaviorCache = behaviorCache;
@@ -228,7 +229,7 @@ public class ExplodedGraphWalker {
     }
     while (!workList.isEmpty()) {
       steps++;
-      if (steps > MAX_STEPS) {
+      if (steps > maxSteps()) {
         throwMaxSteps(tree);
       }
       // LIFO:
@@ -279,7 +280,7 @@ public class ExplodedGraphWalker {
   private void throwMaxSteps(MethodTree tree) {
     interrupted();
     String message = String.format("reached limit of %d steps for method %s#%d in class %s",
-      MAX_STEPS, tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
+      maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
     throw new MaximumStepsReachedException(message);
   }
 
@@ -1102,10 +1103,15 @@ public class ExplodedGraphWalker {
 
   private void checkExplodedGraphTooBig(ProgramState programState) {
     // Arbitrary formula to avoid out of memory errors
-    if (steps + workList.size() > MAX_STEPS / 2 && programState.constraintsSize() > 75) {
+    if (steps + workList.size() > maxSteps() / 2 && programState.constraintsSize() > 75) {
       throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
         + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name());
     }
+  }
+
+  @VisibleForTesting
+  protected int maxSteps() {
+    return MAX_STEPS;
   }
 
   AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector() {
