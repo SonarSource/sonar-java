@@ -126,12 +126,12 @@ public interface BytecodeSECheck {
         case FDIV:
         case IDIV:
         case LDIV:
-          return handleDivision(previousState, currentState);
+          return handleDivisionRemainder(previousState, currentState, true);
         case DREM:
         case FREM:
         case IREM:
         case LREM:
-          return handleRemainder(previousState, currentState);
+          return handleDivisionRemainder(previousState, currentState, false);
         case ISHL:
         case LSHL:
         case ISHR:
@@ -182,7 +182,7 @@ public interface BytecodeSECheck {
       return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
     }
 
-    private static ProgramState handleDivision(ProgramState previousState, ProgramState currentState) {
+    private static ProgramState handleDivisionRemainder(ProgramState previousState, ProgramState currentState, boolean isDivision) {
       List<SymbolicValue> operands = previousState.peekValues(2);
       SymbolicValue result = currentState.peekValue();
       SymbolicValue op1 = operands.get(0);
@@ -195,24 +195,8 @@ public interface BytecodeSECheck {
         // Reuse zero
         return currentState.unstackValue(1).state.stackValue(op1);
       }
-      if (isNonZero(currentState, op1)) {
+      if (isNonZero(currentState, op1) && isDivision) {
         return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class).addConstraint(result, ZeroConstraint.NON_ZERO);
-      }
-      return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
-    }
-
-    private static ProgramState handleRemainder(ProgramState previousState, ProgramState currentState) {
-      List<SymbolicValue> operands = previousState.peekValues(2);
-      SymbolicValue result = currentState.peekValue();
-      SymbolicValue op1 = operands.get(0);
-      SymbolicValue op2 = operands.get(1);
-      if (isZero(currentState, op2)) {
-        // Division by zero
-        // TODO exceptional yield ?
-        return null;
-      } else if (isZero(currentState, op1)) {
-        // Reuse zero
-        return currentState.unstackValue(1).state.stackValue(op1);
       }
       return currentState.removeConstraintsOnDomain(result, BooleanConstraint.class);
     }
