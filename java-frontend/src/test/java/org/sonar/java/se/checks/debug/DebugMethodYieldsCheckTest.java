@@ -19,14 +19,47 @@
  */
 package org.sonar.java.se.checks.debug;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import org.junit.Test;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 public class DebugMethodYieldsCheckTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/se/debug/DebugMethodYieldsCheck.java", new DebugMethodYieldsCheck());
+  }
+
+  @Test
+  public void test_max_steps() {
+    DebugMethodYieldsCheck check = new DebugMethodYieldsCheck();
+    BehaviorCache behaviorCache = new BehaviorCache(new SquidClassLoader(new ArrayList<>()));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(check), behaviorCache) {
+      @Override
+      protected ExplodedGraphWalker getWalker() {
+        return new ExplodedGraphWalker(Collections.singletonList(check), behaviorCache, (SemanticModel) context.getSemanticModel()) {
+          @Override
+          protected int maxSteps() {
+            return 20;
+          }
+        };
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        super.scanFile(context);
+        // the check has been executed, but we still need to call the scan manually to report the issues
+        check.scanFile(context);
+      }
+    };
+    JavaCheckVerifier.verify("src/test/files/se/debug/DebugMethodYieldsCheckMaxSteps.java", sev);
   }
 
 }

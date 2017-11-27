@@ -66,7 +66,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   public void execute(MethodTree methodTree) {
-    ExplodedGraphWalker walker = egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
+    ExplodedGraphWalker walker = getWalker();
     try {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();
       if (methodCanNotBeOverriden(methodSymbol)) {
@@ -86,6 +86,11 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         walker.methodBehavior.visited();
       }
     }
+  }
+
+  @VisibleForTesting
+  protected ExplodedGraphWalker getWalker() {
+    return egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
