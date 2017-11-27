@@ -2,6 +2,7 @@ package my.pkg;
 
 class MyClass {
 
+  /*
   public static String empty(int a) {
     return "" + a;
   }
@@ -18,6 +19,11 @@ class MyClass {
       e;
     }
     f;
+  }
+  */
+
+  public String myConst() {
+    return "foo";
   }
 
 }
