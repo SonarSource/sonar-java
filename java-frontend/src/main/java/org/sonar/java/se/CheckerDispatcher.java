@@ -38,6 +38,7 @@ public class CheckerDispatcher implements CheckerContext {
   private final List<SECheck> checks;
   private int currentCheckerIndex = -1;
   private boolean transition = false;
+  private Exception interruptionCause = null;
   Tree syntaxNode;
   // used by walker to store chosen yield when adding a transition from MIT
   @Nullable
@@ -151,8 +152,19 @@ public class CheckerDispatcher implements CheckerContext {
     return explodedGraphWalker.constraintManager;
   }
 
-  public void interruptedExecution() {
+  public void interruptedExecution(Exception interruptionCause) {
+    this.interruptionCause = interruptionCause;
     checks.forEach(c -> c.interruptedExecution(this));
+    this.interruptionCause = null;
+  }
+
+  /**
+   * Will be not null only when the execution is interrupted, and only during handling of {@link SECheck#interruptedExecution(CheckerContext)}.
+   * Rest of the time, returns null
+   */
+  @CheckForNull
+  public Exception interruptionCause() {
+    return interruptionCause;
   }
 
   @Override

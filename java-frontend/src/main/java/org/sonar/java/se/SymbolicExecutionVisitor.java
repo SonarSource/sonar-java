@@ -28,7 +28,6 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -79,8 +78,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         walker.visitMethod(methodTree);
       }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
-      | ExplodedGraphWalker.ExplodedGraphTooBigException
-      | RelationalSymbolicValue.TransitiveRelationExceededException exception) {
+      | ExplodedGraphWalker.ExplodedGraphTooBigException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
       if (walker.methodBehavior != null) {
         walker.methodBehavior.visited();

@@ -25,7 +25,22 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -51,6 +66,7 @@ import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -82,24 +98,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ExplodedGraphWalker {
 
@@ -162,7 +160,8 @@ public class ExplodedGraphWalker {
     public MaximumStepsReachedException(String s) {
       super(s);
     }
-    public MaximumStepsReachedException(String s, TooManyNestedBooleanStatesException e) {
+
+    public MaximumStepsReachedException(String s, RuntimeException e) {
       super(s, e);
     }
 
@@ -258,6 +257,8 @@ public class ExplodedGraphWalker {
         }
       } catch (TooManyNestedBooleanStatesException e) {
         throwTooManyBooleanStates(tree, e);
+      } catch (RelationalSymbolicValue.TransitiveRelationExceededException e) {
+        throwTooManyTransitiveRelationsException(tree, e);
       }
     }
 
@@ -270,23 +271,33 @@ public class ExplodedGraphWalker {
     constraintManager = null;
   }
 
+  private void throwTooManyTransitiveRelationsException(MethodTree tree, RelationalSymbolicValue.TransitiveRelationExceededException e) {
+    String message = String.format("reached maximum number of transitive relations generated for method %s in class %s",
+      tree.simpleName().name(), tree.symbol().owner().name());
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message, e);
+    interrupted(cause);
+    throw cause;
+  }
+
   private void throwTooManyBooleanStates(MethodTree tree, TooManyNestedBooleanStatesException e) {
-    interrupted();
     String message = String.format("reached maximum number of %d branched states for method %s in class %s",
       MAX_NESTED_BOOLEAN_STATES, tree.simpleName().name(), tree.symbol().owner().name());
-    throw new MaximumStepsReachedException(message, e);
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message, e);
+    interrupted(cause);
+    throw cause;
   }
 
   private void throwMaxSteps(MethodTree tree) {
-    interrupted();
     String message = String.format("reached limit of %d steps for method %s#%d in class %s",
       maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
-    throw new MaximumStepsReachedException(message);
+    MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
+    interrupted(cause);
+    throw cause;
   }
 
-  private void interrupted() {
+  private void interrupted(Exception cause) {
     handleEndOfExecutionPath(true);
-    checkerDispatcher.interruptedExecution();
+    checkerDispatcher.interruptedExecution(cause);
   }
 
   private void setNode(ExplodedGraph.Node node) {

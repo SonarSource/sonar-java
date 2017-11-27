@@ -96,6 +96,7 @@ import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.checks.debug.DebugInterruptedExecutionCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -524,6 +525,7 @@ public final class CheckList {
   public static List<Class<? extends DebugCheck>> getDebugChecks() {
     return ImmutableList.<Class<? extends DebugCheck>>builder()
       .add(DebugMethodYieldsCheck.class)
+      .add(DebugInterruptedExecutionCheck.class)
       .build();
   }
 
