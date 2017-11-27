@@ -22,8 +22,8 @@ class MyClass {
   }
   */
 
-  public String myConst() {
-    return "foo";
+  public String myConst(int a) {
+    return a;
   }
 
 }

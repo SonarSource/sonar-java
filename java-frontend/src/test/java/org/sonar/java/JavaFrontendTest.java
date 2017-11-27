@@ -25,8 +25,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.sonar.java.JavaFrontend.ScannedFile;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -113,9 +116,31 @@ public class JavaFrontendTest {
   private static class SymbolicValue {
   }
 
+  private static class TaintSources {
+
+    private Set<SymbolicValue> sources = new HashSet<>();
+
+    private TaintSources() {
+    }
+
+    private TaintSources(SymbolicValue sval) {
+      sources.add(sval);
+    }
+
+    public static TaintSources empty() {
+      return new TaintSources();
+    }
+
+    public static TaintSources of(SymbolicValue sval) {
+      return new TaintSources(sval);
+    }
+
+  }
+
   private static class BlockVisitor {
 
-    public Deque<Set<SymbolicValue>> stringStack = new ArrayDeque<Set<SymbolicValue>>();
+    public Map<Symbol, SymbolicValue> symbolicValues = new HashMap<>();
+    public Deque<TaintSources> stringStack = new ArrayDeque<>();
 
     private final ScannedFile src;
     private final Block block;
@@ -241,7 +266,11 @@ public class JavaFrontendTest {
     }
 
     private void executeLiteral() {
-      stringStack.push(new HashSet<>());
+      stringStack.push(TaintSources.empty());
+    }
+
+    private void executeIdentifier(IdentifierTree tree) {
+      stringStack.push(TaintSources.of(sval(src.semantic().getSymbol(tree))));
     }
 
     private void executeMethodInvocation(MethodInvocationTree mit) {
@@ -312,14 +341,13 @@ public class JavaFrontendTest {
       /* push 1 */
     }
 
-    private void executeIdentifier(IdentifierTree tree) {
+    private void executeMemberSelect(MemberSelectExpressionTree mse) {
       // TODO
       throw new UnsupportedOperationException();
     }
 
-    private void executeMemberSelect(MemberSelectExpressionTree mse) {
-      // TODO
-      throw new UnsupportedOperationException();
+    private SymbolicValue sval(Symbol symbol) {
+      return symbolicValues.computeIfAbsent(symbol, s -> new SymbolicValue());
     }
 
   }
