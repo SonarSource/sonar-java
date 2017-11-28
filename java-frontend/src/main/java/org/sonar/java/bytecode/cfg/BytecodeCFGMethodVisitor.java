@@ -78,6 +78,7 @@ public class BytecodeCFGMethodVisitor extends MethodLookup.LookupMethodVisitor {
     currentBlock.addInsn(opcode);
     if ((Opcodes.IRETURN <= opcode && opcode <= Opcodes.RETURN) || opcode == Opcodes.ATHROW) {
       currentBlock.successors.add(cfg.blocks.get(0));
+      currentBlock = null;
     }
   }
 
@@ -173,9 +174,7 @@ public class BytecodeCFGMethodVisitor extends MethodLookup.LookupMethodVisitor {
       });
     } else {
       currentBlock = blockByLabel.computeIfAbsent(label, l -> currentBlock.createSuccessor());
-      if (previous.successors.isEmpty()) {
-        previous.successors.add(currentBlock);
-      }
+      previous.successors.add(currentBlock);
     }
     currentTryCatches.addAll(handlersStartingWith(label));
     currentTryCatches.removeAll(handlersEndingWith(label));
