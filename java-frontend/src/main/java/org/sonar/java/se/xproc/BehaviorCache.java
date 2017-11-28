@@ -139,8 +139,24 @@ public class BehaviorCache {
     return bytecodeBehaviors.get(signature);
   }
 
+  /**
+   * Do not trigger any new computation of method behavior, just check if there is a known method behavior for the symbol.
+   *
+   * @param symbol The targeted method.
+   * @return null for methods having no computed method behavior yet, or its method behavior, based on bytecode or source
+   */
+  @CheckForNull
+  public MethodBehavior peek(String signature) {
+    // directly query the cache, to not trigger computation of new method behaviors
+    MethodBehavior mb = behaviors.get(signature);
+    if (mb != null) {
+      return mb;
+    }
+    // check for bytecode signatures
+    return bytecodeBehaviors.get(signature);
+  }
+
   private static boolean isKnownSignature(String signature) {
     return WHITELIST.stream().anyMatch(signature::startsWith);
   }
-
 }

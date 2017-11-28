@@ -19,8 +19,10 @@
  */
 package org.sonar.java.se;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,10 +30,13 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -167,6 +172,52 @@ public class BehaviorCacheTest {
     assertThat(sev.behaviorCache.behaviors.keySet()).isEmpty();
   }
 
+  @Test
+  public void test_peek() throws Exception {
+    Set<String> testedPre = new HashSet<>();
+    Set<String> testedPost = new HashSet<>();
+
+    SECheck check = new SECheck() {
+      @Override
+      public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+        if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+          Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
+          MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
+          assertThat(peekMethodBehavior).isNull();
+          testedPre.add(symbol.name());
+        }
+        return context.getState();
+      }
+
+      @Override
+      public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+        if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+          Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
+          String methodName = symbol.name();
+          MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
+          assertThat(peekMethodBehavior).isNotNull();
+          if ("foo".equals(methodName) || "isBlank".equals(methodName)) {
+            // foo should have been computed
+            assertThat(peekMethodBehavior.isComplete()).isTrue();
+          } else if ("bar".equals(methodName)) {
+            assertThat(peekMethodBehavior.isComplete()).isFalse();
+          }
+          testedPost.add(methodName);
+        }
+        return super.checkPostStatement(context, syntaxNode);
+      }
+    };
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCachePeek.java", check);
+
+    assertThat(sev.behaviorCache.peek("org.apache.commons.lang.StringUtils#isBlank(Ljava/lang/String;)Z").isComplete()).isTrue();
+    assertThat(sev.behaviorCache.peek("org.foo.A#foo()Z").isComplete()).isTrue();
+    assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.peek("org.foo.A#unknownMethod()Z")).isNull();
+    assertThat(sev.behaviorCache.behaviors.keySet()).containsOnly("org.foo.A#foo()Z");
+
+    assertThat(testedPre).containsOnly("foo", "bar", "isBlank");
+    assertThat(testedPost).containsOnly("foo", "bar", "isBlank");
+  }
 
   private static void verifyNoIssueOnFile(String fileName) {
     createSymbolicExecutionVisitor(fileName, nullDereferenceCheck);
