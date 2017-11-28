@@ -287,7 +287,10 @@ public class JavaFrontend {
       TaintProgramState exitState = visitor.state;
       if (block.successors().contains(cfg.exitBlock())) {
         if (!returnsVoid) {
-          result.add(visitor.peek());
+          TaintSource ts = visitor.peek();
+          if (ts.canBeTainted()) {
+            result.add(visitor.peek());
+          }
         }
       }
 

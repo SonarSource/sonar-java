@@ -38,9 +38,7 @@ public class JavaFrontendTest {
   public void const_literal_should_not_be_tainted() {
     Set<TaintSource> conditions = computeTaintSources("constLiteral");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.canBeTainted()).isFalse();
-    });
+    assertThat(conditions).isEmpty();
   }
 
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
