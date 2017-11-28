@@ -44,4 +44,17 @@ class A {
   int actualObject() {
     return 0;
   }
+
+  public void testMethod() throws Exception {
+    MyBean bean = new MyBean();
+
+    assertEquals(1, bean.getDouble(), 0);
+    assertEquals("no FP here", 1, bean.getDouble(), 0);
+  }
+
+  static class MyBean {
+    public double getDouble() {
+      return 1;
+    }
+  }
 }
