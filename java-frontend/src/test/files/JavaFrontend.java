@@ -1,6 +1,10 @@
 package my.pkg;
 
-class MyClass {
+class Base {
+  public int b;
+}
+
+class MyClass extends Base {
 
   /*
   public static String empty(int a) {
@@ -23,7 +27,6 @@ class MyClass {
   */
 
   public String myConst(int a) {
-    return a;
   }
 
 }

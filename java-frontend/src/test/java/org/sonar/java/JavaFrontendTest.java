@@ -19,37 +19,21 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Joiner;
 import java.io.File;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Objects;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.junit.Test;
 import org.sonar.java.JavaFrontend.ScannedFile;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.*;
 
 public class JavaFrontendTest {
 
@@ -80,84 +64,107 @@ public class JavaFrontendTest {
     return result;
   }
 
+  private static class TaintSymbolicValue {
+
+    private final String symbol;
+
+    public TaintSymbolicValue(Symbol symbol) {
+      if (symbol == null) {
+        throw new IllegalArgumentException();
+      }
+      this.symbol = symbol.toString();
+    }
+
+    @Override
+    public String toString() {
+      return symbol;
+    }
+  }
+
+  private static class TaintProgramState {
+
+    private final ScannedFile src;
+
+    public TaintProgramState(ScannedFile src) {
+      this.src = src;
+    }
+
+    private TaintProgramState(TaintProgramState other) {
+      this.src = other.src;
+    }
+
+    public TaintProgramState dup() {
+      return new TaintProgramState(this);
+    }
+
+    public SemanticModel semantic() {
+      return src.semantic();
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(src);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+        return false;
+      }
+
+      TaintProgramState other = (TaintProgramState) obj;
+
+      return Objects.equals(src, other.src);
+    }
+  }
+
   private static void simplifyCFG(ScannedFile src, CFG cfg) {
-    Set<Block> visited = new HashSet<>();
-    Set<Block> worklist = new HashSet<>();
+    Multimap<Block, TaintProgramState> visited = HashMultimap.create();
+    Multimap<Block, TaintProgramState> workList = HashMultimap.create();
 
     Block entry = cfg.entry();
-    worklist.add(entry);
+    TaintProgramState entryState = new TaintProgramState(src);
+    workList.put(entry, entryState);
 
-    while (!worklist.isEmpty()) {
-      Block block = worklist.iterator().next();
-      worklist.remove(block);
-      visited.add(block);
+    while (!workList.isEmpty()) {
+      Block block = workList.keys().iterator().next();
+      TaintProgramState state = workList.get(block).iterator().next();
+      visited.put(block, state);
+      if (!workList.remove(block, state)) {
+        throw new IllegalStateException();
+      }
 
-      System.out.println("  B" + block.id() + " -> " + Joiner.on(", ").join(block.successors().stream().map(b -> "B" + b.id()).collect(Collectors.toList())));
-
-      BlockVisitor visitor = new BlockVisitor(src, block);
-      visitor.visit();
-      if (block.terminator() != null || block.successors().contains(cfg.exitBlock())) {
-        if (visitor.stringStack.size() != 1) {
-          throw new IllegalStateException("Expected 1 element to be left on the stack, but got: " + visitor.stringStack.size());
-        }
-        System.out.println("This block can terminate the method and leaves 1 element on the stack");
-      } else {
-        System.out.println("This block cannot terminate the method");
+      BlockVisitor visitor = new BlockVisitor(state.dup());
+      visitor.visit(block);
+      TaintProgramState exitState = visitor.state;
+      if (block.successors().contains(cfg.exitBlock())) {
+        /* TODO */
       }
 
       for (Block successor: block.successors()) {
-        if (!visited.contains(successor)) {
-          worklist.add(successor);
+        if (!visited.containsEntry(successor, exitState)) {
+          workList.put(successor, exitState);
         }
       }
     }
-  }
-
-  private static class SymbolicValue {
-  }
-
-  private static class TaintSources {
-
-    private Set<SymbolicValue> sources = new HashSet<>();
-
-    private TaintSources() {
-    }
-
-    private TaintSources(SymbolicValue sval) {
-      sources.add(sval);
-    }
-
-    public static TaintSources empty() {
-      return new TaintSources();
-    }
-
-    public static TaintSources of(SymbolicValue sval) {
-      return new TaintSources(sval);
-    }
-
   }
 
   private static class BlockVisitor {
 
-    public Map<Symbol, SymbolicValue> symbolicValues = new HashMap<>();
-    public Deque<TaintSources> stringStack = new ArrayDeque<>();
+    private final TaintProgramState state;
 
-    private final ScannedFile src;
-    private final Block block;
-
-    public BlockVisitor(ScannedFile src, Block block) {
-      this.src = src;
-      this.block = block;
+    public BlockVisitor(TaintProgramState state) {
+      this.state = state;
     }
 
-    public void visit() {
+    public void visit(Block block) {
       for (Tree tree: block.elements()) {
         String fqtn;
         if (tree instanceof ExpressionTree) {
           ExpressionTree expr = (ExpressionTree) tree;
           fqtn = expr.symbolType().fullyQualifiedName();
         } else {
-          fqtn = src.semantic().getSymbol(tree).type().fullyQualifiedName();
+          fqtn = state.semantic().getSymbol(tree).type().fullyQualifiedName();
         }
         System.out.println(String.format("    %s: %s of type %s", tree.kind(), tree, fqtn));
 
@@ -183,10 +190,10 @@ public class JavaFrontendTest {
           executeTypeCast((TypeCastTree) tree);
           break;
         case ASSIGNMENT:
+        case PLUS_ASSIGNMENT:
         case MULTIPLY_ASSIGNMENT:
         case DIVIDE_ASSIGNMENT:
         case REMAINDER_ASSIGNMENT:
-        case PLUS_ASSIGNMENT:
         case MINUS_ASSIGNMENT:
         case LEFT_SHIFT_ASSIGNMENT:
         case RIGHT_SHIFT_ASSIGNMENT:
@@ -266,45 +273,31 @@ public class JavaFrontendTest {
     }
 
     private void executeLiteral() {
-      stringStack.push(TaintSources.empty());
+      // TODO
+      throw new UnsupportedOperationException();
     }
 
     private void executeIdentifier(IdentifierTree tree) {
-      stringStack.push(TaintSources.of(sval(src.semantic().getSymbol(tree))));
-    }
-
-    private void executeMethodInvocation(MethodInvocationTree mit) {
-      /* pop arguments + 1 */
-      // TODO
-      throw new UnsupportedOperationException();
-    }
-
-    private void executeVariable(VariableTree variableTree) {
-      if (variableTree.initializer() == null) {
-      } else {
-      }
-      // TODO
-      throw new UnsupportedOperationException();
-    }
-
-    private void executeTypeCast(TypeCastTree typeCast) {
       // TODO
       throw new UnsupportedOperationException();
     }
 
     private void executeAssignment(AssignmentExpressionTree tree) {
-      if (tree.is(Tree.Kind.ASSIGNMENT)) {
-        if (ExpressionUtils.isSimpleAssignment(tree)) {
-          /* pop 1 */
-        } else {
-          /* pop 2 */
-        }
-      } else {
-        /* pop 2 */
-      }
+      // TODO
+      throw new UnsupportedOperationException();
+    }
 
-      /* push 1 */
+    private void executeMethodInvocation(MethodInvocationTree mit) {
+      // TODO
+      throw new UnsupportedOperationException();
+    }
 
+    private void executeVariable(VariableTree variableTree) {
+      // TODO
+      throw new UnsupportedOperationException();
+    }
+
+    private void executeTypeCast(TypeCastTree typeCast) {
       // TODO
       throw new UnsupportedOperationException();
     }
@@ -330,24 +323,18 @@ public class JavaFrontendTest {
     }
 
     private void executeBinaryExpression(Tree tree) {
-      /* pop 2 */
-      /* push 1 */
       // TODO
       throw new UnsupportedOperationException();
     }
 
     private void executeUnaryExpression(Tree tree) {
-      /* pop 1 */
-      /* push 1 */
+      // TODO
+      throw new UnsupportedOperationException();
     }
 
     private void executeMemberSelect(MemberSelectExpressionTree mse) {
       // TODO
       throw new UnsupportedOperationException();
-    }
-
-    private SymbolicValue sval(Symbol symbol) {
-      return symbolicValues.computeIfAbsent(symbol, s -> new SymbolicValue());
     }
 
   }
