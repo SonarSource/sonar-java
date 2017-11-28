@@ -35,10 +35,19 @@ public class JavaFrontendTest {
   private final ScannedFile src = new JavaFrontend().scan(new File("src/test/files/JavaFrontend.java"), this.getClass().getClassLoader());
 
   @Test
-  public void const_literal_should_not_be_tainted() {
+  public void return_const_literal_should_never_be_tainted() {
     Set<TaintSource> conditions = computeTaintSources("constLiteral");
 
     assertThat(conditions).isEmpty();
+  }
+
+  @Test
+  public void return_param_should_only_be_tainted_when_param_is_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnParam");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("returnParam#a");
+    });
   }
 
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {

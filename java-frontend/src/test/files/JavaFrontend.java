@@ -6,8 +6,12 @@ class Base {
 
 class MyClass extends Base {
 
-  public String constLiteral(String a) {
+  public String returnConstLiteral(String a) {
     return "foo";
+  }
+
+  public String returnParam(String a) {
+    return a;
   }
 
 }
