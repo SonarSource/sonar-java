@@ -93,4 +93,9 @@ public class A {
 
     boolean eof = false; // Compliant, because additional vertical whitespace
   }
+
+  void oneLiner() {
+    if (context.toString().contains("pippo")) scanTree(context.getTopTree());scanTree(context.getTopTree()); // Noncompliant {{This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.}}
+    for (String s : myList) scanTree(context.getTopTree());scanTree(context.getTopTree()); // Noncompliant {{This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.}}
+  }
 }
