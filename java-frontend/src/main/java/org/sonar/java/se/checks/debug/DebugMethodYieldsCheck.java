@@ -39,7 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 @Rule(
   key = "DEBUG-SE-MethodYields",
   name = "DEBUG(SE): Method yields",
-  description = "Display method yields produced for each method exploded by the Symbolic Execution engine.",
+  description = "Display method yields produced for each method explored by the Symbolic Execution engine.",
   priority = Priority.INFO,
   tags = "debug")
 public class DebugMethodYieldsCheck extends SECheck implements DebugCheck {
