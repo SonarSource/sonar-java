@@ -33,11 +33,13 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.testdata.BytecodeTestClass;
+import org.sonar.java.bytecode.se.testdata.ExceptionEnqueue;
 import org.sonar.java.bytecode.se.testdata.FinalBytecodeTestClass;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -219,6 +221,17 @@ public class BytecodeEGWalkerTest {
           " : Too many steps resolving org.sonar.java.bytecode.se.testdata.BytecodeTestClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;");
     assertThat(methodBehavior.isComplete()).isFalse();
     assertThat(methodBehavior.isVisited()).isTrue();
+  }
+
+  @Test
+  public void unchecked_exceptions_should_be_enqueued() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "test(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
+    List<Constraint> resultConstraint = mb.happyPathYields().map(y -> y.resultConstraint().get(BooleanConstraint.class)).collect(Collectors.toList());
+    assertThat(resultConstraint).contains(BooleanConstraint.TRUE, BooleanConstraint.FALSE);
+    List<String> exceptions = mb.exceptionalPathYields().map(y -> y.exceptionType(semanticModel).fullyQualifiedName()).collect(Collectors.toList());
+    assertThat(exceptions).contains("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ExceptionCatch",
+        "org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ThrowableCatch",
+        "org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ErrorCatch");
   }
 
   private static MethodBehavior getMethodBehavior(String signature) {

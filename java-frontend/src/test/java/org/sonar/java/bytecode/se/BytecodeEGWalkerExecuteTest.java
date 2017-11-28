@@ -1015,15 +1015,16 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   private ProgramState execute(Instruction instruction, ProgramState startingState) {
-    ProgramPoint programPoint = mock(ProgramPoint.class);
-    when(programPoint.next()).thenReturn(programPoint);
-    walker.programPosition = programPoint;
+    CFG.IBlock block = mock(CFG.IBlock.class);
+    when(block.successors()).thenReturn(Collections.emptySet());
+    walker.programPosition = new ProgramPoint(block);
     walker.programState = startingState;
+    walker.workList.clear();
     walker.executeInstruction(instruction);
     ProgramState programState = walker.programState;
-    if (instruction.isInvoke()) {
-      // X-PROC will enqueue new nodes
-       programState = walker.workList.getFirst().programState;
+    // X-PROC will enqueue new nodes
+    if (instruction.isInvoke() && !walker.workList.isEmpty()) {
+      programState = walker.workList.getFirst().programState;
     }
     return programState;
   }
@@ -1059,7 +1060,7 @@ public class BytecodeEGWalkerExecuteTest {
     walker.programPosition = new ProgramPoint(b2).next().next();
 
     walker.executeInstruction(b2.elements().get(3));
-    assertThat(walker.workList).hasSize(3);
+    assertThat(walker.workList).hasSize(4);
   }
 
   @Test
@@ -1070,7 +1071,7 @@ public class BytecodeEGWalkerExecuteTest {
     walker.programPosition = new ProgramPoint(b2).next().next();
     walker.executeInstruction(b2.elements().get(3));
 
-    assertThat(walker.workList).hasSize(2);
+    assertThat(walker.workList).hasSize(3);
     assertThat(walker.workList.pop().programState.exitValue()).isNotNull()
       .isInstanceOf(SymbolicValue.ExceptionalSymbolicValue.class)
       .extracting(sv -> ((SymbolicValue.ExceptionalSymbolicValue) sv).exceptionType().fullyQualifiedName()).containsExactly("java.lang.IllegalStateException");

@@ -744,9 +744,11 @@ public class BytecodeEGWalker {
     ProgramState.Pop pop = programState.unstackValue(arity);
     Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
     // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
+    programState = pop.state;
     SymbolicValue returnSV = instruction.hasReturnValue() ? constraintManager.createSymbolicValue(instruction) : null;
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+    enqueueUncheckedExceptions();
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
       List<SymbolicValue> stack = Lists.reverse(pop.values);
       if (!isStatic) {
@@ -775,7 +777,6 @@ public class BytecodeEGWalker {
       // FIXME : empty yields here should not happen, for now act as if behavior was not resolved.
       return !methodInvokedBehavior.yields().isEmpty();
     }
-    programState = pop.state;
     if (methodInvokedBehavior != null) {
       methodInvokedBehavior.getDeclaredExceptions().forEach(exception -> {
         Type exceptionType = semanticModel.getClassType(exception);
@@ -788,6 +789,35 @@ public class BytecodeEGWalker {
       programState = setDoubleOrLong(returnSV, instruction.isLongOrDoubleValue());
     }
     return false;
+  }
+
+  private void enqueueUncheckedExceptions() {
+    programPosition.block.successors()
+        .stream()
+        .map(BytecodeCFG.Block.class::cast)
+        .filter(this::isUncheckedExceptionCatchBlock)
+        .forEach(b -> enqueue(new ProgramPoint(b), stateWithException(programState, b)));
+  }
+
+  private boolean isUncheckedExceptionCatchBlock(BytecodeCFG.Block b) {
+    String exceptionTypeName = b.getExceptionType();
+    if (exceptionTypeName == null) {
+      return false;
+    }
+    Type exceptionType = semanticModel.getClassType(exceptionTypeName);
+    if (exceptionType == null) {
+      return false;
+    }
+    return exceptionType.isSubtypeOf("java.lang.RuntimeException")
+        || exceptionType.isSubtypeOf("java.lang.Error")
+        || exceptionType.is("java.lang.Exception")
+        || exceptionType.is("java.lang.Throwable");
+  }
+
+  private ProgramState stateWithException(ProgramState programState, BytecodeCFG.Block b) {
+    Type exceptionType = semanticModel.getClassType(b.getExceptionType());
+    SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
+    return programState.stackValue(sv);
   }
 
   private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {
