@@ -23,6 +23,14 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
@@ -47,14 +55,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
@@ -183,7 +183,8 @@ public class BytecodeCFGBuilderTest {
   @Test
   public void all_opcodes_should_be_visited() throws Exception {
     Instructions ins = new Instructions();
-    NO_OPERAND_INSN.forEach(ins::visitInsn);
+    Predicate<Integer> filterReturnAndThrow = opcode -> !((Opcodes.IRETURN <= opcode && opcode <= Opcodes.RETURN) || opcode == Opcodes.ATHROW);
+    NO_OPERAND_INSN.stream().filter(filterReturnAndThrow).forEach(ins::visitInsn);
     INT_INSN.forEach(i -> ins.visitIntInsn(i, 0));
     VAR_INSN.forEach(i -> ins.visitVarInsn(i, 0));
     TYPE_INSN.forEach(i -> ins.visitTypeInsn(i, "java/lang/Object"));
@@ -215,7 +216,7 @@ public class BytecodeCFGBuilderTest {
 
     BytecodeCFG cfg = ins.cfg();
     Multiset<String> cfgOpcodes = cfgOpcodes(cfg);
-    List<String> collect = Instructions.ASM_OPCODES.stream().map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
+    List<String> collect = Instructions.ASM_OPCODES.stream().filter(filterReturnAndThrow).map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
     assertThat(cfgOpcodes).containsAll(collect);
   }
 

@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -122,6 +123,18 @@ public class BytecodeEGWalkerExecuteTest {
     BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
     behaviorCache.setFileContext(null, semanticModel);
     walker = new BytecodeEGWalker(behaviorCache, semanticModel);
+  }
+
+  @Test
+  public void athrow_should_not_be_linked_to_next_label() throws Exception {
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {int field;}");
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/JsrRet")));
+    SemanticModel semanticModel = SemanticModel.createFor(tree, classLoader);
+    BehaviorCache behaviorCache = new BehaviorCache(classLoader);
+    behaviorCache.setFileContext(null, semanticModel);
+    BytecodeEGWalker walker = new BytecodeEGWalker(behaviorCache, semanticModel);
+    MethodBehavior methodBehavior = walker.getMethodBehavior("org.apache.commons.io.FileUtils#readFileToString(Ljava/io/File;)Ljava/lang/String;", classLoader);
+    assertThat(methodBehavior.yields()).hasSize(1);
   }
 
   @Test
