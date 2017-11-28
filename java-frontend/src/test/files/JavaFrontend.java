@@ -14,4 +14,12 @@ class MyClass extends Base {
     return a;
   }
 
+  public String returnOneOfTwoParams(boolean flag, String a, String b) {
+    if (flag) {
+      return a;
+    } else {
+      return b;
+    }
+  }
+
 }

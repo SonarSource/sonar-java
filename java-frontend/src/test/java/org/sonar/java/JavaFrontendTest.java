@@ -50,6 +50,18 @@ public class JavaFrontendTest {
     });
   }
 
+  @Test
+  public void return_one_of_two_params_can_be_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnOneOfTwoParams");
+
+    System.out.println("Return taint conditions");
+    for (TaintSource ts: conditions) {
+      System.out.println("  - " + ts);
+    }
+
+    assertThat(conditions).hasSize(2);
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);
