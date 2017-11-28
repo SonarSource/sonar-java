@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -1177,5 +1178,10 @@ public class ExplodedGraphWalker {
       }
       return defaultInstance;
     }
+  }
+
+  @CheckForNull
+  protected MethodBehavior peekMethodBehavior(Symbol.MethodSymbol symbol) {
+    return behaviorCache.peek(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature());
   }
 }

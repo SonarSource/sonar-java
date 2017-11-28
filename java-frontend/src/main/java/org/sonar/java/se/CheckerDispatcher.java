@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -175,5 +176,10 @@ public class CheckerDispatcher implements CheckerContext {
   @CheckForNull
   public MethodBehavior methodBehavior() {
     return explodedGraphWalker.methodBehavior;
+  }
+
+  @CheckForNull
+  public MethodBehavior peekMethodBehavior(Symbol.MethodSymbol symbol) {
+    return explodedGraphWalker.peekMethodBehavior(symbol);
   }
 }
