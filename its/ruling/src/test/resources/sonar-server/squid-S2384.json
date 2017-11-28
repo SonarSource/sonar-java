@@ -51,6 +51,9 @@
 33,
 39,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/Duplication.java':[
+76,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileSimilarity.java':[
 46,
 ],
