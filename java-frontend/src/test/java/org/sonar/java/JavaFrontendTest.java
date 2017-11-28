@@ -20,10 +20,7 @@
 package org.sonar.java;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -33,7 +30,11 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.*;
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
+
+import javax.lang.model.type.PrimitiveType;
 
 public class JavaFrontendTest {
 
@@ -64,26 +65,162 @@ public class JavaFrontendTest {
     return result;
   }
 
-  private static class TaintSymbolicValue {
+  private interface TaintSource {
 
-    private final String symbol;
+    boolean canBeTainted();
+    TaintSource unionWith(TaintSource other);
 
-    public TaintSymbolicValue(Symbol symbol) {
-      if (symbol == null) {
-        throw new IllegalArgumentException();
-      }
-      this.symbol = symbol.toString();
+  }
+
+  /**
+   * Literals
+   * Non-string operands
+   */
+  private static class TaintFreeSource implements TaintSource {
+
+    @Override
+    public boolean canBeTainted() {
+      return false;
+    }
+
+    @Override
+    public TaintSource unionWith(TaintSource other) {
+      return other;
     }
 
     @Override
     public String toString() {
-      return symbol;
+      return "taint-free";
     }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+        return false;
+      }
+
+      return true;
+    }
+
+  }
+
+  /**
+   * Read-from method parameter
+   * Read-from field
+   * Read-from method-call return value
+   */
+  private static class DirectTaintSource implements TaintSource {
+
+    private final Symbol symbol;
+
+    public DirectTaintSource(Symbol symbol) {
+      this.symbol = symbol;
+    }
+
+    @Override
+    public boolean canBeTainted() {
+      return true;
+    }
+
+    @Override
+    public TaintSource unionWith(TaintSource other) {
+      return IndirectTaintSource.union(this, other);
+    }
+
+    @Override
+    public String toString() {
+      return symbol.toString();
+    }
+
+    @Override
+    public int hashCode() {
+      return symbol.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+        return false;
+      }
+
+      DirectTaintSource other = (DirectTaintSource) obj;
+
+      return symbol.equals(other.symbol);
+    }
+
+  }
+
+  /**
+   * String concatenation
+   */
+  private static class IndirectTaintSource implements TaintSource {
+
+    private final TaintSource left;
+    private final TaintSource right;
+
+    private IndirectTaintSource(TaintSource left, TaintSource right) {
+      this.left = left;
+      this.right = right;
+    }
+
+    @Override
+    public boolean canBeTainted() {
+      return true;
+    }
+
+    @Override
+    public TaintSource unionWith(TaintSource other) {
+      return union(this, other);
+    }
+
+    public static TaintSource union(TaintSource left, TaintSource right) {
+      if (!left.canBeTainted()) {
+        return right;
+      }
+
+      if (!right.canBeTainted()) {
+        return left;
+      }
+
+      if (left.equals(right)) {
+        return left;
+      }
+
+      return new IndirectTaintSource(left, right);
+    }
+
+    @Override
+    public String toString() {
+      return "left: " + left.toString() + ", right = " + right.toString();
+    }
+
+    @Override
+    public int hashCode() {
+      return left.hashCode() + right.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+        return false;
+      }
+
+      IndirectTaintSource other = (IndirectTaintSource) obj;
+      return left.equals(other.left) &&
+        right.equals(other.right);
+    }
+
   }
 
   private static class TaintProgramState {
 
     private final ScannedFile src;
+    private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
 
     public TaintProgramState(ScannedFile src) {
       this.src = src;
@@ -91,6 +228,7 @@ public class JavaFrontendTest {
 
     private TaintProgramState(TaintProgramState other) {
       this.src = other.src;
+      this.taintSources.putAll(other.taintSources);
     }
 
     public TaintProgramState dup() {
@@ -101,9 +239,14 @@ public class JavaFrontendTest {
       return src.semantic();
     }
 
+    public TaintSource taintSourceFor(Symbol symbol) {
+      return taintSources.computeIfAbsent(symbol, s -> new DirectTaintSource(s));
+    }
+
     @Override
     public int hashCode() {
-      return Objects.hashCode(src);
+      return src.hashCode() +
+        13 * taintSources.hashCode();
     }
 
     @Override
@@ -114,8 +257,10 @@ public class JavaFrontendTest {
 
       TaintProgramState other = (TaintProgramState) obj;
 
-      return Objects.equals(src, other.src);
+      return Objects.equals(src, other.src) &&
+        Objects.equals(taintSources, other.taintSources);
     }
+
   }
 
   private static void simplifyCFG(ScannedFile src, CFG cfg) {
@@ -152,6 +297,7 @@ public class JavaFrontendTest {
   private static class BlockVisitor {
 
     private final TaintProgramState state;
+    private final Deque<TaintSource> stack = new ArrayDeque<>();
 
     public BlockVisitor(TaintProgramState state) {
       this.state = state;
@@ -169,6 +315,11 @@ public class JavaFrontendTest {
         System.out.println(String.format("    %s: %s of type %s", tree.kind(), tree, fqtn));
 
         visit(tree);
+      }
+
+      System.out.println("at end of visit:");
+      for (TaintSource taintSource: stack) {
+        System.out.println("  - " + taintSource);
       }
     }
 
@@ -273,13 +424,15 @@ public class JavaFrontendTest {
     }
 
     private void executeLiteral() {
-      // TODO
-      throw new UnsupportedOperationException();
+      stack.push(new TaintFreeSource());
     }
 
     private void executeIdentifier(IdentifierTree tree) {
-      // TODO
-      throw new UnsupportedOperationException();
+      if (isString(tree.symbolType())) {
+        stack.push(state.taintSourceFor(tree.symbol()));
+      } else {
+        stack.push(new TaintFreeSource());
+      }
     }
 
     private void executeAssignment(AssignmentExpressionTree tree) {
@@ -335,6 +488,10 @@ public class JavaFrontendTest {
     private void executeMemberSelect(MemberSelectExpressionTree mse) {
       // TODO
       throw new UnsupportedOperationException();
+    }
+
+    private boolean isString(Type type) {
+      return type.is("java.lang.String");
     }
 
   }

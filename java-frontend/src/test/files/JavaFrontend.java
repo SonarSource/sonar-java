@@ -26,7 +26,8 @@ class MyClass extends Base {
   }
   */
 
-  public String myConst(int a) {
+  public String myConst(String a) {
+    a = "hehe";
   }
 
 }
