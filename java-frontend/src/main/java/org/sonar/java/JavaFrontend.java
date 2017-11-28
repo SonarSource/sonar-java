@@ -323,21 +323,7 @@ public class JavaFrontend {
 
     public void visit(Block block) {
       for (Tree tree: block.elements()) {
-        String fqtn;
-        if (tree instanceof ExpressionTree) {
-          ExpressionTree expr = (ExpressionTree) tree;
-          fqtn = expr.symbolType().fullyQualifiedName();
-        } else {
-          fqtn = state.semantic().getSymbol(tree).type().fullyQualifiedName();
-        }
-        System.out.println(String.format("    %s: %s of type %s", tree.kind(), tree, fqtn));
-
         visit(tree);
-      }
-
-      System.out.println("at end of visit:");
-      for (TaintSource taintSource: stack) {
-        System.out.println("  - " + taintSource);
       }
     }
 
