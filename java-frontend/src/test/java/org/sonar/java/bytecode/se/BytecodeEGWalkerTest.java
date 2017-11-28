@@ -22,10 +22,8 @@ package org.sonar.java.bytecode.se;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -34,7 +32,8 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.bytecode.se.testdata.BytecodeTestClass;
+import org.sonar.java.bytecode.se.testdata.FinalBytecodeTestClass;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -46,11 +45,7 @@ import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -71,7 +66,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void generateMethodBehavior() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior("fun");
+    MethodBehavior methodBehavior = getMethodBehavior("fun(ZLjava/lang/Object;)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svFirstArg = new SymbolicValue();
@@ -100,7 +95,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void verify_behavior_of_fun2_method() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior("fun2");
+    MethodBehavior methodBehavior = getMethodBehavior("fun2(Z)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(2);
 
     SymbolicValue svFirstArg = new SymbolicValue();
@@ -134,7 +129,7 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void test_int_comparator() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior("int_comparison");
+    MethodBehavior methodBehavior = getMethodBehavior("int_comparison(II)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(1);
     HappyPathYield methodYield = ((HappyPathYield) methodBehavior.yields().get(0));
     assertThat(methodYield.resultConstraint().get(ObjectConstraint.class)).isSameAs(ObjectConstraint.NULL);
@@ -142,13 +137,13 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void goto_terminator() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior("gotoTerminator");
+    MethodBehavior methodBehavior = getMethodBehavior("gotoTerminator(Ljava/lang/Object;)Z");
     assertThat(methodBehavior.yields()).hasSize(2);
   }
 
   @Test
   public void test_method_throwing_exception() throws Exception {
-    MethodBehavior methodBehavior = getMethodBehavior("throw_exception");
+    MethodBehavior methodBehavior = getMethodBehavior("throw_exception()V");
     assertThat(methodBehavior.yields()).hasSize(1);
     MethodYield methodYield = methodBehavior.yields().get(0);
     assertThat(methodYield).isInstanceOf(ExceptionalYield.class);
@@ -156,31 +151,30 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void test_method_is_complete() {
-    MethodBehavior nativeMethod = getMethodBehavior("nativeMethod");
+    String desc = "(Ljava/lang/String;)Z";
+    MethodBehavior nativeMethod = getMethodBehavior("nativeMethod" + desc);
     assertThat(nativeMethod.isComplete()).isFalse();
 
-    MethodBehavior abstractMethod = getMethodBehavior("abstractMethod");
+    MethodBehavior abstractMethod = getMethodBehavior("abstractMethod" + desc);
     assertThat(abstractMethod.isComplete()).isFalse();
 
-    MethodBehavior finalMethod = getMethodBehavior("finalMethod");
+    MethodBehavior finalMethod = getMethodBehavior("finalMethod" + desc);
     assertThat(finalMethod.isComplete()).isFalse();
 
-    MethodBehavior staticMethod = getMethodBehavior("staticMethod");
+    MethodBehavior staticMethod = getMethodBehavior("staticMethod" + desc);
     assertThat(staticMethod.isComplete()).isTrue();
 
-    MethodBehavior privateMethod = getMethodBehavior("privateMethod");
+    MethodBehavior privateMethod = getMethodBehavior("privateMethod" + desc);
     assertThat(privateMethod.isComplete()).isFalse();
 
-    MethodBehavior publicMethodInFinalClass = getMethodBehavior("FinalInnerClass", finalInnerClass -> ((MethodTree) finalInnerClass.members().get(0)).symbol());
+    MethodBehavior publicMethodInFinalClass = getMethodBehavior(FinalBytecodeTestClass.class, "publicMethod" + desc);
     assertThat(publicMethodInFinalClass.isComplete()).isFalse();
   }
 
   @Test
   public void method_array() throws Exception {
-    BytecodeEGWalker walker = getBytecodeEGWalker(squidClassLoader, null);
-
+    BytecodeEGWalker walker = getBytecodeEGWalker(squidClassLoader);
     MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", squidClassLoader);
-
     assertThat(behavior).isNull();
   }
 
@@ -219,100 +213,30 @@ public class BytecodeEGWalkerTest {
         return 2;
       }
     };
-    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
-    ClassTree innerClass = getClass(tree, "InnerClass");
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) innerClass.symbol().lookupSymbols("fun").stream().findFirst().get();
-    MethodBehavior methodBehavior = bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
+    MethodBehavior methodBehavior = getMethodBehavior(BytecodeTestClass.class, "fun(ZLjava/lang/Object;)Ljava/lang/Object;", bytecodeEGWalker);
     assertThat(logTester.logs(LoggerLevel.DEBUG))
-      .contains("Dataflow analysis is incomplete for method org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object; : Too many steps resolving org.sonar.java.bytecode.se.BytecodeEGWalkerTest$InnerClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;");
+      .contains("Dataflow analysis is incomplete for method org.sonar.java.bytecode.se.testdata.BytecodeTestClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;" +
+          " : Too many steps resolving org.sonar.java.bytecode.se.testdata.BytecodeTestClass#fun(ZLjava/lang/Object;)Ljava/lang/Object;");
     assertThat(methodBehavior.isComplete()).isFalse();
     assertThat(methodBehavior.isVisited()).isTrue();
   }
 
-  private static MethodBehavior getMethodBehavior(String methodName) {
-    return getMethodBehavior("InnerClass", innerClass -> (Symbol.MethodSymbol) innerClass.symbol().lookupSymbols(methodName).stream().findFirst().get());
+  private static MethodBehavior getMethodBehavior(String signature) {
+    return getMethodBehavior(BytecodeTestClass.class, signature);
   }
 
-  private static MethodBehavior getMethodBehavior(String targetClass, Function<ClassTree, Symbol.MethodSymbol> methodFinder) {
-    File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel semanticModel = SemanticModel.createFor(tree, squidClassLoader);
-    BytecodeEGWalker bytecodeEGWalker = getBytecodeEGWalker(squidClassLoader, semanticModel);
-    ClassTree innerClass = getClass(tree, targetClass);
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodFinder.apply(innerClass);
-    return bytecodeEGWalker.getMethodBehavior(methodSymbol.completeSignature(), squidClassLoader);
+  private static MethodBehavior getMethodBehavior(Class<?> clazz, String signature) {
+    return getMethodBehavior(clazz, signature, getBytecodeEGWalker(squidClassLoader));
   }
 
-  @Test
-  public void name() throws Exception {
-    SquidClassLoader classLoader = new SquidClassLoader(new ArrayList<>());
-    MethodBehavior methodBehavior = getBytecodeEGWalker(classLoader, null).getMethodBehavior("java.lang.Package#getPackages()L$Array", classLoader);
-    System.out.println(methodBehavior.yields());
-
+  private static MethodBehavior getMethodBehavior(Class<?> clazz, String signature, BytecodeEGWalker walker) {
+    return walker.getMethodBehavior(clazz.getCanonicalName() + "#" + signature, squidClassLoader);
   }
 
-  private static BytecodeEGWalker getBytecodeEGWalker(SquidClassLoader squidClassLoader, SemanticModel semanticModel) {
+  private static BytecodeEGWalker getBytecodeEGWalker(SquidClassLoader squidClassLoader) {
     BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
     behaviorCache.setFileContext(null, semanticModel);
     return new BytecodeEGWalker(behaviorCache, semanticModel);
   }
 
-  private static ClassTree getClass(CompilationUnitTree cut, String className) {
-    ClassTree testClass = (ClassTree) cut.types().get(0);
-    return testClass.members().stream()
-      .filter(m -> m.is(Tree.Kind.CLASS))
-      .map(ClassTree.class::cast)
-      .filter(ct -> className.equals(ct.simpleName().name()))
-      .findFirst()
-      .get();
-  }
-
-  /**
-   * --------------------- following code is used for byte code ----------------------------------------------
-   */
-  abstract static class InnerClass {
-    static Object fun(boolean a, Object b) {
-      if (b == null) {
-        return null;
-      }
-      return "";
-    }
-
-    static Object fun2(boolean a) {
-      if (a) {
-        return null;
-      }
-      return "";
-    }
-
-    static Object int_comparison(int a, int b) {
-      if (a < b) {
-        if (a < b) {
-          return null;
-        }
-        return "";
-      }
-      return null;
-    }
-
-    static boolean gotoTerminator(Object o) {
-      return o == null;
-    }
-
-    static void throw_exception() {
-      throw new RuntimeException();
-    }
-
-    abstract boolean abstractMethod(String s);
-    static native boolean nativeMethod(String s);
-    final boolean finalMethod(String s) { return true; }
-    static boolean staticMethod(String s) { return true; }
-    private boolean privateMethod(String s) { return true; }
-  }
-
-  final static class FinalInnerClass {
-    public boolean publicMethod(String s) { return true; }
-  }
 }
