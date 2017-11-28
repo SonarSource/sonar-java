@@ -20,6 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
@@ -39,13 +44,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S2384")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -128,12 +126,26 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     if (expressionTree == null || !isMutableType(expressionTree)) {
       return;
     }
-    if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) expressionTree;
+    checkReturnedExpression(expressionTree);
+  }
+
+  private void checkReturnedExpression(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expression;
+      if (isThis(mse.expression())) {
+        checkReturnedExpression(mse.identifier());
+      }
+    }
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree) expression;
       if (identifierTree.symbol().isPrivate() && !isImmutableConstant((Symbol.VariableSymbol) identifierTree.symbol())) {
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
+  }
+
+  private static boolean isThis(ExpressionTree expression) {
+    return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals("this");
   }
 
   private static boolean isImmutableConstant(Symbol.VariableSymbol symbol) {

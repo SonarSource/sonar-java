@@ -94,7 +94,7 @@ class MutableClass2 {
   }
 
   public Date[] getDate() {
-    return date; // Noncompliant {{Return a copy of "date".}}
+    return this.date; // Noncompliant {{Return a copy of "date".}}
   }
 
   public Date[] getDateOK() {
