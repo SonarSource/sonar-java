@@ -270,6 +270,11 @@
                   <version>1.7.21</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-ext</artifactId>
+                  <version>1.7.21</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.junit.jupiter</groupId>
                   <artifactId>junit-jupiter-api</artifactId>
                   <version>5.0.0-M5</version>
