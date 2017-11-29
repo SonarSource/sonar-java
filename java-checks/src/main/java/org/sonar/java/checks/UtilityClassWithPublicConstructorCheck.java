@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -31,8 +31,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 @Rule(key = "S1118")
 public class UtilityClassWithPublicConstructorCheck extends IssuableSubscriptionVisitor {
@@ -45,7 +43,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!hasSemantic() || !isUtilityClass(classTree)) {
+    if (!hasSemantic() || !isUtilityClass(classTree) || isPrivateInnerClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;
@@ -58,6 +56,11 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     if (hasImplicitPublicConstructor) {
       reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
     }
+  }
+
+  private static boolean isPrivateInnerClass(ClassTree classTree) {
+    return !classTree.symbol().owner().isPackageSymbol() &&
+      ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE);
   }
 
   private static boolean isUtilityClass(ClassTree classTree) {
