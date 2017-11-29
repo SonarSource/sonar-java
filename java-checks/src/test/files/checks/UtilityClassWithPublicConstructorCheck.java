@@ -135,3 +135,22 @@ public class NotMain { // Noncompliant
     System.out.println("Hello world!");
   }
 }
+
+public class MySingleton {
+  private MySingleton() {
+    // use getInstance()
+  }
+
+  private static class InitializationOnDemandHolderMySingleton { // compliant inner class is private, adding a private constructor won't change anything
+    static final MySingleton INSTANCE = new MySingleton();
+  }
+  static class InitializationOnDemandHolderMySingleton2 { // Noncompliant
+    static final MySingleton INSTANCE = new MySingleton();
+  }
+  private class InitializationOnDemandHolderMySingleton3 {
+    static final MySingleton INSTANCE = new MySingleton();
+  }
+    public static MySingleton getInstance() {
+    return InitializationOnDemandHolderMySingleton.INSTANCE;
+  }
+}
