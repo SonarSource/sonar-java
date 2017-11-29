@@ -98,6 +98,7 @@ import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.debug.DebugInterruptedExecutionCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
+import org.sonar.java.se.checks.debug.DebugMethodYieldsOnInvocationsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 public final class CheckList {
@@ -526,6 +527,7 @@ public final class CheckList {
     return ImmutableList.<Class<? extends DebugCheck>>builder()
       .add(DebugMethodYieldsCheck.class)
       .add(DebugInterruptedExecutionCheck.class)
+      .add(DebugMethodYieldsOnInvocationsCheck.class)
       .build();
   }
 
