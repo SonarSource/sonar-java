@@ -21,10 +21,15 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -36,13 +41,10 @@ import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,13 +71,33 @@ public class XmlFileSensorTest {
     SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven/").getAbsoluteFile());
     DefaultFileSystem fs = context.fileSystem();
     final File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).build());
+    DefaultInputFile inputFile = new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).setPublish(false).build();
+    fs.add(inputFile);
     SonarComponents sonarComponents = createSonarComponentsMock(fs, file);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 
+    assertThat(inputFile.isPublished()).isFalse();
     sensor.execute(context);
+    assertThat(inputFile.isPublished()).isTrue();
 
     verify(sonarComponents, times(1)).reportIssue(Mockito.argThat(argument -> file.getAbsolutePath().equals(argument.getFile().getAbsolutePath())));
+  }
+
+  @Test
+  public void test_no_issues_but_xml_file_still_published() throws Exception {
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files/maven2/").getAbsoluteFile());
+    DefaultFileSystem fs = context.fileSystem();
+    final File file = new File("src/test/files/maven2/pom.xml");
+    DefaultInputFile inputFile = new TestInputFileBuilder("", "pom.xml").setModuleBaseDir(fs.baseDirPath()).setPublish(false).build();
+    fs.add(inputFile);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, file);
+    XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
+
+    assertThat(inputFile.isPublished()).isFalse();
+    sensor.execute(context);
+    assertThat(inputFile.isPublished()).isTrue();
+
+    verify(sonarComponents, never()).reportIssue(Mockito.argThat(argument -> file.getAbsolutePath().equals(argument.getFile().getAbsolutePath())));
   }
 
   @Test
