@@ -6,6 +6,10 @@ import org.slf4j.*;
 import java.util.*;
 import java.io.*;
 import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -126,4 +130,14 @@ class LazyArgEvaluationCheck {
     }
   }
 
+}
+
+class A {
+  private static final Logger LOGGER = LoggerFactory.getLogger(A.class);
+  private static final XLogger X_LOGGER = XLoggerFactory.getXLogger(A.class);
+
+  void foo(int timeout, String units) {
+    LOGGER.debug("Setting read timeout to " + timeout + " " + units); // Noncompliant
+    X_LOGGER.debug("Setting read timeout to " + timeout + " " + units); // Noncompliant
+  }
 }

@@ -78,7 +78,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
       @Override
       public List<MethodMatcher> log() {
-        return slf4jVariants(() -> MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name(toString().toLowerCase(Locale.ROOT)));
+        return slf4jVariants(() -> MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SLF4J_LOGGER)).name(toString().toLowerCase(Locale.ROOT)));
       }
 
       @Override
