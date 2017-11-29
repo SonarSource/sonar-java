@@ -26,12 +26,14 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -280,7 +282,37 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
       hasBinaryExpression = true;
-      super.visitBinaryExpression(tree);
+      if (!isConstant(tree.rightOperand())) {
+        tree.rightOperand().accept(this);
+      }
+      if (!isConstant(tree.leftOperand())) {
+        tree.leftOperand().accept(this);
+      }
+    }
+
+    private static boolean isConstant(ExpressionTree operand) {
+      switch (operand.kind()) {
+        case BOOLEAN_LITERAL:
+        case CHAR_LITERAL:
+        case DOUBLE_LITERAL:
+        case FLOAT_LITERAL:
+        case INT_LITERAL:
+        case LONG_LITERAL:
+        case STRING_LITERAL:
+        case NULL_LITERAL:
+          return true;
+        case IDENTIFIER:
+          return isConstant(((IdentifierTree) operand).symbol());
+        case MEMBER_SELECT:
+          MemberSelectExpressionTree mset = (MemberSelectExpressionTree) operand;
+          return isConstant(mset.identifier().symbol());
+        default:
+          return false;
+      }
+    }
+
+    private static boolean isConstant(Symbol symbol) {
+      return symbol.isStatic() && symbol.isFinal();
     }
   }
 

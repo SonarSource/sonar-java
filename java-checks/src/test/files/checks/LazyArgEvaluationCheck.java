@@ -141,3 +141,14 @@ class A {
     X_LOGGER.debug("Setting read timeout to " + timeout + " " + units); // Noncompliant
   }
 }
+
+class constantInlining {
+  Logger logger = LoggerFactory.getLogger(A.class);
+
+  static final String MY_CONST = "world";
+
+  void foo(boolean answer) {
+    logger.warn("hello " + MY_CONST + ". Is this inlined by the compiler? {}", answer);
+    logger.warn(MY_CONST + MY_CONST, answer);
+  }
+}
