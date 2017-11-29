@@ -150,6 +150,12 @@
                   </includes>
                 </filter>
                 <filter>
+                  <artifact>org.jacoco:org.jacoco.core</artifact>
+                  <excludes>
+                    <exclude>*.html</exclude>
+                  </excludes>
+                </filter>
+                <filter>
                   <artifact>org.sonarsource.java:java-frontend</artifact>
                   <includes>
                     <include>**</include>
@@ -161,6 +167,10 @@
                   <includes>
                     <include>**</include>
                   </includes>
+                  <excludes>
+                    <exclude>*.xjb</exclude>
+                    <exclude>*.xsd</exclude>
+                  </excludes>
                 </filter>
                 <filter>
                   <artifact>javax.xml.bind:jaxb-api</artifact>
