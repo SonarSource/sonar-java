@@ -42,6 +42,7 @@ import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
+import org.sonar.java.se.ExceptionUtils;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
@@ -759,7 +760,7 @@ public class BytecodeEGWalker {
 
       methodInvokedBehavior
         .happyPathYields()
-        .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+        .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), programState, () -> returnSV).forEach(ps -> {
           checkerDispatcher.methodYield = yield;
           checkerDispatcher.addTransition(ps);
           checkerDispatcher.methodYield = null;
@@ -769,7 +770,7 @@ public class BytecodeEGWalker {
         .forEach(yield -> {
           Type exceptionType = yield.exceptionType(semanticModel);
           yield.statesAfterInvocation(
-            arguments, Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
+            arguments, Collections.emptyList(), programState, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
               ps.storeExitValue();
               enqueueExceptionHandlers(exceptionType, ps);
           });
@@ -805,13 +806,7 @@ public class BytecodeEGWalker {
       return false;
     }
     Type exceptionType = semanticModel.getClassType(exceptionTypeName);
-    if (exceptionType == null) {
-      return false;
-    }
-    return exceptionType.isSubtypeOf("java.lang.RuntimeException")
-        || exceptionType.isSubtypeOf("java.lang.Error")
-        || exceptionType.is("java.lang.Exception")
-        || exceptionType.is("java.lang.Throwable");
+    return ExceptionUtils.isUncheckedException(exceptionType);
   }
 
   private ProgramState stateWithException(ProgramState programState, BytecodeCFG.Block b) {

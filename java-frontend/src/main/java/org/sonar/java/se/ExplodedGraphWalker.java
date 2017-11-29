@@ -786,10 +786,7 @@ public class ExplodedGraphWalker {
 
   private static boolean isCatchingUncheckedException(CFG.Block catchBlock) {
     Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
-    return caughtType.isSubtypeOf("java.lang.RuntimeException")
-      || caughtType.isSubtypeOf("java.lang.Error")
-      || caughtType.is("java.lang.Exception")
-      || caughtType.is("java.lang.Throwable");
+    return ExceptionUtils.isUncheckedException(caughtType);
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
