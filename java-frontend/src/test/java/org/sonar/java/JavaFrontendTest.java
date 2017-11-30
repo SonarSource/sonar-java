@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.java.JavaFrontend.ScannedFile;
 import org.sonar.java.JavaFrontend.TaintSource;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +65,7 @@ public class JavaFrontendTest {
 
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
+    System.out.println(((JavaSymbol.MethodJavaSymbol)m.symbol()).completeSignature());
     CFG cfg = CFG.build(m);
     return JavaFrontend.computeTaintConditions(src, cfg);
   }

@@ -28,6 +28,7 @@ import java.util.*;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -61,6 +62,16 @@ public class JavaFrontend {
     SemanticModel model = SemanticModel.createFor(tree, classLoader);
 
     return new ScannedFile(tree, model);
+  }
+
+  private static class IdGenerator {
+
+    private int current = 0;
+
+    public int next() {
+      return current++;
+    }
+
   }
 
   public interface TaintSource {
@@ -114,10 +125,12 @@ public class JavaFrontend {
    */
   public static class DirectTaintSource implements TaintSource {
 
-    private final Symbol symbol;
+    private final int id;
+    private final String signature;
 
-    public DirectTaintSource(Symbol symbol) {
-      this.symbol = symbol;
+    public DirectTaintSource(int id, String signature) {
+      this.id = id;
+      this.signature = signature;
     }
 
     @Override
@@ -132,12 +145,12 @@ public class JavaFrontend {
 
     @Override
     public String toString() {
-      return symbol.toString();
+      return "$" + id + ": " + signature;
     }
 
     @Override
     public int hashCode() {
-      return symbol.hashCode();
+      return id;
     }
 
     @Override
@@ -148,7 +161,7 @@ public class JavaFrontend {
 
       DirectTaintSource other = (DirectTaintSource) obj;
 
-      return symbol.equals(other.symbol);
+      return id == other.id;
     }
 
   }
@@ -218,14 +231,17 @@ public class JavaFrontend {
 
   private static class TaintProgramState {
 
+    private final IdGenerator idGenerator;
     private final ScannedFile src;
     private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
 
-    public TaintProgramState(ScannedFile src) {
+    public TaintProgramState(IdGenerator idGenerator, ScannedFile src) {
+      this.idGenerator = idGenerator;
       this.src = src;
     }
 
     private TaintProgramState(TaintProgramState other) {
+      this.idGenerator = other.idGenerator;
       this.src = other.src;
       this.taintSources.putAll(other.taintSources);
     }
@@ -238,8 +254,24 @@ public class JavaFrontend {
       return src.semantic();
     }
 
+    private static String fullyQualify(Symbol s) {
+      System.out.println("requesting " + s);
+      if (s.isVariableSymbol()) {
+        // Parameter?
+        // Field?
+        String ownerSignature = ((JavaSymbol.MethodJavaSymbol)s.owner()).completeSignature();
+        return ownerSignature + '#' + s.name();
+      } else if (s.isMethodSymbol()) {
+        return ((JavaSymbol.MethodJavaSymbol)s).completeSignature();
+      } else {
+        throw new IllegalArgumentException();
+      }
+    }
+
     public TaintSource taintSourceFor(Symbol symbol) {
-      return taintSources.computeIfAbsent(symbol, s -> new DirectTaintSource(s));
+      return taintSources.computeIfAbsent(
+        symbol,
+        s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s)));
     }
 
     @Override
@@ -263,6 +295,7 @@ public class JavaFrontend {
   }
 
   public static Set<TaintSource> computeTaintConditions(ScannedFile src, CFG cfg) {
+    IdGenerator idGenerator = new IdGenerator();
     Set<TaintSource> result = new HashSet<>();
 
     boolean returnsVoid = cfg.methodSymbol().returnType().type().isVoid();
@@ -271,7 +304,7 @@ public class JavaFrontend {
     Multimap<Block, TaintProgramState> workList = HashMultimap.create();
 
     Block entry = cfg.entry();
-    TaintProgramState entryState = new TaintProgramState(src);
+    TaintProgramState entryState = new TaintProgramState(idGenerator, src);
     workList.put(entry, entryState);
 
     while (!workList.isEmpty()) {
