@@ -19,16 +19,18 @@
  */
 package org.sonar.plugins.java;
 
+import java.io.File;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.xml.XmlAnalyzer;
-
-import java.io.File;
 
 public class XmlFileSensor implements Sensor {
 
@@ -50,9 +52,12 @@ public class XmlFileSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     if (hasXmlFiles()) {
+      Iterable<InputFile> xmlInputFiles = getXmlFiles();
+      // make xml files visible in SQ UI, when XML plugin is not installed
+      xmlInputFiles.forEach(context::markForPublishing);
       sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getXmlChecks());
       sonarComponents.setSensorContext(context);
-      new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(getXmlFiles());
+      new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(toFile(xmlInputFiles));
     }
   }
 
@@ -60,8 +65,12 @@ public class XmlFileSensor implements Sensor {
     return fs.hasFiles(xmlFilePredicate);
   }
 
-  private Iterable<File> getXmlFiles() {
-    return fs.files(xmlFilePredicate);
+  private Iterable<InputFile> getXmlFiles() {
+    return fs.inputFiles(xmlFilePredicate);
+  }
+
+  private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+    return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 
 }
