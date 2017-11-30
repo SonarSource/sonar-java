@@ -873,7 +873,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
     resolveAs(tree.expression(), JavaSymbol.VAR);
-    registerType(tree, getType(tree.expression()));
+    JavaType type = getType(tree.expression());
+    if (type.isPrimitiveWrapper()) {
+      type = type.primitiveType;
+    }
+    if (type.isNumerical() && type != symbols.longType && type != symbols.doubleType && type != symbols.floatType) {
+      type = symbols.intType;
+    }
+    registerType(tree, type);
   }
 
   @Override

@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -150,6 +151,27 @@ public class TypeAndReferenceSolverTest {
     assertThat(variable.symbol().usages()).isEmpty();
     assertThat(variable.simpleName().symbol().isUnknown()).isFalse();
     assertThat(variable.simpleName().symbol()).isEqualTo(variable.symbol());
+  }
+  @Test
+  public void unary_operator() {
+    assertUnary("class A { Integer field; int foo() {return -field;} }", Type.Primitives.INT);
+    assertUnary("class A { Character field; int foo() {return -field;} }", Type.Primitives.INT);
+    assertUnary("class A { char field; int foo() {return -field;} }", Type.Primitives.INT);
+    assertUnary("class A { byte field; int foo() {return -field;} }", Type.Primitives.INT);
+    assertUnary("class A { Long field; int foo() {return -field;} }", Type.Primitives.LONG);
+    assertUnary("class A { long field; int foo() {return -field;} }", Type.Primitives.LONG);
+    assertUnary("class A { Float field; int foo() {return -field;} }", Type.Primitives.FLOAT);
+    assertUnary("class A { Double field; int foo() {return -field;} }", Type.Primitives.DOUBLE);
+    assertUnary("class A { double field; int foo() {return -field;} }", Type.Primitives.DOUBLE);
+    assertUnary("class A { Boolean field; int foo() {return ~field;} }", Type.Primitives.BOOLEAN);
+    assertUnary("class A { Integer field; int foo() {return -field;} }", Type.Primitives.INT);
+  }
+
+  private void assertUnary(String input, Type.Primitives expectedPrimitive) {
+    CompilationUnitTree compilationUnit = treeOf(input);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+    Type type = ((ReturnStatementTree) ((MethodTree) clazz.members().get(1)).block().body().get(0)).expression().symbolType();
+    assertThat(type.isPrimitive(expectedPrimitive)).isTrue();
   }
 
   @Test
