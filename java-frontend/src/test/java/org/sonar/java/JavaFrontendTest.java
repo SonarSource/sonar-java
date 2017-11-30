@@ -36,7 +36,7 @@ public class JavaFrontendTest {
 
   @Test
   public void return_const_literal_should_never_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("constLiteral");
+    Set<TaintSource> conditions = computeTaintSources("returnConstLiteral");
 
     assertThat(conditions).isEmpty();
   }
