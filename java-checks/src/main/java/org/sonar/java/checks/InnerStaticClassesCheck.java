@@ -64,7 +64,11 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
         // Ignore issues on anonymous classes
         return;
       }
-      context.reportIssue(this, reportTree, "Make this a \"static\" inner class.");
+      String message = "Make this a \"static\" inner class.";
+      if(symbol.owner().isMethodSymbol()) {
+        message = "Make this local class a \"static\" inner class.";
+      }
+      context.reportIssue(this, reportTree, message);
     }
   }
 

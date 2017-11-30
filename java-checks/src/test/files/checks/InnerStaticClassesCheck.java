@@ -89,7 +89,7 @@ class Fruit {
   }
 
   public void noncompliant() {
-    class Seed implements Interface { // Noncompliant
+    class Seed implements Interface { // Noncompliant {{Make this local class a "static" inner class.}}
       public void foo() {
         return;
       }
@@ -200,3 +200,13 @@ class A3 {
     }
   }
 }
+public class A4 {
+  public void m(int a) {
+    class B { // compliant cannot be made static
+      void foo() {
+        return a;
+      }
+    }
+  }
+}
+
