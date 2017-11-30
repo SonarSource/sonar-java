@@ -48,4 +48,9 @@ class MyClass extends Base {
     }
   }
 
+  public String returnConstAssignedToParam(String a) {
+    a = "foo";
+    return a;
+  }
+
 }

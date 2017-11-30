@@ -28,6 +28,7 @@ import java.util.*;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -359,7 +360,7 @@ public class JavaFrontend {
     }
 
     public TaintSource peek() {
-      if (stack.size() != 1) {
+      if (stack.isEmpty()) {
         throw new IllegalStateException();
       }
 
@@ -485,8 +486,24 @@ public class JavaFrontend {
     }
 
     private void executeAssignment(AssignmentExpressionTree tree) {
-      // TODO
-      throw new UnsupportedOperationException();
+      TaintSource ts;
+      if (tree.is(Tree.Kind.ASSIGNMENT)) {
+        ts = stack.pop();
+        if (!ExpressionUtils.isSimpleAssignment(tree)) {
+          stack.pop();
+        }
+      } else {
+        ts = stack.pop();
+        stack.pop();
+      }
+
+      Symbol symbol = null;
+      if (tree.variable().is(Tree.Kind.IDENTIFIER) || ExpressionUtils.isSelectOnThisOrSuper(tree)) {
+        symbol = ExpressionUtils.extractIdentifier(tree).symbol();
+        // TODO How to handle any assignment?
+        state.put(symbol, ts);
+      }
+      stack.push(ts);
     }
 
     private void executeMethodInvocation(MethodInvocationTree mit) {

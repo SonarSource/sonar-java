@@ -89,12 +89,19 @@ public class JavaFrontendTest {
   }
 
   @Test
-  public void return_param_through_two_paths() {
+  public void return_param_through_two_paths_should_only_contain_one_tainted_source() {
     Set<TaintSource> conditions = computeTaintSources("returnParamThroughTwoPaths");
 
     assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
       assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#a");
     });
+  }
+
+  @Test
+  public void return_const_assigned_to_param_should_never_be_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnConstAssignedToParam");
+
+    assertThat(conditions).isEmpty();;
   }
 
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
