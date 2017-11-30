@@ -218,4 +218,9 @@ class AWT {
     }
     return localL;
   }
+
+  void foo() {
+    byte a = 42;
+    a = (byte) -a; // FP, cast is required
+  }
 }
