@@ -34,3 +34,14 @@ abstract class D {
 class E {
   private int field = 5;
 }
+
+class EJB  {
+  @javax.ejb.EJB
+  private MyObject foo; // injection via EJB
+}
+
+@javax.ejb.EJB // injection via EJB
+class EJB2 {
+  private Object someObject;
+}
+
