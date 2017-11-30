@@ -88,6 +88,15 @@ public class JavaFrontendTest {
     assertThat(conditions).hasSize(2);
   }
 
+  @Test
+  public void return_param_through_two_paths() {
+    Set<TaintSource> conditions = computeTaintSources("returnParamThroughTwoPaths");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#a");
+    });
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);

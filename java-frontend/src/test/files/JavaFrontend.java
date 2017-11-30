@@ -39,4 +39,13 @@ class MyClass extends Base {
     }
   }
 
+  public String returnParamThroughTwoPaths(boolean flag, String a) {
+    String v = a;
+    if (flag) {
+      return a;
+    } else {
+      return v;
+    }
+  }
+
 }
