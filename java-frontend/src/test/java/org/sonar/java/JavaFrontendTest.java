@@ -104,6 +104,15 @@ public class JavaFrontendTest {
     assertThat(conditions).isEmpty();;
   }
 
+  @Test
+  public void return_field_later_reassigned_should_be_tainted_when_field_is_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnFieldReassignedLater");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#f");
+    });
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);

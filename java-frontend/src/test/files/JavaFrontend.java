@@ -53,4 +53,11 @@ class MyClass extends Base {
     return a;
   }
 
+  public String returnFieldReassignedLater() {
+    String v;
+    v = f;
+    f = "foo";
+    return v;
+  }
+
 }
