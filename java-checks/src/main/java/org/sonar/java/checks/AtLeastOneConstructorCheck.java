@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,9 +33,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Rule(key = "S1258")
 public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
@@ -54,7 +52,7 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private void checkClassTree(ClassTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT)) {
+    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT) && !isEJBAnnotated(tree.symbol())) {
       List<JavaFileScannerContext.Location> uninitializedVariables = new ArrayList<>();
       for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
@@ -72,7 +70,11 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static boolean requiresInitialization(VariableTree variable) {
     Symbol symbol = variable.symbol();
-    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic();
+    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic() && !isEJBAnnotated(symbol);
+  }
+
+  private static boolean isEJBAnnotated(Symbol symbol) {
+    return symbol.metadata().annotations().stream().anyMatch(a -> a.symbol().owner().name().equals("javax.ejb"));
   }
 
 }
