@@ -282,6 +282,10 @@ public class JavaFrontend {
         s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s)));
     }
 
+    public void put(Symbol symbol, TaintSource ts) {
+      taintSources.put(symbol, ts);
+    }
+
     @Override
     public int hashCode() {
       return src.hashCode() +
@@ -491,8 +495,11 @@ public class JavaFrontend {
     }
 
     private void executeVariable(VariableTree variableTree) {
-      // TODO
-      throw new UnsupportedOperationException();
+      if (variableTree.initializer() != null) {
+        state.put(variableTree.symbol(), stack.pop());
+      } else {
+        state.put(variableTree.symbol(), new TaintFreeSource());
+      }
     }
 
     private void executeTypeCast(TypeCastTree typeCast) {

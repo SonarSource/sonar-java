@@ -61,6 +61,22 @@ public class JavaFrontendTest {
   }
 
   @Test
+  public void return_param_through_local_variable_should_only_be_tainted_when_param_is_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnParamThroughLocalVariable");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParamThroughLocalVariable(Ljava/lang/String;)Ljava/lang/String;#a");
+    });
+  }
+
+  @Test
+  public void return_of_uninitialized_local_variable() {
+    Set<TaintSource> conditions = computeTaintSources("returnOfUninitializedLocalVariable");
+
+    assertThat(conditions).isEmpty();
+  }
+
+  @Test
   public void return_one_of_two_params_can_be_tainted() {
     Set<TaintSource> conditions = computeTaintSources("returnOneOfTwoParams");
 

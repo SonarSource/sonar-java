@@ -20,6 +20,17 @@ class MyClass extends Base {
     return f;
   }
 
+  public String returnParamThroughLocalVariable(String a) {
+    String v = a;
+    String v2;
+    return v;
+  }
+
+  public String returnOfUninitializedLocalVariable() {
+    String v;
+    return v;
+  }
+
   public String returnOneOfTwoParams(boolean flag, String a, String b) {
     if (flag) {
       return a;
