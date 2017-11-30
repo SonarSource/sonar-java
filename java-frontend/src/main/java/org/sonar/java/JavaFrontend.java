@@ -255,11 +255,19 @@ public class JavaFrontend {
     }
 
     private static String fullyQualify(Symbol s) {
-      System.out.println("requesting " + s);
       if (s.isVariableSymbol()) {
-        // Parameter?
-        // Field?
-        String ownerSignature = ((JavaSymbol.MethodJavaSymbol)s.owner()).completeSignature();
+        Symbol owner = s.owner();
+        String ownerSignature;
+        if (owner.isTypeSymbol()) {
+          // field
+          ownerSignature = ((JavaSymbol.TypeJavaSymbol)owner).getFullyQualifiedName();
+        } else if (owner.isMethodSymbol()) {
+          // parameter
+          ownerSignature = ((JavaSymbol.MethodJavaSymbol)s.owner()).completeSignature();
+        } else {
+          throw new IllegalArgumentException();
+        }
+
         return ownerSignature + '#' + s.name();
       } else if (s.isMethodSymbol()) {
         return ((JavaSymbol.MethodJavaSymbol)s).completeSignature();

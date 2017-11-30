@@ -47,7 +47,16 @@ public class JavaFrontendTest {
     Set<TaintSource> conditions = computeTaintSources("returnParam");
 
     assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("returnParam#a");
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParam(Ljava/lang/String;)Ljava/lang/String;#a");
+    });
+  }
+
+  @Test
+  public void return_field_should_only_be_tainted_when_field_is_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnField");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#f");
     });
   }
 
@@ -65,7 +74,6 @@ public class JavaFrontendTest {
 
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
-    System.out.println(((JavaSymbol.MethodJavaSymbol)m.symbol()).completeSignature());
     CFG cfg = CFG.build(m);
     return JavaFrontend.computeTaintConditions(src, cfg);
   }
