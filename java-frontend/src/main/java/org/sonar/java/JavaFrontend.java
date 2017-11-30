@@ -268,7 +268,7 @@ public class JavaFrontend {
           throw new IllegalArgumentException();
         }
 
-        return ownerSignature + '#' + s.name();
+        return ownerSignature + "#" + s.name();
       } else if (s.isMethodSymbol()) {
         return ((JavaSymbol.MethodJavaSymbol)s).completeSignature();
       } else {
