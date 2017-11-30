@@ -25,10 +25,6 @@
 'jdk6:java/awt/image/Raster.java':[
 368,
 ],
-'jdk6:java/beans/Introspector.java':[
-153,
-1278,
-],
 'jdk6:java/beans/ReflectionUtils.java':[
 217,
 ],

@@ -42,6 +42,7 @@ import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
+import org.sonar.java.se.ExceptionUtils;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
@@ -744,9 +745,11 @@ public class BytecodeEGWalker {
     ProgramState.Pop pop = programState.unstackValue(arity);
     Preconditions.checkState(pop.values.size() == arity, "Arguments mismatch for INVOKE");
     // TODO use constraintManager.createMethodSymbolicValue to create relational SV for equals
+    programState = pop.state;
     SymbolicValue returnSV = instruction.hasReturnValue() ? constraintManager.createSymbolicValue(instruction) : null;
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
+    enqueueUncheckedExceptions();
     if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
       List<SymbolicValue> stack = Lists.reverse(pop.values);
       if (!isStatic) {
@@ -757,7 +760,7 @@ public class BytecodeEGWalker {
 
       methodInvokedBehavior
         .happyPathYields()
-        .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), pop.state, () -> returnSV).forEach(ps -> {
+        .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), programState, () -> returnSV).forEach(ps -> {
           checkerDispatcher.methodYield = yield;
           checkerDispatcher.addTransition(ps);
           checkerDispatcher.methodYield = null;
@@ -767,7 +770,7 @@ public class BytecodeEGWalker {
         .forEach(yield -> {
           Type exceptionType = yield.exceptionType(semanticModel);
           yield.statesAfterInvocation(
-            arguments, Collections.emptyList(), pop.state, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
+            arguments, Collections.emptyList(), programState, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
               ps.storeExitValue();
               enqueueExceptionHandlers(exceptionType, ps);
           });
@@ -775,7 +778,6 @@ public class BytecodeEGWalker {
       // FIXME : empty yields here should not happen, for now act as if behavior was not resolved.
       return !methodInvokedBehavior.yields().isEmpty();
     }
-    programState = pop.state;
     if (methodInvokedBehavior != null) {
       methodInvokedBehavior.getDeclaredExceptions().forEach(exception -> {
         Type exceptionType = semanticModel.getClassType(exception);
@@ -788,6 +790,29 @@ public class BytecodeEGWalker {
       programState = setDoubleOrLong(returnSV, instruction.isLongOrDoubleValue());
     }
     return false;
+  }
+
+  private void enqueueUncheckedExceptions() {
+    programPosition.block.successors()
+        .stream()
+        .map(BytecodeCFG.Block.class::cast)
+        .filter(this::isUncheckedExceptionCatchBlock)
+        .forEach(b -> enqueue(new ProgramPoint(b), stateWithException(programState, b)));
+  }
+
+  private boolean isUncheckedExceptionCatchBlock(BytecodeCFG.Block b) {
+    String exceptionTypeName = b.getExceptionType();
+    if (exceptionTypeName == null) {
+      return false;
+    }
+    Type exceptionType = semanticModel.getClassType(exceptionTypeName);
+    return ExceptionUtils.isUncheckedException(exceptionType);
+  }
+
+  private ProgramState stateWithException(ProgramState programState, BytecodeCFG.Block b) {
+    Type exceptionType = semanticModel.getClassType(b.getExceptionType());
+    SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
+    return programState.stackValue(sv);
   }
 
   private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {

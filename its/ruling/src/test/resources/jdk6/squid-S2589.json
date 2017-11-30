@@ -19,11 +19,6 @@
 'jdk6:java/awt/geom/QuadCurve2D.java':[
 986,
 ],
-'jdk6:java/beans/ReflectionUtils.java':[
-349,
-353,
-361,
-],
 'jdk6:java/io/LineNumberInputStream.java':[
 135,
 ],
