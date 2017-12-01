@@ -501,6 +501,11 @@ public class RelationalSymbolicValueTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/RelationSV.java", new NullDereferenceCheck());
   }
 
+  @Test(timeout = 5000)
+  public void too_many_relationship_should_stop_se_engine() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
+  }
+
   @Test
   public void recursion_on_copy_constraint_should_stop_distilled() {
     ProgramState ps = ProgramState.EMPTY_STATE;

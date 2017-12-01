@@ -50,7 +50,7 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METH
 public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   private static final int MAX_ITERATIONS = 10_000;
-  private static final int MAX_DEDUCED_RELATIONS = 1000;
+  private static final int MAX_DEDUCED_RELATIONS = 100_000;
 
   public enum Kind {
     EQUAL("=="),
@@ -255,7 +255,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     int iterations = 0;
     workList.add(this);
     while (!workList.isEmpty()) {
-      if (newRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+      if (newRelations.size() * knownRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
         throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + newRelations.size() + ". Iterations " + iterations);
       }
