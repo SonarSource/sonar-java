@@ -278,6 +278,10 @@ public class JavaFrontend {
     }
 
     public TaintSource taintSourceFor(Symbol symbol) {
+      if (symbol.isMethodSymbol()) {
+        return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol));
+      }
+
       return taintSources.computeIfAbsent(
         symbol,
         s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s)));
@@ -507,8 +511,12 @@ public class JavaFrontend {
     }
 
     private void executeMethodInvocation(MethodInvocationTree mit) {
-      // TODO
-      throw new UnsupportedOperationException();
+      for (int i = 0; i < mit.arguments().size(); i++) {
+        stack.pop();
+      }
+      stack.pop();
+
+      stack.push(state.taintSourceFor(mit.symbol()));
     }
 
     private void executeVariable(VariableTree variableTree) {

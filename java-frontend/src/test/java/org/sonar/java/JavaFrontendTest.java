@@ -113,6 +113,24 @@ public class JavaFrontendTest {
     });
   }
 
+  @Test
+  public void return_of_another_method_should_be_tainted_when_return_value_is_tainted() {
+    Set<TaintSource> conditions = computeTaintSources("returnOfAnotherMethod");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#myConst()Ljava/lang/String;");
+    });
+  }
+
+  @Test
+  public void calling_the_same_method_can_return_different_results() {
+    Set<TaintSource> conditions = computeTaintSources("callingSameMethodYieldDifferentResults");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$1: my.pkg.MyClass#myConst()Ljava/lang/String;");
+    });
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);
