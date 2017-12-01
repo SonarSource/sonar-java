@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
@@ -534,13 +535,14 @@ public class JavaFrontend {
     }
 
     private void executeMethodInvocation(MethodInvocationTree mit) {
+      List<TaintSource> arguments = new ArrayList<>();
       for (int i = 0; i < mit.arguments().size(); i++) {
-        stack.pop();
+        arguments.add(stack.pop());
       }
       stack.pop();
 
       // TODO What if void method?
-      stack.push(state.taintSourceFor(mit.symbol()));
+      stack.push(state.taintSourceFor(mit.symbol(), Lists.reverse(arguments)));
     }
 
     private void executeVariable(VariableTree variableTree) {

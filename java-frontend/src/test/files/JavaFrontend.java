@@ -83,4 +83,12 @@ class MyClass extends Base {
     return myObject();
   }
 
+  public String forward(String s, boolean flag) {
+    return s;
+  }
+
+  public String returnForwardedString(String s) {
+    return forward(s, true);
+  }
+
 }

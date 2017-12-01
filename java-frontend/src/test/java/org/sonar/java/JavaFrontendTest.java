@@ -134,6 +134,15 @@ public class JavaFrontendTest {
     assertThat(conditions).isEmpty();
   }
 
+  @Test
+  public void return_of_forwarded_string() {
+    Set<TaintSource> conditions = computeTaintSources("returnForwardedString");
+
+    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
+      assertThat(ts.toString()).isEqualTo("$1: my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;($0: my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)");
+    });
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);
