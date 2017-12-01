@@ -69,6 +69,7 @@ public final class SurefireUtils {
       return dirs;
     }
     if (dir != null) {
+      LOGGER.info("Property '{}' is deprecated. Use property '{}' instead.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
       return Collections.singletonList(dir);
     }
     // both properties are not set
@@ -93,7 +94,6 @@ public final class SurefireUtils {
   @CheckForNull
   private static File getReportsDirectoryFromDeprecatedProperty(Configuration settings, FileSystem fs, PathResolver pathResolver) {
     if(settings.hasKey(SUREFIRE_REPORTS_PATH_PROPERTY)) {
-      LOGGER.info("Property '{}' is deprecated. Use property '{}' instead.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
       String path = settings.get(SUREFIRE_REPORTS_PATH_PROPERTY).orElse(null);
       if (path != null) {
         return getFileFromPath(fs, pathResolver, path);
