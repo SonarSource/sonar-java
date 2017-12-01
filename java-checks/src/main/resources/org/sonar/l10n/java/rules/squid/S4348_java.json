@@ -1,0 +1,15 @@
+{
+  "title": "\"iterator\" should not return \"this\"",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4348",
+  "sqKey": "S4348"
+}

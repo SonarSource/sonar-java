@@ -520,6 +520,7 @@ public final class CheckList {
       .add(OverwrittenKeyCheck.class)
       .add(LeastSpecificTypeCheck.class)
       .add(SwitchInsteadOfIfSequenceCheck.class)
+      .add(IterableIteratorCheck.class)
       .build();
   }
 
