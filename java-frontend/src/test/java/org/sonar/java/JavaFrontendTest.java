@@ -52,12 +52,10 @@ public class JavaFrontendTest {
   }
 
   @Test
-  public void return_field_should_only_be_tainted_when_field_is_tainted() {
+  public void return_field_should_never_be_tainted() {
     Set<TaintSource> conditions = computeTaintSources("returnField");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#f");
-    });
+    assertThat(conditions).isEmpty();
   }
 
   @Test
@@ -105,12 +103,10 @@ public class JavaFrontendTest {
   }
 
   @Test
-  public void return_field_later_reassigned_should_be_tainted_when_field_is_tainted() {
+  public void return_field_later_reassigned_never_be_tainted() {
     Set<TaintSource> conditions = computeTaintSources("returnFieldReassignedLater");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#f");
-    });
+    assertThat(conditions).isEmpty();
   }
 
   @Test

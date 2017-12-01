@@ -292,6 +292,11 @@ public class JavaFrontend {
         }
       }
 
+      if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
+        // Fields are not supported
+        return new TaintFreeSource();
+      }
+
       return taintSources.computeIfAbsent(
         symbol,
         s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s)));
