@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.typed.ActionParser;
@@ -129,10 +130,12 @@ public class JavaFrontend {
 
     private final int id;
     private final String signature;
+    private final List<TaintSource> arguments;
 
-    public DirectTaintSource(int id, String signature) {
+    public DirectTaintSource(int id, String signature, List<TaintSource> arguments) {
       this.id = id;
       this.signature = signature;
+      this.arguments = arguments;
     }
 
     @Override
@@ -147,7 +150,7 @@ public class JavaFrontend {
 
     @Override
     public String toString() {
-      return "$" + id + ": " + signature;
+      return "$" + id + ": " + signature + (arguments.isEmpty() ? "" : "(" + Joiner.on(", ").join(arguments) + ")");
     }
 
     @Override
@@ -283,13 +286,18 @@ public class JavaFrontend {
     }
 
     public TaintSource taintSourceFor(Symbol symbol) {
+      return taintSourceFor(symbol, Collections.emptyList());
+    }
+
+    public TaintSource taintSourceFor(Symbol symbol, List<TaintSource> arguments) {
       if (symbol.isMethodSymbol()) {
         MethodSymbol method = (MethodSymbol)symbol;
         if (isString(method.returnType().type())) {
-          return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol));
+          return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol), arguments);
         } else {
           return new TaintFreeSource();
         }
+        // TODO If any of the arguments can be tainted, store the invocation to the state
       }
 
       if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
@@ -299,7 +307,7 @@ public class JavaFrontend {
 
       return taintSources.computeIfAbsent(
         symbol,
-        s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s)));
+        s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s), arguments));
     }
 
     public void put(Symbol symbol, TaintSource ts) {
