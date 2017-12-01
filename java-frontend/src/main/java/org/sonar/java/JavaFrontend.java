@@ -526,11 +526,11 @@ public class JavaFrontend {
           break;
         case LAMBDA_EXPRESSION:
         case METHOD_REFERENCE:
-          // TODO
-          throw new UnsupportedOperationException();
+          executeMethodReference();
+          break;
         case ASSERT_STATEMENT:
-          // TODO
-          throw new UnsupportedOperationException();
+          executeAssertStatement();
+          break;
         default:
           throw new IllegalArgumentException("Unhandled tree: " + tree.getClass().getSimpleName() + " - " + tree);
       }
@@ -624,6 +624,16 @@ public class JavaFrontend {
     }
 
     private void executeMemberSelect(MemberSelectExpressionTree mse) {
+      // TODO
+      throw new UnsupportedOperationException();
+    }
+
+    private void executeMethodReference() {
+      // TODO
+      throw new UnsupportedOperationException();
+    }
+
+    private void executeAssertStatement() {
       // TODO
       throw new UnsupportedOperationException();
     }
