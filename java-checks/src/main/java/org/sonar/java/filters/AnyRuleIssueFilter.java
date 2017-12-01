@@ -23,16 +23,16 @@ import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
@@ -68,7 +68,16 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      return ContiguousSet.create(Range.closed(firstSyntaxToken.line(), lastSyntaxToken.line()), DiscreteDomain.integers());
+      int startLine = firstSyntaxToken.line();
+      int endLine = lastSyntaxToken.line();
+
+      // includes trivia on top of first syntax token.
+      List<SyntaxTrivia> trivias = firstSyntaxToken.trivias();
+      if (!trivias.isEmpty()) {
+        startLine = trivias.get(0).startLine();
+      }
+
+      return ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
     }
     return new HashSet<>();
   }
