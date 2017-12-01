@@ -68,16 +68,6 @@ public class JavaFrontend {
     return new ScannedFile(tree, model);
   }
 
-  private static class IdGenerator {
-
-    private int current = 0;
-
-    public int next() {
-      return current++;
-    }
-
-  }
-
   public static class TaintSummary {
 
     private final Set<TaintSource> result;
@@ -167,12 +157,10 @@ public class JavaFrontend {
    */
   public static class DirectTaintSource implements TaintSource {
 
-    private final int id;
     private final String signature;
     private final List<TaintSource> arguments;
 
-    public DirectTaintSource(int id, String signature, List<TaintSource> arguments) {
-      this.id = id;
+    public DirectTaintSource(String signature, List<TaintSource> arguments) {
       this.signature = signature;
       this.arguments = arguments;
     }
@@ -189,12 +177,12 @@ public class JavaFrontend {
 
     @Override
     public String toString() {
-      return "$" + id + ": " + signature + (arguments.isEmpty() ? "" : "(" + Joiner.on(", ").join(arguments) + ")");
+      return signature + (arguments.isEmpty() ? "" : "(" + Joiner.on(", ").join(arguments) + ")");
     }
 
     @Override
     public int hashCode() {
-      return id;
+      return signature.hashCode();
     }
 
     @Override
@@ -205,7 +193,8 @@ public class JavaFrontend {
 
       DirectTaintSource other = (DirectTaintSource) obj;
 
-      return id == other.id;
+      return signature.equals(other.signature) &&
+        arguments.equals(other.arguments);
     }
 
   }
@@ -275,18 +264,15 @@ public class JavaFrontend {
 
   private static class TaintProgramState {
 
-    private final IdGenerator idGenerator;
     private final ScannedFile src;
     private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
     private final Set<DirectTaintSource> methodCalls = new HashSet<>();
 
-    public TaintProgramState(IdGenerator idGenerator, ScannedFile src) {
-      this.idGenerator = idGenerator;
+    public TaintProgramState(ScannedFile src) {
       this.src = src;
     }
 
     private TaintProgramState(TaintProgramState other) {
-      this.idGenerator = other.idGenerator;
       this.src = other.src;
       this.taintSources.putAll(other.taintSources);
       this.methodCalls.addAll(other.methodCalls);
@@ -335,11 +321,11 @@ public class JavaFrontend {
         MethodSymbol method = (MethodSymbol)symbol;
 
         if (arguments.stream().anyMatch(ts -> ts.canBeTainted())) {
-          methodCalls.add(new DirectTaintSource(-1, fullyQualify(symbol), arguments));
+          methodCalls.add(new DirectTaintSource(fullyQualify(symbol), arguments));
         }
 
         if (isString(method.returnType().type())) {
-          return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol), arguments);
+          return new DirectTaintSource(fullyQualify(symbol), arguments);
         } else {
           return new TaintFreeSource();
         }
@@ -352,7 +338,7 @@ public class JavaFrontend {
 
       return taintSources.computeIfAbsent(
         symbol,
-        s -> new DirectTaintSource(idGenerator.next(), fullyQualify(s), arguments));
+        s -> new DirectTaintSource(fullyQualify(s), arguments));
     }
 
     public void put(Symbol symbol, TaintSource ts) {
@@ -382,7 +368,6 @@ public class JavaFrontend {
   }
 
   public static TaintSummary computeTaintConditions(ScannedFile src, CFG cfg) {
-    IdGenerator idGenerator = new IdGenerator();
     Set<TaintSource> result = new HashSet<>();
     Set<DirectTaintSource> methodCalls = new HashSet<>();
 
@@ -392,7 +377,7 @@ public class JavaFrontend {
     Multimap<Block, TaintProgramState> workList = HashMultimap.create();
 
     Block entry = cfg.entry();
-    TaintProgramState entryState = new TaintProgramState(idGenerator, src);
+    TaintProgramState entryState = new TaintProgramState(src);
     workList.put(entry, entryState);
 
     while (!workList.isEmpty()) {
