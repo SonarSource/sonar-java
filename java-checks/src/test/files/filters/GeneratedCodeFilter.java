@@ -14,6 +14,10 @@ class this_is_a_bad_class_name { // WithIssue
   }
 }
 
+/** this is an alpha */ // NoIssue
+/**
+ * Other comment
+ */
 @Generated
 class this_is_a_bad_generated_class_name { // NoIssue
 

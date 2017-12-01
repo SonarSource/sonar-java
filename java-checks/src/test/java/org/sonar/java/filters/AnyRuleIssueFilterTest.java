@@ -19,6 +19,9 @@
  */
 package org.sonar.java.filters;
 
+import java.io.File;
+import java.util.Collections;
+import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +32,6 @@ import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -119,6 +117,12 @@ public class AnyRuleIssueFilterTest {
 
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule6"));
     assertThatIssueWillBeAccepted(7).isTrue();
+
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule7"));
+    // issue on trivia from the field
+    assertThatIssueWillBeAccepted(10).isFalse();
+    // issue on field
+    assertThatIssueWillBeAccepted(12).isFalse();
   }
 
   private AbstractBooleanAssert<?> assertThatIssueWillBeAccepted(@Nullable Integer line) {

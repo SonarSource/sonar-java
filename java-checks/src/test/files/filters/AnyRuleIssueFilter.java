@@ -1,8 +1,13 @@
 class A {
   private
   static
-  Object FieLd; // invalid
+  Object FieLd;
 
   Object
-  myField; // valid
+  myField;
+
+  /**
+   * Oh yeah
+   */
+  Object fieldus;
 }
