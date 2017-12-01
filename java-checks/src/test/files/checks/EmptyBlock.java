@@ -97,3 +97,11 @@ class EmptyBlock {
     }
   }
 }
+
+class EmptyLambda {
+  java.util.function.Consumer<String> c = s -> {};
+
+  void foo(java.util.function.Consumer<String> c){
+    foo(s ->{});
+  }
+}

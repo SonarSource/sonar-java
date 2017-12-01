@@ -59,7 +59,8 @@ public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
     } else {
       if (isMethodBlock) {
         isMethodBlock = false;
-      } else if (!hasStatements((BlockTree) tree) && !hasCommentInside((BlockTree) tree)) {
+      } else if (!tree.parent().is(Tree.Kind.LAMBDA_EXPRESSION)
+              && !hasStatements((BlockTree) tree) && !hasCommentInside((BlockTree) tree)) {
         reportIssue(((BlockTree) tree).openBraceToken(), MESSAGE);
       }
     }
