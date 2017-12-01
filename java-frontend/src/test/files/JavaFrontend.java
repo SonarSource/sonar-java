@@ -73,7 +73,14 @@ class MyClass extends Base {
     f = "foo";
     // Who knows, perhaps myConst()'s result depends on field "f"?
     return myConst();
+  }
 
+  public Object myObject() {
+    return null;
+  }
+
+  public String returnNonStringMethod() {
+    return myObject();
   }
 
 }

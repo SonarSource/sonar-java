@@ -32,6 +32,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.*;
 
@@ -277,9 +278,18 @@ public class JavaFrontend {
       }
     }
 
+    public static boolean isString(Type type) {
+      return type.is("java.lang.String");
+    }
+
     public TaintSource taintSourceFor(Symbol symbol) {
       if (symbol.isMethodSymbol()) {
-        return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol));
+        MethodSymbol method = (MethodSymbol)symbol;
+        if (isString(method.returnType().type())) {
+          return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol));
+        } else {
+          return new TaintFreeSource();
+        }
       }
 
       return taintSources.computeIfAbsent(
@@ -482,7 +492,7 @@ public class JavaFrontend {
     }
 
     private void executeIdentifier(IdentifierTree tree) {
-      if (isString(tree.symbolType())) {
+      if (TaintProgramState.isString(tree.symbolType())) {
         stack.push(state.taintSourceFor(tree.symbol()));
       } else {
         stack.push(new TaintFreeSource());
@@ -516,6 +526,7 @@ public class JavaFrontend {
       }
       stack.pop();
 
+      // TODO What if void method?
       stack.push(state.taintSourceFor(mit.symbol()));
     }
 
@@ -565,10 +576,6 @@ public class JavaFrontend {
     private void executeMemberSelect(MemberSelectExpressionTree mse) {
       // TODO
       throw new UnsupportedOperationException();
-    }
-
-    private boolean isString(Type type) {
-      return type.is("java.lang.String");
     }
 
   }

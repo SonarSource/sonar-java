@@ -131,6 +131,13 @@ public class JavaFrontendTest {
     });
   }
 
+  @Test
+  public void return_my_object_should_be_taint_free() {
+    Set<TaintSource> conditions = computeTaintSources("returnNonStringMethod");
+
+    assertThat(conditions).isEmpty();
+  }
+
   private Set<TaintSource> computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);
