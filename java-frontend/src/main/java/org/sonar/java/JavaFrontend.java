@@ -78,6 +78,44 @@ public class JavaFrontend {
 
   }
 
+  public static class TaintSummary {
+
+    private final Set<TaintSource> result;
+    private final Set<DirectTaintSource> methodCalls;
+
+    public TaintSummary(Set<TaintSource> result, Set<DirectTaintSource> methodCalls) {
+      this.result = result;
+      this.methodCalls = methodCalls;
+    }
+
+    public boolean resultCanBeTaintedBy(String s) {
+      for (TaintSource ts: result) {
+        if (ts.toString().equals(s)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public int resultTaintedPaths() {
+      return result.size();
+    }
+
+    public boolean callsMethod(String s) {
+      for (DirectTaintSource ts: methodCalls) {
+        if (ts.toString().equals(s)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public int methodCalls() {
+      return methodCalls.size();
+    }
+
+  }
+
   public interface TaintSource {
 
     boolean canBeTainted();
@@ -240,6 +278,7 @@ public class JavaFrontend {
     private final IdGenerator idGenerator;
     private final ScannedFile src;
     private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
+    private final Set<DirectTaintSource> methodCalls = new HashSet<>();
 
     public TaintProgramState(IdGenerator idGenerator, ScannedFile src) {
       this.idGenerator = idGenerator;
@@ -250,6 +289,7 @@ public class JavaFrontend {
       this.idGenerator = other.idGenerator;
       this.src = other.src;
       this.taintSources.putAll(other.taintSources);
+      this.methodCalls.addAll(other.methodCalls);
     }
 
     public TaintProgramState dup() {
@@ -293,12 +333,16 @@ public class JavaFrontend {
     public TaintSource taintSourceFor(Symbol symbol, List<TaintSource> arguments) {
       if (symbol.isMethodSymbol()) {
         MethodSymbol method = (MethodSymbol)symbol;
+
+        if (arguments.stream().anyMatch(ts -> ts.canBeTainted())) {
+          methodCalls.add(new DirectTaintSource(-1, fullyQualify(symbol), arguments));
+        }
+
         if (isString(method.returnType().type())) {
           return new DirectTaintSource(idGenerator.next(), fullyQualify(symbol), arguments);
         } else {
           return new TaintFreeSource();
         }
-        // TODO If any of the arguments can be tainted, store the invocation to the state
       }
 
       if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
@@ -318,7 +362,8 @@ public class JavaFrontend {
     @Override
     public int hashCode() {
       return src.hashCode() +
-        13 * taintSources.hashCode();
+        13 * taintSources.hashCode() +
+        19 * methodCalls.hashCode();
     }
 
     @Override
@@ -329,15 +374,17 @@ public class JavaFrontend {
 
       TaintProgramState other = (TaintProgramState) obj;
 
-      return Objects.equals(src, other.src) &&
-        Objects.equals(taintSources, other.taintSources);
+      return src.equals(other.src) &&
+        taintSources.equals(other.taintSources) &&
+        methodCalls.equals(other.methodCalls);
     }
 
   }
 
-  public static Set<TaintSource> computeTaintConditions(ScannedFile src, CFG cfg) {
+  public static TaintSummary computeTaintConditions(ScannedFile src, CFG cfg) {
     IdGenerator idGenerator = new IdGenerator();
     Set<TaintSource> result = new HashSet<>();
+    Set<DirectTaintSource> methodCalls = new HashSet<>();
 
     boolean returnsVoid = cfg.methodSymbol().returnType().type().isVoid();
 
@@ -359,6 +406,9 @@ public class JavaFrontend {
       BlockVisitor visitor = new BlockVisitor(state.dup());
       visitor.visit(block);
       TaintProgramState exitState = visitor.state;
+
+      methodCalls.addAll(exitState.methodCalls);
+
       if (block.successors().contains(cfg.exitBlock())) {
         if (!returnsVoid) {
           TaintSource ts = visitor.peek();
@@ -375,7 +425,7 @@ public class JavaFrontend {
       }
     }
 
-    return result;
+    return new TaintSummary(result, methodCalls);
   }
 
   private static class BlockVisitor {

@@ -25,6 +25,7 @@ import java.util.*;
 import org.junit.Test;
 import org.sonar.java.JavaFrontend.ScannedFile;
 import org.sonar.java.JavaFrontend.TaintSource;
+import org.sonar.java.JavaFrontend.TaintSummary;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.*;
@@ -37,113 +38,112 @@ public class JavaFrontendTest {
 
   @Test
   public void return_const_literal_should_never_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnConstLiteral");
+    TaintSummary summary = computeTaintSources("returnConstLiteral");
 
-    assertThat(conditions).isEmpty();
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_param_should_only_be_tainted_when_param_is_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnParam");
+    TaintSummary summary = computeTaintSources("returnParam");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParam(Ljava/lang/String;)Ljava/lang/String;#a");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$0: my.pkg.MyClass#returnParam(Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
   }
 
   @Test
   public void return_field_should_never_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnField");
+    TaintSummary summary = computeTaintSources("returnField");
 
-    assertThat(conditions).isEmpty();
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_param_through_local_variable_should_only_be_tainted_when_param_is_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnParamThroughLocalVariable");
+    TaintSummary summary = computeTaintSources("returnParamThroughLocalVariable");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParamThroughLocalVariable(Ljava/lang/String;)Ljava/lang/String;#a");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$0: my.pkg.MyClass#returnParamThroughLocalVariable(Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
   }
 
   @Test
   public void return_of_uninitialized_local_variable() {
-    Set<TaintSource> conditions = computeTaintSources("returnOfUninitializedLocalVariable");
+    TaintSummary summary = computeTaintSources("returnOfUninitializedLocalVariable");
 
-    assertThat(conditions).isEmpty();
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_one_of_two_params_can_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnOneOfTwoParams");
+    TaintSummary summary = computeTaintSources("returnOneOfTwoParams");
 
-    System.out.println("Return taint conditions");
-    for (TaintSource ts: conditions) {
-      System.out.println("  - " + ts);
-    }
-
-    assertThat(conditions).hasSize(2);
+    assertThat(summary.resultTaintedPaths()).isEqualTo(2);
+    assertThat(summary.resultCanBeTaintedBy("$0: my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#b")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("$1: my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
   }
 
   @Test
   public void return_param_through_two_paths_should_only_contain_one_tainted_source() {
-    Set<TaintSource> conditions = computeTaintSources("returnParamThroughTwoPaths");
+    TaintSummary summary = computeTaintSources("returnParamThroughTwoPaths");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#a");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$0: my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#a")).isTrue();
   }
 
   @Test
   public void return_const_assigned_to_param_should_never_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnConstAssignedToParam");
+    TaintSummary summary = computeTaintSources("returnConstAssignedToParam");
 
-    assertThat(conditions).isEmpty();;
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_field_later_reassigned_never_be_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnFieldReassignedLater");
+    TaintSummary summary = computeTaintSources("returnFieldReassignedLater");
 
-    assertThat(conditions).isEmpty();
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_of_another_method_should_be_tainted_when_return_value_is_tainted() {
-    Set<TaintSource> conditions = computeTaintSources("returnOfAnotherMethod");
+    TaintSummary summary = computeTaintSources("returnOfAnotherMethod");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$0: my.pkg.MyClass#myConst()Ljava/lang/String;");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$0: my.pkg.MyClass#myConst()Ljava/lang/String;")).isTrue();
   }
 
   @Test
   public void calling_the_same_method_can_return_different_results() {
-    Set<TaintSource> conditions = computeTaintSources("callingSameMethodYieldDifferentResults");
+    TaintSummary summary = computeTaintSources("callingSameMethodYieldDifferentResults");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$1: my.pkg.MyClass#myConst()Ljava/lang/String;");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$1: my.pkg.MyClass#myConst()Ljava/lang/String;")).isTrue();
   }
 
   @Test
   public void return_my_object_should_be_taint_free() {
-    Set<TaintSource> conditions = computeTaintSources("returnNonStringMethod");
+    TaintSummary summary = computeTaintSources("returnNonStringMethod");
 
-    assertThat(conditions).isEmpty();
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
   }
 
   @Test
   public void return_of_forwarded_string() {
-    Set<TaintSource> conditions = computeTaintSources("returnForwardedString");
+    TaintSummary summary = computeTaintSources("returnForwardedString");
 
-    assertThat(conditions).hasOnlyOneElementSatisfying(ts -> {
-      assertThat(ts.toString()).isEqualTo("$1: my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;($0: my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)");
-    });
+    assertThat(summary.resultTaintedPaths()).isEqualTo(1);
+    assertThat(summary.resultCanBeTaintedBy("$1: my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;($0: my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)")).isTrue();
   }
 
-  private Set<TaintSource> computeTaintSources(String methodSimpleName) {
+  @Test
+  public void call_forwarded_method_but_return_literal() {
+    TaintSummary summary = computeTaintSources("callForwardedMethod");
+
+    assertThat(summary.resultTaintedPaths()).isEqualTo(0);
+    assertThat(summary.callsMethod("$-1: my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;($0: my.pkg.MyClass#callForwardedMethod(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)")).isTrue();
+  }
+
+  private TaintSummary computeTaintSources(String methodSimpleName) {
     MethodTree m = getMethod(methodSimpleName);
     CFG cfg = CFG.build(m);
     return JavaFrontend.computeTaintConditions(src, cfg);

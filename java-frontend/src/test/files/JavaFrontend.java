@@ -91,4 +91,9 @@ class MyClass extends Base {
     return forward(s, true);
   }
 
+  public String callForwardedMethod(String s) {
+    forward(s, true);
+    return "foo";
+  }
+
 }
