@@ -191,6 +191,18 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     @Override
     void close(); // override which does not throw 'java.lang.Exception'
   }
+
+  interface MyOtherInterface {
+    Object foo(Object o) throws MyException; // Compliant
+
+    default Object bar(Object o) throws MyException { // Compliant - default method are also defining a contract
+      return o;
+    }
+
+    default Object qix(Object o) throws MyException, MyException { // Noncompliant
+      return o;
+    }
+  }
 }
 
 class MyException extends Exception {}

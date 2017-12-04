@@ -20,7 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
@@ -40,6 +43,7 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -47,12 +51,6 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import javax.annotation.Nullable;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "RedundantThrowsDeclarationCheck")
 @RspecKey("S1130")
@@ -157,8 +155,13 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isDesignedForExtension(MethodTree methodTree) {
-    return !ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE)
-      && (emptyBody(methodTree) || onlyReturnLiteralsOrThrowException(methodTree));
+    ModifiersTree modifiers = methodTree.modifiers();
+    if (ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE)) {
+      return false;
+    }
+    return ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT)
+      || emptyBody(methodTree)
+      || onlyReturnLiteralsOrThrowException(methodTree);
   }
 
   private static boolean onlyReturnLiteralsOrThrowException(MethodTree methodTree) {
