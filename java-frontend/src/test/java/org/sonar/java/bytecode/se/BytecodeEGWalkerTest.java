@@ -35,6 +35,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.testdata.BytecodeTestClass;
 import org.sonar.java.bytecode.se.testdata.ExceptionEnqueue;
 import org.sonar.java.bytecode.se.testdata.FinalBytecodeTestClass;
+import org.sonar.java.bytecode.se.testdata.MaxRelationBytecode;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -232,6 +233,12 @@ public class BytecodeEGWalkerTest {
     assertThat(exceptions).contains("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ExceptionCatch",
         "org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ThrowableCatch",
         "org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ErrorCatch");
+  }
+
+  @Test
+  public void propagation_of_bytecode_analysis_exception() throws Exception {
+    MethodBehavior methodBehavior = getMethodBehavior(MaxRelationBytecode.class, "isXMLLetter(C)Z");
+    assertThat(methodBehavior.isComplete()).isFalse();
   }
 
   private static MethodBehavior getMethodBehavior(String signature) {

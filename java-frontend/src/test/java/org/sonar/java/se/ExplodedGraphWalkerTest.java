@@ -273,6 +273,12 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void test_propagation_of_bytecode_analysis_failure() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/BytecodeExceptionPropagation.java", new NullDereferenceCheck());
+
+  }
+
+  @Test
   public void system_exit() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/SystemExit.java", seChecks());
   }
