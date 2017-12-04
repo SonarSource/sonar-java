@@ -19,9 +19,6 @@
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/DefaultBeanIntrospector.java':[
 122,
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/DynaProperty.java':[
-344,
-],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/JDBCDynaClass.java':[
 178,
 ],

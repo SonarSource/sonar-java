@@ -22,7 +22,7 @@ public class HelloWorld  {
     switch (ch) {
       case 'a': // +1 case
       case 'b': // +1 case
-      default: // +1 default case
+      default: // +0 default case not counted
         break;
     }
 

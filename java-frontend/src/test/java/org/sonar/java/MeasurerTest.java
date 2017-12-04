@@ -64,7 +64,7 @@ public class MeasurerTest {
 
   @Test
   public void verify_complexity_metric() {
-    checkMetric("Complexity.java", "complexity", 16);
+    checkMetric("Complexity.java", "complexity", 15);
   }
 
   @Test
@@ -74,7 +74,7 @@ public class MeasurerTest {
 
   @Test
   public void verify_complexity_in_classes() {
-    checkMetric("Complexity.java", "complexity_in_classes", 16);
+    checkMetric("Complexity.java", "complexity_in_classes", 15);
   }
 
   @Test
