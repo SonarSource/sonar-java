@@ -255,9 +255,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     int iterations = 0;
     workList.add(this);
     while (!workList.isEmpty()) {
-      if (newRelations.size() * knownRelations.size() > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
+      int relationSize = newRelations.size() * knownRelations.size();
+      if (relationSize > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
-        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + newRelations.size() + ". Iterations " + iterations);
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + relationSize + ". Iterations " + iterations);
       }
       iterations++;
       RelationalSymbolicValue relation = workList.pop();
@@ -450,4 +451,5 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   public Kind kind() {
     return kind;
   }
+
 }
