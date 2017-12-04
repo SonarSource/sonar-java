@@ -289,7 +289,9 @@ public class BytecodeEGWalker {
       try {
         methodBehavior.visited();
         execute(signature, classLoader);
-      } catch (ExplodedGraphWalker.MaximumStepsReachedException e) {
+      } catch (ExplodedGraphWalker.MaximumStepsReachedException
+        | RelationalSymbolicValue.TransitiveRelationExceededException
+        | BytecodeAnalysisException e) {
         LOG.debug("Dataflow analysis is incomplete for method {} : {}", signature, e.getMessage());
       } catch (Exception e) {
         throw new BytecodeAnalysisException("Failed dataflow analysis for " + signature, e);
