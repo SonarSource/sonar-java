@@ -22,26 +22,6 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.Symbols;
-import org.sonar.java.se.JavaCheckVerifier;
-import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.checks.DivisionByZeroCheck;
-import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.java.se.constraint.ConstraintsByDomain;
-import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,6 +31,28 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
+import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -66,6 +68,9 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_
 import static org.sonar.java.se.symbolicvalues.SymbolicValue.NULL_LITERAL;
 
 public class RelationalSymbolicValueTest {
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   ConstraintManager constraintManager = new ConstraintManager();
   SymbolicValue a = new SymbolicValue() {
@@ -501,9 +506,10 @@ public class RelationalSymbolicValueTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/RelationSV.java", new NullDereferenceCheck());
   }
 
-  @Test(timeout = 5000)
+  @Test
   public void too_many_relationship_should_stop_se_engine() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
+    SETestUtils.createSymbolicExecutionVisitor("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Could not complete symbolic execution: ");
   }
 
   @Test
