@@ -292,15 +292,18 @@ public class JavaFrontend {
         String ownerSignature;
         if (owner.isTypeSymbol()) {
           // field
-          ownerSignature = ((JavaSymbol.TypeJavaSymbol)owner).getFullyQualifiedName();
+          return ((JavaSymbol.TypeJavaSymbol)owner).getFullyQualifiedName() + "#" + s.name();
         } else if (owner.isMethodSymbol()) {
           // parameter
-          ownerSignature = ((JavaSymbol.MethodJavaSymbol)s.owner()).completeSignature();
+          JavaSymbol.MethodJavaSymbol m = (JavaSymbol.MethodJavaSymbol)s.owner();
+          int paramId = m.getParameters().scopeSymbols().indexOf(s);
+          if (paramId == -1) {
+            throw new IllegalStateException();
+          }
+          return ((JavaSymbol.MethodJavaSymbol)s.owner()).completeSignature() + "#" + paramId;
         } else {
           throw new IllegalArgumentException();
         }
-
-        return ownerSignature + "#" + s.name();
       } else if (s.isMethodSymbol()) {
         return ((JavaSymbol.MethodJavaSymbol)s).completeSignature();
       } else {

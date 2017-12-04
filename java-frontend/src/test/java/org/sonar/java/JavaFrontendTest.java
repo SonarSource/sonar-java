@@ -48,7 +48,7 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("returnParam");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(1);
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParam(Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParam(Ljava/lang/String;)Ljava/lang/String;#0")).isTrue();
   }
 
   @Test
@@ -63,7 +63,7 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("returnParamThroughLocalVariable");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(1);
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParamThroughLocalVariable(Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParamThroughLocalVariable(Ljava/lang/String;)Ljava/lang/String;#0")).isTrue();
   }
 
   @Test
@@ -78,8 +78,8 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("returnOneOfTwoParams");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(2);
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#b")).isTrue();
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#a")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#1")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnOneOfTwoParams(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;#2")).isTrue();
   }
 
   @Test
@@ -87,7 +87,7 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("returnParamThroughTwoPaths");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(1);
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#a")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#returnParamThroughTwoPaths(ZLjava/lang/String;)Ljava/lang/String;#1")).isTrue();
   }
 
   @Test
@@ -132,7 +132,7 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("returnForwardedString");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(1);
-    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)")).isTrue();
+    assertThat(summary.resultCanBeTaintedBy("my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#0, taint-free)")).isTrue();
   }
 
   @Test
@@ -140,7 +140,7 @@ public class JavaFrontendTest {
     TaintSummary summary = computeTaintSources("callForwardedMethod");
 
     assertThat(summary.resultTaintedPaths()).isEqualTo(0);
-    assertThat(summary.callsMethod("my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#callForwardedMethod(Ljava/lang/String;)Ljava/lang/String;#s, taint-free)")).isTrue();
+    assertThat(summary.callsMethod("my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#callForwardedMethod(Ljava/lang/String;)Ljava/lang/String;#0, taint-free)")).isTrue();
   }
 
   private TaintSummary computeTaintSources(String methodSimpleName) {
