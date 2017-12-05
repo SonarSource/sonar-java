@@ -752,7 +752,8 @@ public class BytecodeEGWalker {
     String signature = instruction.fieldOrMethod.completeSignature();
     MethodBehavior methodInvokedBehavior = behaviorCache.get(signature);
     enqueueUncheckedExceptions();
-    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete()) {
+    // FIXME : empty yields here should not happen, for now act as if behavior was not resolved.
+    if (methodInvokedBehavior != null && methodInvokedBehavior.isComplete() && !methodInvokedBehavior.yields().isEmpty()) {
       List<SymbolicValue> stack = Lists.reverse(pop.values);
       if (!isStatic) {
         // remove "thisSV" from stack before trying to apply any yield, as it should not match with arguments
@@ -777,8 +778,7 @@ public class BytecodeEGWalker {
               enqueueExceptionHandlers(exceptionType, ps);
           });
         });
-      // FIXME : empty yields here should not happen, for now act as if behavior was not resolved.
-      return !methodInvokedBehavior.yields().isEmpty();
+      return true;
     }
     if (methodInvokedBehavior != null) {
       methodInvokedBehavior.getDeclaredExceptions().forEach(exception -> {

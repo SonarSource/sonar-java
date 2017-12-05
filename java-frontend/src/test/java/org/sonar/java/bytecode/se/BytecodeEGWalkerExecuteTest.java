@@ -80,6 +80,7 @@ import static org.objectweb.asm.Opcodes.ICONST_2;
 import static org.objectweb.asm.Opcodes.ICONST_3;
 import static org.objectweb.asm.Opcodes.ICONST_4;
 import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.ISTORE;
 import static org.objectweb.asm.Opcodes.LADD;
 import static org.objectweb.asm.Opcodes.LAND;
@@ -137,6 +138,21 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(methodBehavior.yields()).hasSize(1);
   }
 
+  @Test
+  public void behavior_with_no_yield_should_stack_value() throws Exception {
+    BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
+    MethodBehavior methodBehavior = behaviorCache.get("org.mypackage.MyClass#MyMethod()Ljava/lang/Exception;");
+    methodBehavior.completed();
+    BytecodeEGWalker walker = new BytecodeEGWalker(behaviorCache, semanticModel);
+    walker.programState = ProgramState.EMPTY_STATE;
+    CFG.IBlock block = mock(CFG.IBlock.class);
+    when(block.successors()).thenReturn(Collections.emptySet());
+    walker.programPosition = new ProgramPoint(block);
+
+    walker.workList.clear();
+    walker.executeInstruction(new Instruction(INVOKESTATIC, new Instruction.FieldOrMethod("org.mypackage.MyClass", "MyMethod", "()Ljava/lang/Exception;")));
+    assertThat(walker.workList.getFirst().programState.peekValue()).isNotNull();
+  }
   @Test
   public void test_nop() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NOP));
