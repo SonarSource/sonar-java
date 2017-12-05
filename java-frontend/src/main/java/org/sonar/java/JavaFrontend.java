@@ -71,33 +71,19 @@ public class JavaFrontend {
   public static class TaintSummary {
 
     private final TaintSource result;
-    private final Set<TaintSource> methodCalls;
+    private final Set<TaintSource> callees;
 
-    public TaintSummary(TaintSource result, Set<TaintSource> methodCalls) {
+    public TaintSummary(TaintSource result, Set<TaintSource> callees) {
       this.result = result;
-      this.methodCalls = methodCalls;
+      this.callees = callees;
     }
 
-    public boolean resultCanBeTaintedBy(String s) {
-      for (TaintSource ts: result.flatten()) {
-        if (ts.toString().equals(s)) {
-          return true;
-        }
-      }
-      return false;
+    public TaintSource result() {
+      return result;
     }
 
-    public int resultTaintedPaths() {
-      return result.flatten().size();
-    }
-
-    public boolean callsMethod(String s) {
-      for (TaintSource ts: methodCalls) {
-        if (ts.toString().equals(s)) {
-          return true;
-        }
-      }
-      return false;
+    public Set<TaintSource> callees() {
+      return Collections.unmodifiableSet(callees);
     }
 
   }
@@ -105,7 +91,8 @@ public class JavaFrontend {
   public interface TaintSource {
 
     boolean canBeTainted();
-    Set<TaintSource> flatten();
+    Set<TaintSource> directlyDependsOn();
+    Set<TaintSource> recursivelyDependsOn();
     TaintSource unionWith(TaintSource other);
 
   }
@@ -131,8 +118,18 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<TaintSource> flatten() {
+    public Set<TaintSource> directlyDependsOn() {
       return Collections.singleton(this);
+    }
+
+    @Override
+    public Set<TaintSource> recursivelyDependsOn() {
+      Set<TaintSource> result = new HashSet<>();
+      result.add(this);
+      for (TaintSource ts: arguments) {
+        result.addAll(ts.recursivelyDependsOn());
+      }
+      return Collections.unmodifiableSet(result);
     }
 
     @Override
@@ -181,8 +178,13 @@ public class JavaFrontend {
 
     private IndirectTaintSource(TaintSource ts1, TaintSource ts2) {
       Set<TaintSource> sources = new HashSet<>();
-      sources.addAll(ts1.flatten());
-      sources.addAll(ts2.flatten());
+      sources.addAll(ts1.directlyDependsOn());
+      sources.addAll(ts2.directlyDependsOn());
+      for (TaintSource ts: sources) {
+        if (ts instanceof IndirectTaintSource) {
+          throw new IllegalStateException();
+        }
+      }
       this.sources = Collections.unmodifiableSet(sources);
     }
 
@@ -192,8 +194,17 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<TaintSource> flatten() {
+    public Set<TaintSource> directlyDependsOn() {
       return sources;
+    }
+
+    @Override
+    public Set<TaintSource> recursivelyDependsOn() {
+      Set<TaintSource> result = new HashSet<>();
+      for (TaintSource ts: sources) {
+        result.addAll(ts.recursivelyDependsOn());
+      }
+      return Collections.unmodifiableSet(result);
     }
 
     @Override
@@ -266,7 +277,7 @@ public class JavaFrontend {
     private final ScannedFile src;
     private final TaintSourceFactory tsf;
     private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
-    private final Set<TaintSource> methodCalls = new HashSet<>();
+    private final Set<TaintSource> callees = new HashSet<>();
 
     public TaintProgramState(ScannedFile src, TaintSourceFactory tsf) {
       this.src = src;
@@ -277,7 +288,7 @@ public class JavaFrontend {
       this.src = other.src;
       this.tsf = other.tsf;
       this.taintSources.putAll(other.taintSources);
-      this.methodCalls.addAll(other.methodCalls);
+      this.callees.addAll(other.callees);
     }
 
     public TaintProgramState dup() {
@@ -326,7 +337,7 @@ public class JavaFrontend {
         TaintSource methodTaintSource = tsf.taintedIif(fullyQualify(symbol), arguments);
 
         if (arguments.stream().anyMatch(ts -> ts.canBeTainted())) {
-          methodCalls.add(methodTaintSource);
+          callees.add(methodTaintSource);
         }
 
         if (isString(method.returnType().type())) {
@@ -354,7 +365,7 @@ public class JavaFrontend {
       return src.hashCode() +
         13 * tsf.hashCode() +
         17 * taintSources.hashCode() +
-        19 * methodCalls.hashCode();
+        19 * callees.hashCode();
     }
 
     @Override
@@ -368,7 +379,7 @@ public class JavaFrontend {
       return src.equals(other.src) &&
         tsf.equals(other.tsf) &&
         taintSources.equals(other.taintSources) &&
-        methodCalls.equals(other.methodCalls);
+        callees.equals(other.callees);
     }
 
   }
@@ -377,7 +388,7 @@ public class JavaFrontend {
     TaintSourceFactory tsf = new TaintSourceFactory();
 
     TaintSource result = tsf.taintFree();
-    Set<TaintSource> methodCalls = new HashSet<>();
+    Set<TaintSource> callees = new HashSet<>();
 
     boolean returnsVoid = cfg.methodSymbol().returnType().type().isVoid();
 
@@ -400,7 +411,7 @@ public class JavaFrontend {
       visitor.visit(block);
       TaintProgramState exitState = visitor.state;
 
-      methodCalls.addAll(exitState.methodCalls);
+      callees.addAll(exitState.callees);
 
       if (block.successors().contains(cfg.exitBlock())) {
         if (!returnsVoid) {
@@ -416,7 +427,7 @@ public class JavaFrontend {
       }
     }
 
-    return new TaintSummary(result, methodCalls);
+    return new TaintSummary(result, callees);
   }
 
   private static class BlockVisitor {
