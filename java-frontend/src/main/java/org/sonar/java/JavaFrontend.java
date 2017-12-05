@@ -256,12 +256,18 @@ public class JavaFrontend {
 
   private static class TaintSourceFactory {
 
+    private Map<TaintSource, TaintSource> singletons = new HashMap<>();
+
     public TaintSource taintFree() {
-      return new IndirectTaintSource();
+      return singletonFor(new IndirectTaintSource());
     }
 
     public TaintSource taintedIif(String fqn, List<TaintSource> arguments) {
-      return new DirectTaintSource(fqn, arguments);
+      return singletonFor(new DirectTaintSource(fqn, arguments));
+    }
+
+    private TaintSource singletonFor(TaintSource taintSource) {
+      return singletons.computeIfAbsent(taintSource, ts -> ts);
     }
 
   }
@@ -357,7 +363,8 @@ public class JavaFrontend {
     @Override
     public int hashCode() {
       return src.hashCode() +
-        13 * taintSources.hashCode() +
+        13 * tsf.hashCode() +
+        17 * taintSources.hashCode() +
         19 * methodCalls.hashCode();
     }
 
@@ -370,6 +377,7 @@ public class JavaFrontend {
       TaintProgramState other = (TaintProgramState) obj;
 
       return src.equals(other.src) &&
+        tsf.equals(other.tsf) &&
         taintSources.equals(other.taintSources) &&
         methodCalls.equals(other.methodCalls);
     }
