@@ -227,14 +227,7 @@ public class JavaFrontend {
         return "taint-free";
       }
 
-      StringBuilder sb = new StringBuilder();
-      sb.append(this.getClass().getSimpleName() + " with " + sources.size() + " entries:\n");
-      for (DirectTaintSource ts: sources) {
-        sb.append("  ");
-        sb.append(ts.toString());
-        sb.append("\n");
-      }
-      return sb.toString();
+      return "(" + Joiner.on(" | ").join(sources) + ")";
     }
 
     @Override
