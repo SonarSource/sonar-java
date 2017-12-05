@@ -105,7 +105,7 @@ public class JavaFrontend {
   public interface TaintSource {
 
     boolean canBeTainted();
-    Set<DirectTaintSource> flatten();
+    Set<TaintSource> flatten();
     TaintSource unionWith(TaintSource other);
 
   }
@@ -131,7 +131,7 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<DirectTaintSource> flatten() {
+    public Set<TaintSource> flatten() {
       return Collections.singleton(this);
     }
 
@@ -173,14 +173,14 @@ public class JavaFrontend {
    */
   public static class IndirectTaintSource implements TaintSource {
 
-    private Set<DirectTaintSource> sources;
+    private Set<TaintSource> sources;
 
     private IndirectTaintSource() {
       this.sources = Collections.emptySet();
     }
 
     private IndirectTaintSource(TaintSource ts1, TaintSource ts2) {
-      Set<DirectTaintSource> sources = new HashSet<>();
+      Set<TaintSource> sources = new HashSet<>();
       sources.addAll(ts1.flatten());
       sources.addAll(ts2.flatten());
       this.sources = Collections.unmodifiableSet(sources);
@@ -192,7 +192,7 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<DirectTaintSource> flatten() {
+    public Set<TaintSource> flatten() {
       return sources;
     }
 
