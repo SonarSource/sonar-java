@@ -260,10 +260,6 @@ public class JavaFrontend {
       return new IndirectTaintSource();
     }
 
-    public TaintSource taintedIif(String fqn) {
-      return taintedIif(fqn, Collections.emptyList());
-    }
-
     public TaintSource taintedIif(String fqn, List<TaintSource> arguments) {
       return new DirectTaintSource(fqn, arguments);
     }
@@ -300,7 +296,6 @@ public class JavaFrontend {
     private static String fullyQualify(Symbol s) {
       if (s.isVariableSymbol()) {
         Symbol owner = s.owner();
-        String ownerSignature;
         if (owner.isTypeSymbol()) {
           // field
           return ((JavaSymbol.TypeJavaSymbol)owner).getFullyQualifiedName() + "#" + s.name();
@@ -333,26 +328,26 @@ public class JavaFrontend {
     public TaintSource taintSourceFor(Symbol symbol, List<TaintSource> arguments) {
       if (symbol.isMethodSymbol()) {
         MethodSymbol method = (MethodSymbol)symbol;
+        TaintSource methodTaintSource = tsf.taintedIif(fullyQualify(symbol), arguments);
 
         if (arguments.stream().anyMatch(ts -> ts.canBeTainted())) {
-          methodCalls.add(tsf.taintedIif(fullyQualify(symbol), arguments));
+          methodCalls.add(methodTaintSource);
         }
 
         if (isString(method.returnType().type())) {
-          return tsf.taintedIif(fullyQualify(symbol), arguments);
+          return methodTaintSource;
         } else {
           return tsf.taintFree();
         }
-      }
-
-      if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
+      } else if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
         // Fields are not supported
         return tsf.taintFree();
+      } else {
+        // Local variables, re-assigned parameters, etc.
+        return taintSources.computeIfAbsent(
+          symbol,
+          s -> tsf.taintedIif(fullyQualify(s), arguments));
       }
-
-      return taintSources.computeIfAbsent(
-        symbol,
-        s -> tsf.taintedIif(fullyQualify(s), arguments));
     }
 
     public void put(Symbol symbol, TaintSource ts) {
