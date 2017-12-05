@@ -1,12 +1,11 @@
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 
 class A {
 
@@ -23,9 +22,9 @@ class A {
 
   public void doSomething(Set<COLOR> param) { // compliant, we ignore parameters.
     Set<COLOR> warm = new HashSet<COLOR>(); // Noncompliant [[sc=23;ec=43]] {{Convert this Set to an EnumSet.}}
+    warm.add(COLOR.RED);
+    warm.add(COLOR.ORANGE);
     Set foo = new HashSet();
-    warm.add(COLORS.RED);
-    warm.add(COLORS.ORANGE);
     SetString ss;
     SetColor sc;
     ExtendedSet<COLOR> es; // Compliant, we check only initializer.
@@ -37,8 +36,14 @@ class A {
     SetColor ports3 = new HashSet<>();
     Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports5 = Sets.immutableEnumSet(Lists.newArrayList(COLOR.RED)); // Compliant - guava use an enum set with constraint of immutability
+    Set<COLOR> ports6 = Sets.newHashSet(COLOR.RED); // Noncompliant {{Convert this Set to an EnumSet.}}
     Collection<COLOR> col = new ArrayList<>();
-    Set<COLOR> col2 = java.util.Collections.unmodifiableSet(EnumSet.of(COLOR.RED, COLOR.ORANGE));
-    Set<COLOR> col3 = java.util.Collections.unmodifiableSet(new HashSet<COLOR>()); // Noncompliant
+    Set<COLOR> col2 = Collections.unmodifiableSet(EnumSet.of(COLOR.RED, COLOR.ORANGE));
+    Set<COLOR> col3 = Collections.unmodifiableSet(new HashSet<COLOR>()); // Noncompliant
+    Set<COLOR> col4 = rgb(); // Compliant
+  }
+
+  private Set<COLOR> rgb() {
+    return EnumSet.of(COLOR.RED, COLOR.GREEN, COLOR.BLUE);
   }
 }
