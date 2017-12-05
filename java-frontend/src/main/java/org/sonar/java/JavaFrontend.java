@@ -70,16 +70,16 @@ public class JavaFrontend {
 
   public static class TaintSummary {
 
-    private final Set<TaintSource> result;
+    private final TaintSource result;
     private final Set<TaintSource> methodCalls;
 
-    public TaintSummary(Set<TaintSource> result, Set<TaintSource> methodCalls) {
+    public TaintSummary(TaintSource result, Set<TaintSource> methodCalls) {
       this.result = result;
       this.methodCalls = methodCalls;
     }
 
     public boolean resultCanBeTaintedBy(String s) {
-      for (TaintSource ts: result) {
+      for (TaintSource ts: result.flatten()) {
         if (ts.toString().equals(s)) {
           return true;
         }
@@ -88,7 +88,7 @@ public class JavaFrontend {
     }
 
     public int resultTaintedPaths() {
-      return result.size();
+      return result.flatten().size();
     }
 
     public boolean callsMethod(String s) {
@@ -98,10 +98,6 @@ public class JavaFrontend {
         }
       }
       return false;
-    }
-
-    public int methodCalls() {
-      return methodCalls.size();
     }
 
   }
@@ -378,7 +374,9 @@ public class JavaFrontend {
   }
 
   public static TaintSummary computeTaintConditions(ScannedFile src, CFG cfg) {
-    Set<TaintSource> result = new HashSet<>();
+    TaintSourceFactory tsf = new TaintSourceFactory();
+
+    TaintSource result = tsf.taintFree();
     Set<TaintSource> methodCalls = new HashSet<>();
 
     boolean returnsVoid = cfg.methodSymbol().returnType().type().isVoid();
@@ -387,7 +385,7 @@ public class JavaFrontend {
     Multimap<Block, TaintProgramState> workList = HashMultimap.create();
 
     Block entry = cfg.entry();
-    TaintProgramState entryState = new TaintProgramState(src, new TaintSourceFactory());
+    TaintProgramState entryState = new TaintProgramState(src, tsf);
     workList.put(entry, entryState);
 
     while (!workList.isEmpty()) {
@@ -407,9 +405,7 @@ public class JavaFrontend {
       if (block.successors().contains(cfg.exitBlock())) {
         if (!returnsVoid) {
           TaintSource ts = visitor.peek();
-          if (ts.canBeTainted()) {
-            result.add(visitor.peek());
-          }
+          result = result.unionWith(ts);
         }
       }
 
