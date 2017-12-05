@@ -19,6 +19,9 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -33,14 +36,11 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ComplexityVisitor extends BaseTreeVisitor {
 
   private List<Tree> blame = new ArrayList<>();
   private Tree root;
-
+  private static final String DEFAULT_KEYWORD = JavaKeyword.DEFAULT.getValue();
 
   public List<Tree> getNodes(Tree tree) {
     blame.clear();
@@ -75,7 +75,10 @@ public class ComplexityVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    blame.add(tree.firstToken());
+    if (!DEFAULT_KEYWORD.equals(tree.caseOrDefaultKeyword().text())) {
+      // default keyword does not count in complexity
+      blame.add(tree.firstToken());
+    }
     super.visitCaseLabel(tree);
   }
 

@@ -109,7 +109,7 @@ public class Struts139Test {
   @Test
   public void complexity_metrics() {
     setCurrentProject();
-    assertThat(getProjectMeasureAsInteger("complexity")).isEqualTo(5603);
+    assertThat(getProjectMeasureAsInteger("complexity")).isEqualTo(5589);
 
     assertThat(getProjectMeasureAsDouble("class_complexity")).isEqualTo(16.6);
     assertThat(getProjectMeasureAsDouble("function_complexity")).isEqualTo(1.9);

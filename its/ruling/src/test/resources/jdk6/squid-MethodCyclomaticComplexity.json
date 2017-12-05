@@ -53,7 +53,6 @@
 3942,
 3979,
 4212,
-4276,
 4323,
 4411,
 4509,
@@ -146,7 +145,6 @@
 ],
 'jdk6:java/awt/TextComponent.java':[
 1119,
-1172,
 ],
 'jdk6:java/awt/TexturePaintContext.java':[
 50,
@@ -190,12 +188,6 @@
 520,
 657,
 789,
-],
-'jdk6:java/awt/dnd/DragSourceContext.java':[
-439,
-],
-'jdk6:java/awt/event/HierarchyEvent.java':[
-248,
 ],
 'jdk6:java/awt/event/KeyEvent.java':[
 941,
@@ -645,7 +637,6 @@
 870,
 ],
 'jdk6:java/net/SocksSocketImpl.java':[
-246,
 310,
 558,
 626,
@@ -750,7 +741,6 @@
 2310,
 2379,
 2444,
-2517,
 ],
 'jdk6:java/security/spec/RSAMultiPrimePrivateCrtKeySpec.java':[
 72,
@@ -868,7 +858,6 @@
 2406,
 2652,
 2920,
-2938,
 2994,
 3074,
 3162,
@@ -1031,11 +1020,9 @@
 2288,
 2322,
 2446,
-2618,
 2704,
 2853,
 3235,
-3688,
 3933,
 4802,
 ],

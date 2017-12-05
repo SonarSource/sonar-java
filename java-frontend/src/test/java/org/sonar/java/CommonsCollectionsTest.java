@@ -127,7 +127,7 @@ public class CommonsCollectionsTest {
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(6721);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(6714);
   }
 
 }
