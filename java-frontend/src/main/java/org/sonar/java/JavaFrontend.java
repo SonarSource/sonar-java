@@ -71,9 +71,9 @@ public class JavaFrontend {
   public static class TaintSummary {
 
     private final Set<TaintSource> result;
-    private final Set<DirectTaintSource> methodCalls;
+    private final Set<TaintSource> methodCalls;
 
-    public TaintSummary(Set<TaintSource> result, Set<DirectTaintSource> methodCalls) {
+    public TaintSummary(Set<TaintSource> result, Set<TaintSource> methodCalls) {
       this.result = result;
       this.methodCalls = methodCalls;
     }
@@ -92,7 +92,7 @@ public class JavaFrontend {
     }
 
     public boolean callsMethod(String s) {
-      for (DirectTaintSource ts: methodCalls) {
+      for (TaintSource ts: methodCalls) {
         if (ts.toString().equals(s)) {
           return true;
         }
@@ -109,44 +109,8 @@ public class JavaFrontend {
   public interface TaintSource {
 
     boolean canBeTainted();
+    Set<DirectTaintSource> flatten();
     TaintSource unionWith(TaintSource other);
-
-  }
-
-  /**
-   * Literals
-   * Non-string operands
-   */
-  public static class TaintFreeSource implements TaintSource {
-
-    @Override
-    public boolean canBeTainted() {
-      return false;
-    }
-
-    @Override
-    public TaintSource unionWith(TaintSource other) {
-      return other;
-    }
-
-    @Override
-    public String toString() {
-      return "taint-free";
-    }
-
-    @Override
-    public int hashCode() {
-      return 0;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == null || !(obj.getClass().equals(this.getClass()))) {
-        return false;
-      }
-
-      return true;
-    }
 
   }
 
@@ -168,6 +132,11 @@ public class JavaFrontend {
     @Override
     public boolean canBeTainted() {
       return true;
+    }
+
+    @Override
+    public Set<DirectTaintSource> flatten() {
+      return Collections.singleton(this);
     }
 
     @Override
@@ -200,21 +169,35 @@ public class JavaFrontend {
   }
 
   /**
+   * Literals (taint-free)
+   * Non-string operands (taint-free)
    * String concatenation
+   * Multi-paths return values
+   * Multi-paths method argument taint conditions
    */
   public static class IndirectTaintSource implements TaintSource {
 
-    private final TaintSource left;
-    private final TaintSource right;
+    private Set<DirectTaintSource> sources;
 
-    private IndirectTaintSource(TaintSource left, TaintSource right) {
-      this.left = left;
-      this.right = right;
+    private IndirectTaintSource() {
+      this.sources = Collections.emptySet();
+    }
+
+    private IndirectTaintSource(TaintSource ts1, TaintSource ts2) {
+      Set<DirectTaintSource> sources = new HashSet<>();
+      sources.addAll(ts1.flatten());
+      sources.addAll(ts2.flatten());
+      this.sources = Collections.unmodifiableSet(sources);
     }
 
     @Override
     public boolean canBeTainted() {
-      return true;
+      return !sources.isEmpty();
+    }
+
+    @Override
+    public Set<DirectTaintSource> flatten() {
+      return sources;
     }
 
     @Override
@@ -240,15 +223,25 @@ public class JavaFrontend {
 
     @Override
     public String toString() {
-      return "left: " + left.toString() + ", right = " + right.toString();
+      if (!canBeTainted()) {
+        return "taint-free";
+      }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.getClass().getSimpleName() + " with " + sources.size() + " entries:\n");
+      for (DirectTaintSource ts: sources) {
+        sb.append("  ");
+        sb.append(ts.toString());
+        sb.append("\n");
+      }
+      return sb.toString();
     }
 
     @Override
     public int hashCode() {
-      return left.hashCode() + right.hashCode();
+      return sources.hashCode();
     }
 
-    // TODO equals is not symmetrical
     @Override
     public boolean equals(Object obj) {
       if (obj == null || !(obj.getClass().equals(this.getClass()))) {
@@ -256,8 +249,23 @@ public class JavaFrontend {
       }
 
       IndirectTaintSource other = (IndirectTaintSource) obj;
-      return left.equals(other.left) &&
-        right.equals(other.right);
+      return sources.equals(other.sources);
+    }
+
+  }
+
+  private static class TaintSourceFactory {
+
+    public TaintSource taintFree() {
+      return new IndirectTaintSource();
+    }
+
+    public TaintSource taintedIif(String fqn) {
+      return taintedIif(fqn, Collections.emptyList());
+    }
+
+    public TaintSource taintedIif(String fqn, List<TaintSource> arguments) {
+      return new DirectTaintSource(fqn, arguments);
     }
 
   }
@@ -265,15 +273,18 @@ public class JavaFrontend {
   private static class TaintProgramState {
 
     private final ScannedFile src;
+    private final TaintSourceFactory tsf;
     private final Map<Symbol, TaintSource> taintSources = new HashMap<>();
-    private final Set<DirectTaintSource> methodCalls = new HashSet<>();
+    private final Set<TaintSource> methodCalls = new HashSet<>();
 
-    public TaintProgramState(ScannedFile src) {
+    public TaintProgramState(ScannedFile src, TaintSourceFactory tsf) {
       this.src = src;
+      this.tsf = tsf;
     }
 
     private TaintProgramState(TaintProgramState other) {
       this.src = other.src;
+      this.tsf = other.tsf;
       this.taintSources.putAll(other.taintSources);
       this.methodCalls.addAll(other.methodCalls);
     }
@@ -324,24 +335,24 @@ public class JavaFrontend {
         MethodSymbol method = (MethodSymbol)symbol;
 
         if (arguments.stream().anyMatch(ts -> ts.canBeTainted())) {
-          methodCalls.add(new DirectTaintSource(fullyQualify(symbol), arguments));
+          methodCalls.add(tsf.taintedIif(fullyQualify(symbol), arguments));
         }
 
         if (isString(method.returnType().type())) {
-          return new DirectTaintSource(fullyQualify(symbol), arguments);
+          return tsf.taintedIif(fullyQualify(symbol), arguments);
         } else {
-          return new TaintFreeSource();
+          return tsf.taintFree();
         }
       }
 
       if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol()) {
         // Fields are not supported
-        return new TaintFreeSource();
+        return tsf.taintFree();
       }
 
       return taintSources.computeIfAbsent(
         symbol,
-        s -> new DirectTaintSource(fullyQualify(s), arguments));
+        s -> tsf.taintedIif(fullyQualify(s), arguments));
     }
 
     public void put(Symbol symbol, TaintSource ts) {
@@ -372,7 +383,7 @@ public class JavaFrontend {
 
   public static TaintSummary computeTaintConditions(ScannedFile src, CFG cfg) {
     Set<TaintSource> result = new HashSet<>();
-    Set<DirectTaintSource> methodCalls = new HashSet<>();
+    Set<TaintSource> methodCalls = new HashSet<>();
 
     boolean returnsVoid = cfg.methodSymbol().returnType().type().isVoid();
 
@@ -380,7 +391,7 @@ public class JavaFrontend {
     Multimap<Block, TaintProgramState> workList = HashMultimap.create();
 
     Block entry = cfg.entry();
-    TaintProgramState entryState = new TaintProgramState(src);
+    TaintProgramState entryState = new TaintProgramState(src, new TaintSourceFactory());
     workList.put(entry, entryState);
 
     while (!workList.isEmpty()) {
@@ -540,14 +551,14 @@ public class JavaFrontend {
     }
 
     private void executeLiteral() {
-      stack.push(new TaintFreeSource());
+      stack.push(state.tsf.taintFree());
     }
 
     private void executeIdentifier(IdentifierTree tree) {
       if (TaintProgramState.isString(tree.symbolType())) {
         stack.push(state.taintSourceFor(tree.symbol()));
       } else {
-        stack.push(new TaintFreeSource());
+        stack.push(state.tsf.taintFree());
       }
     }
 
@@ -587,7 +598,7 @@ public class JavaFrontend {
       if (variableTree.initializer() != null) {
         state.put(variableTree.symbol(), stack.pop());
       } else {
-        state.put(variableTree.symbol(), new TaintFreeSource());
+        state.put(variableTree.symbol(), state.tsf.taintFree());
       }
     }
 
