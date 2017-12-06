@@ -27,9 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.ExplodedGraph;
@@ -194,12 +196,12 @@ public class MethodBehavior {
   private void reduceYields() {
     Set<HappyPathYield> happyPathYields = happyPathYields().filter(y -> y.resultIndex() == -1).collect(Collectors.toCollection(LinkedHashSet::new));
     yields.removeAll(happyPathYields);
-    int count = happyPathYields.size();
-    Set<HappyPathYield> newYields = reduce(happyPathYields);
-    while (newYields.size() < count) {
-      count = newYields.size();
+    int sizeBeforeReduction;
+    Set<HappyPathYield> newYields = happyPathYields;
+    do {
+      sizeBeforeReduction = newYields.size();
       newYields = reduce(newYields);
-    }
+    } while (newYields.size() < sizeBeforeReduction);
     yields.addAll(newYields);
   }
 
@@ -225,7 +227,30 @@ public class MethodBehavior {
     return newYields;
   }
 
+  @CheckForNull
   private HappyPathYield reduce(HappyPathYield yield1, HappyPathYield yield2) {
+    Optional<Integer> onlyConstraintDifferenceIndex = getOnlyConstraintDifferenceIndex(yield1, yield2);
+    if(!onlyConstraintDifferenceIndex.isPresent()) {
+      return null;
+    }
+    int constraintDifferenceIndex = onlyConstraintDifferenceIndex.get();
+
+    HappyPathYield reducedYield = new HappyPathYield(this);
+    reducedYield.parametersConstraints = new ArrayList<>(yield1.parametersConstraints);
+    reducedYield.setResult(yield1.resultIndex(), yield1.resultConstraint());
+
+    if (constraintDifferenceIndex == yield1.parametersConstraints.size()) {
+      if (isIrreducible(yield1.resultConstraint()) || isIrreducible(yield2.resultConstraint())) {
+        return null;
+      }
+      reducedYield.setResult(-1, null);
+    } else {
+      reducedYield.parametersConstraints.set(constraintDifferenceIndex, ConstraintsByDomain.empty());
+    }
+    return reducedYield;
+  }
+
+  private static Optional<Integer> getOnlyConstraintDifferenceIndex(HappyPathYield yield1, HappyPathYield yield2) {
     List<ConstraintsByDomain> constraints1 = new ArrayList<>(yield1.parametersConstraints);
     constraints1.add(yield1.resultConstraint());
     List<ConstraintsByDomain> constraints2 = new ArrayList<>(yield2.parametersConstraints);
@@ -237,23 +262,12 @@ public class MethodBehavior {
       }
     }
     if (diff.size() != 1) {
-      return null;
+      return Optional.empty();
     }
-    HappyPathYield result = new HappyPathYield(this);
-    result.parametersConstraints = new ArrayList<>(yield1.parametersConstraints);
-    result.setResult(yield1.resultIndex(), yield1.resultConstraint());
-    if (diff.get(0) < yield1.parametersConstraints.size()) {
-      result.parametersConstraints.set(diff.get(0), ConstraintsByDomain.empty());
-      return result;
-    }
-    if (unreducible(yield1.resultConstraint()) || unreducible(yield2.resultConstraint())) {
-      return null;
-    }
-    result.setResult(-1, null);
-    return result;
+    return Optional.of(diff.get(0));
   }
 
-  private static boolean unreducible(@Nullable ConstraintsByDomain constraints) {
+  private static boolean isIrreducible(@Nullable ConstraintsByDomain constraints) {
     return constraints != null
         && (constraints.hasConstraint(ObjectConstraint.NULL)
         || constraints.hasConstraint(DivisionByZeroCheck.ZeroConstraint.ZERO));
