@@ -19,17 +19,14 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.sonar.java.JavaFrontend.ScannedFile;
-import org.sonar.java.JavaFrontend.TaintSource;
 import org.sonar.java.JavaFrontend.TaintSummary;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -160,7 +157,7 @@ public class JavaFrontendTest {
   }
 
   private void assertThatResultTransitivelyDependsOnlyOn(TaintSummary summary, String... expectedSignatures) {
-    Set<String> actualSignatures = summary.result().recursivelyDependsOn().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
+    Set<String> actualSignatures = summary.result().transitivelyDependsOn().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
     assertThat(actualSignatures).isEqualTo(Arrays.stream(expectedSignatures).collect(Collectors.toSet()));
   }
 

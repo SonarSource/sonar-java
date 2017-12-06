@@ -92,7 +92,7 @@ public class JavaFrontend {
 
     boolean canBeTainted();
     Set<TaintSource> directlyDependsOn();
-    Set<TaintSource> recursivelyDependsOn();
+    Set<TaintSource> transitivelyDependsOn();
     TaintSource unionWith(TaintSource other);
 
   }
@@ -123,11 +123,11 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<TaintSource> recursivelyDependsOn() {
+    public Set<TaintSource> transitivelyDependsOn() {
       Set<TaintSource> result = new HashSet<>();
       result.add(this);
       for (TaintSource ts: arguments) {
-        result.addAll(ts.recursivelyDependsOn());
+        result.addAll(ts.transitivelyDependsOn());
       }
       return Collections.unmodifiableSet(result);
     }
@@ -199,10 +199,10 @@ public class JavaFrontend {
     }
 
     @Override
-    public Set<TaintSource> recursivelyDependsOn() {
+    public Set<TaintSource> transitivelyDependsOn() {
       Set<TaintSource> result = new HashSet<>();
       for (TaintSource ts: sources) {
-        result.addAll(ts.recursivelyDependsOn());
+        result.addAll(ts.transitivelyDependsOn());
       }
       return Collections.unmodifiableSet(result);
     }
