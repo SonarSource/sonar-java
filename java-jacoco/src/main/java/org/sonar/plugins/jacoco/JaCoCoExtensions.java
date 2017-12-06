@@ -51,6 +51,7 @@ public class JaCoCoExtensions {
       .category(JavaConstants.JAVA_CATEGORY)
       .subCategory("JaCoCo")
       .name("JaCoCo Reports")
+      .multiValues(true)
       .description("Path to the JaCoCo report files containing coverage data by unit tests. The path may be absolute or relative to the project base directory.")
       .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
       .build(),
