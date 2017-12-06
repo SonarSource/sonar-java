@@ -521,6 +521,7 @@ public final class CheckList {
       .add(LeastSpecificTypeCheck.class)
       .add(SwitchInsteadOfIfSequenceCheck.class)
       .add(IterableIteratorCheck.class)
+      .add(OutputStreamOverrideWriteCheck.class)
       .build();
   }
 

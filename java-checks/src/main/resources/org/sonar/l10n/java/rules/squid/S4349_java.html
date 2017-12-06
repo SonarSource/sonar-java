@@ -1,0 +1,59 @@
+<p>When directly subclassing <code>java.io.OutputStream</code> or <code>java.io.FilterOutputStream</code>, the only requirement is that you implement
+the method <code>write(int)</code>. However most uses for such streams don't write a single byte at a time and the default implementation for
+<code>write(byte[],int,int)</code> will call <code>write(int)</code> for every single byte in the array which can create a lot of overhead and is
+utterly inefficient. It is therefore strongly recommended that subclasses provide an efficient implementation of
+<code>write(byte[],int,int)</code>.</p>
+<p>This rule raises an issue when a direct subclass of <code>java.io.OutputStream</code> or <code>java.io.FilterOutputStream</code> doesn't provide an
+override of <code>write(byte[],int,int)</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyStream extends OutputStream { // Noncompliant
+    private FileOutputStream fout;
+
+    public MyStream(File file) throws IOException {
+        fout = new FileOutputStream(file);
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        fout.write(b);
+    }
+
+    @Override
+    public void close() throws IOException {
+        fout.write("\n\n".getBytes());
+        fout.close();
+        super.close();
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class MyStream extends OutputStream {
+    private FileOutputStream fout;
+
+    public MyStream(File file) throws IOException {
+        fout = new FileOutputStream(file);
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        fout.write(b);
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        fout.write(b, off, len);
+    }
+
+    @Override
+    public void close() throws IOException {
+        fout.write("\n\n".getBytes());
+        fout.close();
+        super.close();
+    }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>This rule doesn't raise an issue when the class is declared <code>abstract</code>.</p>
+
