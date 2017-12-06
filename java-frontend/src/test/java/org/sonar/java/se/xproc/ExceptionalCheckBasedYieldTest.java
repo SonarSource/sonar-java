@@ -60,13 +60,13 @@ public class ExceptionalCheckBasedYieldTest {
     SemanticModel semanticModel = visitorAndSemantic.b;
     mb = getMethodBehavior(sev, methodName);
 
-    // no creation of custom yields, 4 method yields
-    assertThat(mb.yields()).hasSize(5);
+    // no creation of custom yields, 3 method yields
+    assertThat(mb.yields()).hasSize(3);
 
-    assertThat(mb.happyPathYields()).hasSize(3);
+    assertThat(mb.happyPathYields()).hasSize(1);
     assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == null)).hasSize(1);
-    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(1);
-    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(0);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(0);
 
     assertThat(mb.exceptionalPathYields()).hasSize(2);
     assertThat(mb.exceptionalPathYields()).as("All the exceptional yields are runtime exceptions").allMatch(y -> y.exceptionType(semanticModel) == null);

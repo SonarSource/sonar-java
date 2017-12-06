@@ -23,12 +23,23 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -36,7 +47,7 @@ public class MethodBehavior {
   private boolean varArgs;
   private final int arity;
 
-  private final Set<MethodYield> yields;
+  final Set<MethodYield> yields;
   private final List<SymbolicValue> parameters;
   private final String signature;
   private boolean complete = false;
@@ -83,7 +94,11 @@ public class MethodBehavior {
     } else {
       HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
       if (expectReturnValue) {
-        happyPathYield.setResult(parameters.indexOf(resultSV), node.programState.getConstraints(resultSV));
+        ConstraintsByDomain cleanup = cleanup(node.programState.getConstraints(resultSV), org.objectweb.asm.Type.getReturnType(signature.substring(signature.indexOf('('))));
+        if (cleanup.isEmpty()) {
+          cleanup = null;
+        }
+        happyPathYield.setResult(parameters.indexOf(resultSV), cleanup);
       }
       yield = happyPathYield;
     }
@@ -93,13 +108,32 @@ public class MethodBehavior {
 
   private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
     // add the constraints on all the parameters
+    int index = 0;
     for (SymbolicValue parameter : parameters) {
       ConstraintsByDomain constraints = node.programState.getConstraints(parameter);
       if (constraints == null) {
         constraints = ConstraintsByDomain.empty();
+      } else {
+        //cleanup based on signature
+        org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
+        constraints = cleanup(constraints, argumentTypes[index]);
       }
       yield.parametersConstraints.add(constraints);
+      index++;
     }
+  }
+
+  private static ConstraintsByDomain cleanup(@Nullable ConstraintsByDomain constraints, org.objectweb.asm.Type argumentType) {
+    if (constraints == null || constraints.isEmpty()) {
+      return ConstraintsByDomain.empty();
+    }
+    ConstraintsByDomain result = constraints.remove(BytecodeEGWalker.StackValueCategoryConstraint.class);
+    if (argumentType.getSort() == org.objectweb.asm.Type.BOOLEAN) {
+      result = result.remove(DivisionByZeroCheck.ZeroConstraint.class);
+    } else {
+      result = result.remove(BooleanConstraint.class);
+    }
+    return result;
   }
 
   public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, String exceptionType, SECheck check) {
@@ -156,11 +190,93 @@ public class MethodBehavior {
   public void completed() {
     this.complete = true;
     this.visited = true;
+    reduceYields();
+  }
+
+  private void reduceYields() {
+    Set<HappyPathYield> happyPathYields = happyPathYields().filter(y -> y.resultIndex() == -1).collect(Collectors.toCollection(LinkedHashSet::new));
+    yields.removeAll(happyPathYields);
+    int sizeBeforeReduction;
+    Set<HappyPathYield> newYields = happyPathYields;
+    do {
+      sizeBeforeReduction = newYields.size();
+      newYields = reduce(newYields);
+    } while (newYields.size() < sizeBeforeReduction);
+    yields.addAll(newYields);
+  }
+
+  private Set<HappyPathYield> reduce(Set<HappyPathYield> yields) {
+    LinkedList<HappyPathYield> yieldsToReduce = new LinkedList<>(yields);
+    Set<HappyPathYield> newYields = new LinkedHashSet<>();
+    while (!yieldsToReduce.isEmpty()) {
+      HappyPathYield yield1 = yieldsToReduce.removeFirst();
+      HappyPathYield reduced = null;
+      for (ListIterator<HappyPathYield> iterator = yieldsToReduce.listIterator(); iterator.hasNext(); ) {
+        HappyPathYield yield2 = iterator.next();
+        reduced = reduce(yield1, yield2);
+        if (reduced != null) {
+          newYields.add(reduced);
+          iterator.remove();
+          break;
+        }
+      }
+      if (reduced == null) {
+        newYields.add(yield1);
+      }
+    }
+    return newYields;
+  }
+
+  @CheckForNull
+  private HappyPathYield reduce(HappyPathYield yield1, HappyPathYield yield2) {
+    Optional<Integer> onlyConstraintDifferenceIndex = getOnlyConstraintDifferenceIndex(yield1, yield2);
+    if(!onlyConstraintDifferenceIndex.isPresent()) {
+      return null;
+    }
+    int constraintDifferenceIndex = onlyConstraintDifferenceIndex.get();
+
+    HappyPathYield reducedYield = new HappyPathYield(this);
+    reducedYield.parametersConstraints = new ArrayList<>(yield1.parametersConstraints);
+    reducedYield.setResult(yield1.resultIndex(), yield1.resultConstraint());
+
+    if (constraintDifferenceIndex == yield1.parametersConstraints.size()) {
+      if (isIrreducible(yield1.resultConstraint()) || isIrreducible(yield2.resultConstraint())) {
+        return null;
+      }
+      reducedYield.setResult(-1, null);
+    } else {
+      reducedYield.parametersConstraints.set(constraintDifferenceIndex, ConstraintsByDomain.empty());
+    }
+    return reducedYield;
+  }
+
+  private static Optional<Integer> getOnlyConstraintDifferenceIndex(HappyPathYield yield1, HappyPathYield yield2) {
+    List<ConstraintsByDomain> constraints1 = new ArrayList<>(yield1.parametersConstraints);
+    constraints1.add(yield1.resultConstraint());
+    List<ConstraintsByDomain> constraints2 = new ArrayList<>(yield2.parametersConstraints);
+    constraints2.add(yield2.resultConstraint());
+    List<Integer> diff = new ArrayList<>();
+    for (int i = 0; i < constraints1.size(); i++) {
+      if (!Objects.equals(constraints1.get(i), constraints2.get(i))) {
+        diff.add(i);
+      }
+    }
+    if (diff.size() != 1) {
+      return Optional.empty();
+    }
+    return Optional.of(diff.get(0));
+  }
+
+  private static boolean isIrreducible(@Nullable ConstraintsByDomain constraints) {
+    return constraints != null
+        && (constraints.hasConstraint(ObjectConstraint.NULL)
+        || constraints.hasConstraint(DivisionByZeroCheck.ZeroConstraint.ZERO));
   }
 
   public boolean isVisited() {
     return visited;
   }
+
   public void visited() {
     visited = true;
   }

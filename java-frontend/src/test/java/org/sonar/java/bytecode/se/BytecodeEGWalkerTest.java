@@ -54,10 +54,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class BytecodeEGWalkerTest {
 
-
   private static SquidClassLoader squidClassLoader;
   @Rule
-  public LogTester logTester  = new LogTester();
+  public LogTester logTester = new LogTester();
 
   private static SemanticModel semanticModel;
 
@@ -114,7 +113,7 @@ public class BytecodeEGWalkerTest {
     ProgramState ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
     assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.TRUE);
-    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.NON_ZERO);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
 
     oneYield =
       methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NOT_NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
@@ -126,7 +125,7 @@ public class BytecodeEGWalkerTest {
     ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
     assertThat(ps.getConstraint(svFirstArg, BooleanConstraint.class)).isSameAs(BooleanConstraint.FALSE);
-    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isSameAs(DivisionByZeroCheck.ZeroConstraint.ZERO);
+    assertThat(ps.getConstraint(svFirstArg, DivisionByZeroCheck.ZeroConstraint.class)).isNull();
 
   }
 
@@ -226,9 +225,9 @@ public class BytecodeEGWalkerTest {
 
   @Test
   public void unchecked_exceptions_should_be_enqueued() {
-    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "test(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
-    List<Constraint> resultConstraint = mb.happyPathYields().map(y -> y.resultConstraint().get(BooleanConstraint.class)).collect(Collectors.toList());
-    assertThat(resultConstraint).contains(BooleanConstraint.TRUE, BooleanConstraint.FALSE);
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "test(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Ljava/lang/Object;");
+    List<Constraint> resultConstraint = mb.happyPathYields().map(y -> y.resultConstraint().get(ObjectConstraint.class)).collect(Collectors.toList());
+    assertThat(resultConstraint).contains(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
     List<String> exceptions = mb.exceptionalPathYields().map(y -> y.exceptionType(semanticModel).fullyQualifiedName()).collect(Collectors.toList());
     assertThat(exceptions).contains("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ExceptionCatch",
         "org.sonar.java.bytecode.se.testdata.ExceptionEnqueue$ThrowableCatch",

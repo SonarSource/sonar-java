@@ -117,10 +117,10 @@ public class BehaviorCacheTest {
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     SemanticModel semanticModel = sevAndSemantic.b;
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
-    assertThat(behavior.yields()).hasSize(5);
+    assertThat(behavior.yields()).hasSize(4);
 
-    behavior.happyPathYields().map(y -> y.resultConstraint()).filter(Objects::nonNull).forEach(pMap -> assertThat(pMap.get(ObjectConstraint.class) == ObjectConstraint.NULL).isFalse());
-    assertThat(behavior.happyPathYields().count()).isEqualTo(2);
+    behavior.happyPathYields().forEach(y -> assertThat(y.resultConstraint()).isNull());
+    assertThat(behavior.happyPathYields().count()).isEqualTo(1);
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);

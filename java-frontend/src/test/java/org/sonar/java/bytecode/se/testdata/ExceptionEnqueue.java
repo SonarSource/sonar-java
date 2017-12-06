@@ -21,12 +21,12 @@ package org.sonar.java.bytecode.se.testdata;
 
 public class ExceptionEnqueue {
 
-  static boolean test(ExceptionEnqueue ee) {
+  static Object test(ExceptionEnqueue ee) {
     try {
       ee.silentThrow();
-      return false;
+      return new Object();
     } catch (MyException e) {
-      return true;
+      return null;
     } catch (Error e) {
       throw new ErrorCatch();
     } catch (Exception e) {

@@ -7,6 +7,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
 480,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
+308,
+],
 'com.google.guava:guava:src/com/google/common/collect/StandardTable.java':[
 181,
 292,

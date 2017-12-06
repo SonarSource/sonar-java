@@ -215,6 +215,7 @@ import static org.objectweb.asm.Opcodes.SASTORE;
 import static org.objectweb.asm.Opcodes.SIPUSH;
 import static org.objectweb.asm.Opcodes.SWAP;
 import static org.objectweb.asm.Opcodes.TABLESWITCH;
+import static org.sonar.java.bytecode.se.BytecodeEGWalker.StackValueCategoryConstraint.LONG_OR_DOUBLE;
 
 public class BytecodeEGWalker {
 
@@ -232,7 +233,7 @@ public class BytecodeEGWalker {
    * Because some instructions manipulate stack differently depending on the type of the value, we need this constraint to know category of the value
    * see https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-2.html#jvms-2.11.1 Table 2.11.1-B
    */
-  enum StackValueCategoryConstraint implements Constraint {
+  public enum StackValueCategoryConstraint implements Constraint {
     LONG_OR_DOUBLE;
 
     @Override
@@ -725,14 +726,14 @@ public class BytecodeEGWalker {
 
   private static ProgramState setDoubleOrLong(ProgramState programState, SymbolicValue sv, boolean value) {
     if (value) {
-      return programState.addConstraint(sv, StackValueCategoryConstraint.LONG_OR_DOUBLE);
+      return programState.addConstraint(sv, LONG_OR_DOUBLE);
     } else {
       return programState.removeConstraintsOnDomain(sv, StackValueCategoryConstraint.class);
     }
   }
 
   private boolean isDoubleOrLong(SymbolicValue sv) {
-    return programState.getConstraint(sv, StackValueCategoryConstraint.class) == StackValueCategoryConstraint.LONG_OR_DOUBLE;
+    return programState.getConstraint(sv, StackValueCategoryConstraint.class) == LONG_OR_DOUBLE;
   }
 
   private ProgramState.Pop popStack(int nbOfValues, int opcode) {
@@ -765,6 +766,9 @@ public class BytecodeEGWalker {
         .happyPathYields()
         .forEach(yield -> yield.statesAfterInvocation(arguments, Collections.emptyList(), programState, () -> returnSV).forEach(ps -> {
           checkerDispatcher.methodYield = yield;
+          if (ps.peekValue() != null) {
+            ps = setDoubleOrLong(ps, ps.peekValue(), instruction.isLongOrDoubleValue());
+          }
           checkerDispatcher.addTransition(ps);
           checkerDispatcher.methodYield = null;
         }));
