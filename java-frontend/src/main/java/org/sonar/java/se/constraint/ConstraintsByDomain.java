@@ -19,14 +19,12 @@
  */
 package org.sonar.java.se.constraint;
 
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
-
-import javax.annotation.Nullable;
-
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
+import org.sonar.java.collections.PCollections;
+import org.sonar.java.collections.PMap;
 
 public class ConstraintsByDomain {
 
@@ -53,6 +51,10 @@ public class ConstraintsByDomain {
   @Nullable
   public Constraint get(Class<? extends Constraint> domain) {
     return constraintPMap.get(domain);
+  }
+
+  public boolean hasConstraint(Constraint constraint) {
+    return constraint.equals(constraintPMap.get(constraint.getClass()));
   }
 
   public void forEach(BiConsumer<Class<? extends Constraint>, Constraint> action) {

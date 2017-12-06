@@ -60,17 +60,17 @@ class C {
   private C foo(Object o) {
     C result;
     if (o == null) {
-      result = null; // flow@flow_c1 {{Implies 'result' is null.}}
+      result = null; // flow is missing because yield is reduced
     } else {
-      result = null; // flow@flow_c2 {{Implies 'result' is null.}}
+      result = null;
     }
     return result;
   }
 
   void bar(Object o) {
-    C c = foo(o);                                // flow@flow_c1 {{'foo()' returns null.}} flow@flow_c1 {{Implies 'c' is null.}} flow@flow_c2 flow@flow_c2
-    // Noncompliant@+1 [[flows=flow_c1,flow_c2]]
-    if (c != null) {                             // flow@flow_c1 {{Expression is always false.}} flow@flow_c2
+    C c = foo(o);                                // flow@flow_c1 {{'foo()' returns null.}} flow@flow_c1 {{Implies 'c' is null.}}
+    // Noncompliant@+1 [[flows=flow_c1]]
+    if (c != null) {                             // flow@flow_c1 {{Expression is always false.}}
       c = new C();
     }
   }
@@ -92,19 +92,18 @@ abstract class D {
   }
 
   void qix(D param) {
-    tst(param);                                  // flow@flow_d2 [[order=1]] {{'param' is passed to 'tst()'.}} flow@flow_d2 [[order=4]] {{Implies 'param' is null.}}
-    // Noncompliant@+1  [[flows=flow_d2]]
-    gul(param);                                  // flow@flow_d2 [[order=5]] {{'param' is passed to 'gul()'.}}
+    tst(param);   // comparing argument to null will not result in exploring param with NULL constraint
+    gul(param);
   }
 
-  private void tst(D d) {                        // flow@flow_d2 [[order=2]] {{Implies 'd' has the same value as 'param'.}}
-    if (d == null) {                             // flow@flow_d2 [[order=3]] {{Implies 'd' can be null.}}
+  private void tst(D d) {
+    if (d == null) {
       doSomething();
     }
   }
 
-  private void gul(D arg) {                      // flow@flow_d2 [[order=6]] {{Implies 'arg' has the same value as 'param'.}}
-    arg.bar();                                   // flow@flow_d2 [[order=7]] {{Implies 'arg' is null.}} flow@flow_d2 [[order=8]] {{'NullPointerException' is thrown.}}
+  private void gul(D arg) {
+    arg.bar();
   }
 
   abstract void doSomething();

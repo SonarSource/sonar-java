@@ -11,7 +11,7 @@ abstract class A {
   void bar(boolean a, String s) {
     foo(a); // Noncompliant {{Method 'foo' has 2 method yields.}}
     A.foo(!a); // Noncompliant [[sc=7;ec=10]] {{Method 'foo' has 2 method yields.}}
-    StringUtils.isBlank(s); // Noncompliant {{Method 'isBlank' has 3 method yields.}}
+    StringUtils.isBlank(s); // Noncompliant {{Method 'isBlank' has 2 method yields.}}
 
     bar(a, s); // Compliant - no yields
     qix(a);

@@ -21,11 +21,14 @@ package org.sonar.java.se.xproc;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.junit.Test;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,6 +122,63 @@ public class MethodBehaviorTest {
     assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("java.lang.Exception"))).hasSize(1);
     assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException"))).hasSize(1);
 
+  }
+
+  @Test
+  public void test_reducing_of_yields_on_arguments() {
+    MethodBehavior mb = new MethodBehavior("foo(Ljava/lang/Object;)V");
+    addYield(mb, null, ObjectConstraint.NOT_NULL);
+    addYield(mb, null, ObjectConstraint.NULL);
+    mb.completed();
+    assertThat(mb.yields()).hasSize(1);
+    assertThat(mb.yields().get(0).parametersConstraints).contains(ConstraintsByDomain.empty());
+
+    mb = new MethodBehavior("foo(Z)V");
+    addYield(mb, null, BooleanConstraint.TRUE);
+    addYield(mb, null, BooleanConstraint.FALSE);
+    mb.completed();
+    assertThat(mb.yields()).hasSize(1);
+    assertThat(mb.yields().get(0).parametersConstraints).contains(ConstraintsByDomain.empty());
+  }
+
+  @Test
+  public void result_with_boolean_constraint_should_be_reduced() {
+    MethodBehavior mb = new MethodBehavior("foo()Z");
+    addYield(mb, BooleanConstraint.TRUE);
+    addYield(mb, BooleanConstraint.FALSE);
+    mb.completed();
+    assertThat(mb.yields()).hasSize(1);
+    assertThat(((HappyPathYield) mb.yields().get(0)).resultConstraint()).isNull();
+
+    mb = new MethodBehavior("foo()Z");
+    addYield(mb, BooleanConstraint.TRUE, ObjectConstraint.NULL);
+    addYield(mb, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL);
+    mb.completed();
+    assertThat(mb.yields()).hasSize(2);
+    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(BooleanConstraint.class)).collect(Collectors.toList());
+    assertThat(resultConstraints).contains(BooleanConstraint.TRUE, BooleanConstraint.FALSE);
+  }
+
+  @Test
+  public void result_with_unreducible_constraint_should_not_be_reduced() {
+    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(mb, ObjectConstraint.NOT_NULL);
+    addYield(mb, ObjectConstraint.NULL);
+    mb.completed();
+    assertThat(mb.yields()).hasSize(2);
+    List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint().get(ObjectConstraint.class)).collect(Collectors.toList());
+    assertThat(resultConstraints).contains(ObjectConstraint.NULL, ObjectConstraint.NOT_NULL);
+  }
+
+  private void addYield(MethodBehavior mb, @Nullable Constraint result, Constraint... constraints) {
+    HappyPathYield yield = new HappyPathYield(mb);
+    for (Constraint constraint : constraints) {
+      yield.parametersConstraints.add(ConstraintsByDomain.empty().put(constraint));
+    }
+    if (result != null) {
+      yield.setResult(-1, ConstraintsByDomain.empty().put(result));
+    }
+    mb.yields.add(yield);
   }
 
 }

@@ -117,4 +117,13 @@ public class ConstraintsByDomainTest {
     assertThat(c1.equals(c2)).isFalse();
     assertThat(c1.hashCode()).isNotEqualTo(c2.hashCode());
   }
+
+  @Test
+  public void test_has_constraint() {
+    ConstraintsByDomain c = ConstraintsByDomain.empty();
+    assertThat(c.hasConstraint(ObjectConstraint.NULL)).isFalse();
+    c = c.put(ObjectConstraint.NULL);
+    assertThat(c.hasConstraint(ObjectConstraint.NULL)).isTrue();
+    assertThat(c.hasConstraint(ObjectConstraint.NOT_NULL)).isFalse();
+  }
 }

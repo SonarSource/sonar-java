@@ -31,6 +31,9 @@
 'jdk6:java/net/Socket.java':[
 374,
 ],
+'jdk6:java/net/URI.java':[
+3333,
+],
 'jdk6:java/net/URL.java':[
 366,
 ],
@@ -45,12 +48,6 @@
 ],
 'jdk6:java/security/cert/X509CertSelector.java':[
 2402,
-],
-'jdk6:java/text/SimpleDateFormat.java':[
-2157,
-],
-'jdk6:java/util/Calendar.java':[
-2682,
 ],
 'jdk6:java/util/Scanner.java':[
 996,
