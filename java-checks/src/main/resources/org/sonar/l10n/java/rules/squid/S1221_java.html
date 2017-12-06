@@ -1,7 +1,7 @@
-<p>Naming a method <code>hashcode()</code> or <code>equal</code> is either:</p>
+<p>Naming a method <code>tostring</code>, <code>hashcode()</code> or <code>equal</code> is either:</p>
 <ul>
-  <li> A bug in the form of a typo. Overriding <code>Object.hashCode()</code> (note the camelCasing) or <code>Object.equals</code> (note the 's' on
-  the end) was meant, and the application does not behave as expected. </li>
+  <li> A bug in the form of a typo. Overriding <code>toString</code>, <code>Object.hashCode()</code> (note the camelCasing) or
+  <code>Object.equals</code> (note the 's' on the end) was meant, and the application does not behave as expected. </li>
   <li> Done on purpose. The name however will confuse every other developer, who may not notice the naming difference, or who will think it is a bug.
   </li>
 </ul>
@@ -10,6 +10,8 @@
 <pre>
 public int hashcode() { /* ... */ }  // Noncompliant
 
+public String tostring() { /* ... */ } // Noncompliant
+
 public boolean equal(Object obj) { /* ... */ }  // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
@@ -17,6 +19,10 @@ public boolean equal(Object obj) { /* ... */ }  // Noncompliant
 @Override
 public int hashCode() { /* ... */ }
 
+@Override
+public String toString() { /* ... */ }
+
+@Override
 public boolean equals(Object obj) { /* ... */ }
 </pre>
 
