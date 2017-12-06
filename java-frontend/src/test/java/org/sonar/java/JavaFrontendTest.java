@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,6 +135,10 @@ public class JavaFrontendTest {
 
     assertThatResultDirectlyDependsOnlyOn(summary,
       "my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#0, taint-free)");
+
+    assertThatResultTransitivelyDependsOnlyOn(summary,
+      "my.pkg.MyClass#forward(Ljava/lang/String;Z)Ljava/lang/String;(my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#0, taint-free)",
+      "my.pkg.MyClass#returnForwardedString(Ljava/lang/String;)Ljava/lang/String;#0");
   }
 
   @Test
@@ -149,20 +154,19 @@ public class JavaFrontendTest {
     assertThat(summary.result().canBeTainted()).isFalse();
   }
 
-  private void assertThatResultDirectlyDependsOnlyOn(TaintSummary summary, String... signatures) {
-    Set<String> directlyDepends = summary.result().directlyDependsOn().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
-    for (String signature: signatures) {
-      assertThat(directlyDepends).contains(signature);
-    }
-    assertThat(directlyDepends).hasSameSizeAs(signatures);
+  private void assertThatResultDirectlyDependsOnlyOn(TaintSummary summary, String... expectedSignatures) {
+    Set<String> actualSignatures = summary.result().directlyDependsOn().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
+    assertThat(actualSignatures).isEqualTo(Arrays.stream(expectedSignatures).collect(Collectors.toSet()));
   }
 
-  private void assertThatCalleesAreEqualTo(TaintSummary summary, String... signatures) {
-    Set<String> directlyDepends = summary.callees().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
-    for (String signature: signatures) {
-      assertThat(directlyDepends).contains(signature);
-    }
-    assertThat(directlyDepends).hasSameSizeAs(signatures);
+  private void assertThatResultTransitivelyDependsOnlyOn(TaintSummary summary, String... expectedSignatures) {
+    Set<String> actualSignatures = summary.result().recursivelyDependsOn().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
+    assertThat(actualSignatures).isEqualTo(Arrays.stream(expectedSignatures).collect(Collectors.toSet()));
+  }
+
+  private void assertThatCalleesAreEqualTo(TaintSummary summary, String... expectedSignatures) {
+    Set<String> actualSignatures = summary.callees().stream().map(ts -> ts.toString()).collect(Collectors.toSet());
+    assertThat(actualSignatures).isEqualTo(Arrays.stream(expectedSignatures).collect(Collectors.toSet()));
   }
 
   private TaintSummary computeTaintSources(String methodSimpleName) {
