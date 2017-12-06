@@ -29,4 +29,11 @@ public class HardCodedCredentialsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheck.java", new HardCodedCredentialsCheck());
   }
 
+  @Test
+  public void custom() {
+    HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
+    check.credentialWords = "marmalade,bazooka";
+    JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheckCustom.java", check);
+  }
+
 }
