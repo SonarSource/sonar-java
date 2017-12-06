@@ -55,6 +55,7 @@ public final class SurefireExtensions {
             .description("Comma-separated paths to the various directories containing the *.xml JUnit report files. "
               + "Each path may be absolute or relative to the project base directory.")
             .onQualifiers(Qualifiers.PROJECT)
+            .multiValues(true)
             .category(JavaConstants.JAVA_CATEGORY)
             .subCategory("JUnit")
             .build(),

@@ -79,14 +79,11 @@ public final class SurefireUtils {
   @CheckForNull
   private static List<File> getReportsDirectoriesFromProperty(Configuration settings, FileSystem fs, PathResolver pathResolver) {
     if(settings.hasKey(SUREFIRE_REPORT_PATHS_PROPERTY)) {
-      String paths = settings.get(SUREFIRE_REPORT_PATHS_PROPERTY).orElse(null);
-      if (paths != null) {
-        return Arrays.stream(paths.split(","))
-          .map(String::trim)
-          .map(path -> getFileFromPath(fs, pathResolver, path))
-          .filter(Objects::nonNull)
-          .collect(Collectors.toList());
-      }
+      return Arrays.stream(settings.getStringArray(SUREFIRE_REPORT_PATHS_PROPERTY))
+        .map(String::trim)
+        .map(path -> getFileFromPath(fs, pathResolver, path))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     }
     return null;
   }

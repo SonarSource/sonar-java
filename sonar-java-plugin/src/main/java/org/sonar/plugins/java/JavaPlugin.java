@@ -56,6 +56,7 @@ public class JavaPlugin implements Plugin {
         .defaultValue(Java.DEFAULT_FILE_SUFFIXES)
         .category(JavaConstants.JAVA_CATEGORY)
         .name("File suffixes")
+        .multiValues(true)
         .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
         .subCategory("General")
         .onQualifiers(Qualifiers.PROJECT)
