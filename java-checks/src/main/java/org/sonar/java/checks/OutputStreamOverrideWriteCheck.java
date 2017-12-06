@@ -35,10 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4349")
 public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher WRITE_BYTES_INT_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("write")
-    .addParameter("byte[]")
-    .addParameter("int")
-    .addParameter("int");
+  private static final MethodMatcher WRITE_BYTES_INT_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("write").parameters("byte[]", "int", "int");
+  private static final MethodMatcher WRITE_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("write").parameters("int");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,25 +45,37 @@ public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
+    if (!hasSemantic()) {
       return;
     }
     ClassTree classTree = (ClassTree) tree;
     Type superType = classTree.symbol().superClass();
     IdentifierTree className = classTree.simpleName();
-    if(className == null || superType == null || !(superType.is("java.io.OutputStream") || superType.is("java.io.FilterOutputStream"))) {
+    if (className == null || classTree.symbol().isAbstract() || superType == null || !(superType.is("java.io.OutputStream") || superType.is("java.io.FilterOutputStream"))) {
       return;
     }
-    Optional<MethodTree> writeByteIntInt = classTree.members()
+    Optional<MethodTree> writeByteIntInt = findMethod(classTree, WRITE_BYTES_INT_INT);
+    Optional<MethodTree> writeInt = findMethod(classTree, WRITE_INT);
+
+    if (!writeByteIntInt.isPresent()) {
+      String message = "Provide an override of \"write(byte[],int,int)\" for this class.";
+      if (writeInt.isPresent()) {
+        MethodTree writeIntTree = writeInt.get();
+        if (writeIntTree.block().body().isEmpty()) {
+          message = "Provide an empty override of \"write(byte[],int,int)\" for this class as well.";
+        }
+      }
+      reportIssue(className, message);
+    }
+
+  }
+
+  private static Optional<MethodTree> findMethod(ClassTree classTree, MethodMatcher methodMatcher) {
+    return classTree.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.METHOD))
       .map(m -> (MethodTree) m)
-      .filter(WRITE_BYTES_INT_INT::matches)
+      .filter(methodMatcher::matches)
       .findFirst();
-
-    if(!writeByteIntInt.isPresent()) {
-      reportIssue(className, "Provide an override of \"write(byte[],int,int)\" for this class.");
-    }
-
   }
 }
