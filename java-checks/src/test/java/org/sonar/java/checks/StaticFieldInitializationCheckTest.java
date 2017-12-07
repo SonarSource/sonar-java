@@ -26,5 +26,6 @@ public class StaticFieldInitializationCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/StaticFieldInitializationCheck.java", new StaticFieldInitializationCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StaticFieldInitializationCheck.java", new StaticFieldInitializationCheck());
   }
 }

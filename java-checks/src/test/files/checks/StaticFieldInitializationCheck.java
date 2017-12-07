@@ -55,6 +55,17 @@ class A {
     instance5 = 12;  // compliant - primitive type
     return instance5;
   }
+
+  protected static Object instance6 = null;
+  public static Object getInstance6() {
+    if (instance6 != null) {
+      return instance6;
+    }
+
+    A.instance6 = new Object();  // FN - not using identifier directly
+    return instance6;
+  }
+
   private static final URI FAKE_URI;
   static {
     try {
@@ -86,6 +97,9 @@ class A {
         LOCK.unlock();
       }
     }
+
+    synchronized void foo() {
+    }
   }
   class C {
     static Config CONFIG = null;
@@ -107,5 +121,31 @@ class A {
         LOCK.unlock();
       }
     }
+
+    synchronized void foo() {
+    }
+  }
+
+  class D { // same as C without 'foo()'
+    static Config CONFIG = null;
+    private static java.util.concurrent.locks.Lock LOCK = new java.util.concurrent.locks.ReentrantLock();
+
+    {
+     CONFIG = null; // Compliant - there is no sycnhronized methods in this class
+    }
+
+    {
+      LOCK.lock();
+    }
+
+    public static void resetConfiguration2() {
+      try {
+        CONFIG = null; // Compliant - there is no sycnhronized methods in this class
+        LOCK.tryLock();
+      } finally {
+        LOCK.unlock();
+      }
+    }
+
   }
 }
