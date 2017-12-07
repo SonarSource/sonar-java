@@ -522,6 +522,7 @@ public final class CheckList {
       .add(SwitchInsteadOfIfSequenceCheck.class)
       .add(IterableIteratorCheck.class)
       .add(OutputStreamOverrideWriteCheck.class)
+      .add(PredictableSeedCheck.class)
       .build();
   }
 

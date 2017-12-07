@@ -1,0 +1,16 @@
+{
+  "title": "\"SecureRandom\" seeds should not be predictable",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "security",
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4347",
+  "sqKey": "S4347"
+}
