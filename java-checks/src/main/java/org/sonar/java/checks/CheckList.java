@@ -243,7 +243,6 @@ public final class CheckList {
       .add(CollectionsEmptyConstantsCheck.class)
       .add(UselessExtendsCheck.class)
       .add(DITCheck.class)
-      .add(ArchitectureCheck.class)
       .add(CallToDeprecatedMethodCheck.class)
       .add(CallToFileDeleteOnExitMethodCheck.class)
       .add(NioFileDeleteCheck.class)
