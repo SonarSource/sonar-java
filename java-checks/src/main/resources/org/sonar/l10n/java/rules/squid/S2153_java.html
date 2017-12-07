@@ -24,6 +24,8 @@ public void func() {
 
   examineInteger(i); // Compliant; value is boxed but not then unboxed
   examineInteger(iger1.intValue()); // Noncompliant; unboxed int will be autoboxed
+
+  Integer iger2 = new Integer(iger1); // Noncompliant; unnecessary unboxing, value can be reused
 }
 </pre>
 <h2>Compliant Solution</h2>

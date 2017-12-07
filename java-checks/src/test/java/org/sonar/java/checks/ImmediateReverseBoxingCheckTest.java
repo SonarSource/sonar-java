@@ -27,6 +27,7 @@ public class ImmediateReverseBoxingCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ImmediateReverseBoxingCheck.java", new ImmediateReverseBoxingCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ImmediateReverseBoxingCheck.java", new ImmediateReverseBoxingCheck());
   }
 
 }
