@@ -511,6 +511,7 @@ public final class CheckList {
       .add(ArrayForVarArgCheck.class)
       .add(WrongAssignmentOperatorCheck.class)
       .add(DateFormatWeekYearCheck.class)
+      .add(SpringConstructorInjectionCheck.class)
       .add(UnusedThrowableCheck.class)
       .add(ConditionalOnNewLineCheck.class)
       .add(UselessPackageInfoCheck.class)
