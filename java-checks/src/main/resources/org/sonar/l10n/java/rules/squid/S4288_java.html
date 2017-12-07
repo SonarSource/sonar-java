@@ -1,0 +1,37 @@
+<p>Spring <code>@Controller</code>, <code>@Service</code>, and <code>@Repository</code> classes are singletons by default, meaning only one instance
+of the class is ever instantiated in the application. Typically such a class might have a few <code>static</code> members, such as a logger, but all
+non-static members should be managed by Spring and supplied via constructor injection rather than by field injection.</p>
+<p>This rule raise an issue when any non-<code>static</code> member of a Spring component has an injection annotation, or if the constructor of Spring
+component does not have injection annotation.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Controller
+public class HelloWorld {
+
+  @Autowired
+  private String name = null; // Noncompliant
+
+  HelloWorld() {
+   // ...
+  }
+
+  // ...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Controller
+public class HelloWorld {
+
+  private String name = null;
+
+  @Autowired
+  HelloWorld(String name) {
+    this.name = name;
+   // ...
+  }
+
+  // ...
+}
+</pre>
+
