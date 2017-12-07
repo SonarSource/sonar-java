@@ -27,6 +27,12 @@ class A {
   int equals(Object obj) {
     return 0;
   }
+
+  void tostring() { // Noncompliant [[sc=8;ec=16]] {{Either override Object.toString(), or totally rename the method to prevent any confusion.}}
+  }
+
+  void toString() { // Compliant
+  }
 }
 
 interface B {
