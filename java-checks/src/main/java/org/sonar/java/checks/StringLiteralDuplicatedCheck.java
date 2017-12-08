@@ -21,6 +21,11 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
@@ -34,12 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1192")
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -66,7 +65,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     for (String entry : occurrences.keySet()) {
       Collection<LiteralTree> literalTrees = occurrences.get(entry);
       int literalOccurrence = literalTrees.size();
-      if (constants.containsKey(entry) && literalOccurrence > 1) {
+      if (constants.containsKey(entry) && literalOccurrence > 0) {
         VariableTree constant = constants.get(entry);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).collect(Collectors.toList());
         context.reportIssue(this, duplications.iterator().next(),
@@ -103,6 +102,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC)
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
       constants.putIfAbsent(((LiteralTree) initializer).value(), tree);
+      return;
     }
     super.visitVariable(tree);
   }
