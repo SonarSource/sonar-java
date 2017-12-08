@@ -15,7 +15,7 @@ class PackageAnnotations {
 
   private Integer bar2(Integer i) { return i; }
   private void qix2(Integer i) {
-    bar2(i).intValue(); // Noncompliant {{A "NullPointerException" could be thrown; "bar2" is nullable here.}}
+    bar2(i).intValue(); // Noncompliant {{A "NullPointerException" could be thrown; "bar2()" can return null.}}
   }
 
   private void gul(@Nonnull Object o) {
