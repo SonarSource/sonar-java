@@ -31,20 +31,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
-
-import org.apache.commons.lang.StringUtils;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.Fail;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.wsclient.SonarClient;
-
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -57,8 +43,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import javax.annotation.Nullable;
 import no.finn.lambdacompanion.Try;
+import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Fail;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.wsclient.SonarClient;
 
 public class JavaRulingTest {
 
@@ -110,7 +106,6 @@ public class JavaRulingTest {
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
     instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
-    instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
     instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";", activatedRuleKeys);
     instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"", activatedRuleKeys);
