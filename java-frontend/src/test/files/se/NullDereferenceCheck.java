@@ -81,7 +81,7 @@ class NullPointerTest {
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
-    i = checkForNullMethod().length; // Noncompliant {{A "NullPointerException" could be thrown; "checkForNullMethod" is nullable here.}}
+    i = checkForNullMethod().length; // Noncompliant {{A "NullPointerException" could be thrown; "checkForNullMethod()" can return null.}}
   }
 
   public void testNullable(@Nullable Object parameter) {
@@ -620,7 +620,7 @@ class NullPointerTest {
       System.out.println("Found!");
     }
     a.toString(); // Compliant: a cannot be null hereafter
-    this.checkForNullMethod().toString(); // Noncompliant {{A "NullPointerException" could be thrown; "checkForNullMethod" is nullable here.}}
+    this.checkForNullMethod().toString(); // Noncompliant {{A "NullPointerException" could be thrown; "checkForNullMethod()" can return null.}}
   }
 
   @Nonnull
