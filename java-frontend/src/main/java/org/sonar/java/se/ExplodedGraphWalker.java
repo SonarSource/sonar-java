@@ -44,6 +44,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.DebugCheck;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
@@ -1138,12 +1139,20 @@ public class ExplodedGraphWalker {
     final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
+      List<SECheck> debugChecks = new ArrayList<>();
       List<SECheck> checks = new ArrayList<>();
       for (JavaFileScanner scanner : scanners) {
         if (scanner instanceof SECheck) {
-          checks.add((SECheck) scanner);
+          if (scanner instanceof DebugCheck) {
+            debugChecks.add((SECheck) scanner);
+          } else {
+            checks.add((SECheck) scanner);
+          }
         }
       }
+
+      // Debug checks should be inserted before others to be able to report before branches are potentially interrupted
+      seChecks.addAll(debugChecks);
 
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));

@@ -19,9 +19,11 @@
  */
 package org.sonar.java.se.checks.debug;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -50,27 +52,47 @@ import org.sonar.plugins.java.api.tree.Tree;
   tags = "debug")
 public class DebugMethodYieldsOnInvocationsCheck extends SECheck implements DebugCheck {
 
-  private Map<IdentifierTree, MethodBehavior> methodBehaviors = new HashMap<>();
+  private Deque<List<MethodInvocationTree>> methodInvocations = new LinkedList<>();
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    methodBehaviors.clear();
+    methodInvocations.push(new ArrayList<>());
   }
 
   @Override
-  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+  public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-      Symbol symbol = mit.symbol();
-      if (symbol.isMethodSymbol()) {
-        MethodBehavior methodBehavior = ((CheckerDispatcher) context).peekMethodBehavior((Symbol.MethodSymbol) symbol);
-        if (methodBehavior != null && methodBehavior.isComplete()) {
-          methodBehaviors.putIfAbsent(getIdentifier(mit.methodSelect()), methodBehavior);
-        }
-      }
+      methodInvocations.peek().add((MethodInvocationTree) syntaxNode);
     }
     // No operation on state, just monitoring
     return context.getState();
+  }
+
+  @Override
+  public void checkEndOfExecution(CheckerContext context) {
+    reportAll(context);
+  }
+
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    reportAll(context);
+  }
+
+  private void reportAll(CheckerContext context) {
+    CheckerDispatcher checkerDispatcher = (CheckerDispatcher) context;
+    methodInvocations.pop().stream()
+      .filter(mit -> mit.symbol().isMethodSymbol())
+      .forEach(mit -> reportYields(mit, checkerDispatcher));
+  }
+
+  private void reportYields(MethodInvocationTree mit, CheckerDispatcher checkerDispatcher) {
+    MethodBehavior mb = checkerDispatcher.peekMethodBehavior((Symbol.MethodSymbol) mit.symbol());
+    if (mb != null && mb.isComplete()) {
+      IdentifierTree methodName = getIdentifier(mit.methodSelect());
+      String message = String.format("Method '%s' has %d method yields.", methodName.name(), mb.yields().size());
+      Set<Flow> flow = flowFromYield(mb, methodName);
+      reportIssue(methodName, message, flow);
+    }
   }
 
   private static IdentifierTree getIdentifier(ExpressionTree methodSelect) {
@@ -80,29 +102,9 @@ public class DebugMethodYieldsOnInvocationsCheck extends SECheck implements Debu
     return ((MemberSelectExpressionTree) methodSelect).identifier();
   }
 
-  @Override
-  public void checkEndOfExecution(CheckerContext context) {
-    reportAll();
-  }
-
-  @Override
-  public void interruptedExecution(CheckerContext context) {
-    reportAll();
-  }
-
-  private void reportAll() {
-    methodBehaviors.entrySet().forEach(entry -> {
-      MethodBehavior mb = entry.getValue();
-      IdentifierTree methodName = entry.getKey();
-      Set<Flow> flow = flowFromYield(mb, methodName);
-      reportIssue(methodName, String.format("Method '%s' has %d method yields.", methodName.name(), mb.yields().size()), flow);
-    });
-  }
-
   private static Set<Flow> flowFromYield(MethodBehavior mb, IdentifierTree methodName) {
     Flow.Builder builder = Flow.builder();
     mb.yields().stream().map(yield -> new JavaFileScannerContext.Location(yield.toString(), methodName)).forEach(builder::add);
     return Collections.singleton(builder.build());
   }
-
 }

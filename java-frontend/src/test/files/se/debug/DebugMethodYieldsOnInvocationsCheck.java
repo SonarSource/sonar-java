@@ -16,7 +16,26 @@ abstract class A {
     bar(a, s); // Compliant - no yields
     qix(a);
     unknownMethod(a); // Compliant
+
+    // condition always false on next line
+    if (gul()) { // Noncompliant {{Method 'gul' has 1 method yields.}}
+      // do something
+    }
+
+    getNull() // Noncompliant {{Method 'getNull' has 1 method yields.}}
+    // NPE on next line
+      .gul(); // Noncompliant {{Method 'gul' has 1 method yields.}}
+
+    gul(); // Compliant - NPE triggered 2 lines before. This can not be reached by the engine
   }
 
   abstract void qix(boolean a);
+
+  static boolean gul() {
+    return false;
+  }
+
+  static A getNull() {
+    return null;
+  }
 }
