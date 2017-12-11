@@ -28,6 +28,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
@@ -97,7 +98,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-      if (MAP_PUT.matches(mit)) {
+      if (MAP_PUT.matches(mit) && !isMethodInvocationThrowingCheckedException(mit.arguments().get(1))) {
         ProgramState ps = context.getState();
 
         SymbolicValue keySV = ps.peekValue(1);
@@ -114,6 +115,12 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
       }
     }
     return super.checkPreStatement(context, syntaxNode);
+  }
+
+  private static boolean isMethodInvocationThrowingCheckedException(ExpressionTree expr) {
+    // cast to MethodJavaSymbol is safe because this is called when we matched java.util.Map#put method meaning that expr type was resolved.
+    return expr.is(Tree.Kind.METHOD_INVOCATION)
+      && ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expr).symbol()).thrownTypes().stream().anyMatch(t-> !t.isSubtypeOf("java.lang.RuntimeException"));
   }
 
   private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
