@@ -827,7 +827,9 @@ public class BytecodeEGWalker {
       .filter(b -> b.getExceptionType() != null)
       .filter(b -> b.isUncaughtException()
         ||/*required as long as there is no real type tracking*/ exceptionType == null
-        || exceptionType.isSubtypeOf(b.getExceptionType()))
+        || exceptionType.isSubtypeOf(b.getExceptionType())
+        || b.getExceptionType(semanticModel).isSubtypeOf(exceptionType)
+      )
       .forEach(b -> enqueue(new ProgramPoint(b), ps));
   }
 

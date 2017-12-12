@@ -28,6 +28,9 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class BytecodeCFG {
   List<Block> blocks;
@@ -67,6 +70,10 @@ public class BytecodeCFG {
 
     public String getExceptionType() {
       return exceptionType;
+    }
+
+    public Type getExceptionType(SemanticModel semanticModel) {
+      return exceptionType == null ? Symbols.unknownType : semanticModel.getClassType(exceptionType);
     }
 
     public boolean isUncaughtException() {
