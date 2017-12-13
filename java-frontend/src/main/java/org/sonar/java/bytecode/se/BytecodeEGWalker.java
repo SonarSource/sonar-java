@@ -807,16 +807,11 @@ public class BytecodeEGWalker {
   }
 
   private boolean isUncheckedExceptionCatchBlock(BytecodeCFG.Block b) {
-    String exceptionTypeName = b.getExceptionType();
-    if (exceptionTypeName == null) {
-      return false;
-    }
-    Type exceptionType = semanticModel.getClassType(exceptionTypeName);
-    return ExceptionUtils.isUncheckedException(exceptionType);
+    return b.isCatchBlock() && ExceptionUtils.isUncheckedException(b.getExceptionType(semanticModel));
   }
 
   private ProgramState stateWithException(ProgramState programState, BytecodeCFG.Block b) {
-    Type exceptionType = semanticModel.getClassType(b.getExceptionType());
+    Type exceptionType = b.getExceptionType(semanticModel);
     SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
     return programState.stackValue(sv);
   }
@@ -824,12 +819,11 @@ public class BytecodeEGWalker {
   private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {
     programPosition.block.successors().stream()
       .map(b -> (BytecodeCFG.Block) b)
-      .filter(b -> b.getExceptionType() != null)
+      .filter(BytecodeCFG.Block::isCatchBlock)
       .filter(b -> b.isUncaughtException()
         ||/*required as long as there is no real type tracking*/ exceptionType == null
-        || exceptionType.isSubtypeOf(b.getExceptionType())
-        || b.getExceptionType(semanticModel).isSubtypeOf(exceptionType)
-      )
+        || exceptionType.isSubtypeOf(b.getExceptionType(semanticModel))
+        || b.getExceptionType(semanticModel).isSubtypeOf(exceptionType))
       .forEach(b -> enqueue(new ProgramPoint(b), ps));
   }
 
@@ -902,7 +896,7 @@ public class BytecodeEGWalker {
   private void enqueueHappyPath(ProgramPoint programPosition) {
     programPosition.block.successors().stream()
       .map(b-> (BytecodeCFG.Block)b)
-      .filter(b-> b.getExceptionType() == null)
+      .filter(b -> !b.isCatchBlock())
       .forEach(b -> enqueue(new ProgramPoint(b), programState));
   }
 

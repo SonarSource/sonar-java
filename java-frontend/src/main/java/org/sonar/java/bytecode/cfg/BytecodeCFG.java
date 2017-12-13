@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.cfg;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +30,6 @@ import javax.annotation.CheckForNull;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
 public class BytecodeCFG {
@@ -68,16 +68,17 @@ public class BytecodeCFG {
       successors = new ArrayList<>();
     }
 
-    public String getExceptionType() {
-      return exceptionType;
+    public boolean isCatchBlock() {
+      return exceptionType != null;
     }
 
     public Type getExceptionType(SemanticModel semanticModel) {
-      return exceptionType == null ? Symbols.unknownType : semanticModel.getClassType(exceptionType);
+      Preconditions.checkState(isCatchBlock(), "Block %s is not a catch block", id);
+      return semanticModel.getClassType(exceptionType);
     }
 
     public boolean isUncaughtException() {
-      return exceptionType != null && exceptionType.charAt(0) == '!';
+      return isCatchBlock() && exceptionType.charAt(0) == '!';
     }
 
     void addInsn(Instruction insn) {
@@ -140,7 +141,7 @@ public class BytecodeCFG {
         if(s == falseBlock) {
           sb.append("(false)");
         }
-        if(s.exceptionType != null) {
+        if(s.isCatchBlock()) {
           sb.append("(Exception:").append(s.exceptionType).append(")");
         }
         sb.append(" ");
