@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -34,10 +37,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -103,7 +102,11 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // JMock Mockery
     method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters(),
     // WireMock
-    method("com.github.tomakehurst.wiremock.client.WireMock", "verify").withAnyParameters());
+    method("com.github.tomakehurst.wiremock.client.WireMock", VERIFY).withAnyParameters(),
+
+    // Eclipse Vert.x
+    method("io.vertx.ext.unit.TestContext", STARTS_WITH_ASSERT).withAnyParameters(),
+    method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();

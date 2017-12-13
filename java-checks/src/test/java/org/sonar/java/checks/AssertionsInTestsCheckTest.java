@@ -19,21 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 @RunWith(Parameterized.class)
 public class AssertionsInTestsCheckTest {
 
   private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
 
-  @Parameters
+  @Parameters(name = "Test framework: {0}")
   public static Collection<Object[]> frameworks() {
     return Arrays.asList(new Object[][] {
       {"Junit3"},
@@ -46,7 +45,8 @@ public class AssertionsInTestsCheckTest {
       {"RestAssured"},
       {"Mockito"},
       {"JMock"},
-      {"WireMock"}
+      {"WireMock"},
+      {"VertX"}
     });
   }
 
