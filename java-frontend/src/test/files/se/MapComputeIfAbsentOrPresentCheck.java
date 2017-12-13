@@ -196,4 +196,11 @@ abstract class ExceptionThrown {
       items.put(key, bar4()); // compliant : exception thrown is unknown
     }
   }
+
+  void foo5(java.util.Map<String, UnknownObject> items, String key) throws MyException {
+    Object value = items.get(key);
+    if (value == null) {
+      items.put(key, unknown_method()); // Compliant, unknown method so put is not resolved
+    }
+  }
 }

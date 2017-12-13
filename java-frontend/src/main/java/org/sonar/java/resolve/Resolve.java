@@ -482,7 +482,7 @@ public class Resolve {
                                 boolean looseInvocation, boolean varArity, Set<JavaType> visited) {
 
     Resolution bestSoFar = unresolved();
-    if (!visited.add(site)) {
+    if (!visited.add(site) || argTypes.stream().anyMatch(JavaType::isUnknown)) {
       return bestSoFar;
     }
     bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, looseInvocation, varArity, site.getSymbol().members(), bestSoFar);

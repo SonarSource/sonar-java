@@ -360,3 +360,10 @@ class OUTER {
     }
   }
 }
+
+class UnknownTypeMatching {
+  void someFun(Unknown_type_1 param) {
+    Unknown_type_2 localVar = null;
+    someFun(localVar);
+  }
+}
