@@ -34,6 +34,14 @@ public class DisallowedClassCheckTest {
   }
 
   @Test
+  public void check_annotation() {
+    DisallowedClassCheck visitor = new DisallowedClassCheck();
+    visitor.disallowedClass = "org.foo.MyAnnotation";
+    JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckAnnotation.java", visitor);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DisallowedClassCheckAnnotation.java", visitor);
+  }
+
+  @Test
   public void checkRegex() {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     visitor.disallowedClass = "java.lang\\..*";
