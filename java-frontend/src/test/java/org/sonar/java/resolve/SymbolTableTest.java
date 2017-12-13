@@ -1099,6 +1099,7 @@ public class SymbolTableTest {
 
     assertThat(result.reference(342, 5)).isSameAs(result.symbol("myMethod", 339));
     assertThat(result.symbol("myMethod", 338).usages()).isEmpty();
+    assertThat(result.symbol("someFun", 365).usages()).isEmpty();
 
     JavaSymbol add = result.symbol("add");
     assertThat(add.usages()).hasSize(1);
