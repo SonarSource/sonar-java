@@ -289,6 +289,16 @@
                   <artifactId>jdo-api</artifactId>
                   <version>3.1</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>io.vertx</groupId>
+                  <artifactId>vertx-unit</artifactId>
+                  <version>3.5.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>io.vertx</groupId>
+                  <artifactId>vertx-core</artifactId>
+                  <version>3.5.0</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
