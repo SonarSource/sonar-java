@@ -65,7 +65,7 @@ public class Resolve {
   private final JavaSymbolNotFound symbolNotFound = new JavaSymbolNotFound();
 
   private final BytecodeCompleter bytecodeCompleter;
-  private final TypeSubstitutionSolver typeSubstitutionSolver;
+  final TypeSubstitutionSolver typeSubstitutionSolver;
   private final Types types = new Types();
   private final Symbols symbols;
 

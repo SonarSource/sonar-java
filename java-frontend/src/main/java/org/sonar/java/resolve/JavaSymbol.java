@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+import java.util.Collections;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -53,6 +54,8 @@ public class JavaSymbol implements Symbol {
   public static final int ERRONEOUS = 1 << 6;
   public static final int AMBIGUOUS = ERRONEOUS + 1;
   public static final int ABSENT = ERRONEOUS + 2;
+
+  static Resolve resolve;
 
   final int kind;
   final SymbolMetadataResolve symbolMetadata;
@@ -678,12 +681,13 @@ public class JavaSymbol implements Symbol {
         // Generics type should have same erasure see JLS8 8.4.2
 
         JavaType overrideeType = overridee.getParametersTypes().get(i);
-        if (classType.isParameterized()) {
+        overrideeType = resolve.typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(Collections.singletonList(overrideeType), classType).get(0);
+        /*if (classType.isParameterized()) {
           overrideeType = ((ParametrizedTypeJavaType) classType).typeSubstitution.substitutedType(overrideeType);
           if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
-        }
+        }*/
         if (!paramOverrider.erasure().equals(overrideeType.erasure())) {
           return false;
         }

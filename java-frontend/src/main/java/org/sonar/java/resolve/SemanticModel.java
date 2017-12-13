@@ -59,6 +59,7 @@ public class SemanticModel {
     SemanticModel semanticModel = new SemanticModel(bytecodeCompleter);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
+      JavaSymbol.resolve = resolve;
       TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
       new FirstPass(semanticModel, symbols, resolve, parametrizedTypeCache, typeAndReferenceSolver).visitCompilationUnit(tree);
       typeAndReferenceSolver.visitCompilationUnit(tree);

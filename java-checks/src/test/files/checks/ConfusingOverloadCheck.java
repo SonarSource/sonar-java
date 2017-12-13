@@ -84,3 +84,24 @@ class UnknownParamChild extends UnknownParam {
 
   }
 }
+
+class Foo<T> {
+  void wrapUp(T[] params) {
+
+  }
+}
+class Bar extends Foo<String> {
+  void wrapUp(String[] params) {
+
+  }
+}
+class Foo2<T> {
+  void wrapUp(T params) {
+
+  }
+}
+class Bar2 extends Foo2<String> {
+  void wrapUp(String params) {
+
+  }
+}
