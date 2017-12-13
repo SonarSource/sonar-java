@@ -820,11 +820,16 @@ public class BytecodeEGWalker {
     programPosition.block.successors().stream()
       .map(b -> (BytecodeCFG.Block) b)
       .filter(BytecodeCFG.Block::isCatchBlock)
-      .filter(b -> b.isUncaughtException()
-        ||/*required as long as there is no real type tracking*/ exceptionType == null
-        || exceptionType.isSubtypeOf(b.getExceptionType(semanticModel))
-        || b.getExceptionType(semanticModel).isSubtypeOf(exceptionType))
+      .filter(b -> isExceptionHandledByBlock(exceptionType, b))
       .forEach(b -> enqueue(new ProgramPoint(b), ps));
+  }
+
+  private boolean isExceptionHandledByBlock(Type exceptionType, BytecodeCFG.Block b) {
+    Type blockException = b.getExceptionType(semanticModel);
+    return b.isUncaughtException()
+      ||/*required as long as there is no real type tracking*/ exceptionType == null
+      || exceptionType.isSubtypeOf(blockException)
+      || blockException.isSubtypeOf(exceptionType);
   }
 
   @VisibleForTesting
