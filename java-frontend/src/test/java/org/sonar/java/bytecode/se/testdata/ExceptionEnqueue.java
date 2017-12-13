@@ -19,7 +19,10 @@
  */
 package org.sonar.java.bytecode.se.testdata;
 
-public class ExceptionEnqueue {
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public abstract class ExceptionEnqueue {
 
   static Object test(ExceptionEnqueue ee) {
     try {
@@ -44,6 +47,36 @@ public class ExceptionEnqueue {
   public static class ErrorCatch extends RuntimeException {}
   public static class ThrowableCatch extends RuntimeException {}
   public static class ExceptionCatch extends RuntimeException {}
+
+  abstract void throwIOException() throws IOException;
+
+  static void throwSpecificException() throws IOException {
+    throw new FileNotFoundException();
+  }
+
+  static boolean testCatchBlockEnqueue(ExceptionEnqueue ee) {
+    try {
+      ee.throwIOException();
+    } catch (FileNotFoundException e) {
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
+    throw new RuntimeException();
+  }
+
+  static boolean testCatchBlockEnqueue2() throws IOException {
+    try {
+     throwSpecificException();
+    } catch (FileNotFoundException e) {
+      return true;
+    } catch (IOException e) {
+      // this return is not reachable, however catch is enqueued and yield is created anyway,
+      // because we don't know if we have precise type of exception
+      return false;
+    }
+    throw new RuntimeException();
+  }
 
 }
 

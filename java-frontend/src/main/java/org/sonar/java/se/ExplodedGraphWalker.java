@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -742,12 +741,12 @@ public class ExplodedGraphWalker {
     Preconditions.checkState(peekValue instanceof SymbolicValue.ExceptionalSymbolicValue, "Top of stack should always contains exceptional SV");
     SymbolicValue.ExceptionalSymbolicValue exceptionSV = (SymbolicValue.ExceptionalSymbolicValue) peekValue;
     // only consider the first match, as order of catch block is important
-    Optional<CFG.Block> firstMatchingCatchBlock = catchBlocks.stream()
+    List<CFG.Block> caughtBlocks = catchBlocks.stream()
       .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
       .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
-      .findFirst();
-    if (firstMatchingCatchBlock.isPresent()) {
-      enqueue(new ProgramPoint(firstMatchingCatchBlock.get()), ps, methodYield);
+      .collect(Collectors.toList());
+    if (!caughtBlocks.isEmpty()) {
+      caughtBlocks.forEach(b -> enqueue(new ProgramPoint(b), ps, methodYield));
       return;
     }
 
@@ -780,7 +779,7 @@ public class ExplodedGraphWalker {
   private static boolean isCaughtByBlock(@Nullable Type thrownType, CFG.Block catchBlock) {
     if (thrownType != null) {
       Type caughtType = ((VariableTree) catchBlock.elements().get(0)).symbol().type();
-      return thrownType.isSubtypeOf(caughtType);
+      return thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType);
     }
     return false;
   }

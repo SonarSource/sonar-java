@@ -51,6 +51,7 @@ import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -64,6 +65,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
+import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 
 public class ExplodedGraphWalkerTest {
 
@@ -476,6 +478,23 @@ public class ExplodedGraphWalkerTest {
   public void constraints_on_field_reset() {
     JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java", seChecks());
     JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java", seChecks());
+  }
+
+  @Test
+  public void test_enqueueing_of_catch_blocks() {
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/java/org/sonar/java/bytecode/se/testdata/ExceptionEnqueue.java");
+
+    MethodBehavior mb = sev.behaviorCache.behaviors.get("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue#testCatchBlockEnqueue(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
+    List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    assertThat(happyPathYields).hasSize(1);
+    assertThat(happyPathYields.get(0).resultConstraint()).isNull();
+
+    mb = sev.behaviorCache.behaviors.get("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue#testCatchBlockEnqueue2()Z");
+    happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    assertThat(happyPathYields).hasSize(1);
+    // correctly result constraint should be TRUE, but we enqueue also unreachable catch block which creates yield with FALSE result
+    // and yields are reduced consequently
+    assertThat(happyPathYields.get(0).resultConstraint()).isNull();
   }
 
   private static SECheck[] seChecks() {

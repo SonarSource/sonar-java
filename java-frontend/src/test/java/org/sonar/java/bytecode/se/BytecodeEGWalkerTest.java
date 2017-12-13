@@ -235,6 +235,28 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
+  public void test_enqueueing_of_catch_blocks() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "testCatchBlockEnqueue(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
+    List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    assertThat(happyPathYields).hasSize(1);
+    assertThat(happyPathYields.get(0).resultConstraint()).isNull();
+    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(1);
+    assertThat(exceptionalYields.get(0).exceptionType(semanticModel).is("java.lang.RuntimeException")).isTrue();
+  }
+
+  @Test
+  public void test_enqueueing_of_catch_blocks2() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "testCatchBlockEnqueue2()Z");
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(1);
+    // result should have TRUE constraint, but wrong yield with FALSE constraint is also created
+    // and two yields are reduced subsequently
+    assertThat(mb.happyPathYields().findFirst().get().resultConstraint()).isNull();
+    assertThat(mb.exceptionalPathYields().findFirst().isPresent()).isFalse();
+  }
+
+  @Test
   public void propagation_of_bytecode_analysis_exception() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior(MaxRelationBytecode.class, "isXMLLetter(C)Z");
     assertThat(methodBehavior.isComplete()).isFalse();
