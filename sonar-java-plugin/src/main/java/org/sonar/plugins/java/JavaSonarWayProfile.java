@@ -21,47 +21,33 @@ package org.sonar.plugins.java;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import org.sonar.api.profiles.ProfileDefinition;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.rules.Rule;
-import org.sonar.api.rules.RuleFinder;
-import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.api.utils.ValidationMessages;
-import org.sonar.java.checks.CheckList;
-import org.sonarsource.api.sonarlint.SonarLintSide;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.checks.CheckList;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
- * Replacement for org.sonar.plugins.squid.SonarWayProfile
+ * define built-in profile
  */
 @SonarLintSide
-public class JavaSonarWayProfile extends ProfileDefinition {
-
-  private final RuleFinder ruleFinder;
-  public JavaSonarWayProfile(RuleFinder ruleFinder) {
-    this.ruleFinder = ruleFinder;
-  }
+public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   @Override
-  public RulesProfile createProfile(ValidationMessages messages) {
-    RulesProfile profile = RulesProfile.create("Sonar way", Java.KEY);
-    Rule duplicatedBlocks = ruleFinder.findByKey("common-" + Java.KEY, "DuplicatedBlocks");
-    if(duplicatedBlocks != null) {
-      profile.activateRule(duplicatedBlocks, null);
-    }
-
+  public void define(Context context) {
+    NewBuiltInQualityProfile sonarWay = context.createBuiltInQualityProfile("Sonar way", Java.KEY);
+    sonarWay.activateRule("common-" + Java.KEY, "DuplicatedBlocks");
     Profile jsonProfile = readProfile();
     Map<String, String> keys = legacyKeys();
     for (String key : jsonProfile.ruleKeys) {
-      profile.activateRule(ruleFinder.findByKey(CheckList.REPOSITORY_KEY, keys.get(key)), null);
+      sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
     }
-    return profile;
+    sonarWay.done();
   }
 
   private static Map<String, String> legacyKeys() {
