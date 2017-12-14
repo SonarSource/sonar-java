@@ -21,7 +21,15 @@ package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -34,9 +42,13 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -44,15 +56,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
@@ -94,6 +97,11 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
         unused.add(var.simpleName());
       }
     }
+    Set<String> unresolvedIdentifierNames = unresolvedIdentifierNames(methodTree.block());
+    // kill the noise regarding unresolved identifiers, and remove the one with matching names from the list of unused
+    unused = unused.stream()
+      .filter(id -> !unresolvedIdentifierNames.contains(id.name()))
+      .collect(Collectors.toList());
     if (!unused.isEmpty()) {
       reportUnusedParameters(unused);
     }
@@ -184,5 +192,41 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static boolean isOverriding(MethodTree tree) {
     // if overriding cannot be determined, we consider it is overriding to avoid FP.
     return !BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
+  }
+
+  private static Set<String> unresolvedIdentifierNames(Tree tree) {
+    UnresolvedIdentifierVisitor visitor = new UnresolvedIdentifierVisitor();
+    tree.accept(visitor);
+    return visitor.unresolvedIdentifierNames;
+  }
+
+  private static class UnresolvedIdentifierVisitor extends BaseTreeVisitor {
+
+    private Set<String> unresolvedIdentifierNames = new HashSet<>();
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      // skip annotations and identifier, a method parameter will only be used in expression side (before the dot)
+      scan(tree.expression());
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      ExpressionTree methodSelect = tree.methodSelect();
+      if (!methodSelect.is(Tree.Kind.IDENTIFIER)) {
+        // not interested in simple method invocations, we are targeting usage of method parameters
+        scan(methodSelect);
+      }
+      scan(tree.typeArguments());
+      scan(tree.arguments());
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (tree.symbol().isUnknown()) {
+        unresolvedIdentifierNames.add(tree.name());
+      }
+      super.visitIdentifier(tree);
+    }
   }
 }
