@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -87,6 +88,13 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
       checkIfDisallowed(superClassTypeName, superClass);
     }
     super.visitClass(classTree);
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree annotationTree) {
+    String annotationTypeName = annotationTree.symbolType().fullyQualifiedName();
+    checkIfDisallowed(annotationTypeName, annotationTree.annotationType());
+    super.visitAnnotation(annotationTree);
   }
 
   private void checkIfDisallowed(String className, Tree tree) {
