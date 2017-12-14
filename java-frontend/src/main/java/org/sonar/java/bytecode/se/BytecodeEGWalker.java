@@ -228,6 +228,7 @@ public class BytecodeEGWalker {
 
   @VisibleForTesting
   ExplodedGraph explodedGraph;
+  private BytecodeCFG.Block exitBlock;
 
   /**
    * Because some instructions manipulate stack differently depending on the type of the value, we need this constraint to know category of the value
@@ -323,6 +324,7 @@ public class BytecodeEGWalker {
     if (bytecodeCFG == null) {
       return;
     }
+    exitBlock = bytecodeCFG.exitBlock();
     steps = 0;
     for (ProgramState startingState : startingStates(signature, ProgramState.EMPTY_STATE, lookup.isStatic)) {
       enqueue(new ProgramPoint(bytecodeCFG.entry()), startingState);
@@ -679,11 +681,14 @@ public class BytecodeEGWalker {
         programState = pop.state.stackValue(sv).addConstraint(sv, ObjectConstraint.NOT_NULL);
         break;
       case ATHROW:
-        pop = popStack(1, instruction.opcode);
-        sv = pop.values.get(0);
-        TypedConstraint typedConstraint = programState.getConstraint(sv, TypedConstraint.class);
-        Type type = typedConstraint != null ? typedConstraint.getType(semanticModel) : Symbols.unknownType;
-        programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(type));
+        if (!(programState.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue)) {
+          // create exceptional SV if not already on top of the stack (e.g. throw new MyException(); )
+          pop = popStack(1, instruction.opcode);
+          sv = pop.values.get(0);
+          TypedConstraint typedConstraint = programState.getConstraint(sv, TypedConstraint.class);
+          Type type = typedConstraint != null ? typedConstraint.getType(semanticModel) : Symbols.unknownType;
+          programState = pop.state.stackValue(constraintManager.createExceptionalSymbolicValue(type));
+        }
         programState.storeExitValue();
         break;
       case CHECKCAST:
@@ -817,11 +822,26 @@ public class BytecodeEGWalker {
   }
 
   private void enqueueExceptionHandlers(Type exceptionType, ProgramState ps) {
-    programPosition.block.successors().stream()
-      .map(b -> (BytecodeCFG.Block) b)
-      .filter(BytecodeCFG.Block::isCatchBlock)
-      .filter(b -> isExceptionHandledByBlock(exceptionType, b))
-      .forEach(b -> enqueue(new ProgramPoint(b), ps));
+    List<BytecodeCFG.Block> blocksCatchingException = programPosition.block.successors().stream()
+        .map(b -> (BytecodeCFG.Block) b)
+        .filter(BytecodeCFG.Block::isCatchBlock)
+        .filter(b -> isExceptionHandledByBlock(exceptionType, b))
+        .collect(Collectors.toList());
+    if (!blocksCatchingException.isEmpty()) {
+      blocksCatchingException.forEach(b -> enqueue(new ProgramPoint(b), ps));
+      if (isCatchExhaustive(exceptionType, blocksCatchingException)) {
+        return;
+      }
+    }
+    // exception was not handled or was handled only partially, enqueue exit block with exceptional SV
+    ps.storeExitValue();
+    enqueue(new ProgramPoint(exitBlock), ps);
+  }
+
+  private boolean isCatchExhaustive(Type exceptionType, List<BytecodeCFG.Block> blocksCatchingException) {
+    return blocksCatchingException.stream()
+        .filter(BytecodeCFG.Block::isCatchBlock)
+        .anyMatch(b -> b.isUncaughtException() || exceptionType.isSubtypeOf(b.getExceptionType(semanticModel)));
   }
 
   private boolean isExceptionHandledByBlock(Type exceptionType, BytecodeCFG.Block b) {

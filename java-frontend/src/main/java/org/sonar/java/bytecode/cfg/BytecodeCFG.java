@@ -34,13 +34,14 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 public class BytecodeCFG {
   List<Block> blocks;
+  private final Block exitBlock;
 
   BytecodeCFG() {
     blocks = new ArrayList<>();
     // create exit block
-    Block exit = new Block(this);
-    exit.successors = Collections.emptyList();
-    blocks.add(exit);
+    exitBlock = new Block(this);
+    exitBlock.successors = Collections.emptyList();
+    blocks.add(exitBlock);
   }
 
   public CFG.IBlock<Instruction> entry() {
@@ -49,6 +50,10 @@ public class BytecodeCFG {
 
   public List<Block> blocks() {
     return blocks;
+  }
+
+  public Block exitBlock() {
+    return exitBlock;
   }
 
   public static class Block implements CFG.IBlock<Instruction> {

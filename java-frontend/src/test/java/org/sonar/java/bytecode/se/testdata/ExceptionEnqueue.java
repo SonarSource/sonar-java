@@ -78,6 +78,37 @@ public abstract class ExceptionEnqueue {
     throw new RuntimeException();
   }
 
+  static boolean enqueueExitBlock() throws IOException {
+    throwSpecificException();
+    return false;
+  }
+
+  static boolean enqueueExitBlock2(ExceptionEnqueue ee) throws IOException {
+    try {
+      ee.throwIOException();
+    } catch (FileNotFoundException e) {
+      return true;
+    }
+    return false;
+  }
+
+  static boolean enqueueExitBlock3() throws IOException {
+    try {
+      throwSpecificException();
+    } finally {
+      int x = 0;
+    }
+    return false;
+  }
+
+  static boolean enqueueExitBlock4() {
+    try {
+      throwSpecificException();
+    } catch (Throwable e) {
+      return true;
+    }
+    return true;
+  }
 }
 
 
