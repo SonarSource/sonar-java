@@ -40,6 +40,9 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (isDirContextSearchCall(mit)) {
       // Check the first two arguments of search method
@@ -73,12 +76,12 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
     return true;
   }
 
-  private boolean isDirContextSearchCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && LDAP_SEARCH_MATCHER.matches(methodTree);
+  private static boolean isDirContextSearchCall(MethodInvocationTree methodTree) {
+    return LDAP_SEARCH_MATCHER.matches(methodTree);
   }
 
-  private boolean isSearchControlCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree);
+  private static boolean isSearchControlCall(MethodInvocationTree methodTree) {
+    return SEARCH_CONTROLS_MATCHER.matches(methodTree);
   }
 
 }
