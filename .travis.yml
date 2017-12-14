@@ -24,6 +24,7 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.sonar'
     - '$HOME/jvm'
+    - '$HOME/maven'
 notifications:
   email: false
   hipchat:
