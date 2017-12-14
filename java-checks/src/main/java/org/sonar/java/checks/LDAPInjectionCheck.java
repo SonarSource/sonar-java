@@ -51,15 +51,20 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
     } else if (isSearchControlCall(mit)) {
       ExpressionTree arg = mit.arguments().get(0);
       if (isDynamicArray(arg, mit)) {
-        reportIssue(arg, "Make sure that \"" + parameterName + "\" is sanitized before use in this LDAP request.");
+        reportOnArgument(arg);
       }
     }
   }
 
-  private void checkDirContextArg(ExpressionTree arg1, MethodInvocationTree mit) {
-    if (arg1.symbolType().is("java.lang.String") && isDynamicString(mit, arg1, null)) {
-      reportIssue(arg1, "Make sure that \"" + parameterName + "\" is sanitized before use in this LDAP request.");
+  private void checkDirContextArg(ExpressionTree arg, MethodInvocationTree mit) {
+    if (arg.symbolType().is("java.lang.String") && isDynamicString(mit, arg, null)) {
+      reportOnArgument(arg);
     }
+  }
+
+  private void reportOnArgument(ExpressionTree arg) {
+    reportIssue(arg, "Make sure that " + parameterName + " is sanitized before use in this LDAP request.");
+    parameterName = null;
   }
 
   private boolean isDynamicArray(ExpressionTree arg, MethodInvocationTree mit) {

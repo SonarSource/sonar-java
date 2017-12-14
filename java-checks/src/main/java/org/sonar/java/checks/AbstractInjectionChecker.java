@@ -100,7 +100,7 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
       return visitor.dynamicString;
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
-    parameterName = arg.name();
+    parameterName = "\""+arg.name()+"\"";
     return symbol.owner().isMethodSymbol() && !firstLevel;
   }
 
@@ -160,9 +160,11 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
 
   protected void setParameterNameFromArgument(ExpressionTree arg) {
     if (arg.is(Tree.Kind.IDENTIFIER)) {
-      parameterName = ((IdentifierTree) arg).name();
+      parameterName = "\""+((IdentifierTree) arg).name()+"\"";
     } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
-      parameterName = ((MemberSelectExpressionTree) arg).identifier().name();
+      parameterName = "\""+((MemberSelectExpressionTree) arg).identifier().name()+"\"";
+    } else if (arg.is(Tree.Kind.METHOD_INVOCATION)) {
+      parameterName = "result from this method";
     }
   }
 
