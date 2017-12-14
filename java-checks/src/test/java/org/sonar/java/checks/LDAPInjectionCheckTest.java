@@ -27,5 +27,6 @@ public class LDAPInjectionCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/LDAPInjectionCheck.java", new LDAPInjectionCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LDAPInjectionCheck.java", new LDAPInjectionCheck());
   }
 }
