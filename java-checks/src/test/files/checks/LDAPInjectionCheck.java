@@ -43,3 +43,23 @@ class A {
     return null;
   }
 }
+class B {
+
+  public Map<String, Object> findInformation() {
+    SearchControls searchControls = new SearchControls();
+    List<String> attributeNames = getActiveDirectoryFields();
+    searchControls.setReturningAttributes(attributeNames.toArray(new String[attributeNames.size()])); // Noncompliant {{Make sure that result from this method is sanitized before use in this LDAP request.}}
+    return new HashMap<>();
+  }
+
+  // some method in some other class
+  public List<String> getActiveDirectoryFields() {
+    List<String> attributes = new ArrayList<>();
+
+    attributes.add("sAMAccountName");
+    attributes.add("personalTitle");
+
+    return attributes;
+  }
+
+}
