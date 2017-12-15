@@ -1,5 +1,5 @@
 {
-  "title": "Limited dependence should be placed on operator precedence rules in expressions",
+  "title": "Limited dependence should be placed on operator precedence",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

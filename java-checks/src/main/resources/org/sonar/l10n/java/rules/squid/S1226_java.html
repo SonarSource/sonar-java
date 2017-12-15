@@ -4,10 +4,10 @@ before reassignment.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doTheThing(String str, int i, List&lt;String&gt; strings) {
-  str = Integer.toString(i);  // Noncompliant
+  str = Integer.toString(i); // Noncompliant
 
   for (String s : strings) {
-    s = "hello world";  // Noncompliant
+    s = "hello world"; // Noncompliant
   }
 }
 </pre>

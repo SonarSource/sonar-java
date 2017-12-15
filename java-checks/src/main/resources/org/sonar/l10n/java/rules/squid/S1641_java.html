@@ -10,8 +10,8 @@ public class MyClass {
 
   public void doSomething() {
     Set&lt;COLOR&gt; warm = new HashSet&lt;COLOR&gt;();
-    warm.add(COLORS.RED);
-    warm.add(COLORS.ORANGE);
+    warm.add(COLOR.RED);
+    warm.add(COLOR.ORANGE);
   }
 }
 </pre>
@@ -24,7 +24,7 @@ public class MyClass {
   }
 
   public void doSomething() {
-    EnumSet&lt;COLOR&gt; warm = EnumSet.of(COLOR.RED, COLOR.ORANGE);
+    Set&lt;COLOR&gt; warm = EnumSet.of(COLOR.RED, COLOR.ORANGE);
   }
 }
 </pre>

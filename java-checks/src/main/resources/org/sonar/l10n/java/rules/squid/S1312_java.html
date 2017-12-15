@@ -1,10 +1,10 @@
-<p>Loggers should be:</p>
+<p>Regardless of the logging framework in use (logback, log4j, commons-logging, java.util.logging, ...), loggers should be:</p>
 <ul>
-  <li> <code>private</code>: not accessible outside of their parent classes. If another class needs to log something, it should instantiate its own
+  <li> <code>private</code>: never be accessible outside of its parent class. If another class needs to log something, it should instantiate its own
   logger. </li>
-  <li> <code>static</code>: not dependent on an instance of a class (an object). When logging something, contextual information can of course be
+  <li> <code>static</code>: not be dependent on an instance of a class (an object). When logging something, contextual information can of course be
   provided in the messages but the logger should be created at class level to prevent creating a logger along with each object. </li>
-  <li> <code>final</code>: created once and only once per class. </li>
+  <li> <code>final</code>: be created once and only once per class. </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <p>With a default regular expression of <code>LOG(?:GER)?</code>:</p>
