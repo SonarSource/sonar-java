@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -41,6 +42,12 @@ class A {
     Set<COLOR> col2 = Collections.unmodifiableSet(EnumSet.of(COLOR.RED, COLOR.ORANGE));
     Set<COLOR> col3 = Collections.unmodifiableSet(new HashSet<COLOR>()); // Noncompliant
     Set<COLOR> col4 = rgb(); // Compliant
+
+    Set<COLOR> col5 = ImmutableSet.<COLOR>of(); // Noncompliant
+    Set<COLOR> col6 = ImmutableSet.of(COLOR.RED, COLOR.ORANGE); // Noncompliant
+    Set<COLOR> col7 = ImmutableSet.of(COLOR.RED, COLOR.BLUE, COLOR.RED, COLOR.ORANGE, COLOR.GREEN, COLOR.ORANGE, COLOR.BLUE); // Noncompliant
+
+    Set<COLOR> col8 = Set.of(COLOR.RED); // Compliant - not resolved (but should be non-compliant with java 9)
   }
 
   private Set<COLOR> rgb() {

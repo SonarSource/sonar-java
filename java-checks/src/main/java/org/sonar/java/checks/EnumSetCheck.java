@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
@@ -39,7 +40,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class EnumSetCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher COLLECTIONS_UNMODIFIABLE = MethodMatcher.create().typeDefinition("java.util.Collections").name("unmodifiableSet").withAnyParameters();
-  private static final MethodMatcher GUAVA_SETS_ANY_METHOD = MethodMatcher.create().typeDefinition("com.google.common.collect.Sets").name(NameCriteria.any()).withAnyParameters();
+  private static final MethodMatcherCollection SET_CREATION_METHODS = MethodMatcherCollection.create(
+    // Java 9 factory methods
+    MethodMatcher.create().typeDefinition("java.util.Set").name("of").withAnyParameters(),
+    // guava
+    MethodMatcher.create().typeDefinition("com.google.common.collect.ImmutableSet").name("of").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("com.google.common.collect.Sets").name(NameCriteria.any()).withAnyParameters());
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -61,7 +67,7 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
       if (COLLECTIONS_UNMODIFIABLE.matches(mit)) {
         // check the collection used as parameter
         initializer = mit.arguments().get(0);
-      } else if (!GUAVA_SETS_ANY_METHOD.matches(mit) || "immutableEnumSet".equals(mit.symbol().name())) {
+      } else if (!SET_CREATION_METHODS.anyMatch(mit) || "immutableEnumSet".equals(mit.symbol().name())) {
         // Methods from Guava 'Sets' except 'immutableEnumSet' should be checked,
         // but discard any other method invocations (killing the noise)
         return;
