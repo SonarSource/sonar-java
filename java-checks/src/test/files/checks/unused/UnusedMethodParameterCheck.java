@@ -272,3 +272,23 @@ final class FinalClass extends Parent {
 }
 
 @interface MyAnnotation {}
+
+class UnknownUsage {
+  static class Member {
+    private Member(String firstName, String lastName, String memberID) { } // Noncompliant
+
+    public static LastNameBuilder member(String firstName) { // Compliant
+      return lastName -> memberID -> new Member(firstName, lastName, memberID);
+    }
+
+    @FunctionalInterface
+    public interface LastNameBuilder {
+      MemberIDBuilder lastName(String lastName);
+    }
+
+    @FunctionalInterface
+    public interface MemberIDBuilder {
+      Member memberID(String memberID);
+    }
+  }
+}
