@@ -5,8 +5,8 @@ problems or exceptions at runtime.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
-  static private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
-  static private Calendar calendar = Calendar.getInstance();  // Noncompliant
+  private static SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
+  private static Calendar calendar = Calendar.getInstance();  // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>

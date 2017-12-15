@@ -33,7 +33,7 @@ class FooSequence implements Iterable&lt;Foo&gt; {
 
   public Iterator&lt;Foo&gt; iterator() {
     return new Iterator&lt;Foo&gt;() {
-      private idx = 0;
+      private int idx = 0;
 
       public boolean hasNext() {
         return idx &lt; seq.length;

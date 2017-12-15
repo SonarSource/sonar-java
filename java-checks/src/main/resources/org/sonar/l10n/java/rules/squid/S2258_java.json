@@ -8,8 +8,8 @@
   },
   "tags": [
     "cwe",
-    "owasp-a6",
-    "sans-top25-porous"
+    "sans-top25-porous",
+    "owasp-a3"
   ],
   "standards": [
     "CWE",

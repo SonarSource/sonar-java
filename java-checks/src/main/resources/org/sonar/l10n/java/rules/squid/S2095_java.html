@@ -58,6 +58,15 @@ private void doSomething() {
 }
 </pre>
 <h2>Exceptions</h2>
+<p>Instances of the following classes are ignored by this rule because <code>close</code> has no effect:</p>
+<ul>
+  <li> <code>java.io.ByteArrayOutputStream</code> </li>
+  <li> <code>java.io.ByteArrayInputStream</code> </li>
+  <li> <code>java.io.CharArrayReader</code> </li>
+  <li> <code>java.io.CharArrayWriter</code> </li>
+  <li> <code>java.io.StringReader</code> </li>
+  <li> <code>java.io.StringWriter</code> </li>
+</ul>
 <p>Java 7 introduced the try-with-resources statement, which implicitly closes <code>Closeables</code>. All resources opened in a try-with-resources
 statement are ignored by this rule. </p>
 <pre>

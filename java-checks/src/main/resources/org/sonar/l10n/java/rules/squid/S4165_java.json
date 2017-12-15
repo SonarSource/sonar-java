@@ -1,6 +1,6 @@
 {
   "title": "Assignments should not be redundant",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

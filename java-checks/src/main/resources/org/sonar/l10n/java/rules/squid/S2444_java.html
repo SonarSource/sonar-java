@@ -1,44 +1,37 @@
-<p>In a multi-threaded situation, un-<code>synchronized</code> lazy initialization of non-<code>volatile</code> fields could mean that a second thread
-has access to a half-initialized object while the first thread is still creating it. Allowing such access could cause serious bugs. Instead. the
-initialization block should be <code>synchronized</code> or the variable made <code>volatile</code>.</p>
+<p>In a multi-threaded situation, un-<code>synchronized</code> lazy initialization of static fields could mean that a second thread has access to a
+half-initialized object while the first thread is still creating it. Allowing such access could cause serious bugs. Instead. the initialization block
+should be <code>synchronized</code>.</p>
 <p>Similarly, updates of such fields should also be <code>synchronized</code>.</p>
+<p>This rule raises an issue whenever a lazy static initialization is done on a class with at least one <code>synchronized</code> method, indicating
+intended usage in multi-threaded applications.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-protected static Object instance = null;
+private static Properties fPreferences = null;
 
-public static Object getInstance() {
-    if (instance != null) {
-        return instance;
+private static Properties getPreferences() {
+        if (fPreferences == null) {
+            fPreferences = new Properties(); // Noncompliant
+            fPreferences.put("loading", "true");
+            fPreferences.put("filterstack", "true");
+            readPreferences();
+        }
+        return fPreferences;
     }
-
-    instance = new Object();  // Noncompliant
-    return instance;
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-protected static volatile Object instance = null;
+private static Properties fPreferences = null;
 
-public static Object getInstance() {
-    if (instance != null) {
-        return instance;
+private static synchronized Properties getPreferences() {
+        if (fPreferences == null) {
+            fPreferences = new Properties();
+            fPreferences.put("loading", "true");
+            fPreferences.put("filterstack", "true");
+            readPreferences();
+        }
+        return fPreferences;
     }
-
-    instance = new Object();
-    return instance;
-}
-</pre>
-<p>or </p>
-<pre>
-protected static Object instance = null;
-
-public static synchronized Object getInstance() {
-    if (instance != null) {
-        return instance;
-    }
-
-    instance = new Object();
-    return instance;
 }
 </pre>
 

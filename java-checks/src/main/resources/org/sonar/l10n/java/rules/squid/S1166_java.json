@@ -8,6 +8,7 @@
   },
   "tags": [
     "error-handling",
+    "owasp-a10",
     "cert",
     "suspicious"
   ],
