@@ -146,9 +146,14 @@ class constantInlining {
   Logger logger = LoggerFactory.getLogger(A.class);
 
   static final String MY_CONST = "world";
+  final String myField = "world";
+  static String myStaticField = "world";
 
   void foo(boolean answer) {
     logger.warn("hello " + MY_CONST + ". Is this inlined by the compiler? {}", answer);
+    logger.warn("hello " + constantInlining.MY_CONST + ". Is this inlined by the compiler? {}", answer);
+    logger.warn("hello " + myField + ". Is this inlined by the compiler? {}", answer); // Noncompliant
+    logger.warn("hello " + myStaticField + ". Is this inlined by the compiler? {}", answer); // Noncompliant
     logger.warn(MY_CONST + MY_CONST, answer);
   }
 }

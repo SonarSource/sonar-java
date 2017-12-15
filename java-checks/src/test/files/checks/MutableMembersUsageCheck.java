@@ -104,6 +104,16 @@ class MutableClass2 {
     }
     return dates;
   }
+
+  public Date[] getDateOk() {
+    MutableClass2 mc2 = new MutableClass2();
+    return mc2.date;
+  }
+
+  public Date[] getDateOk2() {
+    return new MutableClass2().date;
+  }
+
 }
 
 class ReturnRef {

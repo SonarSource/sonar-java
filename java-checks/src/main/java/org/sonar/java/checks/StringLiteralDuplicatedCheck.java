@@ -65,7 +65,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     for (String entry : occurrences.keySet()) {
       Collection<LiteralTree> literalTrees = occurrences.get(entry);
       int literalOccurrence = literalTrees.size();
-      if (constants.containsKey(entry) && literalOccurrence > 0) {
+      if (constants.containsKey(entry)) {
         VariableTree constant = constants.get(entry);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).collect(Collectors.toList());
         context.reportIssue(this, duplications.iterator().next(),
