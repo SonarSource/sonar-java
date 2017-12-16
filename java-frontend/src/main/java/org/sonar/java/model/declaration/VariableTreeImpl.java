@@ -219,4 +219,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   public void setEndToken(InternalSyntaxToken endToken) {
     this.endToken = endToken;
   }
+
+  @Override public String toString() {
+    return String.format("%s = [...]", simpleName());
+  }
 }

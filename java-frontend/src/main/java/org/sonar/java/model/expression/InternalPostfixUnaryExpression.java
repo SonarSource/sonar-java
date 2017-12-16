@@ -70,4 +70,7 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
     );
   }
 
+  @Override public String toString() {
+    return "[...]" + operatorToken().text();
+  }
 }

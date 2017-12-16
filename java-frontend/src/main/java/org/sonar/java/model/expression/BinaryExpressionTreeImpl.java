@@ -78,4 +78,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
       rightOperand);
   }
 
+  @Override public String toString() {
+    return "[...] " + operatorToken().text() + " [...]";
+  }
 }
