@@ -1,4 +1,7 @@
 {
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/AppAction.java':[
+111,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/AuthorsAction.java':[
 63,
 ],
@@ -10,6 +13,9 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/language/ws/ListAction.java':[
 57,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java':[
+86,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ws/IndexAction.java':[
 76,
@@ -43,9 +49,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/updatecenter/ws/InstalledPluginsAction.java':[
 57,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/UpdateAction.java':[
-125,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/ws/ResponseExampleAction.java':[
 70,

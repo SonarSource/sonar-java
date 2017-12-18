@@ -135,7 +135,8 @@ public class BytecodeEGWalkerExecuteTest {
     behaviorCache.setFileContext(null, semanticModel);
     BytecodeEGWalker walker = new BytecodeEGWalker(behaviorCache, semanticModel);
     MethodBehavior methodBehavior = walker.getMethodBehavior("org.apache.commons.io.FileUtils#readFileToString(Ljava/io/File;)Ljava/lang/String;", classLoader);
-    assertThat(methodBehavior.yields()).hasSize(1);
+    assertThat(methodBehavior.happyPathYields().collect(Collectors.toList())).hasSize(1);
+    assertThat(methodBehavior.exceptionalPathYields().collect(Collectors.toList())).hasSize(2);
   }
 
   @Test

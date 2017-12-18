@@ -29,6 +29,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.Pair;
+import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -96,19 +97,19 @@ public class ExceptionalYieldTest {
     assertThat(exceptionalYields).hasSize(3);
 
     // runtime exception
-    Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null).findFirst();
+    Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown()).findFirst();
     assertThat(runtimeException.isPresent()).isTrue();
     MethodYield runtimeExceptionYield = runtimeException.get();
     assertThat(runtimeExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // exception from other method call
-    Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException2")).findFirst();
+    Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException2")).findFirst();
     assertThat(implicitException.isPresent()).isTrue();
     MethodYield implicitExceptionYield = implicitException.get();
     assertThat(implicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // explicitly thrown exception
-    Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException1")).findFirst();
+    Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException1")).findFirst();
     assertThat(explicitException.isPresent()).isTrue();
     MethodYield explicitExceptionYield = explicitException.get();
     assertThat(explicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
@@ -134,12 +135,12 @@ public class ExceptionalYieldTest {
 
     List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null).count()).isEqualTo(1);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown()).count()).isEqualTo(1);
 
-    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException1")).findAny().get();
+    MethodYield explicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException1")).findAny().get();
     assertThat(explicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
 
-    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException2")).findAny().get();
+    MethodYield implicitExceptionYield = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException2")).findAny().get();
     assertThat(implicitExceptionYield.parametersConstraints.get(0).get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NOT_NULL);
   }
 

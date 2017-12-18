@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Rule;
@@ -31,7 +30,6 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -124,7 +122,7 @@ public class BehaviorCacheTest {
 
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
-    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel) == null)).hasSize(1);
+    assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
   }
 
   @Test
