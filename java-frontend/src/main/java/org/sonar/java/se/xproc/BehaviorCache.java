@@ -47,32 +47,44 @@ public class BehaviorCache {
   // methods known to be well covered using bytecode-generated behavior
   private static final Set<String> WHITELIST = ImmutableSet.of(
     "java.util.Objects#requireNonNull",
-    "org.apache.commons.lang3.Validate#notEmpty",
-    "org.apache.commons.lang3.Validate#notNull",
-    "org.apache.commons.lang.Validate#notEmpty",
-    "org.apache.commons.lang.Validate#notNull",
-    "org.apache.logging.log4j.core.util.Assert#requireNonNull",
-    "org.springframework.util.Assert#notNull",
-    "org.springframework.util.Assert#notEmpty",
     "java.util.Objects#nonNull",
     "java.util.Objects#isNull",
-    "com.google.common.base.Preconditions#checkNotNull",
-    "com.google.common.base.Preconditions#checkArgument",
-    "com.google.common.base.Preconditions#checkState",
-    "org.springframework.util.CollectionUtils#isEmpty",
-    "org.apache.commons.collections4.CollectionUtils#isEmpty",
-    "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
+
     "org.apache.commons.collections.CollectionUtils#isEmpty",
     "org.apache.commons.collections.CollectionUtils#isNotEmpty",
-    "org.springframework.util.Assert#isNull",
-    "org.apache.commons.lang3.StringUtils#isEmpty",
-    "org.apache.commons.lang3.StringUtils#isNotEmpty",
-    "org.apache.commons.lang3.StringUtils#isBlank",
-    "org.apache.commons.lang3.StringUtils#isNotBlank",
+    "org.apache.commons.collections4.CollectionUtils#isEmpty",
+    "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
+
     "org.apache.commons.lang.StringUtils#isEmpty",
     "org.apache.commons.lang.StringUtils#isNotEmpty",
     "org.apache.commons.lang.StringUtils#isBlank",
     "org.apache.commons.lang.StringUtils#isNotBlank",
+    "org.apache.commons.lang.Validate#notEmpty",
+    "org.apache.commons.lang.Validate#notNull",
+    "org.apache.commons.lang3.StringUtils#isEmpty",
+    "org.apache.commons.lang3.StringUtils#isNotEmpty",
+    "org.apache.commons.lang3.StringUtils#isBlank",
+    "org.apache.commons.lang3.StringUtils#isNotBlank",
+    "org.apache.commons.lang3.Validate#notEmpty",
+    "org.apache.commons.lang3.Validate#notNull",
+
+    "org.apache.logging.log4j.core.util.Assert#requireNonNull",
+
+    "org.springframework.util.CollectionUtils#isEmpty",
+    "org.springframework.util.Assert#hasLength",
+    "org.springframework.util.Assert#hasText",
+    "org.springframework.util.Assert#isAssignable",
+    "org.springframework.util.Assert#isInstanceOf",
+    "org.springframework.util.Assert#isNull",
+    "org.springframework.util.Assert#isTrue",
+    "org.springframework.util.Assert#notEmpty",
+    "org.springframework.util.Assert#notNull",
+    "org.springframework.util.Assert#state",
+
+    "com.google.common.base.Preconditions#checkNotNull",
+    "com.google.common.base.Preconditions#checkArgument",
+    "com.google.common.base.Preconditions#checkState",
+
     "org.eclipse.core.runtime.Assert#");
 
   public BehaviorCache(SquidClassLoader classLoader) {
