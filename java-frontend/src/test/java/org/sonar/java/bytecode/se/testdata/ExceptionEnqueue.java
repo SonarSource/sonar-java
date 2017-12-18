@@ -107,7 +107,7 @@ public abstract class ExceptionEnqueue {
     } catch (Throwable e) {
       return true;
     }
-    return true;
+    return false;
   }
 }
 

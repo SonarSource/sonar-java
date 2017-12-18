@@ -834,6 +834,8 @@ public class BytecodeEGWalker {
       }
     }
     // exception was not handled or was handled only partially, enqueue exit block with exceptional SV
+    Preconditions.checkState(ps.peekValue() instanceof SymbolicValue.ExceptionalSymbolicValue,
+        "Exception shall be on top of the stack");
     ps.storeExitValue();
     enqueue(new ProgramPoint(exitBlock), ps);
   }
