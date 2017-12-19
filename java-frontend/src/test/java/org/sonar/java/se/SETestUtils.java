@@ -57,11 +57,16 @@ public class SETestUtils {
   public static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck... checks) {
     return createSymbolicExecutionVisitorAndSemantic(fileName, checks).a;
   }
+
   public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
+    return createSymbolicExecutionVisitorAndSemantic(fileName, true, checks);
+  }
+
+  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
     File file = new File(fileName);
     CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(file);
     SemanticModel semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
     sev.scanFile(new DefaultJavaFileScannerContext(cut, file, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);
   }
