@@ -19,10 +19,6 @@
  */
 package org.sonar.java.bytecode.se;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,16 +32,12 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.Convert;
 import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.Java9Support;
 
 public class MethodLookup {
 
-  private static final Logger LOG = Loggers.get(MethodLookup.class);
+
 
   final boolean isStatic;
   final boolean isVarArgs;
@@ -71,7 +63,7 @@ public class MethodLookup {
   }
 
   private static MethodLookup lookup(String className, String signature, SquidClassLoader classLoader, LookupMethodVisitor methodVisitor) {
-    byte[] bytes = getClassBytes(className, classLoader);
+    byte[] bytes = classLoader.getBytesForClass(className);
     if (bytes == null) {
       return null;
     }
@@ -95,24 +87,6 @@ public class MethodLookup {
           .findAny().orElse(null);
     }
     return null;
-  }
-
-  @CheckForNull
-  private static byte[] getClassBytes(String className, SquidClassLoader classLoader) {
-    try (InputStream is = classLoader.getResourceAsStream(Convert.bytecodeName(className) + ".class")) {
-      if (is == null) {
-        LOG.debug(".class not found for {}", className);
-        return null;
-      }
-      byte[] bytes = ByteStreams.toByteArray(is);
-      // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
-      if (Java9Support.isJava9Class(bytes)) {
-        Java9Support.setJava8MajorVersion(bytes);
-      }
-      return bytes;
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    }
   }
 
   public static class LookupMethodVisitor extends MethodVisitor {

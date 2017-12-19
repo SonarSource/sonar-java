@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -52,7 +53,7 @@ public class SemanticModel {
     this.bytecodeCompleter = bytecodeCompleter;
   }
 
-  public static SemanticModel createFor(CompilationUnitTree tree, ClassLoader classLoader) {
+  public static SemanticModel createFor(CompilationUnitTree tree, SquidClassLoader classLoader) {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(classLoader, parametrizedTypeCache);
     Symbols symbols = new Symbols(bytecodeCompleter);

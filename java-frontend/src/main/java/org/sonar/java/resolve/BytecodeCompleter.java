@@ -21,27 +21,23 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
-import org.apache.commons.lang.StringUtils;
-import org.objectweb.asm.ClassReader;
-
-import javax.annotation.Nullable;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
+import org.apache.commons.lang.StringUtils;
+import org.objectweb.asm.ClassReader;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
 
   private Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;
-  private final ClassLoader classLoader;
+  private final SquidClassLoader classLoader;
   /**
    * Indexed by flat name.
    */
@@ -50,7 +46,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   private Set<String> classesNotFound = new TreeSet<>();
 
-  public BytecodeCompleter(ClassLoader classLoader, ParametrizedTypeCache parametrizedTypeCache) {
+  public BytecodeCompleter(SquidClassLoader classLoader, ParametrizedTypeCache parametrizedTypeCache) {
     this.classLoader = classLoader;
     this.parametrizedTypeCache = parametrizedTypeCache;
   }
@@ -78,32 +74,12 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
     Preconditions.checkState(symbol.isPackageSymbol() || classSymbol == symbol);
 
-    byte[] bytes = bytesForClass(bytecodeName);
+    byte[] bytes = classLoader.getBytesForClass(bytecodeName);
     if (bytes != null) {
       ClassReader classReader = new ClassReader(bytes);
       classReader.accept(
         new BytecodeVisitor(this, symbols, classSymbol, parametrizedTypeCache),
         ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
-    }
-  }
-
-  @Nullable
-  private byte[] bytesForClass(String fullname) {
-    InputStream is = inputStreamFor(fullname);
-    if (is == null) {
-      return null;
-    }
-    try {
-      byte[] bytes = ByteStreams.toByteArray(is);
-      // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
-      if (Java9Support.isJava9Class(bytes)) {
-        Java9Support.setJava8MajorVersion(bytes);
-      }
-      return bytes;
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    } finally {
-      Closeables.closeQuietly(is);
     }
   }
 
@@ -220,7 +196,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       return symbol;
     }
 
-    byte[] bytesForClass = bytesForClass(fullname);
+    byte[] bytesForClass = classLoader.getBytesForClass(fullname);
     if (bytesForClass == null) {
       return new Resolve.JavaSymbolNotFound();
     }
