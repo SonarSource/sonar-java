@@ -69,7 +69,7 @@ public class ExceptionalCheckBasedYieldTest {
     assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(0);
 
     assertThat(mb.exceptionalPathYields()).hasSize(2);
-    assertThat(mb.exceptionalPathYields()).as("All the exceptional yields are runtime exceptions").allMatch(y -> y.exceptionType(semanticModel) == null);
+    assertThat(mb.exceptionalPathYields()).as("All the exceptional yields are runtime exceptions").allMatch(y -> y.exceptionType(semanticModel).isUnknown());
     assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(1);
     assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
@@ -88,8 +88,8 @@ public class ExceptionalCheckBasedYieldTest {
 
     // still 2 exceptional path
     assertThat(mb.exceptionalPathYields()).hasSize(2);
-    assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) == null)).hasSize(1);
-    assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null)).hasSize(1);
+    assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
+    assertThat(mb.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel).isClass())).hasSize(1);
     assertThat(mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(1);
 
     ExceptionalYield exceptionalYield = mb.exceptionalPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE).findFirst().get();

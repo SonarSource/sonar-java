@@ -182,6 +182,9 @@ public class LocksNotUnlockedCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    if (context.getState().exitingOnRuntimeException()) {
+      return;
+    }
     ExplodedGraph.Node node = context.getNode();
     context.getState().getValuesWithConstraints(LockConstraint.LOCKED).stream()
       .flatMap(lockedSv -> FlowComputation.flowWithoutExceptions(node, lockedSv, LockConstraint.LOCKED::equals, LockConstraint.UNLOCKED::equals, LOCK_CONSTRAINT_DOMAIN).stream())

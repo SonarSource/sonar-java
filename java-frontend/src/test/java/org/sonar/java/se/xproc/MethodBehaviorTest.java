@@ -118,9 +118,9 @@ public class MethodBehaviorTest {
     assertThat(rethrowingException.yields()).hasSize(4);
     assertThat(rethrowingException.happyPathYields()).hasSize(1);
     assertThat(rethrowingException.exceptionalPathYields()).hasSize(3);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) == null)).hasSize(1);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("java.lang.Exception"))).hasSize(1);
-    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel) != null && y.exceptionType(semanticModel).is("org.foo.MyException"))).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel).is("java.lang.Exception"))).hasSize(1);
+    assertThat(rethrowingException.exceptionalPathYields().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException"))).hasSize(1);
 
   }
 

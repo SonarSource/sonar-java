@@ -48,6 +48,7 @@ import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -253,6 +254,45 @@ public class BytecodeEGWalkerTest {
     // result should have TRUE constraint, but wrong yield with FALSE constraint is also created
     // and two yields are reduced subsequently
     assertThat(mb.happyPathYields().findFirst().get().resultConstraint()).isNull();
+    assertThat(mb.exceptionalPathYields().findFirst().isPresent()).isFalse();
+  }
+
+  @Test
+  public void test_enqueueing_of_exit_block() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock()Z");
+    List<MethodYield> yields = mb.yields();
+    assertThat(yields).hasSize(1);
+    assertThat(mb.happyPathYields().findFirst().isPresent()).isFalse();
+    ExceptionalYield exceptionalYield = mb.exceptionalPathYields().findFirst().get();
+    Type exceptionType = exceptionalYield.exceptionType(semanticModel);
+    assertThat(exceptionType.is("java.io.FileNotFoundException")).isTrue();
+  }
+
+  @Test
+  public void test_enqueueing_of_exit_block2() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock2(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
+    List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    assertThat(happyPathYields).hasSize(1);
+    assertThat(happyPathYields.get(0).resultConstraint()).isNull();
+    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(1);
+    assertThat(exceptionalYields.get(0).exceptionType(semanticModel).is("java.io.IOException")).isTrue();
+  }
+
+  @Test
+  public void test_enqueueing_of_exit_block3() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock3()Z");
+    assertThat(mb.happyPathYields().findFirst().isPresent()).isFalse();
+    List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    assertThat(exceptionalYields).hasSize(1);
+    assertThat(exceptionalYields.get(0).exceptionType(semanticModel).is("java.io.FileNotFoundException")).isTrue();
+  }
+
+  @Test
+  public void test_enqueueing_of_exit_block4() {
+    MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock4()Z");
+    List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
+    assertThat(happyPathYields.get(0).resultConstraint().hasConstraint(BooleanConstraint.TRUE)).isTrue();
     assertThat(mb.exceptionalPathYields().findFirst().isPresent()).isFalse();
   }
 

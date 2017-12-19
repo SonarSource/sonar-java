@@ -131,7 +131,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   @Override
   public Type exceptionType(SemanticModel semanticModel) {
     Type exceptionType = super.exceptionType(semanticModel);
-    Preconditions.checkArgument(exceptionType != null, "Exception type is required");
+    Preconditions.checkArgument(!exceptionType.isUnknown(), "Exception type is required");
     return exceptionType;
   }
 

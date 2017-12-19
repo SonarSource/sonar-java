@@ -19,21 +19,20 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ExceptionalYield extends MethodYield {
 
@@ -62,12 +61,12 @@ public class ExceptionalYield extends MethodYield {
     this.exceptionType = exceptionType;
   }
 
-  @CheckForNull
   public Type exceptionType(SemanticModel semanticModel) {
-    if(exceptionType == null) {
-      return null;
+    if (exceptionType == null) {
+      return Symbols.unknownType;
     }
-    return semanticModel.getClassType(exceptionType);
+    Type type = semanticModel.getClassType(this.exceptionType);
+    return type == null ? Symbols.unknownType : type;
   }
 
   @Override

@@ -99,6 +99,9 @@ public class InvariantReturnCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    if (context.getState().exitingOnRuntimeException()) {
+      return;
+    }
     MethodInvariantContext methodInvariantContext = methodInvariantContexts.peek();
     if (!methodInvariantContext.methodToCheck) {
       return;

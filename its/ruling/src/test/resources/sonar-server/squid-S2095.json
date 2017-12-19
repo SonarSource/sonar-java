@@ -1,6 +1,12 @@
 {
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/AppAction.java':[
+111,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/batch/BatchReportReaderImpl.java':[
 74,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java':[
+86,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/index/FileSourcesUpdaterHelper.java':[
 53,

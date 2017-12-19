@@ -50,6 +50,7 @@ import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class ProgramState {
 
@@ -531,7 +532,11 @@ public class ProgramState {
   }
 
   public boolean exitingOnRuntimeException() {
-    return exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue && ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType() == null;
+    if (exitSymbolicValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+      Type exceptionType = ((SymbolicValue.ExceptionalSymbolicValue) exitSymbolicValue).exceptionType();
+      return exceptionType == null || exceptionType.isSubtypeOf("java.lang.RuntimeException");
+    }
+    return false;
   }
 
   Set<LearnedConstraint> learnedConstraints(ProgramState parent) {

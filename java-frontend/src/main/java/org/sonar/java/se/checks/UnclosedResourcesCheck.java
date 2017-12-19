@@ -147,6 +147,9 @@ public class UnclosedResourcesCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    if (context.getState().exitingOnRuntimeException()) {
+      return;
+    }
     ExplodedGraph.Node node = context.getNode();
     Set<SymbolicValue> svToReport = symbolicValuesToReport(context);
     svToReport.forEach(sv -> processUnclosedSymbolicValue(node, sv));
