@@ -220,7 +220,7 @@ public class BehaviorCacheTest {
   }
 
   private static void verifyNoIssueOnFile(String fileName) {
-    createSymbolicExecutionVisitor(fileName, nullDereferenceCheck);
+    createSymbolicExecutionVisitorAndSemantic(fileName, false, nullDereferenceCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     nullDereferenceCheck.scanFile(context);
