@@ -19,21 +19,30 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
-import org.apache.commons.lang.ArrayUtils;
-
+import com.google.common.io.ByteStreams;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.annotation.CheckForNull;
+import org.apache.commons.lang.ArrayUtils;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.resolve.Convert;
+import org.sonar.java.resolve.Java9Support;
 
 /**
  * Class loader, which is able to load classes from a list of JAR files and directories.
  */
 public class SquidClassLoader extends ClassLoader implements Closeable {
+
+  private static final Logger LOG = Loggers.get(SquidClassLoader.class);
 
   private final List<Loader> loaders;
 
@@ -90,6 +99,31 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
       }
     }
     return Iterators.asEnumeration(result.iterator());
+  }
+
+  /**
+   * Read bytes representing class with name passed as an argument. Modify the class version in bytecode so ASM can read
+   * returned array without issues.
+   *
+   * @param className canonical name of the class (e.g. org.acme.Foo )
+   * @return bytes or null if class is not found
+   */
+  @CheckForNull
+  public byte[] getBytesForClass(String className) {
+    try (InputStream is = getResourceAsStream(Convert.bytecodeName(className) + ".class")) {
+      if (is == null) {
+        LOG.debug(".class not found for {}", className);
+        return null;
+      }
+      byte[] bytes = ByteStreams.toByteArray(is);
+      // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
+      if (Java9Support.isJava9Class(bytes)) {
+        Java9Support.setJava8MajorVersion(bytes);
+      }
+      return bytes;
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   /**

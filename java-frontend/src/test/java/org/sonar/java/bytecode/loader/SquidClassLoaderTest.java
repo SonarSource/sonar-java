@@ -29,6 +29,9 @@ import org.junit.rules.ExpectedException;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,4 +141,34 @@ public class SquidClassLoaderTest {
     classLoader.close();
   }
 
+  @Test
+  public void test_loading_class() {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("target/test-classes")));
+    String className = getClass().getCanonicalName();
+    byte[] bytes = classLoader.getBytesForClass(className);
+    assertThat(bytes).isNotNull();
+    ClassReader cr = new ClassReader(bytes);
+    ClassNode classNode = new ClassNode();
+    cr.accept(classNode, 0);
+    assertThat(classNode.name).isEqualTo("org/sonar/java/bytecode/loader/SquidClassLoaderTest");
+  }
+
+  @Test
+  public void empty_classloader_should_not_find_bytes() {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.emptyList());
+    String className = getClass().getCanonicalName();
+    byte[] bytes = classLoader.getBytesForClass(className);
+    assertThat(bytes).isNull();
+  }
+
+  @Test
+  public void test_loading_java9_class() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java9/bin")));
+    byte[] bytes = classLoader.getBytesForClass("org.test.Hello9");
+    assertThat(bytes).isNotNull();
+    ClassReader cr = new ClassReader(bytes);
+    ClassNode classNode = new ClassNode();
+    cr.accept(classNode, 0);
+    assertThat(classNode.version).isEqualTo(Opcodes.V1_8);
+  }
 }
