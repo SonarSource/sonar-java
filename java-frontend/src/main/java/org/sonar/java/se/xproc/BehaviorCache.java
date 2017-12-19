@@ -80,6 +80,9 @@ public class BehaviorCache {
     "org.springframework.util.Assert#notEmpty",
     "org.springframework.util.Assert#notNull",
     "org.springframework.util.Assert#state",
+    "org.springframework.util.ObjectUtils#isEmpty",
+    "org.springframework.util.StringUtils#hasLength",
+    "org.springframework.util.StringUtils#hasText",
 
     "com.google.common.base.Preconditions#checkNotNull",
     "com.google.common.base.Preconditions#checkArgument",

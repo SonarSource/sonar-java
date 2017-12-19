@@ -1,6 +1,8 @@
 import java.util.Collection;
 import java.util.Map;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -74,5 +76,26 @@ class SpringAssert {
     Object o = null;
     Assert.state(o != null);
     o.toString();
+  }
+
+  void test_objectutils_isEmpty() {
+    Object o = null;
+    if (!ObjectUtils.isEmpty(o)) {
+      o.toString();
+    }
+  }
+
+  void test_stringutils_hasText() {
+    String s = null;
+    if (StringUtils.hasText(s)) {
+      s.toString();
+    }
+  }
+
+  void test_stringutils_hasLength() {
+    String s = null;
+    if (StringUtils.hasLength(s)) {
+      s.toString();
+    }
   }
 }
