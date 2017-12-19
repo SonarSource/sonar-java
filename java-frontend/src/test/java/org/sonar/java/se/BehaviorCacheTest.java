@@ -151,8 +151,13 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void log4j_and_spring_assert() throws Exception {
-    verifyNoIssueOnFile("src/test/files/se/SpringAndLog4jAssert.java");
+  public void log4j_assert() throws Exception {
+    verifyNoIssueOnFile("src/test/files/se/Log4jAssert.java");
+  }
+
+  @Test
+  public void spring_assert() throws Exception {
+    verifyNoIssueOnFile("src/test/files/se/SpringAssert.java");
   }
 
   @Test
