@@ -52,6 +52,7 @@ import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.java.se.symbolicvalues.BinarySymbolicValue;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.HappyPathYield;
@@ -950,6 +951,71 @@ public class BytecodeEGWalkerExecuteTest {
     assertThatThrownBy(() -> execute(new Instruction.InvokeDynamicInsn("()V"), ProgramState.EMPTY_STATE))
       .hasMessage("Lambda should always evaluate to target functional interface");
   }
+
+
+  @Test
+  public void test_compare_with_zero() {
+    SymbolicValue sv = new SymbolicValue();
+    int[] opcodes = {Opcodes.IFEQ, Opcodes.IFNE, Opcodes.IFLT, Opcodes.IFGE};
+    for (int opcode : opcodes) {
+      ProgramState programState = walker.branchingState(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv));
+      RelationalSymbolicValue relSV = (RelationalSymbolicValue) programState.peekValue();
+      assertThat(relSV.getLeftOp()).isSameAs(sv);
+      assertThat(relSV.getRightOp()).isNotSameAs(sv);
+      assertThat(programState.getConstraints(relSV.getRightOp()).hasConstraint(DivisionByZeroCheck.ZeroConstraint.ZERO)).isTrue();
+    }
+
+    // these opcodes inverse operator and swap operands
+    int[] swapOperandsOpcodes = {Opcodes.IFLE, Opcodes.IFGT};
+    for (int opcode : swapOperandsOpcodes) {
+      ProgramState programState = walker.branchingState(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv));
+      RelationalSymbolicValue relSV = (RelationalSymbolicValue) programState.peekValue();
+      assertThat(relSV.getRightOp()).isSameAs(sv);
+      assertThat(relSV.getLeftOp()).isNotSameAs(sv);
+      assertThat(programState.getConstraints(relSV.getLeftOp()).hasConstraint(DivisionByZeroCheck.ZeroConstraint.ZERO)).isTrue();
+    }
+  }
+
+  @Test
+  public void test_compare_with_null() {
+    SymbolicValue sv = new SymbolicValue();
+    int[] opcodes = {Opcodes.IFNULL, Opcodes.IFNONNULL};
+    for (int opcode : opcodes) {
+      ProgramState programState = walker.branchingState(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(sv));
+      RelationalSymbolicValue relSV = (RelationalSymbolicValue) programState.peekValue();
+      assertThat(relSV.getLeftOp()).isSameAs(sv);
+      assertThat(relSV.getRightOp()).isSameAs(SymbolicValue.NULL_LITERAL);
+    }
+  }
+
+  @Test
+  public void test_compare_instructions() {
+    int[] opcodes = {Opcodes.IF_ICMPEQ, Opcodes.IF_ICMPNE, Opcodes.IF_ICMPLT, Opcodes.IF_ICMPGE, Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE};
+    SymbolicValue left = new SymbolicValue();
+    SymbolicValue right = new SymbolicValue();
+    for (int opcode : opcodes) {
+      ProgramState programState = walker.branchingState(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(left).stackValue(right));
+      RelationalSymbolicValue relSV = (RelationalSymbolicValue) programState.peekValue();
+      assertThat(relSV.getLeftOp()).isSameAs(left);
+      assertThat(relSV.getRightOp()).isSameAs(right);
+    }
+
+    // these opcodes inverse operator and swap operands
+    int[] swapOperandsOpcodes = {Opcodes.IF_ICMPLE, Opcodes.IF_ICMPGT};
+    for (int opcode : swapOperandsOpcodes) {
+      ProgramState programState = walker.branchingState(new Instruction(opcode), ProgramState.EMPTY_STATE.stackValue(left).stackValue(right));
+      RelationalSymbolicValue relSV = (RelationalSymbolicValue) programState.peekValue();
+      assertThat(relSV.getRightOp()).isSameAs(left);
+      assertThat(relSV.getLeftOp()).isSameAs(right);
+    }
+  }
+
+  @Test
+  public void test_invalid_branch_instruction() {
+    assertThatThrownBy(() -> walker.branchingState(new Instruction(Opcodes.GOTO), ProgramState.EMPTY_STATE))
+        .isInstanceOf(IllegalStateException.class);
+  }
+
 
   @Test
   public void test_conversion() throws Exception {

@@ -21,10 +21,12 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +65,9 @@ public class BytecodeEGWalkerTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    List<File> files = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    files.addAll(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, false));
+    squidClassLoader = new SquidClassLoader(files);
     semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A {}"), squidClassLoader);
   }
 
@@ -300,6 +304,12 @@ public class BytecodeEGWalkerTest {
   public void propagation_of_bytecode_analysis_exception() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior(MaxRelationBytecode.class, "isXMLLetter(C)Z");
     assertThat(methodBehavior.isComplete()).isFalse();
+  }
+
+  @Test
+  public void test_guava() throws Exception {
+    MethodBehavior methodBehavior = getMethodBehavior(ByteStreams.class, "read(Ljava/io/InputStream;[BII)I");
+    assertThat(methodBehavior.happyPathYields().anyMatch(y -> y.resultConstraint() == null)).isTrue();
   }
 
   private static MethodBehavior getMethodBehavior(String signature) {

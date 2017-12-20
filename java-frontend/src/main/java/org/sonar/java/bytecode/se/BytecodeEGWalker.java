@@ -21,8 +21,8 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashSet;
@@ -876,8 +876,8 @@ public class BytecodeEGWalker {
     }
   }
 
-  private void handleBranching(Instruction branchInstruction) {
-    programState = branchingState(branchInstruction, programState);
+  private void handleBranching(Instruction terminator) {
+    programState = branchingState(terminator, programState);
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     ProgramPoint falsePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).falseSuccessor());
     ProgramPoint truePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).trueSuccessor());
@@ -885,11 +885,12 @@ public class BytecodeEGWalker {
     pair.b.forEach(s -> enqueue(truePP, s));
   }
 
-  ProgramState branchingState(Instruction branchInstruction, ProgramState programState) {
+  @VisibleForTesting
+  ProgramState branchingState(Instruction terminator, ProgramState programState) {
     ProgramState.Pop pop;
     ProgramState ps;
     List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
-    switch (branchInstruction.opcode) {
+    switch (terminator.opcode) {
       case IFEQ:
       case IFNE:
       case IFLT:
@@ -897,9 +898,10 @@ public class BytecodeEGWalker {
       case IFGT:
       case IFLE:
         pop = programState.unstackValue(1);
-        symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
         SymbolicValue svZero = new SymbolicValue();
-        symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(svZero, null));
+        symbolicValueSymbols = ImmutableList.of(
+            new ProgramState.SymbolicValueSymbol(svZero, null),
+            pop.valuesAndSymbols.get(0));
         List<ProgramState> programStates = svZero.setConstraint(pop.state, DivisionByZeroCheck.ZeroConstraint.ZERO).stream()
             .flatMap(s -> svZero.setConstraint(s, BooleanConstraint.FALSE).stream()).collect(Collectors.toList());
         Preconditions.checkState(programStates.size() == 1);
@@ -920,14 +922,15 @@ public class BytecodeEGWalker {
       case IFNULL:
       case IFNONNULL:
         pop = programState.unstackValue(1);
-        symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
-        symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
+        symbolicValueSymbols = ImmutableList.of(
+            new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null),
+            pop.valuesAndSymbols.get(0));
         ps = pop.state;
         break;
       default:
-        throw new IllegalStateException("Unexpected terminator " + branchInstruction);
+        throw new IllegalStateException("Unexpected terminator " + terminator);
     }
-    return ps.stackValue(constraintManager.createBinarySymbolicValue(branchInstruction, symbolicValueSymbols));
+    return ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
   }
 
   private void enqueueHappyPath(ProgramPoint programPosition) {
