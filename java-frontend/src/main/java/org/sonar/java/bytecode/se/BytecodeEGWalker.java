@@ -858,66 +858,76 @@ public class BytecodeEGWalker {
   void handleBlockExit(ProgramPoint programPosition) {
     BytecodeCFG.Block block = (BytecodeCFG.Block) programPosition.block;
     Instruction terminator = block.terminator();
+    if (terminator == null) {
+      enqueueHappyPath(programPosition);
+      return;
+    }
+    switch (terminator.opcode) {
+      case GOTO:
+        enqueueHappyPath(programPosition);
+        break;
+      case TABLESWITCH:
+      case LOOKUPSWITCH:
+        programState = programState.unstackValue(1).state;
+        enqueueHappyPath(programPosition);
+        break;
+      default:
+        handleBranching(terminator);
+    }
+  }
+
+  private void handleBranching(Instruction branchInstruction) {
+    programState = branchingState(branchInstruction, programState);
+    Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
+    ProgramPoint falsePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).falseSuccessor());
+    ProgramPoint truePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).trueSuccessor());
+    pair.a.forEach(s -> enqueue(falsePP, s));
+    pair.b.forEach(s -> enqueue(truePP, s));
+  }
+
+  ProgramState branchingState(Instruction branchInstruction, ProgramState programState) {
     ProgramState.Pop pop;
     ProgramState ps;
     List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols;
-    if (terminator != null) {
-      switch (terminator.opcode) {
-        case GOTO:
-          enqueueHappyPath(programPosition);
-          return;
-        case IFEQ:
-        case IFNE:
-        case IFLT:
-        case IFGE:
-        case IFGT:
-        case IFLE:
-          pop = programState.unstackValue(1);
-          symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
-          SymbolicValue svZero = new SymbolicValue();
-          symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(svZero, null));
-          List<ProgramState> programStates = svZero.setConstraint(pop.state, DivisionByZeroCheck.ZeroConstraint.ZERO).stream()
+    switch (branchInstruction.opcode) {
+      case IFEQ:
+      case IFNE:
+      case IFLT:
+      case IFGE:
+      case IFGT:
+      case IFLE:
+        pop = programState.unstackValue(1);
+        symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
+        SymbolicValue svZero = new SymbolicValue();
+        symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(svZero, null));
+        List<ProgramState> programStates = svZero.setConstraint(pop.state, DivisionByZeroCheck.ZeroConstraint.ZERO).stream()
             .flatMap(s -> svZero.setConstraint(s, BooleanConstraint.FALSE).stream()).collect(Collectors.toList());
-          Preconditions.checkState(programStates.size() == 1);
-          ps = programStates.get(0);
-          break;
-        case IF_ICMPEQ:
-        case IF_ICMPNE:
-        case IF_ICMPLT:
-        case IF_ICMPGE:
-        case IF_ICMPGT:
-        case IF_ICMPLE:
-        case IF_ACMPEQ:
-        case IF_ACMPNE:
-          pop = programState.unstackValue(2);
-          symbolicValueSymbols = pop.valuesAndSymbols;
-          ps = pop.state;
-          break;
-        case IFNULL:
-        case IFNONNULL:
-          pop = programState.unstackValue(1);
-          symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
-          symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
-          ps = pop.state;
-          break;
-        case TABLESWITCH:
-        case LOOKUPSWITCH:
-          pop = programState.unstackValue(1);
-          programState = pop.state;
-          enqueueHappyPath(programPosition);
-          return;
-        default:
-          throw new IllegalStateException("Unexpected terminator " + terminator);
-      }
-      programState = ps.stackValue(constraintManager.createBinarySymbolicValue(terminator, symbolicValueSymbols));
-      Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
-      ProgramPoint falsePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).falseSuccessor());
-      ProgramPoint truePP = new ProgramPoint(((BytecodeCFG.Block) programPosition.block).trueSuccessor());
-      pair.a.stream().forEach(s -> enqueue(falsePP, s));
-      pair.b.stream().forEach(s -> enqueue(truePP, s));
-    } else {
-      enqueueHappyPath(programPosition);
+        Preconditions.checkState(programStates.size() == 1);
+        ps = programStates.get(0);
+        break;
+      case IF_ICMPEQ:
+      case IF_ICMPNE:
+      case IF_ICMPLT:
+      case IF_ICMPGE:
+      case IF_ICMPGT:
+      case IF_ICMPLE:
+      case IF_ACMPEQ:
+      case IF_ACMPNE:
+        pop = programState.unstackValue(2);
+        symbolicValueSymbols = pop.valuesAndSymbols;
+        ps = pop.state;
+        break;
+      case IFNULL:
+      case IFNONNULL:
+        pop = programState.unstackValue(1);
+        symbolicValueSymbols = new ArrayList<>(pop.valuesAndSymbols);
+        symbolicValueSymbols.add(new ProgramState.SymbolicValueSymbol(SymbolicValue.NULL_LITERAL, null));
+        ps = pop.state;
+        break;
+      default:
+        throw new IllegalStateException("Unexpected terminator " + branchInstruction);
     }
+    return ps.stackValue(constraintManager.createBinarySymbolicValue(branchInstruction, symbolicValueSymbols));
   }
 
   private void enqueueHappyPath(ProgramPoint programPosition) {
