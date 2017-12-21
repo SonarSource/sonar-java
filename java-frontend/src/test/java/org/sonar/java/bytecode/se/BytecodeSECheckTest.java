@@ -307,7 +307,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     assertThat(behavior.happyPathYields().map(HappyPathYield::toString).collect(Collectors.toList())).containsExactly("{params: [[], []], result: null (0)}");
     assertThat(behavior.exceptionalPathYields().map(ExceptionalYield::toString).collect(Collectors.toList()))
       .containsExactly("{params: [[NON_ZERO], []], exceptional (java.lang.IndexOutOfBoundsException)}",
-        "{params: [[], [NON_ZERO]], exceptional (java.lang.IndexOutOfBoundsException)}");
+        "{params: [[], []], exceptional (java.lang.IndexOutOfBoundsException)}");
   }
 
   private static BytecodeEGWalker getEGWalker() {
