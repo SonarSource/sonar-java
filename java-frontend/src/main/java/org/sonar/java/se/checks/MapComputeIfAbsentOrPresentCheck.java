@@ -118,8 +118,8 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   }
 
   private static boolean isMethodInvocationThrowingCheckedException(ExpressionTree expr) {
-    // cast to MethodJavaSymbol is safe because this is called when we matched java.util.Map#put method meaning that expr type was resolved.
     return expr.is(Tree.Kind.METHOD_INVOCATION)
+      && ((MethodInvocationTree) expr).symbol().isMethodSymbol()
       && ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expr).symbol()).thrownTypes().stream().anyMatch(t-> !t.isSubtypeOf("java.lang.RuntimeException"));
   }
 
