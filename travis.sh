@@ -47,7 +47,7 @@ CI)
 
     # Fetch all commit history so that SonarQube has exact blame information
     # for issue auto-assignment
-    # This command can fail with "fatal: --unshallow on a complete repository does not make sense" 
+    # This command can fail with "fatal: --unshallow on a complete repository does not make sense"
     # if there are not enough commits in the Git repository (even if Travis executed git clone --depth 50).
     # For this reason errors are ignored with "|| true"
     git fetch --unshallow || true
@@ -96,20 +96,18 @@ CI)
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
 
-      if [ "$TRAVIS_BRANCH" == "master" ]; then
-        strongEcho "Branch analysis"
-        # analysis of short-living branch directly on master
-        mvn sonar:sonar -B -e -V \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
-            -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
-            -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
-            -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
-            -Dsonar.branch.target=$TRAVIS_BRANCH
-      fi
+      strongEcho "Branch analysis"
+      # analysis of short-living branch directly on master
+      mvn sonar:sonar -B -e -V \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
+          -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
+          -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
+          -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
+          -Dsonar.branch.target=$TRAVIS_BRANCH
     else
       strongEcho "External pull request"
       # external PR : no deployment to repox
