@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
@@ -34,6 +36,7 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -42,9 +45,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S1751")
 public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor {
@@ -226,11 +226,18 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
     Tree currentTree = loop;
     do {
       currentTree = currentTree.parent();
-    } while (!currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER));
+    } while (!currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER));
 
     if (currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
       return CFG.build((MethodTree) currentTree);
     }
+    if (currentTree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      currentTree = ((LambdaExpressionTree) currentTree).body();
+      if (!currentTree.is(Tree.Kind.BLOCK)) {
+        throw new IllegalStateException("Block statement was expected");
+      }
+    }
+
     return CFG.buildCFG(((BlockTree) currentTree).body());
   }
 
