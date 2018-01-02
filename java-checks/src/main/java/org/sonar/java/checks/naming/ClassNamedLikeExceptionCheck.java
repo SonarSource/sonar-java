@@ -20,15 +20,15 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
-import java.util.Locale;
 
 @Rule(key = "S2166")
 public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
@@ -42,14 +42,26 @@ public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       ClassTree classTree = (ClassTree) tree;
-      Symbol symbol = classTree.symbol();
+      Symbol.TypeSymbol symbol = classTree.symbol();
       String className = symbol.name();
-      if (className.toLowerCase(Locale.US).endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
+      if (endsWithException(className) && !isSubtypeOfException(symbol) && !hasUnknownSuperType(symbol)) {
         String suffix = className.substring(className.length() - "exception".length());
         reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
       }
     }
   }
 
+  private static boolean endsWithException(String className) {
+    return className.toLowerCase(Locale.US).endsWith("exception");
+  }
+
+  private static boolean isSubtypeOfException(Symbol symbol) {
+    return symbol.type().isSubtypeOf("java.lang.Exception");
+  }
+
+  private static boolean hasUnknownSuperType(Symbol.TypeSymbol symbol) {
+    Type superClass = symbol.superClass();
+    return superClass != null && (superClass.isUnknown() || hasUnknownSuperType(superClass.symbol()));
+  }
 
 }
