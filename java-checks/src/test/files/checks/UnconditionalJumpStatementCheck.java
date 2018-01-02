@@ -330,3 +330,18 @@ abstract class C {
 
   abstract boolean isItTrue();
 }
+
+abstract class D {
+  void foo(Iterable<D> s) {
+    s.forEach(d -> {
+      for (Object o : d.bar()) {
+        if (o.equals("")) {
+          continue;
+        }
+        break;
+      }
+    });
+  }
+
+  abstract Iterable<Object> bar();
+}
