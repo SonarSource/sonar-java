@@ -83,7 +83,6 @@ CI)
           -Pcoverage-per-test,deploy-sonarsource
 
       strongEcho "Branch analysis"
-      # analysis of short-living branch directly on master
       mvn sonar:sonar -B -e -V \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
