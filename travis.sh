@@ -4,7 +4,7 @@ set -euo pipefail
 
 function configureTravis {
   mkdir -p ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v42 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v43 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
 configureTravis
@@ -47,7 +47,7 @@ CI)
 
     # Fetch all commit history so that SonarQube has exact blame information
     # for issue auto-assignment
-    # This command can fail with "fatal: --unshallow on a complete repository does not make sense" 
+    # This command can fail with "fatal: --unshallow on a complete repository does not make sense"
     # if there are not enough commits in the Git repository (even if Travis executed git clone --depth 50).
     # For this reason errors are ignored with "|| true"
     git fetch --unshallow || true
@@ -82,34 +82,20 @@ CI)
       mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy -B -e -V \
           -Pcoverage-per-test,deploy-sonarsource
 
-      strongEcho "Github analysis"
+      strongEcho "Branch analysis"
       # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
       mvn sonar:sonar -B -e -V \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN \
           -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
           -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
-          -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
+          -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
           -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
-          -Dsonar.analysis.mode=issues \
-          -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
-          -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
-          -Dsonar.github.oauth=$GITHUB_TOKEN \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
-
-      if [ "$TRAVIS_BRANCH" == "master" ]; then
-        strongEcho "Branch analysis"
-        # analysis of short-living branch directly on master
-        mvn sonar:sonar -B -e -V \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
-            -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
-            -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
-            -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
-            -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
-            -Dsonar.branch.target=$TRAVIS_BRANCH
-      fi
+          -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
+          -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
+          -Dsonar.branch.target=$TRAVIS_BRANCH \
+          -Dsonar.pullrequest.github.id=$TRAVIS_PULL_REQUEST \
+          -Dsonar.pullrequest.github.repository=$TRAVIS_REPO_SLUG
     else
       strongEcho "External pull request"
       # external PR : no deployment to repox
