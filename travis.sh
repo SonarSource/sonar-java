@@ -83,6 +83,7 @@ CI)
           -Pcoverage-per-test,deploy-sonarsource
 
       strongEcho "Branch analysis"
+      # do not use 'deploy' goal, which makes shade plugin hide some of the modules (notably sonar-jacoco-previous)
       mvn sonar:sonar -B -e -V \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
