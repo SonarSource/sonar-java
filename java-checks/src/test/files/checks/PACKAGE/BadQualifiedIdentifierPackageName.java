@@ -1,4 +1,4 @@
-package com.foo.PACKAGE; // Noncompliant {{Rename this package name to match the regular expression '^[a-z]+(\.[a-z][a-z0-9]*)*$'.}}
+package com.foo.PACKAGE; // Noncompliant {{Rename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.}}
 
 class BadQualifiedIdentifierPackageName {
 }
