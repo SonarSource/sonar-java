@@ -19,6 +19,11 @@
  */
 package org.sonar.plugins.surefire;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,12 +40,6 @@ import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -187,6 +186,36 @@ public class SurefireJavaParserTest {
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(659);
+  }
+
+  @Test
+  public void should_handle_parameterized_tests() throws URISyntaxException {
+    SensorContextTester context = mockContext();
+    when(javaResourceLocator.findResourceByClassName(anyString()))
+      .thenAnswer(invocation -> {
+        String className = (String) invocation.getArguments()[0];
+        if (className.equals("org.foo.Junit4ParameterizedTest")
+          || className.startsWith("org.foo.Junit5_0ParameterizedTest")
+          || className.startsWith("org.foo.Junit5_1ParameterizedTest")) {
+          return new TestInputFileBuilder("", className).build();
+        }
+        return null;
+      });
+
+    parser.collect(context, getDirs("junitParameterizedTests"), true);
+
+    // class names are wrong in JUnit 4.X parameterized tests, with class name being the name of the test
+    assertThat(context.measure(":org.foo.Junit4ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(7);
+    assertThat(context.measure(":org.foo.Junit4ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(1);
+
+    // class names and test names are wrong in JUnit 5.0, resulting in repeated/parameterized tests sharing the same name,
+    // with class name being the name of the test (cf. https://github.com/junit-team/junit5/issues/1182)
+    assertThat(context.measure(":org.foo.Junit5_0ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(13);
+    assertThat(context.measure(":org.foo.Junit5_0ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(48);
+
+    // test file with expected fix from JUnit 5.1 (TODO: to be confirmed once 5.1 released)
+    assertThat(context.measure(":org.foo.Junit5_1ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(13);
+    assertThat(context.measure(":org.foo.Junit5_1ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(48);
   }
 
   @Test
