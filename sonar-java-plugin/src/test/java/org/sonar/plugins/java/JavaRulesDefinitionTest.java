@@ -27,7 +27,6 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Cardinality;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -107,7 +106,6 @@ public class JavaRulesDefinitionTest {
   public void test_invalid_checks() throws Exception {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
-    newRepository.createRule("myCardinality");
     newRepository.createRule("correctRule");
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
@@ -129,11 +127,6 @@ public class JavaRulesDefinitionTest {
     } catch (IllegalStateException ise) {
       assertThat(ise).hasMessage("No rule was created for class "+UnregisteredRule.class.getName()+" in test");
     }
-    try {
-      definition.newRule(CardinalityRule.class, newRepository, profile);
-    } catch (IllegalArgumentException ise) {
-      assertThat(ise).hasMessage("Cardinality is not supported, use the RuleTemplate annotation instead for class "+CardinalityRule.class.getName());
-    }
     // no metadata defined, does not fail on registration of rule
     definition.newRule(CorrectRule.class, newRepository, profile);
 
@@ -148,10 +141,6 @@ public class JavaRulesDefinitionTest {
 
   @Rule(key = "myKey")
   private class UnregisteredRule implements JavaCheck {
-  }
-
-  @Rule(key = "myCardinality", cardinality = Cardinality.MULTIPLE)
-  private class CardinalityRule implements JavaCheck {
   }
 
   @Rule(key = "correctRule")
