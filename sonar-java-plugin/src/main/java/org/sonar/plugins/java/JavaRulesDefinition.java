@@ -38,7 +38,6 @@ import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.check.Cardinality;
 import org.sonar.java.checks.CheckList;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
@@ -105,9 +104,6 @@ public class JavaRulesDefinition implements RulesDefinition {
     // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
     rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
-    if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
-      throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead for " + ruleClass);
-    }
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {
