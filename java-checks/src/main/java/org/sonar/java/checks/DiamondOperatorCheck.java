@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -163,17 +165,24 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
 
     @CheckForNull
     private static Tree getAssignedVariable(ExpressionTree expression) {
-      if (expression.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-        return getAssignedVariable(((ArrayAccessExpressionTree) expression).expression());
-      }
       IdentifierTree identifier;
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        identifier = (IdentifierTree) expression;
-      } else {
-        identifier = ((MemberSelectExpressionTree) expression).identifier();
+      switch (expression.kind()) {
+        case ARRAY_ACCESS_EXPRESSION:
+          return getAssignedVariable(((ArrayAccessExpressionTree) expression).expression());
+        case TYPE_CAST:
+          return getAssignedVariable(((TypeCastTree) expression).expression());
+        case PARENTHESIZED_EXPRESSION:
+          return getAssignedVariable(((ParenthesizedTree) expression).expression());
+        case IDENTIFIER:
+          identifier = (IdentifierTree) expression;
+          break;
+        case MEMBER_SELECT:
+          identifier = ((MemberSelectExpressionTree) expression).identifier();
+          break;
+        default:
+          throw new IllegalStateException("Unexpected expression " + expression.kind().name() + " at: " + ((JavaTree) expression).getLine());
       }
       return identifier.symbol().declaration();
     }
   }
-
 }
