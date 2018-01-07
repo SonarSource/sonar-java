@@ -36,6 +36,9 @@ class A {
     };
 
     MyUnknownVariable = new ArrayList<Object>(); // Compliant
+
+    Object data = new List[10];
+    ((List[])data)[2] = new HashMap<String,List<Integer>>();
   }
 
   List<Object> qix(boolean test) {
