@@ -169,6 +169,6 @@ public class SquidClassLoaderTest {
     ClassReader cr = new ClassReader(bytes);
     ClassNode classNode = new ClassNode();
     cr.accept(classNode, 0);
-    assertThat(classNode.version).isEqualTo(Opcodes.V1_8);
+    assertThat(classNode.version).isEqualTo(Opcodes.V9);
   }
 }

@@ -35,7 +35,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.resolve.Convert;
-import org.sonar.java.resolve.Java9Support;
 
 /**
  * Class loader, which is able to load classes from a list of JAR files and directories.
@@ -115,12 +114,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
         LOG.debug(".class not found for {}", className);
         return null;
       }
-      byte[] bytes = ByteStreams.toByteArray(is);
-      // to read bytecode with ASM not supporting Java 9, we will set major version to Java 8
-      if (Java9Support.isJava9Class(bytes)) {
-        Java9Support.setJava8MajorVersion(bytes);
-      }
-      return bytes;
+      return ByteStreams.toByteArray(is);
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
