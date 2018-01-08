@@ -89,7 +89,7 @@
     <sslr.version>1.22</sslr.version>
     <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
     <jacoco.version>0.7.9</jacoco.version>
-    <asm.version>5.2</asm.version>
+    <asm.version>6.0</asm.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
 
@@ -178,9 +178,25 @@
         <version>${jacoco.version}</version>
         <classifier>runtime</classifier>
       </dependency>
+
       <dependency>
         <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-debug-all</artifactId>
+        <artifactId>asm-commons</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
         <version>${asm.version}</version>
       </dependency>
 
