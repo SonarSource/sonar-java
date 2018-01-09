@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="org.foo.Junit5_1ParameterizedTest" time="0.115" tests="13" errors="0" skipped="0" failures="0">
+  <properties>
+    <!-- list of properties... -->
+  </properties>
+  <!-- These test results are theoretical, executing same test class, based on expected fix of JUnit 5.0 in JUnit 5.1
+       Fix ticket: https://github.com/junit-team/junit5/issues/1182 -->
+  <testcase name="myNormalJunit4Test" classname="org.foo.Junit5_1ParameterizedTest" time="0.031"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest" time="0.004"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest" time="0"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest" time="0"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0"/>
+  <testcase name="myRepeatedTest" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0.001"/>
+  <testcase name="myParametrizedTest" classname="org.foo.Junit5_1ParameterizedTest" time="0.011"/>
+  <testcase name="myParametrizedTest" classname="org.foo.Junit5_1ParameterizedTest" time="0"/>
+  <testcase name="myParametrizedTest" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0.001"/>
+  <testcase name="myParametrizedTest" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0"/>
+  <testcase name="myNormalJunit5Test" classname="org.foo.Junit5_1ParameterizedTest" time="0"/>
+  <testcase name="myNormalJunit5Test" classname="org.foo.Junit5_1ParameterizedTest$RunTest" time="0"/>
+</testsuite>

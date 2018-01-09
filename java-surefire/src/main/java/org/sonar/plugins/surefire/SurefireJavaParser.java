@@ -22,9 +22,12 @@ package org.sonar.plugins.surefire;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.ScannerSide;
@@ -124,21 +127,32 @@ public class SurefireJavaParser {
 
   private void save(UnitTestIndex index, SensorContext context) {
     long negativeTimeTestNumber = 0;
-    for (Map.Entry<String, UnitTestClassReport> entry : index.getIndexByClassname().entrySet()) {
+    Map<InputFile, UnitTestClassReport> indexByInputFile = mapToInputFile(index.getIndexByClassname());
+    for (Map.Entry<InputFile, UnitTestClassReport> entry : indexByInputFile.entrySet()) {
       UnitTestClassReport report = entry.getValue();
       if (report.getTests() > 0) {
         negativeTimeTestNumber += report.getNegativeTimeTestNumber();
-        InputFile resource = getUnitTestResource(entry.getKey());
-        if (resource != null) {
-          save(report, resource, context);
-        } else {
-          LOGGER.debug("Resource not found: {}", entry.getKey());
-        }
+        save(report, entry.getKey(), context);
       }
     }
     if (negativeTimeTestNumber > 0) {
       LOGGER.warn("There is {} test(s) reported with negative time by surefire, total duration may not be accurate.", negativeTimeTestNumber);
     }
+  }
+
+  private Map<InputFile, UnitTestClassReport> mapToInputFile(Map<String, UnitTestClassReport> indexByClassname) {
+    Map<InputFile, UnitTestClassReport> result = new HashMap<>();
+    indexByClassname.forEach((className, index) -> {
+      InputFile resource = getUnitTestResource(className, index);
+      if (resource != null) {
+        UnitTestClassReport report = result.computeIfAbsent(resource, r -> new UnitTestClassReport());
+        // in case of repeated/parameterized tests (JUnit 5.x) we may end up with tests having the same name
+        index.getResults().forEach(report::add);
+      } else {
+        LOGGER.debug("Resource not found: {}", className);
+      }
+    });
+    return result;
   }
 
   private void save(UnitTestClassReport report, InputFile inputFile, SensorContext context) {
@@ -164,8 +178,19 @@ public class SurefireJavaParser {
     }
   }
 
-  protected InputFile getUnitTestResource(String classKey) {
-    return javaResourceLocator.findResourceByClassName(classKey);
+  @CheckForNull
+  private InputFile getUnitTestResource(String className, UnitTestClassReport unitTestClassReport) {
+    InputFile resource = javaResourceLocator.findResourceByClassName(className);
+    if (resource == null) {
+      // fall back on testSuite class name (repeated and parameterized tests from JUnit 5.0 are using test name as classname)
+      // Should be fixed with JUnit 5.1, see: https://github.com/junit-team/junit5/issues/1182
+      return unitTestClassReport.getResults().stream()
+        .map(r -> javaResourceLocator.findResourceByClassName(r.getTestSuiteClassName()))
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(null);
+    }
+    return resource;
   }
 
   private static <T extends Serializable> void saveMeasure(SensorContext context, InputFile inputFile, Metric<T> metric, T value) {
