@@ -22,7 +22,23 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -53,25 +69,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class FlowComputation {
 
@@ -599,6 +596,15 @@ public class FlowComputation {
       if (name == null) {
         // unable to deduce name of element on which we learn a constraint. Nothing is reported
         return Flow.empty();
+      }
+      if (nodeTree.is(Tree.Kind.IDENTIFIER) && isMethodParameter(((IdentifierTree) nodeTree).symbol()) && constraint.getClass().equals(ObjectConstraint.class)) {
+        // handle nullable method parameter
+        String msg = IMPLIES_CAN_BE_MSG;
+        if (ObjectConstraint.NOT_NULL == constraint) {
+          msg = "Implies '%s' can not be %s.";
+        }
+        return Flow.of(new JavaFileScannerContext.Location(String.format(msg, ((IdentifierTree) nodeTree).symbol().name(), "null"),
+          ((VariableTree) ((IdentifierTree) nodeTree).symbol().declaration()).simpleName()));
       }
       String msg;
       if (ObjectConstraint.NULL == constraint && !sameConstraints.hasAlwaysSameConstraint(trackedSymbol)) {

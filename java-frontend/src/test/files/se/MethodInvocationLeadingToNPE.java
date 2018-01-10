@@ -62,8 +62,8 @@ class A {
     }
   }
 
-  static void nullable(@Nullable Object o) {
-    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@foo5 [[order=3]] {{'NullPointerException' is thrown.}}
+  static void nullable(@Nullable Object o) { // flow@foo5 [[order=3]] {{Implies 'o' can be null.}}
+    o.toString(); // Noncompliant {{A "NullPointerException" could be thrown; "o" is nullable here.}} flow@foo5 [[order=4]] {{'NullPointerException' is thrown.}}
   }
 }
 
