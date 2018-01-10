@@ -188,7 +188,6 @@ public final class CheckList {
       .add(ExceptionsShouldBeImmutableCheck.class)
       .add(CollapsibleIfCandidateCheck.class)
       .add(NestedIfStatementsCheck.class)
-      .add(CatchOfThrowableOrErrorCheck.class)
       .add(ImplementsEnumerationCheck.class)
       .add(CloneMethodCallsSuperCloneCheck.class)
       .add(SwitchCaseTooBigCheck.class)
