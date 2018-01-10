@@ -96,7 +96,7 @@ public class Struts139Test {
     assertThat(getProjectMeasureAsDouble("coverage")).isEqualTo(25.1, offset(0.1));
     assertThat(getCoreModuleMeasureAsDouble("coverage")).isEqualTo(36.8, offset(0.2));
     assertThat(getProjectMeasureAsDouble("line_coverage")).isEqualTo(25.5);
-    assertThat(getProjectMeasureAsDouble("branch_coverage")).isEqualTo(24.1);
+    assertThat(getProjectMeasureAsDouble("branch_coverage")).isEqualTo(24.2);
 
     assertThat(getProjectMeasureAsInteger("tests")).isEqualTo(307);
     assertThat(getProjectMeasureAsInteger("test_execution_time")).isGreaterThan(200);
