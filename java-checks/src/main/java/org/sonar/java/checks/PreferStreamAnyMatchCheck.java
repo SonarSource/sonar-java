@@ -20,22 +20,23 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Rule(key = "S4034")
 public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
@@ -52,6 +53,13 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
     });
   }
 
+  private static final MethodMatcherCollection MAP_METHODS = MethodMatcherCollection.create();
+  static {
+    STREAM_TYPES.forEach(type ->
+      MAP_METHODS.add(MethodMatcher.create().typeDefinition(type).name("map").addParameter("java.util.function.Function"))
+    );
+  }
+
   private static final MethodMatcherCollection FILTER_METHODS = MethodMatcherCollection.create();
 
   static {
@@ -60,20 +68,60 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Stream.of("java.util.Optional", "java.util.OptionalInt", "java.util.OptionalLong", "java.util.OptionalDouble")
+    List<MethodMatcher> matchers = new ArrayList<>();
+    Stream.of("java.util.Optional", "java.util.OptionalInt", "java.util.OptionalLong", "java.util.OptionalDouble")
       .map(type -> MethodMatcher.create().typeDefinition(type).name("isPresent").withoutParameter())
-      .collect(Collectors.toList());
+      .forEach(matchers::add);
+    STREAM_TYPES.stream()
+      .map(type -> MethodMatcher.create().typeDefinition(type).name("anyMatch").addParameter("java.util.function.Predicate"))
+      .forEach(matchers::add);
+    return matchers;
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree isPresentMIT) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (mit.symbol().name().equals("isPresent")) {
+      handleIsPresent(mit);
+    } else if (mit.symbol().name().equals("anyMatch")) {
+      handleAnyMatch(mit);
+    }
+  }
+
+  private void handleAnyMatch(MethodInvocationTree anyMatchMIT) {
+    ExpressionTree predicate = anyMatchMIT.arguments().get(0);
+    if (anyMatchMIT.parent().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+      if (predicate.is(Tree.Kind.LAMBDA_EXPRESSION) && ((LambdaExpressionTree) predicate).body().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+        // !stream.anyMatch(x -> !(...))
+        context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
+          "Replace this double negation with \"allMatch()\" and positive predicate.");
+      } else {
+        context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
+          "Replace this negation and \"anyMatch()\" with \"noneMatch()\".");
+      }
+    }
+    if (predicate.is(Tree.Kind.METHOD_REFERENCE) && isBooleanValueReference((MethodReferenceTree) predicate)) {
+      previousMITInChain(anyMatchMIT)
+        .filter(MAP_METHODS::anyMatch)
+        .ifPresent(mapMIT -> context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
+          "Use predicate from \"map()\" directly in \"anyMatch()\"."));
+    }
+  }
+
+  private static boolean isBooleanValueReference(MethodReferenceTree predicate) {
+    Tree expr = predicate.expression();
+    return expr.is(Tree.Kind.IDENTIFIER)
+      && ((IdentifierTree) expr).name().equals("Boolean")
+      && predicate.method().name().equals("booleanValue");
+  }
+
+  private void handleIsPresent(MethodInvocationTree isPresentMIT) {
     previousMITInChain(isPresentMIT)
       .filter(FIND_METHODS::anyMatch)
       .ifPresent(findMIT ->
         previousMITInChain(findMIT).filter(FILTER_METHODS::anyMatch)
-        .ifPresent(filterMIT ->
-          context.reportIssue(this, MethodsHelper.methodName(filterMIT), MethodsHelper.methodName(isPresentMIT),
-            "Replace this \"filter()." + MethodsHelper.methodName(findMIT).name() +"().isPresent()\" chain with \"anyMatch()\"")));
+          .ifPresent(filterMIT ->
+            context.reportIssue(this, MethodsHelper.methodName(filterMIT), MethodsHelper.methodName(isPresentMIT),
+              "Replace this \"filter()." + MethodsHelper.methodName(findMIT).name() + "().isPresent()\" chain with \"anyMatch()\".")));
   }
 
   private static Optional<MethodInvocationTree> previousMITInChain(MethodInvocationTree mit) {
