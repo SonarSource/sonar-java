@@ -3,8 +3,6 @@ sudo: false
 git:
   submodules: false
 install: true
-before_script:
-  - _JAVA_OPTIONS=
 script: "./travis.sh"
 matrix:
   fast_finish: true
