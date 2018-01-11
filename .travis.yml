@@ -9,12 +9,8 @@ matrix:
   include:
     # CI trigger analysis
   - env: TEST=CI
-    # ruling projects
-  - env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
-  - env: TEST=ruling PROJECT=jdk_1_6_source SQ_VERSION=LATEST_RELEASE
+    # single ruling job only, not performance or other ITs
+  - env: TEST=ruling SQ_VERSION=LATEST_RELEASE
 before_cache:
   # remove all the artifacts that are installed in local repo because of mvn deploy
   - rm -rf $HOME/.m2/repository/org/sonarsource/java
