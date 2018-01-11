@@ -1,10 +1,34 @@
-<p>The Stream API provides the <code>boolean anyMatch(Predicate&lt;? super T&gt; predicate)</code> method, which is a very convenient and efficient
-way to check whether any elements of a stream match the provided predicate.</p>
-<p>This rule raises an issue when a <code>Stream</code> chain could be replaced by this method call. Specifically:</p>
-<ul>
-  <li> <code>filter(Predicate&lt;? super T&gt; predicate).findFirst().isPresent()</code> </li>
-  <li> <code>filter(Predicate&lt;? super T&gt; predicate).findAny().isPresent()</code> </li>
-</ul>
+<p>When using the <code>Stream</code> API, call chains should be simplified as much as possible. Not only does it make the code easier to read, it
+also avoid creating unnecessary temporary objects.</p>
+<p>This rule raises an issue when one of the following substitution is possible:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Original</th>
+      <th>Preferred</th>
+    </tr>
+    <tr>
+      <td>{code}stream.filter(predicate).findFirst().isPresent(){code}</td>
+      <td>{code}stream.anyMatch(predicate){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.filter(predicate).findAny().isPresent(){code}</td>
+      <td>{code}stream.anyMatch(predicate){code}</td>
+    </tr>
+    <tr>
+      <td>{code}!stream.anyMatch(predicate){code}</td>
+      <td>{code}stream.noneMatch(predicate){code}</td>
+    </tr>
+    <tr>
+      <td>{code}!stream.anyMatch(x -&gt; !(...)){code}</td>
+      <td>{code}stream.allMatch(...){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.map(mapper).anyMatch(Boolean::booleanValue){code}</td>
+      <td>{code}stream.anyMatch(predicate){code}</td>
+    </tr>
+  </tbody>
+</table>
 <h2>Noncompliant Code Example</h2>
 <pre>
 boolean hasRed = widgets.stream().filter(w -&gt; w.getColor() == RED).findFirst().isPresent(); // Noncompliant
@@ -13,4 +37,3 @@ boolean hasRed = widgets.stream().filter(w -&gt; w.getColor() == RED).findFirst(
 <pre>
 boolean hasRed = widgets.stream().anyMatch(w -&gt; w.getColor() == RED);
 </pre>
-
