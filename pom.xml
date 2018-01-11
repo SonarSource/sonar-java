@@ -285,5 +285,15 @@
       </plugins>
     </pluginManagement>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>it-ruling</id>
+      <properties>
+        <!--  skip tests from plugin build, but not in ruling -->
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
