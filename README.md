@@ -116,6 +116,6 @@ For example using the command:
 
 ### License
 
-Copyright 2012-2017 SonarSource.
+Copyright 2012-2018 SonarSource.
 
 Licensed under the [GNU Lesser General Public License, Version 3.0](https://www.gnu.org/licenses/lgpl.txt)
