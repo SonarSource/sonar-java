@@ -1,0 +1,50 @@
+<p>When using the <code>Stream</code> API, call chains should be simplified as much as possible to improve readability and maintainability.</p>
+<p>This rule raises an issue when one of the following substitution can be made:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Original</th>
+      <th>Preferred</th>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(counting()){code}</td>
+      <td>{code}stream.count(){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(maxBy(comparator)){code}</td>
+      <td>{code}stream.max(comparator){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(minBy(comparator)){code}</td>
+      <td>{code}stream.min(comparator){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(mapping(mapper)){code}</td>
+      <td>{code}stream.map(mapper).collect(){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(reducing(...)){code}</td>
+      <td>{code}stream.reduce(...){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(summingInt(mapper)){code}</td>
+      <td>{code}stream.mapToInt(mapper).sum(){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(summingLong(mapper)){code}</td>
+      <td>{code}stream.mapToLong(mapper).sum(){code}</td>
+    </tr>
+    <tr>
+      <td>{code}stream.collect(summingDouble(mapper)){code}</td>
+      <td>{code}stream.mapToDouble(mapper).sum(){code}</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Noncompliant Code Example</h2>
+<pre>
+int count = stream.collect(counting());  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+int count = stream.count();
+</pre>

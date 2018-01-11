@@ -523,6 +523,7 @@ public final class CheckList {
       .add(IterableIteratorCheck.class)
       .add(OutputStreamOverrideWriteCheck.class)
       .add(PredictableSeedCheck.class)
+      .add(RedundantStreamCollectCheck.class)
       .build();
   }
 
