@@ -66,6 +66,9 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
     STREAM_TYPES.forEach(type -> FILTER_METHODS.add(MethodMatcher.create().typeDefinition(type).name("filter").withAnyParameters()));
   }
 
+  private static final MethodMatcher BOOLEAN_VALUE = MethodMatcher.create().typeDefinition("java.lang.Boolean")
+    .name("booleanValue").withoutParameter();
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     List<MethodMatcher> matchers = new ArrayList<>();
@@ -80,38 +83,37 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (mit.symbol().name().equals("isPresent")) {
+    String methodName = mit.symbol().name();
+    if (methodName.equals("isPresent")) {
       handleIsPresent(mit);
-    } else if (mit.symbol().name().equals("anyMatch")) {
+    } else if (methodName.equals("anyMatch")) {
       handleAnyMatch(mit);
     }
   }
 
   private void handleAnyMatch(MethodInvocationTree anyMatchMIT) {
     ExpressionTree predicate = anyMatchMIT.arguments().get(0);
+    IdentifierTree reportTree = MethodsHelper.methodName(anyMatchMIT);
     if (anyMatchMIT.parent().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
       if (predicate.is(Tree.Kind.LAMBDA_EXPRESSION) && ((LambdaExpressionTree) predicate).body().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
         // !stream.anyMatch(x -> !(...))
-        context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
+        context.reportIssue(this, reportTree,
           "Replace this double negation with \"allMatch()\" and positive predicate.");
       } else {
-        context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
+        context.reportIssue(this, reportTree,
           "Replace this negation and \"anyMatch()\" with \"noneMatch()\".");
       }
     }
     if (predicate.is(Tree.Kind.METHOD_REFERENCE) && isBooleanValueReference((MethodReferenceTree) predicate)) {
       previousMITInChain(anyMatchMIT)
         .filter(MAP_METHODS::anyMatch)
-        .ifPresent(mapMIT -> context.reportIssue(this, MethodsHelper.methodName(anyMatchMIT),
-          "Use predicate from \"map()\" directly in \"anyMatch()\"."));
+        .ifPresent(mapMIT -> context.reportIssue(this, reportTree,
+          "Use mapper from \"map()\" directly as predicate in \"anyMatch()\"."));
     }
   }
 
   private static boolean isBooleanValueReference(MethodReferenceTree predicate) {
-    Tree expr = predicate.expression();
-    return expr.is(Tree.Kind.IDENTIFIER)
-      && ((IdentifierTree) expr).name().equals("Boolean")
-      && predicate.method().name().equals("booleanValue");
+    return BOOLEAN_VALUE.matches(predicate.method().symbol());
   }
 
   private void handleIsPresent(MethodInvocationTree isPresentMIT) {

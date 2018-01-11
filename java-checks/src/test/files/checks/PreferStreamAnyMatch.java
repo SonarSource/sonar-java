@@ -21,7 +21,7 @@ class A {
   void anymatch(Stream<Object> stream) {
     boolean match = !stream.filter(o -> o instanceof A).filter(o -> o != null).anyMatch(o -> true); // Noncompliant {{Replace this negation and "anyMatch()" with "noneMatch()".}}
     match = !stream.anyMatch(o -> !true); // Noncompliant {{Replace this double negation with "allMatch()" and positive predicate.}}
-    match = stream.map(o -> o.equals("")).anyMatch(Boolean::booleanValue); // Noncompliant [[sc=43;ec=51]] {{Use predicate from "map()" directly in "anyMatch()".}}
+    match = stream.map(o -> o.equals("")).anyMatch(Boolean::booleanValue); // Noncompliant [[sc=43;ec=51]] {{Use mapper from "map()" directly as predicate in "anyMatch()".}}
 
     stream.anyMatch(o -> o != null);
   }
