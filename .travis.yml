@@ -1,5 +1,7 @@
 language: java
-sudo: false
+sudo: required
+dist: trusty
+#group: deprecated-2017Q4
 git:
   submodules: false
 install: true
