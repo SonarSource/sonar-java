@@ -123,6 +123,9 @@ ruling)
     strongEcho "External Pull Request ONLY. For internal PRs, ruling is only played during internal QA!"
     exit 0;
   fi
+  
+  export MAVEN_OPTS="-Xmx1536m -Xms128m"
+  export JAVA_OPTS="-Xmx1024m -Xms128m
 
   git submodule update --init --recursive
   mvn install -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-ruling -DfailIfNoTests=false
