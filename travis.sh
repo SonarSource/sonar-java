@@ -125,7 +125,7 @@ ruling)
   fi
 
   git submodule update --init --recursive
-  mvn install -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-ruling -DfailIfNoTests=false
+  mvn install -Pit-ruling -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -DfailIfNoTests=false -Dsurefire.args="-Xmx2048m" -B -e -V
   ;;
 
 *)
