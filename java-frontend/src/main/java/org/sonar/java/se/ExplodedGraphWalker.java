@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -149,6 +150,7 @@ public class ExplodedGraphWalker {
   @Nullable
   MethodBehavior methodBehavior;
   private Set<ExplodedGraph.Node> endOfExecutionPath;
+  private Set<SymbolicValue> initialParameterSV;
 
   public static class ExplodedGraphTooBigException extends RuntimeException {
 
@@ -332,11 +334,8 @@ public class ExplodedGraphWalker {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
-    boolean isEqualsMethod = EQUALS.matches(tree);
-    SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
-    boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
-    boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
     boolean hasMethodBehavior = methodBehavior != null;
+    initialParameterSV = new HashSet<>();
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
@@ -344,16 +343,8 @@ public class ExplodedGraphWalker {
       if (hasMethodBehavior) {
         methodBehavior.addParameter(sv);
       }
+      initialParameterSV.add(sv);
       stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
-      if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
-        stateStream = stateStream.flatMap((ProgramState ps) ->
-          Stream.concat(
-            sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
-            sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
-            ));
-      } else if (nonNullParams || isAnnotatedNonNull(variableSymbol)) {
-        stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
-      }
     }
     return stateStream.collect(Collectors.toList());
   }
@@ -594,7 +585,9 @@ public class ExplodedGraphWalker {
         executeUnaryExpression(tree);
         break;
       case IDENTIFIER:
-        executeIdentifier((IdentifierTree) tree);
+        if(executeIdentifier((IdentifierTree) tree)) {
+          return;
+        }
         break;
       case MEMBER_SELECT:
         executeMemberSelect((MemberSelectExpressionTree) tree);
@@ -946,7 +939,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void executeIdentifier(IdentifierTree tree) {
+  private boolean executeIdentifier(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     SymbolicValue value = programState.getValue(symbol);
     if (value == null) {
@@ -954,9 +947,32 @@ public class ExplodedGraphWalker {
       programState = programState.stackValue(value, symbol);
       learnIdentifierConstraints(tree, value);
     } else {
-      programState = programState.stackValue(value, symbol);
+      if(initialParameterSV.contains(value)) {
+        initialParameterSV.remove(value);
+        // method parameter
+        Stream<ProgramState> stateStream = Stream.of(programState);
+        boolean isEqualsMethod = EQUALS.matches(methodTree);
+        SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).packge().metadata();
+        boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
+        boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
+        SymbolicValue sv = value;
+        if (isEqualsMethod || parameterCanBeNull(symbol, nullableParams)) {
+          stateStream = stateStream.flatMap((ProgramState ps) ->
+            Stream.concat(
+              sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
+              sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
+            ));
+        } else if (nonNullParams || isAnnotatedNonNull(symbol)) {
+          stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
+        }
+        stateStream.forEach(ps -> checkerDispatcher.addTransition(ps.stackValue(sv, symbol).put(symbol, sv)));
+        return true;
+      } else {
+        programState = programState.stackValue(value, symbol);
+      }
     }
     programState = programState.put(symbol, value);
+    return false;
   }
 
   private void learnIdentifierConstraints(IdentifierTree tree, SymbolicValue sv) {
