@@ -21,6 +21,8 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -45,10 +47,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
 
@@ -253,12 +251,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return iteratorBuilder.build();
   }
 
-  /**
-   * Check if a methodTree is overriden.
-   *
-   * @return true if overriden, null if it cannot be decided (method symbol not resolved or lack of bytecode for super types).
-   */
-  @CheckForNull
+  @Override
+  @Nullable
   public Boolean isOverriding() {
     if (isStatic() || isPrivate()) {
       return false;
@@ -269,9 +263,9 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (symbol == null) {
       return null;
     }
-    JavaSymbol.MethodJavaSymbol methodJavaSymbol = symbol.overriddenSymbol();
-    if (methodJavaSymbol != null) {
-      return methodJavaSymbol.isUnknown() ? null : true;
+    Symbol.MethodSymbol methodSymbol = symbol.overriddenSymbol();
+    if (methodSymbol != null) {
+      return methodSymbol.isUnknown() ? null : true;
     }
     return false;
   }
