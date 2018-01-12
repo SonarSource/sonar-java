@@ -124,10 +124,8 @@ ruling)
     exit 0;
   fi
 
-  [ "$TEST" = "ruling" ] && git submodule update --init --recursive
-  EXTRA_PARAMS=
-  [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
-  mvn install -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-$TEST $EXTRA_PARAMS
+  git submodule update --init --recursive
+  mvn install -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-ruling -DfailIfNoTests=false
   ;;
 
 *)
