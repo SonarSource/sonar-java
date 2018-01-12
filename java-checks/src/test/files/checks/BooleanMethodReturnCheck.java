@@ -1,9 +1,7 @@
-package javax.annotation;
-
 import org.apache.commons.lang.BooleanUtils;
 import java.util.stream.Stream;
-
-@interface CheckForNull{}
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 class A {
   public Boolean myMethod() {
@@ -17,6 +15,11 @@ class A {
   A() {
     // constructor (with null return type) are not covered by the rule
     return;
+  }
+
+  @Nullable
+  public Boolean foo() {
+    return null; // Compliant
   }
 }
 
