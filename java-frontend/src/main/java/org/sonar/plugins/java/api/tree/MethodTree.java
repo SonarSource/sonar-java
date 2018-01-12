@@ -20,11 +20,9 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-import org.sonar.plugins.java.api.semantic.Symbol;
-
-import javax.annotation.Nullable;
-
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Method or annotation type element declaration.
@@ -90,4 +88,11 @@ public interface MethodTree extends Tree {
 
   Symbol.MethodSymbol symbol();
 
+  /**
+   * Check if a methodTree is overriding any other method. The corresponding overridden symbol can be retrieved through the {@link #symbol()}.
+   *
+   * @return true if overriding, null if it cannot be decided (method symbol not resolved or lack of byte code for super types), false if not overriding.
+   */
+  @Nullable
+  Boolean isOverriding();
 }

@@ -19,18 +19,16 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Interface to access symbol information.
@@ -182,6 +180,15 @@ public interface Symbol {
      * @return empty list if no exception are declared in the throw clause of the method.
      */
     List<Type> thrownTypes();
+
+    /**
+     * Retrieve the overridden symbol, which may may not be able to determine (returning 'unknown' symbol).
+     * Note that if the method returns null, the method is not overriding any method for sure.
+     *
+     * @return the overridden symbol, unknown if overriding can not be determined (incomplete semantic), or null if the method is not overriding any method
+     */
+    @Nullable
+    Symbol.MethodSymbol overriddenSymbol();
 
     @Nullable
     @Override
