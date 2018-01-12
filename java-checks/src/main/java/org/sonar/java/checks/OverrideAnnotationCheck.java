@@ -20,16 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S1161")
 public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
@@ -43,14 +40,15 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic() || isExcludedByVersion(context.getJavaVersion())) {
       return;
     }
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    Symbol.MethodSymbol overriddenSymbol = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).overriddenSymbol();
+    MethodTree methodTree = (MethodTree) tree;
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol overriddenSymbol = methodSymbol.overriddenSymbol();
     if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
       return;
     }
     if (!overriddenSymbol.isAbstract()
       && !overriddenSymbol.owner().type().is("java.lang.Object")
-      && !methodTree.isAnnotatedOverride()) {
+      && !methodSymbol.metadata().isAnnotatedWith("java.lang.Override")) {
       reportIssue(methodTree.simpleName(), "Add the \"@Override\" annotation above this method signature");
     }
   }

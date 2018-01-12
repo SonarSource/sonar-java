@@ -28,7 +28,6 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -160,7 +159,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private static boolean isUnitTest(MethodTree methodTree) {
-    JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
+    Symbol.MethodSymbol symbol = methodTree.symbol();
     while (symbol != null) {
       if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
         return true;

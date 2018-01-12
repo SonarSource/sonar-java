@@ -23,10 +23,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
-import org.apache.commons.lang.BooleanUtils;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,8 +38,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 @Rule(key = "S1845")
 public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscriptionVisitor {
@@ -90,8 +86,8 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static boolean isOverriding(Symbol symbol) {
     if (symbol.isMethodSymbol()) {
-      MethodTreeImpl methodDeclaration = (MethodTreeImpl) symbol.declaration();
-      return methodDeclaration != null && BooleanUtils.isTrue(methodDeclaration.isOverriding());
+      MethodTree methodDeclaration = (MethodTree) symbol.declaration();
+      return methodDeclaration != null && Boolean.TRUE.equals(methodDeclaration.isOverriding());
     }
     return false;
   }

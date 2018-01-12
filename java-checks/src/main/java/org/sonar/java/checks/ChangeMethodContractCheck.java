@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
@@ -28,8 +29,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 @Rule(key = "S2638")
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
@@ -50,20 +49,20 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    JavaSymbol.MethodJavaSymbol overridee = ((JavaSymbol.MethodJavaSymbol) methodSymbol).overriddenSymbol();
+    Symbol.MethodSymbol overridee = methodSymbol.overriddenSymbol();
     if (overridee != null && overridee.isMethodSymbol()) {
       checkContractChange(methodTree, overridee);
     }
   }
 
-  private void checkContractChange(MethodTreeImpl methodTree, JavaSymbol.MethodJavaSymbol overridee) {
+  private void checkContractChange(MethodTreeImpl methodTree, Symbol.MethodSymbol overridee) {
     if (methodTree.isEqualsMethod() && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL)) {
       reportIssue(methodTree.parameters().get(0), "Equals method should accept null parameters and return false.");
       return;
     }
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       VariableTree parameter = methodTree.parameters().get(i);
-      Symbol overrideeParamSymbol = overridee.getParameters().scopeSymbols().get(i);
+      Symbol overrideeParamSymbol = ((JavaSymbol.MethodJavaSymbol) overridee).getParameters().scopeSymbols().get(i);
       checkParameter(parameter, overrideeParamSymbol);
     }
     if (nonNullVsNull(overridee, methodTree.symbol())) {

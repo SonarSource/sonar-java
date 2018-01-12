@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -191,7 +190,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOverriding(MethodTree tree) {
     // if overriding cannot be determined, we consider it is overriding to avoid FP.
-    return !BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
+    return !Boolean.FALSE.equals(tree.isOverriding());
   }
 
   private static Set<String> unresolvedIdentifierNames(Tree tree) {

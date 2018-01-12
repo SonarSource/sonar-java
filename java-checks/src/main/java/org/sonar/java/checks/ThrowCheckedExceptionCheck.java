@@ -20,19 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.BooleanUtils;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S1162")
 public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
@@ -84,6 +81,6 @@ public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isOverriding(MethodTree methodTree) {
-    return BooleanUtils.isTrue(((MethodTreeImpl) methodTree).isOverriding());
+    return Boolean.TRUE.equals(methodTree.isOverriding());
   }
 }

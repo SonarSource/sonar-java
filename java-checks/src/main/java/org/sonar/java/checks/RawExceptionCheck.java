@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-
-import org.apache.commons.lang.BooleanUtils;
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -37,9 +37,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Rule(key = "S00112")
 @RspecKey("S112")
@@ -59,7 +56,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && isNotMainMethod(tree)) {
+    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverridden(tree)) && isNotMainMethod(tree)) {
       for (TypeTree throwClause : tree.throwsClauses()) {
         Type exceptionType = throwClause.symbolType();
         if (isRawException(exceptionType) && !exceptionsThrownByMethodInvocations.contains(exceptionType)) {
@@ -108,8 +105,8 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     return false;
   }
 
-  private static boolean isNotOverriden(MethodTree tree) {
-    return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
+  private static boolean isNotOverridden(MethodTree tree) {
+    return Boolean.FALSE.equals(tree.isOverriding());
   }
 
   private static boolean isNotMainMethod(MethodTree tree) {

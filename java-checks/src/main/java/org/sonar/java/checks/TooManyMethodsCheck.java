@@ -20,10 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -31,9 +32,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1448")
 public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
@@ -98,7 +96,7 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOverriding(MethodTree member) {
     Symbol symbol = member.symbol();
-    return symbol.isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol).overriddenSymbol() != null;
+    return symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).overriddenSymbol() != null;
   }
 
 }

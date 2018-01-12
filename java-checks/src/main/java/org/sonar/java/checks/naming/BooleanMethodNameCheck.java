@@ -20,16 +20,13 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2047")
 public class BooleanMethodNameCheck extends IssuableSubscriptionVisitor {
@@ -57,7 +54,7 @@ public class BooleanMethodNameCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isNotOverriding(MethodTree methodTree) {
-    return ((MethodJavaSymbol) methodTree.symbol()).overriddenSymbol() == null;
+    return Boolean.FALSE.equals(methodTree.isOverriding());
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {

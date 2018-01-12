@@ -20,19 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(  key = "S00107")
 @RspecKey("S107")
@@ -86,7 +83,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private static boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(((MethodTreeImpl) tree).isOverriding());
+    return Boolean.TRUE.equals(tree.isOverriding());
   }
 
   private boolean hasSemantic() {
