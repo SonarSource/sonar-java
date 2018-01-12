@@ -20,9 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -31,8 +31,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 @Rule(key = "CallToDeprecatedMethod")
 @RspecKey("S1874")
@@ -97,7 +95,7 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethodIssue(MethodTree methodTree) {
-    if(!methodTree.symbol().isDeprecated() && isOverridingDeprecatedConcreteMethod((JavaSymbol.MethodJavaSymbol) methodTree.symbol())) {
+    if(!methodTree.symbol().isDeprecated() && isOverridingDeprecatedConcreteMethod(methodTree.symbol())) {
       reportIssue(methodTree.simpleName(), "Don't override a deprecated method or explicitly mark it as \"@Deprecated\".");
     }
   }
@@ -114,8 +112,8 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
     return symbol.isMethodSymbol() && "<init>".equals(symbol.name());
   }
 
-  private static boolean isOverridingDeprecatedConcreteMethod(JavaSymbol.MethodJavaSymbol symbol) {
-    JavaSymbol.MethodJavaSymbol overriddenMethod = symbol.overriddenSymbol();
+  private static boolean isOverridingDeprecatedConcreteMethod(Symbol.MethodSymbol symbol) {
+    Symbol.MethodSymbol overriddenMethod = symbol.overriddenSymbol();
     while(overriddenMethod != null && !overriddenMethod.isUnknown()) {
       if (overriddenMethod.isAbstract()) {
         return false;

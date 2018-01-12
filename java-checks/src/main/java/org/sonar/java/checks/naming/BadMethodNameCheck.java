@@ -20,18 +20,15 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.BooleanUtils;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
-import java.util.regex.Pattern;
 
 @Rule(
   key = "S00100")
@@ -71,6 +68,6 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isNotOverriden(MethodTree methodTree) {
-    return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
+    return Boolean.FALSE.equals(methodTree.isOverriding());
   }
 }

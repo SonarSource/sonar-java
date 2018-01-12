@@ -29,7 +29,6 @@ import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -149,7 +148,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   private static boolean isOverridingOrDesignedForExtension(MethodTree methodTree) {
     // we need to be sure that it's not an override
-    return !Boolean.FALSE.equals(((MethodTreeImpl) methodTree).isOverriding())
+    return !Boolean.FALSE.equals(methodTree.isOverriding())
       || SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(methodTree.simpleName().name())
       || isDesignedForExtension(methodTree);
   }

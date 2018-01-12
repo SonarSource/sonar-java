@@ -20,9 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
@@ -35,14 +41,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3242")
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
@@ -61,7 +59,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.isPublic()
-      || BooleanUtils.isNotFalse(((MethodTreeImpl) methodTree).isOverriding())
+      || !Boolean.FALSE.equals(methodTree.isOverriding())
       || isOverloaded(methodSymbol)) {
       return;
     }
