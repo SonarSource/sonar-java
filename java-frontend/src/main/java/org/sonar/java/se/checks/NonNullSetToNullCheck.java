@@ -20,7 +20,11 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
@@ -47,13 +51,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.stream.Stream;
-
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
 
@@ -63,7 +60,8 @@ public class NonNullSetToNullCheck extends SECheck {
 
   private static final String[] JPA_ANNOTATIONS = {
     "javax.persistence.Entity",
-    "javax.persistence.Embeddable"
+    "javax.persistence.Embeddable",
+    "javax.persistence.MappedSuperclass"
   };
 
   private MethodTree methodTree;
