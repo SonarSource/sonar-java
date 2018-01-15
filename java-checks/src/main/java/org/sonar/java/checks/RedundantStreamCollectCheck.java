@@ -39,16 +39,18 @@ public class RedundantStreamCollectCheck extends AbstractMethodDetection {
   private static final Set<String> STREAM_TYPES = ImmutableSet.of("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
     "java.util.stream.DoubleStream");
 
-  private static final String COLLECTORS = "java.util.stream.Collectors";
+  private static final MethodMatcher COUNTING = streamCollectorsMatcher().name("counting").withoutParameter();
+  private static final MethodMatcher MAX_BY = streamCollectorsMatcher().name("maxBy").withAnyParameters();
+  private static final MethodMatcher MIN_BY = streamCollectorsMatcher().name("minBy").withAnyParameters();
+  private static final MethodMatcher MAPPING = streamCollectorsMatcher().name("mapping").withAnyParameters();
+  private static final MethodMatcher REDUCING = streamCollectorsMatcher().name("reducing").withAnyParameters();
+  private static final MethodMatcher SUMMING_INT = streamCollectorsMatcher().name("summingInt").withAnyParameters();
+  private static final MethodMatcher SUMMING_LONG = streamCollectorsMatcher().name("summingLong").withAnyParameters();
+  private static final MethodMatcher SUMMING_DOUBLE = streamCollectorsMatcher().name("summingDouble").withAnyParameters();
 
-  private static final MethodMatcher COUNTING = MethodMatcher.create().typeDefinition(COLLECTORS).name("counting").withoutParameter();
-  private static final MethodMatcher MAX_BY = MethodMatcher.create().typeDefinition(COLLECTORS).name("maxBy").withAnyParameters();
-  private static final MethodMatcher MIN_BY = MethodMatcher.create().typeDefinition(COLLECTORS).name("minBy").withAnyParameters();
-  private static final MethodMatcher MAPPING = MethodMatcher.create().typeDefinition(COLLECTORS).name("mapping").withAnyParameters();
-  private static final MethodMatcher REDUCING = MethodMatcher.create().typeDefinition(COLLECTORS).name("reducing").withAnyParameters();
-  private static final MethodMatcher SUMMING_INT = MethodMatcher.create().typeDefinition(COLLECTORS).name("summingInt").withAnyParameters();
-  private static final MethodMatcher SUMMING_LONG = MethodMatcher.create().typeDefinition(COLLECTORS).name("summingLong").withAnyParameters();
-  private static final MethodMatcher SUMMING_DOUBLE = MethodMatcher.create().typeDefinition(COLLECTORS).name("summingDouble").withAnyParameters();
+  private static MethodMatcher streamCollectorsMatcher() {
+    return MethodMatcher.create().typeDefinition("java.util.stream.Collectors");
+  }
 
   private static final Map<MethodMatcher, String> REPLACEMENTS = ImmutableMap.<MethodMatcher, String>builder()
     .put(COUNTING, "count()")
