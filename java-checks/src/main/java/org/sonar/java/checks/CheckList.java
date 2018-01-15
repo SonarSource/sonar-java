@@ -524,6 +524,7 @@ public final class CheckList {
       .add(OutputStreamOverrideWriteCheck.class)
       .add(PredictableSeedCheck.class)
       .add(RedundantStreamCollectCheck.class)
+      .add(GettersSettersOnRightFieldCheck.class)
       .build();
   }
 
