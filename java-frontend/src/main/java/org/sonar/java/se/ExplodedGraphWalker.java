@@ -74,7 +74,6 @@ import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -109,6 +108,13 @@ public class ExplodedGraphWalker {
   public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
+  private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
+    "javax.annotation.CheckForNull",
+    "javax.annotation.Nullable",
+    "org.jetbrains.annotations.Nullable");
+  private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+    "javax.annotation.Nonnull",
+    "org.jetbrains.annotations.NotNull");
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   @VisibleForTesting
@@ -333,8 +339,8 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS.matches(tree);
-    boolean nonNullParameters = parametersAreNonNull(methodTree);
-    boolean nullableParameters = parametersAreNullable(methodTree);
+    boolean nonNullParameters = isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
+    boolean nullableParameters = isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
     boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
@@ -357,32 +363,34 @@ public class ExplodedGraphWalker {
     return stateStream.collect(Collectors.toList());
   }
 
-  private static boolean parametersAreNullable(MethodTree methodTree) {
-    return isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
-  }
-
-  private static boolean parametersAreNonNull(MethodTree methodTree) {
-    return isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
-  }
-
   private static boolean isAnnotatedWith(MethodTree methodTree, String annotation) {
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
-    if (methodSymbol.metadata().isAnnotatedWith(annotation)) {
-      return true;
-    }
-    if (methodSymbol.enclosingClass().metadata().isAnnotatedWith(annotation)) {
-      return true;
-    }
-    return methodSymbol.packge().metadata().isAnnotatedWith(annotation);
+    return isAnnotatedWith(methodSymbol, annotation)
+      || isAnnotatedWith(methodSymbol.enclosingClass(), annotation)
+      || isAnnotatedWith(methodSymbol.packge(), annotation);
   }
 
   private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParameters) {
-    SymbolMetadata metadata = variableSymbol.metadata();
-    return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
-      || metadata.isAnnotatedWith("javax.annotation.Nullable")
-      || (nullableParameters
-        && !variableSymbol.type().isPrimitive()
-        && !metadata.isAnnotatedWith("javax.annotation.Nonnull"));
+    if (variableSymbol.type().isPrimitive()) {
+      return false;
+    }
+    return isAnnotatedNullable(variableSymbol) || (nullableParameters && !isAnnotatedNonNull(variableSymbol));
+  }
+
+  private static boolean isAnnotatedNullable(Symbol symbol) {
+    return isAnnotatedWith(symbol, NULLABLE_ANNOTATIONS);
+  }
+
+  private static boolean isAnnotatedNonNull(Symbol symbol) {
+    return isAnnotatedWith(symbol, NONNULL_ANNOTATIONS);
+  }
+
+  private static boolean isAnnotatedWith(Symbol symbol, Set<String> annotations) {
+    return annotations.stream().anyMatch(annotation -> isAnnotatedWith(symbol, annotation));
+  }
+
+  private static boolean isAnnotatedWith(Symbol symbol, String annotation) {
+    return symbol.metadata().isAnnotatedWith(annotation);
   }
 
   private void cleanUpProgramState(CFG.Block block) {
@@ -721,7 +729,7 @@ public class ExplodedGraphWalker {
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
-    if (isNonNullMethod(mit.symbol())) {
+    if (isAnnotatedNonNull(mit.symbol())) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager, false);
@@ -807,14 +815,6 @@ public class ExplodedGraphWalker {
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
     return Lists.reverse(values.subList(0, values.size() - 1));
-  }
-
-  private static boolean isNonNullMethod(Symbol symbol) {
-    return !symbol.isUnknown() && isAnnotatedNonNull(symbol);
-  }
-
-  private static boolean isAnnotatedNonNull(Symbol symbol) {
-    return symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull");
   }
 
   /**
@@ -1009,8 +1009,8 @@ public class ExplodedGraphWalker {
       && symbol.owner().isTypeSymbol();
   }
 
-  private static boolean isNonNullMethodInvocation(ExpressionTree initializer) {
-    return initializer.is(Tree.Kind.METHOD_INVOCATION) && isNonNullMethod(((MethodInvocationTree) initializer).symbol());
+  private static boolean isNonNullMethodInvocation(ExpressionTree expr) {
+    return expr.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedNonNull(((MethodInvocationTree) expr).symbol());
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
