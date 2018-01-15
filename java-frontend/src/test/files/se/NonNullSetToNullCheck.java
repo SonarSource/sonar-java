@@ -161,7 +161,7 @@ public class JpaEntityInvalidDefault {
 
   private String otherField;
 
-  public JpaEntity() { // Noncompliant  {{"itemName" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
+  public JpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
     otherField = "test";
   }
 }
@@ -179,7 +179,21 @@ public class JpaEmbeddable {
   public JpaEmbeddable(String name) {
     itemName = name;
   }
+}
 
+@javax.persistence.MappedSuperclass
+public class JpaMappedSuperClass {
+
+  @Nonnull
+  private String itemName;
+
+  public JpaMappedSuperclass() { // Compliant
+    // Default constructor for JPA
+  }
+
+  public JpaMappedSuperclass(String name) {
+    itemName = name;
+  }
 }
 
 class FieldWithInitializer {
