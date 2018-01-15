@@ -149,9 +149,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       .map(AssertionsCompletenessCheck::resourceSymbol)
       .map(Symbol::type)
       .filter(Objects::nonNull)
-      .filter(type -> type.isSubtypeOf("org.assertj.core.api.AutoCloseableSoftAssertions"))
-      .findFirst()
-      .isPresent();
+      .anyMatch(type -> type.isSubtypeOf("org.assertj.core.api.AutoCloseableSoftAssertions"));
     super.visitTryStatement(tree);
     if (hasAutoCloseableSoftAssertion) {
       checkAssertJAssertAll(tree.block().closeBraceToken(), "Add one or more 'assertThat' before the end of this try block.");
