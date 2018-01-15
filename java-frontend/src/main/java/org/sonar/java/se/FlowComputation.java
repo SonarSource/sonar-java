@@ -22,7 +22,23 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
@@ -53,25 +69,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class FlowComputation {
 
@@ -792,7 +789,7 @@ public class FlowComputation {
         IdentifierTree parameterIdentifier = methodParameters.get(argumentIndex).simpleName();
         String identifierName = parameterIdentifier.name();
         if (!argumentName.name().equals(identifierName)) {
-          flowBuilder.add(new JavaFileScannerContext.Location(String.format("Implies '%s' has the same value as '%s'.", identifierName, argumentName.name()), parameterIdentifier));
+          flowBuilder.add(new JavaFileScannerContext.Location(String.format(IMPLIES_SAME_VALUE, identifierName, argumentName.name()), parameterIdentifier));
         }
       }
     }
