@@ -333,9 +333,8 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS.matches(tree);
-    SymbolMetadata packageMetadata = ((JavaSymbol.MethodJavaSymbol) tree.symbol()).packge().metadata();
-    boolean nonNullParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNonnullByDefault");
-    boolean nullableParams = packageMetadata.isAnnotatedWith("javax.annotation.ParametersAreNullableByDefault");
+    boolean nonNullParameters = parametersAreNonNull(methodTree);
+    boolean nullableParameters = parametersAreNullable(methodTree);
     boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
@@ -345,24 +344,43 @@ public class ExplodedGraphWalker {
         methodBehavior.addParameter(sv);
       }
       stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
-      if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParams)) {
+      if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParameters)) {
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
             sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
             sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
-      } else if (nonNullParams || isAnnotatedNonNull(variableSymbol)) {
+      } else if (nonNullParameters || isAnnotatedNonNull(variableSymbol)) {
         stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
     return stateStream.collect(Collectors.toList());
   }
 
-  private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParams) {
+  private static boolean parametersAreNullable(MethodTree methodTree) {
+    return isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
+  }
+
+  private static boolean parametersAreNonNull(MethodTree methodTree) {
+    return isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
+  }
+
+  private static boolean isAnnotatedWith(MethodTree methodTree, String annotation) {
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
+    if (methodSymbol.metadata().isAnnotatedWith(annotation)) {
+      return true;
+    }
+    if (methodSymbol.enclosingClass().metadata().isAnnotatedWith(annotation)) {
+      return true;
+    }
+    return methodSymbol.packge().metadata().isAnnotatedWith(annotation);
+  }
+
+  private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParameters) {
     SymbolMetadata metadata = variableSymbol.metadata();
     return metadata.isAnnotatedWith("javax.annotation.CheckForNull")
       || metadata.isAnnotatedWith("javax.annotation.Nullable")
-      || (nullableParams
+      || (nullableParameters
         && !variableSymbol.type().isPrimitive()
         && !metadata.isAnnotatedWith("javax.annotation.Nonnull"));
   }

@@ -286,9 +286,15 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void read_package_annotations() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotationsNullable.java", seChecks());
-    JavaCheckVerifier.verify("src/test/files/se/PackageAnnotationsNonNull.java", seChecks());
+  public void read_parametersAreNonnullByDefault_and_parametersAreNullableByDefault_annotations() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/annotations/PackageAnnotationsNullable.java", seChecks());
+    JavaCheckVerifier.verify("src/test/files/se/annotations/PackageAnnotationsNonNull.java", seChecks());
+
+    JavaCheckVerifier.verify("src/test/files/se/annotations/ClassAnnotationsNullable.java", seChecks());
+    JavaCheckVerifier.verify("src/test/files/se/annotations/ClassAnnotationsNonNull.java", seChecks());
+
+    JavaCheckVerifier.verify("src/test/files/se/annotations/MethodAnnotationsNullable.java", seChecks());
+    JavaCheckVerifier.verify("src/test/files/se/annotations/MethodAnnotationsNonNull.java", seChecks());
   }
 
   @Test
