@@ -31,7 +31,20 @@ import com.google.common.collect.Multiset;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.sonar.sslr.api.RecognitionException;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -45,22 +58,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 import org.sonar.java.SonarComponents;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -204,10 +201,21 @@ public abstract class CheckVerifier {
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
-      String expectedMsg = !expected.isEmpty() ? ("Expected " + expected) : "";
-      String unexpectedMsg = !unexpectedLines.isEmpty() ? ((expectedMsg.isEmpty() ? "" : ", ") + "Unexpected at " + unexpectedLines) : "";
+      String expectedMsg = expectedMessage();
+      String unexpectedMsg = unexpectedMessage(unexpectedLines);
       Fail.fail(expectedMsg + unexpectedMsg);
     }
+  }
+
+  private String expectedMessage() {
+    return !expected.isEmpty() ? ("Expected " + expected) : "";
+  }
+
+  private String unexpectedMessage(List<Integer> unexpectedLines) {
+    if (unexpectedLines.isEmpty()) {
+      return "";
+    }
+    return (expected.isEmpty() ? "" : ", ") + "Unexpected at " + unexpectedLines;
   }
 
   enum RemediationFunction {
