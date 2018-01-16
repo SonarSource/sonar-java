@@ -21,30 +21,37 @@ package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
-public final class AnnotationUtils {
+public final class NullableAnnotationUtils {
 
-  private AnnotationUtils() {
+  private NullableAnnotationUtils() {
   }
 
-  private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
+  public static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
+    "edu.umd.cs.findbugs.annotations.Nullable",
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
     "org.jetbrains.annotations.Nullable");
-  private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+  public static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+    "android.support.annotation.NonNull",
+    "edu.umd.cs.findbugs.annotations.NonNull",
     "javax.annotation.Nonnull",
+    "javax.validation.constraints.NotNull",
+    "lombok.NonNull",
     "org.jetbrains.annotations.NotNull");
 
-  static boolean isAnnotatedNullable(Symbol symbol) {
+  public static boolean isAnnotatedNullable(Symbol symbol) {
     return isAnnotatedWithOneOf(symbol, NULLABLE_ANNOTATIONS);
   }
 
-  static boolean isAnnotatedNonNull(Symbol symbol) {
+  public static boolean isAnnotatedNonNull(Symbol symbol) {
     return isAnnotatedWithOneOf(symbol, NONNULL_ANNOTATIONS);
   }
 
-  static boolean isAnnotatedWith(Symbol symbol, String annotation) {
+  public static boolean isAnnotatedWith(Symbol symbol, String annotation) {
     return symbol.metadata().isAnnotatedWith(annotation);
   }
 
@@ -52,4 +59,10 @@ public final class AnnotationUtils {
     return annotations.stream().anyMatch(annotation -> isAnnotatedWith(symbol, annotation));
   }
 
+  public static boolean isGloballyAnnotatedWith(MethodTree methodTree, String annotation) {
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
+    return isAnnotatedWith(methodSymbol, annotation)
+      || isAnnotatedWith(methodSymbol.enclosingClass(), annotation)
+      || isAnnotatedWith(methodSymbol.packge(), annotation);
+  }
 }
