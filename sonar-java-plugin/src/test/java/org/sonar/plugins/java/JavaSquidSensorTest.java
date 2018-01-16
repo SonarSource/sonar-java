@@ -147,7 +147,22 @@ public class JavaSquidSensorTest {
 
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    // set up a file to analyze
+    SensorContextTester context = createParseErrorContext();
+    MapSettings settings = new MapSettings();
+    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
+    executeJavaSquidSensor(context, settings);
+
+    String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
+    Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
+    assertThat(analysisErrors).hasSize(1);
+    AnalysisError analysisError = analysisErrors.iterator().next();
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getFilename()).endsWith("ParseError.java");
+    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
+  }
+
+  private SensorContextTester createParseErrorContext() throws IOException {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester context = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
 
@@ -157,11 +172,12 @@ public class JavaSquidSensorTest {
       .setCharset(StandardCharsets.UTF_8)
       .build();
     context.fileSystem().add(defaultFile);
+    return context;
+  }
 
-    MapSettings settings = new MapSettings();
+  private void executeJavaSquidSensor(SensorContextTester context, MapSettings settings) {
 
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
-    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
     context.settings().addProperties(settings.getProperties());
 
     // Mock visitor for metrics.
@@ -179,14 +195,23 @@ public class JavaSquidSensorTest {
 
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig() ,noSonarFilter, postAnalysisIssueFilter);
     jss.execute(context);
+  }
 
-    String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
-    Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
-    assertThat(analysisErrors).hasSize(1);
-    AnalysisError analysisError = analysisErrors.iterator().next();
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
-    assertThat(analysisError.getFilename()).endsWith("ParseError.java");
-    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
+  @Test
+  public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
+    SensorContextTester context = createContext(InputFile.Type.MAIN);
+    MapSettings settings = new MapSettings();
+    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
+    executeJavaSquidSensor(context, settings);
+    assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
+  }
+
+  @Test
+  public void feedbackShouldNotBeFedIfNotSonarCloudHost() throws IOException {
+    SensorContextTester context = createParseErrorContext();
+    MapSettings settings = new MapSettings();
+    settings.appendProperty("sonar.host.url", "https://somerandomurl.com");
+    executeJavaSquidSensor(context, settings);
+    assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
 }
