@@ -118,6 +118,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
 
   private static boolean hasPrivateFieldWithName(String fieldName, Symbol.TypeSymbol accessorOwner) {
     return accessorOwner.lookupSymbols(fieldName).stream()
+      .filter(Symbol::isVariableSymbol)
       .filter(Symbol::isPrivate)
       .anyMatch(symbol -> fieldName.equals(symbol.name()));
   }
