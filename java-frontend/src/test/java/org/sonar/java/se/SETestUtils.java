@@ -71,6 +71,12 @@ public class SETestUtils {
     return new Pair<>(sev, semanticModel);
   }
 
+  public static SemanticModel getSemanticModel(String filename) {
+    File file = new File(filename);
+    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(file);
+    return SemanticModel.createFor(cut, CLASSLOADER);
+  }
+
   public static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
     Optional<MethodBehavior> mb = sev.behaviorCache.behaviors.entrySet().stream()
       .filter(e -> e.getKey().contains("#" + methodName))
