@@ -210,6 +210,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.eclipse.jdt</groupId>
+                  <artifactId>org.eclipse.jdt.annotation</artifactId>
+                  <version>2.1.100</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>javax</groupId>
                   <artifactId>javaee-api</artifactId>
                   <version>7.0</version>

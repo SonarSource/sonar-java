@@ -34,6 +34,7 @@ public final class NullableAnnotationUtils {
     "edu.umd.cs.findbugs.annotations.Nullable",
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
+    "org.eclipse.jdt.annotation.Nullable",
     "org.jetbrains.annotations.Nullable");
   public static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
@@ -41,6 +42,7 @@ public final class NullableAnnotationUtils {
     "javax.annotation.Nonnull",
     "javax.validation.constraints.NotNull",
     "lombok.NonNull",
+    "org.eclipse.jdt.annotation.NonNull",
     "org.jetbrains.annotations.NotNull");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
