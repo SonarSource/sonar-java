@@ -33,8 +33,12 @@ abstract class A {
     return true;
   }
 
-  void set(int i) {
+  private void set(int i) {
 
+  }
+
+  Set<Integer> getSet() {
+    return MAX;
   }
 
   private static final int MAX = 42;
