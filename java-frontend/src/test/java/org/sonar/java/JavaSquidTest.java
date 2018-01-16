@@ -96,4 +96,37 @@ public class JavaSquidTest {
     verify(javaTestClasspath, times(1)).getElements();
 
   }
+
+  @Test
+  public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
+    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
+
+    // set up a file to analyze
+    File file = temp.newFile().getAbsoluteFile();
+    Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n", file, StandardCharsets.UTF_8);
+    DefaultInputFile defaultFile = new TestInputFileBuilder(temp.getRoot().getAbsolutePath(), file.getName())
+      .setLanguage("java")
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.getAbsoluteFile().toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    context.fileSystem().add(defaultFile);
+
+    // Set sonarLint runtime
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.settings().appendProperty("sonar.java.feedback.host", "$customHost$");
+    context.settings().appendProperty("sonar.host.url", "$customHost$");
+    // Mock visitor for metrics.
+    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
+
+    FileSystem fs = context.fileSystem();
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, mock(CheckFactory.class));
+    sonarComponents.setSensorContext(context);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    javaSquid.scan(Collections.singletonList(file), Collections.emptyList());
+    assertThat(sonarComponents.analysisErrors).hasSize(1);
+  }
 }
