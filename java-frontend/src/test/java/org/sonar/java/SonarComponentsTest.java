@@ -21,6 +21,8 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.LexerException;
 import java.io.File;
@@ -359,7 +361,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void io_error_when_reading_file_should_fail_analysis() throws Exception {
+  public void io_error_when_reading_file_should_fail_analysis() {
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(new TestInputFileBuilder("", "unknown_file.java").setCharset(StandardCharsets.UTF_8).build());
@@ -396,5 +398,31 @@ public class SonarComponentsTest {
   }
 
   private static class CustomTestCheck implements JavaCheck {
+  }
+
+  @Test
+  public void sonarcloud_feedback_metric_should_not_exceed_roughly_200ko() {
+    File file = new File("src/test/files/ParseError.java");
+    SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+    sensorContext.settings().appendProperty("sonar.host.url", "https://sonarcloud.io");
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(sensorContext);
+
+    AnalysisError analysisError;
+    try {
+      throw new IllegalStateException("This is the message of this exception");
+    } catch (IllegalStateException iae) {
+      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java");
+    }
+
+    for (int i = 0; i < 200_000; i++) {
+      sonarComponents.addAnalysisError(analysisError);
+    }
+
+    sonarComponents.saveAnalysisErrors();
+
+    String feedback = sensorContext.<String>measure("projectKey", "sonarjava_feedback").value();
+    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
+    assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
   }
 }

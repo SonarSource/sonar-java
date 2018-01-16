@@ -57,6 +57,12 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public class SonarComponents {
 
+  /**
+   * Approximate limit of feedback of 200ko to roughly 100_000 characters of useful feedback.
+   * This does not take into account eventual overhead of serialization.
+   */
+  private static final int ERROR_SERIALIZATION_LIMIT = 100_000;
+
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
@@ -68,6 +74,7 @@ public class SonarComponents {
   private SensorContext context;
   @VisibleForTesting
   List<AnalysisError> analysisErrors;
+  private int errorsSize = 0;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
@@ -271,7 +278,10 @@ public class SonarComponents {
   }
 
   public void addAnalysisError(AnalysisError analysisError) {
-    analysisErrors.add(analysisError);
+    if (errorsSize < ERROR_SERIALIZATION_LIMIT) {
+      errorsSize += analysisError.serializedSize();
+      analysisErrors.add(analysisError);
+    }
   }
 
   public void saveAnalysisErrors() {

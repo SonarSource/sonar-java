@@ -53,4 +53,8 @@ public class AnalysisError {
   public String getType() {
     return type;
   }
+
+  public int serializedSize() {
+    return message.length()+cause.length()+filename.length()+type.length();
+  }
 }
