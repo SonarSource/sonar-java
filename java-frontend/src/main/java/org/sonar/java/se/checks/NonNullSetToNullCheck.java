@@ -22,14 +22,15 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.Lists;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Scope;
+import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -53,10 +54,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
-
-  private static final String[] ANNOTATIONS = {"javax.annotation.Nonnull", "javax.validation.constraints.NotNull",
-    "edu.umd.cs.findbugs.annotations.NonNull", "org.jetbrains.annotations.NotNull", "lombok.NonNull",
-    "android.support.annotation.NonNull"};
 
   private static final String[] JPA_ANNOTATIONS = {
     "javax.persistence.Entity",
@@ -132,11 +129,12 @@ public class NonNullSetToNullCheck extends SECheck {
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
-    String nonNullAnnotation = nonNullAnnotation(symbol);
-    if (nonNullAnnotation != null && isUndefinedOrNull(context, symbol)) {
-      context.reportIssue(tree, this,
-        MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
-    }
+    nonNullAnnotation(symbol).ifPresent(annotation -> {
+      if (isUndefinedOrNull(context, symbol)) {
+        context.reportIssue(tree, this,
+          MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), annotation));
+      }
+    });
   }
 
   private static boolean isUndefinedOrNull(CheckerContext context, Symbol symbol) {
@@ -145,14 +143,10 @@ public class NonNullSetToNullCheck extends SECheck {
     return value == null;
   }
 
-  @CheckForNull
-  private static String nonNullAnnotation(Symbol javaSymbol) {
-    for (String annotation : ANNOTATIONS) {
-      if (javaSymbol.metadata().isAnnotatedWith(annotation)) {
-        return annotation;
-      }
-    }
-    return null;
+  private static Optional<String> nonNullAnnotation(Symbol symbol) {
+    return NullableAnnotationUtils.NONNULL_ANNOTATIONS.stream()
+      .filter(annotation -> NullableAnnotationUtils.isAnnotatedWith(symbol, annotation))
+      .findFirst();
   }
 
   private abstract class AbstractStatementVisitor extends CheckerTreeNodeVisitor {
@@ -180,14 +174,13 @@ public class NonNullSetToNullCheck extends SECheck {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
-        String nonNullAnnotation = nonNullAnnotation(symbol);
-        if (nonNullAnnotation != null) {
+        nonNullAnnotation(symbol).ifPresent(annotation -> {
           SymbolicValue assignedValue = programState.peekValue();
           ObjectConstraint constraint = programState.getConstraint(assignedValue, ObjectConstraint.class);
           if (constraint != null && constraint.isNull()) {
-            reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
+            reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), annotation);
           }
-        }
+        });
       }
     }
 
@@ -231,13 +224,12 @@ public class NonNullSetToNullCheck extends SECheck {
     }
 
     protected void checkNullArgument(Tree syntaxTree, String message, List<JavaSymbol> scopeSymbols, List<SymbolicValue> argumentValues, int i) {
-      String nonNullAnnotation = nonNullAnnotation(scopeSymbols.get(i));
-      if (nonNullAnnotation != null) {
+      nonNullAnnotation(scopeSymbols.get(i)).ifPresent(annotation -> {
         ObjectConstraint constraint = programState.getConstraint(argumentValues.get(i), ObjectConstraint.class);
         if (constraint != null && constraint.isNull()) {
-          reportIssue(syntaxTree, message, Integer.valueOf(i + 1), nonNullAnnotation);
+          reportIssue(syntaxTree, message, Integer.valueOf(i + 1), annotation);
         }
-      }
+      });
     }
   }
 
@@ -257,11 +249,11 @@ public class NonNullSetToNullCheck extends SECheck {
           return;
         }
       }
-      MethodTree mTree = (MethodTree) parent;
-      String nonNullAnnotation = nonNullAnnotation(mTree.symbol());
-      if (nonNullAnnotation != null && isLocalExpression(tree.expression())) {
-        checkReturnedValue(tree, nonNullAnnotation);
-      }
+      nonNullAnnotation(((MethodTree) parent).symbol()).ifPresent(annotation -> {
+        if (isLocalExpression(tree.expression())) {
+          checkReturnedValue(tree, annotation);
+        }
+      });
     }
 
     private boolean isLocalExpression(@Nullable ExpressionTree expression) {

@@ -99,6 +99,10 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
+import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedWith;
+
 public class ExplodedGraphWalker {
 
   /**
@@ -332,8 +336,8 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS.matches(tree);
-    boolean nonNullParameters = isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
-    boolean nullableParameters = isAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
+    boolean nonNullParameters = isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
+    boolean nullableParameters = isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
     boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
@@ -349,26 +353,18 @@ public class ExplodedGraphWalker {
             sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
             sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream()
             ));
-      } else if (nonNullParameters || AnnotationUtils.isAnnotatedNonNull(variableSymbol)) {
+      } else if (nonNullParameters || isAnnotatedNonNull(variableSymbol)) {
         stateStream = stateStream.flatMap(ps -> sv.setConstraint(ps, ObjectConstraint.NOT_NULL).stream());
       }
     }
     return stateStream.collect(Collectors.toList());
   }
 
-  private static boolean isAnnotatedWith(MethodTree methodTree, String annotation) {
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
-    return AnnotationUtils.isAnnotatedWith(methodSymbol, annotation)
-      || AnnotationUtils.isAnnotatedWith(methodSymbol.enclosingClass(), annotation)
-      || AnnotationUtils.isAnnotatedWith(methodSymbol.packge(), annotation);
-  }
-
   private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParameters) {
     if (variableSymbol.type().isPrimitive()) {
       return false;
     }
-    return AnnotationUtils.isAnnotatedNullable(variableSymbol)
-      || (nullableParameters && !AnnotationUtils.isAnnotatedNonNull(variableSymbol));
+    return isAnnotatedNullable(variableSymbol) || (nullableParameters && !isAnnotatedNonNull(variableSymbol));
   }
 
   private void cleanUpProgramState(CFG.Block block) {
@@ -707,7 +703,7 @@ public class ExplodedGraphWalker {
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
-    if (AnnotationUtils.isAnnotatedNonNull(mit.symbol())) {
+    if (isAnnotatedNonNull(mit.symbol())) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager, false);
@@ -988,7 +984,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isNonNullMethodInvocation(ExpressionTree expr) {
-    return expr.is(Tree.Kind.METHOD_INVOCATION) && AnnotationUtils.isAnnotatedNonNull(((MethodInvocationTree) expr).symbol());
+    return expr.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedNonNull(((MethodInvocationTree) expr).symbol());
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
