@@ -20,11 +20,16 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
 import org.junit.Test;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -41,6 +46,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
+import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -77,7 +83,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 3);
+    testIssueCreation(InputFile.Type.MAIN, 4);
   }
 
   @Test
@@ -97,7 +103,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(84));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(90));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -137,5 +143,50 @@ public class JavaSquidSensorTest {
     BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
     return sonarComponents;
+  }
+
+  @Test
+  public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
+    // set up a file to analyze
+    File file = new File("src/test/files/ParseError.java");
+    SensorContextTester context = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+
+    DefaultInputFile defaultFile = new TestInputFileBuilder(file.getParentFile().getPath(), file.getName())
+      .setLanguage("java")
+      .initMetadata(new String(Files.readAllBytes(file.getAbsoluteFile().toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    context.fileSystem().add(defaultFile);
+
+    MapSettings settings = new MapSettings();
+
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
+    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
+    context.settings().addProperties(settings.getProperties());
+
+    // Mock visitor for metrics.
+    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
+
+    FileSystem fs = context.fileSystem();
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
+    DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
+
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig() ,noSonarFilter, postAnalysisIssueFilter);
+    jss.execute(context);
+
+    String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
+    Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
+    assertThat(analysisErrors).hasSize(1);
+    AnalysisError analysisError = analysisErrors.iterator().next();
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getFilename()).endsWith("ParseError.java");
+    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
   }
 }

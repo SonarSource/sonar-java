@@ -89,6 +89,7 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
+    sonarComponents.saveAnalysisErrors();
   }
 
   private Iterable<File> getSourceFiles() {

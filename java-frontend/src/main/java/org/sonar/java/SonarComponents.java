@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,7 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -64,6 +66,8 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+  @VisibleForTesting
+  List<AnalysisError> analysisErrors;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
@@ -82,6 +86,7 @@ public class SonarComponents {
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
+    this.analysisErrors = new ArrayList<>();
     if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
@@ -263,5 +268,19 @@ public class SonarComponents {
 
   public boolean analysisCancelled() {
     return context.isCancelled();
+  }
+
+  public void addAnalysisError(AnalysisError analysisError) {
+    analysisErrors.add(analysisError);
+  }
+
+  public void saveAnalysisErrors() {
+    if (!analysisErrors.isEmpty() && "https://sonarcloud.io".equals(context.config().get("sonar.host.url").orElse(""))) {
+      Metric.Builder metricBuilder = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA);
+      metricBuilder.setHidden(true);
+      Gson gson = new Gson();
+      String metricValue = gson.toJson(analysisErrors);
+      context.<String>newMeasure().forMetric(metricBuilder.create()).on(context.module()).withValue(metricValue).save();
+    }
   }
 }
