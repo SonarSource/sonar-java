@@ -129,5 +129,10 @@ public class JavaSquidTest {
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Collections.singletonList(file), Collections.emptyList());
     assertThat(sonarComponents.analysisErrors).hasSize(1);
+    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getFilename()).endsWith(".tmp");
+    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
   }
 }
