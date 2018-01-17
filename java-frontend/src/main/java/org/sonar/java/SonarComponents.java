@@ -46,6 +46,7 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.measures.Metric;
+import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -66,6 +67,8 @@ public class SonarComponents {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
+  @Nullable
+  private final Server server;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
@@ -75,21 +78,27 @@ public class SonarComponents {
   @VisibleForTesting
   List<AnalysisError> analysisErrors;
   private int errorsSize = 0;
-
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-    CheckFactory checkFactory) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+                         CheckFactory checkFactory) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
+
+  }
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+                         CheckFactory checkFactory, Server server) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-    @Nullable CheckRegistrar[] checkRegistrars) {
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         Server server, @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
+    this.server = server;
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
@@ -285,7 +294,7 @@ public class SonarComponents {
   }
 
   public void saveAnalysisErrors() {
-    if (!analysisErrors.isEmpty() && "https://sonarcloud.io".equals(context.config().get("sonar.host.url").orElse(""))) {
+    if (!isSonarLintContext() && !analysisErrors.isEmpty() && server.getPublicRootUrl().equals("https://sonarcloud.io")) {
       Metric.Builder metricBuilder = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA);
       metricBuilder.setHidden(true);
       Gson gson = new Gson();

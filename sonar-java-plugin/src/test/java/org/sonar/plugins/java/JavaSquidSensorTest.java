@@ -43,6 +43,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
@@ -70,6 +71,7 @@ public class JavaSquidSensorTest {
 
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
+  private static final Server server = mock(Server.class);
 
   static {
     when(checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(checks);
@@ -103,7 +105,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(90));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(92));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -137,7 +139,7 @@ public class JavaSquidSensorTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
@@ -148,9 +150,8 @@ public class JavaSquidSensorTest {
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
     SensorContextTester context = createParseErrorContext();
-    MapSettings settings = new MapSettings();
-    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
-    executeJavaSquidSensor(context, settings);
+    when(server.getPublicRootUrl()).thenReturn("https://sonarcloud.io");
+    executeJavaSquidSensor(context);
 
     String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
     Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
@@ -175,10 +176,9 @@ public class JavaSquidSensorTest {
     return context;
   }
 
-  private void executeJavaSquidSensor(SensorContextTester context, MapSettings settings) {
+  private void executeJavaSquidSensor(SensorContextTester context) {
 
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
-    context.settings().addProperties(settings.getProperties());
 
     // Mock visitor for metrics.
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
@@ -188,30 +188,28 @@ public class JavaSquidSensorTest {
     FileSystem fs = context.fileSystem();
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server);
     DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
 
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig() ,noSonarFilter, postAnalysisIssueFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(),noSonarFilter, postAnalysisIssueFilter);
     jss.execute(context);
   }
 
   @Test
   public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
     SensorContextTester context = createContext(InputFile.Type.MAIN);
-    MapSettings settings = new MapSettings();
-    settings.appendProperty("sonar.host.url", "https://sonarcloud.io");
-    executeJavaSquidSensor(context, settings);
+    when(server.getPublicRootUrl()).thenReturn("https://sonarcloud.io");
+    executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
 
   @Test
   public void feedbackShouldNotBeFedIfNotSonarCloudHost() throws IOException {
     SensorContextTester context = createParseErrorContext();
-    MapSettings settings = new MapSettings();
-    settings.appendProperty("sonar.host.url", "https://somerandomurl.com");
-    executeJavaSquidSensor(context, settings);
+    when(server.getPublicRootUrl()).thenReturn("https://somerandomurl.com");
+    executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
 }

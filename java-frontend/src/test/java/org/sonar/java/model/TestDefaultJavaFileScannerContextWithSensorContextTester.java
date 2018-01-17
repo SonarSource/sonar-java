@@ -38,6 +38,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
@@ -67,6 +68,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   @Mock private JavaClasspath javaClasspath;
   @Mock private JavaTestClasspath javaTestClasspath;
   @Mock private CheckFactory checkFactory;
+  @Mock private Server server;
 
   private SensorContextTester sensorContext;
   private DefaultJavaFileScannerContext scannerContext;
@@ -86,7 +88,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
         .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath()), StandardCharsets.UTF_8))
         .build()
     );
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory, server);
     sonarComponents.setSensorContext(sensorContext);
 
     // spy getRuleKey call, to avoid mocking CheckFactory and Checks

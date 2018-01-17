@@ -22,6 +22,11 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,18 +37,13 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.platform.Server;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.squidbridge.api.CodeVisitor;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -70,7 +70,7 @@ public class SyntaxHighlighterVisitorTest {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class), mock(Server.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }
