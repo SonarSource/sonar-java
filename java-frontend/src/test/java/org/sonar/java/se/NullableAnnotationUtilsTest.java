@@ -19,16 +19,22 @@
  */
 package org.sonar.java.se;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 
@@ -36,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWith;
+import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedWith;
 import static org.sonar.java.se.NullableAnnotationUtils.valuesForGlobalAnnotation;
 
@@ -54,6 +61,8 @@ public class NullableAnnotationUtilsTest {
     Constructor<NullableAnnotationUtils> constructor = NullableAnnotationUtils.class.getDeclaredConstructor();
     assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
   }
 
   @Test
@@ -65,7 +74,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  public void testIsAnnotatedFromHierarchy() {
+  public void testIsGloballyAnnotatedWith() {
     Symbol foo = getSymbol("foo");
     assertThat(isGloballyAnnotatedWith((MethodTree) foo.declaration(), "android.support.annotation.MyAnnotation")).isTrue();
 
@@ -74,6 +83,34 @@ public class NullableAnnotationUtilsTest {
     MethodTree declaration = (MethodTree) bar.declaration();
     assertThat(isGloballyAnnotatedWith(declaration, "android.support.annotation.MyAnnotation")).isTrue();
     assertThat(isGloballyAnnotatedWith(declaration, "org.bar.MyOtherAnnotation")).isFalse();
+  }
+
+  @Test
+  public void testEclipseIsGloballyAnnotatedNonNull() {
+    File file = new File("src/test/files/se/annotations/NullableEclipseAnnotation.java");
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
+    classPath.add(new File("target/test-classes"));
+    classPath.add(new File("src/test/files/se/annotations/eclipsePackageInfo"));
+
+    semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(classPath));
+
+    // parameters handled
+    Stream.concat(getSymbols("org.foo.bar.A", "nonnull"), getSymbols("org.foo.bar.B", "nonnull")).forEach(s -> {
+      assertThat(isGloballyAnnotatedParameterNonNull((MethodTree) s.declaration())).as(s + " should be recognized as NonNull.").isTrue();
+    });
+
+    getSymbols("org.foo.bar.A", "notNonnull").forEach(s -> {
+      assertThat(isGloballyAnnotatedParameterNonNull((MethodTree) s.declaration())).as(s + " should be recognized as NonNull.").isFalse();
+    });
+
+    // method return type handled
+    getSymbols("org.foo.bar.B", "nonnull").forEach(s -> {
+      assertThat(isAnnotatedNonNull(s)).as(s + " should be recognized as NonNull.").isTrue();
+    });
+
+    // fields not handled
+    assertThat(isAnnotatedNonNull(getSymbol("org.foo.bar.B", "field"))).isFalse();
   }
 
   @Test
@@ -88,7 +125,7 @@ public class NullableAnnotationUtilsTest {
     MethodTree fooDeclaration = (MethodTree) foo.declaration();
     assertThat(isGloballyAnnotatedWith(fooDeclaration, myAnnotation)).isTrue();
     // annotation value retrieved from bytecode, on package
-    List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(fooDeclaration, myAnnotation);
+    List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(fooDeclaration.symbol(), myAnnotation);
     assertThat(fooAnnotationValues).hasSize(1);
     assertThat(fooAnnotationValues.get(0).name()).isEqualTo("value");
     assertThat(fooAnnotationValues.get(0).value()).isInstanceOf(Object[].class);
@@ -99,7 +136,7 @@ public class NullableAnnotationUtilsTest {
     MethodTree barDeclaration = (MethodTree) bar.declaration();
     assertThat(isGloballyAnnotatedWith(barDeclaration, myAnnotation)).isTrue();
     // annotation value retrieved from source, on method
-    List<SymbolMetadata.AnnotationValue> barAnnotationValues = valuesForGlobalAnnotation(barDeclaration, myAnnotation);
+    List<SymbolMetadata.AnnotationValue> barAnnotationValues = valuesForGlobalAnnotation(barDeclaration.symbol(), myAnnotation);
     assertThat(barAnnotationValues).hasSize(1);
     assertThat(barAnnotationValues.get(0).name()).isEqualTo("value");
     assertThat(barAnnotationValues.get(0).value()).isInstanceOf(NewArrayTree.class);
@@ -109,11 +146,11 @@ public class NullableAnnotationUtilsTest {
     MethodTree qixDeclaration = (MethodTree) qix.declaration();
     assertThat(isGloballyAnnotatedWith(qixDeclaration, myAnnotation)).isTrue();
     // annotation value retrieved from source, on class
-    assertThat(valuesForGlobalAnnotation(qixDeclaration, myAnnotation)).isEmpty();
+    assertThat(valuesForGlobalAnnotation(qixDeclaration.symbol(), myAnnotation)).isEmpty();
 
     assertThat(isAnnotatedWith(qix, myOtherAnnotation)).isFalse();
     assertThat(isGloballyAnnotatedWith(qixDeclaration, myOtherAnnotation)).isFalse();
-    assertThat(valuesForGlobalAnnotation(qixDeclaration, myOtherAnnotation)).isEmpty();
+    assertThat(valuesForGlobalAnnotation(qixDeclaration.symbol(), myOtherAnnotation)).isNull();
   }
 
   @Test
@@ -150,5 +187,9 @@ public class NullableAnnotationUtilsTest {
 
   private Symbol getSymbol(String owner, String name) {
     return semanticModel.getClassType(owner).symbol().memberSymbols().stream().filter(s -> name.equals(s.name())).findAny().get();
+  }
+
+  private Stream<Symbol> getSymbols(String owner, String nameStartsWith) {
+    return semanticModel.getClassType(owner).symbol().memberSymbols().stream().filter(s -> s.name().startsWith(nameStartsWith));
   }
 }
