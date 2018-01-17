@@ -160,7 +160,7 @@ public class JavaSquidSensorTest {
     assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
     assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
     assertThat(analysisError.getFilename()).endsWith("ParseError.java");
-    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
+    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
 
   private SensorContextTester createParseErrorContext() throws IOException {

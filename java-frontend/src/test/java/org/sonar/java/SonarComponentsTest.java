@@ -416,7 +416,7 @@ public class SonarComponentsTest {
     try {
       throw new IllegalStateException("This is the message of this exception");
     } catch (IllegalStateException iae) {
-      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java");
+      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java", AnalysisError.Kind.PARSE_ERROR);
     }
 
     for (int i = 0; i < 200_000; i++) {
@@ -428,5 +428,6 @@ public class SonarComponentsTest {
     String feedback = sensorContext.<String>measure("projectKey", "sonarjava_feedback").value();
     Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
     assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
+    assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
 }
