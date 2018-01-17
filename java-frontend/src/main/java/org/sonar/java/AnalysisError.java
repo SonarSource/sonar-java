@@ -24,18 +24,23 @@ import java.io.StringWriter;
 
 public class AnalysisError {
 
+  public enum Kind {
+    PARSE_ERROR,
+    SEMANTIC_ERROR;
+  }
+
   private final String message;
   private final String cause;
   private final String filename;
-  private final String type;
+  private final Kind kind;
 
-  public AnalysisError(Exception exception, String filename) {
+  public AnalysisError(Exception exception, String filename, Kind kind) {
     this.message = exception.getMessage();
     StringWriter sw = new StringWriter();
     exception.printStackTrace(new PrintWriter(sw));
     this.cause = sw.toString();
     this.filename = filename;
-    this.type = "Parse error";
+    this.kind = kind;
   }
 
   public String getMessage() {
@@ -50,11 +55,11 @@ public class AnalysisError {
     return filename;
   }
 
-  public String getType() {
-    return type;
+  public Kind getKind() {
+    return kind;
   }
 
   public int serializedSize() {
-    return message.length()+cause.length()+filename.length()+type.length();
+    return message.length()+cause.length()+filename.length()+ kind.name().length();
   }
 }

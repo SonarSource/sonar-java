@@ -104,6 +104,7 @@ public class VisitorsBridge {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);
         } catch (Exception e) {
+          sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), AnalysisError.Kind.SEMANTIC_ERROR));
           LOG.error("Unable to create symbol table for : " + currentFile.getAbsolutePath(), e);
           return;
         }
@@ -173,7 +174,7 @@ public class VisitorsBridge {
 
   public void processRecognitionException(RecognitionException e, File file) {
     if (sonarComponents != null) {
-      sonarComponents.addAnalysisError(new AnalysisError(e, file.getPath()));
+      sonarComponents.addAnalysisError(new AnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR));
     }
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
       this.visitFile(null);

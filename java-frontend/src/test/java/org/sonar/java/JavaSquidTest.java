@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.io.Files;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Rule;
@@ -100,11 +101,32 @@ public class JavaSquidTest {
 
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
+    String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n";
+    SonarComponents sonarComponents = collectAnalysisErrors(code);
+    assertThat(sonarComponents.analysisErrors).hasSize(1);
+    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getFilename()).endsWith(".tmp");
+    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
+  }
 
-    // set up a file to analyze
+  @Test
+  public void verify_analysis_errors_are_collected_on_semantic_error() throws Exception {
+    String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}\nclass A {}";
+    SonarComponents sonarComponents = collectAnalysisErrors(code);
+    assertThat(sonarComponents.analysisErrors).hasSize(1);
+    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
+    assertThat(analysisError.getMessage()).startsWith("Registering class 2 times : A");
+    assertThat(analysisError.getCause()).startsWith("java.lang.IllegalStateException: Registering class 2 times : A");
+    assertThat(analysisError.getFilename()).endsWith(".tmp");
+    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.SEMANTIC_ERROR);
+  }
+
+  private SonarComponents collectAnalysisErrors(String code) throws IOException {
+    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
     File file = temp.newFile().getAbsoluteFile();
-    Files.write("/***/\nclass A {\n String foo() {\n  return foo();\n }\n", file, StandardCharsets.UTF_8);
+    Files.write(code, file, StandardCharsets.UTF_8);
     DefaultInputFile defaultFile = new TestInputFileBuilder(temp.getRoot().getAbsolutePath(), file.getName())
       .setLanguage("java")
       .initMetadata(new String(java.nio.file.Files.readAllBytes(file.getAbsoluteFile().toPath()), StandardCharsets.UTF_8))
@@ -128,11 +150,6 @@ public class JavaSquidTest {
     sonarComponents.setSensorContext(context);
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Collections.singletonList(file), Collections.emptyList());
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
-    assertThat(analysisError.getFilename()).endsWith(".tmp");
-    assertThat(analysisError.getType()).isEqualToIgnoringCase("Parse error");
+    return sonarComponents;
   }
 }
