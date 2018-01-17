@@ -89,11 +89,10 @@ public class NullableAnnotationUtilsTest {
     assertThat(isGloballyAnnotatedWith(fooDeclaration, myAnnotation)).isTrue();
     // annotation value retrieved from bytecode, on package
     List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(fooDeclaration, myAnnotation);
-    // FIXME should be size 1
-    assertThat(fooAnnotationValues).hasSize(2);
-    // should be 0
-    assertThat(fooAnnotationValues.get(1).name()).isEqualTo("value");
-    assertThat(fooAnnotationValues.get(0).value()).isInstanceOf(Symbol.class);
+    assertThat(fooAnnotationValues).hasSize(1);
+    assertThat(fooAnnotationValues.get(0).name()).isEqualTo("value");
+    assertThat(fooAnnotationValues.get(0).value()).isInstanceOf(Object[].class);
+    assertThat(((Object[]) fooAnnotationValues.get(0).value())[0]).isInstanceOf(Symbol.class);
 
     Symbol bar = getSymbol(myClass, "bar");
     assertThat(isAnnotatedWith(foo, myAnnotation)).isFalse();

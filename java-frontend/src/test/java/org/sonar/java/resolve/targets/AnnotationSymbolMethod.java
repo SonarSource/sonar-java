@@ -31,4 +31,8 @@ public class AnnotationSymbolMethod {
   @RuntimeAnnotation2(foo = {"one", "two"}, bar = MyEnum.TWO, annot = @ClassAnnotation)
   void foo() {
   }
+
+  @ArrayEnumAnnotation({MyEnum.TWO, MyEnum.THREE})
+  void bar() {
+  }
 }

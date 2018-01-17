@@ -21,6 +21,16 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,16 +47,6 @@ import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -273,7 +273,21 @@ public class BytecodeCompleterTest {
     assertAnnotationValue(value);
     value = iterator.next().value();
     assertAnnotationValue(value);
+  }
 
+  @Test
+  public void annotationArrayOfEnum() {
+    JavaSymbol.TypeJavaSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.AnnotationSymbolMethod");
+    Symbol barMethod = classSymbol.memberSymbols().stream().filter(symbol -> "bar".equals(symbol.name())).findFirst().get();
+    SymbolMetadata barMetadata = barMethod.metadata();
+    assertThat(barMetadata.annotations()).hasSize(1);
+    List<SymbolMetadata.AnnotationValue> valuesForAnnotation = barMetadata.valuesForAnnotation("org.sonar.java.resolve.targets.ArrayEnumAnnotation");
+    assertThat(valuesForAnnotation).hasSize(1);
+    assertThat(valuesForAnnotation.get(0).name()).isEqualTo("value");
+    Object annotationValue = valuesForAnnotation.get(0).value();
+    assertThat(annotationValue).isInstanceOf(Object[].class);
+    assertThat((Object[]) annotationValue).hasSize(2);
+    assertThat(Arrays.stream((Object[]) annotationValue)).allMatch(o -> o instanceof Symbol && ((Symbol) o).type().is("org.sonar.java.resolve.targets.MyEnum"));
   }
 
   private void assertAnnotationValue(Object value) {
