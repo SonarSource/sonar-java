@@ -101,7 +101,8 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
-import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedWith;
+import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedNonNull;
+import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedNullable;
 
 public class ExplodedGraphWalker {
 
@@ -336,8 +337,8 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS.matches(tree);
-    boolean nonNullParameters = isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
-    boolean nullableParameters = isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
+    boolean nonNullParameters = isGloballyAnnotatedNonNull(methodTree);
+    boolean nullableParameters = isGloballyAnnotatedNullable(methodTree);
     boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create

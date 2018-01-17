@@ -20,9 +20,12 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 public final class NullableAnnotationUtils {
@@ -61,10 +64,39 @@ public final class NullableAnnotationUtils {
     return annotations.stream().anyMatch(annotation -> isAnnotatedWith(symbol, annotation));
   }
 
+  public static boolean isGloballyAnnotatedNonNull(MethodTree methodTree) {
+    return isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNonnullByDefault");
+  }
+
+  public static boolean isGloballyAnnotatedNullable(MethodTree methodTree) {
+    return isGloballyAnnotatedWith(methodTree, "javax.annotation.ParametersAreNullableByDefault");
+  }
+
   public static boolean isGloballyAnnotatedWith(MethodTree methodTree, String annotation) {
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
     return isAnnotatedWith(methodSymbol, annotation)
       || isAnnotatedWith(methodSymbol.enclosingClass(), annotation)
       || isAnnotatedWith(methodSymbol.packge(), annotation);
   }
+
+  public static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(MethodTree methodTree, String annotation) {
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
+    if (isAnnotatedWith(methodSymbol, annotation)) {
+      return valuesForAnnotation(methodSymbol, annotation);
+    }
+    JavaSymbol.TypeJavaSymbol enclosingClassSymbol = methodSymbol.enclosingClass();
+    if (isAnnotatedWith(enclosingClassSymbol, annotation)) {
+      return valuesForAnnotation(enclosingClassSymbol, annotation);
+    }
+    JavaSymbol.PackageJavaSymbol packageSymbol = methodSymbol.packge();
+    if (isAnnotatedWith(packageSymbol, annotation)) {
+      return valuesForAnnotation(packageSymbol, annotation);
+    }
+    return Collections.emptyList();
+  }
+
+  private static List<SymbolMetadata.AnnotationValue> valuesForAnnotation(Symbol symbol, String annotation) {
+    return symbol.metadata().valuesForAnnotation(annotation);
+  }
+
 }

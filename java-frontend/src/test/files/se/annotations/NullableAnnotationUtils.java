@@ -4,7 +4,7 @@
  */
 package android.support.annotation;
 
-@MyAnnotation
+@MyAnnotation(Location.ALL)
 interface A {
   @MyAnnotation @org.bar.MyOtherAnnotation Object foo();
   Object bar();
@@ -24,7 +24,14 @@ interface A {
   @org.eclipse.jdt.annotation.NonNull Object nonnull7();
 }
 
-@interface MyAnnotation { }
+@interface MyAnnotation {
+  public Location[] value() default Location.ALL;
+}
+
+
+enum Location {
+  ALL, PARAMETER, RETURN_TYPE;
+}
 
 // fake 'android.support.annotation.NonNull' annotation
 @interface NonNull { }
