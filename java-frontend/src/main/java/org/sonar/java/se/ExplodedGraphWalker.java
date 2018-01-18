@@ -337,8 +337,8 @@ public class ExplodedGraphWalker {
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
     boolean isEqualsMethod = EQUALS.matches(tree);
-    boolean nonNullParameters = isGloballyAnnotatedParameterNonNull(methodTree);
-    boolean nullableParameters = isGloballyAnnotatedParameterNullable(methodTree);
+    boolean nonNullParameters = isGloballyAnnotatedParameterNonNull(methodTree.symbol());
+    boolean nullableParameters = isGloballyAnnotatedParameterNullable(methodTree.symbol());
     boolean hasMethodBehavior = methodBehavior != null;
     for (final VariableTree variableTree : tree.parameters()) {
       // create

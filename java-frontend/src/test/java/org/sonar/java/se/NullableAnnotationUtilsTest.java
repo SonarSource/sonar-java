@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
+import org.apache.commons.lang.StringUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -35,7 +36,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,10 +48,10 @@ import static org.sonar.java.se.NullableAnnotationUtils.valuesForGlobalAnnotatio
 
 public class NullableAnnotationUtilsTest {
 
-  private SemanticModel semanticModel;
+  private static SemanticModel semanticModel;
 
-  @Before
-  public void setUp() {
+  @BeforeClass
+  public static void setUp() {
     semanticModel = SETestUtils.getSemanticModel("src/test/files/se/annotations/NullableAnnotationUtils.java");
   }
 
@@ -75,42 +75,56 @@ public class NullableAnnotationUtilsTest {
 
   @Test
   public void testIsGloballyAnnotatedWith() {
-    Symbol foo = getSymbol("foo");
-    assertThat(isGloballyAnnotatedWith((MethodTree) foo.declaration(), "android.support.annotation.MyAnnotation")).isTrue();
+    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) getSymbol("foo");
+    assertThat(isGloballyAnnotatedWith(foo, "android.support.annotation.MyAnnotation")).isTrue();
 
-    Symbol bar = getSymbol("bar");
+    Symbol.MethodSymbol bar = (Symbol.MethodSymbol) getSymbol("bar");
     assertThat(isAnnotatedWith(bar, "android.support.annotation.MyAnnotation")).isFalse();
-    MethodTree declaration = (MethodTree) bar.declaration();
-    assertThat(isGloballyAnnotatedWith(declaration, "android.support.annotation.MyAnnotation")).isTrue();
-    assertThat(isGloballyAnnotatedWith(declaration, "org.bar.MyOtherAnnotation")).isFalse();
+    assertThat(isGloballyAnnotatedWith(bar, "android.support.annotation.MyAnnotation")).isTrue();
+    assertThat(isGloballyAnnotatedWith(bar, "org.bar.MyOtherAnnotation")).isFalse();
   }
 
   @Test
   public void testEclipseIsGloballyAnnotatedNonNull() {
-    File file = new File("src/test/files/se/annotations/NullableEclipseAnnotation.java");
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(file);
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
-    classPath.add(new File("src/test/files/se/annotations/eclipsePackageInfo"));
+    // adding the class corresponding to package-info having @NonNullByDefault annotation
+    classPath.add(new File("src/test/files/se/annotations/eclipse"));
 
-    semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(classPath));
-
-    // parameters handled
-    Stream.concat(getSymbols("org.foo.bar.A", "nonnull"), getSymbols("org.foo.bar.B", "nonnull")).forEach(s -> {
-      assertThat(isGloballyAnnotatedParameterNonNull((MethodTree) s.declaration())).as(s + " should be recognized as NonNull.").isTrue();
-    });
-
-    getSymbols("org.foo.bar.A", "notNonnull").forEach(s -> {
-      assertThat(isGloballyAnnotatedParameterNonNull((MethodTree) s.declaration())).as(s + " should be recognized as NonNull.").isFalse();
-    });
-
-    // method return type handled
-    getSymbols("org.foo.bar.B", "nonnull").forEach(s -> {
-      assertThat(isAnnotatedNonNull(s)).as(s + " should be recognized as NonNull.").isTrue();
-    });
+    SemanticModel semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/bar/Eclipse.java", classPath);
+    getMethods(semanticModel, "org.foo.bar.A").forEach(NullableAnnotationUtilsTest::testMethods);
+    getMethods(semanticModel, "org.foo.bar.B").forEach(NullableAnnotationUtilsTest::testMethods);
 
     // fields not handled
-    assertThat(isAnnotatedNonNull(getSymbol("org.foo.bar.B", "field"))).isFalse();
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
+
+    semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/foo/Eclipse.java", classPath);
+    getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
+
+    semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/qix/Eclipse.java", classPath);
+    getMethods(semanticModel, "org.foo.qix.A").forEach(NullableAnnotationUtilsTest::testMethods);
+  }
+
+  private static SemanticModel getSemanticModel(String fileName, List<File> classPath) {
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(new File(fileName));
+    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(classPath));
+    return semanticModel;
+  }
+
+  private static void testMethods(Symbol.MethodSymbol s) {
+    String name = s.name();
+    boolean annotatedNonNull = isAnnotatedNonNull(s);
+    if (StringUtils.containsIgnoreCase(name, "ReturnNonNull")) {
+      assertThat(annotatedNonNull).as(s + " should be recognized as returning NonNull.").isTrue();
+    } else {
+      assertThat(annotatedNonNull).as(s + " should NOT be recognized as returning NonNull.").isFalse();
+    }
+    boolean globallyAnnotatedParameterNonNull = isGloballyAnnotatedParameterNonNull(s);
+    if (StringUtils.containsIgnoreCase(name, "nonNullParameters")) {
+      assertThat(globallyAnnotatedParameterNonNull).as(s + " should be recognized as NonNull for parameters.").isTrue();
+    } else {
+      assertThat(globallyAnnotatedParameterNonNull).as(s + " should NOT be recognized as NonNull for parameters.").isFalse();
+    }
   }
 
   @Test
@@ -118,39 +132,36 @@ public class NullableAnnotationUtilsTest {
     String myClass = "org.sonar.java.resolve.targets.annotations.MyClass";
     String myAnnotation = "org.sonar.java.resolve.targets.annotations.MyAnnotation";
     String myOtherAnnotation = "org.bar.MyOtherAnnotation";
-    semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/resolve/targets/annotations/MyClass.java");
+    SemanticModel semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/resolve/targets/annotations/MyClass.java");
 
-    Symbol foo = getSymbol(myClass, "foo");
+    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) getSymbol(semanticModel, myClass, "foo");
     assertThat(isAnnotatedWith(foo, myAnnotation)).isFalse();
-    MethodTree fooDeclaration = (MethodTree) foo.declaration();
-    assertThat(isGloballyAnnotatedWith(fooDeclaration, myAnnotation)).isTrue();
+    assertThat(isGloballyAnnotatedWith(foo, myAnnotation)).isTrue();
     // annotation value retrieved from bytecode, on package
-    List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(fooDeclaration.symbol(), myAnnotation);
+    List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(foo, myAnnotation);
     assertThat(fooAnnotationValues).hasSize(1);
     assertThat(fooAnnotationValues.get(0).name()).isEqualTo("value");
     assertThat(fooAnnotationValues.get(0).value()).isInstanceOf(Object[].class);
     assertThat(((Object[]) fooAnnotationValues.get(0).value())[0]).isInstanceOf(Symbol.class);
 
-    Symbol bar = getSymbol(myClass, "bar");
-    assertThat(isAnnotatedWith(foo, myAnnotation)).isFalse();
-    MethodTree barDeclaration = (MethodTree) bar.declaration();
-    assertThat(isGloballyAnnotatedWith(barDeclaration, myAnnotation)).isTrue();
+    Symbol.MethodSymbol bar = (Symbol.MethodSymbol) getSymbol(semanticModel, myClass, "bar");
+    assertThat(isAnnotatedWith(bar, myAnnotation)).isTrue();
+    assertThat(isGloballyAnnotatedWith(bar, myAnnotation)).isTrue();
     // annotation value retrieved from source, on method
-    List<SymbolMetadata.AnnotationValue> barAnnotationValues = valuesForGlobalAnnotation(barDeclaration.symbol(), myAnnotation);
+    List<SymbolMetadata.AnnotationValue> barAnnotationValues = valuesForGlobalAnnotation(bar, myAnnotation);
     assertThat(barAnnotationValues).hasSize(1);
     assertThat(barAnnotationValues.get(0).name()).isEqualTo("value");
     assertThat(barAnnotationValues.get(0).value()).isInstanceOf(NewArrayTree.class);
 
-    Symbol qix = getSymbol("org.sonar.java.resolve.targets.annotations.MyOtherClass", "qix");
+    Symbol.MethodSymbol qix = (Symbol.MethodSymbol) getSymbol(semanticModel, "org.sonar.java.resolve.targets.annotations.MyOtherClass", "qix");
     assertThat(isAnnotatedWith(qix, myAnnotation)).isFalse();
-    MethodTree qixDeclaration = (MethodTree) qix.declaration();
-    assertThat(isGloballyAnnotatedWith(qixDeclaration, myAnnotation)).isTrue();
+    assertThat(isGloballyAnnotatedWith(qix, myAnnotation)).isTrue();
     // annotation value retrieved from source, on class
-    assertThat(valuesForGlobalAnnotation(qixDeclaration.symbol(), myAnnotation)).isEmpty();
+    assertThat(valuesForGlobalAnnotation(qix, myAnnotation)).isEmpty();
 
     assertThat(isAnnotatedWith(qix, myOtherAnnotation)).isFalse();
-    assertThat(isGloballyAnnotatedWith(qixDeclaration, myOtherAnnotation)).isFalse();
-    assertThat(valuesForGlobalAnnotation(qixDeclaration.symbol(), myOtherAnnotation)).isNull();
+    assertThat(isGloballyAnnotatedWith(qix, myOtherAnnotation)).isFalse();
+    assertThat(valuesForGlobalAnnotation(qix, myOtherAnnotation)).isNull();
   }
 
   @Test
@@ -173,23 +184,26 @@ public class NullableAnnotationUtilsTest {
     });
   }
 
-  private Symbol getSymbol(String name) {
+  private static Symbol getSymbol(String name) {
     return getMainType().symbol().memberSymbols().stream().filter(s -> name.equals(s.name())).findAny().get();
   }
 
-  private Stream<Symbol> getSymbols(String nameStartsWith) {
+  private static Stream<Symbol> getSymbols(String nameStartsWith) {
     return getMainType().symbol().memberSymbols().stream().filter(s -> s.name().startsWith(nameStartsWith));
   }
 
-  private Type getMainType() {
+  private static Type getMainType() {
     return semanticModel.getClassType("android.support.annotation.A");
   }
 
-  private Symbol getSymbol(String owner, String name) {
+  private static Symbol getSymbol(SemanticModel semanticModel, String owner, String name) {
     return semanticModel.getClassType(owner).symbol().memberSymbols().stream().filter(s -> name.equals(s.name())).findAny().get();
   }
 
-  private Stream<Symbol> getSymbols(String owner, String nameStartsWith) {
-    return semanticModel.getClassType(owner).symbol().memberSymbols().stream().filter(s -> s.name().startsWith(nameStartsWith));
+  private static Stream<Symbol.MethodSymbol> getMethods(SemanticModel semanticModel, String owner) {
+    return semanticModel.getClassType(owner).symbol().memberSymbols().stream()
+      .filter(s -> s.isMethodSymbol())
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(s -> !"<init>".equals(s.name()));
   }
 }
