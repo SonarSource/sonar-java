@@ -20,10 +20,18 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public final class NullableAnnotationUtils {
 
@@ -34,6 +42,7 @@ public final class NullableAnnotationUtils {
     "edu.umd.cs.findbugs.annotations.Nullable",
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
+    "org.eclipse.jdt.annotation.Nullable",
     "org.jetbrains.annotations.Nullable");
   public static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
@@ -41,6 +50,7 @@ public final class NullableAnnotationUtils {
     "javax.annotation.Nonnull",
     "javax.validation.constraints.NotNull",
     "lombok.NonNull",
+    "org.eclipse.jdt.annotation.NonNull",
     "org.jetbrains.annotations.NotNull");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
@@ -48,7 +58,8 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
-    return isAnnotatedWithOneOf(symbol, NONNULL_ANNOTATIONS);
+    return isAnnotatedWithOneOf(symbol, NONNULL_ANNOTATIONS)
+      || (symbol.isMethodSymbol() && usesEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "RETURN_TYPE"));
   }
 
   public static boolean isAnnotatedWith(Symbol symbol, String annotation) {
@@ -59,10 +70,75 @@ public final class NullableAnnotationUtils {
     return annotations.stream().anyMatch(annotation -> isAnnotatedWith(symbol, annotation));
   }
 
-  public static boolean isGloballyAnnotatedWith(MethodTree methodTree, String annotation) {
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
-    return isAnnotatedWith(methodSymbol, annotation)
-      || isAnnotatedWith(methodSymbol.enclosingClass(), annotation)
-      || isAnnotatedWith(methodSymbol.packge(), annotation);
+  public static boolean isGloballyAnnotatedParameterNonNull(Symbol.MethodSymbol method) {
+    return isGloballyAnnotatedWith(method, "javax.annotation.ParametersAreNonnullByDefault")
+      || usesEclipseNonNullByDefault(method, "PARAMETER");
   }
+
+  public static boolean isGloballyAnnotatedParameterNullable(Symbol.MethodSymbol method) {
+    return isGloballyAnnotatedWith(method, "javax.annotation.ParametersAreNullableByDefault");
+  }
+
+  public static boolean isGloballyAnnotatedWith(Symbol.MethodSymbol method, String annotation) {
+    return isAnnotatedWith(method, annotation)
+      || isAnnotatedWith(method.enclosingClass(), annotation)
+      || isAnnotatedWith(((JavaSymbol.MethodJavaSymbol) method).packge(), annotation);
+  }
+
+  private static boolean usesEclipseNonNullByDefault(Symbol.MethodSymbol symbol, String target) {
+    List<AnnotationValue> parameters = valuesForGlobalAnnotation(symbol, "org.eclipse.jdt.annotation.NonNullByDefault");
+    if (parameters == null) {
+      return false;
+    }
+    if (parameters.isEmpty()) {
+      // annotation default value include parameters
+      return true;
+    }
+    Object annotationValue = parameters.get(0).value();
+    if (annotationValue instanceof Tree) {
+      // from sources
+      return containsDefaultLocation((Tree) annotationValue, target);
+    }
+    // from binaries
+    return containsDefaultLocation((Object[]) annotationValue, target);
+  }
+
+  @CheckForNull
+  public static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol.MethodSymbol method, String annotation) {
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) method;
+    if (isAnnotatedWith(methodSymbol, annotation)) {
+      return methodSymbol.metadata().valuesForAnnotation(annotation);
+    }
+    JavaSymbol.TypeJavaSymbol enclosingClassSymbol = methodSymbol.enclosingClass();
+    if (isAnnotatedWith(enclosingClassSymbol, annotation)) {
+      return enclosingClassSymbol.metadata().valuesForAnnotation(annotation);
+    }
+    JavaSymbol.PackageJavaSymbol packageSymbol = methodSymbol.packge();
+    if (isAnnotatedWith(packageSymbol, annotation)) {
+      return packageSymbol.metadata().valuesForAnnotation(annotation);
+    }
+    return null;
+  }
+
+  private static boolean containsDefaultLocation(Tree defaultLocation, String target) {
+    Symbol symbol;
+    switch (defaultLocation.kind()) {
+      case IDENTIFIER:
+        symbol = ((IdentifierTree) defaultLocation).symbol();
+        break;
+      case MEMBER_SELECT:
+        symbol = ((MemberSelectExpressionTree) defaultLocation).identifier().symbol();
+        break;
+      case NEW_ARRAY:
+        return ((NewArrayTree) defaultLocation).initializers().stream().anyMatch(expr -> containsDefaultLocation(expr, target));
+      default:
+        throw new IllegalArgumentException("Unexpected tree used to parameterize annotation");
+    }
+    return target.equals(symbol.name());
+  }
+
+  private static boolean containsDefaultLocation(Object[] defaultLocation, String target) {
+    return Arrays.stream(defaultLocation).map(Symbol.class::cast).anyMatch(symbol -> target.equals(symbol.name()));
+  }
+
 }

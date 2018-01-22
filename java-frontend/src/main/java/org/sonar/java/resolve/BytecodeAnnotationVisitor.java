@@ -20,11 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
-import java.util.List;
 
 public class BytecodeAnnotationVisitor extends AnnotationVisitor {
   private final AnnotationInstanceResolve annotationInstance;
@@ -53,22 +52,26 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
 
   @Override
   public void visitEnum(String name, String desc, String value) {
-    List<JavaSymbol> lookup = getSymbol(desc).members().lookup(value);
-    for (JavaSymbol symbol : lookup) {
-      if (symbol.isKind(JavaSymbol.VAR)) {
-        addValue(name, symbol);
-      }
-    }
+    getSymbol(desc).members().lookup(value).stream()
+      .filter(symbol -> symbol.isKind(JavaSymbol.VAR))
+      .forEach(symbol -> addValue(name, symbol));
   }
 
   @Override
   public AnnotationVisitor visitArray(final String name) {
     final List<Object> valuesList = Lists.newArrayList();
-    //TODO handle arrays of annotation and arrays of enum values.
+    // TODO handle arrays of annotation
     return new AnnotationVisitor(Opcodes.ASM5, this) {
       @Override
       public void visit(String name, Object value) {
         valuesList.add(value);
+      }
+
+      @Override
+      public void visitEnum(String name, String desc, String value) {
+        getSymbol(desc).members().lookup(value).stream()
+          .filter(symbol -> symbol.isKind(JavaSymbol.VAR))
+          .forEach(valuesList::add);
       }
 
       @Override

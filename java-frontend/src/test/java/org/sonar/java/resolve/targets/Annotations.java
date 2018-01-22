@@ -57,6 +57,10 @@ public class Annotations {
   ClassAnnotation annot();
 }
 
+@interface ArrayEnumAnnotation {
+  MyEnum[] value() default MyEnum.ONE;
+}
+
 enum MyEnum {
   ONE,TWO,THREE;
 }

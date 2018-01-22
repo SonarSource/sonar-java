@@ -17,22 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve.targets;
+package org.sonar.java.resolve.targets.annotations;
 
-@SourceAnnotation
-@ClassAnnotation
-@RuntimeAnnotation1("plop"+AnnotationSymbolMethod.FOO)
-@RuntimeAnnotation2(foo = {"one", "two", "three", "four"}, bar = MyEnum.ONE, annot = @ClassAnnotation)
-public class AnnotationSymbolMethod {
-   final static String FOO = "foo";
-  @SourceAnnotation
-  @ClassAnnotation
-  @RuntimeAnnotation1("plop")
-  @RuntimeAnnotation2(foo = {"one", "two"}, bar = MyEnum.TWO, annot = @ClassAnnotation)
+// annotated with "MyAnnotation" through the package
+public class MyClass {
   void foo() {
   }
 
-  @ArrayEnumAnnotation({MyEnum.TWO, MyEnum.THREE})
+  @MyAnnotation({MyAnnotation.Param.A, MyAnnotation.Param.B})
   void bar() {
+  }
+}
+
+@MyAnnotation
+class MyOtherClass {
+  void qix() {
   }
 }
