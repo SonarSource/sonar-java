@@ -26,7 +26,8 @@ public class AnalysisError {
 
   public enum Kind {
     PARSE_ERROR,
-    SEMANTIC_ERROR;
+    SEMANTIC_ERROR,
+    CHECK_ERROR,
   }
 
   private final String message;

@@ -383,8 +383,8 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_fail_when_same_explicit_order_is_provided() {
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsDuplicateExplicitOrder.java", new FakeVisitor()));
-    assertThat(throwable.getCause())
-      .isInstanceOf(IllegalStateException.class)
+    assertThat(throwable)
+      .isInstanceOf(AssertionError.class)
       .hasMessage("Same explicit ORDER=1 provided for two comments.\n"
         + "6: flow@f {ORDER=1, MESSAGE=msg1}\n"
         + "7: flow@f {ORDER=1, MESSAGE=msg2}");
@@ -393,8 +393,8 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_fail_when_mixing_explicit_and_implicit_order() {
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierFlowsMixedExplicitOrder.java", new FakeVisitor()));
-    assertThat(throwable.getCause())
-      .isInstanceOf(IllegalStateException.class)
+    assertThat(throwable)
+      .isInstanceOf(AssertionError.class)
       .hasMessage("Mixed explicit and implicit order in same flow.\n"
         + "5: flow@f {ORDER=3, MESSAGE=msg3}\n"
         + "7: flow@f {MESSAGE=msg2}");

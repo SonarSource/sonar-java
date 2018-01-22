@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -102,7 +103,7 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
       try {
         pattern = Pattern.compile(disallowedClass);
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + disallowedClass, e);
+        throw new IllegalRuleParameterException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + disallowedClass, e);
       }
     }
     if (pattern.matcher(className).matches() && !tree.is(Tree.Kind.INFERED_TYPE)) {

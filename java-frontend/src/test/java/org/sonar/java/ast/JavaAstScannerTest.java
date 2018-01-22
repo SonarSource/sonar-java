@@ -25,6 +25,9 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import com.sonar.sslr.api.typed.GrammarBuilder;
+import java.io.File;
+import java.io.InterruptedIOException;
+import java.nio.charset.StandardCharsets;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;
@@ -36,6 +39,8 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
@@ -53,10 +58,7 @@ import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
-import java.io.File;
-import java.io.InterruptedIOException;
-import java.nio.charset.StandardCharsets;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -68,7 +70,8 @@ public class JavaAstScannerTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-
+  @Rule
+  public LogTester logTester = new LogTester();
   SensorContextTester context;
   private DefaultFileSystem fs;
 
@@ -137,7 +140,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_interrupt_analysis_when_InterrptedException_is_thrown() throws Exception {
+  public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
     File file = new File("src/test/files/metrics/NoSonar.java");
 
     thrown.expectMessage("Analysis cancelled");
@@ -147,7 +150,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_interrupt_analysis_when_InterrptedIOException_is_thrown() throws Exception {
+  public void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
     File file = new File("src/test/files/metrics/NoSonar.java");
 
     thrown.expectMessage("Analysis cancelled");
@@ -157,27 +160,17 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
+  public void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingException(new NullPointerException("foo"))));
-
-    thrown.expectMessage("SonarQube is unable to analyze file");
-    thrown.expect(new AnalysisExceptionBaseMatcher(NullPointerException.class, "instanceof AnalysisException with NullPointerException cause"));
-
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
-  }
-
-  @Test
-  public void should_propagate_visitor_exception_when_no_parse_error() {
-    JavaAstScanner scanner = defaultJavaAstScanner();
-    scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingException(new NullPointerException("foo"))));
-
-    thrown.expectMessage("SonarQube is unable to analyze file");
-    thrown.expect(new AnalysisExceptionBaseMatcher(NullPointerException.class, "instanceof AnalysisException with NullPointerException cause"));
-
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
-  }
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file src/test/resources/AstScannerNoParseError.txt, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
 
+    logTester.clear();
+    scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file src/test/resources/AstScannerParseError.txt, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+  }
   @Test
   public void should_propagate_SOError() {
     thrown.expect(StackOverflowError.class);
@@ -187,7 +180,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() throws Exception {
+  public void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
     JavaAstScanner scanner = defaultJavaAstScanner();
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
@@ -220,6 +213,13 @@ public class JavaAstScannerTest {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       throw exception;
+    }
+  }
+
+  @org.sonar.check.Rule(key = "AnnotatedCheck")
+  private static class AnnotatedCheck extends CheckThrowingException {
+    public AnnotatedCheck(RuntimeException e) {
+      super(e);
     }
   }
 
