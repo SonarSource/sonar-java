@@ -1,4 +1,8 @@
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 public class MainClass {
 
@@ -93,17 +97,17 @@ public class MainClass {
   }
 
   public static void initialize1() {
-    MainClass instance = new MainClass(null, "Blue");  // Noncompliant {{Parameter 1 to this constructor is marked "javax.annotation.Nonnull" but null is passed.}}
+    MainClass instance = new MainClass(null, "Blue");  // Noncompliant {{Parameter 1 to this constructor is marked "javax.annotation.Nonnull" but null could be passed.}}
   }
 
   public static void initialize2() {
     MainClass instance = new MainClass("Black", null);
-    instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null is passed.}}
+    instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null could be passed.}}
   }
 
   public static void initialize3() {
     MainClass instance = new MainClass("Red", null);
-    instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null is passed.}}
+    instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null could be passed.}}
   }
 
   public static void initiliaze4() {
@@ -258,3 +262,35 @@ class ExitWithException {
 }
 
 class MyException extends Exception { }
+
+@ParametersAreNonnullByDefault
+class HandleParametersAreNonnullByDefault {
+  HandleParametersAreNonnullByDefault(Object o) {
+  }
+
+  void foo(Object o) {
+    foo(null); // Noncompliant {{"foo" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
+    new HandleParametersAreNonnullByDefault(null); // Noncompliant {{Constructor is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
+  }
+
+  void bar(@Nullable Object o) {
+    bar(null); // Compliant
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return equals(null); // Compliant
+  }
+}
+
+class HandleEclipseParametersNonNull {
+  @NonNullByDefault(DefaultLocation.PARAMETER)
+  void foo(Object o) {
+    foo(null); // Noncompliant {{"foo" is marked "org.eclipse.jdt.annotation.NonNullByDefault" but parameter 1 could be null.}}
+  }
+
+  @NonNullByDefault(DefaultLocation.RETURN_TYPE)
+  Object bar(Object o) {
+    return bar(null); // Compliant
+  }
+}

@@ -15,10 +15,10 @@ class ClassAnnotation {
   }
 
   void qix(@Nullable Object singleObject, @Nullable Object[] objects) {
-    bar(singleObject);
+    bar(singleObject); // Noncompliant {{"bar" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
     if (singleObject != null) {} // Compliant
 
-    bar(objects);
+    bar(objects); // Noncompliant {{"bar" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
     if (objects != null) {} // Noncompliant {{Remove this expression which always evaluates to "true"}}
   }
 }
