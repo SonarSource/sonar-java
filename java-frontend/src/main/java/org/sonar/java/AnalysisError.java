@@ -35,7 +35,7 @@ public class AnalysisError {
   private final Kind kind;
 
   public AnalysisError(Exception exception, String filename, Kind kind) {
-    this.message = exception.getMessage();
+    this.message = exception.getMessage() == null ? "" : exception.getMessage();
     StringWriter sw = new StringWriter();
     exception.printStackTrace(new PrintWriter(sw));
     this.cause = sw.toString();
