@@ -20,9 +20,11 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +32,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.check.Rule;
 import org.sonar.java.AnalysisError;
+import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -119,11 +124,36 @@ public class VisitorsBridge {
       new SymbolicExecutionVisitor(executableScanners, behaviorCache).scanFile(javaFileScannerContext);
       behaviorCache.cleanup();
     }
-    for (JavaFileScanner scanner : executableScanners) {
-      scanner.scanFile(javaFileScannerContext);
-    }
+    runChecks(javaFileScannerContext);
     if (semanticModel != null) {
       classesNotFound.addAll(semanticModel.classesNotFound());
+    }
+  }
+
+  private void runChecks(JavaFileScannerContext javaFileScannerContext) {
+    for (JavaFileScanner scanner : executableScanners) {
+      try {
+        scanner.scanFile(javaFileScannerContext);
+      } catch (IllegalRuleParameterException e) {
+        // bad configuration of a rule parameter, we want to fail analysis fast.
+        throw e;
+      } catch (Exception e) {
+        Throwable rootCause = Throwables.getRootCause(e);
+        if(rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
+          throw e;
+        }
+        Rule annotation = AnnotationUtils.getAnnotation(scanner.getClass(), Rule.class);
+        String key = "";
+        if(annotation !=  null) {
+          key = annotation.key();
+        }
+        LOG.error(
+          String.format("Unable to run check %s - %s on file %s, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
+            scanner.getClass(), key, currentFile.getPath()), e);
+        if (sonarComponents != null) {
+          sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), AnalysisError.Kind.CHECK_ERROR));
+        }
+      }
     }
   }
 

@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -30,16 +29,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
-import org.apache.commons.lang.StringUtils;
-import org.assertj.core.api.Fail;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +49,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Fail;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -153,14 +150,16 @@ class Expectations {
       Integer thisOrder = ORDER.get(attributes);
       Integer otherOrder = ORDER.get(other.attributes);
       if (thisOrder != null && otherOrder != null) {
-        Preconditions.checkState(!thisOrder.equals(otherOrder), "Same explicit ORDER=%s provided for two comments.\n%s\n%s", thisOrder, this, other);
+        if(thisOrder.equals(otherOrder)) {
+          Fail.fail("Same explicit ORDER=%s provided for two comments.\n%s\n%s", thisOrder, this, other);
+        }
         return thisOrder.compareTo(otherOrder);
       }
       if (thisOrder == null && otherOrder == null) {
         int compareLines = Integer.compare(line, other.line);
         return compareLines != 0 ? compareLines : Integer.compare(startColumn, other.startColumn);
       }
-      throw new IllegalStateException("Mixed explicit and implicit order in same flow.\n" + this + "\n" + other);
+      throw new AssertionError("Mixed explicit and implicit order in same flow.\n" + this + "\n" + other);
     }
 
     @CheckForNull

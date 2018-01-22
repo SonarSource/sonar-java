@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,7 +66,7 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
       try {
         pattern = Pattern.compile(regularExpression, Pattern.DOTALL);
       } catch (RuntimeException e) {
-        throw new IllegalArgumentException("Unable to compile regular expression: " + regularExpression, e);
+        throw new IllegalRuleParameterException("Unable to compile regular expression: " + regularExpression, e);
       }
     }
     if (pattern != null && pattern.matcher(syntaxTrivia.comment()).matches()) {
