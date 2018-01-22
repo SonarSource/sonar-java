@@ -19,9 +19,11 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.java.resolve.JavaSymbol;
@@ -35,16 +37,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public final class NullableAnnotationUtils {
 
+
   private NullableAnnotationUtils() {
   }
 
-  public static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
+  private static final String JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT = "javax.annotation.ParametersAreNonnullByDefault";
+  private static final String ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT = "org.eclipse.jdt.annotation.NonNullByDefault";
+
+  private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
     "edu.umd.cs.findbugs.annotations.Nullable",
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
     "org.eclipse.jdt.annotation.Nullable",
     "org.jetbrains.annotations.Nullable");
-  public static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+  private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
     "javax.annotation.Nonnull",
@@ -59,7 +65,13 @@ public final class NullableAnnotationUtils {
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
     return isAnnotatedWithOneOf(symbol, NONNULL_ANNOTATIONS)
-      || (symbol.isMethodSymbol() && usesEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "RETURN_TYPE"));
+      || (symbol.isMethodSymbol() && isGloballyAnnotatedWith((Symbol.MethodSymbol) symbol, ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT, "RETURN_TYPE"));
+  }
+
+  public static Optional<String> nonNullAnnotation(Symbol symbol) {
+    return NONNULL_ANNOTATIONS.stream()
+      .filter(annotation -> isAnnotatedWith(symbol, annotation))
+      .findFirst();
   }
 
   public static boolean isAnnotatedWith(Symbol symbol, String annotation) {
@@ -71,22 +83,33 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isGloballyAnnotatedParameterNonNull(Symbol.MethodSymbol method) {
-    return isGloballyAnnotatedWith(method, "javax.annotation.ParametersAreNonnullByDefault")
-      || usesEclipseNonNullByDefault(method, "PARAMETER");
+    return parameterNonNullGlobalAnnotation(method) != null;
+  }
+
+  @CheckForNull
+  public static String parameterNonNullGlobalAnnotation(Symbol.MethodSymbol method) {
+    if (isGloballyAnnotatedWith(method, JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT)) {
+      return JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT;
+    }
+    if (isGloballyAnnotatedWith(method, ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT, "PARAMETER")) {
+      return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
+    }
+    return null;
   }
 
   public static boolean isGloballyAnnotatedParameterNullable(Symbol.MethodSymbol method) {
     return isGloballyAnnotatedWith(method, "javax.annotation.ParametersAreNullableByDefault");
   }
 
+  @VisibleForTesting
   public static boolean isGloballyAnnotatedWith(Symbol.MethodSymbol method, String annotation) {
     return isAnnotatedWith(method, annotation)
       || isAnnotatedWith(method.enclosingClass(), annotation)
       || isAnnotatedWith(((JavaSymbol.MethodJavaSymbol) method).packge(), annotation);
   }
 
-  private static boolean usesEclipseNonNullByDefault(Symbol.MethodSymbol symbol, String target) {
-    List<AnnotationValue> parameters = valuesForGlobalAnnotation(symbol, "org.eclipse.jdt.annotation.NonNullByDefault");
+  private static boolean isGloballyAnnotatedWith(Symbol.MethodSymbol symbol, String annotation, String parameter) {
+    List<AnnotationValue> parameters = valuesForGlobalAnnotation(symbol, annotation);
     if (parameters == null) {
       return false;
     }
@@ -97,12 +120,13 @@ public final class NullableAnnotationUtils {
     Object annotationValue = parameters.get(0).value();
     if (annotationValue instanceof Tree) {
       // from sources
-      return containsDefaultLocation((Tree) annotationValue, target);
+      return containsDefaultLocation((Tree) annotationValue, parameter);
     }
     // from binaries
-    return containsDefaultLocation((Object[]) annotationValue, target);
+    return containsDefaultLocation((Object[]) annotationValue, parameter);
   }
 
+  @VisibleForTesting
   @CheckForNull
   public static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol.MethodSymbol method, String annotation) {
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) method;
