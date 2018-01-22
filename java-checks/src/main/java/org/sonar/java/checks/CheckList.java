@@ -450,7 +450,6 @@ public final class CheckList {
       .add(CommentRegularExpressionCheck.class)
       .add(AssertOnBooleanVariableCheck.class)
       .add(CombineCatchCheck.class)
-      .add(TryWithResourcesCheck.class)
       .add(ConstantMethodCheck.class)
       .add(ChangeMethodContractCheck.class)
       .add(CatchRethrowingCheck.class)
