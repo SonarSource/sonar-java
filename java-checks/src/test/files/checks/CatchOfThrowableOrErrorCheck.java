@@ -5,7 +5,7 @@ class A extends Exception {
     Closer closer = Closer.create();
     try {
     } catch (RuntimeException e) {    // Compliant
-    } catch (Throwable e) {           // Noncompliant [[sc=14;ec=23]] {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Compliant
     } catch (Error e) {               // Noncompliant {{Catch Exception instead of Error.}}
     } catch (StackOverflowError e) {  // Compliant
     } catch (Foo |
@@ -14,24 +14,24 @@ class A extends Exception {
       try {
       } catch (Error e) {             // Noncompliant {{Catch Exception instead of Error.}}
       }
-    } catch (java.lang.Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (java.lang.Throwable e) { // Compliant
     } catch (java.lang.Error e) {     // Noncompliant {{Catch Exception instead of Error.}}
     } catch (foo.Throwable e) {       // Compliant
     } catch (java.foo.Throwable e) {  // Compliant
     } catch (foo.lang.Throwable e) {  // Compliant
     } catch (java.lang.foo e) {       // Compliant
     } catch (foo.java.lang.Throwable e) { // Compliant
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Compliant
       throw e;
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Compliant
       throw new Exception(e).getCause();
     } catch (Throwable e) {           // Compliant
       throw closer.rethrow(e);
     } catch (java.lang.Throwable e) { // Compliant
       throw closer.rethrow(e);
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Compliant
       throw closer.rethrow(new Exception(e));
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Compliant
       Throwable myThrowable = new Throwable(e);
       throw closer.rethrow(myThrowable);
     } catch (Throwable e) {           // Compliant
