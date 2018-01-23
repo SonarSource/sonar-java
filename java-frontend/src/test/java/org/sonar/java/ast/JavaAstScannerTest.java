@@ -163,13 +163,20 @@ public class JavaAstScannerTest {
   public void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingException(new NullPointerException("foo"))));
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file src/test/resources/AstScannerNoParseError.txt, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    File scannedFile = new File("src/test/resources/AstScannerNoParseError.txt");
+
+    scanner.scan(ImmutableList.of(scannedFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file "
+      + scannedFile.getPath()
+      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
 
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file src/test/resources/AstScannerParseError.txt, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    scannedFile = new File("src/test/resources/AstScannerParseError.txt");
+    scanner.scan(ImmutableList.of(scannedFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file "
+      + scannedFile.getPath()
+      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
   }
   @Test
   public void should_propagate_SOError() {
