@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
@@ -81,8 +82,11 @@ public class UndocumentedApiCheckTest {
   public void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java", check);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.checks.UndocumentedApiCheck - UndocumentedApi on file src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    String filename = "src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java";
+    JavaCheckVerifier.verifyNoIssue(filename, check);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.checks.UndocumentedApiCheck - UndocumentedApi on file "
+      + new File(filename).getPath()
+      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
   }
 
 }
