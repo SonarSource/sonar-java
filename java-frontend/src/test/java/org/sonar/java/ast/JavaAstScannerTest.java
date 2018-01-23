@@ -28,6 +28,8 @@ import com.sonar.sslr.api.typed.GrammarBuilder;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;
@@ -45,11 +47,15 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.se.SymbolicExecutionMode;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -177,6 +183,22 @@ public class JavaAstScannerTest {
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file "
       + scannedFile.getPath()
       + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+  }
+
+  @Test
+  public void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
+    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+
+    logTester.clear();
+    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(new SECheck() {
+      @Override
+      public void init(MethodTree methodTree, CFG cfg) {
+        throw new NullPointerException("nobody expect the spanish inquisition !");
+      }
+    }), new ArrayList<>(), null, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/se/MethodBehavior.java")));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
   }
   @Test
   public void should_propagate_SOError() {
