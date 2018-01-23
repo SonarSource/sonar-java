@@ -121,16 +121,16 @@ public class VisitorsBridge {
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
-      runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache));
+      runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
       behaviorCache.cleanup();
     }
-    executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner));
+    executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
     if (semanticModel != null) {
       classesNotFound.addAll(semanticModel.classesNotFound());
     }
   }
 
-  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner) {
+  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) {
     try {
       scanner.scanFile(javaFileScannerContext);
     } catch (IllegalRuleParameterException e) {
@@ -150,7 +150,7 @@ public class VisitorsBridge {
         String.format("Unable to run check %s - %s on file %s, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
           scanner.getClass(), key, currentFile.getPath()), e);
       if (sonarComponents != null) {
-        sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), AnalysisError.Kind.CHECK_ERROR));
+        sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), kind));
       }
     }
   }

@@ -76,7 +76,7 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
   @VisibleForTesting
-  List<AnalysisError> analysisErrors;
+  public List<AnalysisError> analysisErrors;
   private int errorsSize = 0;
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
