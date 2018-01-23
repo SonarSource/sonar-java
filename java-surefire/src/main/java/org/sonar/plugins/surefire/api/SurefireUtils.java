@@ -64,7 +64,7 @@ public final class SurefireUtils {
     if (dirs != null) {
       if (dir != null) {
         // both properties are set, deprecated property ignored
-        LOGGER.info("Property '{}' is deprecated and will be ignored, as property '{}' is also set.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
+        LOGGER.debug("Property '{}' is deprecated and will be ignored, as property '{}' is also set.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
       }
       return dirs;
     }
