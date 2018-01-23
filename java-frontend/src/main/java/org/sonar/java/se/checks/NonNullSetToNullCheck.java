@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -199,7 +200,11 @@ public class NonNullSetToNullCheck extends SECheck {
         Arguments arguments = syntaxTree.arguments();
         int peekSize = arguments.size() + 1;
         List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize).subList(0, peekSize - 1));
-        checkNullArguments(syntaxTree, (JavaSymbol.MethodJavaSymbol) symbol, argumentValues);
+        ExpressionTree reportTree = syntaxTree.methodSelect();
+        if (reportTree.is(Tree.Kind.MEMBER_SELECT)) {
+          reportTree = ((MemberSelectExpressionTree) reportTree).identifier();
+        }
+        checkNullArguments(reportTree, (JavaSymbol.MethodJavaSymbol) symbol, argumentValues);
       }
     }
 
