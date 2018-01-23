@@ -97,7 +97,7 @@ public class SurefireUtilsTest {
     File directory2 = directories.get(1);
     assertThat(directory2.exists()).isTrue();
     assertThat(directory2.isDirectory()).isTrue();
-    assertThat(logTester.logs(LoggerLevel.INFO))
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
       .contains("Property 'sonar.junit.reportsPath' is deprecated and will be ignored, as property 'sonar.junit.reportPaths' is also set.");
     assertThat(logTester.logs(LoggerLevel.INFO))
       .doesNotContain("Property 'sonar.junit.reportsPath' is deprecated. Use property 'sonar.junit.reportPaths' instead.");
