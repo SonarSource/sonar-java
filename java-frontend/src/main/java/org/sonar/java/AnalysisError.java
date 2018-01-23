@@ -28,6 +28,7 @@ public class AnalysisError {
     PARSE_ERROR,
     SEMANTIC_ERROR,
     CHECK_ERROR,
+    SE_ERROR,
   }
 
   private final String message;
