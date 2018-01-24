@@ -33,18 +33,13 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWith;
 import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
-import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedWith;
-import static org.sonar.java.se.NullableAnnotationUtils.valuesForGlobalAnnotation;
 
 public class NullableAnnotationUtilsTest {
 
@@ -63,25 +58,6 @@ public class NullableAnnotationUtilsTest {
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
-  }
-
-  @Test
-  public void testIsAnnotatedWith() {
-    Symbol foo = getSymbol("foo");
-    assertThat(isAnnotatedWith(foo, "android.support.annotation.MyAnnotation")).isTrue();
-    // not resolved
-    assertThat(isAnnotatedWith(foo, "org.bar.MyOtherAnnotation")).isFalse();
-  }
-
-  @Test
-  public void testIsGloballyAnnotatedWith() {
-    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) getSymbol("foo");
-    assertThat(isGloballyAnnotatedWith(foo, "android.support.annotation.MyAnnotation")).isTrue();
-
-    Symbol.MethodSymbol bar = (Symbol.MethodSymbol) getSymbol("bar");
-    assertThat(isAnnotatedWith(bar, "android.support.annotation.MyAnnotation")).isFalse();
-    assertThat(isGloballyAnnotatedWith(bar, "android.support.annotation.MyAnnotation")).isTrue();
-    assertThat(isGloballyAnnotatedWith(bar, "org.bar.MyOtherAnnotation")).isFalse();
   }
 
   @Test
@@ -125,43 +101,6 @@ public class NullableAnnotationUtilsTest {
     } else {
       assertThat(globallyAnnotatedParameterNonNull).as(s + " should NOT be recognized as NonNull for parameters.").isFalse();
     }
-  }
-
-  @Test
-  public void testGetAnnotationValue() {
-    String myClass = "org.sonar.java.resolve.targets.annotations.MyClass";
-    String myAnnotation = "org.sonar.java.resolve.targets.annotations.MyAnnotation";
-    String myOtherAnnotation = "org.bar.MyOtherAnnotation";
-    SemanticModel semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/resolve/targets/annotations/MyClass.java");
-
-    Symbol.MethodSymbol foo = (Symbol.MethodSymbol) getSymbol(semanticModel, myClass, "foo");
-    assertThat(isAnnotatedWith(foo, myAnnotation)).isFalse();
-    assertThat(isGloballyAnnotatedWith(foo, myAnnotation)).isTrue();
-    // annotation value retrieved from bytecode, on package
-    List<SymbolMetadata.AnnotationValue> fooAnnotationValues = valuesForGlobalAnnotation(foo, myAnnotation);
-    assertThat(fooAnnotationValues).hasSize(1);
-    assertThat(fooAnnotationValues.get(0).name()).isEqualTo("value");
-    assertThat(fooAnnotationValues.get(0).value()).isInstanceOf(Object[].class);
-    assertThat(((Object[]) fooAnnotationValues.get(0).value())[0]).isInstanceOf(Symbol.class);
-
-    Symbol.MethodSymbol bar = (Symbol.MethodSymbol) getSymbol(semanticModel, myClass, "bar");
-    assertThat(isAnnotatedWith(bar, myAnnotation)).isTrue();
-    assertThat(isGloballyAnnotatedWith(bar, myAnnotation)).isTrue();
-    // annotation value retrieved from source, on method
-    List<SymbolMetadata.AnnotationValue> barAnnotationValues = valuesForGlobalAnnotation(bar, myAnnotation);
-    assertThat(barAnnotationValues).hasSize(1);
-    assertThat(barAnnotationValues.get(0).name()).isEqualTo("value");
-    assertThat(barAnnotationValues.get(0).value()).isInstanceOf(NewArrayTree.class);
-
-    Symbol.MethodSymbol qix = (Symbol.MethodSymbol) getSymbol(semanticModel, "org.sonar.java.resolve.targets.annotations.MyOtherClass", "qix");
-    assertThat(isAnnotatedWith(qix, myAnnotation)).isFalse();
-    assertThat(isGloballyAnnotatedWith(qix, myAnnotation)).isTrue();
-    // annotation value retrieved from source, on class
-    assertThat(valuesForGlobalAnnotation(qix, myAnnotation)).isEmpty();
-
-    assertThat(isAnnotatedWith(qix, myOtherAnnotation)).isFalse();
-    assertThat(isGloballyAnnotatedWith(qix, myOtherAnnotation)).isFalse();
-    assertThat(valuesForGlobalAnnotation(qix, myOtherAnnotation)).isNull();
   }
 
   @Test

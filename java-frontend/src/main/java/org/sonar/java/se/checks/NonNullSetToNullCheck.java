@@ -22,7 +22,6 @@ package org.sonar.java.se.checks;
 import com.google.common.collect.Lists;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -55,7 +54,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.java.se.ExplodedGraphWalker.EQUALS_METHODS;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
-import static org.sonar.java.se.NullableAnnotationUtils.parameterNonNullGlobalAnnotation;
+import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotationOnParameters;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -134,12 +133,13 @@ public class NonNullSetToNullCheck extends SECheck {
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
-    nonNullAnnotation(symbol).ifPresent(annotation -> {
-      if (isUndefinedOrNull(context, symbol)) {
-        context.reportIssue(tree, this,
-          MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), annotation));
-      }
-    });
+    String nonNullAnnotation = nonNullAnnotation(symbol);
+    if (nonNullAnnotation == null) {
+      return;
+    }
+    if (isUndefinedOrNull(context, symbol)) {
+      context.reportIssue(tree, this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
+    }
   }
 
   private static boolean isUndefinedOrNull(CheckerContext context, Symbol symbol) {
@@ -173,13 +173,15 @@ public class NonNullSetToNullCheck extends SECheck {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
-        nonNullAnnotation(symbol).ifPresent(annotation -> {
-          SymbolicValue assignedValue = programState.peekValue();
-          ObjectConstraint constraint = programState.getConstraint(assignedValue, ObjectConstraint.class);
-          if (constraint != null && constraint.isNull()) {
-            reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), annotation);
-          }
-        });
+        String nonNullAnnotation = nonNullAnnotation(symbol);
+        if (nonNullAnnotation == null) {
+          return;
+        }
+        SymbolicValue assignedValue = programState.peekValue();
+        ObjectConstraint constraint = programState.getConstraint(assignedValue, ObjectConstraint.class);
+        if (constraint != null && constraint.isNull()) {
+          reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
+        }
       }
     }
 
@@ -210,7 +212,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
     private void checkNullArguments(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, List<SymbolicValue> argumentValues) {
       Scope parameters = symbol.getParameters();
-      String methodAnnotatedParameterNonNull = parameterNonNullGlobalAnnotation(symbol);
+      String methodAnnotatedParameterNonNull = nonNullAnnotationOnParameters(symbol);
       if (parameters != null) {
         List<JavaSymbol> scopeSymbols = parameters.scopeSymbols();
         int parametersToTest = argumentValues.size();
@@ -228,10 +230,10 @@ public class NonNullSetToNullCheck extends SECheck {
       @Nullable String methodAnnotatedParameterNonNull) {
       ObjectConstraint constraint = programState.getConstraint(argumentValue, ObjectConstraint.class);
       if (constraint != null && constraint.isNull()) {
-        Optional<String> parameterNonNullAnnotation = nonNullAnnotation(argumentSymbol);
-        if (parameterNonNullAnnotation.isPresent()) {
+        String nonNullAnnotation = nonNullAnnotation(argumentSymbol);
+        if (nonNullAnnotation != null) {
           String message = "Parameter {0} to this {1} is marked \"{2}\" but null could be passed.";
-          reportIssue(syntaxTree, message, index + 1, (symbol.isConstructor() ? "constructor" : "call"), parameterNonNullAnnotation.get());
+          reportIssue(syntaxTree, message, index + 1, (symbol.isConstructor() ? "constructor" : "call"), nonNullAnnotation);
         } else if (methodAnnotatedParameterNonNull != null && !parameterIsNullable(symbol, argumentSymbol)) {
           String message = "{0} is marked \"{1}\" but parameter {2} could be null.";
           reportIssue(syntaxTree, message, (symbol.isConstructor() ? "Constructor" : ("\"" + symbol.name() + "\"")), methodAnnotatedParameterNonNull, index + 1);
@@ -260,11 +262,13 @@ public class NonNullSetToNullCheck extends SECheck {
           return;
         }
       }
-      nonNullAnnotation(((MethodTree) parent).symbol()).ifPresent(annotation -> {
-        if (isLocalExpression(tree.expression())) {
-          checkReturnedValue(tree, annotation);
-        }
-      });
+      String nonNullAnnotation = nonNullAnnotation(((MethodTree) parent).symbol());
+      if (nonNullAnnotation == null) {
+        return;
+      }
+      if (isLocalExpression(tree.expression())) {
+        checkReturnedValue(tree, nonNullAnnotation);
+      }
     }
 
     private boolean isLocalExpression(@Nullable ExpressionTree expression) {
