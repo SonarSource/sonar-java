@@ -302,4 +302,8 @@ public class SonarComponents {
       context.<String>newMeasure().forMetric(metricBuilder.create()).on(context.module()).withValue(metricValue).save();
     }
   }
+
+  public boolean shouldFailAnalysisOnException() {
+    return context.config().getBoolean("sonar.java.failOnException").orElse(false);
+  }
 }

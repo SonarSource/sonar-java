@@ -110,7 +110,7 @@ public class VisitorsBridge {
           semanticModel = SemanticModel.createFor(tree, classLoader);
         } catch (Exception e) {
           LOG.error("Unable to create symbol table for : " + currentFile.getAbsolutePath(), e);
-          sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), AnalysisError.Kind.SEMANTIC_ERROR));
+          addAnalysisError(e, currentFile.getPath(), AnalysisError.Kind.SEMANTIC_ERROR);
           return;
         }
         createSonarSymbolTable(tree);
@@ -137,21 +137,28 @@ public class VisitorsBridge {
       // bad configuration of a rule parameter, we want to fail analysis fast.
       throw e;
     } catch (Exception e) {
+      if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
+        throw e;
+      }
       Throwable rootCause = Throwables.getRootCause(e);
-      if(rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
+      if (rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
         throw e;
       }
       Rule annotation = AnnotationUtils.getAnnotation(scanner.getClass(), Rule.class);
       String key = "";
-      if(annotation !=  null) {
+      if (annotation != null) {
         key = annotation.key();
       }
       LOG.error(
         String.format("Unable to run check %s - %s on file %s, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
           scanner.getClass(), key, currentFile.getPath()), e);
-      if (sonarComponents != null) {
-        sonarComponents.addAnalysisError(new AnalysisError(e, currentFile.getPath(), kind));
-      }
+      addAnalysisError(e, currentFile.getPath(), kind);
+    }
+  }
+
+  private void addAnalysisError(Exception e, String path, AnalysisError.Kind checkError) {
+    if (sonarComponents != null) {
+      sonarComponents.addAnalysisError(new AnalysisError(e, path, checkError));
     }
   }
 
@@ -201,9 +208,7 @@ public class VisitorsBridge {
   }
 
   public void processRecognitionException(RecognitionException e, File file) {
-    if (sonarComponents != null) {
-      sonarComponents.addAnalysisError(new AnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR));
-    }
+    addAnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR);
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
       this.visitFile(null);
       scanners.stream()

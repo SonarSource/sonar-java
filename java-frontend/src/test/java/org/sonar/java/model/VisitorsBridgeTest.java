@@ -22,10 +22,14 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
+import java.util.ArrayList;
+import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -117,4 +121,31 @@ public class VisitorsBridgeTest {
     }
   }
 
+  @Test
+  public void rethrow_exception_when_hidden_property_set_to_true() {
+    NullPointerException npe = new NullPointerException("BimBadaboum");
+    JavaFileScanner visitor = c -> {throw npe;};
+    File currentFile = new File("");
+    SensorContextTester sensorContextTester = SensorContextTester.create(currentFile);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null, null);
+    sonarComponents.setSensorContext(sensorContextTester);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singleton(visitor), new ArrayList<>(), sonarComponents);
+    visitorsBridge.setCurrentFile(currentFile);
+    try {
+      visitorsBridge.visitFile(null);
+      assertThat(sonarComponents.analysisErrors).hasSize(1);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Fail.fail("Exception should be swallowed when property is not set");
+    }
+
+    sensorContextTester.settings().appendProperty("sonar.java.failOnException", "true");
+    try {
+      visitorsBridge.visitFile(null);
+      Fail.fail("scanning of file should have raise an exception");
+    } catch (Exception e) {
+      assertThat(e).isSameAs(npe);
+    }
+
+  }
 }
