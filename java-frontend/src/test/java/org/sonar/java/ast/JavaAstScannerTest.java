@@ -172,6 +172,7 @@ public class JavaAstScannerTest {
   public void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = defaultJavaAstScanner();
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
     File scannedFile = new File("src/test/resources/AstScannerNoParseError.txt");
 
