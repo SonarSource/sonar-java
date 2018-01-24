@@ -4,7 +4,6 @@
  */
 package android.support.annotation;
 
-@MyAnnotation(Location.ALL)
 interface A {
   @MyAnnotation @org.bar.MyOtherAnnotation Object foo();
   Object bar();
@@ -14,6 +13,9 @@ interface A {
   @org.jetbrains.annotations.Nullable Object nullable3();
   @edu.umd.cs.findbugs.annotations.Nullable Object nullable4();
   @org.eclipse.jdt.annotation.Nullable Object nullable5();
+  @javax.annotation.Nonnull(when = javax.annotation.meta.When.UNKNOWN) Object nullable6();
+  @javax.annotation.Nonnull(when = javax.annotation.meta.When.MAYBE) Object nullable7();
+
 
   @javax.annotation.Nonnull Object nonnull1();
   @javax.validation.constraints.NotNull Object nonnull2();
@@ -22,15 +24,7 @@ interface A {
   @lombok.NonNull Object nonnull5();
   @NonNull Object nonnull6(); // android annotation
   @org.eclipse.jdt.annotation.NonNull Object nonnull7();
-}
-
-@interface MyAnnotation {
-  public Location[] value() default Location.ALL;
-}
-
-
-enum Location {
-  ALL, PARAMETER, RETURN_TYPE;
+  @javax.annotation.Nonnull(when = javax.annotation.meta.When.ALWAYS) Object nonnull8();
 }
 
 // fake 'android.support.annotation.NonNull' annotation
