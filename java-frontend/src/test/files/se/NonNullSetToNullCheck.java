@@ -1,5 +1,6 @@
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.meta.When;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +32,21 @@ public class MainClass {
   @Nonnull
   public String colorMix() {
     return null;  // Noncompliant {{This method's return value is marked "javax.annotation.Nonnull" but null is returned.}}
+  }
+
+  @Nonnull(when = When.MAYBE)
+  public String maybeNull() {
+    return null; // Compliant
+  }
+
+  @Nonnull(when = When.UNKNOWN)
+  public String unknownNull() {
+    return null; // Compliant
+  }
+
+  @Nonnull(when = When.ALWAYS)
+  public String neverNull() {
+    return null; // Noncompliant
   }
 
   @Nonnull

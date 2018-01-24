@@ -59,12 +59,66 @@ public final class NullableAnnotationUtils {
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
-    return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+    return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isNullableThroughNonNull(symbol);
+  }
+
+  private static boolean isNullableThroughNonNull(Symbol symbol) {
+    List<SymbolMetadata.AnnotationValue> valuesForAnnotation = symbol.metadata().valuesForAnnotation("javax.annotation.Nonnull");
+    if (valuesForAnnotation == null) {
+      return false;
+    }
+    if (valuesForAnnotation.isEmpty()) {
+      return false;
+    }
+    return checkAnnotationParameter(valuesForAnnotation, "when", "MAYBE") || checkAnnotationParameter(valuesForAnnotation, "when", "UNKNOWN");
+  }
+
+  private static boolean checkAnnotationParameter(List<SymbolMetadata.AnnotationValue> valuesForAnnotation, String fieldName, String expectedValue) {
+    return valuesForAnnotation.stream()
+      .filter(annotationValue -> fieldName.equals(annotationValue.name()))
+      .anyMatch(annotationValue -> isExceptecedValue(annotationValue.value(), expectedValue));
+  }
+
+  private static boolean isExceptecedValue(Object annotationValue, String expectedValue) {
+    if (annotationValue instanceof Tree) {
+      // from sources
+      return containsValue((Tree) annotationValue, expectedValue);
+    }
+    // from binaries
+    if (annotationValue instanceof Object[]) {
+      return containsValue((Object[]) annotationValue, expectedValue);
+    }
+    return expectedValue.equals(((Symbol) annotationValue).name());
+  }
+
+  private static boolean containsValue(Tree annotationValue, String expectedValue) {
+    Symbol symbol;
+    switch (annotationValue.kind()) {
+      case IDENTIFIER:
+        symbol = ((IdentifierTree) annotationValue).symbol();
+        break;
+      case MEMBER_SELECT:
+        symbol = ((MemberSelectExpressionTree) annotationValue).identifier().symbol();
+        break;
+      case NEW_ARRAY:
+        return ((NewArrayTree) annotationValue).initializers().stream().anyMatch(expr -> containsValue(expr, expectedValue));
+      default:
+        throw new IllegalArgumentException("Unexpected tree used to parameterize annotation");
+    }
+    return expectedValue.equals(symbol.name());
+  }
+
+  private static boolean containsValue(Object[] annotationValue, String expectedValue) {
+    return Arrays.stream(annotationValue).map(Symbol.class::cast).anyMatch(symbol -> expectedValue.equals(symbol.name()));
   }
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
+    if (isNullableThroughNonNull(symbol)) {
+      return false;
+    }
     SymbolMetadata metadata = symbol.metadata();
-    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isMethodAnnotatedWithEclipseNonNullReturnType(symbol);
+    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)
+      || isMethodAnnotatedWithEclipseNonNullReturnType(symbol);
   }
 
   private static boolean isMethodAnnotatedWithEclipseNonNullReturnType(Symbol symbol) {
@@ -74,6 +128,9 @@ public final class NullableAnnotationUtils {
   @CheckForNull
   public static String nonNullAnnotation(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
+    if (isNullableThroughNonNull(symbol)) {
+      return null;
+    }
     Optional<String> result = NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst();
     if (result.isPresent()) {
       return result.get();
@@ -113,41 +170,10 @@ public final class NullableAnnotationUtils {
   }
 
   private static boolean isGloballyAnnotatedWithEclipseNonNullByDefault(Symbol.MethodSymbol symbol, String parameter) {
-    List<SymbolMetadata.AnnotationValue> annotationValues = valuesForGlobalAnnotation(symbol, ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
-    if (annotationValues == null) {
+    List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation = valuesForGlobalAnnotation(symbol, ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
+    if (valuesForGlobalAnnotation == null) {
       return false;
     }
-    if (annotationValues.isEmpty()) {
-      // annotation default value include parameters
-      return true;
-    }
-    Object annotationValue = annotationValues.get(0).value();
-    if (annotationValue instanceof Tree) {
-      // from sources
-      return containsEclipseDefaultLocation((Tree) annotationValue, parameter);
-    }
-    // from binaries
-    return containsEclipseDefaultLocation((Object[]) annotationValue, parameter);
-  }
-
-  private static boolean containsEclipseDefaultLocation(Tree defaultLocation, String target) {
-    Symbol symbol;
-    switch (defaultLocation.kind()) {
-      case IDENTIFIER:
-        symbol = ((IdentifierTree) defaultLocation).symbol();
-        break;
-      case MEMBER_SELECT:
-        symbol = ((MemberSelectExpressionTree) defaultLocation).identifier().symbol();
-        break;
-      case NEW_ARRAY:
-        return ((NewArrayTree) defaultLocation).initializers().stream().anyMatch(expr -> containsEclipseDefaultLocation(expr, target));
-      default:
-        throw new IllegalArgumentException("Unexpected tree used to parameterize annotation");
-    }
-    return target.equals(symbol.name());
-  }
-
-  private static boolean containsEclipseDefaultLocation(Object[] defaultLocation, String target) {
-    return Arrays.stream(defaultLocation).map(Symbol.class::cast).anyMatch(symbol -> target.equals(symbol.name()));
+    return valuesForGlobalAnnotation.isEmpty() || checkAnnotationParameter(valuesForGlobalAnnotation, "value", parameter);
   }
 }
