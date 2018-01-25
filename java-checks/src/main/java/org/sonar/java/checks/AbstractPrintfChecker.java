@@ -20,6 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -29,19 +41,11 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
   private static final String FORMAT_METHOD_NAME = "format";
+  protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn");
 
   protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
   protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("log")
@@ -52,7 +56,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return ImmutableList.<MethodMatcher>builder().add(
       MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),
@@ -61,8 +65,18 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withAnyParameters(),
       MESSAGE_FORMAT,
       JAVA_UTIL_LOGGER
-      );
+      )
+      .addAll(slf4jMethods())
+      .build();
   }
+
+  private static Collection<MethodMatcher> slf4jMethods() {
+    return LEVELS.stream()
+      .map(l -> MethodMatcher.create().typeDefinition("org.slf4j.Logger").name(l).withAnyParameters())
+      .collect(Collectors.toList());
+  }
+
+
 
   protected abstract void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
@@ -77,7 +91,10 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
 
-  protected static Set<Integer> getMessageFormatIndexes(String formatString) {
+  protected static Set<Integer> getMessageFormatIndexes(String formatString, MethodInvocationTree mit) {
+    if(LEVELS.contains(mit.symbol().name())) {
+      return IntStream.range(0, StringUtils.countMatches(formatString, "{}")).boxed().collect(Collectors.toSet());
+    }
     Matcher matcher = MESSAGE_FORMAT_PATTERN.matcher(formatString);
     Set<Integer> result = new HashSet<>();
     while (matcher.find()) {
