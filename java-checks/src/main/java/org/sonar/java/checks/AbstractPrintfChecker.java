@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -43,6 +44,10 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   private static final String FORMAT_METHOD_NAME = "format";
 
   protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
+  protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("log")
+    .addParameter("java.util.logging.Level")
+    .addParameter("java.lang.String")
+    .addParameter(TypeCriteria.anyType());
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
   @Override
@@ -54,7 +59,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withAnyParameters(),
-      MESSAGE_FORMAT
+      MESSAGE_FORMAT,
+      JAVA_UTIL_LOGGER
       );
   }
 
