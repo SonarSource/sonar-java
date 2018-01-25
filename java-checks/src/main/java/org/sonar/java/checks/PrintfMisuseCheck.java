@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -30,11 +34,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
@@ -50,6 +49,13 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (isMessageFormat && !mit.symbol().isStatic()) {
       // only consider the static method
       return;
+    }
+    if (!isMessageFormat) {
+      isMessageFormat = JAVA_UTIL_LOGGER.matches(mit);
+      if (isMessageFormat && mit.arguments().get(2).symbolType().isSubtypeOf("java.lang.Throwable")) {
+        // ignore formatting issues when last argument is a throwable
+        return;
+      }
     }
     // Check type of first argument:
     if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
