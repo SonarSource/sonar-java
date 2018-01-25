@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -58,16 +59,17 @@ public final class NullableAnnotationUtils {
     "org.jetbrains.annotations.NotNull");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
+    return isUsingNullable(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
+  }
+
+  private static boolean isUsingNullable(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
     return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isNullableThroughNonNull(symbol);
   }
 
   private static boolean isNullableThroughNonNull(Symbol symbol) {
     List<SymbolMetadata.AnnotationValue> valuesForAnnotation = symbol.metadata().valuesForAnnotation("javax.annotation.Nonnull");
-    if (valuesForAnnotation == null) {
-      return false;
-    }
-    if (valuesForAnnotation.isEmpty()) {
+    if (valuesForAnnotation == null || valuesForAnnotation.isEmpty()) {
       return false;
     }
     return checkAnnotationParameter(valuesForAnnotation, "when", "MAYBE") || checkAnnotationParameter(valuesForAnnotation, "when", "UNKNOWN");
@@ -76,10 +78,10 @@ public final class NullableAnnotationUtils {
   private static boolean checkAnnotationParameter(List<SymbolMetadata.AnnotationValue> valuesForAnnotation, String fieldName, String expectedValue) {
     return valuesForAnnotation.stream()
       .filter(annotationValue -> fieldName.equals(annotationValue.name()))
-      .anyMatch(annotationValue -> isExceptecedValue(annotationValue.value(), expectedValue));
+      .anyMatch(annotationValue -> isExpectedValue(annotationValue.value(), expectedValue));
   }
 
-  private static boolean isExceptecedValue(Object annotationValue, String expectedValue) {
+  private static boolean isExpectedValue(Object annotationValue, String expectedValue) {
     if (annotationValue instanceof Tree) {
       // from sources
       return containsValue((Tree) annotationValue, expectedValue);
@@ -113,12 +115,15 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
+    return isUsingNonNull(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
+  }
+
+  private static boolean isUsingNonNull(Symbol symbol) {
     if (isNullableThroughNonNull(symbol)) {
       return false;
     }
     SymbolMetadata metadata = symbol.metadata();
-    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)
-      || isMethodAnnotatedWithEclipseNonNullReturnType(symbol);
+    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isMethodAnnotatedWithEclipseNonNullReturnType(symbol);
   }
 
   private static boolean isMethodAnnotatedWithEclipseNonNullReturnType(Symbol symbol) {
