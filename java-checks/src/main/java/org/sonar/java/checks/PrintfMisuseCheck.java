@@ -43,8 +43,6 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree formatStringTree;
-    List<ExpressionTree> args;
     boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
     if (isMessageFormat && !mit.symbol().isStatic()) {
       // only consider the static method
@@ -52,11 +50,24 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
     if (!isMessageFormat) {
       isMessageFormat = JAVA_UTIL_LOGGER.matches(mit);
-      if (isMessageFormat && mit.arguments().get(2).symbolType().isSubtypeOf("java.lang.Throwable")) {
+      if (isMessageFormat && mit.arguments().get(mit.arguments().size() - 1).symbolType().isSubtypeOf("java.lang.Throwable")) {
         // ignore formatting issues when last argument is a throwable
         return;
       }
     }
+    if(!isMessageFormat) {
+      isMessageFormat = LEVELS.contains(mit.symbol().name());
+      if (isMessageFormat && mit.arguments().get(mit.arguments().size() - 1).symbolType().isSubtypeOf("java.lang.Throwable")) {
+        // ignore formatting issues when last argument is a throwable
+        return;
+      }
+    }
+    checkFormatting(mit, isMessageFormat);
+  }
+
+  private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
+    ExpressionTree formatStringTree;
+    List<ExpressionTree> args;
     // Check type of first argument:
     if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);
@@ -123,7 +134,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
-    Set<Integer> indexes = getMessageFormatIndexes(newFormatString);
+    Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
     List<ExpressionTree> newArgs = args;
     if (newArgs.size() == 1) {
       ExpressionTree firstArg = newArgs.get(0);

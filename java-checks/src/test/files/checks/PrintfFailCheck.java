@@ -134,5 +134,49 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
+
+    org.slf4j.Logger slf4jLog;
+    org.slf4j.Marker marker;
+
+    slf4jLog.debug(marker, "message {}"); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.debug(marker, "message ", 1);
+    slf4jLog.debug(marker, "message {}", 1);
+    slf4jLog.debug(marker, "message {} - {}", 1, 2);
+    slf4jLog.debug(marker, "message {}", 1, 2);
+    slf4jLog.debug(marker, "message {} {} {}", 1, 2, 3);
+    slf4jLog.debug(marker, "message {} {}", 1, 2, 3);
+    slf4jLog.debug(marker, "message {} {}", new Object[]{1, 2, 3});
+    slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2, 3});
+    slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2}); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.debug(marker, "message ", new Exception());
+    slf4jLog.debug(marker, "message {}", new Exception());
+
+
+    slf4jLog.debug("message {}"); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.debug("message ", 1);
+    slf4jLog.debug("message {}", 1);
+    slf4jLog.debug("message {} - {}", 1, 2);
+    slf4jLog.debug("message {}", 1, 2);
+    slf4jLog.debug("message {} {} {}", 1, 2, 3);
+    slf4jLog.debug("message {} {}", 1, 2, 3);
+    slf4jLog.debug("message {} {}", new Object[]{1, 2, 3});
+    slf4jLog.debug("message {} {} {}", new Object[]{1, 2, 3});
+    slf4jLog.debug("message ", new Exception());
+    slf4jLog.debug("message {}", new Exception());
+
+    slf4jLog.error("message {}"); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message ", 1);
+    slf4jLog.error("message {}", 1);
+    slf4jLog.info("message {} - {}", 1, 2);
+    slf4jLog.info("message {}", 1, 2);
+    slf4jLog.info("message {} {} {}", 1, 2, 3);
+    slf4jLog.trace("message {} {}", 1, 2, 3);
+    slf4jLog.trace("message {} {}", new Object[]{1, 2, 3});
+    slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3});
+    slf4jLog.trace("message ", new Exception());
+    slf4jLog.trace("message {}", new Exception());
+    slf4jLog.warn("message {}"); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.warn("message ", 1);
+    slf4jLog.warn("message {}", 1);
   }
 }
