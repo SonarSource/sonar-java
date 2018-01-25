@@ -15,7 +15,9 @@ interface A {
   @org.eclipse.jdt.annotation.Nullable Object nullable5();
   @javax.annotation.Nonnull(when = javax.annotation.meta.When.UNKNOWN) Object nullable6();
   @javax.annotation.Nonnull(when = javax.annotation.meta.When.MAYBE) Object nullable7();
-
+  @MyNullableAnnotation Object nullable8();
+  @MyOtherNullableAnnotation Object nullable9();
+  @MayBeNullAnnotation Object nullable10();
 
   @javax.annotation.Nonnull Object nonnull1();
   @javax.validation.constraints.NotNull Object nonnull2();
@@ -25,7 +27,22 @@ interface A {
   @NonNull Object nonnull6(); // android annotation
   @org.eclipse.jdt.annotation.NonNull Object nonnull7();
   @javax.annotation.Nonnull(when = javax.annotation.meta.When.ALWAYS) Object nonnull8();
+  @MyNonNullAnnotation Object nonnull9();
 }
 
 // fake 'android.support.annotation.NonNull' annotation
 @interface NonNull { }
+
+@javax.annotation.Nullable
+@interface MyNullableAnnotation { }
+
+@javax.annotation.Nonnull(when = javax.annotation.meta.When.MAYBE)
+@interface MyOtherNullableAnnotation { }
+
+@MyNullableAnnotation
+@interface MayBeNullAnnotation { }
+
+@javax.annotation.Nonnull
+@interface MyNonNullAnnotation { }
+
+@interface MyAnnotation { }

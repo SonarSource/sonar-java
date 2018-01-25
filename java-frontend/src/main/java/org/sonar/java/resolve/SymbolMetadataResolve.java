@@ -20,10 +20,14 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-
-import javax.annotation.CheckForNull;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class SymbolMetadataResolve implements SymbolMetadata {
 
@@ -36,6 +40,24 @@ public class SymbolMetadataResolve implements SymbolMetadata {
   @Override
   public List<AnnotationInstance> annotations() {
     return annotations;
+  }
+
+  public List<Symbol> metaAnnotations() {
+    return metaAnnotations(new HashSet<>());
+  }
+
+  private List<Symbol> metaAnnotations(Set<Type> knownTypes) {
+    List<Symbol> result = new ArrayList<>();
+    for (AnnotationInstance annotationInstance : annotations) {
+      Symbol annotationSymbol = annotationInstance.symbol();
+      Type annotationType = annotationSymbol.type();
+      if (!knownTypes.contains(annotationType)) {
+        knownTypes.add(annotationType);
+        result.add(annotationSymbol);
+        result.addAll(((SymbolMetadataResolve) annotationSymbol.metadata()).metaAnnotations(knownTypes));
+      }
+    }
+    return new ArrayList<>(result);
   }
 
   void addAnnotation(AnnotationInstance annotationInstance) {
