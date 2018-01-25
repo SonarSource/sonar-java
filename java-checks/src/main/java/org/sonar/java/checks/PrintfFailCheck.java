@@ -51,6 +51,13 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
       // only consider the static method
       return;
     }
+    if (!isMessageFormat) {
+      isMessageFormat = JAVA_UTIL_LOGGER.matches(mit);
+      if (isMessageFormat && mit.arguments().get(2).symbolType().isSubtypeOf("java.lang.Throwable")) {
+        // ignore formatting issues when last argument is a throwable
+        return;
+      }
+    }
     // Check type of first argument:
     if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);

@@ -113,5 +113,26 @@ class A {
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     MessageFormat.format("value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
+
+    java.util.logging.Logger logger;
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,$'#',##}", value); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "Result ''{0}''.", 14); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "Result '{0}'", 14);
+    logger.log(java.util.logging.Level.SEVERE, "Result ' {0}", 14); // Noncompliant {{Single quote "'" must be escaped.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {{{0}}.", 14); // Noncompliant {{Single left curly braces "{" must be escaped.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.toString());
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.hashCode()); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14);
+    logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
+    logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14); // Noncompliant {{Not enough arguments.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14); // Noncompliant {{Not enough arguments.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", new String[]{14,18}); // compliant
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", new String[]{14,18, 12}); // compliant
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Not enough arguments.}}
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
+    logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
+    logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
   }
 }
