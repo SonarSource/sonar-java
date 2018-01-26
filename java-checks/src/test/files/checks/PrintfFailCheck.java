@@ -178,5 +178,8 @@ class A {
     slf4jLog.warn("message {}"); // Noncompliant {{Not enough arguments.}}
     slf4jLog.warn("message ", 1);
     slf4jLog.warn("message {}", 1);
+    slf4jLog.warn("Output on the error channel detected: this is probably due to a problem on pylint's side.");
+    String fileKey;
+    slf4jLog.warn("The resource for '{}' is not found, drilling down to the details of this test won't be possible", fileKey);
   }
 }
