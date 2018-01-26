@@ -14,6 +14,14 @@ String.format("%&lt; is equals to %d", 2);   //Noncompliant; the argument index 
 MessageFormat.format("Result {1}.", value); // Noncompliant; Not enough arguments. (first element is {0})
 MessageFormat.format("Result {{0}.", value); // Noncompliant; Unbalanced number of curly brace (single curly braces should be escaped)
 MessageFormat.format("Result ' {0}", value); // Noncompliant; Unbalanced number of quotes (single quote must be escaped)
+
+java.util.logging.Logger logger;
+logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14); // Noncompliant {{Not enough arguments.}}
+
+org.slf4j.Logger slf4jLog;
+org.slf4j.Marker marker;
+
+slf4jLog.debug(marker, "message {}"); // Noncompliant {{Not enough arguments.}}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -26,10 +34,17 @@ String.format("%d is equals to %&lt;", 2);
 MessageFormat.format("Result {0}.", value);
 MessageFormat.format("Result {0} &amp; {1}.", value, value);
 MessageFormat.format("Result {0}.", myObject);
+
+java.util.logging.Logger logger;
+logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14, 2); // Noncompliant {{Not enough arguments.}}
+
+org.slf4j.Logger slf4jLog;
+org.slf4j.Marker marker;
+
+slf4jLog.debug(marker, "message {}", 1);
 </pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/wQA1">CERT, FIO47-C.</a> - Use valid format strings </li>
-  <li> <a href="https://www.securecoding.cert.org/confluence/x/e4EyAQ">CERT, FIO00-CPP.</a> - Take care when creating format strings </li>
 </ul>
 

@@ -10,7 +10,7 @@
     "cwe",
     "error-handling",
     "cert",
-    "owasp-a3"
+    "owasp-a6"
   ],
   "standards": [
     "CWE",

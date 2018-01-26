@@ -1,6 +1,6 @@
 {
   "title": "Value-based objects should not be serialized",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -16,6 +16,17 @@ String s = String.format("string without arguments"); // Noncompliant
 MessageFormat.format("Result '{0}'.", value); // Noncompliant; String contains no format specifiers. (quote are discarding format specifiers)
 MessageFormat.format("Result {0}.", value, value);  // Noncompliant; 2nd argument is not used
 MessageFormat.format("Result {0}.", myObject.toString()); // Noncompliant; no need to call toString() on objects
+
+java.util.Logger logger;
+logger.log(java.util.logging.Level.SEVERE, "Result {0}.", myObject.toString()); // Noncompliant; no need to call toString() on objects
+logger.log(java.util.logging.Level.SEVERE, "Result.", new Exception()); // compliant, parameter is an exception
+logger.log(java.util.logging.Level.SEVERE, "Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
+
+org.slf4j.Logger slf4jLog;
+org.slf4j.Marker marker;
+
+slf4jLog.debug(marker, "message {}");
+slf4jLog.debug(marker, "message ", 1); // Noncompliant {{String contains no format specifiers.}}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -30,10 +41,20 @@ String s = "string without arguments";
 MessageFormat.format("Result {0}.", value);
 MessageFormat.format("Result '{0}'  =  {0}", value);
 MessageFormat.format("Result {0}.", myObject);
+
+java.util.Logger logger;
+logger.log(java.util.logging.Level.SEVERE, "Result {0}.", myObject);
+logger.log(java.util.logging.Level.SEVERE, "Result {0}'", 14);
+
+
+org.slf4j.Logger slf4jLog;
+org.slf4j.Marker marker;
+
+slf4jLog.debug(marker, "message {}");
+slf4jLog.debug(marker, "message {}", 1);
 </pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/wQA1">CERT, FIO47-C.</a> - Use valid format strings </li>
-  <li> <a href="https://www.securecoding.cert.org/confluence/x/e4EyAQ">CERT, FIO00-CPP.</a> - Take care when creating format strings </li>
 </ul>
 

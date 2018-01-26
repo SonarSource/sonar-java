@@ -1,5 +1,5 @@
 {
-  "title": "The members of an interface declaration or class should appear in a pre-defined order",
+  "title": "The members of an interface or class declaration should appear in a pre-defined order",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
