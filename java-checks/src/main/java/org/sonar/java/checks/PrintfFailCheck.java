@@ -132,6 +132,9 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
+    if(LEVELS.contains(mit.symbol().name())) {
+      return false;
+    }
     String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
     int numberQuote = 0;
     for (int i = 0; i < withoutParam.length(); ++i) {
