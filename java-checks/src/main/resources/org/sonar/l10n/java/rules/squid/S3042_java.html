@@ -1,5 +1,5 @@
 <p>The purpose of synchronization is to ensure that only one thread executes a given block of code at a time. There's no real problem with marking
-<code>writeObject</code> <code>synchronized</code>, but if it's highly suspicious if this serialization-related method the only
+<code>writeObject</code> <code>synchronized</code>, but it's highly suspicious if this serialization-related method is the only
 <code>synchronized</code> code in a <code>class</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

@@ -9,8 +9,8 @@
   "tags": [
     "cwe",
     "websphere",
-    "owasp-a6",
-    "jee"
+    "jee",
+    "owasp-a7"
   ],
   "standards": [
     "CWE",

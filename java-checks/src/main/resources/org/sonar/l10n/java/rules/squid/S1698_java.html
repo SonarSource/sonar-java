@@ -4,10 +4,10 @@ method inherited from <code>Object</code> has not been overridden. In this case 
 suspicious uses of <code>==</code> and <code>!=</code> operators on objects whose <code>equals</code> methods are overridden.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-String firstName = getFirstName();   //String is a good example of a class overriding the equals method
+String firstName = getFirstName();   //String overrides equals
 String lastName = getLastName();
 
-if (firstName == lastName) { ... };   // Non-compliant, the two literals can have the same value and yet the condition is false
+if (firstName == lastName) { ... };   // Non-compliant; false even if the strings have the same value
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
