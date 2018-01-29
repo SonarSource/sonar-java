@@ -51,10 +51,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.se.ExplodedGraphWalker.EQUALS_METHODS;
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
-import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotationOnParameters;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -212,7 +209,6 @@ public class NonNullSetToNullCheck extends SECheck {
 
     private void checkNullArguments(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, List<SymbolicValue> argumentValues) {
       Scope parameters = symbol.getParameters();
-      String methodAnnotatedParameterNonNull = nonNullAnnotationOnParameters(symbol);
       if (parameters != null) {
         List<JavaSymbol> scopeSymbols = parameters.scopeSymbols();
         int parametersToTest = argumentValues.size();
@@ -221,28 +217,20 @@ public class NonNullSetToNullCheck extends SECheck {
           parametersToTest = scopeSymbols.size() - 1;
         }
         for (int i = 0; i < parametersToTest; i++) {
-          checkNullArgument(syntaxTree, symbol, scopeSymbols.get(i), argumentValues.get(i), i, methodAnnotatedParameterNonNull);
+          checkNullArgument(syntaxTree, symbol, scopeSymbols.get(i), argumentValues.get(i), i);
         }
       }
     }
 
-    private void checkNullArgument(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, JavaSymbol argumentSymbol, SymbolicValue argumentValue, int index,
-      @Nullable String methodAnnotatedParameterNonNull) {
+    private void checkNullArgument(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, JavaSymbol argumentSymbol, SymbolicValue argumentValue, int index) {
       ObjectConstraint constraint = programState.getConstraint(argumentValue, ObjectConstraint.class);
       if (constraint != null && constraint.isNull()) {
         String nonNullAnnotation = nonNullAnnotation(argumentSymbol);
         if (nonNullAnnotation != null) {
           String message = "Parameter {0} to this {1} is marked \"{2}\" but null could be passed.";
           reportIssue(syntaxTree, message, index + 1, (symbol.isConstructor() ? "constructor" : "call"), nonNullAnnotation);
-        } else if (methodAnnotatedParameterNonNull != null && !parameterIsNullable(symbol, argumentSymbol)) {
-          String message = "{0} is marked \"{1}\" but parameter {2} could be null.";
-          reportIssue(syntaxTree, message, (symbol.isConstructor() ? "Constructor" : ("\"" + symbol.name() + "\"")), methodAnnotatedParameterNonNull, index + 1);
         }
       }
-    }
-
-    private boolean parameterIsNullable(JavaSymbol.MethodJavaSymbol symbol, JavaSymbol argumentSymbol) {
-      return isAnnotatedNullable(argumentSymbol) || EQUALS_METHODS.anyMatch(symbol);
     }
   }
 
