@@ -18,10 +18,10 @@ class MethodAnnotation {
 
   @ParametersAreNonnullByDefault
   void qix(@Nullable Object singleObject, @Nullable Object[] objects) {
-    bar(singleObject); // Noncompliant {{"bar" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
+    bar(singleObject);
     if (singleObject != null) {} // Compliant
 
-    bar(objects); // Noncompliant {{"bar" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
+    bar(objects);
     if (objects != null) {} // Noncompliant {{Remove this expression which always evaluates to "true"}}
   }
 }

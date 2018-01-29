@@ -1,3 +1,4 @@
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.meta.When;
@@ -285,8 +286,8 @@ class HandleParametersAreNonnullByDefault {
   }
 
   void foo(Object o) {
-    foo(null); // Noncompliant {{"foo" is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
-    new HandleParametersAreNonnullByDefault(null); // Noncompliant {{Constructor is marked "javax.annotation.ParametersAreNonnullByDefault" but parameter 1 could be null.}}
+    foo(null); // Compliant - @ParametersAreNonnullByDefault not handled
+    new HandleParametersAreNonnullByDefault(null); // Compliant - @ParametersAreNonnullByDefault not handled
   }
 
   void bar(@Nullable Object o) {
@@ -302,11 +303,22 @@ class HandleParametersAreNonnullByDefault {
 class HandleEclipseParametersNonNull {
   @NonNullByDefault(DefaultLocation.PARAMETER)
   void foo(Object o) {
-    foo(null); // Noncompliant {{"foo" is marked "org.eclipse.jdt.annotation.NonNullByDefault" but parameter 1 could be null.}}
+    foo(null); // Compliant - @NonNullByDefault not handled
   }
 
   @NonNullByDefault(DefaultLocation.RETURN_TYPE)
   Object bar(Object o) {
     return bar(null); // Compliant
+  }
+}
+
+abstract class ExcludedMethods {
+  @CheckForNull
+  abstract Object getMyObject();
+
+  void foo() {
+    com.google.common.base.Preconditions.checkNotNull(getMyObject()); // Compliant
+    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo"); // Compliant
+    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo", new Object(), 2); // Compliant
   }
 }
