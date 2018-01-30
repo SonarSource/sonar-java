@@ -164,10 +164,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       .flatMap(i -> getAllMembers(i.symbol()))
       .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
     for (Symbol s : symbol.memberSymbols()) {
-      if (s instanceof Symbol.TypeSymbol) {
-        if (s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")) {
-          members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
-        }
+      if (s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")) {
+        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
       }
     }
     members = Stream.concat(members, defaultMethodsFromInterfaces);

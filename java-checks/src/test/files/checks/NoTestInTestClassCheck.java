@@ -229,3 +229,4 @@ class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
     }
   }
 }
+
