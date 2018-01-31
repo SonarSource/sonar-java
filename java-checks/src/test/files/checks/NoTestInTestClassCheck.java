@@ -11,6 +11,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -209,3 +210,23 @@ class CustomAnnotationTest {
 
 @org.junit.platform.commons.annotation.Testable
 @interface CustomAnnotation {}
+
+class NestedTest { // Compliant
+  @Nested
+  class NestedClass {
+    @Test
+    public void foo() {
+      Assert.assertTrue(true);
+    }
+  }
+}
+
+class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
+  @Nested
+  class NestedClass {
+    public void foo() {
+      Assert.assertTrue(true);
+    }
+  }
+}
+

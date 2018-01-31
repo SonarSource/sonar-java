@@ -163,6 +163,11 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol()))
       .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
+    for (Symbol s : symbol.memberSymbols()) {
+      if (s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")) {
+        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
+      }
+    }
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     return members;
   }
