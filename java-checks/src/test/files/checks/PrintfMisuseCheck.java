@@ -174,5 +174,7 @@ class A {
     slf4jLog.warn("message {}");
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
+    slf4jLog.warn("message");
+
   }
 }
