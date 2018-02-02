@@ -20,6 +20,9 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.base.Preconditions;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -34,11 +37,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S3655")
 public class OptionalGetBeforeIsPresentCheck extends SECheck {
@@ -171,7 +169,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
-        programState = null;
+        // continue exploration after reporting, assuming the optional is now present (killing any noise after the initial issue)
+        programState = programState.addConstraint(peek, OptionalConstraint.PRESENT);
       } else if (OPTIONAL_FILTER.matches(tree)) {
         // filter has one parameter, so optional is next item on stack
         SymbolicValue optionalSV = programState.peekValue(1);
