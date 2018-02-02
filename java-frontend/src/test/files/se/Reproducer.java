@@ -208,3 +208,24 @@ final class C {
   }
 
 }
+
+abstract class S3655noInterruption {
+
+  public void foo(boolean b) {
+    if (bar(b)) {
+      doSomething(42);
+    }
+  }
+
+  private boolean bar(boolean b) {
+    if (b) {
+      java.util.Optional<Object> value = getValue();
+      doSomething(value.get()); // Noncompliant {{Call "value.isPresent()" before accessing the value.}}
+      return true;
+    }
+    return false;
+  }
+
+  public abstract void doSomething(Object o);
+  public abstract java.util.Optional<Object> getValue();
+}

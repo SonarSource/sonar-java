@@ -12,12 +12,17 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClientProvider.java':[
 52,
+64,
+64,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/NotificationDaemon.java':[
 66,
+67,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerFileSystemImpl.java':[
 40,
+41,
+42,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerLogging.java':[
 67,
@@ -27,6 +32,7 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/UpdateCenterClient.java':[
 77,
+78,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/GroupsAction.java':[
 134,
