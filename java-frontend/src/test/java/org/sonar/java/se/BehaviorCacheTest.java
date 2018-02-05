@@ -141,6 +141,11 @@ public class BehaviorCacheTest {
   }
 
   @Test
+  public void guava_common_Strings() throws Exception {
+    verifyNoIssueOnFile("src/test/files/se/GuavaCommonStrings.java");
+  }
+
+  @Test
   public void collections_utils_is_empty_method() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CollectionUtilsIsEmpty.java");
   }
