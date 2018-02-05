@@ -19,9 +19,9 @@
  */
 package org.sonar.java.it;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.locator.FileLocation;
@@ -31,37 +31,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.wsclient.internal.HttpRequestFactory;
 import org.sonar.wsclient.jsonsimple.JSONValue;
 
-public class ProfileGenerator {
 
-  static void generate(Orchestrator orchestrator, String language, String repositoryKey, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+public class ProfileGenerator {
+  private static final String LANGUAGE = "java";
+  private static final String REPOSITORY_KEY = "squid";
+
+  static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       StringBuilder sb = new StringBuilder()
         .append("<profile>")
         .append("<name>rules</name>")
-        .append("<language>").append(language).append("</language>")
+        .append("<language>").append(LANGUAGE).append("</language>")
         .append("<rules>");
 
-      List<String> ruleKeys = Lists.newArrayList();
-      String json = new HttpRequestFactory(orchestrator.getServer().getUrl())
-        .get("/api/rules/search", ImmutableMap.<String, Object>of("languages", language, "repositories", repositoryKey, "ps", "1000"));
-      @SuppressWarnings("unchecked")
-      List<Map> jsonRules = (List<Map>) ((Map) JSONValue.parse(json)).get("rules");
-      for (Map jsonRule : jsonRules) {
-        String key = (String) jsonRule.get("key");
-        ruleKeys.add(key.split(":")[1]);
-      }
-
-      for (String key : ruleKeys) {
+      for (String key : getRuleKeys(orchestrator)) {
         if (excluded.contains(key) || (!subsetOfEnabledRules.isEmpty() && !subsetOfEnabledRules.contains(key))) {
           continue;
         }
         activatedRuleKeys.add(key);
         sb.append("<rule>")
-          .append("<repositoryKey>").append(repositoryKey).append("</repositoryKey>")
+          .append("<repositoryKey>").append(REPOSITORY_KEY).append("</repositoryKey>")
           .append("<key>").append(key).append("</key>")
           .append("<priority>INFO</priority>");
         if (rulesParameters.containsKey(key)) {
@@ -87,5 +81,22 @@ public class ProfileGenerator {
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  private static List<String> getRuleKeys(Orchestrator orchestrator) {
+    String json = new HttpRequestFactory(orchestrator.getServer().getUrl())
+      .get("/api/rules/search", ImmutableMap.<String, Object>of("languages", LANGUAGE, "repositories", REPOSITORY_KEY, "ps", "500"));
+    @SuppressWarnings("unchecked")
+    Map<Object, Object> jsonObject = (Map<Object, Object>) JSONValue.parse(json);
+
+    Preconditions.checkState((Long) jsonObject.get("total") < 500, "Only collect the 500 first rules. Requires pagination in case of more rules");
+
+    @SuppressWarnings("unchecked")
+    List<Map<Object, Object>> jsonRules = (List<Map<Object, Object>>) jsonObject.get("rules");
+
+    return jsonRules.stream()
+      .map(jsonRule -> (String) jsonRule.get("key"))
+      .map(key -> key.split(":")[1])
+      .collect(Collectors.toList());
   }
 }
