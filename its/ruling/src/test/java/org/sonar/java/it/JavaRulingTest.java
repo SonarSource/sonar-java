@@ -103,7 +103,7 @@ public class JavaRulingTest {
       "LeftCurlyBraceStartLineCheck"
       );
     Set<String> activatedRuleKeys = new HashSet<>();
-    ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
+    ProfileGenerator.generate(orchestrator, rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
     instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);

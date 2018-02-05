@@ -34,20 +34,23 @@ import java.util.Set;
 import org.sonar.wsclient.internal.HttpRequestFactory;
 import org.sonar.wsclient.jsonsimple.JSONValue;
 
-public class ProfileGenerator {
 
-  static void generate(Orchestrator orchestrator, String language, String repositoryKey, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+public class ProfileGenerator {
+  private static final String LANGUAGE = "java";
+  private static final String REPOSITORY_KEY = "squid";
+
+  static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       StringBuilder sb = new StringBuilder()
         .append("<profile>")
         .append("<name>rules</name>")
-        .append("<language>").append(language).append("</language>")
+        .append("<language>").append(LANGUAGE).append("</language>")
         .append("<rules>");
 
       List<String> ruleKeys = Lists.newArrayList();
       String json = new HttpRequestFactory(orchestrator.getServer().getUrl())
-        .get("/api/rules/search", ImmutableMap.<String, Object>of("languages", language, "repositories", repositoryKey, "ps", "1000"));
+        .get("/api/rules/search", ImmutableMap.<String, Object>of("languages", LANGUAGE, "repositories", REPOSITORY_KEY, "ps", "1000"));
       @SuppressWarnings("unchecked")
       List<Map> jsonRules = (List<Map>) ((Map) JSONValue.parse(json)).get("rules");
       for (Map jsonRule : jsonRules) {
@@ -61,7 +64,7 @@ public class ProfileGenerator {
         }
         activatedRuleKeys.add(key);
         sb.append("<rule>")
-          .append("<repositoryKey>").append(repositoryKey).append("</repositoryKey>")
+          .append("<repositoryKey>").append(REPOSITORY_KEY).append("</repositoryKey>")
           .append("<key>").append(key).append("</key>")
           .append("<priority>INFO</priority>");
         if (rulesParameters.containsKey(key)) {
