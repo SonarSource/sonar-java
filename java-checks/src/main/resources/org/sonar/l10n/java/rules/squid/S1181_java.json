@@ -1,5 +1,5 @@
 {
-  "title": "Throwable and Error should not be caught",
+  "title": "Throwable and Error may not be caught",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -9,14 +9,13 @@
   "tags": [
     "cwe",
     "error-handling",
-    "bad-practice",
     "cert"
   ],
   "standards": [
     "CWE",
     "CERT"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1181",
   "sqKey": "S1181"
 }
