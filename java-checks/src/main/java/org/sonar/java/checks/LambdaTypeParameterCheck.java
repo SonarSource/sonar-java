@@ -42,7 +42,12 @@ public class LambdaTypeParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    List<VariableTree> parameters = ((LambdaExpressionTree) tree).parameters();
+    LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
+    List<VariableTree> parameters = lambdaExpressionTree.parameters();
+    if(parameters.size() <= 2 && !lambdaExpressionTree.body().is(Tree.Kind.BLOCK)) {
+      // ignore lambdas with one or two params and a non-block body
+      return;
+    }
     String missingTypeParameters = parameters.stream()
       .filter(variable -> variable.type().is(Tree.Kind.INFERED_TYPE))
       .map(VariableTree::simpleName)
