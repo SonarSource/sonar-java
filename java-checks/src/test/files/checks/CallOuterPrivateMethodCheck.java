@@ -56,3 +56,30 @@ class DumpElement {
     }
   }
 }
+
+class UnknownInvocation {
+  private void invoke(int a) {}
+  private void invoke2(int a, int b) {} // Noncompliant
+  private void invoke3(String a, String b, int... c) {}
+  private void invoke4(String a, String b, int... c) {} // Noncompliant invoke4 in InnerTwo can't be this method
+  private void invoke5(int a) {}
+
+  private class InnerOne {
+    void fun(){
+      invoke(1);
+      invoke2(1, 2);
+      invoke3("", "");
+      invoke4("", "");
+      invoke5(1);
+    }
+  }
+  private class InnerTwo {
+    void fun(){
+      invoke(unknown);
+      invoke2(1); // unknown
+      invoke3("", unknown);
+      invoke4("");
+      invoke5(1);
+    }
+  }
+}

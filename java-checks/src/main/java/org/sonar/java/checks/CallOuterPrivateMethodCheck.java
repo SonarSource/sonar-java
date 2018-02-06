@@ -19,12 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -32,11 +41,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 @Rule(key = "S3398")
 public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
+
+  private MethodInvocationVisitor methodInvocationVisitor;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -44,13 +52,20 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void scanFile(JavaFileScannerContext context) {
+    methodInvocationVisitor = new MethodInvocationVisitor();
+    super.scanFile(context);
+    methodInvocationVisitor.checkUsages();
+    methodInvocationVisitor = null;
+  }
+
+  @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
     if (isInnerClass(classSymbol)) {
-      MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor(classSymbol);
+      methodInvocationVisitor.setClassSymbol(classSymbol);
       classTree.accept(methodInvocationVisitor);
-      methodInvocationVisitor.checkUsages();
     }
   }
 
@@ -59,17 +74,23 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
-    private final Symbol.TypeSymbol classSymbol;
-    private final Multiset<Symbol> usages = HashMultiset.create();
+    private final Map<Symbol.TypeSymbol, Multiset<Symbol>> usagesByInnerClass = new HashMap<>();
+    private final Multimap<String, MethodInvocationTree> unknownInvocations = HashMultimap.create();
+    private Symbol.TypeSymbol classSymbol;
+    private Multiset<Symbol> usages;
 
-    public MethodInvocationVisitor(Symbol.TypeSymbol classSymbol) {
+    public void setClassSymbol(Symbol.TypeSymbol classSymbol) {
       this.classSymbol = classSymbol;
+      usages = HashMultiset.create();
+      usagesByInnerClass.put(classSymbol, usages);
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
-      if (isPrivateMethodOfOuterClass(symbol)) {
+      if(symbol.isUnknown()) {
+        unknownInvocations.put(MethodsHelper.methodName(tree).name(), tree);
+      } else if (isPrivateMethodOfOuterClass(symbol)) {
         usages.add(symbol);
       }
       super.visitMethodInvocation(tree);
@@ -79,15 +100,29 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       return symbol.isPrivate() && symbol.owner().equals(classSymbol.owner()) && !"<init>".equals(symbol.name());
     }
 
-    public void checkUsages() {
-      for (Symbol methodUsed : usages.elementSet()) {
-        if (methodUsed.usages().size() == usages.count(methodUsed)) {
-          reportIssueOnMethod((MethodTree) methodUsed.declaration());
+    void checkUsages() {
+      for (Map.Entry<Symbol.TypeSymbol, Multiset<Symbol>> usageByInnerClassEntry : usagesByInnerClass.entrySet()) {
+        Multiset<Symbol> innerClassUsages = usageByInnerClassEntry.getValue();
+        for (Symbol methodUsed : innerClassUsages.elementSet()) {
+          boolean matchArity = unknownInvocations.get(methodUsed.name())
+            .stream()
+            .anyMatch(mit -> hasSameArity((Symbol.MethodSymbol) methodUsed, mit));
+          // if an unknown method has same name and same arity, do not report, likely a FP.
+          if (!matchArity && methodUsed.usages().size() == innerClassUsages.count(methodUsed)) {
+            reportIssueOnMethod((MethodTree) methodUsed.declaration(), usageByInnerClassEntry.getKey());
+          }
         }
       }
     }
 
-    private void reportIssueOnMethod(@Nullable MethodTree declaration) {
+    private boolean hasSameArity(Symbol.MethodSymbol methodUsed, MethodInvocationTree mit) {
+      int formalArity = methodUsed.parameterTypes().size();
+      int invokedArity = mit.arguments().size();
+      return formalArity == invokedArity ||
+        (((JavaSymbol.MethodJavaSymbol) methodUsed).isVarArgs() && invokedArity >= formalArity - 1);
+    }
+
+    private void reportIssueOnMethod(@Nullable MethodTree declaration, Symbol.TypeSymbol classSymbol) {
       if (declaration != null) {
         String message = "Move this method into ";
         if (classSymbol.name().isEmpty()) {
