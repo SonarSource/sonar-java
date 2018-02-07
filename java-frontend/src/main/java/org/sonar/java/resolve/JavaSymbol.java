@@ -68,6 +68,7 @@ public class JavaSymbol implements Symbol {
   boolean completing = false;
   private ImmutableList.Builder<IdentifierTree> usagesBuilder;
   private List<IdentifierTree> usages;
+  private List<Runnable> callbacks = new ArrayList<>();
 
   public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
     this.kind = kind;
@@ -107,6 +108,7 @@ public class JavaSymbol implements Symbol {
       completing = true;
       c.complete(this);
       completing = false;
+      callbacks.forEach(Runnable::run);
     }
   }
 
@@ -270,6 +272,10 @@ public class JavaSymbol implements Symbol {
   @Override
   public Tree declaration() {
     return null;
+  }
+
+  public void callbackOnceComplete(Runnable callback) {
+    callbacks.add(callback);
   }
 
   interface Completer {
