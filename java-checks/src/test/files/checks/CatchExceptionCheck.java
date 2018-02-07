@@ -105,4 +105,17 @@ class ExceptionsWithParametrizedMethods {
       }
     }
   }
+
+  class ExceptionThrower {
+    ExceptionThrower() throws Exception {
+      throw new Exception("");
+    }
+  }
+  void instanceExceptionThrower() {
+    try {
+      String s = new String();
+      ExceptionThrower et = new ExceptionThrower();
+    } catch(Exception e) {
+    }
+  }
 }

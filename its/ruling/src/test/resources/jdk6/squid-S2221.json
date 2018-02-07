@@ -194,9 +194,6 @@
 'jdk6:java/text/AttributedString.java':[
 513,
 ],
-'jdk6:java/text/BreakIterator.java':[
-595,
-],
 'jdk6:java/text/ChoiceFormat.java':[
 196,
 ],

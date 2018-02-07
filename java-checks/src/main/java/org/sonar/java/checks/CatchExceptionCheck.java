@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -28,13 +30,12 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
-
-import java.util.List;
 
 @Rule(key = "S2221")
 public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
@@ -89,22 +90,32 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
     }
 
     @Override
+    protected void scan(@Nullable Tree tree) {
+      if(containsExplicitThrowsException) {
+        return;
+      }
+      super.scan(tree);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (containsExplicitThrowsException) {
+      if (isThrowingJavaLangException(tree.symbol())) {
         return;
-      }
-      Symbol symbol = tree.symbol();
-      if (symbol.isUnknown()) {
-        containsExplicitThrowsException = true;
-        return;
-      }
-      for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
-        if (isJavaLangException(type)) {
-          containsExplicitThrowsException = true;
-          return;
-        }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (isThrowingJavaLangException(tree.constructorSymbol())) {
+        return;
+      }
+      super.visitNewClass(tree);
+    }
+
+    private boolean isThrowingJavaLangException(Symbol symbol) {
+      containsExplicitThrowsException |= symbol.isUnknown() || ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(CatchExceptionCheck::isJavaLangException);
+      return containsExplicitThrowsException;
     }
   }
 
