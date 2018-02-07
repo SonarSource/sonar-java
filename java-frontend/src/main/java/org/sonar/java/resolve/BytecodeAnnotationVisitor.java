@@ -52,7 +52,16 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
 
   @Override
   public void visitEnum(String name, String desc, String value) {
-    getSymbol(desc).members().lookup(value).stream()
+    JavaSymbol.TypeJavaSymbol sym = getSymbol(desc);
+    if(sym.completing) {
+      sym.callbackOnceComplete(() -> addSymbolAsValue(name, value, sym));
+      return;
+    }
+    addSymbolAsValue(name, value, sym);
+  }
+
+  private void addSymbolAsValue(String name, String value, JavaSymbol.TypeJavaSymbol sym) {
+    sym.members().lookup(value).stream()
       .filter(symbol -> symbol.isKind(JavaSymbol.VAR))
       .forEach(symbol -> addValue(name, symbol));
   }
