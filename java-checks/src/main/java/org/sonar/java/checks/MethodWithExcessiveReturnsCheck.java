@@ -22,6 +22,11 @@ package org.sonar.java.checks;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -38,12 +43,19 @@ import java.util.List;
 public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 3;
+  private static final boolean DEFAULT_INCLUDE_SWITCH_BLOCKS = true;
 
   @RuleProperty(description = "Maximum allowed return statements per method", defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
+  @RuleProperty(
+      description = "Whether to count returns inside switch statements towards the total",
+      defaultValue = "" + DEFAULT_INCLUDE_SWITCH_BLOCKS)
+  public boolean includeSwitchBlocks = DEFAULT_INCLUDE_SWITCH_BLOCKS;
+
   private final Multiset<Tree> returnStatementCounter = HashMultiset.create();
   private final Deque<Tree> methods = new LinkedList<>();
+  private final Map<Tree, Set<Tree>> switchStatementContextByMethod = new HashMap<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -53,13 +65,19 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
-      returnStatementCounter.add(methods.peek());
+      boolean isInsideSwitchBlock = !switchStatementContextByMethod.getOrDefault(methods.peek(), Collections.emptySet()).isEmpty();
+      if (includeSwitchBlocks || !isInsideSwitchBlock) {
+        returnStatementCounter.add(methods.peek());
+      }
+    } else if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
+      switchStatementContextByMethod.putIfAbsent(methods.peek(), new HashSet<>());
+      switchStatementContextByMethod.get(methods.peek()).add(tree);
     } else {
       methods.push(tree);
     }
@@ -72,6 +90,8 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
       reportTree = ((MethodTree) tree).simpleName();
     } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       reportTree = ((LambdaExpressionTree) tree).arrowToken();
+    } else if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
+      switchStatementContextByMethod.get(methods.peek()).remove(tree);
     }
     if (reportTree != null) {
       int count = returnStatementCounter.count(tree);

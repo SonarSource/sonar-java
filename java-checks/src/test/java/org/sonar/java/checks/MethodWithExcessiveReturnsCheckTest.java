@@ -36,4 +36,11 @@ public class MethodWithExcessiveReturnsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheckCustom.java", check);
   }
 
+  @Test
+  public void ignoreSwitchBlocks() {
+    MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
+    check.includeSwitchBlocks = false;
+    JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheckIgnoreSwitchBlocks.java", check);
+  }
+
 }
