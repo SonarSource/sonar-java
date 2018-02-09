@@ -61,6 +61,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
     returnStatementCounter.clear();
+    switchStatementContextByMethod.clear();
   }
 
   @Override
