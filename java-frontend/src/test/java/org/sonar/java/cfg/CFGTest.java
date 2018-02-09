@@ -20,6 +20,13 @@
 package org.sonar.java.cfg;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -36,14 +43,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -2059,6 +2058,491 @@ public class CFGTest {
       ).exceptions(0)
     );
     cfgChecker.check(cfg);
+
+  }
+
+  @Test
+  public void break_in_nested_catch() {
+    CFG cfg = buildCFG(
+      "  void foo(boolean a) {\n" +
+      "    String[] types = new String[12];\n" +
+      "    try {\n" +
+      "      invoke0();\n" +
+      "    for (int i = 0; i < files.length; i++) {\n" +
+      "      A file = files[i];\n" +
+      "      try{\n" +
+      "        invoke1();\n" +
+      "      }catch(Throwable e) {\n" +
+      "        invoke2();\n" +
+      "        invoke3();\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        types[i] = invoke4();\n" +
+      "      }\n" +
+      "    }\n" +
+      "    } finally {\n" +
+      "      invoke10();\n" +
+      "      invoke11();\n" +
+      "    }\n" +
+      "    \n" +
+      "  }\n");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B13\n" +
+      "\n" +
+      "B13\n" +
+      "0:\tINT_LITERAL                         \t12\n" +
+      "1:\tNEW_ARRAY                           \tnew []\n" +
+      "2:\tVARIABLE                            \ttypes\n" +
+      "3:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B12\n" +
+      "\n" +
+      "B12\n" +
+      "0:\tIDENTIFIER                          \tinvoke0\n" +
+      "1:\tMETHOD_INVOCATION                   \tinvoke0()\n" +
+      "\tjumps to: B11\n" +
+      "\texceptions to: B1\n" +
+      "\n" +
+      "B11\n" +
+      "0:\tINT_LITERAL                         \t0\n" +
+      "1:\tVARIABLE                            \ti\n" +
+      "\tjumps to: B10\n" +
+      "\n" +
+      "B10\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tIDENTIFIER                          \tfiles\n" +
+      "2:\tMEMBER_SELECT                       \tfiles.length\n" +
+      "3:\tLESS_THAN                           \ti < files.length\n" +
+      "T:\tFOR_STATEMENT                       \tfor {i;i < files.length;i++}\n" +
+      "\tjumps to: B9(true) B1(false)\n" +
+      "\n" +
+      "B9\n" +
+      "0:\tIDENTIFIER                          \tfiles\n" +
+      "1:\tIDENTIFIER                          \ti\n" +
+      "2:\tARRAY_ACCESS_EXPRESSION             \tfiles[i]\n" +
+      "3:\tVARIABLE                            \tfile\n" +
+      "4:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B8\n" +
+      "\n" +
+      "B8\n" +
+      "0:\tIDENTIFIER                          \tinvoke1\n" +
+      "1:\tMETHOD_INVOCATION                   \tinvoke1()\n" +
+      "\tjumps to: B4\n" +
+      "\texceptions to: B4 B7\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tVARIABLE                            \te\n" +
+      "1:\tIDENTIFIER                          \tinvoke2\n" +
+      "2:\tMETHOD_INVOCATION                   \tinvoke2()\n" +
+      "\tjumps to: B6\n" +
+      "\texceptions to: B4\n" +
+      "\n" +
+      "B6\n" +
+      "0:\tIDENTIFIER                          \tinvoke3\n" +
+      "1:\tMETHOD_INVOCATION                   \tinvoke3()\n" +
+      "\tjumps to: B5\n" +
+      "\texceptions to: B4\n" +
+      "\n" +
+      "B5\n" +
+      "T:\tBREAK_STATEMENT                     \tbreak\n" +
+      "\tjumps to: B4\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tIDENTIFIER                          \ttypes\n" +
+      "1:\tIDENTIFIER                          \ti\n" +
+      "2:\tARRAY_ACCESS_EXPRESSION             \ttypes[i]\n" +
+      "3:\tIDENTIFIER                          \tinvoke4\n" +
+      "4:\tMETHOD_INVOCATION                   \tinvoke4()\n" +
+      "\tjumps to: B3\n" +
+      "\texceptions to: B1\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tASSIGNMENT                          \ttypes[i]=invoke4()\n" +
+      "\tjumps to: B2 B1(exit)\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
+      "\tjumps to: B10\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tIDENTIFIER                          \tinvoke10\n" +
+      "1:\tMETHOD_INVOCATION                   \tinvoke10()\n" +
+      "2:\tIDENTIFIER                          \tinvoke11\n" +
+      "3:\tMETHOD_INVOCATION                   \tinvoke11()\n" +
+      "\tjumps to: B0(exit)\n" +
+      "\n" +
+      "B0 (Exit):\n" +
+      "\n");
+  }
+
+  @Test
+  public void break_in_try_finally_within_while() {
+    CFG cfg = buildCFG("void run1() {\n" +
+      "    while (true) {\n" +
+      "      try {\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        String s = true ? \"trueLiteral\" : \"falseLiteral\";\n" +
+      "        System.out.println(s);\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
+      "\tjumps to: B6(true) B0(false)\n" +
+      "\n" +
+      "B6\n" +
+      "0:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B5\n" +
+      "\n" +
+      "B5\n" +
+      "T:\tBREAK_STATEMENT                     \tbreak\n" +
+      "\tjumps to: B4\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
+      "\tjumps to: B3(true) B2(false)\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tVARIABLE                            \ts\n" +
+      "1:\tIDENTIFIER                          \tSystem\n" +
+      "2:\tMEMBER_SELECT                       \tSystem.out\n" +
+      "3:\tIDENTIFIER                          \ts\n" +
+      "4:\tMETHOD_INVOCATION                   \t.println(s)\n" +
+      "\tjumps to: B7 B0(exit)\n" +
+      "\n" +
+      "B0 (Exit):\n\n");
+  }
+  @Test
+  public void continue_in_try_finally_within_while() {
+    CFG cfg = buildCFG("void run2() {\n" +
+      "    while (true) {\n" +
+      "      try {\n" +
+      "        continue;\n" +
+      "      } finally {\n" +
+      "        System.out.println(true ? \"trueLiteral\" : \"falseLiteral\");\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
+      "\tjumps to: B6(true) B0(false)\n" +
+      "\n" +
+      "B6\n" +
+      "0:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B5\n" +
+      "\n" +
+      "B5\n" +
+      "T:\tCONTINUE_STATEMENT                  \tcontinue\n" +
+      "\tjumps to: B4\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tIDENTIFIER                          \tSystem\n" +
+      "1:\tMEMBER_SELECT                       \tSystem.out\n" +
+      "2:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
+      "\tjumps to: B3(true) B2(false)\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tMETHOD_INVOCATION                   \t.println(true ? \"trueLiteral\" : \"falseLiteral\")\n" +
+      "\tjumps to: B7 B0(exit)\n" +
+      "\n" +
+      "B0 (Exit):\n\n");
+  }
+
+  @Test
+  public void break_in_try_finally_within_for() {
+    CFG cfg = buildCFG(" void run3() {\n" +
+      "    for (int i = 0; i < 5; i++) {\n" +
+      "      try {\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        String s;\n" +
+      "        System.out.println(true ? \"trueLiteral\" : \"falseLiteral\");\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B9\n" +
+      "\n" +
+      "B9\n" +
+      "0:\tINT_LITERAL                         \t0\n" +
+      "1:\tVARIABLE                            \ti\n" +
+      "\tjumps to: B8\n" +
+      "\n" +
+      "B8\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tINT_LITERAL                         \t5\n" +
+      "2:\tLESS_THAN                           \ti < 5\n" +
+      "T:\tFOR_STATEMENT                       \tfor {i;i < 5;i++}\n" +
+      "\tjumps to: B7(true) B0(false)\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B6\n" +
+      "\n" +
+      "B6\n" +
+      "T:\tBREAK_STATEMENT                     \tbreak\n" +
+      "\tjumps to: B5\n" +
+      "\n" +
+      "B5\n" +
+      "0:\tVARIABLE                            \ts\n" +
+      "1:\tIDENTIFIER                          \tSystem\n" +
+      "2:\tMEMBER_SELECT                       \tSystem.out\n" +
+      "3:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tCONDITIONAL_EXPRESSION              \ttrue ? \"trueLiteral\" : \"falseLiteral\"\n" +
+      "\tjumps to: B4(true) B3(false)\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
+      "\tjumps to: B2\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
+      "\tjumps to: B2\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tMETHOD_INVOCATION                   \t.println(true ? \"trueLiteral\" : \"falseLiteral\")\n" +
+      "\tjumps to: B1 B0(exit)\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
+      "\tjumps to: B8\n" +
+      "\n" +
+      "B0 (Exit):\n\n");
+  }
+  @Test
+  public void break_in_try_and_complex_finally_within_while() {
+    CFG cfg = buildCFG(" void run4() {\n" +
+      "    while (true) {\n" +
+      "      try {\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        String s;\n" +
+      "        if (true) { s = \"trueLiteral\"; } else { s = \"falseLiteral\"; }\n" +
+      "        System.out.println(s);\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B7\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (true)\n" +
+      "\tjumps to: B6(true) B0(false)\n" +
+      "\n" +
+      "B6\n" +
+      "0:\tTRY_STATEMENT                       \t\n" +
+      "\tjumps to: B5\n" +
+      "\n" +
+      "B5\n" +
+      "T:\tBREAK_STATEMENT                     \tbreak\n" +
+      "\tjumps to: B4\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tVARIABLE                            \ts\n" +
+      "1:\tBOOLEAN_LITERAL                     \ttrue\n" +
+      "T:\tIF_STATEMENT                        \tif (true)\n" +
+      "\tjumps to: B3(true) B2(false)\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tSTRING_LITERAL                      \t\"trueLiteral\"\n" +
+      "1:\tASSIGNMENT                          \ts=\"trueLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tSTRING_LITERAL                      \t\"falseLiteral\"\n" +
+      "1:\tASSIGNMENT                          \ts=\"falseLiteral\"\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tIDENTIFIER                          \tSystem\n" +
+      "1:\tMEMBER_SELECT                       \tSystem.out\n" +
+      "2:\tIDENTIFIER                          \ts\n" +
+      "3:\tMETHOD_INVOCATION                   \t.println(s)\n" +
+      "\tjumps to: B7 B0(exit)\n" +
+      "\n" +
+      "B0 (Exit):\n\n");
+  }
+
+  @Test
+  public void break_without_finally() {
+    CFG cfg = buildCFG("void fun(int highestLevel) {       while (highestLevel >= lowestOddLevel) {\n" +
+      "            int i = levelStart;\n" +
+      "\n" +
+      "            for (;;) {\n" +
+      "                while (i < levelLimit && levels[i] < highestLevel) {\n" +
+      "                    i++;\n" +
+      "                }\n" +
+      "                int begin = i++;\n" +
+      "\n" +
+      "                if (begin == levelLimit) {\n" +
+      "                    break; // no more runs at this level\n" +
+      "                }\n" +
+      "\n" +
+      "                while (i < levelLimit && levels[i] >= highestLevel) {\n" +
+      "                    i++;\n" +
+      "                }\n" +
+      "                int end = i - 1;\n" +
+      "\n" +
+      "\t\tbegin += delta;\n" +
+      "\t\tend += delta;\n" +
+      "                while (begin < end) {\n" +
+      "                    Object temp = objects[begin];\n" +
+      "                    objects[begin] = objects[end];\n" +
+      "                    objects[end] = temp;\n" +
+      "                    ++begin;\n" +
+      "                    --end;\n" +
+      "                }\n" +
+      "            }\n" +
+      "\n" +
+      "            --highestLevel;\n" +
+      "        }}");
+    assertThat(CFGDebug.toString(cfg)).isEqualTo("Starts at B15\n" +
+      "\n" +
+      "B15\n" +
+      "0:\tIDENTIFIER                          \thighestLevel\n" +
+      "1:\tIDENTIFIER                          \tlowestOddLevel\n" +
+      "2:\tGREATER_THAN_OR_EQUAL_TO            \thighestLevel >= lowestOddLevel\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (highestLevel >= lowestOddLevel)\n" +
+      "\tjumps to: B14(true) B0(false)\n" +
+      "\n" +
+      "B14\n" +
+      "0:\tIDENTIFIER                          \tlevelStart\n" +
+      "1:\tVARIABLE                            \ti\n" +
+      "\tjumps to: B13\n" +
+      "\n" +
+      "B13\n" +
+      "T:\tFOR_STATEMENT                       \tfor {;;}\n" +
+      "\tjumps to: B12\n" +
+      "\n" +
+      "B12\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tIDENTIFIER                          \tlevelLimit\n" +
+      "2:\tLESS_THAN                           \ti < levelLimit\n" +
+      "T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] < highestLevel\n" +
+      "\tjumps to: B11(true) B9(false)\n" +
+      "\n" +
+      "B11\n" +
+      "0:\tIDENTIFIER                          \tlevels\n" +
+      "1:\tIDENTIFIER                          \ti\n" +
+      "2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]\n" +
+      "3:\tIDENTIFIER                          \thighestLevel\n" +
+      "4:\tLESS_THAN                           \tlevels[i] < highestLevel\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] < highestLevel)\n" +
+      "\tjumps to: B10(true) B9(false)\n" +
+      "\n" +
+      "B10\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
+      "\tjumps to: B12\n" +
+      "\n" +
+      "B9\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
+      "2:\tVARIABLE                            \tbegin\n" +
+      "3:\tIDENTIFIER                          \tbegin\n" +
+      "4:\tIDENTIFIER                          \tlevelLimit\n" +
+      "5:\tEQUAL_TO                            \tbegin == levelLimit\n" +
+      "T:\tIF_STATEMENT                        \tif (begin == levelLimit)\n" +
+      "\tjumps to: B8(true) B7(false)\n" +
+      "\n" +
+      "B8\n" +
+      "T:\tBREAK_STATEMENT                     \tbreak\n" +
+      "\tjumps to: B1\n" +
+      "\n" +
+      "B7\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tIDENTIFIER                          \tlevelLimit\n" +
+      "2:\tLESS_THAN                           \ti < levelLimit\n" +
+      "T:\tCONDITIONAL_AND                     \ti < levelLimit && levels[i] >= highestLevel\n" +
+      "\tjumps to: B6(true) B4(false)\n" +
+      "\n" +
+      "B6\n" +
+      "0:\tIDENTIFIER                          \tlevels\n" +
+      "1:\tIDENTIFIER                          \ti\n" +
+      "2:\tARRAY_ACCESS_EXPRESSION             \tlevels[i]\n" +
+      "3:\tIDENTIFIER                          \thighestLevel\n" +
+      "4:\tGREATER_THAN_OR_EQUAL_TO            \tlevels[i] >= highestLevel\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (i < levelLimit && levels[i] >= highestLevel)\n" +
+      "\tjumps to: B5(true) B4(false)\n" +
+      "\n" +
+      "B5\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tPOSTFIX_INCREMENT                   \ti++\n" +
+      "\tjumps to: B7\n" +
+      "\n" +
+      "B4\n" +
+      "0:\tIDENTIFIER                          \ti\n" +
+      "1:\tINT_LITERAL                         \t1\n" +
+      "2:\tMINUS                               \ti - 1\n" +
+      "3:\tVARIABLE                            \tend\n" +
+      "4:\tIDENTIFIER                          \tbegin\n" +
+      "5:\tIDENTIFIER                          \tdelta\n" +
+      "6:\tPLUS_ASSIGNMENT                     \tbegin+=delta\n" +
+      "7:\tIDENTIFIER                          \tend\n" +
+      "8:\tIDENTIFIER                          \tdelta\n" +
+      "9:\tPLUS_ASSIGNMENT                     \tend+=delta\n" +
+      "\tjumps to: B3\n" +
+      "\n" +
+      "B3\n" +
+      "0:\tIDENTIFIER                          \tbegin\n" +
+      "1:\tIDENTIFIER                          \tend\n" +
+      "2:\tLESS_THAN                           \tbegin < end\n" +
+      "T:\tWHILE_STATEMENT                     \twhile (begin < end)\n" +
+      "\tjumps to: B13(false) B2(true)\n" +
+      "\n" +
+      "B2\n" +
+      "0:\tIDENTIFIER                          \tobjects\n" +
+      "1:\tIDENTIFIER                          \tbegin\n" +
+      "2:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]\n" +
+      "3:\tVARIABLE                            \ttemp\n" +
+      "4:\tIDENTIFIER                          \tobjects\n" +
+      "5:\tIDENTIFIER                          \tbegin\n" +
+      "6:\tARRAY_ACCESS_EXPRESSION             \tobjects[begin]\n" +
+      "7:\tIDENTIFIER                          \tobjects\n" +
+      "8:\tIDENTIFIER                          \tend\n" +
+      "9:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]\n" +
+      "10:\tASSIGNMENT                          \tobjects[begin]=objects[end]\n" +
+      "11:\tIDENTIFIER                          \tobjects\n" +
+      "12:\tIDENTIFIER                          \tend\n" +
+      "13:\tARRAY_ACCESS_EXPRESSION             \tobjects[end]\n" +
+      "14:\tIDENTIFIER                          \ttemp\n" +
+      "15:\tASSIGNMENT                          \tobjects[end]=temp\n" +
+      "16:\tIDENTIFIER                          \tbegin\n" +
+      "17:\tPREFIX_INCREMENT                    \t++begin\n" +
+      "18:\tIDENTIFIER                          \tend\n" +
+      "19:\tPREFIX_DECREMENT                    \t--end\n" +
+      "\tjumps to: B3\n" +
+      "\n" +
+      "B1\n" +
+      "0:\tIDENTIFIER                          \thighestLevel\n" +
+      "1:\tPREFIX_DECREMENT                    \t--highestLevel\n" +
+      "\tjumps to: B15\n" +
+      "\n" +
+      "B0 (Exit):\n\n");
 
   }
 

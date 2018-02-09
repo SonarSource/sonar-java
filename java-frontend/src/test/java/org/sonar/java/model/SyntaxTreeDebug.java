@@ -164,6 +164,8 @@ public class SyntaxTreeDebug {
         return methodString((MethodTree) syntaxNode);
       case BLOCK:
         return blockString((BlockTree) syntaxNode);
+      case NEW_ARRAY:
+        return "new []";
       default:
         return syntaxNode.toString();
     }

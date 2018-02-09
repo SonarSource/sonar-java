@@ -22,6 +22,18 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -65,19 +77,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
 
 public class CFG {
 
@@ -294,6 +293,23 @@ public class CFG {
       }
       for (Block successor : b.exceptions) {
         successor.predecessors.add(b);
+      }
+    }
+    cleanupUnfeasibleBreakPaths(blocks);
+  }
+
+  private static void cleanupUnfeasibleBreakPaths(List<Block> blocks) {
+    for (Block block : blocks) {
+      Set<Block> happyPathPredecessor = block.predecessors.stream().filter(p -> !p.exceptions.contains(block)).collect(Collectors.toSet());
+      if(block.isFinallyBlock && happyPathPredecessor.size() == 1) {
+        Block pred = happyPathPredecessor.iterator().next();
+        if (pred.terminator != null && pred.terminator.is(Tree.Kind.BREAK_STATEMENT)) {
+          Set<Block> succs = block.successors.stream()
+            .filter(suc -> suc.terminator == null || !suc.terminator.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT))
+            .collect(Collectors.toSet());
+          block.successors.clear();
+          block.successors.addAll(succs);
+        }
       }
     }
   }
@@ -721,12 +737,6 @@ public class CFG {
     currentBlock = createUnconditionalJump(tree, targetBlock);
     if(currentBlock.exitBlock != null) {
       currentBlock.exitBlock = null;
-      Block last = breakTargets.removeLast();
-      targetBlock.successors().clear();
-      Block exitBlock = targetBlock.exitBlock;
-      targetBlock.addSuccessor(breakTargets.getLast());
-      targetBlock.addExitSuccessor(exitBlock);
-      breakTargets.addLast(last);
     }
   }
 
@@ -849,8 +859,9 @@ public class CFG {
       build(finallyBlockTree);
       finallyBlock.addExitSuccessor(exitBlock());
       exitBlocks.push(currentBlock);
-      addContinueTarget(finallyBlock);
-      breakTargets.addLast(finallyBlock);
+      addContinueTarget(currentBlock);
+      currentBlock.isFinallyBlock = true;
+      breakTargets.addLast(currentBlock);
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
