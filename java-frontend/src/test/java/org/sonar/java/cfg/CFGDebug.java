@@ -19,13 +19,14 @@
  */
 package org.sonar.java.cfg;
 
+import java.text.MessageFormat;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.SyntaxTreeDebug;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.text.MessageFormat;
-import java.util.List;
 
 public class CFGDebug {
 
@@ -140,7 +141,7 @@ public class CFGDebug {
       buffer.append(SyntaxTreeDebug.toString(terminator));
     }
     boolean first = true;
-    for (Block successor : block.successors()) {
+    for (Block successor : block.successors().stream().sorted(Comparator.comparingInt(Block::id).reversed()).collect(Collectors.toList())) {
       if (first) {
         first = false;
         buffer.append('\n');
