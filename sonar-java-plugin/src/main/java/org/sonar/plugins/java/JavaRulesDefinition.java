@@ -121,15 +121,15 @@ public class JavaRulesDefinition implements RulesDefinition {
   private void addMetadata(NewRule rule, String metadataKey) {
     URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.json");
     if (resource != null) {
-      RuleMetatada metatada = gson.fromJson(readResource(resource), RuleMetatada.class);
-      rule.setSeverity(metatada.defaultSeverity.toUpperCase(Locale.US));
-      rule.setName(metatada.title);
-      rule.addTags(metatada.tags);
-      rule.setType(RuleType.valueOf(metatada.type));
-      rule.setStatus(RuleStatus.valueOf(metatada.status.toUpperCase(Locale.US)));
-      if(metatada.remediation != null) {
-        rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
-        rule.setGapDescription(metatada.remediation.linearDesc);
+      RuleMetadata metadata = gson.fromJson(readResource(resource), RuleMetadata.class);
+      rule.setSeverity(metadata.defaultSeverity.toUpperCase(Locale.US));
+      rule.setName(metadata.title);
+      rule.addTags(metadata.tags);
+      rule.setType(RuleType.valueOf(metadata.type));
+      rule.setStatus(RuleStatus.valueOf(metadata.status.toUpperCase(Locale.US)));
+      if(metadata.remediation != null) {
+        rule.setDebtRemediationFunction(metadata.remediation.remediationFunction(rule.debtRemediationFunctions()));
+        rule.setGapDescription(metadata.remediation.linearDesc);
       }
     }
   }
@@ -149,7 +149,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
   }
 
-  private static class RuleMetatada {
+  private static class RuleMetadata {
     String title;
     String status;
     @Nullable
