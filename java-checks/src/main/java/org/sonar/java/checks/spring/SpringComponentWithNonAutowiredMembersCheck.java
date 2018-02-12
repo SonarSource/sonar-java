@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,13 +43,22 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     ClassTree clazzTree = (ClassTree) tree;
     SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
 
-    if (isSpringComponent(clazzMeta)) {
+    if (isSpringComponent(clazzMeta) && !hasUniqueConstructor(clazzTree)) {
       clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
         .map(m -> (VariableTree) m)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))
         .forEach(v -> reportIssue(v.simpleName(), "Annotate this member with \"@Autowired\", \"@Resource\", \"@Inject\", or \"@Value\", or remove it."));
     }
+  }
+
+  private static boolean hasUniqueConstructor(ClassTree clazzTree) {
+    return clazzTree.symbol().memberSymbols().stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (Symbol.MethodSymbol) s)
+      .filter(m -> m.name().equals("<init>"))
+      .filter(m -> m.declaration() != null)
+      .count() == 1;
   }
 
   private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
