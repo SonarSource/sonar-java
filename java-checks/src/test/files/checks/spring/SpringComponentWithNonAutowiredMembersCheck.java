@@ -29,6 +29,7 @@ public class HelloWorld {
   String someConfigKey; // Compliant
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorld.class); // Compliant
+  void someMethod(){}
 }
 
 @Service
@@ -48,4 +49,26 @@ class NonSpringComponentClazz {
   
   @Autowired 
   String email = null; // Compliant
+}
+@Service
+class UniqueConstructor {
+  private final String name;
+
+  public UniqueConstructor(String name) {
+    this.name = name;
+  }
+}
+
+@Service
+class DualConstructor {
+  private final String name; // Noncompliant
+  private final String address; // Noncompliant
+
+  public DualConstructor(String name) {
+    this.name = name;
+  }
+  public DualConstructor(String name, String address) {
+    this.name = name;
+    this.address = address;
+  }
 }
