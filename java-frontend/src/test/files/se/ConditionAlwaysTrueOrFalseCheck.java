@@ -238,9 +238,9 @@ public class Class extends SuperClass {
 
   public void literals() {
     // literals
-    if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (true) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
+    if (!false) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
     }
   }
 
@@ -1004,15 +1004,15 @@ public class Class extends SuperClass {
     boolean condition;
     condition = object != null;
     if (condition) {
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } else {
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
     condition = null != object;
     if (condition != null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } else {
       if (false) { // unreachable statement
@@ -1025,7 +1025,7 @@ public class Class extends SuperClass {
       case 0:
         return;
     }
-    if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     switch (condition) {
       case 0:
@@ -1098,10 +1098,10 @@ public class Class extends SuperClass {
     // out of scope, must evaluate to unknown
     if (3 > 3) {
 
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } else {
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
   }
@@ -2221,4 +2221,17 @@ abstract class UnaryOperators {
   }
 
   abstract void doSomething();
+}
+
+class ExcludedCornerCases {
+  void test() {
+    final boolean debug = false;
+    //...
+    if (debug) {
+      // Print something
+    }
+    if (true) {
+      // do something
+    }
+  }
 }

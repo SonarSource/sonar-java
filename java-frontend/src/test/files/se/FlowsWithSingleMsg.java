@@ -7,13 +7,13 @@ class A {
   }
 
   void ternary(Object r1, Object r2) {
-    if (true) { // Noncompliant
+    if (!false) { // Noncompliant
 
     }
   }
 
   void ternary(Object r1, Object r2) {
-    if (false) { // Noncompliant
+    if (!true) { // Noncompliant
 
     }
   }

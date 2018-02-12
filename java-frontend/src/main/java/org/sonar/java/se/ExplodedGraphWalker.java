@@ -384,7 +384,8 @@ public class ExplodedGraphWalker {
     if (terminator != null) {
       switch (terminator.kind()) {
         case IF_STATEMENT:
-          handleBranch(block, cleanupCondition(((IfStatementTree) terminator).condition()));
+          ExpressionTree ifCondition = ((IfStatementTree) terminator).condition();
+          handleBranch(block, cleanupCondition(ifCondition), verifyCondition(ifCondition));
           return;
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
@@ -402,11 +403,11 @@ public class ExplodedGraphWalker {
           break;
         case WHILE_STATEMENT:
           ExpressionTree whileCondition = ((WhileStatementTree) terminator).condition();
-          handleBranch(block, cleanupCondition(whileCondition), !whileCondition.is(Tree.Kind.BOOLEAN_LITERAL));
+          handleBranch(block, cleanupCondition(whileCondition), verifyCondition(whileCondition));
           return;
         case DO_STATEMENT:
           ExpressionTree doCondition = ((DoWhileStatementTree) terminator).condition();
-          handleBranch(block, cleanupCondition(doCondition), !doCondition.is(Tree.Kind.BOOLEAN_LITERAL));
+          handleBranch(block, cleanupCondition(doCondition), verifyCondition(doCondition));
           return;
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues(false);
@@ -450,6 +451,17 @@ public class ExplodedGraphWalker {
         }
       }
     }
+  }
+
+  private static boolean verifyCondition(ExpressionTree condition) {
+    if(condition.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree) condition;
+      if(identifierTree.symbol().isFinal() && identifierTree.symbol().isVariableSymbol()) {
+        VariableTree declaration = (VariableTree) identifierTree.symbol().declaration();
+        return declaration == null || declaration.initializer() == null || !declaration.initializer().is(Tree.Kind.BOOLEAN_LITERAL);
+      }
+    }
+    return !condition.is(Tree.Kind.BOOLEAN_LITERAL);
   }
 
   private static boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {

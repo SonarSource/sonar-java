@@ -4,7 +4,7 @@ package javax.annotation;
 public class Class {
 
   void f(boolean a) {
-    if (false) { // Noncompliant
+    if (!true) { // Noncompliant
 
     }
     if (false && a) { // Noncompliant
@@ -16,7 +16,7 @@ public class Class {
     if (true) { // Compliant - gratuitous expr
 
     }
-    if (true) { // Noncompliant
+    if (!false) { // Noncompliant
 
     } else {
 
