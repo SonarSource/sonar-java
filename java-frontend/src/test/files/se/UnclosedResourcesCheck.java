@@ -1,6 +1,9 @@
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nonnull;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -539,4 +542,38 @@ class NPEUnknownSymbol implements Closeable {
   static void consumer(Object o) {}
 
   public void close()  {}
+}
+
+public class App
+{
+  public static Connection getJDBCConnectionWithFinally(String driver, String url, String user, String pwd) {
+
+    Connection con = null;
+
+    try
+    {
+      Class.forName(driver);
+      con = DriverManager.getConnection(url, user, pwd); // compliant connection is returned
+
+    }
+    catch(ClassNotFoundException cnfe){}
+    catch(SQLException se){}
+    finally {}
+    return con;
+  }
+
+  public static Connection getJDBCConnectionOrigWithoutFinally(String driver, String url, String user, String pwd) {
+
+    Connection con = null;
+
+    try
+    {
+      Class.forName(driver);
+      con = DriverManager.getConnection(url, user, pwd); // compliant connection is returned
+
+    }
+    catch(ClassNotFoundException cnfe){}
+    catch(SQLException se){}
+    return con;
+  }
 }
