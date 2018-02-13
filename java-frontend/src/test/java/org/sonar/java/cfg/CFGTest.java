@@ -2547,6 +2547,44 @@ public class CFGTest {
   }
 
   @Test
+  public void throw_statement_within_try_catch() {
+    CFG cfg = buildCFG("void fun() { try {throw new MyException();} catch(MyException me){foo();} bar();} class MyException extends Exception{}");
+    CFGChecker cfgChecker = checker(
+      block(element(TRY_STATEMENT)).successors(4),
+      block(element(NEW_CLASS)).successors(3).exceptions(0),
+      terminator(THROW_STATEMENT).successors(2),
+      block(element(VARIABLE, "me"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0),
+    block(element(IDENTIFIER, "bar"),
+      element(METHOD_INVOCATION)).successors(0)
+      );
+    cfgChecker.check(cfg);
+
+    cfg = buildCFG("void fun() { try {throw new MyException();} catch(MySuperException me){foo();} bar();} class MyException extends MySuperException{} class MySuperException extends Exception{}");
+    cfgChecker = checker(
+      block(element(TRY_STATEMENT)).successors(4),
+      block(element(NEW_CLASS)).successors(3).exceptions(0),
+      terminator(THROW_STATEMENT).successors(2),
+      block(element(VARIABLE, "me"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0),
+      block(element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0)
+    );
+    cfgChecker.check(cfg);
+
+    cfg = buildCFG("void fun() { throw new MyException(); bar();} class MyException extends MySuperException{}");
+    cfgChecker = checker(
+      block(element(NEW_CLASS)).terminator(THROW_STATEMENT).successors(0),
+      block(element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0)
+    );
+    cfgChecker.check(cfg);
+
+  }
+
+  @Test
   public void build_partial_cfg_with_break() throws Exception {
     build_partial_cfg("break");
   }
