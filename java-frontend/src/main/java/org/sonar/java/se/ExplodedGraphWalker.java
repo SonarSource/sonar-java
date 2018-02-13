@@ -465,7 +465,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
-    return successor != block.exitBlock() || successor.isMethodExitBlock();
+    return successor != block.exitBlock() || (block.successors().size() == 1 && successor.isMethodExitBlock());
   }
 
   /**
