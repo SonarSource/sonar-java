@@ -893,8 +893,16 @@ public class CFG {
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
-    // TODO check enclosing try to determine jump target
-    currentBlock = createUnconditionalJump(throwStatementTree, exitBlock());
+    Block jumpTo = exitBlock();
+    TryStatement enclosingTryCatch = enclosingTry.peek();
+    if(enclosingTryCatch != null){
+      jumpTo = enclosingTryCatch.catches.keySet().stream()
+        .filter(t -> throwStatementTree.expression().symbolType().isSubtypeOf(t))
+        .findFirst()
+        .map(t -> enclosingTryCatch.catches.get(t))
+        .orElse(exitBlock());
+    }
+    currentBlock = createUnconditionalJump(throwStatementTree, jumpTo);
     build(throwStatementTree.expression());
   }
 

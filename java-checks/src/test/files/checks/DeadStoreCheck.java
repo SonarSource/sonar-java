@@ -323,3 +323,19 @@ class NoIssueOnInitializers {
     return 0;
   }
 }
+public class B {
+  void foo() {
+    int attemptNumber = 0;
+    while (true) {
+      try {
+        attemptNumber++; // compliant this is handled in the catch block
+        throw new MyException();
+      } catch (MyException e) {
+        if (attemptNumber >= 10) {
+          System.exit(1);
+        }
+      }
+    }
+  }
+  static class MyException extends Exception {  }
+}
