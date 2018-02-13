@@ -47,6 +47,12 @@ public class JavaPlugin implements Plugin {
       builder.addAll(JaCoCoExtensions.getExtensions());
       builder.add(JavaSonarWayProfile.class);
       builder.add(JavaClasspath.class);
+      builder.add(PropertyDefinition.builder("sonar.java.failOnException")
+        .defaultValue("false")
+        .hidden()
+        .name("Fail on exceptions")
+        .description("when set to true, if an exception is thrown by the analyzer the analysis will fail")
+        .build());
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
