@@ -13,7 +13,7 @@ abstract class A {
     return this.x;
   }
 
-  public int getLastName() {  // Noncompliant  {{Refactor this getter so that it actually refers to the field "lastName".}}
+  public String getLastName() {  // Noncompliant  {{Refactor this getter so that it actually refers to the field "lastName".}}
     return name;
   }
 
@@ -74,4 +74,21 @@ class B extends A {
     return name;
   }
 
+}
+
+public class C {
+
+  private String field;
+  private boolean isField;
+
+  boolean isField() { // compliant, we already return the correct value, "field" is simply not used in this context
+    return isField;
+  }
+
+  private B someB;
+  private boolean someOtherB;
+
+  A getSomeB() { // compliant
+    return someB;
+  }
 }
