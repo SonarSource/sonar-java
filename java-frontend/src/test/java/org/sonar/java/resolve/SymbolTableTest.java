@@ -20,6 +20,12 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,13 +47,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -1601,5 +1600,18 @@ public class SymbolTableTest {
     softly.assertThat(res.referenceTree(10, 9).symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
     softly.assertThat(res.referenceTree(17, 9).symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
     softly.assertAll();
+  }
+
+  @Test
+  public void conditional_operator_expression_type() {
+    Result res = Result.createFor("ConditionalOperator");
+    ExpressionTree conditional = ((ReturnStatementTree) ((MethodTree) res.symbol("fun").declaration()).block().body().get(0)).expression();
+    Type conditionalExpressionType = conditional.symbolType();
+    assertThat(conditionalExpressionType.is("App$Foo")).isTrue();
+    assertThat(((JavaType) conditionalExpressionType).isParameterized()).isTrue();
+    List<JavaType> substitutedTypes = ((ParametrizedTypeJavaType) conditionalExpressionType).typeSubstitution.substitutedTypes();
+    assertThat(substitutedTypes).hasSize(1);
+    assertThat(substitutedTypes.get(0).isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitutedTypes.get(0)).bound.is("java.util.List")).isTrue();
   }
 }
