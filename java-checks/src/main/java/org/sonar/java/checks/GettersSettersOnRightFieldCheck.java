@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -88,7 +89,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
 
   private void checkGetter(String fieldName, MethodTree methodTree) {
     Symbol.TypeSymbol getterOwner = ((Symbol.TypeSymbol) methodTree.symbol().owner());
-    if (!hasPrivateFieldWithName(fieldName, getterOwner)) {
+    if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().returnType().type(), getterOwner)) {
       return;
     }
     firstAndOnlyStatement(methodTree)
@@ -102,7 +103,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
 
   private void checkSetter(String fieldName, MethodTree methodTree) {
     Symbol.TypeSymbol setterOwner = ((Symbol.TypeSymbol) methodTree.symbol().owner());
-    if (!hasPrivateFieldWithName(fieldName, setterOwner)) {
+    if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().parameterTypes().get(0), setterOwner)) {
       return;
     }
     firstAndOnlyStatement(methodTree)
@@ -116,11 +117,12 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
         "Refactor this setter so that it actually refers to the field \"" + fieldName + "\"."));
   }
 
-  private static boolean hasPrivateFieldWithName(String fieldName, Symbol.TypeSymbol accessorOwner) {
+  private static boolean hasNoPrivateFieldMatchingNameAndType(String fieldName, Type fieldType, Symbol.TypeSymbol accessorOwner) {
     return accessorOwner.lookupSymbols(fieldName).stream()
       .filter(Symbol::isVariableSymbol)
       .filter(Symbol::isPrivate)
-      .anyMatch(symbol -> fieldName.equals(symbol.name()));
+      .filter(symbol -> symbol.type().equals(fieldType) || symbol.type().isSubtypeOf(fieldType))
+      .noneMatch(symbol -> fieldName.equals(symbol.name()));
   }
 
   private static Optional<Symbol> symbolFromExpression(ExpressionTree returnExpression) {
