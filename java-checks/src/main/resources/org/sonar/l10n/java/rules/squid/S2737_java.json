@@ -7,7 +7,6 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cert",
     "unused",
     "finding",
     "clumsy"

@@ -16,4 +16,10 @@ Arrays.sort(rosterAsArray,
     }
 );
 </pre>
+<h2>Exceptions</h2>
+<p>When the lambda has one or two parameters and does not have a block this rule will not fire up an issue as things are considered more readable in
+those cases.</p>
+<pre>
+stream.map((a, b) -&gt; a.length); // compliant
+</pre>
 
