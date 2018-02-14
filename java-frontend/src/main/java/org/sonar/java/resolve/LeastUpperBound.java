@@ -127,6 +127,12 @@ public class LeastUpperBound {
 
     Symbol.TypeSymbol symbol = type.symbol();
     TypeSubstitution substitution = getTypeSubstitution(type);
+    if(substitution.size() == 0 && !((JavaSymbol.TypeJavaSymbol) symbol).typeVariableTypes.isEmpty()) {
+      // raw type : let's create a substitution based on erasures
+      TypeSubstitution ts = new TypeSubstitution();
+      ((JavaSymbol.TypeJavaSymbol) symbol).typeVariableTypes.forEach(t -> ts.add(t, t.erasure()));
+      substitution = ts;
+    }
 
     result.addAll(interfacesWithSubstitution(symbol, substitution));
 
