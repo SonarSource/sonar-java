@@ -184,3 +184,16 @@ class A {
     slf4jLog.warn("The resource for is not found, drilling down to the details of this test won't be possible");
   }
 }
+
+class UsingLambda {
+
+  private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UsingLambda.class);
+
+  void start(int port) {
+
+    unknown((a, b) -> {
+      LOG.info(a.foo());
+    });
+
+  }
+}

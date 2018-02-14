@@ -66,6 +66,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
+    if (mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(Type::isUnknown)) {
+      // method resolved but not all the parameters are
+      return;
+    }
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
     // Check type of first argument:
@@ -132,6 +136,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     reportUnusedArgs(mit, args, unusedArgs);
   }
 
+  @Override
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);

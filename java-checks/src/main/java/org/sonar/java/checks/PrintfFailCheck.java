@@ -20,6 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -28,10 +31,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S2275")
 public class PrintfFailCheck extends AbstractPrintfChecker {
@@ -67,6 +66,10 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
   }
 
   private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
+    if (mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(Type::isUnknown)) {
+      // method resolved but not all the parameters are
+      return;
+    }
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
     // Check type of first argument:
@@ -88,7 +91,6 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
     }
   }
 
-
   @Override
   protected void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     List<String> params = getParameters(formatString, mit);
@@ -100,6 +102,8 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
       verifyParameters(mit, args, params);
     }
   }
+
+  @Override
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
@@ -181,7 +185,6 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
       }
     }
   }
-
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
