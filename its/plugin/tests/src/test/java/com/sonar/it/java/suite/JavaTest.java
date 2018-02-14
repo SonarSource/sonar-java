@@ -37,8 +37,10 @@ import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueClient;
 import org.sonar.wsclient.issue.IssueQuery;
 import org.sonarqube.ws.WsComponents;
+import org.sonarqube.ws.WsMeasures;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
+import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -252,5 +254,20 @@ public class JavaTest {
     orchestrator.executeBuild(scan);
     // no java version specified, got issue on java 7 code
     assertThat(getMeasureAsInteger("org.example:example-scanner", "violations")).isEqualTo(1);
+  }
+
+  @Test
+  public void collect_feedback_on_server() {
+    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-parse-error"))
+      .setProperty("sonar.projectKey", "java-parse-error")
+      .setProperty("sonar.projectName", "java-parse-error")
+      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
+      .setProperty("sonar.java.collectAnalysisErrors", "true")
+      .setProperty("sonar.sources", "src");
+    orchestrator.executeBuild(scan);
+
+    WsMeasures.Measure sonarjava_feedback = getMeasure("java-parse-error", "sonarjava_feedback");
+    assertThat(sonarjava_feedback).isNotNull();
+    assertThat(sonarjava_feedback.getValue()).startsWith("[{\"message\":\"Parse error at line 5 column 1");
   }
 }
