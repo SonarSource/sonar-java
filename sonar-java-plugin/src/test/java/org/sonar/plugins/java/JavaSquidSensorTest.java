@@ -139,7 +139,7 @@ public class JavaSquidSensorTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
@@ -150,7 +150,7 @@ public class JavaSquidSensorTest {
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
     SensorContextTester context = createParseErrorContext();
-    when(server.getPublicRootUrl()).thenReturn("https://sonarcloud.io");
+    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
 
     String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
@@ -188,7 +188,7 @@ public class JavaSquidSensorTest {
     FileSystem fs = context.fileSystem();
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
     DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
@@ -200,7 +200,7 @@ public class JavaSquidSensorTest {
   @Test
   public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
     SensorContextTester context = createContext(InputFile.Type.MAIN);
-    when(server.getPublicRootUrl()).thenReturn("https://sonarcloud.io");
+    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
@@ -208,7 +208,6 @@ public class JavaSquidSensorTest {
   @Test
   public void feedbackShouldNotBeFedIfNotSonarCloudHost() throws IOException {
     SensorContextTester context = createParseErrorContext();
-    when(server.getPublicRootUrl()).thenReturn("https://somerandomurl.com");
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }

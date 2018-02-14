@@ -46,7 +46,6 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -59,6 +58,12 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 public class SonarComponents {
 
   /**
+   * Metric to collect
+   */
+  public static final Metric<String> FEEDBACK_METRIC = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA).setHidden(true).create();
+  public static final String COLLECT_ANALYSIS_ERRORS_KEY = "sonar.java.collectAnalysisErrors";
+  public static final String FAIL_ON_EXCEPTION_KEY = "sonar.java.failOnException";
+  /**
    * Approximate limit of feedback of 200ko to roughly 100_000 characters of useful feedback.
    * This does not take into account eventual overhead of serialization.
    */
@@ -67,8 +72,6 @@ public class SonarComponents {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
-  @Nullable
-  private final Server server;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
@@ -81,24 +84,16 @@ public class SonarComponents {
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
                          CheckFactory checkFactory) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
-
-  }
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory, Server server) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, server, null);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable Server server, @Nullable CheckRegistrar[] checkRegistrars) {
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
-    this.server = server;
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
@@ -294,16 +289,18 @@ public class SonarComponents {
   }
 
   public void saveAnalysisErrors() {
-    if (!isSonarLintContext() && !analysisErrors.isEmpty() && server.getPublicRootUrl().equals("https://sonarcloud.io")) {
-      Metric.Builder metricBuilder = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA);
-      metricBuilder.setHidden(true);
+    if (!isSonarLintContext() && !analysisErrors.isEmpty() && shouldCollectAnalysisErrors()) {
       Gson gson = new Gson();
       String metricValue = gson.toJson(analysisErrors);
-      context.<String>newMeasure().forMetric(metricBuilder.create()).on(context.module()).withValue(metricValue).save();
+      context.<String>newMeasure().forMetric(FEEDBACK_METRIC).on(context.module()).withValue(metricValue).save();
     }
   }
 
   public boolean shouldFailAnalysisOnException() {
-    return context.config().getBoolean("sonar.java.failOnException").orElse(false);
+    return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
+  }
+
+  private boolean shouldCollectAnalysisErrors() {
+    return context.config().getBoolean(COLLECT_ANALYSIS_ERRORS_KEY).orElse(false);
   }
 }
