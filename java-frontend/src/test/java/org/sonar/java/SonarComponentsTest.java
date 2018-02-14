@@ -46,6 +46,7 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.Issuable;
@@ -405,6 +406,13 @@ public class SonarComponentsTest {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
     sensorContext.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
+    Measure<String> feedback = analysisWithAnError(sensorContext);
+    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback.value(), new TypeToken<Collection<AnalysisError>>(){}.getType());
+    assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
+    assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
+  }
+
+  private Measure<String> analysisWithAnError(SensorContextTester sensorContext) {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContext);
 
@@ -421,9 +429,28 @@ public class SonarComponentsTest {
 
     sonarComponents.saveAnalysisErrors();
 
-    String feedback = sensorContext.<String>measure("projectKey", "sonarjava_feedback").value();
-    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
-    assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
-    assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
+    return sensorContext.measure("projectKey", "sonarjava_feedback");
+  }
+
+  @Test
+  public void feedback_should_not_be_sent_in_sonarLintContext_or_when_collecting_is_disabled_or_when_no_errors() {
+    File file = new File("src/test/files/ParseError.java");
+    SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+    Measure<String> feedback = analysisWithAnError(sensorContext);
+    assertThat(feedback).isNull();
+
+    sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+    sensorContext.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
+    sensorContext.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    feedback = analysisWithAnError(sensorContext);
+    assertThat(feedback).isNull();
+
+    //analysis with no error
+    sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(sensorContext);
+    sonarComponents.saveAnalysisErrors();
+    assertThat(sensorContext.measure("projectKey", "sonarjava_feedback")).isNull();
+
   }
 }
