@@ -175,6 +175,18 @@ class A {
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
+  }
+}
+
+class UsingLambda {
+
+  private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UsingLambda.class);
+
+  void start(int port) {
+
+    unknown((a, b) -> {
+      LOG.info(a.foo());
+    });
 
   }
 }
