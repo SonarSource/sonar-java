@@ -49,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
@@ -181,6 +182,7 @@ public abstract class CheckVerifier {
 
   static SonarComponents sonarComponents(File file) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, File file) {
