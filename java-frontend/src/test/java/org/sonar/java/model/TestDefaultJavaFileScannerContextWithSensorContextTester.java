@@ -88,7 +88,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
         .initMetadata(new String(Files.readAllBytes(JAVA_FILE.toPath()), StandardCharsets.UTF_8))
         .build()
     );
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory, server);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);
 
     // spy getRuleKey call, to avoid mocking CheckFactory and Checks

@@ -127,7 +127,7 @@ public class VisitorsBridgeTest {
     JavaFileScanner visitor = c -> {throw npe;};
     File currentFile = new File("");
     SensorContextTester sensorContextTester = SensorContextTester.create(currentFile);
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
     VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singleton(visitor), new ArrayList<>(), sonarComponents);
     visitorsBridge.setCurrentFile(currentFile);
@@ -139,7 +139,7 @@ public class VisitorsBridgeTest {
       Fail.fail("Exception should be swallowed when property is not set");
     }
 
-    sensorContextTester.settings().appendProperty("sonar.java.failOnException", "true");
+    sensorContextTester.settings().appendProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, "true");
     try {
       visitorsBridge.visitFile(null);
       Fail.fail("scanning of file should have raise an exception");

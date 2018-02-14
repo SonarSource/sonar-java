@@ -22,6 +22,11 @@ package org.sonar.java.ast.visitors;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,18 +39,11 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.platform.Server;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -61,11 +59,11 @@ public class SonarSymbolTableVisitorTest {
   private SonarComponents sonarComponents;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class), mock(Server.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
   }
 
