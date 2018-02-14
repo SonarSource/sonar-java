@@ -13,6 +13,27 @@ if (!a || b) { // Noncompliant; "!a" is always "true", "b" is never evaluated
   doSomethingElse(); // never executed
 }
 </pre>
+<h2>Exceptions</h2>
+<p>This rule will not raise an issue in either of these cases:</p>
+<ul>
+  <li> When the condition is a single <code>final boolean</code> </li>
+</ul>
+<pre>
+final boolean debug = false;
+//...
+if (debug) {
+  // Print something
+}
+</pre>
+<ul>
+  <li> When the condition is literally <code>true</code> or <code>false</code>. </li>
+</ul>
+<pre>
+if (true) {
+  // do something
+}
+</pre>
+<p>In these cases it is obvious the code is as intended.</p>
 <h2>See</h2>
 <ul>
   <li> MISRA C:2004, 13.7 - Boolean operations whose results are invariant shall not be permitted. </li>
@@ -21,6 +42,5 @@ if (!a || b) { // Noncompliant; "!a" is always "true", "b" is never evaluated
   <li> <a href="http://cwe.mitre.org/data/definitions/571">MITRE, CWE-571</a> - Expression is Always True </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/NYA5">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never
   executed </li>
-  <li> <a href="https://www.securecoding.cert.org/confluence/x/SIIyAQ">CERT, MSC12-CPP.</a> - Detect and remove code that has no effect </li>
 </ul>
 
