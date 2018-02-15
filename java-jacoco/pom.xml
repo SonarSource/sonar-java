@@ -52,6 +52,14 @@
       <artifactId>java-jacoco-previous</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
     <!-- Would be provided by environment -->
     <dependency>
       <groupId>org.apache.ant</groupId>

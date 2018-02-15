@@ -37,6 +37,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisError;
+import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
@@ -52,7 +53,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 public class VisitorsBridge {
 
@@ -212,8 +212,8 @@ public class VisitorsBridge {
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
       this.visitFile(null);
       scanners.stream()
-        .filter(scanner -> scanner instanceof AstScannerExceptionHandler)
-        .forEach(scanner -> ((AstScannerExceptionHandler) scanner).processRecognitionException(e));
+        .filter(scanner -> scanner instanceof ExceptionHandler)
+        .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
 
   }

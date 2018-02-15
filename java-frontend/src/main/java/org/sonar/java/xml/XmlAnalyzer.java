@@ -22,6 +22,11 @@ package org.sonar.java.xml;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
@@ -30,16 +35,9 @@ import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.java.xml.maven.PomCheckContextImpl;
 import org.sonar.java.xml.maven.PomParser;
 import org.sonar.maven.model.maven2.MavenProject;
+import org.sonar.plugins.java.api.JavaVisitor;
 import org.sonar.squidbridge.ProgressReport;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.w3c.dom.Document;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class XmlAnalyzer {
 
@@ -49,10 +47,10 @@ public class XmlAnalyzer {
   private final List<PomCheck> pomChecks;
   private final XPath xPath;
 
-  public XmlAnalyzer(SonarComponents sonarComponents, CodeVisitor... visitors) {
+  public XmlAnalyzer(SonarComponents sonarComponents, JavaVisitor... visitors) {
     ImmutableList.Builder<XmlCheck> xmlChecksBuilder = ImmutableList.builder();
     ImmutableList.Builder<PomCheck> pomChecksBuilder = ImmutableList.builder();
-    for (CodeVisitor visitor : visitors) {
+    for (JavaVisitor visitor : visitors) {
       if (visitor instanceof XmlCheck) {
         xmlChecksBuilder.add((XmlCheck) visitor);
       } else if (visitor instanceof PomCheck) {

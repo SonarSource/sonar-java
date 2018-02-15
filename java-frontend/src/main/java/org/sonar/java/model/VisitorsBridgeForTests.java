@@ -38,9 +38,9 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
@@ -59,7 +59,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<CodeVisitor>toArray(visitors, CodeVisitor.class), true));
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<JavaVisitor>toArray(visitors, JavaVisitor.class), true));
   }
 
   @Override

@@ -22,6 +22,12 @@ package org.sonar.java;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -34,15 +40,8 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class JavaSquid {
 
@@ -53,23 +52,23 @@ public class JavaSquid {
 
   public JavaSquid(JavaVersion javaVersion,
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
+    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, JavaVisitor... visitors) {
     this(javaVersion, false, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, visitors);
   }
 
   public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
+                   JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, JavaVisitor... visitors) {
 
-    List<CodeVisitor> commonVisitors = Lists.newArrayList(javaResourceLocator);
+    List<JavaVisitor> commonVisitors = Lists.newArrayList(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<CodeVisitor> testCodeVisitors = Lists.newArrayList(commonVisitors);
+    Iterable<JavaVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
+    Collection<JavaVisitor> testCodeVisitors = Lists.newArrayList(commonVisitors);
     if (measurer != null) {
-      Iterable<CodeVisitor> measurers = Collections.singletonList(measurer);
+      Iterable<JavaVisitor> measurers = Collections.singletonList(measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
@@ -103,7 +102,7 @@ public class JavaSquid {
   }
 
   private static VisitorsBridge createVisitorBridge(
-    Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
+    Iterable<JavaVisitor> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, symbolicExecutionMode);
     visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;

@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.squidbridge.api.AnalysisException;
 
 public class DisallowedClassCheckTest {
 
@@ -53,10 +54,11 @@ public class DisallowedClassCheckTest {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     // bad regex
     visitor.disallowedClass = "java.lang(";
-      try {
-          JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
-      } catch (AnalysisException e) {
-          throw e.getCause();
-      }
+    try {
+      JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
+      Fail.fail("Should have failed");
+    } catch (AnalysisException e) {
+      throw e.getCause();
+    }
   }
 }

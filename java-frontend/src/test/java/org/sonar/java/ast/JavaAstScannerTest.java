@@ -46,6 +46,8 @@ import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisError;
+import org.sonar.java.AnalysisException;
+import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
@@ -62,8 +64,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -285,7 +285,7 @@ public class JavaAstScannerTest {
 
   }
 
-  private static class FakeAuditListener implements JavaFileScanner, AstScannerExceptionHandler {
+  private static class FakeAuditListener implements JavaFileScanner, ExceptionHandler {
 
     @Override
     public void processRecognitionException(RecognitionException e) {

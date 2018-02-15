@@ -20,8 +20,8 @@
 package org.sonar.java.filters;
 
 import org.sonar.api.scan.issue.filter.IssueFilter;
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.plugins.java.api.JavaVisitor;
 
-public interface CodeVisitorIssueFilter extends CodeVisitor, IssueFilter {
+public interface CodeVisitorIssueFilter extends JavaVisitor, IssueFilter {
 
 }

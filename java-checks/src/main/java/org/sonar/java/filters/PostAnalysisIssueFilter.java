@@ -21,14 +21,13 @@ package org.sonar.java.filters;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
+import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.squidbridge.api.AnalysisException;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 

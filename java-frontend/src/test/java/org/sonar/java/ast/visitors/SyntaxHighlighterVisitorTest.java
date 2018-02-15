@@ -42,7 +42,7 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.plugins.java.api.JavaVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -184,7 +184,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(File file) {
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaVisitor[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
   }
 

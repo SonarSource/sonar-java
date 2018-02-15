@@ -20,6 +20,7 @@
 package org.sonar.java.xml;
 
 import com.google.common.collect.Lists;
+import java.io.File;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,9 +35,6 @@ import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.squidbridge.api.CodeVisitor;
-
-import java.io.File;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -232,9 +230,9 @@ public class XmlAnalyzerTest {
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
-  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs, CodeVisitor... codeVisitor) {
+  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs, JavaCheck... visitors) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.checkClasses()).thenReturn(codeVisitor);
+    when(sonarComponents.checkClasses()).thenReturn(visitors);
 
     when(sonarComponents.getFileSystem()).thenReturn(fs);
 

@@ -29,7 +29,6 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
-import org.sonar.squidbridge.api.AnalysisException;
 
 public class JavaClasspath extends AbstractJavaClasspath {
 

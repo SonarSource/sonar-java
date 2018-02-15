@@ -17,33 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java;
 
-import java.util.Arrays;
-import org.sonar.java.se.checks.SECheck;
-import org.sonar.plugins.java.api.JavaVisitor;
+import com.sonar.sslr.api.RecognitionException;
 
-public enum SymbolicExecutionMode {
-  DISABLED,
-  ENABLED_WITHOUT_X_FILE,
-  ENABLED;
+public interface ExceptionHandler {
 
-  public static SymbolicExecutionMode getMode(JavaVisitor[] visitors, boolean xFileEnabled) {
-    if (hasASymbolicExecutionCheck(visitors)) {
-      return xFileEnabled ? SymbolicExecutionMode.ENABLED : SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE;
-    }
-    return SymbolicExecutionMode.DISABLED;
-  }
+  void processRecognitionException(RecognitionException e);
 
-  private static boolean hasASymbolicExecutionCheck(JavaVisitor[] visitors) {
-    return Arrays.stream(visitors).anyMatch(v -> v instanceof SECheck);
-  }
+  void processException(Exception e);
 
-  public boolean isEnabled() {
-    return this != DISABLED;
-  }
-
-  public boolean isCrossFileEnabled() {
-    return this == ENABLED;
-  }
 }
