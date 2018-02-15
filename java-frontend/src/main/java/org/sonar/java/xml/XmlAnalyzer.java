@@ -35,7 +35,7 @@ import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.java.xml.maven.PomCheckContextImpl;
 import org.sonar.java.xml.maven.PomParser;
 import org.sonar.maven.model.maven2.MavenProject;
-import org.sonar.plugins.java.api.JavaVisitor;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.ProgressReport;
 import org.w3c.dom.Document;
 
@@ -47,10 +47,10 @@ public class XmlAnalyzer {
   private final List<PomCheck> pomChecks;
   private final XPath xPath;
 
-  public XmlAnalyzer(SonarComponents sonarComponents, JavaVisitor... visitors) {
+  public XmlAnalyzer(SonarComponents sonarComponents, JavaCheck... visitors) {
     ImmutableList.Builder<XmlCheck> xmlChecksBuilder = ImmutableList.builder();
     ImmutableList.Builder<PomCheck> pomChecksBuilder = ImmutableList.builder();
-    for (JavaVisitor visitor : visitors) {
+    for (JavaCheck visitor : visitors) {
       if (visitor instanceof XmlCheck) {
         xmlChecksBuilder.add((XmlCheck) visitor);
       } else if (visitor instanceof PomCheck) {

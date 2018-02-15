@@ -22,5 +22,5 @@ package org.sonar.plugins.java.api;
 /**
  * Marker interface for all checks of the java analyzer.
  */
-public interface JavaCheck extends JavaVisitor {
+public interface JavaCheck {
 }

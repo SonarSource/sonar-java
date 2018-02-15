@@ -33,8 +33,8 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.plugins.java.api.JavaVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -55,7 +55,7 @@ public class StrutsTest {
     }
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, javaResourceLocator, null, new JavaVisitor[0]);
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, javaResourceLocator, null, new JavaCheck[0]);
     squid.scan(files, Collections.<File>emptyList());
   }
 

@@ -21,6 +21,9 @@ package org.sonar.java;
 
 import com.sonar.sslr.api.RecognitionException;
 
+/**
+ * Interface defining how a java check should react when errors are occurring during analysis.
+ */
 public interface ExceptionHandler {
 
   void processRecognitionException(RecognitionException e);

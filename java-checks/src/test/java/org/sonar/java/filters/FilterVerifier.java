@@ -41,7 +41,6 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -52,17 +51,17 @@ import static org.mockito.Mockito.when;
 
 public class FilterVerifier {
 
-  public static void verify(String filename, JavaIssueFilter filter, JavaVisitor... extraJavaVisitors) {
+  public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
     // set the component to the filter
     filter.setComponentKey(filename);
 
     IssueCollector issueCollector = new IssueCollector();
-    ArrayList<JavaVisitor> visitors = Lists.<JavaVisitor>newArrayList(filter, issueCollector);
+    ArrayList<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter, issueCollector);
 
     // instantiate the rules filtered by the filter
     visitors.addAll(instantiateRules(filter.filteredRules()));
 
-    for (JavaVisitor visitor : extraJavaVisitors) {
+    for (JavaCheck visitor : extraJavaChecks) {
       visitors.add(visitor);
     }
 

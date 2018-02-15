@@ -19,6 +19,9 @@
  */
 package org.sonar.java;
 
+/**
+ * Runtime exception to be thrown during analysis, in case of major issue, for instance invalid format of a report to be parsed
+ */
 public class AnalysisException extends RuntimeException {
 
   public AnalysisException(String message) {

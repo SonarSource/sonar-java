@@ -29,7 +29,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
+public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter(),
