@@ -10,7 +10,7 @@ SonarJava is a code analyzer for Java projects. Information about the SonarJava 
 Features
 --------
 
-* 390+ rules (including 140+ bug detection)
+* 430+ rules (including 140+ bug detection)
 * Metrics (complexity, number of lines etc.)
 * Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
 * [Custom rules](https://docs.sonarqube.org/display/PLUG/Custom+Rules+for+Java)
@@ -20,9 +20,9 @@ Useful links
 
 * [Project homepage](https://redirect.sonarsource.com/plugins/java.html)
 * [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
-* [Available rules](https://nemo.sonarqube.org/coding_rules#languages=java|repositories=squid)
+* [Available rules](https://rules.sonarsource.com/java)
 * [Google Group for feedback](https://groups.google.com/forum/#!forum/sonarqube)
-* [Demo project analysis](https://nemo.sonarqube.org/overview?id=org.sonarsource.sonarqube%3Asonarqube)
+* [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.sonarqube%3Asonarqube)
 
 Have question or feedback?
 --------------------------
