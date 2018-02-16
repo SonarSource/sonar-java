@@ -19,19 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.utils.log.LogTester;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.squidbridge.api.AnalysisException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class UndocumentedApiCheckTest {
-
-  @Rule
-  public LogTester logTester = new LogTester();
 
   @Test
   public void test() {
@@ -82,11 +77,8 @@ public class UndocumentedApiCheckTest {
   public void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    String filename = "src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java";
-    JavaCheckVerifier.verifyNoIssue(filename, check);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.checks.UndocumentedApiCheck - UndocumentedApi on file "
-      + new File(filename).getPath()
-      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    assertThatExceptionOfType(AnalysisException.class).isThrownBy(() -> {
+      JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java", check);
+    }).withCause(new IllegalStateException("Exceptions can not be specified other than with an identifier or a fully qualified name."));
   }
-
 }
