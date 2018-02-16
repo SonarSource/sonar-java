@@ -19,19 +19,18 @@
  */
 package org.sonar.plugins.jacoco;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Map;
 import org.apache.commons.lang.BooleanUtils;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
 import org.jacoco.core.data.ISessionInfoVisitor;
 import org.jacoco.core.data.SessionInfo;
-import org.sonar.squidbridge.api.AnalysisException;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map;
+import org.sonar.java.AnalysisException;
 
 /**
  * Utility class to merge JaCoCo reports.

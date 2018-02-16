@@ -40,11 +40,11 @@ import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
-import org.sonar.squidbridge.api.AnalysisException;
 
 /**
  * @since 2.4

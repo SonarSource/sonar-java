@@ -17,10 +17,11 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java.filters;
 
-/**
- * Marker interface for all checks of the java analyzer.
- */
-public interface JavaCheck {
+import org.sonar.api.scan.issue.filter.IssueFilter;
+import org.sonar.plugins.java.api.JavaCheck;
+
+public interface SonarJavaIssueFilter extends JavaCheck, IssueFilter {
+
 }

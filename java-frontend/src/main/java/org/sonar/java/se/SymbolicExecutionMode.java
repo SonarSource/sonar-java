@@ -21,21 +21,21 @@ package org.sonar.java.se;
 
 import java.util.Arrays;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.plugins.java.api.JavaCheck;
 
 public enum SymbolicExecutionMode {
   DISABLED,
   ENABLED_WITHOUT_X_FILE,
   ENABLED;
 
-  public static SymbolicExecutionMode getMode(CodeVisitor[] visitors, boolean xFileEnabled) {
+  public static SymbolicExecutionMode getMode(JavaCheck[] visitors, boolean xFileEnabled) {
     if (hasASymbolicExecutionCheck(visitors)) {
       return xFileEnabled ? SymbolicExecutionMode.ENABLED : SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE;
     }
     return SymbolicExecutionMode.DISABLED;
   }
 
-  private static boolean hasASymbolicExecutionCheck(CodeVisitor[] visitors) {
+  private static boolean hasASymbolicExecutionCheck(JavaCheck[] visitors) {
     return Arrays.stream(visitors).anyMatch(v -> v instanceof SECheck);
   }
 

@@ -20,18 +20,17 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.sonar.check.Rule;
+import org.sonar.java.ExceptionHandler;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.squidbridge.AstScannerExceptionHandler;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 @Rule(key = "ParsingError")
 @RspecKey("S2260")
-public class ParsingErrorCheck implements AstScannerExceptionHandler, JavaFileScanner {
+public class ParsingErrorCheck implements ExceptionHandler, JavaFileScanner {
 
   private JavaFileScannerContext context;
 

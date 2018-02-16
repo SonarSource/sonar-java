@@ -20,16 +20,15 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.squidbridge.api.AnalysisException;
-
-import java.io.File;
-import java.util.Collection;
+import org.sonar.java.AnalysisException;
 
 public class JacocoReportReaderTest {
 

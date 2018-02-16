@@ -17,10 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java;
 
 /**
- * Marker interface for all checks of the java analyzer.
+ * Runtime exception to be thrown during analysis, in case of major issue, for instance invalid format of a report to be parsed
  */
-public interface JavaCheck {
+public class AnalysisException extends RuntimeException {
+
+  public AnalysisException(String message) {
+    super(message);
+  }
+
+  public AnalysisException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
 }

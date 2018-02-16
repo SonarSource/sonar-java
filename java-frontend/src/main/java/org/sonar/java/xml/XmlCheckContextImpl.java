@@ -20,26 +20,24 @@
 package org.sonar.java.xml;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.AnalyzerMessage.TextSpan;
-import org.sonar.java.SonarComponents;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.squidbridge.api.AnalysisException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
+import java.io.File;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import org.sonar.java.AnalysisException;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.SonarComponents;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import static org.sonar.java.xml.XmlCheckUtils.nodeLine;
 

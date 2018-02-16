@@ -17,11 +17,17 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.filters;
+package org.sonar.java;
 
-import org.sonar.api.scan.issue.filter.IssueFilter;
-import org.sonar.squidbridge.api.CodeVisitor;
+import com.sonar.sslr.api.RecognitionException;
 
-public interface CodeVisitorIssueFilter extends CodeVisitor, IssueFilter {
+/**
+ * Interface defining how a java check should react when errors are occurring during analysis.
+ */
+public interface ExceptionHandler {
+
+  void processRecognitionException(RecognitionException e);
+
+  void processException(Exception e);
 
 }

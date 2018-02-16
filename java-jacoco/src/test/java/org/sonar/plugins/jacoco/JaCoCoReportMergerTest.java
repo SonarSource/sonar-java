@@ -19,16 +19,15 @@
  */
 package org.sonar.plugins.jacoco;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.Map;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.squidbridge.api.AnalysisException;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.Map;
+import org.sonar.java.AnalysisException;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;

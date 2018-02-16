@@ -33,7 +33,7 @@ import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -112,7 +112,7 @@ public class MeasurerTest {
     inputFile.setModuleBaseDir(fs.baseDirPath());
     fs.add(inputFile.build());
     Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new CodeVisitor[0]);
+    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new JavaCheck[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
     assertThat(context.measures("projectKey:" + relativePath)).hasSize(numberOfMetrics);
     Measure<Serializable> measure = context.measure("projectKey:" + relativePath, metric);

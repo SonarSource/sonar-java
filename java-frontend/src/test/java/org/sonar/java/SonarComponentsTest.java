@@ -57,8 +57,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -122,7 +120,7 @@ public class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    CodeVisitor[] visitors = sonarComponents.checkClasses();
+    JavaCheck[] visitors = sonarComponents.checkClasses();
     assertThat(visitors).hasSize(0);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
     assertThat(testChecks).hasSize(0);
@@ -155,7 +153,7 @@ public class SonarComponentsTest {
     });
     sonarComponents.setSensorContext(context);
 
-    CodeVisitor[] visitors = sonarComponents.checkClasses();
+    JavaCheck[] visitors = sonarComponents.checkClasses();
     assertThat(visitors).hasSize(1);
     assertThat(visitors[0]).isEqualTo(expectedCheck);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
@@ -175,7 +173,7 @@ public class SonarComponentsTest {
     });
     sonarComponents.setSensorContext(context);
 
-    CodeVisitor[] visitors = sonarComponents.checkClasses();
+    JavaCheck[] visitors = sonarComponents.checkClasses();
     assertThat(visitors).hasSize(0);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
     assertThat(testChecks).hasSize(1);
@@ -199,7 +197,7 @@ public class SonarComponentsTest {
     });
     sonarComponents.setSensorContext(context);
 
-    CodeVisitor[] visitors = sonarComponents.checkClasses();
+    JavaCheck[] visitors = sonarComponents.checkClasses();
     assertThat(visitors).hasSize(1);
     assertThat(visitors[0]).isEqualTo(expectedCheck);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();

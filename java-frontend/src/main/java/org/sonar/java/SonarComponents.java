@@ -49,8 +49,6 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -160,8 +158,8 @@ public class SonarComponents {
     allChecks.add(createdChecks);
   }
 
-  public CodeVisitor[] checkClasses() {
-    return checks.stream().flatMap(ce -> ce.all().stream()).toArray(CodeVisitor[]::new);
+  public JavaCheck[] checkClasses() {
+    return checks.stream().flatMap(ce -> ce.all().stream()).toArray(JavaCheck[]::new);
   }
 
   public Iterable<Checks<JavaCheck>> checks() {

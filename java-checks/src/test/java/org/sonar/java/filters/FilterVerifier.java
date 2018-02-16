@@ -23,6 +23,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.rule.RuleKey;
@@ -36,15 +43,6 @@ import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -53,22 +51,22 @@ import static org.mockito.Mockito.when;
 
 public class FilterVerifier {
 
-  public static void verify(String filename, JavaIssueFilter filter, CodeVisitor... extraCodeVisitors) {
+  public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
     // set the component to the filter
     filter.setComponentKey(filename);
 
     IssueCollector issueCollector = new IssueCollector();
-    ArrayList<CodeVisitor> codeVisitors = Lists.<CodeVisitor>newArrayList(filter, issueCollector);
+    ArrayList<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter, issueCollector);
 
     // instantiate the rules filtered by the filter
-    codeVisitors.addAll(instantiateRules(filter.filteredRules()));
+    visitors.addAll(instantiateRules(filter.filteredRules()));
 
-    for (CodeVisitor codeVisitor : extraCodeVisitors) {
-      codeVisitors.add(codeVisitor);
+    for (JavaCheck visitor : extraJavaChecks) {
+      visitors.add(visitor);
     }
 
     Collection<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true);
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(codeVisitors, Lists.newArrayList(classpath), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), null);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
