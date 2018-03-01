@@ -1,0 +1,15 @@
+{
+  "title": "Nullness of parameters should be guaranteed",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4449",
+  "sqKey": "S4449"
+}
