@@ -1,0 +1,15 @@
+{
+  "title": "Unary prefix operators should not be repeated",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2761",
+  "sqKey": "S2761"
+}

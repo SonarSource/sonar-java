@@ -527,6 +527,7 @@ public final class CheckList {
       .add(RedundantStreamCollectCheck.class)
       .add(GettersSettersOnRightFieldCheck.class)
       .add(ParameterNullnessCheck.class)
+      .add(DoublePrefixOperatorCheck.class)
       .build();
   }
 
