@@ -59,18 +59,13 @@ public class ParameterNullnessCheck extends SECheck {
       return;
     }
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
-    Scope parameters = methodSymbol.getParameters();
-    if (parameters == null) {
-      // FIXME: scope should never be null for parameters (null in default constructors for instance)
-      return;
-    }
     if (nonNullAnnotationOnParameters(methodSymbol) == null) {
       // method is not annotated (locally or globally)
       return;
     }
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxnode, nbArguments);
-    List<JavaSymbol> argumentSymbols = parameters.scopeSymbols();
+    List<JavaSymbol> argumentSymbols = methodSymbol.getParameters().scopeSymbols();
     int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (methodSymbol.isVarArgs() ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);

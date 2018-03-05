@@ -23,6 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -32,10 +35,6 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Completes hierarchy of types.
@@ -125,6 +124,7 @@ public class SecondPass implements JavaSymbol.Completer {
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
       MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.of(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
+      defaultConstructor.parameters = new Scope(defaultConstructor);
       symbol.members.enter(defaultConstructor);
     }
   }

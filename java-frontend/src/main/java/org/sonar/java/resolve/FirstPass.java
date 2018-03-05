@@ -22,6 +22,9 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -54,11 +57,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Defines scopes and symbols.
@@ -270,12 +268,15 @@ public class FirstPass extends BaseTreeVisitor {
       ArrayJavaType enumArrayType = new ArrayJavaType(symbol.type, symbols.arrayClass);
       MethodJavaType valuesMethodType = new MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
       valuesMethod.setMethodType(valuesMethodType);
+      valuesMethod.parameters = new Scope(valuesMethod);
       classEnv.scope.enter(valuesMethod);
 
       // add 'public static E valueOf(String name)'
       JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
       MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
       valueOfMethod.setMethodType(valueOfMethodType);
+      valueOfMethod.parameters = new Scope(valueOfMethod);
+      valueOfMethod.parameters.enter(new JavaSymbol.VariableJavaSymbol(0, "name", symbols.stringType, valueOfMethod));
       classEnv.scope.enter(valueOfMethod);
     }
     restoreEnvironment(tree);
