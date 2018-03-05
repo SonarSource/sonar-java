@@ -1,0 +1,29 @@
+<p>The needless repetition of an operator is usually a typo. There is no reason to write <code>!!!i</code> when <code>!i</code> will do.</p>
+<p>On the other hand, the repetition of increment and decrement operators may have been done on purpose, but doing so obfuscates the meaning, and
+should be simplified.</p>
+<p>This rule raises an issue for sequences of: <code>!</code>, <code>~</code>, <code>-</code>, and <code>+</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+int i = 1;
+
+int j = - - -i;  // Noncompliant; just use -i
+int k = ~~~i;     // Noncompliant; same as i
+int m = + +i;    // Noncompliant; operators are useless here
+
+boolean b = false;
+boolean c = !!!b;   // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+int i =  1;
+
+int j = -i;
+int k =  i;
+int m =  i;
+
+boolean b = false;
+boolean c = !b;
+</pre>
+<h2>Exceptions</h2>
+<p>Overflow handling for GWT compilation using <code>~~</code> is ignored.</p>
+
