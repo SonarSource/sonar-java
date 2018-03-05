@@ -7,7 +7,7 @@ should be simplified.</p>
 int i = 1;
 
 int j = - - -i;  // Noncompliant; just use -i
-int k = ~~i;     // Noncompliant; same as i
+int k = ~~~i;     // Noncompliant; same as i
 int m = + +i;    // Noncompliant; operators are useless here
 
 boolean b = false;
@@ -24,4 +24,6 @@ int m =  i;
 boolean b = false;
 boolean c = !b;
 </pre>
+<h2>Exceptions</h2>
+<p>Overflow handling for GWT compilation using <code>~~</code> is ignored.</p>
 

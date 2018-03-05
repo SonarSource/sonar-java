@@ -56,11 +56,12 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
     }
     ExpressionTree expr = ExpressionUtils.skipParentheses(exprTree.expression());
     if (exprTree.is(expr.kind())) {
-      if (caseHandlingDoubleTilde(expr) && expr.is(Tree.Kind.BITWISE_COMPLEMENT)) {
+      UnaryExpressionTree child = (UnaryExpressionTree) expr;
+      if (child.is(Tree.Kind.BITWISE_COMPLEMENT) && !ExpressionUtils.skipParentheses(child.expression()).is(Tree.Kind.BITWISE_COMPLEMENT)) {
         return;
       }
-      prefixSet.add(expr);
-      reportIssue(exprTree.operatorToken(), ((UnaryExpressionTree) expr).operatorToken(), "Remove multiple operator prefixes.");
+      prefixSet.add(child);
+      reportIssue(exprTree.operatorToken(), child.operatorToken(), "Remove multiple operator prefixes.");
     }
   }
 
@@ -76,10 +77,6 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
-  }
-
-  private static boolean caseHandlingDoubleTilde(ExpressionTree expr) {
-    return ExpressionUtils.skipParentheses(((UnaryExpressionTree) expr).expression()).is(Tree.Kind.BITWISE_COMPLEMENT) ? false : true;
   }
 
 }
