@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -56,10 +55,10 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
       return;
     }
     ExpressionTree expr = ExpressionUtils.skipParentheses(exprTree.expression());
-    if (caseHandlingDoubleTilde(expr)) {
-      return;
-    }
     if (exprTree.is(expr.kind())) {
+      if (caseHandlingDoubleTilde(expr) && expr.is(Tree.Kind.BITWISE_COMPLEMENT)) {
+        return;
+      }
       prefixSet.add(expr);
       reportIssue(exprTree.operatorToken(), ((UnaryExpressionTree) expr).operatorToken(), "Remove multiple operator prefixes.");
     }
@@ -80,13 +79,7 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean caseHandlingDoubleTilde(ExpressionTree expr) {
-    if (expr.is(Tree.Kind.BITWISE_COMPLEMENT)) {
-      ExpressionTree exprIdentifier = ExpressionUtils.skipParentheses(((UnaryExpressionTree) expr).expression());
-      if (exprIdentifier.is(Tree.Kind.IDENTIFIER) || exprIdentifier.getClass().equals(BinaryExpressionTreeImpl.class)) {
-        return true;
-      }
-    }
-    return false;
+    return ExpressionUtils.skipParentheses(((UnaryExpressionTree) expr).expression()).is(Tree.Kind.BITWISE_COMPLEMENT) ? false : true;
   }
 
 }

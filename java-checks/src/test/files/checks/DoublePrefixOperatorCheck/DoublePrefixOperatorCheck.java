@@ -5,7 +5,7 @@ class test1 {
   int hashCode = 2;
   
   boolean flag2 = !!flag;  // Noncompliant  
-  int a1 = ~~~a; // Noncompliant
+  int a1 = ~~~a; // Noncompliant [[sc=12;ec=14]]{{Remove multiple operator prefixes.}}
 
   boolean flag3 = !!!flag; // Noncompliant
 
@@ -14,8 +14,6 @@ class test1 {
   boolean flag5 = !(!flag4); // Noncompliant [[sc=19;ec=22]] {{Remove multiple operator prefixes.}}
 
   int c = ~(~(~a3));    // Noncompliant [[sc=11;ec=14]] {{Remove multiple operator prefixes.}}
-  
-  int d = ~~~hash;   // Noncompliant [[sc=11;ec=13]]{{Remove multiple operator prefixes.}}
   
   boolean flag6 = !(!(!flag4)); // Noncompliant [[sc=19;ec=22]] {{Remove multiple operator prefixes.}}
   
