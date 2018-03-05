@@ -26,7 +26,7 @@ public class ParameterNullnessCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ParameterNullnessCheckTest.java", new ParameterNullnessCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ParameterNullnessCheck.java", new ParameterNullnessCheck());
   }
 
 }

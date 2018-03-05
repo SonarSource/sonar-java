@@ -31,6 +31,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.se.ExplodedGraphWalker.EQUALS_METHODS;
@@ -44,29 +45,31 @@ public class ParameterNullnessCheck extends SECheck {
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     ProgramState state = context.getState();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      checkParameters((MethodInvocationTree) syntaxNode, state);
+      MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
+      checkParameters(mit, mit.symbol(), mit.arguments(), state);
+    } else if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree nct = (NewClassTree) syntaxNode;
+      checkParameters(nct, nct.constructorSymbol(), nct.arguments(), state);
     }
     return state;
   }
 
-  private void checkParameters(MethodInvocationTree mit, ProgramState state) {
-    Symbol symbol = mit.symbol();
-    if (!symbol.isMethodSymbol() || mit.arguments().isEmpty()) {
+  private void checkParameters(Tree syntaxnode, Symbol symbol, Arguments arguments, ProgramState state) {
+    if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
-    String methodAnnotatedParameterNonNull = nonNullAnnotationOnParameters(methodSymbol);
-    if (methodAnnotatedParameterNonNull == null) {
+    Scope parameters = methodSymbol.getParameters();
+    if (parameters == null) {
+      // FIXME: scope should never be null for parameters (null in default constructors for instance)
+      return;
+    }
+    if (nonNullAnnotationOnParameters(methodSymbol) == null) {
       // method is not annotated (locally or globally)
       return;
     }
-    Scope parameters = methodSymbol.getParameters();
-    if (parameters == null) {
-      return;
-    }
-    Arguments arguments = mit.arguments();
     int nbArguments = arguments.size();
-    List<SymbolicValue> argumentSVs = Lists.reverse(state.peekValues(nbArguments + 1).subList(0, nbArguments));
+    List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxnode, nbArguments);
     List<JavaSymbol> argumentSymbols = parameters.scopeSymbols();
     int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (methodSymbol.isVarArgs() ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
@@ -75,6 +78,13 @@ public class ParameterNullnessCheck extends SECheck {
         reportIssue(arguments.get(i), "Annotate the parameter with @javax.annotation.Nullable in method declaration, or make sure that null can not be passed as argument.");
       }
     }
+  }
+
+  private static List<SymbolicValue> getArgumentSVs(ProgramState state, Tree syntaxNode, int nbArguments) {
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      return Lists.reverse(state.peekValues(nbArguments + 1).subList(0, nbArguments));
+    }
+    return Lists.reverse(state.peekValues(nbArguments));
   }
 
   private static boolean parameterIsNullable(Symbol.MethodSymbol method, Symbol argumentSymbol) {

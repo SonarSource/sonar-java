@@ -40,6 +40,7 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/FilteredEntryMultimap.java':[
 84,
+188,
 204,
 366,
 ],
@@ -59,6 +60,12 @@
 119,
 146,
 ],
+'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
+290,
+290,
+329,
+329,
+],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java':[
 601,
 ],
@@ -67,6 +74,9 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
 510,
+],
+'com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java':[
+99,
 ],
 'com.google.guava:guava:src/com/google/common/collect/SortedLists.java':[
 278,

@@ -4,6 +4,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 abstract class A {
 
+  A(String s) { }
+  A(Object o1, Object o2) { }
+
   Object field;
 
   void foo(Object o) {
@@ -22,6 +25,10 @@ abstract class A {
 
     gul(null, o, null, o); // Compliant - ignore variadic argument
     gul2(null, o, null, o); // Noncompliant [[sc=10;ec=14]] - first parameter is not variadic
+
+    A a1 = new A(null); // Noncompliant
+    A a2 = new A(o, null); // Noncompliant [[sc=21;ec=25]]
+    B b = new B();
   }
 
   @Override
