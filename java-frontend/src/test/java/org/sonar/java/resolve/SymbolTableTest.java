@@ -509,6 +509,8 @@ public class SymbolTableTest {
     assertThat(valuesMethod.declaration).isNull();
     assertThat(valuesMethod.isStatic()).isTrue();
     assertThat(valuesMethod.parameterTypes()).isEmpty();
+    assertThat(valuesMethod.getParameters()).isNotNull();
+    assertThat(valuesMethod.getParameters().scopeSymbols()).isEmpty();
     assertThat(((MethodJavaType) valuesMethod.type).resultType).isInstanceOf(ArrayJavaType.class);
     assertThat(((ArrayJavaType) (((MethodJavaType) valuesMethod.type).resultType)).elementType).isSameAs(enumSymbol.type);
     assertThat(result.reference(9, 19)).isSameAs(valuesMethod);
@@ -519,6 +521,8 @@ public class SymbolTableTest {
     assertThat(valueOfMethod.isStatic()).isTrue();
     assertThat(valueOfMethod.parameterTypes()).hasSize(1);
     assertThat(valueOfMethod.parameterTypes().get(0).is("java.lang.String")).isTrue();
+    assertThat(valueOfMethod.getParameters()).isNotNull();
+    assertThat(valueOfMethod.getParameters().scopeSymbols()).hasSize(1);
     assertThat(((MethodJavaType) valueOfMethod.type).resultType).isSameAs(enumSymbol.type);
     assertThat(result.reference(10, 20)).isSameAs(valueOfMethod);
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("useValueOf", 14));
@@ -632,7 +636,8 @@ public class SymbolTableTest {
     assertThat(defaultConstructor.owner).isSameAs(result.symbol("ParameterType"));
     defaultConstructor = result.reference(28, 7);
     assertThat(defaultConstructor.isAbstract()).isFalse();
-
+    assertThat(((JavaSymbol.MethodJavaSymbol) defaultConstructor).getParameters()).isNotNull();
+    assertThat(((JavaSymbol.MethodJavaSymbol) defaultConstructor).getParameters().scopeSymbols()).isEmpty();
   }
 
   @Test

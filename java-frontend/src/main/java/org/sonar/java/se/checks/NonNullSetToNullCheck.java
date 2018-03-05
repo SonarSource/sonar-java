@@ -28,7 +28,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.Scope;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -208,17 +207,14 @@ public class NonNullSetToNullCheck extends SECheck {
     }
 
     private void checkNullArguments(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, List<SymbolicValue> argumentValues) {
-      Scope parameters = symbol.getParameters();
-      if (parameters != null) {
-        List<JavaSymbol> scopeSymbols = parameters.scopeSymbols();
-        int parametersToTest = argumentValues.size();
-        if (scopeSymbols.size() < parametersToTest) {
-          // The last parameter is a variable length argument: the non-null condition does not apply to its values
-          parametersToTest = scopeSymbols.size() - 1;
-        }
-        for (int i = 0; i < parametersToTest; i++) {
-          checkNullArgument(syntaxTree, symbol, scopeSymbols.get(i), argumentValues.get(i), i);
-        }
+      List<JavaSymbol> scopeSymbols = symbol.getParameters().scopeSymbols();
+      int parametersToTest = argumentValues.size();
+      if (scopeSymbols.size() < parametersToTest) {
+        // The last parameter is a variable length argument: the non-null condition does not apply to its values
+        parametersToTest = scopeSymbols.size() - 1;
+      }
+      for (int i = 0; i < parametersToTest; i++) {
+        checkNullArgument(syntaxTree, symbol, scopeSymbols.get(i), argumentValues.get(i), i);
       }
     }
 
