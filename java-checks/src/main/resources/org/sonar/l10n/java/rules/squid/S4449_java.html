@@ -1,0 +1,65 @@
+<p>When using null-related annotations at global scope level, for instance using <code>javax.annotation.ParametersAreNonnullByDefault</code> (from
+JSR-305) at package level, it means that all the parameters to all the methods included in the package will, or should, be considered
+Non-<code>null</code>. It is equivalent to annotating every parameter in every method with non-null annotations (such as <code>@Nonnull</code>).</p>
+<p>The rule raises an issue every time a parameter could be <code>null</code> for a method invocation, where the method is annotated as forbidding
+null parameters.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@javax.annotation.ParametersAreNonnullByDefault
+class A {
+
+  void foo() {
+    bar(getValue()); // Noncompliant - method 'bar' do not expect 'null' values as parameter
+  }
+
+  void bar(Object o) { // 'o' is by contract expected never to be null
+    // ...
+  }
+
+  @javax.annotation.CheckForNull
+  abstract Object getValue();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>Two solutions are possible: </p>
+<ul>
+  <li> The signature of the method is correct, and null check should be done prior to the call. </li>
+  <li> The signature of the method is not coherent and should be annotated to allow null values being passed as parameter </li>
+</ul>
+<pre>
+@javax.annotation.ParametersAreNonnullByDefault
+abstract class A {
+
+  void foo() {
+      Object o = getValue();
+      if (o != null) {
+        bar(); // Compliant - 'o' can not be null
+      }
+  }
+
+  void bar(Object o) {
+    // ...
+  }
+
+  @javax.annotation.CheckForNull
+  abstract Object getValue();
+}
+</pre>
+<p>or </p>
+<pre>
+@javax.annotation.ParametersAreNonnullByDefault
+abstract class A {
+
+  void foo() {
+    bar(getValue());
+  }
+
+  void bar(@javax.annotation.Nullable Object o) { // annotation was missing
+    // ...
+  }
+
+  @javax.annotation.CheckForNull
+  abstract Object getValue();
+}
+</pre>
+

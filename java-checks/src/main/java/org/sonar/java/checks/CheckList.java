@@ -92,6 +92,7 @@ import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
+import org.sonar.java.se.checks.ParameterNullnessCheck;
 import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
@@ -525,6 +526,7 @@ public final class CheckList {
       .add(PredictableSeedCheck.class)
       .add(RedundantStreamCollectCheck.class)
       .add(GettersSettersOnRightFieldCheck.class)
+      .add(ParameterNullnessCheck.class)
       .build();
   }
 
