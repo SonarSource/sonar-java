@@ -22,9 +22,12 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -38,30 +41,36 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
     return ImmutableList.of(Tree.Kind.LOGICAL_COMPLEMENT, Tree.Kind.BITWISE_COMPLEMENT, Tree.Kind.UNARY_PLUS, Tree.Kind.UNARY_MINUS);
   }
 
-  static HashSet<ExpressionTree> prefixSet = new HashSet<>();
+  private Set<ExpressionTree> prefixSet = new HashSet<>();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    prefixSet.clear();
+    super.scanFile(context);
+  }
 
   @Override
   public void visitNode(Tree tree) {
-    UnaryExpressionTree temp = (UnaryExpressionTree) tree;
-    if (usedForDoublePrefix(temp)) {
+    UnaryExpressionTree exprTree = (UnaryExpressionTree) tree;
+    if (alreadyReported(exprTree)) {
       return;
     }
-    ExpressionTree expr = ExpressionUtils.skipParentheses(temp.expression());
-    if (temp.is(expr.kind())) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(exprTree.expression());
+    if (caseHandlingDoubleTilde(expr)) {
+      return;
+    }
+    if (exprTree.is(expr.kind())) {
       prefixSet.add(expr);
-      reportIssue(temp.operatorToken(), ((UnaryExpressionTree) expr).operatorToken(), "Remove multiple operator prefixes.");
+      reportIssue(exprTree.operatorToken(), ((UnaryExpressionTree) expr).operatorToken(), "Remove multiple operator prefixes.");
     }
   }
 
-  private static boolean usedForDoublePrefix(UnaryExpressionTree tree) {
+  private boolean alreadyReported(UnaryExpressionTree tree) {
     if (prefixSet.contains(tree)) {
       return true;
     }
     Tree parent = tree;
-    while (parent != null) {
-      if (!parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.BITWISE_COMPLEMENT, Tree.Kind.LOGICAL_COMPLEMENT, Tree.Kind.UNARY_PLUS, Tree.Kind.UNARY_MINUS)) {
-        return false;
-      }
+    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.BITWISE_COMPLEMENT, Tree.Kind.LOGICAL_COMPLEMENT, Tree.Kind.UNARY_PLUS, Tree.Kind.UNARY_MINUS)) {
       parent = parent.parent();
       if (prefixSet.contains(parent)) {
         return true;
@@ -69,4 +78,15 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
     }
     return false;
   }
+
+  private static boolean caseHandlingDoubleTilde(ExpressionTree expr) {
+    if (expr.is(Tree.Kind.BITWISE_COMPLEMENT)) {
+      ExpressionTree exprIdentifier = ExpressionUtils.skipParentheses(((UnaryExpressionTree) expr).expression());
+      if (exprIdentifier.is(Tree.Kind.IDENTIFIER) || exprIdentifier.getClass().equals(BinaryExpressionTreeImpl.class)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
