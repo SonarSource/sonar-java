@@ -19,8 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -29,10 +32,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @Rule(key = "S3346")
 public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
@@ -53,7 +52,7 @@ public class AssertOnBooleanVariableCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      IdentifierTree methodNameTree = MethodsHelper.methodName(tree);
+      IdentifierTree methodNameTree = ExpressionUtils.methodName(tree);
       if (SIDE_EFFECT_METHOD_NAMES.matcher(methodNameTree.name()).find()) {
         reportIssue(methodNameTree, "Move this \"assert\" side effect to another statement.");
       } else {

@@ -20,11 +20,14 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -37,11 +40,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "UnusedPrivateMethod")
 @RspecKey("S1144")
@@ -102,7 +100,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private void checkIfUnknown(MethodInvocationTree mit) {
     if (mit.symbol().isUnknown()) {
-      unresolvedMethodNames.add(MethodsHelper.methodName(mit).name());
+      unresolvedMethodNames.add(ExpressionUtils.methodName(mit).name());
     }
   }
 

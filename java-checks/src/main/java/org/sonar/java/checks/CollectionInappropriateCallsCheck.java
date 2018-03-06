@@ -21,12 +21,14 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
+import java.text.MessageFormat;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
@@ -38,11 +40,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import javax.annotation.Nullable;
-
-import java.text.MessageFormat;
-import java.util.List;
 
 @Rule(key = "S2175")
 public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
@@ -83,7 +80,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
       && !collectionParameterType.isUnknown()
       && !isCallToParametrizedOrUnknownMethod
       && !isArgumentCompatible(argumentType, collectionParameterType)) {
-      reportIssue(MethodsHelper.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
+      reportIssue(ExpressionUtils.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
   }
 

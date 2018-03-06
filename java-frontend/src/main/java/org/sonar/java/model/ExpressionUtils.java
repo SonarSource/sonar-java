@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -104,5 +105,19 @@ public final class ExpressionUtils {
 
   public static boolean isNullLiteral(ExpressionTree tree) {
     return skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
+  }
+
+  /**
+   * Retrieve the identifier corresponding to the method name associated to the method invocation
+   */
+  public static IdentifierTree methodName(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    IdentifierTree id;
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      id = (IdentifierTree) methodSelect;
+    } else {
+      id = ((MemberSelectExpressionTree) methodSelect).identifier();
+    }
+    return id;
   }
 }

@@ -21,11 +21,17 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -36,15 +42,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @Rule(key = "S2250")
 public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscriptionVisitor {
@@ -93,7 +90,7 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
       if (methodMatcher.matches(mit) && invocationInMethod(mit)) {
         Symbol target = invocationTarget(mit);
         if (target != null && isField(target) && matchesActualType(target, actualTypes)) {
-          IdentifierTree methodName = MethodsHelper.methodName(mit);
+          IdentifierTree methodName = ExpressionUtils.methodName(mit);
           reportIssue(methodName, "This call to \"" + methodName.name() + "()\" may be a performance hot spot if the collection is large.");
         }
       }

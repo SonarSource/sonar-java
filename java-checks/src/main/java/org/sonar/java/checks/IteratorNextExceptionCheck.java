@@ -20,10 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,8 +37,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
 
 @Rule(key = "S2272")
 public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
@@ -105,7 +104,7 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       if (throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes())) {
         return true;
       }
-      MethodJavaType methodJavaType = (MethodJavaType) MethodsHelper.methodName(methodInvocationTree).symbolType();
+      MethodJavaType methodJavaType = (MethodJavaType) ExpressionUtils.methodName(methodInvocationTree).symbolType();
       return throwsNoSuchElementException(methodJavaType.thrownTypes());
     }
 

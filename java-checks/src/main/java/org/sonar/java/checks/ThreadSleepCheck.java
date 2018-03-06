@@ -20,12 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
 import java.util.List;
+import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S2276")
 public class ThreadSleepCheck extends AbstractInSynchronizeChecker {
@@ -33,7 +32,7 @@ public class ThreadSleepCheck extends AbstractInSynchronizeChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (isInSyncBlock()) {
-      reportIssue(MethodsHelper.methodName(mit), "Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".");
+      reportIssue(ExpressionUtils.methodName(mit), "Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".");
     }
   }
 

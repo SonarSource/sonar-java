@@ -20,10 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -32,8 +33,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-
-import java.util.List;
 
 @Rule(key = "S1858")
 public class StringToStringCheck extends AbstractMethodDetection {
@@ -55,7 +54,7 @@ public class StringToStringCheck extends AbstractMethodDetection {
     } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
       reportIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
     } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      IdentifierTree methodName = MethodsHelper.methodName((MethodInvocationTree) expressionTree);
+      IdentifierTree methodName = ExpressionUtils.methodName((MethodInvocationTree) expressionTree);
       reportIssue(methodName, "\"" + methodName + "\" returns a string, there's no need to call \"toString()\".");
     } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
       ArrayAccessExpressionTree arrayAccess = (ArrayAccessExpressionTree) expressionTree;

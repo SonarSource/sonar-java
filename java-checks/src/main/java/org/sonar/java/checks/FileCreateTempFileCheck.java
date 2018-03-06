@@ -19,9 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -37,12 +41,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 @Rule(key = "S2976")
 public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
@@ -118,7 +116,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     } else if (FILE_MKDIR.matches(mit) && State.MKDIR.equals(checkAndAdvanceState(mit, State.DELETE, State.MKDIR))) {
       context.reportIssue(
         this,
-        MethodsHelper.methodName(mit),
+        ExpressionUtils.methodName(mit),
         "Use \"Files.createTempDirectory\" or a library function to create this directory instead." +
           context.getJavaVersion().java7CompatibilityMessage());
     }

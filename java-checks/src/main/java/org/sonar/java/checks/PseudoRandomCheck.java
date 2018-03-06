@@ -20,15 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2245")
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
@@ -46,7 +45,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (MATH_RANDOM_MATCHER.matches(mit)) {
-        reportIssue(MethodsHelper.methodName(mit), MESSAGE);
+        reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
       }
     } else {
       NewClassTree newClass = (NewClassTree) tree;

@@ -20,8 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -30,8 +31,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2388")
 public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisitor {
@@ -72,7 +71,7 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
       Symbol symbol = tree.symbol();
       if (tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isCallToSuperclassMethod(symbol)) {
         String methodName = ((IdentifierTree) tree.methodSelect()).name();
-        reportIssue(MethodsHelper.methodName(tree), "Prefix this call to \"" + methodName + "\" with \"super.\".");
+        reportIssue(ExpressionUtils.methodName(tree), "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);
     }

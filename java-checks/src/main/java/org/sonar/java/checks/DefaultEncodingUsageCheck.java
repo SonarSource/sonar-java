@@ -22,8 +22,11 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -39,11 +42,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Rule(key = "S1943")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
@@ -137,7 +135,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
         }
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        checkForbiddenTypes(MethodsHelper.methodName(mit), mit.symbolType());
+        checkForbiddenTypes(ExpressionUtils.methodName(mit), mit.symbolType());
       }
     }
   }
@@ -203,7 +201,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     } else if (FILEUTILS_WRITE_WITH_CHARSET_MATCHERS.anyMatch(mit)) {
       testNullLiteralPassedForEncoding(mit.arguments().get(2));
     } else {
-      reportIssue(MethodsHelper.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\"");
+      reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\"");
     }
   }
 

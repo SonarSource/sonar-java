@@ -26,10 +26,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -93,7 +93,7 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
   private void handleAnyMatch(MethodInvocationTree anyMatchMIT) {
     ExpressionTree predicate = anyMatchMIT.arguments().get(0);
-    IdentifierTree reportTree = MethodsHelper.methodName(anyMatchMIT);
+    IdentifierTree reportTree = ExpressionUtils.methodName(anyMatchMIT);
     if (anyMatchMIT.parent().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
       if (predicate.is(Tree.Kind.LAMBDA_EXPRESSION) && ((LambdaExpressionTree) predicate).body().is(Tree.Kind.LOGICAL_COMPLEMENT)) {
         // !stream.anyMatch(x -> !(...))
@@ -122,8 +122,8 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
       .ifPresent(findMIT ->
         previousMITInChain(findMIT).filter(FILTER_METHODS::anyMatch)
           .ifPresent(filterMIT ->
-            context.reportIssue(this, MethodsHelper.methodName(filterMIT), MethodsHelper.methodName(isPresentMIT),
-              "Replace this \"filter()." + MethodsHelper.methodName(findMIT).name() + "().isPresent()\" chain with \"anyMatch()\".")));
+    context.reportIssue(this, ExpressionUtils.methodName(filterMIT), ExpressionUtils.methodName(isPresentMIT),
+      "Replace this \"filter()." + ExpressionUtils.methodName(findMIT).name() + "().isPresent()\" chain with \"anyMatch()\".")));
   }
 
   private static Optional<MethodInvocationTree> previousMITInChain(MethodInvocationTree mit) {

@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -78,7 +78,7 @@ public class RedundantStreamCollectCheck extends AbstractMethodDetection {
       REPLACEMENTS.entrySet().stream()
         .filter(e -> e.getKey().matches(methodInvocation))
         .findFirst()
-        .ifPresent(e -> context.reportIssue(this,  MethodsHelper.methodName(methodInvocation),
+        .ifPresent(e -> context.reportIssue(this, ExpressionUtils.methodName(methodInvocation),
             "Use \"" + e.getValue() + "\" instead."));
     }
   }

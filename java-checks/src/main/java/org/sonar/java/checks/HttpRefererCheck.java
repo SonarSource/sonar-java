@@ -20,16 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2089")
 public class HttpRefererCheck extends AbstractMethodDetection {
@@ -48,7 +47,7 @@ public class HttpRefererCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.STRING_LITERAL)) {
       LiteralTree lt = (LiteralTree) arg;
       if ("\"referer\"".equals(lt.value())) {
-        reportIssue(MethodsHelper.methodName(mit), "\"referer\" header should not be relied on");
+        reportIssue(ExpressionUtils.methodName(mit), "\"referer\" header should not be relied on");
       }
     }
   }
