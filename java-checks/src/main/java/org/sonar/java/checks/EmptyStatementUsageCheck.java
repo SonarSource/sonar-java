@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -40,7 +39,7 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (usedForEmptyEnum(tree)) {
+    if (usedForEmptyEnum(tree) || uniqueStatementOfLoop(tree)) {
       return;
     }
     reportIssue(tree, "Remove this empty statement.");
@@ -48,9 +47,13 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 
   private static boolean usedForEmptyEnum(Tree tree) {
     Tree parent = tree.parent();
-    if(parent.is(Tree.Kind.ENUM)) {
+    if (parent.is(Tree.Kind.ENUM)) {
       return ((ClassTree) parent).members().indexOf(tree) == 0;
     }
     return false;
+  }
+
+  private static boolean uniqueStatementOfLoop(Tree tree) {
+    return tree.parent().is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.DO_STATEMENT);
   }
 }

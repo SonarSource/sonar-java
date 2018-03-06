@@ -18,7 +18,7 @@ abstract class Foo {
 
   void foo(boolean condition) {
     for (int i = 0; i < 42; i++)
-      ; // Noncompliant {{Remove this empty statement.}}
+      ; // compliant unique statement of a loop
     int i = 0;; // Noncompliant {{Remove this empty statement.}}
     ; // Noncompliant {{Remove this empty statement.}}
 
@@ -40,13 +40,13 @@ abstract class Foo {
 
     class myInnerClass {}; // Noncompliant {{Remove this empty statement.}}
 
-    do ; while (condition); // Noncompliant {{Remove this empty statement.}}
+    do ; while (condition); // compliant
 
     while (condition)
-      ; // Noncompliant {{Remove this empty statement.}}
+      ; // compliant
 
     for (Object object : getCollection())
-      ; // Noncompliant {{Remove this empty statement.}}
+      ; // compliant
     
     return; // Compliant
   }
