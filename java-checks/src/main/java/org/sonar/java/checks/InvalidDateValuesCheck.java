@@ -21,9 +21,14 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -35,11 +40,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import javax.annotation.CheckForNull;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
 
 @Rule(key = "S2110")
 public class InvalidDateValuesCheck extends AbstractMethodDetection {
@@ -208,11 +208,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   private static String getMethodName(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) methodSelect).identifier().name();
-    }
-    return ((IdentifierTree) methodSelect).name();
+    return ExpressionUtils.methodName(mit).name();
   }
 
   private enum Threshold {

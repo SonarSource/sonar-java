@@ -20,14 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
 
 @Rule(key = "S1844")
 public class WaitOnConditionCheck extends AbstractMethodDetection {
@@ -44,6 +43,6 @@ public class WaitOnConditionCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
+    reportIssue(ExpressionUtils.methodName(mit), "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
   }
 }

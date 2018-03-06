@@ -20,14 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
 
 @Rule(key = "S2204")
 public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
@@ -49,7 +48,7 @@ public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "Use \".get()\" to retrieve the value and compare it instead.");
+    reportIssue(ExpressionUtils.methodName(mit), "Use \".get()\" to retrieve the value and compare it instead.");
   }
 
 }

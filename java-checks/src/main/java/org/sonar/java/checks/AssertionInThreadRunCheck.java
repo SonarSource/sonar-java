@@ -20,8 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -29,8 +30,6 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2186")
 public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
@@ -65,7 +64,7 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
       if(tree.symbol().isMethodSymbol()) {
         Type type = tree.symbol().owner().type();
         if (isCheckedType(type)) {
-          reportIssue(MethodsHelper.methodName(tree), "Remove this assertion.");
+          reportIssue(ExpressionUtils.methodName(tree), "Remove this assertion.");
         }
       }
       super.visitMethodInvocation(tree);

@@ -19,6 +19,10 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -27,14 +31,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -81,6 +81,19 @@ public class ExpressionUtilsTest {
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(2))).isFalse();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(3))).isFalse();
+  }
+
+  @Test
+  public void method_name() throws Exception {
+    File file = new File("src/test/files/model/ExpressionUtilsMethodNameTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
+
+    MethodInvocationTree firstMIT = (MethodInvocationTree) ((ExpressionStatementTree) methodTree.block().body().get(0)).expression();
+    MethodInvocationTree secondMIT = (MethodInvocationTree) ((ExpressionStatementTree) methodTree.block().body().get(1)).expression();
+
+    assertThat(ExpressionUtils.methodName(firstMIT).name()).isEqualTo("foo");
+    assertThat(ExpressionUtils.methodName(secondMIT).name()).isEqualTo("foo");
   }
 
   @Test

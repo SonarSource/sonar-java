@@ -20,9 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -32,8 +32,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
 
 @Rule(key = "S1849")
 public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
@@ -77,7 +75,7 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
         && tree.arguments().isEmpty()
         && isIteratorMethod(method)
         && (hasNextOwner == method.owner() || hasNextOwner.type().isSubtypeOf(method.owner().type()))) {
-        reportIssue(MethodsHelper.methodName(tree), "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
+        reportIssue(ExpressionUtils.methodName(tree), "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
       }
       super.visitMethodInvocation(tree);
     }

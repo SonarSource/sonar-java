@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -89,7 +89,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
       if(symbol.isUnknown()) {
-        unknownInvocations.put(MethodsHelper.methodName(tree).name(), tree);
+        unknownInvocations.put(ExpressionUtils.methodName(tree).name(), tree);
       } else if (isPrivateMethodOfOuterClass(symbol)) {
         usages.add(symbol);
       }

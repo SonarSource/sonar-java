@@ -20,14 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2273")
 public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
@@ -35,14 +36,12 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!isInSyncBlock()) {
-      IdentifierTree methodName;
+      IdentifierTree methodName = ExpressionUtils.methodName(mit);
+      ExpressionTree methodSelect = mit.methodSelect();
       String lockName;
-      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-        methodName = mse.identifier();
-        lockName = mse.expression().symbolType().name();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        lockName = ((MemberSelectExpressionTree) methodSelect).expression().symbolType().name();
       } else {
-        methodName = (IdentifierTree) mit.methodSelect();
         lockName = "this";
       }
       reportIssue(methodName, "Move this call to \"" + methodName + "()\" into a synchronized block to be sure the monitor on \"" + lockName + "\" is held.");

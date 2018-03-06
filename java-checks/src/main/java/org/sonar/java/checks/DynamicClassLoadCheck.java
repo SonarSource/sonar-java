@@ -20,14 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
 
 @Rule(key = "S2658")
 public class DynamicClassLoadCheck extends AbstractMethodDetection {
@@ -42,7 +41,7 @@ public class DynamicClassLoadCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "Remove this use of dynamic class loading.");
+    reportIssue(ExpressionUtils.methodName(mit), "Remove this use of dynamic class loading.");
   }
 
 }

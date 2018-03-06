@@ -20,13 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
 
 @Rule(key = "S2446")
 public class NotifyCheck extends AbstractMethodDetection {
@@ -38,6 +37,6 @@ public class NotifyCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(MethodsHelper.methodName(mit), "\"notify\" may not wake up the appropriate thread.");
+    reportIssue(ExpressionUtils.methodName(mit), "\"notify\" may not wake up the appropriate thread.");
   }
 }

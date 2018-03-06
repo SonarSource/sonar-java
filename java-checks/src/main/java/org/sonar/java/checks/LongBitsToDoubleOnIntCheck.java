@@ -20,14 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
 
 @Rule(key = "S2127")
 public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
@@ -43,7 +42,7 @@ public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Type symbolType = mit.arguments().get(0).symbolType();
     if (!(symbolType.is("long") || symbolType.is("java.lang.Long"))) {
-      reportIssue(MethodsHelper.methodName(mit), "Remove this \"Double.longBitsToDouble\" call.");
+      reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Double.longBitsToDouble\" call.");
     }
   }
 }

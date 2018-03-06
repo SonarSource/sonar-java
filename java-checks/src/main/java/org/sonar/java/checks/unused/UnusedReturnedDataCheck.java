@@ -20,8 +20,10 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
@@ -32,11 +34,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-
-import java.util.List;
-import java.util.Objects;
 
 @Rule(key = "S2677")
 public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
@@ -62,7 +59,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
       CHECKED_METHODS.stream()
         .map(matcher -> isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher))
         .filter(Objects::nonNull)
-        .forEach(mit -> raiseIssue(MethodsHelper.methodName(mit)));
+        .forEach(mit -> raiseIssue(ExpressionUtils.methodName(mit)));
     } else {
       BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
       ExpressionTree leftOperand = expressionTree.leftOperand();
@@ -70,11 +67,11 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
       for (MethodMatcher matcher : CHECKED_METHODS) {
         MethodInvocationTree leftMit = isTreeMethodInvocation(leftOperand, matcher);
         if (leftMit != null && isTreeLiteralNull(rightOperand)) {
-          raiseIssue(MethodsHelper.methodName(leftMit));
+          raiseIssue(ExpressionUtils.methodName(leftMit));
         }
         MethodInvocationTree rightMit = isTreeMethodInvocation(rightOperand, matcher);
         if (rightMit != null && isTreeLiteralNull(leftOperand)) {
-          raiseIssue(MethodsHelper.methodName(rightMit));
+          raiseIssue(ExpressionUtils.methodName(rightMit));
         }
       }
     }

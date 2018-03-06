@@ -20,19 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S2693")
 public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor {
@@ -57,7 +56,7 @@ public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor
       } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.STATIC_INITIALIZER)) {
         inMethodOrStaticInitializerOrFinalClass.push(Boolean.TRUE);
       } else if (BooleanUtils.isFalse(inMethodOrStaticInitializerOrFinalClass.peek()) && THREAD_START.matches((MethodInvocationTree) tree)) {
-        reportIssue(MethodsHelper.methodName((MethodInvocationTree) tree), "Move this \"start\" call to another method.");
+        reportIssue(ExpressionUtils.methodName((MethodInvocationTree) tree), "Move this \"start\" call to another method.");
       }
     }
   }

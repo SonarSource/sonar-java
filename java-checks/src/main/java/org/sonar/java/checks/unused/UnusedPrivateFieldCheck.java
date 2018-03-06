@@ -23,9 +23,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -44,10 +45,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1068")
 public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
@@ -126,7 +123,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
-      return identifier.equals(MethodsHelper.methodName((MethodInvocationTree) parent));
+      return identifier.equals(ExpressionUtils.methodName((MethodInvocationTree) parent));
     } else {
       return identifier.equals(((MethodReferenceTree) parent).method());
     }

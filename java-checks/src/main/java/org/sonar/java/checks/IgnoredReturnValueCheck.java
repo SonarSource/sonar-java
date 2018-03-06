@@ -21,10 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,9 +37,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S2201")
 public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
@@ -98,7 +97,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
         && isCheckedType(methodSymbol.owner().type())
         && methodSymbol.isPublic()
         && !isConstructor(methodSymbol)) {
-        IdentifierTree methodName = MethodsHelper.methodName(mit);
+        IdentifierTree methodName = ExpressionUtils.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }

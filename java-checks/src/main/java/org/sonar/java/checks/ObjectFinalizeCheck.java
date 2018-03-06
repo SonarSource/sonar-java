@@ -20,17 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "ObjectFinalizeCheck")
 @RspecKey("S1111")
@@ -49,7 +48,7 @@ public class ObjectFinalizeCheck extends IssuableSubscriptionVisitor {
       isInFinalizeMethod = isFinalizeMethodMember((MethodTree) tree);
     } else {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      IdentifierTree methodName = MethodsHelper.methodName(methodInvocationTree);
+      IdentifierTree methodName = ExpressionUtils.methodName(methodInvocationTree);
       if (!isInFinalizeMethod && "finalize".equals(methodName.name()) && methodInvocationTree.arguments().isEmpty()) {
         reportIssue(methodName, "Remove this call to finalize().");
       }

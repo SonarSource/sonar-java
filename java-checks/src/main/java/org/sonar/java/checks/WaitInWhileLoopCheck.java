@@ -21,19 +21,18 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Deque;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Deque;
-import java.util.List;
 
 @Rule(key = "S2274")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
@@ -74,7 +73,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!inWhileLoop.peek()) {
-      IdentifierTree identifierTree = MethodsHelper.methodName(mit);
+      IdentifierTree identifierTree = ExpressionUtils.methodName(mit);
       reportIssue(identifierTree, "Remove this call to \"" + identifierTree.name() + "\" or move it into a \"while\" loop.");
     }
   }

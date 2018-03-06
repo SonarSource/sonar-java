@@ -20,19 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
 
 @Rule(key = "S2674")
 public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
@@ -56,7 +55,7 @@ public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
     if (statement.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) statement;
       if (MATCHERS.anyMatch(mit)) {
-        reportIssue(MethodsHelper.methodName(mit), "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
+        reportIssue(ExpressionUtils.methodName(mit), "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
       }
     }
   }

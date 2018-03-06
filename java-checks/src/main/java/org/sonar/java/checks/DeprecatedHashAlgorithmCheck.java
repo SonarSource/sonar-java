@@ -22,24 +22,23 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
-
-import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.JavaPropertiesHelper;
-import org.sonar.java.checks.helpers.MethodsHelper;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.JavaPropertiesHelper;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD2;
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD5;
@@ -139,13 +138,13 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String methodName = MethodsHelper.methodName(mit).name();
-    InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
+    InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName.name());
     if (algorithm == null) {
       algorithm = algorithm(mit.arguments().get(0)).orElse(null);
     }
     if (algorithm != null) {
-      reportIssue(MethodsHelper.methodName(mit), "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
+      reportIssue(methodName, "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
     }
   }
 

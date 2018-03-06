@@ -21,15 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.util.List;
+import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
-import java.util.Map;
 
 @Rule(key = "S3725")
 public class FilesExistsJDK8Check extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -62,6 +62,6 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
-    reportIssue(mit.methodSelect(), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "()\" method");
+    reportIssue(ExpressionUtils.methodName(mit), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "()\" method");
   }
 }
