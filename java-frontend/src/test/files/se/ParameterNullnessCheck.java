@@ -1,3 +1,4 @@
+import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -5,14 +6,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 abstract class A {
 
   A(String s) { }
-  A(Object o1, Object o2) { }
+  A(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
 
   Object field;
 
-  void foo(Object o) {
-    foo(null); // Noncompliant [[sc=9;ec=13]] {{Annotate the parameter with @javax.annotation.Nullable in method declaration, or make sure that null can not be passed as argument.}}
+  void foo(Object o) { // flow@foo [[order=2]] {{Method 'foo' declaration.}}
+    foo( // Noncompliant [[sc=5;ec=8;flows=foo]] {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
+      null); // flow@foo [[order=1]] {{Argument can be null.}}
     bar(o, null);
-    bar(null, o); // Noncompliant [[sc=9;ec=13]]
+    bar(null, o); // Noncompliant [[sc=5;ec=8]]
 
     equals(null);
     unknownMethod(null);
@@ -24,11 +26,15 @@ abstract class A {
     qix();
 
     gul(null, o, null, o); // Compliant - ignore variadic argument
-    gul2(null, o, null, o); // Noncompliant [[sc=10;ec=14]] - first parameter is not variadic
+    gul2(null, o, null, o); // Noncompliant [[sc=5;ec=9]] - first parameter is not variadic
 
     A a1 = new A(null); // Noncompliant
-    A a2 = new A(o, null); // Noncompliant [[sc=21;ec=25]]
+    A a2 = new A(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
+      null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
+
+    Preconditions.checkNotNull( // Noncompliant [[sc=19;ec=31;flows=checkNotNull]] 
+      null); // flow@checkNotNull [[order=1]] {{Argument can be null.}}
   }
 
   @Override

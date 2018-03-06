@@ -20,17 +20,23 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.Scope;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -54,7 +60,7 @@ public class ParameterNullnessCheck extends SECheck {
     return state;
   }
 
-  private void checkParameters(Tree syntaxnode, Symbol symbol, Arguments arguments, ProgramState state) {
+  private void checkParameters(Tree syntaxNode, Symbol symbol, Arguments arguments, ProgramState state) {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
@@ -64,15 +70,39 @@ public class ParameterNullnessCheck extends SECheck {
       return;
     }
     int nbArguments = arguments.size();
-    List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxnode, nbArguments);
+    List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
     List<JavaSymbol> argumentSymbols = methodSymbol.getParameters().scopeSymbols();
     int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (methodSymbol.isVarArgs() ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, argumentSymbols.get(i))) {
-        reportIssue(arguments.get(i), "Annotate the parameter with @javax.annotation.Nullable in method declaration, or make sure that null can not be passed as argument.");
+        reportIssue(syntaxNode, arguments.get(i), methodSymbol);
       }
     }
+  }
+
+  private void reportIssue(Tree syntaxNode, ExpressionTree argument, JavaSymbol.MethodJavaSymbol methodSymbol) {
+    String declarationMessage = "constructor declaration";
+    if (!methodSymbol.isConstructor()) {
+      declarationMessage = "method '" + methodSymbol.getName() + "' declaration";
+    }
+    String message = String.format("Annotate the parameter with @javax.annotation.Nullable in %s, or make sure that null can not be passed as argument.", declarationMessage);
+
+    Tree reportTree;
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      reportTree = ExpressionUtils.methodName((MethodInvocationTree) syntaxNode);
+    } else {
+      reportTree = ((NewClassTree) syntaxNode).identifier();
+    }
+
+    Flow.Builder secondaryBuilder = Flow.builder();
+    MethodTree declarationTree = methodSymbol.declaration();
+    if (declarationTree != null) {
+      secondaryBuilder.add(new JavaFileScannerContext.Location(StringUtils.capitalize(declarationMessage) + ".", declarationTree.simpleName()));
+    }
+    secondaryBuilder.add(new JavaFileScannerContext.Location("Argument can be null.", argument));
+
+    reportIssue(reportTree, message, Collections.singleton(secondaryBuilder.build()));
   }
 
   private static List<SymbolicValue> getArgumentSVs(ProgramState state, Tree syntaxNode, int nbArguments) {
