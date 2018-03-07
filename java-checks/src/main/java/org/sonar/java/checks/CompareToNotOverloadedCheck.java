@@ -27,40 +27,34 @@ import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S4351")
 public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    ClassJavaType clt;
-    String name = "Object";
     if (hasSemantic() && isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
-      clt = (ClassJavaType) methodTree.symbol().owner().type();
-      if (isComparableImplemented(clt)) {
-        ClassJavaType comparableType = clt.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().get();
+      String name = "Object";
+      ClassJavaType ownerType = (ClassJavaType) methodTree.symbol().owner().type();
+      if (ownerType.isSubtypeOf("java.lang.Comparable")) {
+        ClassJavaType comparableType = ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().get();
         if (comparableType.isParameterized()) {
           ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) comparableType;
           name = ptjt.substitution(ptjt.typeParameters().get(0)).symbol().name();
         }
-        reportIssue((Tree) methodTree.parameters(), "Refactor this method so that its argument is of type '" + name + "'.");
+        reportIssue(methodTree.parameters().get(0), "Refactor this method so that its argument is of type '" + name + "'.");
       }
     }
   }
 
   private static boolean isCompareToMethod(MethodTree tree) {
     return "compareTo".equals(tree.simpleName().name()) && tree.parameters().size() == 1;
-  }
-
-  private static boolean isComparableImplemented(ClassJavaType classJavaType) {
-    return classJavaType.isSubtypeOf("java.lang.Comparable");
   }
 
 }

@@ -25,6 +25,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CompareToNotOverloadedCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CompareToNotOverloadedCheck/CompareToNotOverloadedCheck.java", new CompareToNotOverloadedCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/CompareToNotOverloadedCheck.java", new CompareToNotOverloadedCheck());
   }
 }
