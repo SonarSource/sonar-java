@@ -1,0 +1,15 @@
+{
+  "title": "\"equals\" method parameters should not be marked \"@Nonnull\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "3min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4454",
+  "sqKey": "S4454"
+}
