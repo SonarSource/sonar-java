@@ -14,6 +14,10 @@ class test{
     public int compareTo(A a) { // Compliant
       return 0;
     }
+    
+    public int compareTo(A a, B b) { // Compliant
+      return 0;
+    }
   }
   
   class C implements Comparable{
@@ -41,7 +45,14 @@ class test{
   }
     
   class D {
-    int compareTo(A a) {      // Compliant
+    public int compareTo(A a) {      // Compliant
+      return 1;
+    }
+    
+  }
+  
+  class F extends B{
+    public int compareTo1(B b) {      // Compliant
       return 1;
     }
   }
