@@ -1,0 +1,38 @@
+<p>When implementing the <code>Comparable&lt;T&gt;.compareTo</code> method, the parameter's type has to match the type used in the
+<code>Comparable</code> declaration. When a different type is used this creates an overload instead of an override, which is unlikely to be the
+intent.</p>
+<p>This rule raises an issue when the parameter of the <code>compareTo</code> method of a class implementing <code>Comparable&lt;T&gt;</code> is not
+same as the one used in the <code>Comparable</code> declaration.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo {
+  static class Bar implements Comparable&lt;Bar&gt; {
+    public int compareTo(Bar rhs) {
+      return -1;
+    }
+  }
+
+  static class FooBar extends Bar {
+    public int compareTo(FooBar rhs) {  // Noncompliant: Parameter should be of type Bar
+      return 0;
+    }
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo {
+  static class Bar implements Comparable&lt;Bar&gt; {
+    public int compareTo(Bar rhs) {
+      return -1;
+    }
+  }
+
+  static class FooBar extends Bar {
+    public int compareTo(Bar rhs) {
+      return 0;
+    }
+  }
+}
+</pre>
+

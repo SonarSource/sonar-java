@@ -528,6 +528,7 @@ public final class CheckList {
       .add(GettersSettersOnRightFieldCheck.class)
       .add(ParameterNullnessCheck.class)
       .add(DoublePrefixOperatorCheck.class)
+      .add(CompareToNotOverloadedCheck.class)
       .build();
   }
 
