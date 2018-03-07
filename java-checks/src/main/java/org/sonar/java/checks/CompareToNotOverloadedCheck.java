@@ -40,16 +40,16 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (hasSemantic() && isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
-      String name = "Object";
       ClassJavaType ownerType = (ClassJavaType) methodTree.symbol().owner().type();
-      if (ownerType.isSubtypeOf("java.lang.Comparable")) {
-        ClassJavaType comparableType = ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().get();
-        if (comparableType.isParameterized()) {
-          ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) comparableType;
-          name = ptjt.substitution(ptjt.typeParameters().get(0)).symbol().name();
-        }
-        reportIssue(methodTree.parameters().get(0), "Refactor this method so that its argument is of type '" + name + "'.");
-      }
+      ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
+        comparableType -> {
+          String name = "Object";
+          if (comparableType.isParameterized()) {
+            ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) comparableType;
+            name = ptjt.substitution(ptjt.typeParameters().get(0)).symbol().name();
+          }
+          reportIssue(methodTree.parameters().get(0), "Refactor this method so that its argument is of type '" + name + "'.");
+        });
     }
   }
 
