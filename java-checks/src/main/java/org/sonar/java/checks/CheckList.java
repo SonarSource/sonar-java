@@ -529,6 +529,7 @@ public final class CheckList {
       .add(ParameterNullnessCheck.class)
       .add(DoublePrefixOperatorCheck.class)
       .add(CompareToNotOverloadedCheck.class)
+      .add(EqualsParametersMarkedNonNullCheck.class)
       .build();
   }
 
