@@ -530,6 +530,7 @@ public final class CheckList {
       .add(DoublePrefixOperatorCheck.class)
       .add(CompareToNotOverloadedCheck.class)
       .add(EqualsParametersMarkedNonNullCheck.class)
+      .add(NestedSwitchStatementCheck.class)
       .build();
   }
 

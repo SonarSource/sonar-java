@@ -1,0 +1,15 @@
+{
+  "title": "\"switch\" statements should not be nested",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-1821",
+  "sqKey": "S1821"
+}
