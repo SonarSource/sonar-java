@@ -81,6 +81,14 @@ public class A {
     put("c", "d");
   }});
 
+  public static final Set<Object> SINGLETON_UNMODIFIABLE_SET = Collections.singleton(new Object());
+  public static final List<Object> SINGLETON_UNMODIFIABLE_LIST = Collections.singletonList(new Object());
+  public static final Map<Object, Object> SINGLETON_UNMODIFIABLE_MAP = Collections.singletonMap(new Object(), new Object());
+
+  public static final Set<Object> EMTPY_SET = Collections.emptySet();
+  public static final List<Object> EMPTY_LIST2 = Collections.emptyList();
+  public static final Map<Object, Object> EMPTY_MAP = Collections.emptyMap();
+
   // guava
   public static final List<String> immutableList = ImmutableList.of("a");
   public static final Set<String> immutableSet = ImmutableSet.of("a");
