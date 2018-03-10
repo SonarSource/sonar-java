@@ -45,7 +45,6 @@ public class SuppressWarningTest {
       .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"));
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
-    orchestratorBuilder.addPlugin(FileLocation.ofClasspath("/sonar-checkstyle-plugin-2.4.jar"));
     ORCHESTRATOR = orchestratorBuilder.build();
   }
 
@@ -60,7 +59,7 @@ public class SuppressWarningTest {
       .setProperty("sonar.profile", "suppress-warnings");
     ORCHESTRATOR.executeBuild(build);
 
-    assertThat(parseInt(getMeasure("org.example:example", "violations").getValue())).isEqualTo(3);
+    assertThat(parseInt(getMeasure("org.example:example", "violations").getValue())).isEqualTo(4);
   }
 
   @CheckForNull

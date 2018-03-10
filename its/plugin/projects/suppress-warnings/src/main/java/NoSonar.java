@@ -1,5 +1,6 @@
 public class NoSonar {
-  private void foo() {
+  // java-extension:example
+  private void foo() {// NOSONAR
     // Squid:S1197
     int var[]; //NOSONAR
   }

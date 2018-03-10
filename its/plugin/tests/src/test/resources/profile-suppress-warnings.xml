@@ -9,8 +9,8 @@
       <priority>MAJOR</priority>
     </rule>
     <rule>
-      <repositoryKey>checkstyle</repositoryKey>
-      <key>com.puppycrawl.tools.checkstyle.checks.coding.ArrayTrailingCommaCheck</key>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>example</key>
       <priority>MINOR</priority>
     </rule>
   </rules>
