@@ -24,8 +24,8 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -39,14 +39,15 @@ public class NestedSwitchStatementCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ((SwitchStatementTree) tree).cases().stream().forEach(c -> c.accept(new NestedSwitchVisitor()));
+    NestedSwitchVisitor visitor = new NestedSwitchVisitor();
+    ((SwitchStatementTree) tree).cases().stream().forEach(c -> c.accept(visitor));
   }
 
   private class NestedSwitchVisitor extends BaseTreeVisitor {
 
     @Override
-    public void visitNewClass(NewClassTree tree) {
-      // skip Anonymous Classes
+    public void visitClass(ClassTree tree) {
+      // skip nested and anonymous Classes
     }
 
     @Override

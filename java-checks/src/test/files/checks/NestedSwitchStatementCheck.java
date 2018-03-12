@@ -1,3 +1,5 @@
+import java.util.List;
+
 class A{
   void foo() {
     int myVar = 0;
@@ -94,6 +96,29 @@ class B{
           }
         }
       }
+    }
+  }
+  void foo3(int i) {
+    switch (i) {
+      case 0:
+      case 42:
+        class B { // nested class
+          void bar(int j) {
+            switch (j) { // Compliant
+              case 42:
+                System.out.println("");
+                break;
+              case 0:
+                break;
+              default:
+                break;
+            }
+          }
+        }
+        new B().bar(i);
+        break;
+      default:
+        break;
     }
   }
 }
