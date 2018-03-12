@@ -24,33 +24,29 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S1821")
 public class NestedSwitchStatementCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    List<CaseGroupTree> cases = switchStatementTree.cases();
-    cases.stream().forEach(c -> c.accept(new NestedSwitchVisitor()));
+    ((SwitchStatementTree) tree).cases().stream().forEach(c -> c.accept(new NestedSwitchVisitor()));
   }
 
   private class NestedSwitchVisitor extends BaseTreeVisitor {
 
     @Override
-    public void visitClass(ClassTree tree) {
-      // skip Class
+    public void visitNewClass(NewClassTree tree) {
+      // skip Anonymous Classes
     }
 
     @Override
@@ -60,8 +56,7 @@ public class NestedSwitchStatementCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitSwitchStatement(SwitchStatementTree tree) {
-      reportIssue((tree).switchKeyword(),
-        "Refactor the code to eliminate this nested \"switch\".");
+      reportIssue(tree.switchKeyword(), "Refactor the code to eliminate this nested \"switch\".");
     }
   }
 }

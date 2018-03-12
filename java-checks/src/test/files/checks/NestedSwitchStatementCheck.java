@@ -1,5 +1,3 @@
-import java.util.List;
-
 class A{
   void foo() {
     int myVar = 0;
@@ -55,7 +53,7 @@ class A{
 }
 
 class B{
-  List<Integer> list = new ArrayList<>();
+  List<Integer> list;
   void foo2() {
     int i = 0;
     switch(i) {  // Compliant
