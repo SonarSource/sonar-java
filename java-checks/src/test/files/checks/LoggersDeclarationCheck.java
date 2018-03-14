@@ -27,4 +27,7 @@ class A {
   
   private void logExclusions(String[] exclusions, Logger logger) { // Compliant
   }
+
+  protected final org.slf4j.Logger logger; // Noncompliant
+ 
 }

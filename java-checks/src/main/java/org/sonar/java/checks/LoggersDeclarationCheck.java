@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -102,10 +103,14 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isLoggerType(Tree tree) {
-    if (!tree.is(Tree.Kind.IDENTIFIER)) {
+    IdentifierTree identifierTree = null;
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      identifierTree = (IdentifierTree) tree;
+    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      identifierTree = ((MemberSelectExpressionTree) tree).identifier ();
+    } else {
       return false;
     }
-    IdentifierTree identifierTree = (IdentifierTree) tree;
 
     return "Log".equals(identifierTree.name()) ||
       "Logger".equals(identifierTree.name());
