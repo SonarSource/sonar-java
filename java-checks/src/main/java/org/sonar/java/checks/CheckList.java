@@ -531,6 +531,7 @@ public final class CheckList {
       .add(CompareToNotOverloadedCheck.class)
       .add(EqualsParametersMarkedNonNullCheck.class)
       .add(NestedSwitchStatementCheck.class)
+      .add(ThisExposedFromConstructorCheck.class)
       .build();
   }
 
