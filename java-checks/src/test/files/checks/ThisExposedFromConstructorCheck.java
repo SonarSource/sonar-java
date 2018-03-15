@@ -56,7 +56,8 @@ class B {
   public static A field;
   public A field3;
   public B field2;
-  
+  public B[] arr1;
+    
   public B() {
     this.field2 = this;  // Noncompliant
     this.field3 = foo2(this);  // Compliant
@@ -68,6 +69,7 @@ class B {
         a.Instance2 = this;  // Compliant
       }
     }.start();
+   arr1[0] = this;  // Noncompliant
   }
   
   void foo(A a) {
