@@ -21,10 +21,11 @@ package org.sonar.java.xml;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import org.sonar.api.utils.log.Logger;
@@ -63,7 +64,7 @@ public class XmlAnalyzer {
     this.xPath = XPathFactory.newInstance().newXPath();
   }
 
-  public void scan(Iterable<File> files) {
+  public void scan(Collection<File> files) {
     boolean hasChecks = !xmlChecks.isEmpty() || !pomChecks.isEmpty();
     if (hasChecks && Iterables.isEmpty(files)) {
       LOG.warn("No 'xml' file have been indexed.");
@@ -71,7 +72,7 @@ public class XmlAnalyzer {
     }
 
     ProgressReport progressReport = new ProgressReport("Report about progress of Xml analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Lists.newArrayList(files));
+    progressReport.start(files.stream().map(File::getAbsolutePath).collect(Collectors.toList()));
 
     boolean successfulyCompleted = false;
     try {

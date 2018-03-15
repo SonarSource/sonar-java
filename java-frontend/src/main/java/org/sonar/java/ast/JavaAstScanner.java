@@ -21,13 +21,14 @@ package org.sonar.java.ast;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.io.InterruptedIOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -52,9 +53,9 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
-  public void scan(Iterable<File> files) {
+  public void scan(Collection<File> files) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Lists.newArrayList(files));
+    progressReport.start(files.stream().map(File::getAbsolutePath).collect(Collectors.toList()));
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;

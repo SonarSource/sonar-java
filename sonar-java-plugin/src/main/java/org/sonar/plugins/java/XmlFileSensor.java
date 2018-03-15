@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -69,7 +70,7 @@ public class XmlFileSensor implements Sensor {
     return fs.inputFiles(xmlFilePredicate);
   }
 
-  private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+  private static Collection<File> toFile(Iterable<InputFile> inputFiles) {
     return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 
