@@ -80,7 +80,6 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
   }
 
   private static boolean isBlank(String line) {
-    // Implementation of this method was taken from org.sonar.squidbridge.text.Line#isThereBlankComment()
     // TODO Godin: for some languages we use Character.isLetterOrDigit instead of Character.isWhitespace
     for (int i = 0; i < line.length(); i++) {
       char character = line.charAt(i);
