@@ -68,6 +68,11 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Rule unusedPrivateMethodRule = repository.rule("UnusedPrivateMethod");
     assertThat(unusedPrivateMethodRule.activatedByDefault()).isEqualTo(true);
 
+    // rule templates are manually defined
+    assertThat(repository.rules().stream()
+      .filter(RulesDefinition.Rule::template)
+      .map(RulesDefinition.Rule::key)).containsOnly("S124", "S2253", "S3417", "S3688", "S3546", "S4011");
+
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
   }

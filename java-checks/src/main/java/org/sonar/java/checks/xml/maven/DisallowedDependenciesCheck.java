@@ -26,10 +26,8 @@ import org.sonar.java.checks.xml.maven.helpers.MavenDependencyMatcher;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.maven.model.maven2.Dependency;
-import org.sonar.squidbridge.annotations.RuleTemplate;
 
 @Rule(key = DisallowedDependenciesCheck.KEY)
-@RuleTemplate
 public class DisallowedDependenciesCheck implements PomCheck {
 
   public static final String KEY = "S3417";

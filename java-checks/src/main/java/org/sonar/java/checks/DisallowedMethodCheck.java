@@ -28,10 +28,8 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.RuleTemplate;
 
 @Rule(key = "S2253")
-@RuleTemplate
 public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   @RuleProperty(key = "className", description = "Name of the class whose method is forbidden")
