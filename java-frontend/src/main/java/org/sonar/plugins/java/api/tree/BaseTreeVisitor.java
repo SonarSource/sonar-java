@@ -20,11 +20,9 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
-
-import javax.annotation.Nullable;
-
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 /**
  * Default implementation of {@link TreeVisitor}.
@@ -64,6 +62,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitClass(ClassTree tree) {
     scan(tree.modifiers());
+    scan(tree.simpleName());
     scan(tree.typeParameters());
     scan(tree.superClass());
     scan(tree.superInterfaces());
@@ -75,6 +74,7 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.modifiers());
     scan(tree.typeParameters());
     scan(tree.returnType());
+    scan(tree.simpleName());
     scan(tree.parameters());
     scan(tree.defaultValue());
     scan(tree.throwsClauses());
@@ -290,6 +290,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitVariable(VariableTree tree) {
     scan(tree.modifiers());
     scan(tree.type());
+    scan(tree.simpleName());
     scan(tree.initializer());
   }
 
@@ -306,6 +307,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
     scan(tree.modifiers());
+    scan(tree.simpleName());
     scan(tree.initializer());
   }
 

@@ -25,9 +25,12 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class VariableReadExtractor extends BaseTreeVisitor {
 
@@ -52,6 +55,24 @@ public class VariableReadExtractor extends BaseTreeVisitor {
       scan(tree.variable());
     }
     scan(tree.expression());
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    // skip variable modifiers and simple name
+    scan(tree.initializer());
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    // skip modifiers, parameters, simple name and superclass/interface
+    scan(tree.members());
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    // skip variable declaration
+    scan(lambdaExpressionTree.body());
   }
 
   @Override
