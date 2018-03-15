@@ -20,6 +20,7 @@
 package org.sonar.java.cfg;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -29,8 +30,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -86,6 +85,16 @@ public class VariableReadExtractorTest {
     statementTree.accept(extractor);
     // local variable "a" and field "field"
     assertThat(extractor.usedVariables()).isEmpty();
+  }
+
+  @Test
+  public void should_not_extract_variable_declared() throws Exception {
+    MethodTree methodTree = buildMethodTree("void foo(boolean a) { boolean b = a; }");
+    StatementTree statementTree = methodTree.block().body().get(0);
+    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
+    statementTree.accept(extractor);
+    // only "a" should be detected
+    assertThat(extractor.usedVariables()).hasSize(1);
   }
 
   @Test

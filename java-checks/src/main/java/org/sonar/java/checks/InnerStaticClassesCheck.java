@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -27,12 +29,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Deque;
-import java.util.LinkedList;
 
 @Rule(key = "S2694")
 public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -150,8 +150,22 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
   public void visitVariable(VariableTree tree) {
     Symbol symbol = tree.symbol();
     if (symbol != null && !symbol.isStatic()) {
-      super.visitVariable(tree);
+      scan(tree.modifiers());
+      scan(tree.type());
+      // skip the simple name
+      scan(tree.initializer());
     }
   }
 
+  @Override
+  public void visitMethod(MethodTree tree) {
+    scan(tree.modifiers());
+    scan(tree.typeParameters());
+    scan(tree.returnType());
+    // skip the simple name
+    scan(tree.parameters());
+    scan(tree.defaultValue());
+    scan(tree.throwsClauses());
+    scan(tree.block());
+  }
 }
