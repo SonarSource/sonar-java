@@ -169,3 +169,55 @@ abstract class WithinLambda {
       });
   }
 }
+
+interface AB {
+  default void foo(){}
+  default void bar(){}
+
+  static void main() {
+    AB a = new AB() { // Compliant 
+      @Override                 
+      public void foo() {}
+    };
+  }
+}
+
+interface BA {
+  default void foo(){}
+  void bar(){}
+
+  static void main() {
+    BA a = new BA() { // Noncompliant 
+      @Override                 
+      public void foo() {}
+    };
+  }
+}
+
+interface K {
+  static void main() {
+    BA a = new BA() { // Noncompliant 
+      @Override                 
+      public void foo() {}
+    };
+  }
+}
+
+interface L{
+  static void main() {
+    AB a = new AB() { // Compliant 
+      @Override                 
+      public void foo() {}
+    };
+  }
+}
+
+interface M {
+  static void main() {
+    BA a = new BA() { // Noncompliant 
+      @Override                 
+      public void bar() {}
+    };
+  }
+}
+

@@ -25,6 +25,16 @@ interface Handler {
   String handle();
 }
 
+interface B {
+  default void foo() {}
+  default void bar() {}
+}
+
+interface C{
+  default void foo() {}
+  default int bar(int a) {}
+}
+
 class A {
   void toto() {
     new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda (sonar.java.source not set. Assuming 8 or greater.)}}
@@ -92,6 +102,20 @@ class A {
         return A.this.toStr();
       }
     };
+   
+    new B() {// Compliant
+      @Override
+      public void bar() {
+      }
+    };
+  
+    new C() { // Noncompliant
+      @Override
+      public void foo() {
+      }
+    };
+   
+    new D() {};  // Compliant
   }
 
   String toStr(){
