@@ -20,6 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -35,11 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collection;
-import java.util.List;
 
 public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisitor {
 
@@ -63,7 +62,12 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
 
   protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
     if (arg.is(Tree.Kind.MEMBER_SELECT)) {
-      return !isConstant(((MemberSelectExpressionTree) arg).identifier().symbol());
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) arg;
+      IdentifierTree identifier = memberSelectExpressionTree.identifier();
+      if (ExpressionUtils.isSelectOnThisOrSuper(memberSelectExpressionTree)) {
+        return isIdentifierDynamicString(methodTree, identifier, currentlyChecking, firstLevel);
+      }
+      return !isConstant(identifier.symbol());
     } else if (arg.is(Tree.Kind.IDENTIFIER)) {
       return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking, firstLevel);
     } else if (arg.is(Tree.Kind.PLUS)) {
