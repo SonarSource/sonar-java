@@ -20,7 +20,6 @@
 package org.sonar.java.xml;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -66,7 +65,7 @@ public class XmlAnalyzer {
 
   public void scan(Collection<File> files) {
     boolean hasChecks = !xmlChecks.isEmpty() || !pomChecks.isEmpty();
-    if (hasChecks && Iterables.isEmpty(files)) {
+    if (hasChecks && files.isEmpty()) {
       LOG.warn("No 'xml' file have been indexed.");
       return;
     }
