@@ -11,6 +11,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsClient.java':[
 77,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/RootFilter.java':[
+49,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java':[
 81,
 ],
