@@ -152,3 +152,19 @@ class Test {
     }
   }
 }
+
+class B {
+
+  private String user;
+  private JdbcTemplate tmpl = new JdbcTemplate();
+
+  private void foo() {
+    // field accessed with "this."
+    tmpl.batchUpdate(this.user); // Compliant
+    tmpl.queryForObject(this.user, String.class); // Compliant
+
+    // field accessed without "this."
+    tmpl.batchUpdate(user); // compliant
+    tmpl.queryForObject(user, String.class); // compliant
+  }
+}
