@@ -19,6 +19,13 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
@@ -26,15 +33,10 @@ import org.sonar.java.xml.maven.PomCheckContext.Location;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.maven2.MavenProject;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
 @Rule(key = "S3423")
 public class PomElementOrderCheck implements PomCheck {
 
-  private static final Comparator<LocatedTree> LINE_COMPARATOR = new LineComparator();
+  private static final Comparator<LocatedTree> LINE_COMPARATOR = (l1, l2) -> Integer.compare(l1.startLocation().line(), l2.startLocation().line());
 
   @Override
   public void scanFile(PomCheckContext context) {
@@ -77,41 +79,31 @@ public class PomElementOrderCheck implements PomCheck {
   }
 
   private static List<Location> checkPositions(LocatedTree... trees) {
-    List<Location> issues = new LinkedList<>();
-    List<LocatedTree> expectedOrder = getNonNullTrees(trees);
-    List<LocatedTree> observedOrder = sortByLine(expectedOrder);
+    List<LocatedTree> expectedOrder = Arrays.stream(trees).filter(Objects::nonNull).collect(Collectors.toList());
+    List<LocatedTree> observedOrder = expectedOrder.stream().sorted(LINE_COMPARATOR).collect(Collectors.toList());
+
+    int lastWrongPosition = -1;
+    int firstWrongPosition = -1;
 
     for (int index = 0; index < expectedOrder.size(); index++) {
-      LocatedTree expected = expectedOrder.get(index);
-      int indexObserved = observedOrder.indexOf(expected);
-      if (!issues.isEmpty() || index != indexObserved) {
-        issues.add(new Location("Expected position: " + (index + 1), expected.startLocation().line()));
+      if (observedOrder.indexOf(expectedOrder.get(index)) != index) {
+        lastWrongPosition = index;
+        if (firstWrongPosition == -1) {
+          firstWrongPosition = index;
+        }
       }
+    }
+
+    if (lastWrongPosition == -1) {
+      return Collections.emptyList();
+    }
+
+    List<Location> issues = new ArrayList<>();
+    // only reports between first and last wrong position
+    for (int index = firstWrongPosition; index <= lastWrongPosition; index++) {
+      issues.add(new Location("Expected position: " + (index + 1), expectedOrder.get(index).startLocation().line()));
     }
 
     return issues;
-  }
-
-  private static List<LocatedTree> getNonNullTrees(LocatedTree... trees) {
-    List<LocatedTree> result = new LinkedList<>();
-    for (LocatedTree locatedTree : trees) {
-      if (locatedTree != null) {
-        result.add(locatedTree);
-      }
-    }
-    return result;
-  }
-
-  private static List<LocatedTree> sortByLine(List<LocatedTree> expectedOrder) {
-    List<LocatedTree> result = new LinkedList<>(expectedOrder);
-    Collections.sort(result, LINE_COMPARATOR);
-    return result;
-  }
-
-  private static class LineComparator implements Comparator<LocatedTree> {
-    @Override
-    public int compare(LocatedTree o1, LocatedTree o2) {
-      return Integer.compare(o1.startLocation().line(), o2.startLocation().line());
-    }
   }
 }
