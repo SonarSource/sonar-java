@@ -37,11 +37,14 @@ public class IfElseIfStatementEndsWithElseCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
-    StatementTree elseStmt = ((IfStatementTree) tree).elseStatement();
-    if (elseStmt != null
-      && elseStmt.is(Tree.Kind.IF_STATEMENT) && ((IfStatementTree) elseStmt).elseStatement() == null) {
-
-      reportIssue(((IfStatementTree) elseStmt.parent()).elseKeyword(), ((IfStatementTree) elseStmt).ifKeyword(), "\"if ... else if\" constructs should end with \"else\" clauses.");
+    IfStatementTree treeIfStmt = (IfStatementTree) tree;
+    StatementTree elseStmt = treeIfStmt.elseStatement();
+    IfStatementTree ifStmt = null;
+    if (elseStmt != null && elseStmt.is(Tree.Kind.IF_STATEMENT)) {
+      ifStmt = (IfStatementTree) elseStmt;
+    }
+    if (ifStmt != null && ifStmt.elseStatement() == null) {
+      reportIssue(treeIfStmt.elseKeyword(), ifStmt.ifKeyword(), "\"if ... else if\" constructs should end with \"else\" clauses.");
     }
   }
 }
