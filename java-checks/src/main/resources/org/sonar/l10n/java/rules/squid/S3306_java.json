@@ -7,7 +7,9 @@
     "constantCost": "5min"
   },
   "tags": [
+    "spring",
     "design",
+    "jee",
     "pitfall"
   ],
   "defaultSeverity": "Major",

@@ -7,7 +7,11 @@
     "constantCost": "15min"
   },
   "tags": [
-    "spring"
+    "spring",
+    "owasp-a3"
+  ],
+  "standards": [
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3749",

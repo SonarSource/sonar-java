@@ -1,36 +1,18 @@
-<p>A dead store happens when a local variable is assigned a value, including <code>null</code>, that is not read by any subsequent instruction.
-Calculating or retrieving a value only to then overwrite it or throw it away, could indicate a serious error in the code. Even if it's not an error,
-it is at best a waste of resources. </p>
-<p>Even assigning <code>null</code> to a variable is a dead store if the variable is not subsequently used. Assigning null as a hint to the garbage
-collector used to be common practice, but is no longer needed and such code should be eliminated.</p>
+<p>A dead store happens when a local variable is assigned a value that is not read by any subsequent instruction. Calculating or retrieving a value
+only to then overwrite it or throw it away, could indicate a serious error in the code. Even if it's not an error, it is at best a waste of resources.
+Therefore all calculated values should be used.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public void pow(int a, int b) {
-  if(b == 0) {
-    return 0;
-  }
-  int x = a;
-  for(int i= 1, i &lt; b, i++) {
-    x = x * a;  //Dead store because the last return statement should return x instead of returning a
-  }
-  return a;
-}
+i = a + b; // Noncompliant; calculation result not used before value is overwritten
+i = compute();
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-public void pow(int a, int b) {
-  if(b == 0) {
-    return 0;
-  }
-  int x = a;
-  for(int i= 1, i &lt; b, i++) {
-    x = x * a;
-  }
-  return x;
-}
+i = a + b;
+i += compute();
 </pre>
 <h2>Exceptions</h2>
-<p>This rule ignores initializations to -1, 0, 1, <code>null</code>, empty string (<code>""</code>), <code>true</code>, and <code>false</code>.</p>
+<p>This rule ignores initializations to -1, 0, 1, <code>null</code>, <code>true</code>, <code>false</code> and <code>""</code>.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/563.html">MITRE, CWE-563</a> - Assignment to Variable without Use ('Unused Variable') </li>

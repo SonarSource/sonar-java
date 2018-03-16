@@ -9,6 +9,9 @@
   "tags": [
     "owasp-a9"
   ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2976",
   "sqKey": "S2976"

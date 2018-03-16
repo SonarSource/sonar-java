@@ -3,7 +3,7 @@ inner class larger and could cause the outer class instance to live in memory lo
 <p>If the reference to the outer class isn't used, it is more efficient to make the inner class <code>static</code> (also called nested). If the
 reference is used only in the class constructor, then explicitly pass a class reference to the constructor. If the inner class is anonymous, it will
 also be necessary to name it. </p>
-<p>However, while a nested/<code>static</code> class would be more efficient, it's worth nothing that there are semantic differences between an inner
+<p>However, while a nested/<code>static</code> class would be more efficient, it's worth noting that there are semantic differences between an inner
 class and a nested one:</p>
 <ul>
   <li> an inner class can only be instantiated within the context of an instance of the outer class. </li>
