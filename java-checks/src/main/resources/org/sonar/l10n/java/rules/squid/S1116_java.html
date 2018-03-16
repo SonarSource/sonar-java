@@ -12,8 +12,6 @@ void doSomething() {
 void doSomethingElse() {
   System.out.println("Hello, world!");;                     // Noncompliant - double ;
   ...
-  for (int i = 0; i &lt; 3; System.out.println(i), i++);       // Noncompliant - Rarely, they are used on purpose as the body of a loop. It is a bad practice to have side-effects outside of the loop body
-  ...
 }
 </pre>
 <h2>Compliant Solution</h2>
@@ -23,9 +21,7 @@ void doSomething() {}
 void doSomethingElse() {
   System.out.println("Hello, world!");
   ...
-  for (int i = 0; i &lt; 3; i++){
-    System.out.println(i);
-  }
+  for (int i = 0; i &lt; 3; i++) ; // compliant if unique statement of a loop
   ...
 }
 </pre>

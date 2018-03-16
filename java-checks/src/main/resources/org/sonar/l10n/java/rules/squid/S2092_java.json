@@ -8,8 +8,8 @@
   },
   "tags": [
     "cwe",
-    "owasp-a6",
-    "owasp-a2"
+    "owasp-a2",
+    "owasp-a3"
   ],
   "standards": [
     "CWE",

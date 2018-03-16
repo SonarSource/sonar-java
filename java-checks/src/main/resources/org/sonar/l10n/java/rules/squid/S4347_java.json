@@ -7,8 +7,14 @@
     "constantCost": "2min"
   },
   "tags": [
-    "security",
+    "cwe",
+    "cert",
+    "owasp-a6",
     "pitfall"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4347",

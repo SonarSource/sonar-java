@@ -7,10 +7,12 @@
     "constantCost": "20min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "owasp-a3"
   ],
   "standards": [
-    "CWE"
+    "CWE",
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3318",
