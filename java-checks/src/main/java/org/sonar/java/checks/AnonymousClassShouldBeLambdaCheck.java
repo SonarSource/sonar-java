@@ -20,12 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -35,8 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.List;
 
 @Rule(key = "S1604")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
@@ -76,12 +78,42 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   }
 
   private static boolean isSAM(ClassTree classBody) {
-    if(hasOnlyOneMethod(classBody.members()) && classBody.symbol().isTypeSymbol()) {
+    if (hasOnlyOneMethod(classBody.members()) && classBody.symbol().isTypeSymbol()) {
       // Verify class body is a subtype of an interface
+      MethodJavaSymbol methodSymbol = ((MethodJavaSymbol) ((MethodTree) classBody.symbol().memberSymbols().stream().findFirst().get().declaration())
+        .symbol());
       JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
-      return symbol.getInterfaces().size() == 1 && symbol.getSuperclass().is("java.lang.Object");
+      boolean checkAnonymousClassFP = defaultMehodsSameSign(methodSymbol);
+      return symbol.getInterfaces().size() == 1 &&
+        symbol.getSuperclass().is("java.lang.Object") &&
+        checkAnonymousClassFP;
     }
     return false;
+  }
+
+  // seaches in the interface if there is a default method with the same signature
+  private static boolean defaultMehodsSameSign(MethodJavaSymbol methodSymbol) {
+    TypeJavaSymbol tjs = methodSymbol.overriddenSymbol().outermostClass();
+    if (methodSymbol.overriddenSymbol().isDefault() && tjs.isInterface() && tjs.declaration() != null) {
+      for (Symbol mjs : ((TypeJavaSymbol) tjs.declaration().symbol()).memberSymbols()) {
+        if (mjs.isMethodSymbol() && !checkmethodSignature(methodSymbol, (MethodJavaSymbol) mjs)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private static boolean checkmethodSignature(MethodJavaSymbol methodSymbol, MethodJavaSymbol met) {
+    if (!methodSymbol.name().equals(met.name()) && met.isDefault()) {
+      String s = methodSymbol.completeSignature();
+      String m = met.completeSignature();
+      if (s.substring(s.indexOf('(') + 1, s.indexOf(')')).equals(m.substring(m.indexOf('(') + 1, m.indexOf(')')))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {
