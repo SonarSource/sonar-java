@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -92,15 +93,15 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.saveAnalysisErrors();
   }
 
-  private Iterable<File> getSourceFiles() {
+  private Collection<File> getSourceFiles() {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.MAIN))));
   }
 
-  private Iterable<File> getTestFiles() {
+  private Collection<File> getTestFiles() {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
   }
 
-  private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+  private static Collection<File> toFile(Iterable<InputFile> inputFiles) {
     return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
   }
 

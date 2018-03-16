@@ -19,19 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.squidbridge.annotations.RuleTemplate;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S4011")
-@RuleTemplate
 public class DisallowedConstructorCheck extends AbstractMethodDetection {
 
   @RuleProperty(key = "className", description = "Name of the class whose constructor is forbidden. This parameter is mandatory, if absent the rule is disabled.")

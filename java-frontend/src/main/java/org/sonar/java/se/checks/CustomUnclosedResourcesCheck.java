@@ -20,6 +20,8 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -38,14 +40,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.RuleTemplate;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
 
 @Rule(key = "S3546")
-@RuleTemplate
 public class CustomUnclosedResourcesCheck extends SECheck {
 
   //see SONARJAVA-1624 class cannot be static, different classes are needed for every instance of this template rule

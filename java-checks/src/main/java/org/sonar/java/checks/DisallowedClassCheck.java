@@ -33,9 +33,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.RuleTemplate;
 
-@RuleTemplate
 @Rule(key = "S3688")
 public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileScanner {
 

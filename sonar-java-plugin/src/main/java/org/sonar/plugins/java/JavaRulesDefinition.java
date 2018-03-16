@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -29,6 +30,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.config.Configuration;
@@ -39,7 +41,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.checks.CheckList;
-import org.sonar.squidbridge.annotations.RuleTemplate;
 
 /**
  * Definition of rules.
@@ -47,6 +48,17 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 public class JavaRulesDefinition implements RulesDefinition {
 
   private final boolean isDebugEnabled;
+
+  /**
+   * Rule templates have to be manually defined
+   */
+  private static final Set<String> TEMPLATE_RULE_KEY = ImmutableSet.of(
+    "S124",
+    "S2253",
+    "S3417",
+    "S3688",
+    "S3546",
+    "S4011");
 
   /**
    * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
@@ -103,7 +115,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     String metadataKey = ruleMetadata(ruleClass, rule);
     // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
     rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
-    rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
+    rule.setTemplate(TEMPLATE_RULE_KEY.contains(ruleKey));
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {

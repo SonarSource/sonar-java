@@ -21,20 +21,17 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.RuleTemplate;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @Rule(key = "S124")
-@RuleTemplate
 public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_REGULAR_EXPRESSION = "";

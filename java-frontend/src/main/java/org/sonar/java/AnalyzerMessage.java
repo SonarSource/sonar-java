@@ -20,18 +20,16 @@
 package org.sonar.java;
 
 import com.google.common.base.Preconditions;
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Replacement for {@link org.sonar.squidbridge.api.CheckMessage}.
+ * Class used to represent analyzer issue messages
  */
 public class AnalyzerMessage {
 
