@@ -35,6 +35,10 @@ interface C{
   default int bar(int a) {}
 }
 
+interface D{
+  default void foo2() {}
+}
+
 class A {
   void toto() {
     new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda (sonar.java.source not set. Assuming 8 or greater.)}}
@@ -116,10 +120,37 @@ class A {
     };
    
     new D() {};  // Compliant
+  
+    new D() { // Noncompliant
+      public void foo2() {};    
+    };
   }
 
   String toStr(){
     return "";
+  }
+
+  interface A2 {
+    default void bar1() {}
+    default void foo() {}
+  }
+  
+  interface A1 extends A2{
+    default void foo(int a) {}
+  }
+
+  interface B1 extends A1 {
+    default void bar() {}
+    void bar2() {}
+  }
+
+  class C1 {
+    B1 b1 = new B1() { // Compliant
+      @Override
+      public void bar() {
+        System.out.println();
+      }
+    };
   }
 
 }

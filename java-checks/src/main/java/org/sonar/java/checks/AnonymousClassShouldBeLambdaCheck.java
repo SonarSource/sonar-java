@@ -20,11 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -72,7 +75,10 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
       if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
-        context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
+        Tree member = classBody.members().get(0);
+        if (member.is(Tree.Kind.METHOD) && multipleMethodsDefaultSameSignature(((JavaSymbol.MethodJavaSymbol) ((MethodTree) member).symbol()))) {
+          context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
+        }
       }
     }
   }
@@ -80,40 +86,38 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   private static boolean isSAM(ClassTree classBody) {
     if (hasOnlyOneMethod(classBody.members()) && classBody.symbol().isTypeSymbol()) {
       // Verify class body is a subtype of an interface
-      MethodJavaSymbol methodSymbol = ((MethodJavaSymbol) ((MethodTree) classBody.symbol().memberSymbols().stream().findFirst().get().declaration())
-        .symbol());
       JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
-      boolean checkAnonymousClassFP = defaultMehodsSameSign(methodSymbol);
       return symbol.getInterfaces().size() == 1 &&
-        symbol.getSuperclass().is("java.lang.Object") &&
-        checkAnonymousClassFP;
+        symbol.getSuperclass().is("java.lang.Object");
     }
     return false;
   }
 
-  // seaches in the interface if there is a default method with the same signature
-  private static boolean defaultMehodsSameSign(MethodJavaSymbol methodSymbol) {
-    TypeJavaSymbol tjs = methodSymbol.overriddenSymbol().outermostClass();
-    if (methodSymbol.overriddenSymbol().isDefault() && tjs.isInterface() && tjs.declaration() != null) {
-      for (Symbol mjs : ((TypeJavaSymbol) tjs.declaration().symbol()).memberSymbols()) {
-        if (mjs.isMethodSymbol() && !checkmethodSignature(methodSymbol, (MethodJavaSymbol) mjs)) {
-          return false;
-        }
-      }
+  private static boolean multipleMethodsDefaultSameSignature(JavaSymbol.MethodJavaSymbol methodSymbol) {
+    JavaSymbol.TypeJavaSymbol typeJavaSymbol = methodSymbol.overriddenSymbol().enclosingClass();
+    Set<JavaSymbol.MethodJavaSymbol> methods = new HashSet<>();
+    methods.addAll(
+      methodSymbol.overriddenSymbol().enclosingClass().memberSymbols().stream().filter(Symbol::isMethodSymbol).map(x -> ((JavaSymbol.MethodJavaSymbol) x))
+        .collect(Collectors.toList()));
+    List<TypeJavaSymbol> list = typeJavaSymbol.superTypes().stream().filter(type -> !type.name().equals("Object"))
+      .map(ClassJavaType::getSymbol).collect(Collectors.toList());
+    for (JavaSymbol.TypeJavaSymbol t : list) {
+      methods.addAll(t.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(x -> ((JavaSymbol.MethodJavaSymbol) x))
+        .filter(method -> !method.name().equals(methodSymbol.name()))
+        .collect(Collectors.toList()));
     }
-
-    return true;
+    return checkForDefaultMethodsWithSameSignature(methodSymbol, methods);
   }
 
-  private static boolean checkmethodSignature(MethodJavaSymbol methodSymbol, MethodJavaSymbol met) {
-    if (!methodSymbol.name().equals(met.name()) && met.isDefault()) {
-      String s = methodSymbol.completeSignature();
-      String m = met.completeSignature();
-      if (s.substring(s.indexOf('(') + 1, s.indexOf(')')).equals(m.substring(m.indexOf('(') + 1, m.indexOf(')')))) {
-        return false;
-      }
+  private static boolean checkForDefaultMethodsWithSameSignature(JavaSymbol.MethodJavaSymbol methodSymbol, Set<JavaSymbol.MethodJavaSymbol> methods) {
+    List<JavaSymbol.MethodJavaSymbol> list1 = methods.stream().filter(method -> method.getParameters().scopeSymbols()
+      .equals(methodSymbol.getParameters().scopeSymbols()) && !method.name().equals("main") && method.isDefault())
+      .collect(Collectors.toList());
+    if (list1.isEmpty()) {
+      return true;
+    } else {
+      return list1.size() > 1 ? false : true;
     }
-    return true;
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {

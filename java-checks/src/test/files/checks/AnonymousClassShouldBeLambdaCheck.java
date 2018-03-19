@@ -193,31 +193,3 @@ interface BA {
     };
   }
 }
-
-interface K {
-  static void main() {
-    BA a = new BA() { // Noncompliant 
-      @Override                 
-      public void foo() {}
-    };
-  }
-}
-
-interface L{
-  static void main() {
-    AB a = new AB() { // Compliant 
-      @Override                 
-      public void foo() {}
-    };
-  }
-}
-
-interface M {
-  static void main() {
-    BA a = new BA() { // Noncompliant 
-      @Override                 
-      public void bar() {}
-    };
-  }
-}
-
