@@ -122,7 +122,8 @@ class A {
     new D() {};  // Compliant
   
     new D() { // Noncompliant
-      public void foo2() {};    
+      @Override
+      public void foo2() {}
     };
   }
 
@@ -141,7 +142,8 @@ class A {
 
   interface B1 extends A1 {
     default void bar() {}
-    void bar2() {}
+    default String bar4(int a, int b) {}
+    default Integer bar2(int a, int b, String c) {}
   }
 
   class C1 {
@@ -153,4 +155,41 @@ class A {
     };
   }
 
+  class C2 {
+    B1 b1 = new B1() { // Compliant
+      @Override
+      public void foo() {
+        System.out.println();
+      }
+    };
+  }
+
+  interface F extends B1{
+    default String bar(int a, int b) {}
+    default Integer bar2(int a, int b, String c) {}
+    default Integer bar3 (int a, int b) {}
+  }
+
+  class C3{
+    B1 b1 = new B1() {  // Noncompliant
+      @Override
+      public String bar(int c, int f) {
+        return "";
+      }
+    };
+
+    B1 b2 = new B1() {  // Noncompliant
+      @Override
+      public Integer bar2(int a, int b, String c) {
+        return "";
+      }
+    };
+
+    F b3 = new F() {  // Compliant
+      @Override
+      public Integer bar3(int a, int b) {
+        return 0;
+      }
+    };
+  }
 }
