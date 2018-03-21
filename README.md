@@ -117,6 +117,7 @@ For example using the command:
 
     cp its/ruling/target/actual/* its/ruling/src/test/resources/
 
+
 ### License
 
 Copyright 2012-2018 SonarSource.
