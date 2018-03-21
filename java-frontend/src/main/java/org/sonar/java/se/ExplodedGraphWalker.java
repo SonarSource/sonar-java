@@ -808,12 +808,16 @@ public class ExplodedGraphWalker {
    * @see JLS8 4.12.5 for details
    */
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
+    Symbol variableSymbol = variableTree.symbol();
     if (variableTree.initializer() == null) {
       SymbolicValue sv = null;
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
+        if (isAnnotatedNonNull(variableSymbol)) {
+          programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+        }
       } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = handleCatchVariable(variableTree.symbol().type());
+        sv = handleCatchVariable(variableSymbol.type());
         // an exception have been thrown and caught, stack must be cleared
         // see notes in JVMS 8 - §6.5. - instruction "athrow"
         programState = programState.clearStack();
@@ -821,12 +825,12 @@ public class ExplodedGraphWalker {
         programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
       }
       if (sv != null) {
-        programState = programState.put(variableTree.symbol(), sv);
+        programState = programState.put(variableSymbol, sv);
       }
     } else {
       ProgramState.Pop unstack = programState.unstackValue(1);
       programState = unstack.state;
-      programState = programState.put(variableTree.symbol(), unstack.values.get(0));
+      programState = programState.put(variableSymbol, unstack.values.get(0));
     }
   }
 
