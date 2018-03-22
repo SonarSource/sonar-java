@@ -109,6 +109,12 @@
       <artifactId>javax.activation</artifactId>
       <scope>runtime</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.sonarsource.ucfg</groupId>
+      <artifactId>sonar-ucfg</artifactId>
+      <version>1.0.0.27</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -268,6 +274,26 @@
                   <groupId>org.aspectj</groupId>
                   <artifactId>aspectjtools</artifactId>
                   <version>1.8.10</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-api</artifactId>
+                  <version>7.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.servlet</groupId>
+                  <artifactId>javax.servlet-api</artifactId>
+                  <version>3.1.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-web</artifactId>
+                  <version>5.0.4.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-context</artifactId>
+                  <version>5.0.4.RELEASE</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
