@@ -34,6 +34,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
@@ -269,6 +270,35 @@ public class JaCoCoSensorTest {
     context.settings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there is no class files.");
+  }
+
+  @Test
+  public void should_log_when_class_are_not_matching_with_report() throws Exception {
+    String testDir = "/org/sonar/plugins/jacoco/JaCoCoNoMatch/";
+    outputDir = TestUtils.getResource(testDir);
+    jacocoExecutionData = new File(outputDir, "jacoco.exec");
+
+    Files.copy(TestUtils.getResource(testDir + "org/foo/bar/Example2.class.toCopy"), new File(outputDir, "org/foo/bar/Example2.class"));
+    Files.copy(TestUtils.getResource(testDir + "Example.class.toCopy"), new File(outputDir, "Example.class"));
+
+    DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
+
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+
+    SensorContextTester context = SensorContextTester.create(outputDir);
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));
+    context.fileSystem().setWorkDir(temp.newFolder().toPath());
+    context.setSettings(new MapSettings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath()));
+
+    sensor.execute(context);
+
+    List<String> warnLogs = logTester.logs(LoggerLevel.WARN);
+    assertThat(warnLogs).contains(
+      "The following class(es) did not match with execution data:",
+      "> 'org/foo/bar/Example2'",
+      "> 'Example'",
+      "In order to have accurate coverage measures, the same class files must be used as at runtime for report generation.");
   }
 
 }
