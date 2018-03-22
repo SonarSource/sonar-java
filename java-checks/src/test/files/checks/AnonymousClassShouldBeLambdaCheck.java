@@ -1,3 +1,6 @@
+import com.google.common.base.Function;
+import java.util.Date;
+
 enum foo  {
   FOO{
     @Override
@@ -117,6 +120,7 @@ class A {
       };
       main.myMethod();
       Object o1 = new Object() {
+        @Override
         public String toString(){
           return null;
         }
@@ -139,7 +143,8 @@ class SamWithException {
   }
   void foo(I i) {
     foo(new I() { // Compliant : Cannot be nicely refactored as lamdba because of the checked exception
-      void apply(String s) throws MyCheckedException {
+      @Override
+      public void apply(String s) throws MyCheckedException {
         // doSomething
       }
     });
@@ -171,25 +176,78 @@ abstract class WithinLambda {
 }
 
 interface AB {
-  default void foo(){}
-  default void bar(){}
+  default void foo() {
+  }
+
+  default void bar() {
+  }
 
   static void main() {
-    AB a = new AB() { // Compliant 
-      @Override                 
-      public void foo() {}
+    AB a = new AB() { // Compliant
+      @Override
+      public void foo() {
+      }
     };
   }
 }
 
 interface BA {
-  default void foo(){}
-  void bar(){}
+  default void foo() {
+  }
+
+  void bar();
 
   static void main() {
-    BA a = new BA() { // Noncompliant 
-      @Override                 
-      public void foo() {}
+    BA a = new BA() { // Noncompliant
+      @Override
+      public void bar() {
+      }
+    };
+  }
+}
+
+class Alpha {
+
+  interface Lvl1 {
+    void foo();
+  }
+
+  interface Lvl2 extends Lvl1 {
+    @Override
+    void foo();
+  }
+
+  Lvl2 level = new Lvl2() { // Noncompliant
+    @Override
+    public void foo() {
+    }
+  };
+  Lvl2 level2 = () -> {};
+
+  Function<Object, Date> a = new Function<Object, Date>() { // Noncompliant - function overrides equals from object
+    @Override
+    public Date apply(Object o) {
+      return new Date();
+    }
+  };
+
+  Function<Object, Date> b = o -> new Date();
+}
+
+abstract class AbstractClass {
+  public abstract void foo();
+
+  static void bar() {
+    AbstractClass ac1 = new AbstractClass() { // Compliant: not a SAM
+      @Override
+      public void foo() {
+      }
+    };
+
+    Unknown u = new Unknown() { // Compliant: can not resolve parent
+      @Override
+      void foo() {
+      }
     };
   }
 }
