@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -46,6 +44,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 @Rule(key = "S1604")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private JavaFileScannerContext context;
   private List<IdentifierTree> enumConstants;
 
@@ -74,51 +73,41 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
-      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && isSAM(classBody, identifier)) {
+      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
         context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
   }
 
-  private static boolean isSAM(ClassTree classBody, TypeTree identifier) {
-    List<Tree> members = classBody.members();
-    if (hasOnlyOneMethod(members) && classBody.symbol().isTypeSymbol()) {
-      // Verify class body is a subtype of an interface
+  private static boolean isSAM(ClassTree classBody) {
+    if (hasOnlyOneMethod(classBody.members())) {
       JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
-      MethodTree method = (MethodTree) members.get(0);
-      JavaSymbol.TypeJavaSymbol interfaceOwner = (JavaSymbol.TypeJavaSymbol) identifier.symbolType().symbol();
-      return symbol.getInterfaces().size() == 1 &&
-        symbol.getSuperclass().is("java.lang.Object") &&
-        notMultipleDefaultMethodsWithSameSignature((JavaSymbol.MethodJavaSymbol) method.symbol(), interfaceOwner);
+      // should be anonymous class of interface and not abstract class
+      return symbol.getInterfaces().size() == 1
+        && symbol.getSuperclass().is(JAVA_LANG_OBJECT)
+        && hasSingleAbstractMethodInHierarchy(symbol.superTypes());
     }
     return false;
   }
 
-  private static boolean notMultipleDefaultMethodsWithSameSignature(JavaSymbol.MethodJavaSymbol methodSymbol, JavaSymbol.TypeJavaSymbol interfaceOwner) {
-    Set<JavaSymbol.MethodJavaSymbol> methods = new HashSet<>();
-    List<TypeJavaSymbol> allInterfacesOfHierarchy = interfaceOwner.superTypes().stream().filter(type -> !type.is("java.lang.Object"))
-      .map(ClassJavaType::getSymbol).collect(Collectors.toList());
-    for (JavaSymbol.TypeJavaSymbol interfaceOfHierarchy : allInterfacesOfHierarchy) {
-      methods.addAll(interfaceOfHierarchy.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(method -> ((JavaSymbol.MethodJavaSymbol) method))
-        .filter(method -> !method.name().equals(methodSymbol.name()))
-        .filter(method -> sameParameters(method, methodSymbol))
-        .collect(Collectors.toList()));
-    }
-    methods.addAll(
-      interfaceOwner.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(method -> ((JavaSymbol.MethodJavaSymbol) method))
-        .filter(method -> sameParameters(method, methodSymbol))
-        .collect(Collectors.toList()));
-    return methodsDefaultAndNotStatic(methods);
+  private static boolean hasSingleAbstractMethodInHierarchy(Set<ClassJavaType> superTypes) {
+    return superTypes.stream()
+      .filter(type -> !type.is(JAVA_LANG_OBJECT))
+      .map(ClassJavaType::getSymbol)
+      // collect all the methods declared in hierarchy
+      .flatMap(superType -> superType.memberSymbols().stream().filter(Symbol::isMethodSymbol).filter(Symbol::isAbstract))
+      .map(JavaSymbol.MethodJavaSymbol.class::cast)
+      // remove objects methods redefined in interfaces
+      .filter(symbol -> !isObjectMethod(symbol))
+      // always take same symbol if method is redeclared over and over in hierarchy
+      .map(symbol -> symbol.overriddenSymbol() != null ? symbol.overriddenSymbol() : symbol)
+      .collect(Collectors.toSet())
+      .size() == 1;
   }
 
-  private static boolean methodsDefaultAndNotStatic(Set<JavaSymbol.MethodJavaSymbol> methods) {
-    List<JavaSymbol.MethodJavaSymbol> methodsRemained = methods.stream().filter(method -> !method.isStatic() && method.isDefault())
-      .collect(Collectors.toList());
-    return methodsRemained.isEmpty() || methodsRemained.size() <= 1;
-  }
-
-  private static boolean sameParameters(JavaSymbol.MethodJavaSymbol method1, JavaSymbol.MethodJavaSymbol method2) {
-    return method1.parameterTypes().equals(method2.parameterTypes());
+  private static boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodSymbol) {
+    Symbol overridenSymbol = methodSymbol.overriddenSymbol();
+    return overridenSymbol != null && overridenSymbol.owner().type().is(JAVA_LANG_OBJECT);
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {
