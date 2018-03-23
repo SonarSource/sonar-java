@@ -7,20 +7,27 @@ class A {
 
   public void alpha(int a) {
   }
-
+  public void beta(Unknown e, String b) {
+  }
+  
   public void doTheThing() {
+    Unknown u, A;
+    alpha(u);
+    alpha(A);
     int divisor = 15;
     int dividend = 5;
-    double result = divide(dividend, divisor); // Noncompliant [[sc=27;ec=46;secondary=4,4]] {{Parameters to divide have the same names but
-                                               // not the same
-                                               // order as the method arguments.}}
+    double result = divide(dividend, divisor); // Noncompliant [[sc=27;ec=46;secondary=4,4]] {{Parameters to divide have the same names but not the same order as the method arguments.}}
     double result1 = divide(new B().alpha, divisor); // Compliant
-    double result2 = divide(new B().dividend, divisor); // Noncompliant [[sc=28;ec=55;secondary=4,4]] {{Parameters to divide have the same
-                                                        // names but not the same order as the method arguments.}}
-
+    double result2 = divide(new B().dividend, divisor); // Noncompliant [[sc=28;ec=55;secondary=4,4]] {{Parameters to divide have the same names but not the same order as the method arguments.}}
+    Unknown e;
+    String b ="";
+    beta(e, b);   // Compliant
+    beta(b, e);    // Compliant
+    beta(a,b); // Compliant
     // coverage
 
     alpha(divisor); // Compliant
+    alpha(e);   // Compliant
     int a = 2;
     alpha(a); // Compliant
   }
@@ -40,9 +47,7 @@ class A {
     int divisOr = 15;
     int dividend = 5;
     String a = "1", b = "2";
-    double result = divide(dividend, divisOr); // Noncompliant {{Parameters to divide have the same names but not the same order as the
-                                               // method
-    // arguments.}}
+    double result = divide(dividend, divisOr); // Noncompliant {{Parameters to divide have the same names but not the same order as the method arguments.}}
 
     result = divide(divisOr, dividend); // Compliant
     result = divide(parameter1, parameter2); // Compliant
@@ -120,7 +125,6 @@ class B {
     String A = ((Integer) a).toString();
     test2(d, null, A, Integer.parseInt(new B().b)); // Compliant -- because b is int not Object
     strange(new B().upperBound, Integer.valueOf(0), A); // Compliant
-    strange(new B().upperBound, Integer.valueOf(0), null); // Compliant if only 1 argument matches a parameter in a different position then
-                                                           // this is compliant
+    strange(new B().upperBound, Integer.valueOf(0), null); // Compliant if only 1 argument matches a parameter in a different position
   }
 }

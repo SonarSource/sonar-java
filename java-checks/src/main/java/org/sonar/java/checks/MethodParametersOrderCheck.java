@@ -34,6 +34,8 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -44,7 +46,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2234")
 public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
 
-  private Map<Symbol, List<Symbol>> parameterNamesByMethod = new HashMap<>();
+  private Map<Symbol, ParametersList> parametersByMethod = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -53,35 +55,22 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    parameterNamesByMethod.clear();
+    parametersByMethod.clear();
     super.scanFile(context);
   }
 
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvTree = (MethodInvocationTree) tree;
-    List<Symbol> definedFunctionParameters = parameterNamesByMethod.get(methodInvTree.symbol());
-    MethodTree methodTree = (MethodTree) methodInvTree.symbol().declaration();
-    if (definedFunctionParameters == null) {
-      if (methodTree != null) {
-        definedFunctionParameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toCollection(ArrayList::new));
-        parameterNamesByMethod.put(methodTree.symbol(), definedFunctionParameters);
-      } else {
-        return;
-      }
+    MethodTree methodDeclaration = (MethodTree) methodInvTree.symbol().declaration();
+    if (methodDeclaration == null) {
+      return;
     }
-    List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(arg -> {
-      if (arg.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) arg);
-      } else if (arg.is(Tree.Kind.MEMBER_SELECT)) {
-        return (IdentifierTree) ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) arg).identifier());
-      } else {
-        return null;
-      }
-    }).collect(Collectors.toList());
-    if (argumentsNamesMatchParametersNames(definedFunctionParameters, argumentsList)
-      && argumentsTypesMatchParametersTypesAndNamesNotOrdered(definedFunctionParameters, argumentsList)) {
-      List<JavaFileScannerContext.Location> flow = methodTree.parameters().stream().map(param -> new JavaFileScannerContext.Location("Formal Parameters", param))
+    ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.symbol(), m -> new ParametersList(methodDeclaration));
+    List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
+    if (matchingNames(formalParameterList, argumentsList)
+      && matchingTypesWrongOrder(formalParameterList, argumentsList)) {
+      List<JavaFileScannerContext.Location> flow = methodDeclaration.parameters().stream().map(param -> new JavaFileScannerContext.Location("Formal Parameters", param))
         .collect(Collectors.toList());
       reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.",
         flow, null);
@@ -89,33 +78,67 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean argumentsNamesMatchParametersNames(List<Symbol> parametersList, List<IdentifierTree> argumentsList) {
-    List<String> argListNames = argumentsList.stream().filter(Objects::nonNull).map(parameter -> parameter.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
+  private static boolean matchingNames(ParametersList formalParameters, List<IdentifierTree> argumentsList) {
+    List<String> argListNames = argumentsList.stream().filter(Objects::nonNull).map(arg -> arg.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
     return allUnique(argListNames)
-      && argListNames.stream().allMatch(arg -> parametersList.stream().map(parameter -> parameter.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList()).contains(arg));
+      && argListNames.stream().allMatch(formalParameters::contains);
+  }
 
+  public IdentifierTree argumentToIdentifier(ExpressionTree expr) {
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      return (IdentifierTree) ExpressionUtils.skipParentheses(expr);
+    } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      return (IdentifierTree) ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) expr).identifier());
+    } else {
+      return null;
+    }
   }
 
   public static boolean allUnique(List<String> argListNames) {
-    return argListNames.stream().allMatch(new HashSet<>()::add);
+    return argListNames.size() == new HashSet<>(argListNames).size();
   }
 
-  private static boolean argumentsTypesMatchParametersTypesAndNamesNotOrdered(List<Symbol> parameterList, List<IdentifierTree> argumentList) {
+  private static boolean matchingTypesWrongOrder(ParametersList formalParameterList, List<IdentifierTree> argumentList) {
     Iterator<IdentifierTree> argumentsIterator = argumentList.stream().filter(Objects::nonNull).iterator();
     int countArgumentsNotOrdered = 0;
     while (argumentsIterator.hasNext()) {
       IdentifierTree argument = argumentsIterator.next();
-      int index = (parameterList.stream().map(param -> param.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList()))
-        .indexOf(argument.name().toLowerCase(Locale.ENGLISH));
-      if (parameterList.get(index).type().equals(argument.symbolType())) {
-        if (argumentList.indexOf(argument) != index) {
-          countArgumentsNotOrdered++;
-        }
-        continue;
-      } else {
+      int index = formalParameterList.indexOf(argument.name().toLowerCase(Locale.ENGLISH));
+      Type formalType = formalParameterList.typeOfIndex(index);
+      Type argType = argument.symbolType();
+      if (!formalType.is(argType.fullyQualifiedName())) {
         return false;
+      }
+      if (argumentList.indexOf(argument) != index) {
+        countArgumentsNotOrdered++;
       }
     }
     return countArgumentsNotOrdered >= 2;
+  }
+
+  private static class ParametersList {
+
+    private List<String> parameterNames;
+    private List<Type> parameterTypes;
+
+    public ParametersList(MethodTree methodTree) {
+      parameterNames = new ArrayList<>();
+      parameterTypes = new ArrayList<>();
+      List<Symbol> symbolListOfParameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
+      parameterNames.addAll(symbolListOfParameters.stream().map(parameter -> parameter.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList()));
+      parameterTypes.addAll(symbolListOfParameters.stream().map(Symbol::type).collect(Collectors.toList()));
+    }
+
+    public boolean contains(String argument) {
+      return parameterNames.contains(argument);
+    }
+
+    public int indexOf(String argName) {
+      return parameterNames.indexOf(argName);
+    }
+
+    public Type typeOfIndex(int index) {
+      return parameterTypes.get(index);
+    }
   }
 }
