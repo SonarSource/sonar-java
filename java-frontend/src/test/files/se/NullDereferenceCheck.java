@@ -777,3 +777,23 @@ class OptionalOrElseNull {
      s.toString(); // Noncompliant
   }
 }
+
+abstract class NonNullAnnotationOnForEach {
+  void foo(List<Object> items) {
+    for (@Nonnull Object item : items) {
+      Object o = qix(bar(item)); // 'bar' can only be called with non-null constraint
+      if ("foo".equals(o.toString())) {
+        item.toString(); // Compliant
+      }
+    }
+  }
+
+  private static String bar(Object item) {
+    if (item != null) { // defensive programming
+      return item.toString();
+    }
+    return null;
+  }
+
+  abstract Object qix(String s);
+}
