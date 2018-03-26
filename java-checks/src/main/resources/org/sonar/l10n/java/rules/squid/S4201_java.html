@@ -1,0 +1,15 @@
+<p>There's no need to null test in conjunction with an <code>instanceof</code> test. <code>null</code> is not an <code>instanceof</code> anything, so
+a null check is redundant.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+if (x != null &amp;&amp; x instanceof MyClass) { ... }  // Noncompliant
+
+if (x == null || ! x instanceof MyClass) { ... } // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+if (x instanceof MyClass) { ... }
+
+if (! x instanceof MyClass) { ... }
+</pre>
+
