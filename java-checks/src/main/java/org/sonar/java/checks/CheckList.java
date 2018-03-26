@@ -533,6 +533,7 @@ public final class CheckList {
       .add(NestedSwitchStatementCheck.class)
       .add(ThisExposedFromConstructorCheck.class)
       .add(IfElseIfStatementEndsWithElseCheck.class)
+      .add(MethodParametersOrderCheck.class)
       .build();
   }
 
