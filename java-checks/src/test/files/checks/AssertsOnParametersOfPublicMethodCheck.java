@@ -68,7 +68,7 @@ class C {
   private static class D {
 
     public D(int a) {
-      assert a > 0; // Compliant
+      assert a > 0; // Noncompliant
 
     }
   }

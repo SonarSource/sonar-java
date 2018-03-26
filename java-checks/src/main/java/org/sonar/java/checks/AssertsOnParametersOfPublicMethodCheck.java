@@ -55,15 +55,18 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (!methodTree.symbol().isPublic() || methodTree.symbol().owner().isPrivate()) {
+    if (!methodTree.symbol().isPublic()) {
       return;
     }
-    methodTree.parameters().stream().map(VariableTree::symbol).map(Symbol::usages).flatMap(List::stream)
+    methodTree.parameters().stream()
+      .map(VariableTree::symbol)
+      .map(Symbol::usages)
+      .flatMap(List::stream)
       .forEach(parameter -> checkUsage(parameter, methodTree));
   }
 
   private void checkUsage(IdentifierTree parameterUsage, MethodTree methodTree) {
-    Tree parameterParent = parameterUsage.identifierToken().parent();
+    Tree parameterParent = parameterUsage.parent();
     while (!parameterParent.equals(methodTree) && !assertReported.contains(parameterParent)) {
       if (parameterParent.is(Tree.Kind.ASSERT_STATEMENT)) {
         assertReported.add((AssertStatementTree) parameterParent);
