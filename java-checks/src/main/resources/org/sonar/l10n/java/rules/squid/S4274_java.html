@@ -1,0 +1,24 @@
+<p>An <code>assert</code> is inappropriate for parameter validation because assertions can be disabled at runtime in the JVM, meaning that a bad
+operational setting would completely eliminate the intended checks. Further, <code>assert</code>s that fail throw <code>AssertionError</code>s, rather
+than throwing some type of <code>Exception</code>. Throwing <code>Error</code>s is completely outside of the normal realm of expected
+<code>catch</code>/<code>throw</code> behavior in normal programs.</p>
+<p>This rule raises an issue when a <code>public</code> method uses one or more of its parameters with <code>assert</code>s.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ public void setPrice(int price) {
+  assert price &gt;= 0 &amp;&amp; price &lt;= MAX_PRICE;
+  // Set the price
+ }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+ public void setPrice(int price) {
+  if (price &lt; 0 || price &gt; MAX_PRICE) {
+    throw new IllegalArgumentException("Invalid price: " + price);
+  }
+  // Set the price
+ }
+</pre>
+<h2>See</h2>
+<p><a href="https://docs.oracle.com/javase/7/docs/technotes/guides/language/assert.html">Programming With Assertions</a></p>
+

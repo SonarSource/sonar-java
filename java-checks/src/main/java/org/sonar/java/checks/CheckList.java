@@ -534,6 +534,7 @@ public final class CheckList {
       .add(ThisExposedFromConstructorCheck.class)
       .add(IfElseIfStatementEndsWithElseCheck.class)
       .add(MethodParametersOrderCheck.class)
+      .add(AssertsOnParametersOfPublicMethodCheck.class)
       .build();
   }
 
