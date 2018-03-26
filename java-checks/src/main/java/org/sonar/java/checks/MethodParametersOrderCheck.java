@@ -81,7 +81,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
   private static boolean matchingNames(ParametersList formalParameters, List<IdentifierTree> argumentsList) {
     List<String> argListNames = argumentsList.stream().filter(Objects::nonNull).map(arg -> arg.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
     return allUnique(argListNames)
-      && argListNames.stream().allMatch(formalParameters::contains);
+      && argListNames.stream().allMatch(formalParameters::hasArgumentWithName);
   }
 
   public IdentifierTree argumentToIdentifier(ExpressionTree expr) {
@@ -106,7 +106,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
       int index = formalParameterList.indexOf(argument.name().toLowerCase(Locale.ENGLISH));
       Type formalType = formalParameterList.typeOfIndex(index);
       Type argType = argument.symbolType();
-      if (!formalType.is(argType.fullyQualifiedName())) {
+      if (!formalType.is(argType.fullyQualifiedName()) || formalType.isUnknown() || argType.isUnknown()) {
         return false;
       }
       if (argumentList.indexOf(argument) != index) {
@@ -124,12 +124,13 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     public ParametersList(MethodTree methodTree) {
       parameterNames = new ArrayList<>();
       parameterTypes = new ArrayList<>();
-      List<Symbol> symbolListOfParameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
-      parameterNames.addAll(symbolListOfParameters.stream().map(parameter -> parameter.name().toLowerCase(Locale.ENGLISH)).collect(Collectors.toList()));
-      parameterTypes.addAll(symbolListOfParameters.stream().map(Symbol::type).collect(Collectors.toList()));
+      methodTree.parameters().stream().map(VariableTree::symbol).forEach(symbol -> {
+        parameterNames.add(symbol.name().toLowerCase(Locale.ENGLISH));
+        parameterTypes.add(symbol.type());
+      });
     }
 
-    public boolean contains(String argument) {
+    public boolean hasArgumentWithName(String argument) {
       return parameterNames.contains(argument);
     }
 
