@@ -1,0 +1,15 @@
+{
+  "title": "Asserts should not be used to check the parameters of a public method",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4274",
+  "sqKey": "S4274"
+}
