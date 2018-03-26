@@ -307,6 +307,6 @@ public class SonarComponents {
   }
 
   public boolean shouldGenerateUCFG() {
-    return !context.activeRules().findByRepository("sonar-security-java").isEmpty();
+    return !context.activeRules().findByRepository("SonarSecurityJava").isEmpty();
   }
 }

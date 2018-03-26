@@ -461,7 +461,7 @@ public class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContext);
     assertThat(sonarComponents.shouldGenerateUCFG()).isFalse();
-    ActiveRules activeRules = new ActiveRulesBuilder().create(RuleKey.of("sonar-security-java", "S3649")).activate().build();
+    ActiveRules activeRules = new ActiveRulesBuilder().create(RuleKey.of("SonarSecurityJava", "S3649")).activate().build();
     sensorContext.setActiveRules(activeRules);
     assertThat(sonarComponents.shouldGenerateUCFG()).isTrue();
   }
