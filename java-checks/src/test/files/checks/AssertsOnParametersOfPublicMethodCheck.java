@@ -11,9 +11,6 @@ class A {
   }
 
   public void setPrice1(int price3) {
-    if (price3 < 0 || price3 > 10000) {
-      throw new IllegalArgumentException("Invalid price: " + price3); // Compliant
-    }
     if (true) {
       assert price3 > 1000; // Noncompliant
     }
@@ -44,7 +41,7 @@ class B {
   public void foo(int a) {
     new Thread() {
       public void run() {
-        assert a > 0;   // Noncompliant
+        assert a > 0; // Noncompliant
         System.out.println("blah");
       }
     }.start();
@@ -53,10 +50,14 @@ class B {
 
 class C {
 
-  public synchronized void put(String a, Integer b) {
+  public C(int c) {
+    assert c > 0; // Noncompliant
+    // ...
+  }
+
+  public synchronized void put(String a) {
     assert ((a != null) && (b != null)); // Noncompliant
-    assert (find2(b) == null);
-    assert (find1(a) == null);
+    assert (find1(a) == null); // Noncompliant
   }
 
   public synchronized Integer find1(String a) {
@@ -64,8 +65,11 @@ class C {
     return 0;
   }
 
-  public synchronized String find2(Integer b) {
-    assert (b != null); // Noncompliant
-    return "";
+  private static class D {
+
+    public D(int a) {
+      assert a > 0; // Compliant
+
+    }
   }
 }

@@ -19,13 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
+import com.google.common.collect.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,7 +38,7 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   private Set<AssertStatementTree> assertReported = new HashSet<>();
@@ -54,29 +55,22 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (!methodTree.symbol().isPublic()) {
+    if (!methodTree.symbol().isPublic() || methodTree.symbol().owner().isPrivate()) {
       return;
     }
-    for (VariableTree parameter : methodTree.parameters()) {
-      for (IdentifierTree paramUsage : parameter.symbol().usages()) {
-        Tree paramParent = paramUsage.identifierToken().parent();
-        while (!paramParent.equals(methodTree) && !assertReported.contains(paramParent)) {
-          if (parentType(paramParent)) {
-            break;
-          }
-          paramParent = paramParent.parent();
-        }
-      }
-    }
+    methodTree.parameters().stream().map(VariableTree::symbol).map(Symbol::usages).flatMap(List::stream)
+      .forEach(parameter -> checkUsage(parameter, methodTree));
   }
 
-  private boolean parentType(Tree parameterParent) {
-    if (parameterParent.is(Tree.Kind.ASSERT_STATEMENT)) {
-      assertReported.add((AssertStatementTree) parameterParent);
-      reportIssue(parameterParent, "Replace this assert with a proper check.");
-      return true;
-    } else {
-      return parameterParent.is(Tree.Kind.METHOD_INVOCATION) ? true : false;
+  private void checkUsage(IdentifierTree parameterUsage, MethodTree methodTree) {
+    Tree parameterParent = parameterUsage.identifierToken().parent();
+    while (!parameterParent.equals(methodTree) && !assertReported.contains(parameterParent)) {
+      if (parameterParent.is(Tree.Kind.ASSERT_STATEMENT)) {
+        assertReported.add((AssertStatementTree) parameterParent);
+        reportIssue(parameterParent, "Replace this assert with a proper check.");
+        return;
+      }
+      parameterParent = parameterParent.parent();
     }
   }
 }
