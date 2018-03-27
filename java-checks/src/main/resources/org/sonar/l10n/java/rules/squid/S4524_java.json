@@ -1,0 +1,15 @@
+{
+  "title": "\"default\" clauses should be last",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "misra"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4524",
+  "sqKey": "S4524"
+}
