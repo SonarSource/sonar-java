@@ -455,7 +455,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void test_generation_of_ucfg() {
+  public void ucfg_activation_should_rely_on_active_rules() {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);

@@ -75,7 +75,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   private static final Logger LOG = Loggers.get(JavaSquid.class);
   private final File protobufDirectory;
   String fileKey;
-  int index = 0;
+  private int index = 0;
 
   public UCFGJavaVisitor(File workdir) {
     this.protobufDirectory = new File(new File(workdir, "ucfg"), "java");
@@ -98,9 +98,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
         UCFG uCFG = buildUCfg(tree, cfg);
         UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
       } catch (Exception e) {
-        LOG.error("Cannot generate ucfg in file "+fileKey+" for method at line"+tree.firstToken().line(), e);
+        LOG.error("Cannot generate ucfg in file " + fileKey + " for method at line" + tree.firstToken().line(), e);
       }
-      index++;
     }
   }
 
