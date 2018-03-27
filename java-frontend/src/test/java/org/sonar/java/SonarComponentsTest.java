@@ -41,8 +41,10 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -450,5 +452,17 @@ public class SonarComponentsTest {
     sonarComponents.saveAnalysisErrors();
     assertThat(sensorContext.measure("projectKey", "sonarjava_feedback")).isNull();
 
+  }
+
+  @Test
+  public void ucfg_activation_should_rely_on_active_rules() {
+    File file = new File("src/test/files/ParseError.java");
+    SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(sensorContext);
+    assertThat(sonarComponents.shouldGenerateUCFG()).isFalse();
+    ActiveRules activeRules = new ActiveRulesBuilder().create(RuleKey.of("SonarSecurityJava", "S3649")).activate().build();
+    sensorContext.setActiveRules(activeRules);
+    assertThat(sonarComponents.shouldGenerateUCFG()).isTrue();
   }
 }

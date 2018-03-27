@@ -301,4 +301,12 @@ public class SonarComponents {
   private boolean shouldCollectAnalysisErrors() {
     return context.config().getBoolean(COLLECT_ANALYSIS_ERRORS_KEY).orElse(false);
   }
+
+  public File workDir() {
+    return context.fileSystem().workDir();
+  }
+
+  public boolean shouldGenerateUCFG() {
+    return !context.activeRules().findByRepository("SonarSecurityJava").isEmpty();
+  }
 }

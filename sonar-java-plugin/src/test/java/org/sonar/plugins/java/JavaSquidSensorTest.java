@@ -27,9 +27,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collection;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.sonar.api.SonarQubeSide;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -77,6 +78,10 @@ public class JavaSquidSensorTest {
     when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
     when(checkFactory.create(anyString())).thenReturn(checks);
   }
+
+  @Rule
+  public final TemporaryFolder tmp = new TemporaryFolder();
+
   @Test
   public void test_toString() {
     assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
@@ -103,7 +108,7 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(91));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(96));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -177,13 +182,12 @@ public class JavaSquidSensorTest {
   private void executeJavaSquidSensor(SensorContextTester context) {
 
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
-
     // Mock visitor for metrics.
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    FileSystem fs = context.fileSystem();
+    DefaultFileSystem fs = context.fileSystem().setWorkDir(tmp.getRoot().toPath());
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
