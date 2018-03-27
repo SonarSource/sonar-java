@@ -233,7 +233,12 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree mit) {
+    if (mit.symbol().isUnknown()) {
+      return;
+    }
+
     List<String> arguments = null;
+
     if (isString(mit.symbol().owner().type())) {
       // myStr.myMethod(args) -> myMethod(myStr, args)
       arguments = new ArrayList<>();
@@ -245,7 +250,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       arguments = argumentIds(idGenerator, mit);
     }
 
-    if (arguments != null && !mit.symbol().isUnknown()) {
+    if (arguments != null) {
       String destination = idGenerator.newIdFor(mit);
       blockBuilder.assignTo(variableWithId(destination),
         UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) mit.symbol()))

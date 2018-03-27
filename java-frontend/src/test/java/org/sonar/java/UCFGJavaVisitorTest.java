@@ -152,6 +152,26 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void unknown_method() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/util/Set;)V").addMethodParam(arg)
+      .addBasicBlock(newBasicBlock("0")
+        .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 9, 2, 9, 3)))
+      .build();
+    assertCodeToUCfg("import java.util.Set;\n" +
+      "import java.util.Collection;\n" +
+      "import java.util.stream.Collectors;\n" +
+      "public class A {\n" +
+      "  void method(Set<String> arg) { \n" +
+      "    arg.stream()\n" +
+      "      .flatMap(Collection::stream)\n" +
+      "      .collect(Collectors.toCollection(LinkedHashSet::new)); \n" +
+      "  }\n" +
+      "}", expectedUCFG);
+  }
+
+  @Test
   public void build_two_parameters_annotations() {
     Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
     Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
