@@ -198,6 +198,20 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void constructor_with_return() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/lang/String;)V").addMethodParam(arg)
+      .addBasicBlock(newBasicBlock("1")
+        .ret(constant("\"\""), new LocationInFile(FILE_KEY, 3,4,3,11)))
+      .build();
+    assertCodeToUCfg("class A { \n" +
+      "  A(String arg) { \n" +
+      "    return;\n" +
+      "  }\n" +
+      "}", expectedUCFG);
+  }
+
+  @Test
   public void location_in_source_file_should_be_preserved() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable var = UCFGBuilder.variableWithId("%0");
