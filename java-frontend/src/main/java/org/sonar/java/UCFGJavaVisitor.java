@@ -175,7 +175,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     if (terminator != null && terminator.is(Tree.Kind.RETURN_STATEMENT)) {
       ExpressionTree returnedExpression = ((ReturnStatementTree) terminator).expression();
       Expression retExpr = constant(IdentifierGenerator.CONST);
-      if(isString(methodTree.returnType().symbolType())) {
+      if (methodTree.returnType() != null && isString(methodTree.returnType().symbolType())) {
         retExpr = idGenerator.lookupExpressionFor(returnedExpression);
       }
       blockBuilder.ret(retExpr, location(terminator));
