@@ -1,0 +1,21 @@
+<p><code>javax.net.ssl.SSLContext.getInstance</code> returns a SSLContext object that implements the specified secure socket protocol. However, not
+all protocols are created equal and some legacy ones like "SSL", have been proven to be insecure.</p>
+<p>This rule raises an issue when an <code>SSLContext</code> is created with an insecure protocol (ie: a protocol different from "TLSv1.2" or
+"DTLSv1.2").</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+context = SSLContext.getInstance("SSL"); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+context = SSLContext.getInstance("TLSv1.2");
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/326.html">MITRE, CWE-327</a> - Inadequate Encryption Strength </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/327.html">MITRE, CWE-326</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+  <li> <a href="https://blogs.oracle.com/java-platform-group/diagnosing-tls,-ssl,-and-https">Diagnosing TLS, SSL, and HTTPS</a> </li>
+</ul>
+

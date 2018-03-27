@@ -456,6 +456,7 @@ public final class CheckList {
       .add(ChangeMethodContractCheck.class)
       .add(CatchRethrowingCheck.class)
       .add(InappropriateRegexpCheck.class)
+      .add(WeakSSLContextCheck.class)
       .add(CallOuterPrivateMethodCheck.class)
       .add(SubClassStaticReferenceCheck.class)
       .add(InterruptedExceptionCheck.class)
