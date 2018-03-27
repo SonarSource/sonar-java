@@ -64,6 +64,7 @@ import org.sonar.ucfg.UCFGBuilder.BlockBuilder;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSIGNMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS_ASSIGNMENT;
@@ -236,8 +237,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     if (isString(mit.symbol().owner().type())) {
       // myStr.myMethod(args) -> myMethod(myStr, args)
       arguments = new ArrayList<>();
-      // safe cast, only case where methodSelect cannot be a MSE is when analysing java.lang.String source and SonarJava don't build semantic for java.lang package.
-      arguments.add(idGenerator.lookupIdFor(((MemberSelectExpressionTree) mit.methodSelect()).expression()));
+      if (mit.methodSelect().is(MEMBER_SELECT)) {
+        arguments.add(idGenerator.lookupIdFor(((MemberSelectExpressionTree) mit.methodSelect()).expression()));
+      }
       arguments.addAll(argumentIds(idGenerator, mit));
     } else if (isString(mit.symbolType()) || mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
       arguments = argumentIds(idGenerator, mit);

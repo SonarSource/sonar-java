@@ -231,6 +231,25 @@ public class UCFGJavaVisitorTest {
     assertCodeToUCfg("class A { int method(String arg) {return arg.length();}}", expectedUCFG);
   }
 
+  @Test
+  public void static_method_call_without_object() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)I").addMethodParam(arg)
+      .addStartingBlock(
+        newBasicBlock("1")
+          .assignTo(var0, call("java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String;").withArgs(arg),
+            new LocationInFile(FILE_KEY, 4,11,4,23))
+        .ret(constant("\"\""), new LocationInFile(FILE_KEY, 4,4,4,24)))
+      .build();
+    assertCodeToUCfg("import static java.lang.String.valueOf; \n" +
+      "class A { \n" +
+      "  int method(Integer arg) {\n" +
+      "    return valueOf(arg);\n" +
+      "  }\n" +
+      "}", expectedUCFG);
+  }
+
   private void assertCodeToUCfgAndLocations(String source, UCFG expectedUCFG) {
     assertCodeToUCfg(source, expectedUCFG, true);
   }
