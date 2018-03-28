@@ -42,6 +42,7 @@ import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
+import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
@@ -536,6 +537,7 @@ public final class CheckList {
       .add(MethodParametersOrderCheck.class)
       .add(AssertsOnParametersOfPublicMethodCheck.class)
       .add(NullCheckWithInstanceofCheck.class)
+      .add(HostnameVerifierImplementationCheck.class)
       .build();
   }
 

@@ -1,0 +1,21 @@
+{
+  "title": "\"HostnameVerifier.verify\" should not always return true",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a6"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3510",
+  "sqKey": "S3510",
+  "scope": "Main"
+}
