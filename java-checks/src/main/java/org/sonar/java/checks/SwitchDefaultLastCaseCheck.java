@@ -40,12 +40,9 @@ public class SwitchDefaultLastCaseCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
-    if (defaultLabel.isPresent() && !defaultIsLastCase(switchStatementTree)) {
+    if (defaultLabel.isPresent() && !defaultIsLastCase(switchStatementTree, defaultLabel.get())) {
       reportIssue(defaultLabel.get(), "Move this default to the end of the switch.");
     }
   }
@@ -59,9 +56,8 @@ public class SwitchDefaultLastCaseCheck extends IssuableSubscriptionVisitor {
     return JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text());
   }
 
-  private static boolean defaultIsLastCase(SwitchStatementTree switchStatementTree) {
+  private static boolean defaultIsLastCase(SwitchStatementTree switchStatementTree, CaseLabelTree defaultLabel) {
     List<CaseLabelTree> lastCaseLabels = switchStatementTree.cases().get(switchStatementTree.cases().size() - 1).labels();
-    return isDefault(lastCaseLabels.get(lastCaseLabels.size() - 1));
-
+    return defaultLabel.equals(lastCaseLabels.get(lastCaseLabels.size() - 1));
   }
 }

@@ -26,6 +26,5 @@ public class SwitchDefaultLastCaseCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/SwitchDefaultLastCaseCheck.java", new SwitchDefaultLastCaseCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SwitchDefaultLastCaseCheck.java", new SwitchDefaultLastCaseCheck());
   }
 }
