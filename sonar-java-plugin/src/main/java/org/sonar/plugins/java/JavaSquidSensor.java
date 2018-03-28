@@ -80,6 +80,7 @@ public class JavaSquidSensor implements Sensor {
   public void execute(SensorContext context) {
     javaResourceLocator.setSensorContext(context);
     sonarComponents.setSensorContext(context);
+    sonarComponents.setRuleRepositoryKey(CheckList.REPOSITORY_KEY);
 
     List<Class<? extends JavaCheck>> checks = ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(CheckList.getJavaChecks())

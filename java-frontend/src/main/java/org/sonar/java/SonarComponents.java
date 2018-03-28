@@ -27,17 +27,23 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
+import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -47,6 +53,8 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.api.sonarlint.SonarLintSide;
@@ -54,6 +62,8 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @ScannerSide
 @SonarLintSide
 public class SonarComponents {
+
+  private static final Logger LOG = Loggers.get(SonarComponents.class);
 
   /**
    * Metric to collect
@@ -76,6 +86,7 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+  private String ruleRepositoryKey;
   @VisibleForTesting
   public List<AnalysisError> analysisErrors;
   private int errorsSize = 0;
@@ -110,6 +121,10 @@ public class SonarComponents {
 
   public void setSensorContext(SensorContext context) {
     this.context = context;
+  }
+
+  public void setRuleRepositoryKey(String ruleRepositoryKey) {
+    this.ruleRepositoryKey = ruleRepositoryKey;
   }
 
   public InputFile inputFromIOFile(File file) {
@@ -307,6 +322,31 @@ public class SonarComponents {
   }
 
   public boolean shouldGenerateUCFG() {
-    return !context.activeRules().findByRepository("SonarSecurityJava").isEmpty();
+    Set<String> activeRuleKeys = context.activeRules().findByRepository(this.ruleRepositoryKey).stream()
+      .map(ActiveRule::ruleKey)
+      .map(RuleKey::rule)
+      .collect(Collectors.toSet());
+    Set<String> securityRuleKeys = getSecurityRuleKeys();
+    activeRuleKeys.retainAll(securityRuleKeys);
+    return !activeRuleKeys.isEmpty();
   }
+
+  public static Set<String> getSecurityRuleKeys() {
+    try {
+      Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
+      Method getRuleKeysMethod = javaRulesClass.getMethod("getRuleKeys");
+      return (Set<String>) getRuleKeysMethod.invoke(null);
+    } catch (ClassNotFoundException e) {
+      LOG.debug("com.sonar.plugins.security.api.JavaRules is not found, no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (NoSuchMethodException e) {
+      LOG.debug("com.sonar.plugins.security.api.JavaRules#getRuleKeys is not found, no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (IllegalAccessException e) {
+      LOG.debug("[IllegalAccessException] no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (InvocationTargetException e) {
+      LOG.debug("[InvocationTargetException] no security rules added to Sonar way java profile: " + e.getMessage());
+    }
+
+    return new HashSet<>();
+  }
+
 }
