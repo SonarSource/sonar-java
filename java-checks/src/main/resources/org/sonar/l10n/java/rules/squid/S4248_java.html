@@ -1,0 +1,44 @@
+<p>The <code>java.util.regex.Pattern.compile()</code> methods have a significant performance cost, and therefore should be used sensibly.</p>
+<p>Moreover they are the only mechanism available to create instances of the Pattern class, which are necessary to do any pattern matching using
+regular expressions. Unfortunately that can be hidden behind convenience methods like <code>String.matches()</code> or
+<code>String.split()</code>.</p>
+<p>It is therefore somewhat easy to inadvertently repeatedly compile the same regular expression at great performance cost with no valid reason.</p>
+<p>This rule raises an issue when:</p>
+<ul>
+  <li> A <code>Pattern</code> is compiled from a <code>String</code> literal or constant and is not stored in a static final reference. </li>
+  <li> <code>String.matches</code>, <code>String.split</code>, <code>String.replaceAll</code> or <code>String.replaceFirst</code> are invoked with a
+  <code>String</code> literal or constant. In which case the code should be refactored to use a <code>java.util.regex.Pattern</code> while respecting
+  the previous rule. </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void doingSomething(String stringToMatch) {
+  Pattern regex = Pattern.compile("myRegex");  // Noncompliant
+  Matcher matcher = regex.matcher("s");
+  // ...
+  if (stringToMatch.matches("myRegex2")) {  // Noncompliant
+    // ...
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+private static final Pattern myRegex = Pattern.compile("myRegex");
+private static final Pattern myRegex2 = Pattern.compile("myRegex2");
+
+public void doingSomething(String stringToMatch) {
+  Matcher matcher = myRegex.matcher("s");
+  // ...
+  if (myRegex2.matcher(stringToMatch).matches()) {
+    // ...
+  }
+}
+</pre>
+<h2>Exceptions</h2>
+<p><code>String.split</code> doesn't create a regex when the string passed as argument meets either of these 2 conditions:</p>
+<ul>
+  <li> It is a one-char String and this character is not one of the RegEx's meta characters ".$|()[{^?*+\" </li>
+  <li> It is a two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter. </li>
+</ul>
+<p>In which case no issue will be raised.</p>
+
