@@ -1,5 +1,5 @@
 {
-  "title": "Constructors should not be used to instantiate \"String\" and primitive-wrapper classes",
+  "title": "Constructors should not be used to instantiate \"String\", \"BigInteger\", \"BigDecimal\" and primitive-wrapper classes",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

@@ -1,7 +1,9 @@
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 class A {
 
   void bar(char[] chars) {
-
     String empty = new String(); // Noncompliant [[sc=24;ec=30]] {{Remove this "String" constructor}}
     String nonempty = new String("Hello world"); // Noncompliant
     nonempty = new String(chars);
@@ -14,6 +16,9 @@ class A {
     Short myShort = new Short((short) 0); // Noncompliant [[sc=25;ec=30]] {{Remove this "Short" constructor}}
     Float myFloat = new Float(1.0f); // Noncompliant [[sc=25;ec=30]] {{Remove this "Float" constructor}}
     byte b = 0;
+    BigInteger existingBigInteger = new BigInteger("1"); // Noncompliant {{Remove this "BigInteger" constructor}}
+    BigDecimal doubleBigDecimal = new BigDecimal(1.1); // Noncompliant {{Remove this "BigDecimal" constructor}}
+    BigDecimal stringBigDecimal = new BigDecimal("1.1");
   }
 
   void foo() {
@@ -22,5 +27,7 @@ class A {
     Double myDouble = Double.valueOf(1.1);
     Integer integer = Integer.valueOf(1);
     Boolean bool = Boolean.valueOf(true);
+    BigInteger existingBigInteger = BigInteger.valueOf(1);
+    BigDecimal doubleBigDecimal = BigDecimal.valueOf(1.1);
   }
 }

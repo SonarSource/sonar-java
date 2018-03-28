@@ -45,12 +45,14 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.lang.Long").name(INIT).addParameter("long"),
       MethodMatcher.create().typeDefinition("java.lang.Float").name(INIT).addParameter("float"),
       MethodMatcher.create().typeDefinition("java.lang.Double").name(INIT).addParameter("double"),
-      MethodMatcher.create().typeDefinition("java.lang.Boolean").name(INIT).addParameter("boolean")
+      MethodMatcher.create().typeDefinition("java.lang.Boolean").name(INIT).addParameter("boolean"),
+      MethodMatcher.create().typeDefinition("java.math.BigInteger").name(INIT).addParameter(STRING),
+      MethodMatcher.create().typeDefinition("java.math.BigDecimal").name(INIT).addParameter("double")
     );
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssue(newClassTree.identifier(), "Remove this \""+newClassTree.symbolType().name()+"\" constructor");
+    reportIssue(newClassTree.identifier(), "Remove this \"" + newClassTree.symbolType().name() + "\" constructor");
   }
 }

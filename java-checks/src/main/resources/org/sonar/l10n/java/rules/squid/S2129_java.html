@@ -1,5 +1,6 @@
-<p>Constructors for <code>Strings</code> and the objects used to wrap primitives should never be used. Doing so is less clear and uses more memory
-than simply using the desired value in the case of strings, and using <code>valueOf</code> for everything else.</p>
+<p>Constructors for <code>Strings</code>, <code>BigInteger</code>, <code>BigDecimal</code> and the objects used to wrap primitives should never be
+used. Doing so is less clear and uses more memory than simply using the desired value in the case of strings, and using <code>valueOf</code> for
+everything else.</p>
 <p>Further, these constructors are deprecated in Java 9, which is an indication that they will eventually be removed from the language altogether.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -8,6 +9,8 @@ String nonempty = new String("Hello world"); // Noncompliant
 Double myDouble = new Double(1.1); // Noncompliant; use valueOf
 Integer integer = new Integer(1); // Noncompliant
 Boolean bool = new Boolean(true); // Noncompliant
+BigInteger bigInteger = new BigInteger("1"); // Noncompliant
+BigDecimal bigDecimal = new BigDecimal(1.1); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -16,5 +19,7 @@ String nonempty = "Hello world";
 Double myDouble = Double.valueOf(1.1);
 Integer integer = Integer.valueOf(1);
 Boolean bool = Boolean.valueOf(true);
+BigInteger bigInteger = BigInteger.valueOf(1);
+BigDecimal bigDecimal = BigDecimal.valueOf(1.1);
 </pre>
 
