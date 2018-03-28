@@ -31,9 +31,29 @@ class A {
     switch (1) {
       case 1:
         trivial();
+      case 2: // Noncompliant [[secondary=32]]
+        trivial();
+    }
+
+    switch (1) {
+      case 1:
+        trivial();
+        break;
+      case 2: // Noncompliant [[secondary=39]]
+        trivial();
+        break;
+      case 3: // Noncompliant [[secondary=39]]
+        trivial();
+        break;
+    }
+
+    switch (1) {
+      case 1:
+        trivial();
       case 2:
         trivial();
       case 3:
+      default:
     }
 
     switch (1) {
@@ -44,6 +64,7 @@ class A {
         trivial();
         break;
       case 3:
+      default:
     }
 
     switch (1) {
@@ -67,7 +88,7 @@ class A {
         f(1);
         System.out.println(1);
         break;
-      case 2:
+      case 2: // Noncompliant
         f(1);
         System.out.println(1);
         break;
@@ -111,10 +132,10 @@ class A {
       // skip empty blocks
     } else if (true) {
       System.out.println("bar");
-    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=105]] {{This branch's code block is the same as the block for the branch on line 105.}}
+    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=126]] {{This branch's code block is the same as the block for the branch on line 126.}}
       System.out.println("foo");
       System.out.println("foo");
-    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=105]] {{This branch's code block is the same as the block for the branch on line 105.}}
+    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=126]] {{This branch's code block is the same as the block for the branch on line 126.}}
       System.out.println("foo");
       System.out.println("foo");
     }
@@ -129,11 +150,14 @@ class A {
     if (true) f();
     else f();
 
+    if (true) f();
+    else if (true) f(); // Noncompliant [[secondary=153]]
+
     if (true) {
       f();
       f();
     }
-    else if (true) { // Noncompliant [[secondary=132]]
+    else if (true) { // Noncompliant [[secondary=156]]
       f();
       f();
     }
@@ -141,7 +165,7 @@ class A {
       g();
       g();
     }
-    else if (true) {  // Noncompliant [[secondary=140]]
+    else if (true) {  // Noncompliant [[secondary=164]]
       g();
       g();
     }

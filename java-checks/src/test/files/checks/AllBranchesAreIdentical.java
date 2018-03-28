@@ -9,10 +9,30 @@ class A {
   }
 
   void switchStatement() {
-    switch (1) { // Noncompliant [[sc=5;ec=11]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
+    switch (1) {  // Noncompliant [[sc=5;ec=11]] {{Remove this conditional structure or edit its code blocks so that they're not all the same.}}
       case 1:
+        doSomething();
         break;
       case 2:
+        doSomething();
+        break;
+      case 3:
+        doSomething();
+        break;
+      default:
+        doSomething();
+        break;
+    }
+
+    switch (1) {  // Compliant: this is the exception case as defined in RSPEC
+      case 1:
+        doSomething();
+        break;
+      case 2:
+        doSomething();
+        break;
+      case 3:
+        doSomething();
         break;
     }
 
@@ -46,6 +66,11 @@ class A {
     if (true) f(); // Noncompliant
     else f();
 
+    if(b == 0) { // Compliant: this is the exception case as defined in RSPEC
+      doSomething();
+    } else if(b == 1) {
+      doSomething();
+    }
 
   }
 

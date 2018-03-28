@@ -7,6 +7,12 @@
 3450,
 3460,
 ],
+'jdk6:java/beans/MetaData.java':[
+526,
+],
+'jdk6:java/io/PushbackReader.java':[
+96,
+],
 'jdk6:java/lang/management/ThreadInfo.java':[
 599,
 ],
@@ -17,6 +23,9 @@
 ],
 'jdk6:java/net/URI.java':[
 2304,
+],
+'jdk6:java/net/URLConnection.java':[
+1645,
 ],
 'jdk6:java/text/PatternEntry.java':[
 150,
