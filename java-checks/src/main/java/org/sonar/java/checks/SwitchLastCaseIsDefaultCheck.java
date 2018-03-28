@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -47,8 +46,7 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
       return;
     }
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
-    if (!defaultLabel.isPresent()) {
+    if (getDefaultLabel(switchStatementTree)) {
       if (!isSwitchOnEnum(switchStatementTree)) {
         reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
       } else if (missingCasesOfEnum(switchStatementTree)) {
@@ -57,8 +55,8 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static Optional<CaseLabelTree> getDefaultLabel(SwitchStatementTree switchStatementTree) {
-    return allLabels(switchStatementTree).filter(SwitchLastCaseIsDefaultCheck::isDefault).findAny();
+  private static boolean getDefaultLabel(SwitchStatementTree switchStatementTree) {
+    return allLabels(switchStatementTree).noneMatch(SwitchLastCaseIsDefaultCheck::isDefault);
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
