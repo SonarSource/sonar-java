@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,22 +41,28 @@ public class SwitchDefaultLastCaseCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
-    if (defaultLabel.isPresent() && !defaultIsLastCase(switchStatementTree, defaultLabel.get())) {
+    if (defaultLabel.isPresent()) {
       reportIssue(defaultLabel.get(), "Move this default to the end of the switch.");
     }
   }
 
   private static Optional<CaseLabelTree> getDefaultLabel(SwitchStatementTree switchStatementTree) {
-    return switchStatementTree.cases().stream().flatMap(c -> c.labels().stream())
-      .collect(Collectors.toList()).stream().filter(SwitchDefaultLastCaseCheck::isDefault).findAny();
+    for (int i = 0; i < switchStatementTree.cases().size(); i++) {
+      List<CaseLabelTree> labels = switchStatementTree.cases().get(i).labels();
+      for (int j = 0; j < labels.size(); j++) {
+        CaseLabelTree label = labels.get(j);
+        boolean defaultExists = isDefault(label);
+        if (defaultExists && ((j != labels.size() - 1) || (j == labels.size() - 1 && i == switchStatementTree.cases().size() - 1))) {
+          return Optional.empty();
+        } else if (defaultExists) {
+          return Optional.of(label);
+        }
+      }
+    }
+    return Optional.empty();
   }
 
   private static boolean isDefault(CaseLabelTree caseLabelTree) {
     return JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text());
-  }
-
-  private static boolean defaultIsLastCase(SwitchStatementTree switchStatementTree, CaseLabelTree defaultLabel) {
-    List<CaseLabelTree> lastCaseLabels = switchStatementTree.cases().get(switchStatementTree.cases().size() - 1).labels();
-    return defaultLabel.equals(lastCaseLabels.get(lastCaseLabels.size() - 1));
   }
 }
