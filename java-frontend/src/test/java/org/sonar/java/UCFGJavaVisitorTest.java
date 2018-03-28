@@ -32,7 +32,10 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.ucfg.BasicBlock;
 import org.sonar.ucfg.Expression;
 import org.sonar.ucfg.Instruction;
@@ -159,7 +162,8 @@ public class UCFGJavaVisitorTest {
       .addBasicBlock(newBasicBlock("0")
         .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 9, 2, 9, 3)))
       .build();
-    assertCodeToUCfg("import java.util.Set;\n" +
+
+    String source = "import java.util.Set;\n" +
       "import java.util.Collection;\n" +
       "import java.util.stream.Collectors;\n" +
       "public class A {\n" +
@@ -168,7 +172,22 @@ public class UCFGJavaVisitorTest {
       "      .flatMap(Collection::stream)\n" +
       "      .collect(Collectors.toCollection(LinkedHashSet::new)); \n" +
       "  }\n" +
-      "}", expectedUCFG);
+      "}";
+
+    // Semantic model creates 2 kinds of "unknown" symbols: "Symbols.unknownSymbol" and "JavaSymbolNotFound"
+    // We need to test first case
+    // To make sure that code contains "Symbols.unknownSymbol" this assertion is there
+    // Note that if Semantic model is improved somehow that "Symbols.unknownSymbol" is not anymore generated in this case
+    // this test might be removed
+    assertUnknownMethodCalled(source);
+    assertCodeToUCfg(source, expectedUCFG);
+  }
+
+  private void assertUnknownMethodCalled(String source) {
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
+    UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
+    unknownMethodVisitor.visitCompilationUnit(cut);
+    assertThat(unknownMethodVisitor.unknownMethodCount).isGreaterThan(0);
   }
 
   @Test
@@ -293,8 +312,7 @@ public class UCFGJavaVisitorTest {
   }
 
   private UCFG assertCodeToUCfg(String source, UCFG expectedUCFG, boolean testLocations) {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(source);
-    SemanticModel.createFor(cut, squidClassLoader);
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
     UCFGJavaVisitor.fileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
@@ -322,7 +340,26 @@ public class UCFGJavaVisitorTest {
     return actualUCFG;
   }
 
+  private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(source);
+    SemanticModel.createFor(cut, squidClassLoader);
+    return cut;
+  }
+
   private Stream<LocationInFile> toLocationStream(UCFG UCFG) {
     return UCFG.basicBlocks().values().stream().flatMap(b -> Stream.concat(b.calls().stream().map(Instruction::location), Stream.of(b.terminator().location())));
+  }
+
+  private static class UnknownMethodVisitor extends BaseTreeVisitor {
+
+    int unknownMethodCount = 0;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (tree.symbol().equals(Symbols.unknownSymbol)) {
+        unknownMethodCount++;
+      }
+      super.visitMethodInvocation(tree);
+    }
   }
 }
