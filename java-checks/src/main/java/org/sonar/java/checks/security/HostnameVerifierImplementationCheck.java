@@ -31,13 +31,10 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3510")
 public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVisitor {
@@ -53,38 +50,36 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+
     if (tree.kind().equals(Tree.Kind.METHOD)) {
       checkMethodDefinition((MethodTree) tree);
-    } else if (tree.kind().equals(Tree.Kind.METHOD_INVOCATION)) {
-      ((MethodInvocationTree) tree).arguments().forEach(this::checkForLambdaImplementation);
-    } else {
-      ((NewClassTree) tree).arguments().forEach(this::checkForLambdaImplementation);
+    } else if (tree.kind().equals(Tree.Kind.LAMBDA_EXPRESSION)) {
+      checkLambdaDefinition(((LambdaExpressionTree) tree));
     }
   }
 
   private void checkMethodDefinition(MethodTree tree) {
     BlockTree blockTree = tree.block();
-    if (tree.symbol() != null && VERIFY_METHOD_MATCHER.matches(tree) && blockTree != null) {
+    if (VERIFY_METHOD_MATCHER.matches(tree) && blockTree != null) {
       checkBlock(blockTree);
     }
   }
 
-  private void checkForLambdaImplementation(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      LambdaExpressionTree lambdaExpressionTree = ((LambdaExpressionTree) argument);
-      Tree lambdaBody = lambdaExpressionTree.body();
-      if (isHostnameVerifierSignature(lambdaExpressionTree)) {
-        if (lambdaBody.is(Tree.Kind.BLOCK)) {
-          checkBlock((BlockTree) lambdaBody);
-        } else if ((lambdaBody.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || lambdaBody.is(Tree.Kind.BOOLEAN_LITERAL))
-          && isTrueLiteral((ExpressionTree) lambdaBody)) {
-          reportIssue(lambdaBody, ISSUE_MESSAGE);
-        }
+  private void checkLambdaDefinition(LambdaExpressionTree lambdaExpression) {
+    Tree lambdaBody = lambdaExpression.body();
+    if (isHostnameVerifierSignature(lambdaExpression)) {
+      if (lambdaBody.is(Tree.Kind.BLOCK)) {
+        checkBlock((BlockTree) lambdaBody);
+      } else if (isTrueLiteral(lambdaBody)) {
+        reportIssue(lambdaBody, ISSUE_MESSAGE);
       }
     }
   }
@@ -101,11 +96,7 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
   }
 
   private static boolean isHostnameVerifierSignature(LambdaExpressionTree lambdaExpressionTree) {
-    List<VariableTree> parameters = lambdaExpressionTree.parameters();
-    return lambdaExpressionTree.symbolType().isSubtypeOf("javax.net.ssl.HostnameVerifier")
-      && parameters.size() == 2
-      && TYPE_CRITERIA_STRING.test(parameters.get(0).type().symbolType())
-      && TYPE_CRITERIA_SSL_SESSION.test(parameters.get(1).type().symbolType());
+    return lambdaExpressionTree.symbolType().isSubtypeOf("javax.net.ssl.HostnameVerifier");
   }
 
   private static boolean isReturnTrueStatement(List<StatementTree> statementTreeList) {
@@ -116,9 +107,9 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
     return false;
   }
 
-  private static boolean isTrueLiteral(@Nullable ExpressionTree expressionTree) {
-    if (expressionTree != null) {
-      ExpressionTree expression = ExpressionUtils.skipParentheses(expressionTree);
+  private static boolean isTrueLiteral(@Nullable Tree tree) {
+    if (tree != null && (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || tree.is(Tree.Kind.BOOLEAN_LITERAL))) {
+      ExpressionTree expression = ExpressionUtils.skipParentheses((ExpressionTree) tree);
       return expression.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expression).value());
     }
     return false;

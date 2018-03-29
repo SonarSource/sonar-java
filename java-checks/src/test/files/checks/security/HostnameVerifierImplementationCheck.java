@@ -9,44 +9,13 @@ class A {
   }
 
   void method1() {
-    return b.method(new HostnameVerifier() {
+    b.method(new HostnameVerifier() {
       @Override
       public boolean verify(String a, SSLSession b) {
         return true; // Noncompliant {{Do not unconditionally return true in this method.}}
       }
     });
-  }
-
-  void method2() {
-    return b.method((a, b) -> true); // Noncompliant
-  }
-
-  void method3() {
-    return b.method((a, b) -> (true)); // Noncompliant
-  }
-
-  void method4() {
-    return b.method((a, b) -> {
-      return true; // Noncompliant
-    });
-  }
-
-  void method5() {
-    return b.method((a, b) -> {
-      return (true); // Noncompliant
-    });
-  }
-
-  void method6() {
-    new B((a, b) -> true); // Noncompliant
-  }
-
-  void method7() {
-    new B((a, b) -> false);
-  }
-
-  void method8() {
-    return b.method(new HostnameVerifier() {
+    b.method(new HostnameVerifier() {
       @Override
       public boolean verify(String a, SSLSession b) {
         return a.equalsIgnoreCase(b.getPeerHost());
@@ -54,19 +23,66 @@ class A {
     });
   }
 
-  void method9() {
-    new B((a, b) -> a.equalsIgnoreCase(b.getPeerHost()));
+  void method2() {
+    BiFunction<String, SSLSession, Boolean> lambda = (a, b) -> true;
+    b.method((a, b) -> true); // Noncompliant
+    b.method((a, b) -> (((true)))); // Noncompliant
+    b.method((a, b) -> a.equalsIgnoreCase(b.getPeerHost()));
+    b.method(lambda);
+  }
+
+  void method4() {
+    b.method((a, b) -> {
+      return true; // Noncompliant
+    });
+    b.method((a, b) -> {
+      return (((true))); // Noncompliant
+    });
+    b.method((a, b) -> {
+      return false;
+    });
+    b.method((a, b) -> {
+      boolean returnValue = true;
+      return returnValue;
+    });
   }
 }
 
 class B {
-  private HostnameVerifier hostnameVerifier;
-
-  B(HostnameVerifier hostnameVerifier) {
-    this.hostnameVerifier = hostnameVerifier;
-  }
-
   void method(HostnameVerifier hostnameVerifier) {
     this.hostnameVerifier = hostnameVerifier;
+  }
+}
+
+class C implements HostnameVerifier {
+  public boolean verify(String a, SSLSession b) {
+    return true; // Noncompliant
+  }
+}
+
+class D implements HostnameVerifier {
+  public boolean verify(String a, SSLSession b) {
+    return a.equals("");
+  }
+}
+
+class E implements HostnameVerifier {
+  public boolean verify(String a, SSLSession b) {
+    {
+      {
+        return true; // Noncompliant
+      }
+    }
+  }
+}
+
+class F implements HostnameVerifier {
+  public boolean verify(String a, SSLSession b) {
+    {
+      boolean bool = true;
+    }
+    {
+      return true;
+    }
   }
 }
