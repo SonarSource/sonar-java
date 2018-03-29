@@ -51,16 +51,19 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     if (node.is(Tree.Kind.SWITCH_STATEMENT)) {
       SwitchStatementTree switchStatement = (SwitchStatementTree) node;
       Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
-      if (!allBranchesSame(identicalBranches, switchStatement.cases().size())) {
+      boolean allBranchesSame = allBranchesSame(identicalBranches, switchStatement.cases().size());
+      boolean allBranchesSameWithoutDefault = allBranchesSame && !hasDefaultClause(switchStatement);
+      if (!allBranchesSame || allBranchesSameWithoutDefault) {
         identicalBranches.asMap().forEach((first, others) -> {
-          if (!isTrivialCase(first.body())) {
+          if (!isTrivialCase(first.body()) || allBranchesSameWithoutDefault) {
             others.forEach(other -> createIssue(other, issueMessage("case", first), first));
           }
         });
       }
     } else if (node.is(Tree.Kind.IF_STATEMENT) && !node.parent().is(Tree.Kind.IF_STATEMENT)) {
-      IfElseChain ifElseChain = checkIfStatement((IfStatementTree) node);
-      reportIdenticalIfChainBranches(ifElseChain.branches, ifElseChain.totalBranchCount);
+      IfStatementTree ifStatement = (IfStatementTree) node;
+      IfElseChain ifElseChain = checkIfStatement(ifStatement);
+      reportIdenticalIfChainBranches(ifElseChain.branches, ifElseChain.totalBranchCount, hasElseClause(ifStatement));
     }
   }
 
@@ -114,7 +117,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   private static IfElseChain collectIdenticalBranches(List<StatementTree> allBranches) {
     IfElseChain ifElseChain = new IfElseChain();
-    for (int i = 0; i <  allBranches.size(); i++) {
+    for (int i = 0; i < allBranches.size(); i++) {
       if (ifElseChain.branches.containsValue(allBranches.get(i))) {
         continue;
       }
@@ -128,10 +131,12 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     return ifElseChain;
   }
 
-  private void reportIdenticalIfChainBranches(Multimap<StatementTree, StatementTree> identicalBranches, int totalBranchCount) {
-    if (!allBranchesSame(identicalBranches, totalBranchCount)) {
+  private void reportIdenticalIfChainBranches(Multimap<StatementTree, StatementTree> identicalBranches, int totalBranchCount, boolean withElseClause) {
+    boolean allBranchesSame = allBranchesSame(identicalBranches, totalBranchCount);
+    boolean allBranchesSameWithoutElse = allBranchesSame && !withElseClause;
+    if (!allBranchesSame || allBranchesSameWithoutElse) {
       identicalBranches.asMap().forEach((first, others) -> {
-        if (!isTrivialIfStatement(first)) {
+        if (!isTrivialIfStatement(first) || allBranchesSameWithoutElse) {
           others.forEach(other -> createIssue(other, issueMessage("branch", first), first));
         }
       });
@@ -140,6 +145,20 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isTrivialIfStatement(StatementTree node) {
     return !node.is(Tree.Kind.BLOCK) || ((BlockTree) node).body().size() <= 1;
+  }
+
+  protected static boolean hasDefaultClause(SwitchStatementTree switchStatement) {
+    return switchStatement.cases().stream()
+      .flatMap(caseGroupTree -> caseGroupTree.labels().stream())
+      .anyMatch(caseLabelTree -> caseLabelTree.caseOrDefaultKeyword().text().equals("default"));
+  }
+
+  protected static boolean hasElseClause(IfStatementTree ifStatement) {
+    StatementTree elseStatement = ifStatement.elseStatement();
+    while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+      elseStatement = ((IfStatementTree) elseStatement).elseStatement();
+    }
+    return elseStatement != null;
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {
