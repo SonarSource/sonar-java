@@ -1,15 +1,13 @@
 {
-  "title": "Jump statements should not be used unconditionally",
-  "type": "CODE_SMELL",
+  "title": "Loops with at most one iteration should be refactored",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "misra",
-    "cert",
-    "unused"
+    
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1751",

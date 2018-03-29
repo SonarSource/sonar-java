@@ -6,13 +6,6 @@ class A {
     }
   }
 
-  void m2() {
-    forLabel: for (int i = 0; i < 10; ++i) {
-      foo();
-      continue forLabel;  // Noncompliant {{Remove this "continue" statement or make it conditional.}}
-    }
-  }
-
   void m3() throws Exception {
     int i = 0;
     while (i++ < 10) {
@@ -32,7 +25,7 @@ class A {
   void m5(java.util.List<Object> myList) {
     for (Object object : myList) {
       foo(object);
-      continue; // Noncompliant {{Remove this "continue" statement or make it conditional.}}
+      continue;
     }
   }
 
@@ -149,7 +142,7 @@ class B {
 
     while(foo()) {
       bar();
-      continue; // Noncompliant
+      continue;
     }
 
     while(foo()) {
@@ -178,11 +171,6 @@ class B {
       break; // Noncompliant
     }
 
-    for (Object o : myList) {
-      foo();
-      continue; // Noncompliant
-    }
-
     while(foo()) {
       if (baz()) {
         break;
@@ -199,14 +187,6 @@ class B {
       break; // Compliant - the loop can execute more than once
     }
 
-    while(foo()) {
-      if (baz()) {
-        continue;
-      }
-      baz();
-      continue; // Noncompliant
-    }
-
     for (int i = 0; foo(); i++) {
       if (baz()) {
         continue;
@@ -220,10 +200,6 @@ class B {
       break; // Noncompliant
     }
 
-    for (int i = 0; foo(); i++) {
-      baz();
-      continue; // Noncompliant
-    }
   }
 
   private static boolean baz() { return false; }
@@ -246,15 +222,6 @@ abstract class C {
       return s; // Compliant
     }
     return null;
-  }
-
-  String m3(java.util.Enumeration<String> e) {
-    String s = null;
-    while(e.hasMoreElements()) {
-      s = e.nextElement();
-      continue; // Noncompliant - continue statement is always wrong here
-    }
-    return s;
   }
 
   void m4() {

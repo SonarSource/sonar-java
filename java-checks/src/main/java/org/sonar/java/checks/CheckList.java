@@ -381,7 +381,7 @@ public final class CheckList {
       .add(PrimitiveWrappersInTernaryOperatorCheck.class)
       .add(SynchronizedLockCheck.class)
       .add(SymmetricEqualsCheck.class)
-      .add(UnconditionalJumpStatementCheck.class)
+      .add(LoopExecutingAtMostOnceCheck.class)
       .add(CallSuperMethodFromInnerClassCheck.class)
       .add(SelectorMethodArgumentCheck.class)
       .add(ThreadAsRunnableArgumentCheck.class)

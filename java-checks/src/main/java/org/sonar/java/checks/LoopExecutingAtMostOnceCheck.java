@@ -47,7 +47,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(key = "S1751")
-public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor {
+public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcherCollection NEXT_ELEMENT = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Enumeration")).name("hasMoreElements").withoutParameter(),
@@ -64,7 +64,6 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(
       Tree.Kind.BREAK_STATEMENT,
-      Tree.Kind.CONTINUE_STATEMENT,
       Tree.Kind.RETURN_STATEMENT,
       Tree.Kind.THROW_STATEMENT);
   }
@@ -80,8 +79,7 @@ public class UnconditionalJumpStatementCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    if (tree.is(Tree.Kind.CONTINUE_STATEMENT)
-      || (!isWhileNextElementLoop(parent) && !isEmptyConditionLoop(parent) && executeUnconditionnally(parent))) {
+    if (!isWhileNextElementLoop(parent) && !isEmptyConditionLoop(parent) && executeUnconditionnally(parent)) {
       SyntaxToken jumpKeyword = jumpKeyword(tree);
       reportIssue(jumpKeyword, String.format("Remove this \"%s\" statement or make it conditional.", jumpKeyword.text()));
     }
