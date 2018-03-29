@@ -13,11 +13,6 @@ class Foo {
       default:
     }
 
-    switch (0) {
-      default:   // Noncompliant [[sc=7;ec=15]] {{Move this default to the end of the switch.}}
-      case 0:
-    }
-
     switch (myEnum) { // Noncompliant {{Complete cases by adding the missing enum constants or add a default case to this switch.}}
       case A:
         break;
