@@ -58,7 +58,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
         ExpressionTree firstArgument = arguments.get(0);
         if (firstArgument.is(Tree.Kind.STRING_LITERAL) && !STRONG_PROTOCOLS.contains(trimQuotes(((LiteralTree) firstArgument).value()))) {
-          reportIssue(mit, "Change this code to use a stronger protocol.");
+          reportIssue(firstArgument, "Change this code to use a stronger protocol.");
         }
       }
     }
