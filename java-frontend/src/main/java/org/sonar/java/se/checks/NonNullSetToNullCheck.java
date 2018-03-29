@@ -130,7 +130,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
     String nonNullAnnotation = nonNullAnnotation(symbol);
-    if (nonNullAnnotation == null) {
+    if (nonNullAnnotation == null || symbol.isStatic()) {
       return;
     }
     if (isUndefinedOrNull(context, symbol)) {

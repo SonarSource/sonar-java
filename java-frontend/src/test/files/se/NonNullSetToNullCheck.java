@@ -12,6 +12,9 @@ public class MainClass {
   private String primary;
   private String secondary;
 
+  @Nonnull
+  private static final Integer STATIC_FIELD; // Compliant as static fields are not reported
+
   public MainClass(String color) {
     if (color != null) {
       secondary = null;
@@ -218,6 +221,8 @@ public class JpaMappedSuperClass {
 }
 
 class FieldWithInitializer {
+  @Nonnull
+  private static final Integer STATIC_FIELD = null; // Compliant as static fields are not reported
   @Nonnull
   private final Integer val1 = calculate();
   @Nonnull
