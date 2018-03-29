@@ -21,9 +21,16 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
@@ -38,11 +45,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
@@ -73,7 +75,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       // Primitive wrappers excluded because covered by S2154
       return;
     }
-    if(target != null && (isRedundantNumericalCast(cast, expressionType) || isSubtype(expressionType, target))) {
+    if (target != null && (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
     }
   }
@@ -139,9 +141,37 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return skip;
   }
 
-  private static boolean isSubtype(Type expression, Type target) {
-    return expression.isSubtypeOf(target);
+  private static boolean isUnnecessarySubtypeCast(Type expressionType, TypeCastTree typeCastTree, Type target) {
+    return expressionType.isSubtypeOf(target) && !isLambdaCastNeeded(expressionType, typeCastTree, target);
   }
+
+  private static boolean isLambdaCastNeeded(Type expressionType, TypeCastTree typeCastTree, Type target) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(typeCastTree.expression());
+    if (expression.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(expressionType);
+      List<MethodJavaSymbol> parentMethods = getMethodSymbolsOf(target);
+
+      Predicate<JavaSymbol> isDefaultMethod = JavaSymbol::isDefault;
+      Set<MethodJavaSymbol> childDefaultMethods = childMethods.stream().filter(isDefaultMethod).collect(Collectors.toSet());
+      Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(isDefaultMethod.negate()).findAny();
+      Set<MethodJavaSymbol> parentAbstractMethods = parentMethods.stream().filter(isDefaultMethod.negate()).collect(Collectors.toSet());
+
+      if (childAbstractMethod.isPresent()) {
+        return !parentAbstractMethods.contains(childAbstractMethod.get().overriddenSymbol());
+      } else {
+        return childDefaultMethods.stream().map(Symbol.MethodSymbol::overriddenSymbol).anyMatch(parentAbstractMethods::contains);
+      }
+    }
+    return false;
+  }
+
+  private static List<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
+    return type.symbol().memberSymbols().stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(MethodJavaSymbol.class::cast)
+      .collect(Collectors.toList());
+  }
+
   private static boolean isRedundantNumericalCast(Type cast, Type expressionType) {
     return cast.isNumerical() && cast.equals(expressionType);
   }

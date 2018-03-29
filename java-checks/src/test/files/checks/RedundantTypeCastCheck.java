@@ -36,9 +36,9 @@ class Outer {
     int c = (int)a; // Noncompliant {{Remove this unnecessary cast to "int".}}
     int e = (int) d;
   }
-  
+
   void foo(List<List<A>> a) {}
-  
+
   List<List<B>> foo2() {
     return null;
   }
@@ -173,6 +173,61 @@ class G<T> {
     System.out.println(((Object[])test)[0]); // compliant : target type is array access
     System.out.println(((Object[])test2)[0]); // Noncompliant
     System.out.println(((String[])test3)[0]); // compliant
+  }
+}
+
+interface J {
+  default void foo() { }
+  default void bar() { }
+
+  interface K extends J {
+    void foo();
+  }
+
+  interface L extends J {
+    void foobar();
+  }
+
+  static void test() {
+    J j1 = (K) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+    J j2 = (L) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+  }
+}
+
+interface M {
+  default void foo() { }
+  default void bar() { }
+  void foobar();
+
+  interface N extends M {
+    default void foobar() { }
+    void foo();
+  }
+
+  interface O extends M { }
+
+  interface P extends M {
+    void foobar();
+  }
+
+  static void test() {
+    M l1 = () -> { };
+    M l2 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
+    M l3 = (O) () -> { }; // Noncompliant {{Remove this unnecessary cast to "O".}}
+    M l4 = (P) () -> { }; // Noncompliant {{Remove this unnecessary cast to "P".}}
+  }
+}
+
+interface Q {
+  void foo();
+  void bar();
+
+  interface R extends Q {
+    default void foo();
+  }
+
+  static void test() {
+    Q j1 = (R) () -> {  }; // compliant : cast is needed for it to be used as a lambda expression
   }
 }
 
