@@ -1,0 +1,23 @@
+{
+  "title": "Weak SSLContexts should not be used",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a6",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4423",
+  "sqKey": "S4423"
+}
