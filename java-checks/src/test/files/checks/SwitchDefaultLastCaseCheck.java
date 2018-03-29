@@ -51,7 +51,7 @@ class A {
       case 1:
         break;
       case 2:
-      default:  // Compliant
+      default:  // Compliant default does not affect the normal execution of the switch, as it requires to match 3
       case 3:
         break;
     }

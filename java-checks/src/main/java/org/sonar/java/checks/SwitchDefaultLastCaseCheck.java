@@ -40,19 +40,20 @@ public class SwitchDefaultLastCaseCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    Optional<CaseLabelTree> defaultLabel = getDefaultLabel(switchStatementTree);
-    if (defaultLabel.isPresent()) {
-      reportIssue(defaultLabel.get(), "Move this default to the end of the switch.");
-    }
+    getDefaultLabelAtWrongPosition(switchStatementTree).ifPresent(defaultLabel -> reportIssue(defaultLabel, "Move this default to the end of the switch."));
   }
 
-  private static Optional<CaseLabelTree> getDefaultLabel(SwitchStatementTree switchStatementTree) {
+  private static Optional<CaseLabelTree> getDefaultLabelAtWrongPosition(SwitchStatementTree switchStatementTree) {
     for (int i = 0; i < switchStatementTree.cases().size(); i++) {
       List<CaseLabelTree> labels = switchStatementTree.cases().get(i).labels();
       for (int j = 0; j < labels.size(); j++) {
         CaseLabelTree label = labels.get(j);
         boolean defaultExists = isDefault(label);
         if (defaultExists && ((j != labels.size() - 1) || (j == labels.size() - 1 && i == switchStatementTree.cases().size() - 1))) {
+          /*
+           * we return Optional.empty() because either we have default at the end which is a best practise
+           * or it is in a place in a case group where it can not affect the result of the execution
+           */
           return Optional.empty();
         } else if (defaultExists) {
           return Optional.of(label);
