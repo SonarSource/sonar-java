@@ -86,7 +86,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private String getSuggestedType(boolean springInjectionAnnotated, Type leastSpecificType) {
+  private static String getSuggestedType(boolean springInjectionAnnotated, Type leastSpecificType) {
     if (springInjectionAnnotated && leastSpecificType.is("java.lang.Iterable")) {
       return "java.util.Collection";
     } else {
