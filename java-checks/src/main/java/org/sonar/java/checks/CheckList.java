@@ -539,6 +539,7 @@ public final class CheckList {
       .add(AssertsOnParametersOfPublicMethodCheck.class)
       .add(NullCheckWithInstanceofCheck.class)
       .add(HostnameVerifierImplementationCheck.class)
+      .add(SwitchDefaultLastCaseCheck.class)
       .build();
   }
 

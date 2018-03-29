@@ -1,0 +1,39 @@
+<p><code>switch</code> can contain a <code>default</code> clause for various reason: to handle unexpected values, to show all the cases where properly
+considered.</p>
+<p>For readability purpose, to help a developer to quickly find the default behavior of a <code>switch</code> statement, it is recommended to put the
+<code>default</code> clause at the beginning or the end of the <code>switch</code> statement. This rule raised an issue if the <code>default</code>
+statement is not the first or the last one of the switch's cases.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+switch (param) {
+  default: // default clause should be the last one
+    error();
+    break;
+  case 0:
+    doSomething();
+    break;
+  case 1:
+    doSomethingElse();
+    break;
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+switch (param) {
+  case 0:
+    doSomething();
+    break;
+  case 1:
+    doSomethingElse();
+    break;
+  default:
+    error();
+    break;
+}
+</pre>
+<h2>See</h2>
+<p>- MISRA C:2004, 15.3 - The final clause of a switch statement shall be the default clause</p>
+<p>- MISRA C++:2008, 6-4-6 - The final clause of a switch statement shall be the default-clause</p>
+<p>- MISRA C:2012, 16.4 - Every switch statement shall have a default label</p>
+<p>- MISRA C:2012, 16.5 - A default label shall appear as either the first or the last switch label of a switch statement</p>
+
