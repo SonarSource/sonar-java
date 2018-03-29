@@ -33,10 +33,12 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.model.LiteralUtils.trimQuotes;
+
 @Rule(key = "S4423")
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("\"TLSv1.2\"", "\"DTLSv1.2\""));
+  private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2"));
 
   private static final MethodMatcher SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.net.ssl.SSLContext")
@@ -55,7 +57,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       Arguments arguments = mit.arguments();
       if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
         ExpressionTree firstArgument = arguments.get(0);
-        if (firstArgument.is(Tree.Kind.STRING_LITERAL) && !STRONG_PROTOCOLS.contains(((LiteralTree) firstArgument).value())) {
+        if (firstArgument.is(Tree.Kind.STRING_LITERAL) && !STRONG_PROTOCOLS.contains(trimQuotes(((LiteralTree) firstArgument).value()))) {
           reportIssue(mit, "Change this code to use a stronger protocol.");
         }
       }
