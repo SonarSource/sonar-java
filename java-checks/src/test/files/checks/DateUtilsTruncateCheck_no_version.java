@@ -6,7 +6,7 @@ import static org.apache.commons.lang.time.DateUtils.truncate;
 
 class A {
   public void foo(Date date, Calendar calendar, Object object, int field) {
-    DateUtils.truncate(date, field);      // Noncompliant {{Use "Instant.truncatedTo" instead. (sonar.java.source not set. Assuming 8 or greater.)}}
+    DateUtils.truncate(date, field);      // Noncompliant {{Use "ZonedDateTime.truncatedTo" instead. (sonar.java.source not set. Assuming 8 or greater.)}}
     DateUtils.truncate(calendar, field);  // Noncompliant
     DateUtils.truncate(object, field);    // Noncompliant
     truncate(date, field);      // Noncompliant
