@@ -23,13 +23,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sonar.plugins.security.api.JavaRules;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.LexerException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -459,9 +462,15 @@ public class SonarComponentsTest {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setRuleRepositoryKey("squid");
     sonarComponents.setSensorContext(sensorContext);
+    // no security rules available
+    JavaRules.ruleKeys = new HashSet<>();
     assertThat(sonarComponents.shouldGenerateUCFG()).isFalse();
-    ActiveRules activeRules = new ActiveRulesBuilder().create(RuleKey.of("SonarSecurityJava", "S3649")).activate().build();
+
+    ActiveRules activeRules = new ActiveRulesBuilder().create(RuleKey.of("squid", "S3649")).activate().build();
+    // one security rule available
+    JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
     sensorContext.setActiveRules(activeRules);
     assertThat(sonarComponents.shouldGenerateUCFG()).isTrue();
   }

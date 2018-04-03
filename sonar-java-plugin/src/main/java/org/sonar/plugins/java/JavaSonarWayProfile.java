@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -47,8 +48,12 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     for (String key : jsonProfile.ruleKeys) {
       sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
     }
+
+    SonarComponents.getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(CheckList.REPOSITORY_KEY, key));
+
     sonarWay.done();
   }
+
 
   private static Map<String, String> legacyKeys() {
     Map<String, String> result = new HashMap<>();
