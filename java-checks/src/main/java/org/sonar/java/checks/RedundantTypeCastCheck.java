@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -48,6 +49,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
+
+  private static final Predicate<JavaSymbol> DEFAULT_METHOD_PREDICATE = JavaSymbol::isDefault;
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -151,15 +154,17 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(expressionType);
       List<MethodJavaSymbol> parentMethods = getMethodSymbolsOf(target);
 
-      Predicate<JavaSymbol> isDefaultMethod = JavaSymbol::isDefault;
-      Set<MethodJavaSymbol> childDefaultMethods = childMethods.stream().filter(isDefaultMethod).collect(Collectors.toSet());
-      Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(isDefaultMethod.negate()).findAny();
-      Set<MethodJavaSymbol> parentAbstractMethods = parentMethods.stream().filter(isDefaultMethod.negate()).collect(Collectors.toSet());
+      Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate()).findAny();
+      Stream<MethodJavaSymbol> parentAbstractMethods = parentMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate());
 
       if (childAbstractMethod.isPresent()) {
-        return !parentAbstractMethods.contains(childAbstractMethod.get().overriddenSymbol());
+        return parentAbstractMethods.noneMatch(parentAbstractMethod -> parentAbstractMethod.equals(childAbstractMethod.get().overriddenSymbol()));
       } else {
-        return childDefaultMethods.stream().map(Symbol.MethodSymbol::overriddenSymbol).anyMatch(parentAbstractMethods::contains);
+        Set<MethodJavaSymbol> parentAbstractMethodsSet = parentAbstractMethods.collect(Collectors.toSet());
+        return childMethods.stream()
+          .filter(DEFAULT_METHOD_PREDICATE)
+          .map(Symbol.MethodSymbol::overriddenSymbol)
+          .anyMatch(parentAbstractMethodsSet::contains);
       }
     }
     return false;
