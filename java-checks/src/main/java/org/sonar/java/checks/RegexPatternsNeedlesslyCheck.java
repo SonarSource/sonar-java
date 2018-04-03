@@ -20,11 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -38,12 +40,7 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
   private static final String PATTERN = "java.util.regex.Pattern";
-  private static final char[] array;
-
-  static {
-    array = ".$|()[{^?*\\".toCharArray();
-    Arrays.sort(array);
-  }
+  private static final Pattern SPLIT_EXCLUSION = Pattern.compile("[\\$\\.\\|\\(\\)\\[\\{\\^\\?\\*\\+\\\\]|\\\\\\w");
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -58,47 +55,40 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(0);
-    if (mit.symbolType().is(PATTERN)) {
-      if (argument.is(Tree.Kind.NULL_LITERAL) || (checkArgs(argument) && invokedOnlyOnce(mit))) {
+    if (mit.symbol().name().equals("split") && argument.is(Tree.Kind.STRING_LITERAL)) {
+      String argValue = LiteralUtils.trimQuotes(((LiteralTree) argument).value());
+      int strLength = argValue.length();
+      if ((strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\')) &&
+        !SPLIT_EXCLUSION.matcher(argValue).matches()) {
         return;
       }
-    } else {
-      if (!argument.is(Tree.Kind.STRING_LITERAL) ||
-        ("split".equals(((MemberSelectExpressionTree) mit.methodSelect()).identifier().name()) && specialCaseNotReported(argument))) {
-        return;
-      }
     }
-    reportIssue(mit, "Refactor this code to use a \"static final\" Pattern.");
+    if (!storedInStaticFinal(mit) && (argument.is(Tree.Kind.STRING_LITERAL) || isConstant(argument))) {
+      reportIssue(mit, "Refactor this code to use a \"static final\" Pattern.");
+    }
   }
 
-  private static boolean checkArgs(ExpressionTree argument) {
-    return argument.is(Tree.Kind.STRING_LITERAL) || (argument.is(Tree.Kind.IDENTIFIER) && (((IdentifierTree) argument).symbol().isFinal()));
-
+  private static boolean storedInStaticFinal(MethodInvocationTree mit) {
+    Tree tree = mit.parent();
+    while (!tree.is(Tree.Kind.VARIABLE, Tree.Kind.CLASS, Tree.Kind.ASSIGNMENT)) {
+      tree = tree.parent();
+    }
+    if (tree.is(Tree.Kind.CLASS)) {
+      return false;
+    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      return isConstant(((AssignmentExpressionTree) tree).variable());
+    }
+    VariableTree variableTree = (VariableTree) tree;
+    return variableTree.symbol().isStatic() && variableTree.symbol().isFinal();
   }
 
-  private static boolean invokedOnlyOnce(MethodInvocationTree mit) {
-    Tree parentTree = mit.parent();
-    while (!parentTree.is(Tree.Kind.METHOD, Tree.Kind.CLASS)) {
-      if (parentTree.is(Tree.Kind.VARIABLE)) {
-        return ((VariableTree) parentTree).symbol().isFinal();
-      }
-      parentTree = parentTree.parent();
+  private static boolean isConstant(ExpressionTree expr) {
+    IdentifierTree identifierTree = null;
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      identifierTree = (IdentifierTree) expr;
+    } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      identifierTree = ((MemberSelectExpressionTree) expr).identifier();
     }
-    return false;
-  }
-
-  private static boolean specialCaseNotReported(ExpressionTree argument) {
-    String argString = ((LiteralTree) argument).value().replace("\"", "");
-    int stringLength = argString.length();
-    char arg1 = argString.charAt(0);
-    if (stringLength == 1 || (stringLength == 2 && (arg1 == '\\' && argString.charAt(1) == '\\'))) {
-      return Arrays.binarySearch(array, arg1) < 0;
-    }
-    char charToCheck = argString.charAt(1);
-    if (charToCheck == '\\') {
-      charToCheck = argString.charAt(2);
-    }
-    return (argString.charAt(0) == '\\' &&
-      (!(Character.isLetter(charToCheck) || Character.isDigit(charToCheck))));
+    return identifierTree != null && identifierTree.symbol().isFinal() && identifierTree.symbol().isStatic();
   }
 }
