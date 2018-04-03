@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -49,7 +49,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<JavaSymbol> DEFAULT_METHOD_PREDICATE = JavaSymbol::isDefault;
+  private static final Predicate<JavaSymbol> ABSTRACT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -143,35 +143,31 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return skip;
   }
 
-  private static boolean isUnnecessarySubtypeCast(Type expressionType, TypeCastTree typeCastTree, Type target) {
-    return expressionType.isSubtypeOf(target) && !isLambdaCastNeeded(expressionType, typeCastTree, target);
+  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
+    return childType.isSubtypeOf(parentType)
+      && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
+        || isUnnecessaryLambdaCast(childType, parentType));
   }
 
-  private static boolean isLambdaCastNeeded(Type expressionType, TypeCastTree typeCastTree, Type target) {
-    ExpressionTree expression = ExpressionUtils.skipParentheses(typeCastTree.expression());
-    if (!expression.is(Tree.Kind.LAMBDA_EXPRESSION) || target.isSubtypeOf(expressionType)) {
-      return false;
+  private static boolean isUnnecessaryLambdaCast(Type childType, Type parentType) {
+    if (parentType.is(childType.fullyQualifiedName())) {
+      return true;
     }
 
-    List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(expressionType);
-    Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate()).findAny();
-
-    return childAbstractMethod
-      .map(method -> {
-        List<MethodJavaSymbol> parentMethods = getMethodSymbolsOf(target);
-        MethodJavaSymbol overriddenSymbol = method.overriddenSymbol();
-        return overriddenSymbol == null
-          || childMethods.size() > 1
-          || parentMethods.stream().filter(DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
-      })
-      .orElse(!childMethods.isEmpty());
+    List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(childType).collect(Collectors.toList());
+    return childMethods.isEmpty() || (childMethods.size() == 1 && isSingleAbstractMethodOverride(childMethods.get(0), parentType));
   }
 
-  private static List<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
+  private static boolean isSingleAbstractMethodOverride(MethodJavaSymbol childMethod, Type parentType) {
+    MethodJavaSymbol overriddenSymbol = childMethod.overriddenSymbol();
+    return !childMethod.isDefault() && overriddenSymbol != null
+      && getMethodSymbolsOf(parentType).filter(ABSTRACT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
+  }
+
+  private static Stream<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
     return type.symbol().memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
-      .map(MethodJavaSymbol.class::cast)
-      .collect(Collectors.toList());
+      .map(MethodJavaSymbol.class::cast);
   }
 
   private static boolean isRedundantNumericalCast(Type cast, Type expressionType) {
