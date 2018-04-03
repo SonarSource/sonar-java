@@ -49,12 +49,24 @@ public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
     if (isSuspiciousToken(expressionFirstToken)
       && noSpacingBetween(operatorToken, expressionFirstToken)
       && !noSpacingBetween(variableLastToken, operatorToken)) {
-      reportIssue(operatorToken, expressionFirstToken, "Was \"" + expressionFirstToken.text() + "=\" meant instead?");
+      reportIssue(operatorToken, expressionFirstToken, getMessage(expressionFirstToken, aeTree));
     }
   }
 
+  private static String getMessage(SyntaxToken expressionFirstToken, AssignmentExpressionTree aeTree) {
+    if (isSingleNegationAssignment(expressionFirstToken, aeTree)) {
+      return "Add a space between \"=\" and \"!\" to avoid confusion.";
+    }
+    return "Was \"" + expressionFirstToken.text() + "=\" meant instead?";
+  }
+
+  private static boolean isSingleNegationAssignment(SyntaxToken firstToken, AssignmentExpressionTree aeTree) {
+    return "!".equals(firstToken.text()) && (aeTree.parent() == null || !aeTree.parent().is(Tree.Kind.ASSIGNMENT));
+  }
+
   private static boolean noSpacingBetween(SyntaxToken firstToken, SyntaxToken secondToken) {
-    return firstToken.column() + firstToken.text().length() == secondToken.column();
+    return firstToken.line() == secondToken.line()
+      && firstToken.column() + firstToken.text().length() == secondToken.column();
   }
 
   private static boolean isSuspiciousToken(SyntaxToken firstToken) {
