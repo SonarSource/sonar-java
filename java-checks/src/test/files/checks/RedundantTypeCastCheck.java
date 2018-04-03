@@ -210,24 +210,31 @@ interface M {
     void foobar();
   }
 
+  interface Q extends M {
+    default void foo() { }
+  }
+
   static void test() {
-    M l1 = () -> { };
-    M l2 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
-    M l3 = (O) () -> { }; // Noncompliant {{Remove this unnecessary cast to "O".}}
-    M l4 = (P) () -> { }; // Noncompliant {{Remove this unnecessary cast to "P".}}
+    M m1 = () -> { };
+    M m2 = (M) () -> { }; // Noncompliant {{Remove this unnecessary cast to "M".}}
+    M m3 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
+    M m4 = (O) () -> { }; // Noncompliant {{Remove this unnecessary cast to "O".}}
+    M m5 = (P) () -> { }; // Noncompliant {{Remove this unnecessary cast to "P".}}
+    M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
+    M m7 = (R) () -> { }; // compliant : cast changes default definition of method foo
   }
 }
 
-interface Q {
+interface R {
   void foo();
   void bar();
 
-  interface R extends Q {
+  interface S extends R {
     default void foo();
   }
 
   static void test() {
-    Q j1 = (R) () -> {  }; // compliant : cast is needed for it to be used as a lambda expression
+    R r1 = (S) () -> {  }; // compliant : cast is needed for it to be used as a lambda expression
   }
 }
 

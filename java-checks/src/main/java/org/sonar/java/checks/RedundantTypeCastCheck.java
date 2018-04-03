@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -150,24 +149,22 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isLambdaCastNeeded(Type expressionType, TypeCastTree typeCastTree, Type target) {
     ExpressionTree expression = ExpressionUtils.skipParentheses(typeCastTree.expression());
-    if (expression.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(expressionType);
-      List<MethodJavaSymbol> parentMethods = getMethodSymbolsOf(target);
-
-      Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate()).findAny();
-      Stream<MethodJavaSymbol> parentAbstractMethods = parentMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate());
-
-      if (childAbstractMethod.isPresent()) {
-        return parentAbstractMethods.noneMatch(parentAbstractMethod -> parentAbstractMethod.equals(childAbstractMethod.get().overriddenSymbol()));
-      } else {
-        Set<MethodJavaSymbol> parentAbstractMethodsSet = parentAbstractMethods.collect(Collectors.toSet());
-        return childMethods.stream()
-          .filter(DEFAULT_METHOD_PREDICATE)
-          .map(Symbol.MethodSymbol::overriddenSymbol)
-          .anyMatch(parentAbstractMethodsSet::contains);
-      }
+    if (!expression.is(Tree.Kind.LAMBDA_EXPRESSION) || target.isSubtypeOf(expressionType)) {
+      return false;
     }
-    return false;
+
+    List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(expressionType);
+    Optional<MethodJavaSymbol> childAbstractMethod = childMethods.stream().filter(DEFAULT_METHOD_PREDICATE.negate()).findAny();
+
+    return childAbstractMethod
+      .map(method -> {
+        List<MethodJavaSymbol> parentMethods = getMethodSymbolsOf(target);
+        MethodJavaSymbol overriddenSymbol = method.overriddenSymbol();
+        return overriddenSymbol == null
+          || childMethods.size() > 1
+          || parentMethods.stream().filter(DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
+      })
+      .orElse(!childMethods.isEmpty());
   }
 
   private static List<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
