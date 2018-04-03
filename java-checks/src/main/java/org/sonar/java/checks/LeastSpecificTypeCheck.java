@@ -69,6 +69,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     methodTree.parameters().stream()
       .map(VariableTree::symbol)
       .filter(p -> p.type().isClass() && !p.type().symbol().isEnum() && !p.type().is("java.lang.String"))
+      .filter(p -> !(springInjectionAnnotated && p.type().is("java.util.Collection")))
       .forEach(p -> handleParameter(p, springInjectionAnnotated));
   }
 
@@ -79,8 +80,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
     Type leastSpecificType = findLeastSpecificType(parameter);
     if (parameter.type() != leastSpecificType
-      && !leastSpecificType.is("java.lang.Object")
-      && !(springInjectionAnnotated && parameter.type().is("java.util.Collection"))) {
+      && !leastSpecificType.is("java.lang.Object")) {
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
       reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().name()));
     }
@@ -89,9 +89,8 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   private static String getSuggestedType(boolean springInjectionAnnotated, Type leastSpecificType) {
     if (springInjectionAnnotated && leastSpecificType.is("java.lang.Iterable")) {
       return "java.util.Collection";
-    } else {
-      return leastSpecificType.fullyQualifiedName().replace('$', '.');
     }
+    return leastSpecificType.fullyQualifiedName().replace('$', '.');
   }
 
   private static Type findLeastSpecificType(Symbol parameter) {
