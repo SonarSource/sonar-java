@@ -49,7 +49,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<JavaSymbol> ABSTRACT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
+  private static final Predicate<JavaSymbol> NON_DEFAULT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -151,7 +151,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnnecessaryLambdaCast(Type childType, Type parentType) {
-    if (parentType.is(childType.fullyQualifiedName())) {
+    if (parentType.isSubtypeOf(childType)) {
       return true;
     }
 
@@ -162,7 +162,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   private static boolean isSingleAbstractMethodOverride(MethodJavaSymbol childMethod, Type parentType) {
     MethodJavaSymbol overriddenSymbol = childMethod.overriddenSymbol();
     return !childMethod.isDefault() && overriddenSymbol != null
-      && getMethodSymbolsOf(parentType).filter(ABSTRACT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
+      && getMethodSymbolsOf(parentType).filter(NON_DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
   }
 
   private static Stream<MethodJavaSymbol> getMethodSymbolsOf(Type type) {

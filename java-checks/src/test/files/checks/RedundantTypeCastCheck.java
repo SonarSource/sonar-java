@@ -257,6 +257,14 @@ class T {
   }
 }
 
+interface U<A extends Iterable> {
+  A foo(A param);
+
+  default void test() {
+    U u1 = (U<List>) (param) -> param.subList(0,1); // Compliant : cast needed to access sublist method
+  }
+}
+
 abstract class MyClass {
   public String field;
   abstract <U extends MyClass> U foo();
