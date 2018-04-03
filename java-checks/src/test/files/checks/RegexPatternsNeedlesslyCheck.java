@@ -66,8 +66,12 @@ class A {
 
     param.split("\\a"); // Noncompliant
     param.split("\\2"); // Noncompliant
-    param.split("\\-"); // Noncompliant FP
-    param.split("\\\\"); // Noncompliant FP
-
+    param.split("\\-"); // Noncompliant
+    param.split("\\*"); // Compliant    * is a metacharacter
+    param.split("\\."); // Compliant
+    param.split("\\|"); // Compliant
+    param.split("\\\\"); // Compliant
+    param.split("//++"); // Noncompliant
+    param.split("\\?q"); // Noncompliant
   }
 }

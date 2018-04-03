@@ -58,8 +58,8 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
     if (mit.symbol().name().equals("split") && argument.is(Tree.Kind.STRING_LITERAL)) {
       String argValue = LiteralUtils.trimQuotes(((LiteralTree) argument).value());
       int strLength = argValue.length();
-      if ((strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\')) &&
-        !SPLIT_EXCLUSION.matcher(argValue).matches()) {
+      if (((strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\')) &&
+        !SPLIT_EXCLUSION.matcher(argValue).matches()) || metaCharactersInSplit(argValue)) {
         return;
       }
     }
@@ -90,5 +90,12 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
       identifierTree = ((MemberSelectExpressionTree) expr).identifier();
     }
     return identifierTree != null && identifierTree.symbol().isFinal() && identifierTree.symbol().isStatic();
+  }
+
+  private static boolean metaCharactersInSplit(String argValue) {
+    int strLength = argValue.length();
+    return ((strLength == 3 && argValue.charAt(1) == '\\' && argValue.charAt(0) == '\\'
+      && SPLIT_EXCLUSION.matcher(Character.toString(argValue.charAt(2))).matches()) ||
+      (strLength == 4 && argValue.charAt(0) == '\\' && argValue.charAt(3) == '\\'));
   }
 }
