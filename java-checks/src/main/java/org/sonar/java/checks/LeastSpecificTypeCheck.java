@@ -34,6 +34,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -64,23 +65,32 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
+    boolean springInjectionAnnotated = isSpringInjectionAnnotated(methodSymbol.metadata());
     methodTree.parameters().stream()
       .map(VariableTree::symbol)
       .filter(p -> p.type().isClass() && !p.type().symbol().isEnum() && !p.type().is("java.lang.String"))
-      .forEach(this::handleParameter);
+      .filter(p -> !(springInjectionAnnotated && p.type().is("java.util.Collection")))
+      .forEach(p -> handleParameter(p, springInjectionAnnotated));
   }
 
   private static boolean isOverloaded(Symbol.MethodSymbol methodSymbol) {
     return ((Symbol.TypeSymbol) methodSymbol.owner()).lookupSymbols(methodSymbol.name()).size() > 1;
   }
 
-  private void handleParameter(Symbol parameter) {
+  private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
     Type leastSpecificType = findLeastSpecificType(parameter);
     if (parameter.type() != leastSpecificType
       && !leastSpecificType.is("java.lang.Object")) {
-      String suggestedType = leastSpecificType.fullyQualifiedName().replace('$', '.');
+      String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
       reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().name()));
     }
+  }
+
+  private static String getSuggestedType(boolean springInjectionAnnotated, Type leastSpecificType) {
+    if (springInjectionAnnotated && leastSpecificType.is("java.lang.Iterable")) {
+      return "java.util.Collection";
+    }
+    return leastSpecificType.fullyQualifiedName().replace('$', '.');
   }
 
   private static Type findLeastSpecificType(Symbol parameter) {
@@ -203,5 +213,11 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
+  }
+
+  private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
+    return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
+      || metadata.isAnnotatedWith("javax.inject.Inject")
+      || metadata.isAnnotatedWith("javax.annotation.Resource");
   }
 }

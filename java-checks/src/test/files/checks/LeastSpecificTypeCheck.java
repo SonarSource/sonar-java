@@ -1,4 +1,7 @@
 import java.util.*;
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class A {
 
@@ -24,6 +27,53 @@ class A {
 
   public void ignoreStringParams(String s) { // Compliant
     s.charAt(0);
+  }
+
+  @Resource
+  public void resourceAnnotatedMethod1(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Inject
+  public void injectAnnotatedMethod1(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Autowired
+  public void autowiredMethod1(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Resource
+  public void resourceAnnotatedMethod2(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Inject
+  public void injectAnnotatedMethod2(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Autowired
+  public void autowiredMethod2(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
+    for (Object o : list) {
+      o.toString();
+    }
+  }
+
+  @Autowired
+  public void autowiredMethod3(List<Object> list) { // Compliant - List interface is used in method body
+    list.sort(Comparator.comparingInt(Object::hashCode));
   }
 
   public static void staticMethod(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
@@ -221,5 +271,5 @@ class A {
   }
 
   public static void primitiveTypesAreIgnored(int i, long l, double d, float f, byte b, short s, char c, boolean boo) { }
-  
+
 }
