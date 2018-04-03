@@ -1,6 +1,8 @@
+import java.util.function.Predicate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -221,7 +223,6 @@ interface M {
     M m4 = (O) () -> { }; // Noncompliant {{Remove this unnecessary cast to "O".}}
     M m5 = (P) () -> { }; // Noncompliant {{Remove this unnecessary cast to "P".}}
     M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
-    M m7 = (R) () -> { }; // compliant : cast changes default definition of method foo
   }
 }
 
@@ -235,6 +236,24 @@ interface R {
 
   static void test() {
     R r1 = (S) () -> {  }; // compliant : cast is needed for it to be used as a lambda expression
+  }
+}
+
+class T {
+  Predicate<Object> methodReferenceCastNeeded() {
+    return ((Predicate<Object>) Objects::nonNull).negate(); // Compliant : cannot call Predicate#negate() without casting it first
+  }
+
+  Comparator<Integer> methodReferenceCastNeeded2() {
+    return (((Comparator<Integer>) Integer::compare)).reversed();   // Compliant : cannot call Comparator#reversed() without casting it first
+  }
+
+  Predicate<Object> methodReferenceCastNotNeeded() {
+    return (((Predicate<Object>) Objects::nonNull)); // Noncompliant
+  }
+
+  Comparator<Integer> methodReferenceCastNotNeeded2() {
+    return (Comparator<Integer>) Integer::compare; // Noncompliant
   }
 }
 

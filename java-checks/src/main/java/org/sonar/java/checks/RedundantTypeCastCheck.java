@@ -85,7 +85,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   private static boolean requiredForMemberAccess(TypeCastTree typeCastTree) {
     ExpressionTree expression = typeCastTree.expression();
     if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      return false;
+      Tree parent = typeCastTree.parent();
+      return expression.is(Tree.Kind.METHOD_REFERENCE) && parent != null && skipParentheses(parent).is(Tree.Kind.MEMBER_SELECT);
     }
     Symbol symbol = ((MethodInvocationTree) expression).symbol();
     if (!symbol.isMethodSymbol()) {
