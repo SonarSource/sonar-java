@@ -22,7 +22,10 @@ package org.sonar.java.ast.visitors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
@@ -34,11 +37,6 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
@@ -64,6 +62,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
     typesByKindBuilder.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
     typesByKindBuilder.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
+    typesByKindBuilder.put(Tree.Kind.VAR_TYPE, TypeOfText.KEYWORD);
     typesByKind = typesByKindBuilder.build();
   }
 

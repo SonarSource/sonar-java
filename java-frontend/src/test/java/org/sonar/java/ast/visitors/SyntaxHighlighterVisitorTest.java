@@ -183,6 +183,22 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasNotBeenHighlighted(componentKey, 20, 17, 20, 25); // provides
   }
 
+  @Test
+  public void test_java10_var() throws Exception {
+    this.eol = "\n";
+    File file = generateTestFile("src/test/files/highlighter/Java10Var.java");
+    scan(file);
+
+    String componentKey = ":" + file.getName();
+    assertThatHasBeenHighlighted(componentKey, 10, 5, 10, 8, TypeOfText.KEYWORD); // var a = ...
+    assertThatHasBeenHighlighted(componentKey, 12, 5, 12, 8, TypeOfText.KEYWORD); // var list = ...
+    assertThatHasBeenHighlighted(componentKey, 17, 10, 17, 13, TypeOfText.KEYWORD); // for (var counter = ...
+    assertThatHasBeenHighlighted(componentKey, 21, 10, 21, 13, TypeOfText.KEYWORD); // for (var value : ...
+    assertThatHasBeenHighlighted(componentKey, 27, 10, 27, 13, TypeOfText.KEYWORD); // try (var reader = ...
+    assertThatHasBeenHighlighted(componentKey, 32, 5, 32, 8, TypeOfText.KEYWORD); // var myA = new A() { ...
+    assertThatHasNotBeenHighlighted(componentKey, 51, 12, 51, 15); // Object var;
+  }
+
   private void scan(File file) {
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
