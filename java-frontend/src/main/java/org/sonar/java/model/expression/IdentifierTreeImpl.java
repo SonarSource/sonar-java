@@ -22,8 +22,11 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -32,10 +35,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
-import java.util.List;
-
-public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
+public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree, JavaTree.AnnotatedTypeTree {
 
   private final InternalSyntaxToken nameToken;
   private Symbol symbol = Symbols.unknownSymbol;
@@ -47,9 +47,9 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
     this.annotations = ImmutableList.<AnnotationTree>of();
   }
 
-  public IdentifierTreeImpl complete(List<AnnotationTree> annotations) {
+  @Override
+  public void complete(List<AnnotationTree> annotations) {
     this.annotations = Preconditions.checkNotNull(annotations);
-    return this;
   }
 
   @Override

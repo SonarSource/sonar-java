@@ -361,7 +361,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class WildcardTreeImpl extends AbstractTypedTree implements WildcardTree {
+  public static class WildcardTreeImpl extends AbstractTypedTree implements WildcardTree, AnnotatedTypeTree {
 
     private SyntaxToken queryToken;
     @Nullable
@@ -395,9 +395,9 @@ public abstract class JavaTree implements Tree {
       return this;
     }
 
-    public WildcardTreeImpl complete(List<AnnotationTree> annotations) {
+    @Override
+    public void complete(List<AnnotationTree> annotations) {
       this.annotations = annotations;
-      return this;
     }
 
     @Override
@@ -506,7 +506,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree {
+  public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree, AnnotatedTypeTree {
 
     private final InternalSyntaxToken token;
     private List<AnnotationTree> annotations;
@@ -517,9 +517,9 @@ public abstract class JavaTree implements Tree {
       this.annotations = ImmutableList.of();
     }
 
-    public PrimitiveTypeTreeImpl complete(List<AnnotationTree> annotations) {
+    @Override
+    public void complete(List<AnnotationTree> annotations) {
       this.annotations = annotations;
-      return this;
     }
 
     @Override
@@ -548,7 +548,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree {
+  public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree, AnnotatedTypeTree {
 
     private final TypeTree type;
     private final TypeArguments typeArguments;
@@ -561,9 +561,9 @@ public abstract class JavaTree implements Tree {
       this.annotations = ImmutableList.<AnnotationTree>of();
     }
 
-    public ParameterizedTypeTreeImpl complete(List<AnnotationTree> annotations) {
+    @Override
+    public void complete(List<AnnotationTree> annotations) {
       this.annotations = annotations;
-      return this;
     }
 
     @Override
@@ -597,7 +597,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
+  public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree, AnnotatedTypeTree {
     private TypeTree type;
     private List<AnnotationTree> annotations;
     private final InternalSyntaxToken openBracketToken;
@@ -686,8 +686,18 @@ public abstract class JavaTree implements Tree {
       return annotationBuilder.build();
     }
 
+    @Override
     public void complete(List<AnnotationTree> typeAnnotations) {
       this.annotations = typeAnnotations;
     }
+  }
+
+  /**
+   * This interface is dedicated to mark TypeTrees which will requires completion of their annotations during parsing.
+   *
+   * Note that {@link org.sonar.plugins.java.api.tree.InferedTypeTree} and {@link UnionTypeTree} can not have annotations.
+   */
+  public interface AnnotatedTypeTree extends TypeTree {
+    void complete(List<AnnotationTree> annotations);
   }
 }
