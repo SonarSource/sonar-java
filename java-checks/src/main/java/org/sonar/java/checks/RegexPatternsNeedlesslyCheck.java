@@ -25,7 +25,9 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -54,42 +56,49 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree argument = mit.arguments().get(0);
-    if (mit.symbol().name().equals("split") && argument.is(Tree.Kind.STRING_LITERAL)) {
-      String argValue = LiteralUtils.trimQuotes(((LiteralTree) argument).value());
-      int strLength = argValue.length();
-      if (((strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\')) &&
+    ExpressionTree firstArgument = ExpressionUtils.skipParentheses(mit.arguments().get(0));
+    if (isSplitMethod(mit) && firstArgument.is(Tree.Kind.STRING_LITERAL)) {
+      String argValue = LiteralUtils.trimQuotes(((LiteralTree) firstArgument).value());
+      if ((exceptionSplitMethod(argValue) &&
         !SPLIT_EXCLUSION.matcher(argValue).matches()) || metaCharactersInSplit(argValue)) {
         return;
       }
     }
-    if (!storedInStaticFinal(mit) && (argument.is(Tree.Kind.STRING_LITERAL) || isConstant(argument))) {
-      reportIssue(mit, "Refactor this code to use a \"static final\" Pattern.");
+    if (!storedInStaticFinal(mit) && (firstArgument.is(Tree.Kind.STRING_LITERAL) || isConstant(firstArgument))) {
+      reportIssue(ExpressionUtils.methodName(mit), mit.arguments(), "Refactor this code to use a \"static final\" Pattern.");
     }
   }
 
   private static boolean storedInStaticFinal(MethodInvocationTree mit) {
     Tree tree = mit.parent();
-    while (!tree.is(Tree.Kind.VARIABLE, Tree.Kind.CLASS, Tree.Kind.ASSIGNMENT)) {
+    while (!tree.is(Tree.Kind.VARIABLE, Tree.Kind.CLASS, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD)) {
       tree = tree.parent();
     }
-    if (tree.is(Tree.Kind.CLASS)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
       return false;
-    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
-      return isConstant(((AssignmentExpressionTree) tree).variable());
+    } else {
+      return isConstant(tree);
     }
-    VariableTree variableTree = (VariableTree) tree;
-    return variableTree.symbol().isStatic() && variableTree.symbol().isFinal();
   }
 
-  private static boolean isConstant(ExpressionTree expr) {
-    IdentifierTree identifierTree = null;
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      identifierTree = (IdentifierTree) expr;
-    } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      identifierTree = ((MemberSelectExpressionTree) expr).identifier();
+  private static boolean isConstant(Tree tree) {
+    Symbol symbol = null;
+    switch (tree.kind()) {
+      case IDENTIFIER:
+        symbol = ((IdentifierTree) tree).symbol();
+        break;
+      case MEMBER_SELECT:
+        symbol = (((MemberSelectExpressionTree) tree).identifier()).symbol();
+        break;
+      case VARIABLE:
+        symbol = ((VariableTree) tree).symbol();
+        break;
+      case ASSIGNMENT:
+        return isConstant(((AssignmentExpressionTree) tree).variable());
+      default:
+        break;
     }
-    return identifierTree != null && identifierTree.symbol().isFinal() && identifierTree.symbol().isStatic();
+    return symbol != null && symbol.isFinal() && symbol.isStatic();
   }
 
   private static boolean metaCharactersInSplit(String argValue) {
@@ -97,5 +106,14 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
     return ((strLength == 3 && argValue.charAt(1) == '\\' && argValue.charAt(0) == '\\'
       && SPLIT_EXCLUSION.matcher(Character.toString(argValue.charAt(2))).matches()) ||
       (strLength == 4 && argValue.charAt(0) == '\\' && argValue.charAt(3) == '\\'));
+  }
+
+  private static boolean exceptionSplitMethod(String argValue) {
+    int strLength = argValue.length();
+    return strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\');
+  }
+
+  private static boolean isSplitMethod(MethodInvocationTree mit) {
+    return mit.symbol().name().equals("split");
   }
 }
