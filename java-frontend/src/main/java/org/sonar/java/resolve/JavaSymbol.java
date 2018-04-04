@@ -729,6 +729,11 @@ public class JavaSymbol implements Symbol {
       return declaration;
     }
 
+    @Override
+    public boolean isOverridable() {
+      return !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
+    }
+
     public boolean isParametrized() {
       return !typeVariableTypes.isEmpty();
     }

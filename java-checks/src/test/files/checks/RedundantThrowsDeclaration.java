@@ -208,3 +208,70 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
 class MyException extends Exception {}
 class MyError extends Error {}
 class MyRuntimeException extends RuntimeException {}
+class MyException2 extends Exception {}
+
+abstract class NonThrownExceptionClass {
+  abstract void bar();
+
+  final class FinalClass {
+
+    /**
+     * @throws MyException
+     */
+    void nonOverrideableMethod() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+  }
+
+  class NormalClass {
+    /**
+     * @exception MyException
+     */
+    private void nonOverrideableMethod1() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException
+     */
+    static void nonOverrideableMethod2() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException
+     */
+    final void nonOverrideableMethod3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException
+     */
+    void overrideableMethod1() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * @throws MyException
+     */
+    protected void overrideableMethod2() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * @exception MyException
+     */
+    public void overrideableMethod3() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * @exception MyException
+     * @throws  MyException2
+     */
+    public void missingJavadocForException() throws MyException, MyException2, java.io.IOException { // Noncompliant {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+  }
+}
