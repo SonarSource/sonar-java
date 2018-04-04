@@ -559,7 +559,7 @@ public class TypeAndReferenceSolverTest {
   }
 
   @Test
-  public void wildcard_type_tree_have_a_wildcard_type() {
+  public void wildcard_type_tree_have_a_widlcard_type() {
     CompilationUnitTree cut = treeOf("abstract class A<T> { abstract A<? extends Runnable> foo(); }");
     TypeTree returnType = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0)).returnType();
     assertThat(returnType.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();

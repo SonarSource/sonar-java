@@ -23,8 +23,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -34,10 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
+public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree, JavaTree.AnnotatedTypeTree {
 
   private ExpressionTree expression;
 
@@ -80,9 +80,9 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     return this;
   }
 
-  public MemberSelectExpressionTreeImpl complete(List<AnnotationTree> annotations) {
+  @Override
+  public void complete(List<AnnotationTree> annotations) {
     this.annotations = annotations;
-    return this;
   }
 
   @Override

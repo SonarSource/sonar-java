@@ -22,7 +22,11 @@ package org.sonar.java.ast.parser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.Optional;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaRestrictedKeyword;
@@ -105,7 +109,6 @@ import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -113,13 +116,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class TreeFactory {
 
@@ -365,13 +361,8 @@ public class TreeFactory {
     return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), ImmutableList.<SyntaxToken>of(), closeBracketToken);
   }
 
-  public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {
-    if (partial.is(Tree.Kind.UNBOUNDED_WILDCARD, Tree.Kind.EXTENDS_WILDCARD, Tree.Kind.SUPER_WILDCARD)) {
-      List<AnnotationTree> annotationList = ImmutableList.copyOf(annotations.or(ImmutableList.of()));
-      ((WildcardTreeImpl) partial).complete(annotationList);
-    } else {
-      completeTypeTreeWithAnnotations((TypeTree) partial, annotations);
-    }
+  public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, TypeTree partial) {
+    completeTypeTreeWithAnnotations(partial, annotations);
     return partial;
   }
 
@@ -1656,35 +1647,19 @@ public class TreeFactory {
           throw new IllegalArgumentException();
         }
       }
-      moveAnnotations(result, firstIdentifier);
+      moveAnnotations((TypeTree) result, (TypeTree) firstIdentifier);
     }
 
     return (T) result;
   }
 
-  private static void moveAnnotations(ExpressionTree result, ExpressionTree firstIdentifier) {
-    List<AnnotationTree> firstIdentifierAnnotations;
-    boolean isParameterizedType = firstIdentifier.is(Tree.Kind.PARAMETERIZED_TYPE);
-
-    if (isParameterizedType) {
-      firstIdentifierAnnotations = ((ParameterizedTypeTree) firstIdentifier).annotations();
-    } else {
-      firstIdentifierAnnotations = ((IdentifierTree) firstIdentifier).annotations();
-    }
+  private static void moveAnnotations(TypeTree result, TypeTree firstIdentifier) {
+    List<AnnotationTree> firstIdentifierAnnotations = firstIdentifier.annotations();
     // move the annotations from the first identifier to the member select or the parameterized type
     if (!firstIdentifierAnnotations.isEmpty()) {
-      if (result.is(Tree.Kind.MEMBER_SELECT)) {
-        ((MemberSelectExpressionTreeImpl) result).complete(firstIdentifierAnnotations);
-      } else {
-        ((ParameterizedTypeTreeImpl) result).complete(firstIdentifierAnnotations);
-      }
-      if (isParameterizedType) {
-        ((ParameterizedTypeTreeImpl) firstIdentifier).complete(ImmutableList.<AnnotationTree>of());
-      } else {
-        ((IdentifierTreeImpl) firstIdentifier).complete(ImmutableList.<AnnotationTree>of());
-      }
+      ((JavaTree.AnnotatedTypeTree) result).complete(firstIdentifierAnnotations);
+      ((JavaTree.AnnotatedTypeTree) firstIdentifier).complete(ImmutableList.<AnnotationTree>of());
     }
-
   }
 
   public ExpressionTree newAnnotatedParameterizedIdentifier(
@@ -1695,10 +1670,10 @@ public class TreeFactory {
     ExpressionTree result = new IdentifierTreeImpl(identifierToken);
 
     if (typeArguments.isPresent()) {
-      result = new ParameterizedTypeTreeImpl((TypeTree) result, typeArguments.get()).complete(annotationList);
-    } else {
-      result = ((IdentifierTreeImpl) result).complete(annotationList);
+      result = new ParameterizedTypeTreeImpl((TypeTree) result, typeArguments.get());
     }
+
+    ((JavaTree.AnnotatedTypeTree) result).complete(annotationList);
 
     return result;
   }
@@ -2012,24 +1987,8 @@ public class TreeFactory {
   }
 
   private static void completeTypeTreeWithAnnotations(TypeTree type, Optional<List<AnnotationTreeImpl>> annotations) {
-    if (annotations.isPresent()) {
-      List<AnnotationTree> typeAnnotations = ImmutableList.copyOf(annotations.get());
-      completeTypeTreeWithAnnotations(type, typeAnnotations);
-    }
-  }
-
-  private static void completeTypeTreeWithAnnotations(TypeTree type, List<AnnotationTree> typeAnnotations) {
-    if (type.is(Tree.Kind.IDENTIFIER)) {
-      ((IdentifierTreeImpl) type).complete(typeAnnotations);
-    } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
-      ((MemberSelectExpressionTreeImpl) type).complete(typeAnnotations);
-    } else if (type.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      ((ParameterizedTypeTreeImpl) type).complete(typeAnnotations);
-    } else if (type.is(Kind.ARRAY_TYPE)) {
-      ((ArrayTypeTreeImpl) type).complete(typeAnnotations);
-    } else {
-      ((PrimitiveTypeTreeImpl) type).complete(typeAnnotations);
-    }
+    List<AnnotationTree> annotationList = ImmutableList.copyOf(annotations.or(ImmutableList.of()));
+    ((JavaTree.AnnotatedTypeTree) type).complete(annotationList);
   }
 
 }
