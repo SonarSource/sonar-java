@@ -19,9 +19,13 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.sonar.sslr.api.typed.GrammarBuilder;
+import com.sonar.sslr.api.typed.Optional;
+import java.util.List;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaRestrictedKeyword;
+import org.sonar.java.ast.api.JavaSpecialIdentifier;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -43,6 +47,7 @@ import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.model.expression.VarTypeTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -63,8 +68,6 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
-import com.sonar.sslr.api.typed.GrammarBuilder;
-import com.sonar.sslr.api.typed.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -75,8 +78,6 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.List;
 
 import static org.sonar.java.ast.api.JavaPunctuator.COLON;
 import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
@@ -674,7 +675,7 @@ public class JavaGrammar {
       .is(
         f.newFormalParameter(
           MODIFIERS(),
-          TYPE(),
+          LOCAL_VARIABLE_TYPE(),
           VARIABLE_DECLARATOR_ID()));
   }
 
@@ -684,7 +685,17 @@ public class JavaGrammar {
 
   public VariableDeclaratorListTreeImpl LOCAL_VARIABLE_DECLARATION_STATEMENT() {
     return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaLexer.LOCAL_VARIABLE_DECLARATION_STATEMENT)
-      .is(f.completeLocalVariableDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS(), b.token(JavaPunctuator.SEMI)));
+      .is(f.completeLocalVariableDeclaration(MODIFIERS(), LOCAL_VARIABLE_TYPE(), VARIABLE_DECLARATORS(), b.token(JavaPunctuator.SEMI)));
+  }
+
+  public TypeTree LOCAL_VARIABLE_TYPE() {
+    return b.<TypeTree>nonterminal(JavaLexer.LOCAL_VARIABLE_TYPE)
+      .is(b.firstOf(VAR_TYPE(), TYPE()));
+  }
+
+  public VarTypeTreeImpl VAR_TYPE() {
+    return b.<VarTypeTreeImpl>nonterminal(JavaLexer.VAR_TYPE)
+      .is(f.newVarType(b.token(JavaSpecialIdentifier.VAR)));
   }
 
   public VariableDeclaratorListTreeImpl VARIABLE_DECLARATORS() {
@@ -778,7 +789,7 @@ public class JavaGrammar {
 
   public StatementExpressionListTreeImpl FOR_INIT_DECLARATION() {
     return b.<StatementExpressionListTreeImpl>nonterminal()
-      .is(f.newForInitDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS()));
+      .is(f.newForInitDeclaration(MODIFIERS(), LOCAL_VARIABLE_TYPE(), VARIABLE_DECLARATORS()));
   }
 
   public StatementExpressionListTreeImpl FOR_INIT_EXPRESSIONS() {
@@ -887,7 +898,14 @@ public class JavaGrammar {
   public Tree RESOURCE() {
     return b.<Tree>nonterminal(JavaLexer.RESOURCE)
       .is(b.firstOf(
-        f.newResource(MODIFIERS(), TYPE_QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.token(JavaPunctuator.EQU), EXPRESSION()),
+        f.newResource(
+          MODIFIERS(),
+          b.firstOf(
+            VAR_TYPE(),
+            TYPE_QUALIFIED_IDENTIFIER()),
+          VARIABLE_DECLARATOR_ID(),
+          b.token(JavaPunctuator.EQU),
+          EXPRESSION()),
         PRIMARY_WITH_SELECTOR()));
   }
 

@@ -20,14 +20,14 @@
 package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.GenericTokenType;
+import java.util.Arrays;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaRestrictedKeyword;
+import org.sonar.java.ast.api.JavaSpecialIdentifier;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
-
-import java.util.Arrays;
 
 import static org.sonar.java.ast.api.JavaKeyword.ENUM;
 import static org.sonar.java.ast.api.JavaPunctuator.AND;
@@ -163,6 +163,8 @@ public enum JavaLexer implements GrammarRuleKey {
   ARGUMENTS,
 
   LOCAL_VARIABLE_DECLARATION_STATEMENT,
+  LOCAL_VARIABLE_TYPE,
+  VAR_TYPE,
   VARIABLE_DECLARATOR,
 
   FORMAL_PARAMETER,
@@ -404,6 +406,11 @@ public enum JavaLexer implements GrammarRuleKey {
         restrictedKeywords[1],
         ArrayUtils.subarray(restrictedKeywords, 2, restrictedKeywords.length)),
       b.nextNot(LETTER_OR_DIGIT));
+
+    // special identifier introduced for java10: 'var'
+    for (JavaSpecialIdentifier tokenType : JavaSpecialIdentifier.values()) {
+      b.rule(tokenType).is(tokenType.getValue(), b.nextNot(LETTER_OR_DIGIT), SPACING);
+    }
   }
 
   private static void punctuator(LexerlessGrammarBuilder b, GrammarRuleKey ruleKey, String value) {

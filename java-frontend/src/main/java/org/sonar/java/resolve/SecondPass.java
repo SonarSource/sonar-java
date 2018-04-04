@@ -249,6 +249,7 @@ public class SecondPass implements JavaSymbol.Completer {
       Tree.Kind.ARRAY_TYPE,
       Tree.Kind.UNION_TYPE,
       Tree.Kind.PRIMITIVE_TYPE,
+      Tree.Kind.VAR_TYPE,
       Tree.Kind.INFERED_TYPE);
   }
 

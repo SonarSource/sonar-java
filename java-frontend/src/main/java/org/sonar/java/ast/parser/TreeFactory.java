@@ -76,6 +76,7 @@ import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
+import org.sonar.java.model.expression.VarTypeTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -339,6 +340,11 @@ public class TreeFactory {
       }
       return result;
     }
+  }
+
+  public VarTypeTreeImpl newVarType(InternalSyntaxToken varToken) {
+    // JLS10 - $14.4
+    return new VarTypeTreeImpl(varToken);
   }
 
   public TypeArgumentListTreeImpl newTypeArgumentList(InternalSyntaxToken openBracketToken,

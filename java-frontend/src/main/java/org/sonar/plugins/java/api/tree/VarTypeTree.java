@@ -17,27 +17,24 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.ast.parser.grammar.types;
+package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaLexer;
+import com.google.common.annotations.Beta;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+/**
+ * 'var' type tree used for local variables.
+ *
+ * JLS 10 - §14.4
+ *
+ * <pre>
+ *   {@link #varToken()}
+ * </pre>
+ *
+ * @since Java 10
+ */
+@Beta
+public interface VarTypeTree extends TypeTree {
 
-public class TypeTest {
-
-  @Test
-  public void ok() {
-    assertThat(JavaLexer.TYPE)
-      .matches("int")
-      .matches("var")
-      .matches("classType")
-      .matches("int []")
-      .matches("classType []")
-      .matches("int [] []")
-      .matches("classType [] []")
-      .matches("classType @Foo [] @Bar []")
-      .matches("int @Foo [] @Bar []");
-  }
+  SyntaxToken varToken();
 
 }

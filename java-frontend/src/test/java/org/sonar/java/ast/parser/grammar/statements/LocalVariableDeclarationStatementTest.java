@@ -34,7 +34,8 @@ public class LocalVariableDeclarationStatementTest {
     assertThat(b, JavaLexer.LOCAL_VARIABLE_DECLARATION_STATEMENT)
       .matches("final int a ;")
       .matches("@Foo List<Integer> a, b ;")
-      .matches("int a;");
+      .matches("int a;")
+      .matches("var a;");
   }
 
 }
