@@ -540,6 +540,7 @@ public final class CheckList {
       .add(NullCheckWithInstanceofCheck.class)
       .add(HostnameVerifierImplementationCheck.class)
       .add(SwitchDefaultLastCaseCheck.class)
+      .add(RegexPatternsNeedlesslyCheck.class)
       .build();
   }
 
