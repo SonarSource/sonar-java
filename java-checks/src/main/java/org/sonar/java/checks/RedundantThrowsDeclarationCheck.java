@@ -66,6 +66,9 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     ListTree<TypeTree> thrownList = methodTree.throwsClauses();
 
