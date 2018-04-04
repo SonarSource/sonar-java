@@ -21,9 +21,16 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
@@ -39,13 +46,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-
-import java.util.List;
-import java.util.Set;
-
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
+
+  private static final Predicate<JavaSymbol> NON_DEFAULT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
 
   private Set<Tree> excluded = Sets.newHashSet();
 
@@ -73,7 +77,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       // Primitive wrappers excluded because covered by S2154
       return;
     }
-    if(target != null && (isRedundantNumericalCast(cast, expressionType) || isSubtype(expressionType, target))) {
+    if (target != null && (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
     }
   }
@@ -81,7 +85,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   private static boolean requiredForMemberAccess(TypeCastTree typeCastTree) {
     ExpressionTree expression = typeCastTree.expression();
     if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      return false;
+      Tree parent = typeCastTree.parent();
+      return expression.is(Tree.Kind.METHOD_REFERENCE) && parent != null && skipParentheses(parent).is(Tree.Kind.MEMBER_SELECT);
     }
     Symbol symbol = ((MethodInvocationTree) expression).symbol();
     if (!symbol.isMethodSymbol()) {
@@ -139,9 +144,33 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return skip;
   }
 
-  private static boolean isSubtype(Type expression, Type target) {
-    return expression.isSubtypeOf(target);
+  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
+    return childType.isSubtypeOf(parentType)
+      && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
+        || isUnnecessaryLambdaCast(childType, parentType));
   }
+
+  private static boolean isUnnecessaryLambdaCast(Type childType, Type parentType) {
+    if (parentType.isSubtypeOf(childType)) {
+      return true;
+    }
+
+    List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(childType).collect(Collectors.toList());
+    return childMethods.isEmpty() || (childMethods.size() == 1 && isSingleAbstractMethodOverride(childMethods.get(0), parentType));
+  }
+
+  private static boolean isSingleAbstractMethodOverride(MethodJavaSymbol childMethod, Type parentType) {
+    MethodJavaSymbol overriddenSymbol = childMethod.overriddenSymbol();
+    return !childMethod.isDefault() && overriddenSymbol != null
+      && getMethodSymbolsOf(parentType).filter(NON_DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
+  }
+
+  private static Stream<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
+    return type.symbol().memberSymbols().stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(MethodJavaSymbol.class::cast);
+  }
+
   private static boolean isRedundantNumericalCast(Type cast, Type expressionType) {
     return cast.isNumerical() && cast.equals(expressionType);
   }
