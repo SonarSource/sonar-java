@@ -21,6 +21,10 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,14 +42,12 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -554,6 +556,21 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void assignment_expression() {
     assertThat(typeOf("var = 1")).isSameAs(variableSymbol.type);
+  }
+
+  @Test
+  public void wildcard_type_tree_have_a_wildcard_type() {
+    CompilationUnitTree cut = treeOf("abstract class A<T> { abstract A<? extends Runnable> foo(); }");
+    TypeTree returnType = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0)).returnType();
+    assertThat(returnType.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
+    Tree typeArg = ((ParameterizedTypeTree) returnType).typeArguments().get(0);
+    assertThat(typeArg.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
+    JavaType javaType = (JavaType) ((WildcardTree) typeArg).symbolType();
+    assertThat(javaType).isInstanceOf(WildCardType.class);
+    WildCardType wildCardType = (WildCardType) javaType;
+    assertThat(wildCardType.isSubtypeOf("java.lang.Runnable")).isTrue();
+    assertThat(wildCardType.bound.is("java.lang.Runnable")).isTrue();
+    assertThat(wildCardType.boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
   }
 
   @Test

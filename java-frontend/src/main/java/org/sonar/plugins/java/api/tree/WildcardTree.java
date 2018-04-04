@@ -20,10 +20,8 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-
-import javax.annotation.Nullable;
-
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Wildcard type argument.
@@ -47,8 +45,9 @@ import java.util.List;
  * @since Java 1.5
  */
 @Beta
-public interface WildcardTree extends Tree {
+public interface WildcardTree extends TypeTree {
 
+  @Override
   List<AnnotationTree> annotations();
 
   SyntaxToken queryToken();
