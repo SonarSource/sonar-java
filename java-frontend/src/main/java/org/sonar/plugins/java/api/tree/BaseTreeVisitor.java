@@ -287,6 +287,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitVarType(VarTypeTree tree) {
+    scan(tree.annotations());
+  }
+
+  @Override
   public void visitVariable(VariableTree tree) {
     scan(tree.modifiers());
     scan(tree.type());

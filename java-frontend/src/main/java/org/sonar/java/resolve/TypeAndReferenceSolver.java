@@ -23,6 +23,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -78,17 +87,6 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Computes types and references of Identifier and MemberSelectExpression.
@@ -395,7 +393,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     tree.accept(this);
     JavaType type = getType(tree);
-    if (tree.is(Tree.Kind.INFERED_TYPE)) {
+    if (tree.is(Tree.Kind.INFERED_TYPE, Tree.Kind.VAR_TYPE)) {
       type = symbols.deferedType((AbstractTypedTree) tree);
       registerType(tree, type);
     }

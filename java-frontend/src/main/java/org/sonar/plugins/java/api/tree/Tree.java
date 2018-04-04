@@ -20,9 +20,8 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-import org.sonar.sslr.grammar.GrammarRuleKey;
-
 import javax.annotation.Nullable;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
  * Common interface for all nodes in a syntax tree.
@@ -536,6 +535,11 @@ public interface Tree {
      * {@link IdentifierTree}
      */
     IDENTIFIER(IdentifierTree.class),
+
+    /**
+     * {@link VarTypeTree}
+     */
+    VAR_TYPE(VarTypeTree.class),
 
     /**
      * {@link VariableTree}

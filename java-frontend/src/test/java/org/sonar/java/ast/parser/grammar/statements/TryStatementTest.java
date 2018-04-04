@@ -52,13 +52,18 @@ public class TryStatementTest {
   }
 
   @Test
-  public void java9() {
+  public void java9_resources_without_initializer() {
     assertThat(JavaLexer.STATEMENT)
       .matches("try (resource) {}")
       .matches("try (new A().field) {}")
       .matches("try (super.resource;) {}")
       .matches("try (super.resource; Resource resource = new Resource()) {}")
-      .matches("try (super.resource; Resource resource = new Resource();) {}")
-    ;
+      .matches("try (super.resource; Resource resource = new Resource();) {}");
+  }
+
+  @Test
+  public void java10_resources_declared_with_var() {
+    assertThat(JavaLexer.STATEMENT)
+      .matches("try (var resource = new Resource()) {}");
   }
 }

@@ -17,27 +17,31 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.ast.parser.grammar.types;
+package org.sonar.java.ast.api;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaLexer;
+import com.google.common.annotations.Beta;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+/**
+ *
+ * Introduced with java 10 'var' special identifier for local variable declaration
+ *
+ * JLS10 - $14.4
+ *
+ * @since Java 10
+ */
+@Beta
+public enum JavaSpecialIdentifier implements GrammarRuleKey {
+  VAR("var");
 
-public class TypeTest {
+  private final String value;
 
-  @Test
-  public void ok() {
-    assertThat(JavaLexer.TYPE)
-      .matches("int")
-      .matches("var")
-      .matches("classType")
-      .matches("int []")
-      .matches("classType []")
-      .matches("int [] []")
-      .matches("classType [] []")
-      .matches("classType @Foo [] @Bar []")
-      .matches("int @Foo [] @Bar []");
+  JavaSpecialIdentifier(String word) {
+    this.value = word;
+  }
+
+  public String getValue() {
+    return value;
   }
 
 }

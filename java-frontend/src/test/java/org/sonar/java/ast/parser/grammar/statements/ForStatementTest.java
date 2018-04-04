@@ -30,10 +30,12 @@ public class ForStatementTest {
   public void realLife() {
     assertThat(JavaLexer.FOR_STATEMENT)
       .matches("for (int i = 0; i < 10; i++) {}")
+      .matches("for (var i = 0; i < 10; i++) {}")
       .matches("for (; i < 10; i++) {}")
       .matches("for (;; i++) {}")
       .matches("for (;;) {}")
-      .matches("for (File file : files) {}");
+      .matches("for (File file : files) {}")
+      .matches("for (var file : files) {}");
   }
 
 }
