@@ -47,7 +47,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Use \"Instant.truncatedTo\" instead." + context.getJavaVersion().java8CompatibilityMessage());
+    reportIssue(ExpressionUtils.methodName(mit), "Use \"ZonedDateTime.truncatedTo\" instead." + context.getJavaVersion().java8CompatibilityMessage());
   }
 
   private static MethodMatcher truncateMethodMatcher(String firstParameterType) {

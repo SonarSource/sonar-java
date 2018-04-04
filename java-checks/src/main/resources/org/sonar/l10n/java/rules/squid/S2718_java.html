@@ -11,8 +11,10 @@ public Date trunc(Date date) {
 <pre>
 public Date trunc(Date date) {
   Instant instant = date.toInstant();
-  instant = instant.truncatedTo(ChronoUnit.SECONDS);
-  return Date.from(instant);
+  ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+  ZonedDateTime truncatedZonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.SECONDS);
+  Instant truncatedInstant = truncatedZonedDateTime.toInstant();
+  return Date.from(truncatedInstant);
 }
 </pre>
 
