@@ -69,15 +69,18 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     if (!hasSemantic()) {
       return;
     }
-    MethodTree methodTree = (MethodTree) tree;
-    ListTree<TypeTree> thrownList = methodTree.throwsClauses();
 
+    checkMethodThrownList((MethodTree) tree);
+  }
+
+  private void checkMethodThrownList(MethodTree methodTree) {
+    ListTree<TypeTree> thrownList = methodTree.throwsClauses();
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
     boolean isOverridableMethod = methodTree.symbol().isOverridable();
-
     Set<String> documentedExceptionNames = CommentsMatcherHelper.getBlockTagsFromMethodJavadoc(methodTree, THROWS_JAVADOC_PATTERN, "clazz");
     Set<String> reported = new HashSet<>();
+
     for (TypeTree typeTree : thrownList) {
       Type exceptionType = typeTree.symbolType();
       if (hasTryWithResourceInBody && (exceptionType.is("java.io.IOException") || exceptionType.is("java.lang.Exception"))) {
