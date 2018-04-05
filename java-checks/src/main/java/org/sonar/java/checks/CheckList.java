@@ -382,6 +382,7 @@ public final class CheckList {
       .add(SynchronizedLockCheck.class)
       .add(SymmetricEqualsCheck.class)
       .add(LoopExecutingAtMostOnceCheck.class)
+      .add(RedundantJumpCheck.class)
       .add(CallSuperMethodFromInnerClassCheck.class)
       .add(SelectorMethodArgumentCheck.class)
       .add(ThreadAsRunnableArgumentCheck.class)

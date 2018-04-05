@@ -172,6 +172,7 @@ public class CFG {
     private Block trueBlock;
     private Block falseBlock;
     private Block exitBlock;
+    private Block successorWithoutJump;
 
     private Tree terminator;
 
@@ -283,6 +284,15 @@ public class CFG {
 
     public boolean isMethodExitBlock() {
       return successors().isEmpty();
+    }
+
+    /**
+     * This method makes the implementation of RSPEC-3626 almost trivial.
+     * @return the block which would be the successor of this one if this one didn't terminate with a jump
+     */
+    @CheckForNull
+    public Block successorWithoutJump() {
+      return successorWithoutJump;
     }
   }
 
@@ -546,7 +556,7 @@ public class CFG {
   }
 
   private void buildReturnStatement(ReturnStatementTree returnStatement) {
-    currentBlock = createUnconditionalJump(returnStatement, exitBlock());
+    currentBlock = createUnconditionalJump(returnStatement, exitBlock(), currentBlock);
     ExpressionTree expression = returnStatement.expression();
     if (expression != null) {
       build(expression);
@@ -734,7 +744,7 @@ public class CFG {
     } else {
       targetBlock = labelsBreakTarget.get(label.name());
     }
-    currentBlock = createUnconditionalJump(tree, targetBlock);
+    currentBlock = createUnconditionalJump(tree, targetBlock, currentBlock);
     if(currentBlock.exitBlock != null) {
       currentBlock.exitBlock = null;
     }
@@ -754,7 +764,7 @@ public class CFG {
     } else {
       targetBlock = labelsContinueTarget.get(label.name());
     }
-    currentBlock = createUnconditionalJump(tree, targetBlock);
+    currentBlock = createUnconditionalJump(tree, targetBlock, currentBlock);
     // cleanup for continue statement to a finally: continue block can't have an exit block.
     currentBlock.exitBlock = null;
   }
@@ -841,7 +851,7 @@ public class CFG {
       currentBlock = createBranch(tree, body, falseBranch);
       buildCondition(condition, body, falseBranch);
     } else {
-      currentBlock = createUnconditionalJump(tree, body);
+      currentBlock = createUnconditionalJump(tree, body, null);
     }
     updateBlock.addSuccessor(currentBlock);
     // process init
@@ -902,7 +912,7 @@ public class CFG {
         .map(t -> enclosingTryCatch.catches.get(t))
         .orElse(exitBlock());
     }
-    currentBlock = createUnconditionalJump(throwStatementTree, jumpTo);
+    currentBlock = createUnconditionalJump(throwStatementTree, jumpTo, currentBlock);
     build(throwStatementTree.expression());
   }
 
@@ -910,7 +920,7 @@ public class CFG {
     // First create the block of the statement,
     build(sst.block());
     // Then create a single block with the SYNCHRONIZED tree as terminator
-    currentBlock = createUnconditionalJump(sst, currentBlock);
+    currentBlock = createUnconditionalJump(sst, currentBlock, null);
     build(sst.expression());
   }
 
@@ -1002,7 +1012,7 @@ public class CFG {
     build(assertStatementTree.condition());
   }
 
-  private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {
+  private Block createUnconditionalJump(Tree terminator, @Nullable Block target, @Nullable Block successorWithoutJump) {
     Block result = createBlock();
     result.terminator = terminator;
     if (target != null) {
@@ -1012,6 +1022,7 @@ public class CFG {
         result.addSuccessor(target);
       }
     }
+    result.successorWithoutJump = successorWithoutJump;
     return result;
   }
 
