@@ -64,15 +64,15 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
+    ListTree<TypeTree> thrownList = ((MethodTree) tree).throwsClauses();
+    if (!hasSemantic() || thrownList.isEmpty()) {
       return;
     }
 
-    checkMethodThrownList((MethodTree) tree);
+    checkMethodThrownList((MethodTree) tree, thrownList);
   }
 
-  private void checkMethodThrownList(MethodTree methodTree) {
-    ListTree<TypeTree> thrownList = methodTree.throwsClauses();
+  private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
     boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();

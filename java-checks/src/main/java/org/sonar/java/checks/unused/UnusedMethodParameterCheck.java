@@ -77,7 +77,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.block() == null || isExcluded(methodTree)) {
+    if (methodTree.block() == null || methodTree.parameters().isEmpty() || isExcluded(methodTree)) {
       return;
     }
     Set<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();

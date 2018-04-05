@@ -43,22 +43,68 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class Javadoc {
+  enum BlockTag {
+    RETURN(Pattern.compile("^@return(\\s++)?(?<descr>.+)?"), false),
+    PARAM(Pattern.compile("^@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?"), true),
+    EXCEPTIONS(Pattern.compile("^(?:@throws|@exception)\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?"), true);
+
+    private final Pattern pattern;
+    private final boolean patternWithName;
+
+    BlockTag(Pattern pattern, boolean patternWithName) {
+      this.pattern = pattern;
+      this.patternWithName = patternWithName;
+    }
+
+    Pattern getPattern() {
+      return pattern;
+    }
+
+    boolean isPatternWithName() {
+      return patternWithName;
+    }
+  }
+
+  static class BlockTagKey {
+    private final BlockTag tag;
+    private final String name;
+
+    BlockTagKey(BlockTag tag, @Nullable String name) {
+      this.tag = tag;
+      this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      } else if (o instanceof BlockTagKey) {
+        BlockTagKey other = ((BlockTagKey) o);
+        return tag == other.tag && Objects.equals(name, other.name);
+      }
+      return false;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(tag, name);
+    }
+
+    static BlockTagKey of(BlockTag tag, @Nullable String name) {
+      return new BlockTagKey(tag, name);
+    }
+  }
+
   private static final Tree.Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Tree.Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
   private static final List<String> GENERIC_EXCEPTIONS = Arrays.asList("Exception", "java.lang.Exception");
-  private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile("^@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
-  private static final Pattern EXCEPTION_JAVADOC_PATTERN = Pattern.compile("^(?:@throws|@exception)\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
-  private static final Pattern RETURN_JAVADOC_PATTERN = Pattern.compile("^@return(\\s++)?(?<descr>.+)?");
-  private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile("^@\\S+.*");
+  private static final Pattern BLOCK_TAG_LINE_PATTERN = Pattern.compile("^@\\S+.*");
   private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
 
   private final List<String> elementParameters;
   private final List<String> elementExceptionNames;
-  private final List<String> javadocLines;
-  private String mainDescription;
-  private String returnDescription;
-  private Map<String, List<String>> javadocParameters;
-  private Map<String, List<String>> javadocExceptions;
+  private final String mainDescription;
+  private final Map<BlockTagKey, List<String>> blockTagDescriptions;
 
   public Javadoc(Tree tree) {
     if (tree.is(METHOD_KINDS)) {
@@ -82,21 +128,22 @@ public class Javadoc {
       elementExceptionNames = Collections.emptyList();
     }
 
-    javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree));
+    List<String> javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree));
+    mainDescription = getDescription(javadocLines, -1, "");
+    blockTagDescriptions = extractBlockTags(javadocLines, Arrays.asList(BlockTag.values()));
   }
 
   public boolean noMainDescription() {
-    return isEmptyDescription(getMainDescription());
+    return isEmptyDescription(mainDescription);
   }
 
   public boolean noReturnDescription() {
-    return isEmptyDescription(getReturnDescription());
+    return isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.RETURN, null)));
   }
 
   public Set<String> undocumentedParameters() {
-    Map<String, List<String>> javadocParametersMap = getJavadocParameters();
     return elementParameters.stream()
-      .filter(name -> isEmptyDescription(javadocParametersMap.get(name)))
+      .filter(name -> isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.PARAM, name))))
       .collect(Collectors.toSet());
   }
 
@@ -112,27 +159,56 @@ public class Javadoc {
         .collect(Collectors.toSet());
     }
     return exceptionNames.stream()
-      .filter(this::noDescriptionForException)
       .map(Javadoc::toSimpleName)
+      .filter(simpleName -> noDescriptionForException(thrownExceptionsMap, simpleName))
       .collect(Collectors.toSet());
   }
 
-  private boolean noDescriptionForException(String exceptionName) {
-    Map<String, List<String>> thrownExceptionsMap = getJavadocExceptions();
-    List<String> descriptions = thrownExceptionsMap.get(exceptionName);
-    if (descriptions == null) {
-      // exceptions used in javadoc is using simple name when method declaration use fully qualified name
-      descriptions = thrownExceptionsMap.get(toSimpleName(exceptionName));
-    }
+  private boolean noDescriptionForException(Map<String, List<String>> thrownExceptionsMap, String exceptionSimpleName) {
+    List<String> descriptions = thrownExceptionsMap.get(exceptionSimpleName);
     if (descriptions == null) {
       // exceptions used in javadoc is using fully qualified name when method declaration use simple name
       descriptions = thrownExceptionsMap.entrySet().stream()
-        .filter(e -> toSimpleName(e.getKey()).equals(exceptionName))
+        .filter(e -> toSimpleName(e.getKey()).equals(exceptionSimpleName))
         .map(Map.Entry::getValue)
         .flatMap(List::stream)
         .collect(Collectors.toList());
     }
     return isEmptyDescription(descriptions);
+  }
+
+  private Map<String, List<String>> getJavadocExceptions() {
+    return blockTagDescriptions.entrySet().stream()
+      .filter(entry -> entry.getKey().tag == BlockTag.EXCEPTIONS && entry.getKey().name != null)
+      .collect(Collectors.toMap(entry -> entry.getKey().name, Map.Entry::getValue));
+  }
+
+  String getMainDescription() {
+    return mainDescription;
+  }
+
+  Map<BlockTagKey, List<String>> getBlockTagDescriptions() {
+    return blockTagDescriptions;
+  }
+
+  private static Map<BlockTagKey, List<String>> extractBlockTags(List<String> javadocLines, List<BlockTag> tags) {
+    Map<BlockTagKey, List<String>> results = new HashMap<>();
+    for (int i = 0; i < javadocLines.size(); i++) {
+      for (int j = 0; j < tags.size(); j++) {
+        BlockTag tag = tags.get(j);
+        Matcher matcher = tag.getPattern().matcher(javadocLines.get(i));
+        if (matcher.matches()) {
+          BlockTagKey key = BlockTagKey.of(tag, tag.isPatternWithName() ? matcher.group("name") : null);
+          List<String> descriptions = results.computeIfAbsent(key, k -> new ArrayList<>());
+          String newDescription = getDescription(javadocLines, i, matcher.group("descr"));
+          if (!newDescription.isEmpty()) {
+            descriptions.add(newDescription);
+            break;
+          }
+        }
+      }
+    }
+    return results;
   }
 
   private static String toSimpleName(String exceptionName) {
@@ -176,77 +252,15 @@ public class Javadoc {
     return Arrays.stream(lines).map(String::trim).collect(Collectors.toList());
   }
 
-  private static Map<String, List<String>> extractToMap(List<String> lines, Pattern pattern) {
-    Map<String, List<String>> results = new HashMap<>();
-    for (int i = 0; i < lines.size(); i++) {
-      Matcher matcher = pattern.matcher(lines.get(i));
-      if (matcher.matches()) {
-        List<String> descriptions = results.computeIfAbsent(matcher.group("name"), key -> new ArrayList<>());
-        String newDescription = getFullDescription(lines, i, matcher.group("descr"));
-        if (!newDescription.isEmpty()) {
-          descriptions.add(newDescription);
-        }
-      }
-    }
-
-    return results;
-  }
-
-  private static String extractReturnDescription(List<String> lines) {
-    for (int i = 0; i < lines.size(); i++) {
-      String line = lines.get(i);
-      Matcher matcher = RETURN_JAVADOC_PATTERN.matcher(line);
-      if (matcher.matches()) {
-        String returnDescription = getFullDescription(lines, i, matcher.group("descr"));
-        if (!returnDescription.isEmpty()) {
-          return returnDescription;
-        }
-      }
-    }
-    return "";
-  }
-
-  private static String getFullDescription(List<String> lines, int i, @Nullable String currentValue) {
+  private static String getDescription(List<String> lines, int lineIndex, @Nullable String currentValue) {
     StringBuilder sb = new StringBuilder();
     sb.append(currentValue != null ? currentValue : "");
-    int currentIndex = i;
-    while (currentIndex + 1 < lines.size() && !BLOCK_TAG_PATTERN.matcher(lines.get(currentIndex + 1)).matches()) {
+    int currentIndex = lineIndex;
+    while (currentIndex + 1 < lines.size() && !BLOCK_TAG_LINE_PATTERN.matcher(lines.get(currentIndex + 1)).matches()) {
       sb.append(" ");
       sb.append(lines.get(currentIndex + 1));
       currentIndex++;
     }
     return sb.toString().trim();
-  }
-
-  private String getMainDescription() {
-    if (mainDescription == null) {
-      mainDescription = getFullDescription(javadocLines, -1, "");
-    }
-    return mainDescription;
-  }
-
-  private Map<String, List<String>> getJavadocParameters() {
-    if (javadocParameters == null) {
-      javadocParameters = extractToMap(javadocLines, PARAMETER_JAVADOC_PATTERN);
-    }
-    return javadocParameters;
-  }
-
-  private Map<String, List<String>> getJavadocExceptions() {
-    if (javadocExceptions == null) {
-      javadocExceptions = extractToMap(javadocLines, EXCEPTION_JAVADOC_PATTERN);
-    }
-    return javadocExceptions;
-  }
-
-  private String getReturnDescription() {
-    if (returnDescription == null) {
-      returnDescription = extractReturnDescription(javadocLines);
-    }
-    return returnDescription;
-  }
-
-  List<String> getJavadocLines() {
-    return javadocLines;
   }
 }

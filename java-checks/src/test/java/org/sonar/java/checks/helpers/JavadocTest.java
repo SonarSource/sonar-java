@@ -101,9 +101,10 @@ public class JavadocTest {
   @Test
   public void test_no_exception_on_invalid_type() {
     Javadoc invalidJavadoc = new Javadoc(tree);
-    assertThat(invalidJavadoc.getJavadocLines()).isEmpty();
     assertThat(invalidJavadoc.undocumentedParameters()).isEmpty();
-    ;
+    assertThat(invalidJavadoc.undocumentedThrownExceptions()).isEmpty();
+    assertThat(invalidJavadoc.getBlockTagDescriptions()).isEmpty();
+    assertThat(invalidJavadoc.getMainDescription()).isEmpty();
   }
 
   @Test
