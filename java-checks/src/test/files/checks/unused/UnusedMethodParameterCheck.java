@@ -203,30 +203,45 @@ class NotStrutsAction {
 
 class DocumentedMethod {
   /**
-   * @param firstArg
-   * @param secondArg
-   * @param fourthArg
+   * @param firstArg proper javadoc description
+   * @param secondArg proper javadoc description
+   * @param fourthArg proper javadoc description
    */
   void foo(String firstArg, int secondArg, double thirdArg, float fourthArg) { // Noncompliant {{Remove this unused method parameter "thirdArg".}}
     doSomething();
   }
 
   /**
+   * @param firstArg proper javadoc description
+   */
+  protected void bar(String firstArg) { // Compliant - parameter has proper javadoc
+    doSomething();
+  }
+
+  /**
+   * Overridable method, but a proper javadoc description is missing for unused parameter
    * @param firstArg
+   */
+  public void foobar(String firstArg) { // Noncompliant
+    doSomething();
+  }
+
+  /**
+   * @param firstArg proper javadoc description
    */
   private void nonOverrideableMethod(String firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
     doSomething();
   }
 
   /**
-   * @param firstArg
+   * @param firstArg proper javadoc description
    */
   static void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
     doSomething();
   }
 
   /**
-   * @param firstArg
+   * @param firstArg proper javadoc description
    */
   final void nonOverrideableMethod(Object firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
     doSomething();
@@ -235,7 +250,7 @@ class DocumentedMethod {
 
 final class FinalDocumentedMethod {
   /**
-   * @param firstArg
+   * @param firstArg proper javadoc description
    */
   void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
     doSomething();

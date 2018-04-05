@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.ClassJavaType;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -30,15 +32,13 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
 
 @Rule(key = "S1699")
 public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisitor {
@@ -88,7 +88,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
-        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
+        if (symbol.isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol).isOverridable() && isMethodDefinedOnConstructedType(symbol)) {
           reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
@@ -129,10 +129,6 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
         }
       }
       return constructorType.equals(methodEnclosingClass);
-    }
-
-    private boolean isOverridableMethod(Symbol symbol) {
-      return symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic();
     }
   }
 

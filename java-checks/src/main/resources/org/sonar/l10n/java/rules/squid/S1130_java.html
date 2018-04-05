@@ -17,4 +17,17 @@ void foo() throws MyException {}
 void bar() throws Throwable {}
 void baz() {}
 </pre>
+<h2>Exceptions</h2>
+<p>In the case of an exception type that cannot be thrown from the method body, the rule will not raise any issue if the method is overridable
+(non-final, or not member of a final class, non-static, non-private) and is documented with a proper javadoc.</p>
+<pre>
+class A extends B {
+  /**
+   * @throws IOException Overriding classes may throw this exception if they print values into a file
+   */
+  protected void print() throws IOException { // no issue, method is overridable and the exception type that is not thrown inside the body has proper javadoc
+    System.out.println("foo");
+  }
+}
+</pre>
 

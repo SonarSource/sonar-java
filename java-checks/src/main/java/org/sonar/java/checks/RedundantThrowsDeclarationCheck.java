@@ -23,14 +23,14 @@ import com.google.common.collect.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.checks.helpers.CommentsMatcherHelper;
+import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -57,8 +57,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 @RspecKey("S1130")
 public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern THROWS_JAVADOC_PATTERN = Pattern.compile(".*(?:@throws|@exception)\\s++(?<clazz>\\S*)(\\s++)?(?<descr>.+)?");
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
@@ -77,8 +75,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     ListTree<TypeTree> thrownList = methodTree.throwsClauses();
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
-    boolean isOverridableMethod = methodTree.symbol().isOverridable();
-    Set<String> documentedExceptionNames = CommentsMatcherHelper.getBlockTagsFromMethodJavadoc(methodTree, THROWS_JAVADOC_PATTERN, "clazz");
+    boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
+    Set<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 
     for (TypeTree typeTree : thrownList) {
@@ -97,7 +95,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s' which is a runtime exception.", fullyQualifiedName));
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
           reportIssue(typeTree, String.format("Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
-        } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || !documentedExceptionNames.contains(exceptionType.name()))) {
+        } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
             methodTreeType(methodTree)));
         }

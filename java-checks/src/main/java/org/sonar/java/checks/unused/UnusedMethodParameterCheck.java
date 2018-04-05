@@ -26,14 +26,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.CommentsMatcherHelper;
+import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -65,7 +65,6 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
   private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
-  private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -81,15 +80,15 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     if (methodTree.block() == null || isExcluded(methodTree)) {
       return;
     }
-    Set<String> documentedParameters = CommentsMatcherHelper.getBlockTagsFromMethodJavadoc(methodTree, PARAMETER_JAVADOC_PATTERN, "name");
-    boolean overridableMethod = methodTree.symbol().isOverridable();
+    Set<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
+    boolean overridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
     List<IdentifierTree> unused = Lists.newArrayList();
     for (VariableTree var : methodTree.parameters()) {
       Symbol symbol = var.symbol();
       if (symbol.usages().isEmpty()
         && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)
         && !isStrutsActionParameter(var)
-        && (!overridableMethod || !documentedParameters.contains(symbol.name()))) {
+        && (!overridableMethod || undocumentedParameters.contains(symbol.name()))) {
         unused.add(var.simpleName());
       }
     }

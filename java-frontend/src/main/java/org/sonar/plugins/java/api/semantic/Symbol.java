@@ -194,7 +194,6 @@ public interface Symbol {
     @Override
     MethodTree declaration();
 
-    boolean isOverridable();
   }
 
   /**
