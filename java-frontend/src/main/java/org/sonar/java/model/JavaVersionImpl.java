@@ -19,11 +19,10 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaVersion;
-
-import javax.annotation.Nullable;
 
 public class JavaVersionImpl implements JavaVersion {
 
@@ -42,16 +41,19 @@ public class JavaVersionImpl implements JavaVersion {
   }
 
   public static JavaVersion fromString(@Nullable String javaVersion) {
-    if (javaVersion != null) {
-      try {
-        return new JavaVersionImpl(Integer.parseInt(javaVersion.replaceAll("1.", "")));
-      } catch (NumberFormatException e) {
-        LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
-          + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
-          + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
-      }
+    if (javaVersion == null) {
+      return new JavaVersionImpl();
     }
-    return new JavaVersionImpl();
+    try {
+      String cleanedVersion = javaVersion.startsWith("1.") ? javaVersion.substring(2) : javaVersion;
+      int versionAsInt = Integer.parseInt(cleanedVersion);
+      return new JavaVersionImpl(versionAsInt);
+    } catch (NumberFormatException e) {
+      LOG.warn("Invalid java version (got \"" + javaVersion + "\"). "
+        + "The version will be ignored. Accepted formats are \"1.X\", or simply \"X\" "
+        + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
+      return new JavaVersionImpl();
+    }
   }
 
   @Override

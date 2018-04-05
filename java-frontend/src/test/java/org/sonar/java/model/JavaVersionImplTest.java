@@ -98,5 +98,10 @@ public class JavaVersionImplTest {
     version = JavaVersionImpl.fromString("7");
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(7);
+
+    version = JavaVersionImpl.fromString("10");
+    assertThat(version.isNotSet()).isFalse();
+    assertThat(version.asInt()).isEqualTo(10);
+    assertThat(version.isJava8Compatible()).isTrue();
   }
 }
