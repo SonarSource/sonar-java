@@ -231,7 +231,7 @@ public class BytecodeCFGConstructionTest {
   @BeforeClass
   public static void verifyTestData() {
     List<Integer> opcodes = data().stream().map(data -> ((TestInput) data[0]).opcode).collect(Collectors.toList());
-    assertThat(opcodes).containsAll(Instructions.ASM_OPCODES);
+    assertThat(opcodes).containsAll(Instructions.OPCODES);
   }
 
   public BytecodeCFGConstructionTest(TestInput testInput, Instruction expected) {

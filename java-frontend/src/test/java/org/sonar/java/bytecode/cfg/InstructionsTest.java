@@ -27,6 +27,6 @@ public class InstructionsTest {
 
   @Test
   public void test() throws Exception {
-    assertThat(Instructions.ALL).isEqualTo(Instructions.ASM_OPCODES);
+    assertThat(Instructions.ALL).isEqualTo(Instructions.OPCODES);
   }
 }
