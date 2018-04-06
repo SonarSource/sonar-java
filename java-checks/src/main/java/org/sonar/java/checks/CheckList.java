@@ -543,6 +543,7 @@ public final class CheckList {
       .add(SwitchDefaultLastCaseCheck.class)
       .add(RegexPatternsNeedlesslyCheck.class)
       .add(SpecializedFunctionalInterfacesCheck.class)
+      .add(IndentationAfterConditionalCheck.class)
       .build();
   }
 
