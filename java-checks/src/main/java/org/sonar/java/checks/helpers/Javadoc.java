@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks.helpers;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +44,8 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class Javadoc {
-  enum BlockTag {
+public final class Javadoc {
+  private enum BlockTag {
     RETURN(Pattern.compile("^@return(\\s++)?(?<descr>.+)?"), false),
     PARAM(Pattern.compile("^@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?"), true),
     EXCEPTIONS(Pattern.compile("^(?:@throws|@exception)\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?"), true);
@@ -56,16 +58,16 @@ public class Javadoc {
       this.patternWithName = patternWithName;
     }
 
-    Pattern getPattern() {
+    private Pattern getPattern() {
       return pattern;
     }
 
-    boolean isPatternWithName() {
+    private boolean isPatternWithName() {
       return patternWithName;
     }
   }
 
-  static class BlockTagKey {
+  private static class BlockTagKey {
     private final BlockTag tag;
     private final String name;
 
@@ -90,7 +92,7 @@ public class Javadoc {
       return Objects.hash(tag, name);
     }
 
-    static BlockTagKey of(BlockTag tag, @Nullable String name) {
+    private static BlockTagKey of(BlockTag tag, @Nullable String name) {
       return new BlockTagKey(tag, name);
     }
   }
@@ -105,6 +107,8 @@ public class Javadoc {
   private final List<String> elementExceptionNames;
   private final String mainDescription;
   private final Map<BlockTagKey, List<String>> blockTagDescriptions;
+  private final EnumMap<BlockTag, List<String>> undocumentedNamedTags;
+  private Map<String, List<String>> javadocExceptions;
 
   public Javadoc(Tree tree) {
     if (tree.is(METHOD_KINDS)) {
@@ -131,6 +135,7 @@ public class Javadoc {
     List<String> javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree));
     mainDescription = getDescription(javadocLines, -1, "");
     blockTagDescriptions = extractBlockTags(javadocLines, Arrays.asList(BlockTag.values()));
+    undocumentedNamedTags = new EnumMap<>(BlockTag.class);
   }
 
   public boolean noMainDescription() {
@@ -141,13 +146,21 @@ public class Javadoc {
     return isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.RETURN, null)));
   }
 
-  public Set<String> undocumentedParameters() {
-    return elementParameters.stream()
-      .filter(name -> isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.PARAM, name))))
-      .collect(Collectors.toSet());
+  public List<String> undocumentedParameters() {
+    return undocumentedNamedTags.computeIfAbsent(BlockTag.PARAM, key -> computeUndocumentedParameters());
   }
 
-  public Set<String> undocumentedThrownExceptions() {
+  public List<String> undocumentedThrownExceptions() {
+    return undocumentedNamedTags.computeIfAbsent(BlockTag.EXCEPTIONS, key -> computeUndocumentedThrownExceptions());
+  }
+
+  private List<String> computeUndocumentedParameters() {
+    return elementParameters.stream()
+      .filter(name -> isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.PARAM, name))))
+      .collect(Collectors.toList());
+  }
+
+  private List<String> computeUndocumentedThrownExceptions() {
     Map<String, List<String>> thrownExceptionsMap = getJavadocExceptions();
     List<String> exceptionNames = elementExceptionNames;
     if (exceptionNames.size() == 1 && GENERIC_EXCEPTIONS.contains(toSimpleName(exceptionNames.get(0))) && !thrownExceptionsMap.isEmpty()) {
@@ -156,12 +169,12 @@ public class Javadoc {
         .filter(e -> isEmptyDescription(e.getValue()))
         .map(Map.Entry::getKey)
         .map(Javadoc::toSimpleName)
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
     }
     return exceptionNames.stream()
       .map(Javadoc::toSimpleName)
       .filter(simpleName -> noDescriptionForException(thrownExceptionsMap, simpleName))
-      .collect(Collectors.toSet());
+      .collect(Collectors.toList());
   }
 
   private boolean noDescriptionForException(Map<String, List<String>> thrownExceptionsMap, String exceptionSimpleName) {
@@ -178,17 +191,12 @@ public class Javadoc {
   }
 
   private Map<String, List<String>> getJavadocExceptions() {
-    return blockTagDescriptions.entrySet().stream()
-      .filter(entry -> entry.getKey().tag == BlockTag.EXCEPTIONS && entry.getKey().name != null)
-      .collect(Collectors.toMap(entry -> entry.getKey().name, Map.Entry::getValue));
-  }
-
-  String getMainDescription() {
-    return mainDescription;
-  }
-
-  Map<BlockTagKey, List<String>> getBlockTagDescriptions() {
-    return blockTagDescriptions;
+    if (javadocExceptions == null) {
+      javadocExceptions = blockTagDescriptions.entrySet().stream()
+        .filter(entry -> entry.getKey().tag == BlockTag.EXCEPTIONS && entry.getKey().name != null)
+        .collect(Collectors.toMap(entry -> entry.getKey().name, Map.Entry::getValue));
+    }
+    return javadocExceptions;
   }
 
   private static Map<BlockTagKey, List<String>> extractBlockTags(List<String> javadocLines, List<BlockTag> tags) {
@@ -262,5 +270,15 @@ public class Javadoc {
       currentIndex++;
     }
     return sb.toString().trim();
+  }
+
+  @VisibleForTesting
+  String getMainDescription() {
+    return mainDescription;
+  }
+
+  @VisibleForTesting
+  Map<BlockTagKey, List<String>> getBlockTagDescriptions() {
+    return blockTagDescriptions;
   }
 }

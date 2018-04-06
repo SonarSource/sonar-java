@@ -80,7 +80,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     if (methodTree.block() == null || methodTree.parameters().isEmpty() || isExcluded(methodTree)) {
       return;
     }
-    Set<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
+    List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
     boolean overridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
     List<IdentifierTree> unused = Lists.newArrayList();
     for (VariableTree var : methodTree.parameters()) {

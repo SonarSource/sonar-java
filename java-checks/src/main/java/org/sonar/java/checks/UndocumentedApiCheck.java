@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
@@ -130,14 +130,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       if (javadoc.noMainDescription() && !isNonVoidMethodWithNoParameter(tree, javadoc)) {
         context.reportIssue(this, reportTree, "Document this public " + getType(tree) + " by adding an explicit description.");
       } else {
-        Set<String> undocumentedParameters = javadoc.undocumentedParameters();
+        List<String> undocumentedParameters = javadoc.undocumentedParameters();
         if (!undocumentedParameters.isEmpty()) {
           context.reportIssue(this, reportTree, "Document the parameter(s): " + undocumentedParameters.stream().collect(Collectors.joining(", ")));
         }
         if (hasNonVoidReturnType(tree) && javadoc.noReturnDescription()) {
           context.reportIssue(this, reportTree, "Document this method return value.");
         }
-        Set<String> undocumentedExceptions = javadoc.undocumentedThrownExceptions();
+        List<String> undocumentedExceptions = javadoc.undocumentedThrownExceptions();
         if (!undocumentedExceptions.isEmpty()) {
           context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + undocumentedExceptions.stream().collect(Collectors.joining(", ")));
         }

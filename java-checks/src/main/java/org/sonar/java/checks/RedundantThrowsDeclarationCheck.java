@@ -76,7 +76,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
     boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
-    Set<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
+    List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 
     for (TypeTree typeTree : thrownList) {
