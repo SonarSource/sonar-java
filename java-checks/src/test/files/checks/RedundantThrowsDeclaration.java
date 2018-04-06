@@ -208,3 +208,78 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
 class MyException extends Exception {}
 class MyError extends Error {}
 class MyRuntimeException extends RuntimeException {}
+class MyException2 extends Exception {}
+
+abstract class NonThrownExceptionClass {
+  abstract void bar();
+
+  final class FinalClass {
+
+    /**
+     * @throws MyException proper javadoc description
+     */
+    void nonOverrideableMethod() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+  }
+
+  class NormalClass {
+    /**
+     * @exception MyException proper javadoc description
+     */
+    private void nonOverrideableMethod1() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException proper javadoc description
+     */
+    static void nonOverrideableMethod2() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException proper javadoc description
+     */
+    final void nonOverrideableMethod3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+
+    /**
+     * @throws MyException proper javadoc description
+     */
+    void overrideableMethod1() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * @throws MyException proper javadoc description
+     */
+    protected void overrideableMethod2() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * @exception MyException proper javadoc description
+     */
+    public void overrideableMethod3() throws MyException { // Compliant : can be overridden and has javadoc associated
+      bar();
+    }
+
+    /**
+     * Overridable method but javadoc for exception is missing proper description
+     * @exception MyException
+     */
+    public void overrideableMethod4() throws MyException { // Noncompliant
+      bar();
+    }
+
+    /**
+     * @exception MyException proper javadoc description
+     * @throws  MyException2 proper javadoc description
+     */
+    public void missingJavadocForException() throws MyException, MyException2, java.io.IOException { // Noncompliant {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
+      bar();
+    }
+  }
+}

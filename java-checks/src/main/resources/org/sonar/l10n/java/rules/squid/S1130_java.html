@@ -17,4 +17,38 @@ void foo() throws MyException {}
 void bar() throws Throwable {}
 void baz() {}
 </pre>
+<h2>Exceptions</h2>
+<p>The rule will not raise any issue for exceptions that cannot be thrown from the method body:</p>
+<ul>
+  <li> in overriding and implementation methods </li>
+  <li> in interface <code>default</code> methods </li>
+  <li> in non-private methods that only <code>throw</code>, have empty bodies, or a single return statement . </li>
+  <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
+  javadoc. </li>
+</ul>
+<pre>
+class A extends B {
+  @Override
+  void doSomething() throws IOException {
+    compute(a);
+  }
+
+  public void foo() throws IOException {}
+
+  protected void bar() throws IOException {
+    throw new UnsupportedOperationException("This method should be implemented in subclasses");
+  }
+
+  Object foobar(String s) throws IOException {
+    return null;
+  }
+
+  /**
+   * @throws IOException Overriding classes may throw this exception if they print values into a file
+   */
+  protected void print() throws IOException { // no issue, method is overridable and the exception has proper javadoc
+    System.out.println("foo");
+  }
+}
+</pre>
 

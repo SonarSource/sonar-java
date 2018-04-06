@@ -22,23 +22,21 @@ package org.sonar.java.checks.unused;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -52,7 +50,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -66,9 +63,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
     MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
-  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping", 
+  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
-  private static final Pattern PARAMETER_JAVADOC_PATTERN = Pattern.compile(".*@param\\s++(?<name>\\S*)(\\s++)?(?<descr>.+)?");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -81,18 +77,18 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.block() == null || isExcluded(methodTree)) {
+    if (methodTree.block() == null || methodTree.parameters().isEmpty() || isExcluded(methodTree)) {
       return;
     }
-    Set<String> documentedParameters = documentedParameters(methodTree);
-    boolean overridableMethod = overridableMethod(methodTree.symbol());
+    List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
+    boolean overridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
     List<IdentifierTree> unused = Lists.newArrayList();
     for (VariableTree var : methodTree.parameters()) {
       Symbol symbol = var.symbol();
       if (symbol.usages().isEmpty()
         && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)
         && !isStrutsActionParameter(var)
-        && (!overridableMethod || !documentedParameters.contains(symbol.name()))) {
+        && (!overridableMethod || undocumentedParameters.contains(symbol.name()))) {
         unused.add(var.simpleName());
       }
     }
@@ -119,21 +115,6 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       msg = "Remove this unused method parameter \"" + firstUnused.name() + "\".";
     }
     reportIssue(firstUnused, msg, locations, null);
-  }
-
-  private static boolean overridableMethod(MethodSymbol symbol) {
-    return !(symbol.isPrivate() || symbol.isStatic() || symbol.isFinal() || symbol.owner().isFinal());
-  }
-
-  private static Set<String> documentedParameters(MethodTree methodTree) {
-    return methodTree.firstToken().trivias().stream()
-      .map(SyntaxTrivia::comment)
-      .map(c -> c.split("\\r?\\n"))
-      .flatMap(Arrays::stream)
-      .map(PARAMETER_JAVADOC_PATTERN::matcher)
-      .filter(Matcher::matches)
-      .map(matcher -> matcher.group("name"))
-      .collect(Collectors.toSet());
   }
 
   private static boolean isExcluded(MethodTree tree) {

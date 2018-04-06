@@ -26,9 +26,11 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -62,13 +64,21 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree methodTree = (MethodTree) tree;
-    ListTree<TypeTree> thrownList = methodTree.throwsClauses();
+    ListTree<TypeTree> thrownList = ((MethodTree) tree).throwsClauses();
+    if (!hasSemantic() || thrownList.isEmpty()) {
+      return;
+    }
 
+    checkMethodThrownList((MethodTree) tree, thrownList);
+  }
+
+  private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
-
+    boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
+    List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
+
     for (TypeTree typeTree : thrownList) {
       Type exceptionType = typeTree.symbolType();
       if (hasTryWithResourceInBody && (exceptionType.is("java.io.IOException") || exceptionType.is("java.lang.Exception"))) {
@@ -85,7 +95,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s' which is a runtime exception.", fullyQualifiedName));
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
           reportIssue(typeTree, String.format("Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
-        } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions)) {
+        } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
             methodTreeType(methodTree)));
         }
