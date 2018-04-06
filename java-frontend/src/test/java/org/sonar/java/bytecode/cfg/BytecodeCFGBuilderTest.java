@@ -216,7 +216,7 @@ public class BytecodeCFGBuilderTest {
 
     BytecodeCFG cfg = ins.cfg();
     Multiset<String> cfgOpcodes = cfgOpcodes(cfg);
-    List<String> collect = Instructions.ASM_OPCODES.stream().filter(filterReturnAndThrow).map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
+    List<String> collect = Instructions.OPCODES.stream().filter(filterReturnAndThrow).map(op -> Printer.OPCODES[op]).collect(Collectors.toList());
     assertThat(cfgOpcodes).containsAll(collect);
   }
 

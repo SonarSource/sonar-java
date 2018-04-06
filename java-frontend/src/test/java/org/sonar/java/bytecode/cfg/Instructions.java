@@ -22,6 +22,10 @@ package org.sonar.java.bytecode.cfg;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -29,15 +33,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.util.Printer;
-
 import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
-
-import javax.annotation.Nullable;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -81,11 +77,26 @@ public class Instructions {
     .addAll(OTHER_INSN)
     .build();
 
-  static final Set<Integer> ASM_OPCODES = ImmutableSet.copyOf(IntStream.range(0, Printer.OPCODES.length)
-    .filter(i -> !Printer.OPCODES[i].isEmpty())
+  /**
+   * List of opCodes variants which are equivalent to more general ones, but with a constant predefined.
+   * Collected from 'org.objectweb.asm.Constants'
+   */
+  static final ImmutableSet<Integer> CONSTANTS = ImmutableSet.<Integer>builder()
+    // (I/L/F/D/A)LOAD_X variants
+    .addAll(IntStream.rangeClosed(26, 45).boxed().collect(Collectors.toList()))
+    // (I/L/F/D/A)STORE_X variants
+    .addAll(IntStream.rangeClosed(59, 78).boxed().collect(Collectors.toList()))
+    // WIDE
+    .add(196)
+    // LDC, LDC2, GOTO, JSR wide variants
+    .add(19, 20, 200, 201)
+    .build();
+
+  static final Set<Integer> OPCODES = IntStream.range(0, 201)
+    .filter(i -> !CONSTANTS.contains(i))
     .filter(i -> i != JSR)
     .boxed()
-    .collect(Collectors.toSet()));
+    .collect(Collectors.toSet());
 
   public Instructions() {
     cw = new ClassWriter(Opcodes.ASM5);
