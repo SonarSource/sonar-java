@@ -21,65 +21,64 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.cfg.CFG;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S128")
-public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
-
+public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
-  public void visitSwitchStatement(SwitchStatementTree switchStatement) {
-    switchStatement.cases().stream()
-      // Exclude the last case as stated in RSPEC. This also excludes switches with no or a single case group.
-      .limit(Math.max(0, switchStatement.cases().size() - 1))
-      .forEach(caseGroup -> {
-        // Assign issues to the last label in the group
-        CaseLabelTree caseLabel = caseGroup.labels().get(caseGroup.labels().size() - 1);
+  public void visitNode(Tree tree) {
+    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+    List<CaseGroupTree> caseGroupTrees = switchStatementTree.cases();
+    CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
+    CFG.Block entry = cfg.entry();
+    List<CFG.Block> cfgCases = new ArrayList<>(entry.successors());
 
-          // Reverse the body as commonly the unconditional exit will be at the end of the body.
-        if (Lists.reverse(caseGroup.body()).stream().noneMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit) && !intentionalFallThrough(switchStatement, caseGroup)) {
-          context.reportIssue(this, caseLabel, "End this switch case with an unconditional break, return or throw statement.");
-        }
-      });
+    if (!hasDefaultClause(switchStatementTree)) {
+      cfgCases.remove(cfgCases.size() - 1);
+    }
 
-    super.visitSwitchStatement(switchStatement);
+    List<CFG.Block> cases = Lists.reverse(cfgCases);
+
+    IntStream.range(1, cases.size())
+      .filter(i -> cases.get(i).predecessors().stream().anyMatch(predecessor -> !tree.equals(predecessor.terminator())))
+      .filter(i -> !intentionalFallThrough(caseGroupTrees.get(i - 1), caseGroupTrees.get(i)))
+      .mapToObj(i -> caseGroupTrees.get(i - 1).labels())
+      .map(caseGroupLabels -> caseGroupLabels.get(caseGroupLabels.size() - 1))
+      .forEach(label -> reportIssue(label, "End this switch case with an unconditional break, return or throw statement."));
   }
 
-  private static boolean intentionalFallThrough(SwitchStatementTree switchStatement, CaseGroupTree caseGroup) {
-    FallThroughCommentVisitor visitor = new FallThroughCommentVisitor();
+  private static boolean hasDefaultClause(SwitchStatementTree switchStatement) {
+    return switchStatement.cases().stream()
+      .flatMap(caseGroupTree -> caseGroupTree.labels().stream())
+      .anyMatch(caseLabelTree -> caseLabelTree.caseOrDefaultKeyword().text().equals("default"));
+  }
+
+  private static boolean intentionalFallThrough(CaseGroupTree caseGroup, CaseGroupTree nextCaseGroup) {
     // Check first token of next case group when comment is last element of case group it is attached to next group.
-    CaseGroupTree nextCaseGroup = switchStatement.cases().get(switchStatement.cases().indexOf(caseGroup) + 1);
+    FallThroughCommentVisitor visitor = new FallThroughCommentVisitor();
     List<Tree> treesToScan = ImmutableList.<Tree>builder().addAll(caseGroup.body()).add(nextCaseGroup.firstToken()).build();
     visitor.scan(treesToScan);
     return visitor.hasComment;
   }
 
   private static class FallThroughCommentVisitor extends SubscriptionVisitor {
-
     private static final Pattern FALL_THROUGH_PATTERN = Pattern.compile("falls?[\\-\\s]?thro?u[gh]?", Pattern.CASE_INSENSITIVE);
     boolean hasComment = false;
 
@@ -97,48 +96,11 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
     private void scan(List<Tree> trees) {
       for (Tree tree : trees) {
-        if(hasComment) {
+        if (hasComment) {
           return;
         }
         scanTree(tree);
       }
     }
-  }
-
-  private static boolean isUnconditionalExit(Tree syntaxNode) {
-    switch (syntaxNode.kind()) {
-      case BREAK_STATEMENT:
-      case THROW_STATEMENT:
-      case RETURN_STATEMENT:
-      case CONTINUE_STATEMENT:
-        return true;
-      case BLOCK:
-        return ((BlockTree) syntaxNode).body().stream().anyMatch(SwitchCaseWithoutBreakCheck::isUnconditionalExit);
-      case TRY_STATEMENT:
-        return isUnconditionalExitInTryCatchStatement((TryStatementTree) syntaxNode);
-      case IF_STATEMENT:
-        return isUnconditionalExitInIfStatement((IfStatementTree) syntaxNode);
-      default:
-        return false;
-    }
-  }
-
-  private static boolean isUnconditionalExitInTryCatchStatement(TryStatementTree tryStatement) {
-    return isUnconditionalExit(tryStatement.block())
-        && tryStatement.catches().stream().allMatch(catchTree -> isUnconditionalExit(catchTree.block()));
-  }
-
-  private static boolean isUnconditionalExitInIfStatement(IfStatementTree ifStatement) {
-    if (!isUnconditionalExit(ifStatement.thenStatement())) {
-      return false;
-    }
-
-    StatementTree elseStatement = ifStatement.elseStatement();
-    if (elseStatement == null) {
-      // Without else this is a conditional exit.
-      return false;
-    }
-
-    return isUnconditionalExit(elseStatement);
   }
 }
