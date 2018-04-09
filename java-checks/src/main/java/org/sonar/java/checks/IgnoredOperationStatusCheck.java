@@ -63,7 +63,6 @@ public class IgnoredOperationStatusCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.util.concurrent.Semaphore").name("tryAcquire").withAnyParameters(),
 
       MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("offer").withAnyParameters(),
-      MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("drainTo").withAnyParameters(),
       MethodMatcher.create().callSite(SUBTYPE_OF_BLOCKING_QUEUE).name("remove").withAnyParameters());
   }
 

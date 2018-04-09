@@ -17,9 +17,6 @@
 'jdk6:java/util/concurrent/PriorityBlockingQueue.java':[
 184,
 ],
-'jdk6:java/util/concurrent/ThreadPoolExecutor.java':[
-1189,
-],
 'jdk6:java/util/logging/FileHandler.java':[
 529,
 531,

@@ -83,8 +83,8 @@ class A {
     b.remove(); // Noncompliant {{Do something with the "String" value returned by "remove".}}
     b.remove(new Object()); // Noncompliant
 
-    b.drainTo(l); // Noncompliant
-    a.drainTo(lo, 42); // Noncompliant
+    b.drainTo(l); // not a status code
+    a.drainTo(lo, 42); // not a status code
 
     a.offer(new Object()); // Noncompliant
     b.offer("hello", 42L, TimeUnit.SECONDS); // Noncompliant
