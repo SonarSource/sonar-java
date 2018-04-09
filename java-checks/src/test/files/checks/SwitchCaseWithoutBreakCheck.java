@@ -327,7 +327,7 @@ class SwitchesAndLoops {
                     result = 0;
                   case 4:
                     result = 1;
-                    // fall through
+                    // fallthrough
                   case 5: // Noncompliant
                     result = 1;
                   case 6:

@@ -20,12 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.cfg.CFG;
@@ -47,39 +50,63 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     List<CaseGroupTree> caseGroupTrees = switchStatementTree.cases();
     CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
-    CFG.Block entry = cfg.entry();
-    List<CFG.Block> cfgCases = new ArrayList<>(entry.successors());
+    Set<CFG.Block> switchSuccessors = cfg.entry().successors();
 
-    if (!hasDefaultClause(switchStatementTree)) {
-      cfgCases.remove(cfgCases.size() - 1);
-    }
-
-    List<CFG.Block> cases = Lists.reverse(cfgCases);
-
-    IntStream.range(1, cases.size())
-      .filter(i -> cases.get(i).predecessors().stream().anyMatch(predecessor -> !tree.equals(predecessor.terminator())))
-      .filter(i -> !intentionalFallThrough(caseGroupTrees.get(i - 1), caseGroupTrees.get(i)))
-      .mapToObj(i -> caseGroupTrees.get(i - 1).labels())
+    Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);
+    switchSuccessors.stream()
+      .filter(cfgBlockToCaseGroupMap.keySet()::contains)
+      .flatMap(cfgBlock -> getCaseGroupPredecessorStream(cfgBlock, cfgBlockToCaseGroupMap))
+      .map(CaseGroupTree::labels)
       .map(caseGroupLabels -> caseGroupLabels.get(caseGroupLabels.size() - 1))
       .forEach(label -> reportIssue(label, "End this switch case with an unconditional break, return or throw statement."));
   }
 
-  private static boolean hasDefaultClause(SwitchStatementTree switchStatement) {
-    return switchStatement.cases().stream()
-      .flatMap(caseGroupTree -> caseGroupTree.labels().stream())
-      .anyMatch(caseLabelTree -> caseLabelTree.caseOrDefaultKeyword().text().equals("default"));
+  private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, List<CaseGroupTree> caseGroupTrees) {
+    Map<CFG.Block, CaseGroupTree> mapping = new HashMap<>();
+    switchSuccessors.forEach(cfgBlock -> cfgBlock.elements().stream()
+      .filter(element -> element.is(Tree.Kind.CASE_GROUP))
+      .filter(caseGroupTrees::contains)
+      .findAny()
+      .ifPresent(caseGroup -> mapping.put(cfgBlock, (CaseGroupTree) caseGroup)));
+    return mapping;
   }
 
-  private static boolean intentionalFallThrough(CaseGroupTree caseGroup, CaseGroupTree nextCaseGroup) {
+  private static Stream<CaseGroupTree> getCaseGroupPredecessorStream(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+    CaseGroupTree caseGroup = cfgBlockToCaseGroupMap.get(cfgBlock);
+    return cfgBlock.predecessors().stream()
+      .map(predecessor -> getCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap))
+      .filter(Objects::nonNull)
+      .filter(predecessor -> !intentionalFallThrough(predecessor, caseGroup))
+      .distinct();
+  }
+
+  @Nullable
+  private static CaseGroupTree getCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+    if (cfgBlockToCaseGroupMap.get(predecessor) != null) {
+      return cfgBlockToCaseGroupMap.get(predecessor);
+    }
+
+    Set<CFG.Block> previousPredecessors = predecessor.predecessors();
+    for (CFG.Block previousPredecessor : previousPredecessors) {
+      CaseGroupTree caseGroupTree = getCaseGroupPredecessor(previousPredecessor, cfgBlockToCaseGroupMap);
+      if (caseGroupTree != null) {
+        return caseGroupTree;
+      }
+    }
+    return null;
+  }
+
+  private static boolean intentionalFallThrough(Tree caseGroup, Tree nextCaseGroup) {
     // Check first token of next case group when comment is last element of case group it is attached to next group.
     FallThroughCommentVisitor visitor = new FallThroughCommentVisitor();
-    List<Tree> treesToScan = ImmutableList.<Tree>builder().addAll(caseGroup.body()).add(nextCaseGroup.firstToken()).build();
+    List<Tree> treesToScan = ImmutableList.<Tree>builder().addAll(((CaseGroupTree) caseGroup).body())
+      .add(nextCaseGroup.firstToken()).build();
     visitor.scan(treesToScan);
     return visitor.hasComment;
   }
 
   private static class FallThroughCommentVisitor extends SubscriptionVisitor {
-    private static final Pattern FALL_THROUGH_PATTERN = Pattern.compile("falls?[\\-\\s]?thro?u[gh]?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern FALL_THROUGH_PATTERN = Pattern.compile("falls?\\-?thro?u[gh]?", Pattern.CASE_INSENSITIVE);
     boolean hasComment = false;
 
     @Override

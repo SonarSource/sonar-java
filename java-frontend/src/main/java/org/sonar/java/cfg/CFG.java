@@ -721,6 +721,7 @@ public class CFG {
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
+        currentBlock.elements.add(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.
