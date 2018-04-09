@@ -46,6 +46,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
     BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant [[sc=5;ec=27]] {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer'}}
     BiConsumer<A, Long> a13 = (aaa, long1) -> {};// Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjLongConsumer'}}
     BiConsumer<A.AA, Double> a14 = (aaa, double1) -> {};; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjDoubleConsumer'}}
+    BiConsumer<A,A> compl1 = (a,aa)-> {};  // Compliant
     Function<A, Integer> a15 = (aaa) -> 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToIntFunction<A>'}}
     Function<A, Long> a16 = (aaa) -> new Long(1); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToLongFunction<A>'}}
     Function<A, Double> a17 = new Function<A, Double>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToDoubleFunction<A>'}}
@@ -65,9 +66,10 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
 
     Function<A, A> a25 = (aaa) -> new A(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<A>'}}
     Function<Integer, Integer> lambda = value -> value * 2; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<Integer>'}}
-    BiFunction<A, A2, A> a40; // Compliant
-    BiFunction<A, A2, A2> a42; // Compliant
-    BiFunction<A, AA, A2> a43; // Compliant
+    BiFunction<String, Integer, Double> a40 = (x, y) -> 2.0; // Compliant
+    BiFunction<String, String, Integer> a42 = (x, y) -> 1; // Compliant
+    BiFunction<String, Double, Double> a43 = (x,y) -> 2.0; // Compliant
+    
     
     BiFunction<String, String, String> bi = (x, y) -> { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<String>'}}
       return x + y;

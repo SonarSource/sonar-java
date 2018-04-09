@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class FunctionalInterfacesSpecialisedCheckTest {
+public class SpecializedFunctionalInterfacesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FunctionalInterfacesSpecialisedCheck.java", new FunctionalInterfacesSpecialisedCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/FunctionalInterfacesSpecialisedCheck.java", new FunctionalInterfacesSpecialisedCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/SpecializedFunctionalInterfacesCheck.java", new SpecializedFunctionalInterfacesCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SpecializedFunctionalInterfacesCheck.java", new SpecializedFunctionalInterfacesCheck());
   }
 }
