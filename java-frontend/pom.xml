@@ -113,7 +113,7 @@
     <dependency>
       <groupId>org.sonarsource.ucfg</groupId>
       <artifactId>sonar-ucfg</artifactId>
-      <version>1.0.0.27</version>
+      <version>1.0.0.29</version>
     </dependency>
   </dependencies>
 
