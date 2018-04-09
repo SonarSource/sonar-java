@@ -20,15 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -41,7 +46,7 @@ public class FunctionalInterfacesSpecialisedCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE);
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
   }
 
   private static final String REPORT_STRING = "Refactor this code to use the more specialised Functional Interface '";
@@ -49,22 +54,26 @@ public class FunctionalInterfacesSpecialisedCheck extends IssuableSubscriptionVi
 
   @Override
   public void visitNode(Tree tree) {
-    String reportString = null;
+    if (!hasSemantic()) {
+      return;
+    }
     if (tree.is(Tree.Kind.CLASS)) {
       ClassTree interfaceTree = (ClassTree) tree;
-      interfaceTree.superInterfaces().stream().map(FunctionalInterfacesSpecialisedCheck::matchInterface).filter(Objects::nonNull)
-        .forEach(reportMessage -> report(interfaceTree, reportMessage));
+      List<String> reportMessages = interfaceTree.superInterfaces().stream().map(FunctionalInterfacesSpecialisedCheck::matchInterface).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+      if (!reportMessages.isEmpty()) {
+        report(interfaceTree.superInterfaces(), reportMessages);
+      }
     } else if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) tree;
       TypeTree interfaceType = variableTree.type();
-      if (variableTree.initializer() != null && variableTree.initializer().is(Tree.Kind.NEW_CLASS, Tree.Kind.LAMBDA_EXPRESSION)) {
-        reportString = matchInterface(interfaceType);
-        if (reportString == null) {
-          return;
-        }
-        report(interfaceType, reportString);
+      ExpressionTree initializer = variableTree.initializer();
+      String reportMessage = null;
+      if (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) ||
+        (initializer.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) initializer).classBody() != null))) {
+        reportMessage = matchInterface(interfaceType);
+        report(interfaceType, reportMessage);
       }
-
     }
   }
 
@@ -154,24 +163,40 @@ public class FunctionalInterfacesSpecialisedCheck extends IssuableSubscriptionVi
 
   @CheckForNull
   private static TypeArguments interfaceParameters(TypeTree interfaceType) {
-    TypeArguments args = null;
     if (interfaceType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      ParameterizedTypeTree parameters = (ParameterizedTypeTree) interfaceType;
-      args = parameters.typeArguments();
+      return ((ParameterizedTypeTree) interfaceType).typeArguments();
     }
-    return args;
+    return null;
   }
 
-  private void report(Tree tree, String reportString) {
-    if (tree.is(Tree.Kind.CLASS)) {
-      reportIssue(((ClassTree) tree).superInterfaces(), REPORT_STRING + reportString + "'");
-    } else {
+  private void report(Tree tree, @Nullable String reportString) {
+    if (reportString != null) {
       reportIssue(tree, REPORT_STRING + reportString + "'");
     }
   }
 
+  private void report(Tree tree, List<String> reportMessages) {
+    if (reportMessages.size() > 1) {
+      StringBuilder reportMessage = new StringBuilder();
+      reportMessage.append("Refactor this code to use the more specialised Functional Interfaces '");
+      Iterator<String> it = reportMessages.iterator();
+      while (true) {
+        reportMessage.append(it.next());
+        if (it.hasNext()) {
+          reportMessage.append(", ");
+        } else {
+          break;
+        }
+      }
+      reportMessage.append("'");
+      reportIssue(tree, reportMessage.toString());
+    } else {
+      reportIssue(tree, REPORT_STRING + reportMessages.get(0) + "'");
+    }
+  }
+
   private static class ParameterTypeNameAndTreeType {
-    Type paramSymbol;
+    Type paramType;
     String paramTypeName;
     String originalName;
 
@@ -179,27 +204,27 @@ public class FunctionalInterfacesSpecialisedCheck extends IssuableSubscriptionVi
       switch (tree.kind()) {
         case IDENTIFIER:
           IdentifierTree idTree = (IdentifierTree) tree;
-          this.paramSymbol = idTree.symbolType();
-          this.paramTypeName = returnStringFromJavaObject(this.paramSymbol);
+          this.paramType = idTree.symbolType();
+          this.paramTypeName = returnStringFromJavaObject(this.paramType);
           this.originalName = idTree.name();
           break;
         case MEMBER_SELECT:
           MemberSelectExpressionTree memberTree = (MemberSelectExpressionTree) tree;
-          this.paramSymbol = memberTree.identifier().symbolType();
-          this.paramTypeName = returnStringFromJavaObject(this.paramSymbol);
-          this.originalName = ((IdentifierTree) memberTree.expression()).name() + "." + memberTree.identifier().name();
+          this.paramType = memberTree.symbolType();
+          this.paramTypeName = returnStringFromJavaObject(this.paramType);
+          this.originalName = memberTree.identifier().name();
           break;
         case PARAMETERIZED_TYPE:
           ParameterizedTypeTree p = (ParameterizedTypeTree) tree;
           this.paramTypeName = null;
-          this.paramSymbol = null;
+          this.paramType = null;
           this.originalName = nameFromType(p);
           break;
         case EXTENDS_WILDCARD:
         case UNBOUNDED_WILDCARD:
         case SUPER_WILDCARD:
           this.paramTypeName = null;
-          this.paramSymbol = null;
+          this.paramType = null;
           this.originalName = nameFromType(tree);
           break;
         default:

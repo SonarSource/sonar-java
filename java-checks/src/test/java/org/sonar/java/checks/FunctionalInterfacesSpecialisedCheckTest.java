@@ -27,5 +27,6 @@ public class FunctionalInterfacesSpecialisedCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/FunctionalInterfacesSpecialisedCheck.java", new FunctionalInterfacesSpecialisedCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/FunctionalInterfacesSpecialisedCheck.java", new FunctionalInterfacesSpecialisedCheck());
   }
 }

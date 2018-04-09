@@ -18,6 +18,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
   }
 
   private class AA implements Consumer<Long> { // Noncompliant
+    
     Consumer<Integer> a1 = new Consumer<Integer>() { // Noncompliant [[sc=5;ec=22]] {{Refactor this code to use the more specialised Functional Interface 'IntConsumer'}}
       @Override
       public void accept(Integer t) {
@@ -36,16 +37,11 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
     Supplier<Integer> a = () -> 1; // Noncompliant
     Supplier<Double> a6 = () -> 1.0; // Noncompliant
     Supplier<Long> a7 = () -> new Long(1); // Noncompliant
-    Integer int1 = null;
-    Double double1 = null;
-    Long long1 = null;
-    A aaa;
     Predicate<Integer> a4 = (int1) -> true; // Noncompliant
     Predicate<Double> a8 = (double1) -> true; // Noncompliant
     Predicate<Long> a9 = (long1) -> true; // Noncompliant
     UnaryOperator<Integer> a5 = (int1) -> int1; // Noncompliant
-    UnaryOperator<Double> a10 = (double1) -> double1; // Noncompliant [[sc=5;ec=26]] {{Refactor this code to use the more specialised
-                                                      // Functional Interface 'DoubleUnaryOperator'}}
+    UnaryOperator<Double> a10 = (double1) -> double1; // Noncompliant [[sc=5;ec=26]] {{Refactor this code to use the more specialised Functional Interface 'DoubleUnaryOperator'}}
     UnaryOperator<Long> a11 = long1 -> long1; // Noncompliant
     BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant [[sc=5;ec=27]] {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer'}}
     BiConsumer<A, Long> a13 = (aaa, long1) -> {};// Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjLongConsumer'}}
@@ -92,12 +88,15 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
     };
     DoublePredicate a31;
     Supplier<A> a34 = () -> new A(); // Compliant
+    Supplier<Integer> a44 = new Supplier<Integer>();
+    IntSupplier a45 = new IntSupplier();  
     Consumer<A> a35= new Consumer<A>() { // Compliant
       @Override
       public void accept(A t) {
       }
     };
-    DoubleBinaryOperator<Double,Double> d = (x, y) -> x * y; // Compliant
+    DoubleBinaryOperator d = (x, y) -> x * y; // Compliant 
+    IntFunction<A> a33= (x, y) -> x * 2; // Compliant
     Predicate<A> a36 = (aaa) -> true; // Compliant
     UnaryOperator<A> a37 = (aaa) -> new A(); // Compliant
     BinaryOperator<A> a38 = new BinaryOperator<A>() { // Compliant
@@ -116,10 +115,11 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refacto
         return null;
       }
     };
+    private class A3{}
+    Function<A.AA.A3, A.AA.A3> foo1 = a3 -> new A3(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<A3>'}}    
   }
 
-  A.AA aaaaaa = new AA();
-  Function<A.AA, A.AA> foo1 = aaaaaa -> new AA(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<A.AA>'}}
+  Function<A.AA, A.AA> foo1 = aaaaaa -> new AA(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<AA>'}}
 }
 
 class A2 implements BinaryOperator<Integer> {// Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntBinaryOperator'}}
@@ -176,4 +176,38 @@ class A3 {
     }
   }
 
+}
+
+class MySupplier implements Supplier<Integer>  { // Noncompliant
+  Supplier<Integer> mySupplier = new MySupplier(); // Compliant 
+  @Override
+  public Integer get() {
+    return null;
+  }
+}
+
+class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=30;ec=47] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+  Supplier<Integer> mySupplier = new MySupplier1(); // Compliant
+
+  @Override
+  public Integer get() {
+    return null;
+  }
+
+  @Override
+  public void run() {
+  }
+}
+
+class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=30;ec=65]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
+  Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
+
+  @Override
+  public Integer get() {
+    return null;
+  }
+
+  @Override
+  public void accept(Double t) {
+  }
 }
