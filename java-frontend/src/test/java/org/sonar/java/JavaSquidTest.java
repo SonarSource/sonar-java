@@ -152,4 +152,51 @@ public class JavaSquidTest {
     javaSquid.scan(Collections.singletonList(file), Collections.emptyList());
     return sonarComponents;
   }
+
+  @Test
+  public void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
+    SensorContextTester context = setupAnalysisError("class A {");
+
+    assertThat(context.allAnalysisErrors()).hasSize(1);
+    assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 10");
+  }
+
+  @Test
+  public void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
+    SensorContextTester context = setupAnalysisError("class A {} class A {}");
+
+    assertThat(context.allAnalysisErrors()).hasSize(1);
+    assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
+  }
+
+  private SensorContextTester setupAnalysisError(String code) throws IOException {
+    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
+
+    // set up a file to analyze
+    File file = temp.newFile().getAbsoluteFile();
+    Files.write(code, file, StandardCharsets.UTF_8);
+    DefaultInputFile defaultFile = new TestInputFileBuilder(temp.getRoot().getAbsolutePath(), file.getName())
+      .setLanguage("java")
+      .initMetadata(new String(java.nio.file.Files.readAllBytes(file.getAbsoluteFile().toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    context.fileSystem().add(defaultFile);
+
+    // Set sonarLint runtime
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+
+    // Mock visitor for metrics.
+    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
+
+    FileSystem fs = context.fileSystem();
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, mock(CheckFactory.class));
+    sonarComponents.setSensorContext(context);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(fs, context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    javaSquid.scan(Collections.singletonList(file), Collections.emptyList());
+    return context;
+  }
 }

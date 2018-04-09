@@ -111,6 +111,7 @@ public class VisitorsBridge {
         } catch (Exception e) {
           LOG.error("Unable to create symbol table for : " + currentFile.getAbsolutePath(), e);
           addAnalysisError(e, currentFile.getPath(), AnalysisError.Kind.SEMANTIC_ERROR);
+          sonarComponents.reportAnalysisError(currentFile, e.getMessage());
           return;
         }
         createSonarSymbolTable(tree);
