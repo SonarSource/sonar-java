@@ -251,11 +251,15 @@ public class SonarComponents {
   }
 
   public boolean reportAnalysisError(RecognitionException re, File file) {
+    reportAnalysisError(file, re.getMessage());
+    return isSonarLintContext();
+  }
+
+  public void reportAnalysisError(File file, String message) {
     context.newAnalysisError()
       .onFile(inputFromIOFile(file))
-      .message(re.getMessage())
+      .message(message)
       .save();
-    return isSonarLintContext();
   }
 
   public boolean isSonarLintContext() {
