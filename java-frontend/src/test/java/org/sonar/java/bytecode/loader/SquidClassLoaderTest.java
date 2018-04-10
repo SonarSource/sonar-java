@@ -20,15 +20,14 @@
 package org.sonar.java.bytecode.loader;
 
 import com.google.common.collect.Iterators;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -170,5 +169,18 @@ public class SquidClassLoaderTest {
     ClassNode classNode = new ClassNode();
     cr.accept(classNode, 0);
     assertThat(classNode.version).isEqualTo(Opcodes.V9);
+    classLoader.close();
+  }
+
+  @Test
+  public void test_loading_java10_class() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java10/bin")));
+    byte[] bytes = classLoader.getBytesForClass("org.foo.A");
+    assertThat(bytes).isNotNull();
+    ClassReader cr = new ClassReader(bytes);
+    ClassNode classNode = new ClassNode();
+    cr.accept(classNode, 0);
+    assertThat(classNode.version).isEqualTo(Opcodes.V10);
+    classLoader.close();
   }
 }
