@@ -228,6 +228,8 @@ class Conditions {
         //falls-through
         System.out.println(i);
       case 7:
+        System.out.println(i); //fall through
+      case 8:
         System.out.println("foo");
         break;
     }
