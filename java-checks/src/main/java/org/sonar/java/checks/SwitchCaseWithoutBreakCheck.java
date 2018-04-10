@@ -21,12 +21,13 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -55,45 +56,41 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
     Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);
     switchSuccessors.stream()
       .filter(cfgBlockToCaseGroupMap.keySet()::contains)
-      .flatMap(cfgBlock -> getCaseGroupPredecessorStream(cfgBlock, cfgBlockToCaseGroupMap))
+      .flatMap(cfgBlock -> getForbiddenCaseGroupPredecessors(cfgBlock, cfgBlockToCaseGroupMap))
       .map(CaseGroupTree::labels)
       .map(caseGroupLabels -> caseGroupLabels.get(caseGroupLabels.size() - 1))
       .forEach(label -> reportIssue(label, "End this switch case with an unconditional break, return or throw statement."));
   }
 
   private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, List<CaseGroupTree> caseGroupTrees) {
-    Map<CFG.Block, CaseGroupTree> mapping = new HashMap<>();
-    switchSuccessors.forEach(cfgBlock -> cfgBlock.elements().stream()
-      .filter(element -> element.is(Tree.Kind.CASE_GROUP))
-      .filter(caseGroupTrees::contains)
-      .findAny()
-      .ifPresent(caseGroup -> mapping.put(cfgBlock, (CaseGroupTree) caseGroup)));
-    return mapping;
+    return switchSuccessors.stream()
+      .filter(cfgBlock -> cfgBlock.label() != null && caseGroupTrees.contains(cfgBlock.label()))
+      .collect(
+        Collectors.toMap(
+          Function.identity(),
+          cfgBlock -> (CaseGroupTree) cfgBlock.label()));
   }
 
-  private static Stream<CaseGroupTree> getCaseGroupPredecessorStream(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+  private static Stream<CaseGroupTree> getForbiddenCaseGroupPredecessors(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
     CaseGroupTree caseGroup = cfgBlockToCaseGroupMap.get(cfgBlock);
     return cfgBlock.predecessors().stream()
-      .map(predecessor -> getCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap))
+      .map(predecessor -> getForbiddenCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap))
       .filter(Objects::nonNull)
       .filter(predecessor -> !intentionalFallThrough(predecessor, caseGroup))
       .distinct();
   }
 
   @Nullable
-  private static CaseGroupTree getCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+  private static CaseGroupTree getForbiddenCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
     if (cfgBlockToCaseGroupMap.get(predecessor) != null) {
       return cfgBlockToCaseGroupMap.get(predecessor);
     }
 
-    Set<CFG.Block> previousPredecessors = predecessor.predecessors();
-    for (CFG.Block previousPredecessor : previousPredecessors) {
-      CaseGroupTree caseGroupTree = getCaseGroupPredecessor(previousPredecessor, cfgBlockToCaseGroupMap);
-      if (caseGroupTree != null) {
-        return caseGroupTree;
-      }
-    }
-    return null;
+    return predecessor.predecessors().stream()
+      .map(previousPredecessors -> getForbiddenCaseGroupPredecessor(previousPredecessors, cfgBlockToCaseGroupMap))
+      .filter(Objects::nonNull)
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean intentionalFallThrough(Tree caseGroup, Tree nextCaseGroup) {

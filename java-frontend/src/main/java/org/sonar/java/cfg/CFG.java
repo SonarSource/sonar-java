@@ -176,6 +176,7 @@ public class CFG {
     private Block successorWithoutJump;
 
     private Tree terminator;
+    private Tree label;
 
     private boolean isFinallyBlock;
     private boolean isCatchBlock = false;
@@ -294,6 +295,19 @@ public class CFG {
     @CheckForNull
     public Block successorWithoutJump() {
       return successorWithoutJump;
+    }
+
+    /**
+     * Label is used to contain additional information about a block which is not directly related to CFG structure.
+     * Used for simplifying implementation of RSPEC-128.
+     */
+    @CheckForNull
+    public Tree label() {
+      return label;
+    }
+
+    public void setLabel(Tree label) {
+      this.label = label;
     }
   }
 
@@ -721,7 +735,7 @@ public class CFG {
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
-        currentBlock.elements.add(caseGroupTree);
+        currentBlock.setLabel(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.

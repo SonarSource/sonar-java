@@ -312,7 +312,7 @@ class SwitchesAndLoops {
     for (int i = 0; i < 1; i++) {
       switch (myVariable) {
         case 0:
-          continue;
+          continue label1;
         case 1:
           switch (s) {
             case "FOO":
@@ -324,6 +324,7 @@ class SwitchesAndLoops {
                   case 2:
                     continue;
                   case 3: // Noncompliant
+                    label1:
                     result = 0;
                   case 4:
                     result = 1;

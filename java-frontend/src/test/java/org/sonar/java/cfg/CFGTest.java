@@ -48,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.CASE_GROUP;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
@@ -133,6 +132,7 @@ public class CFGTest {
     private int[] exceptionsIDs = new int[] {};
     private final List<ElementChecker> checkers = new ArrayList<>();
     private TerminatorChecker terminatorChecker;
+    private LabelChecker labelChecker;
     private int ifTrue = -1;
     private int ifFalse = -1;
     private int exitId = -1;
@@ -213,6 +213,11 @@ public class CFGTest {
       return this;
     }
 
+    BlockChecker label(final Kind kind) {
+      this.labelChecker = new LabelChecker(kind);
+      return this;
+    }
+
     public void check(final Block block) {
       assertThat(block.elements()).as("Expected number of elements in block " + block.id()).hasSize(checkers.size());
       final Iterator<ElementChecker> checkerIterator = checkers.iterator();
@@ -242,6 +247,11 @@ public class CFGTest {
       assertThat(block.exceptions().stream().mapToInt(Block::id).sorted().toArray()).as("Expected exceptions in block " + block.id()).isEqualTo(exceptionsIDs);
       if (terminatorChecker != null) {
         terminatorChecker.check(block.terminator());
+      }
+      if (labelChecker != null) {
+        labelChecker.check(block.label());
+      } else {
+        assertThat(block.label()).as("Block label").isNull();
       }
       if (isCatchBlock) {
         assertThat(block.isCatchBlock()).as("Block B" + block.id() + " expected to be flagged as 'catch' block").isTrue();
@@ -333,7 +343,6 @@ public class CFGTest {
         case LOGICAL_COMPLEMENT:
         case MULTIPLY_ASSIGNMENT:
         case PLUS:
-        case CASE_GROUP:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -401,6 +410,19 @@ public class CFGTest {
       assertThat(element.kind()).as("Element kind").isEqualTo(kind);
     }
 
+  }
+
+  private static class LabelChecker {
+    private final Kind kind;
+
+    private LabelChecker(final Tree.Kind kind) {
+      this.kind = kind;
+    }
+
+    public void check(final Tree element) {
+      assertThat(element).as("Label kind").isNotNull();
+      assertThat(element.kind()).as("Label kind").isEqualTo(kind);
+    }
   }
 
   public static final ActionParser<Tree> parser = JavaParser.createParser();
@@ -592,28 +614,25 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break; default: System.out.println(baz);} }");
     CFGChecker cfgChecker = checker(
       block(
-        element(CASE_GROUP),
         element(INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(3),
+        ).label(Kind.CASE_GROUP).successors(3),
       block(
-        element(CASE_GROUP),
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+        ).label(Kind.CASE_GROUP).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
       block(
-        element(CASE_GROUP),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "baz"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(0),
+        ).label(Kind.CASE_GROUP).successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")
@@ -627,27 +646,24 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break; case 3: case 4: default: System.out.println(baz);} }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Kind.CASE_GROUP),
         element(INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
+        element(Tree.Kind.METHOD_INVOCATION)).label(Kind.CASE_GROUP).successors(3),
       block(
-        element(Kind.CASE_GROUP),
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).label(Kind.CASE_GROUP).successors(0),
       block(
-        element(Kind.CASE_GROUP),
         element(INT_LITERAL, "4"),
         element(INT_LITERAL, "3"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "baz"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).label(Kind.CASE_GROUP).successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
@@ -660,19 +676,17 @@ public class CFGTest {
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break;} Integer.toString(foo); }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Kind.CASE_GROUP),
         element(INT_LITERAL, "1"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
+        element(Tree.Kind.METHOD_INVOCATION)).label(Kind.CASE_GROUP).successors(3),
       block(
-        element(Kind.CASE_GROUP),
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(1),
+        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).label(Kind.CASE_GROUP).successors(1),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(1, 3, 4),
@@ -689,15 +703,13 @@ public class CFGTest {
       "void fun() { int a; switch(b) { case c : System.out.println(1);break; case d || e: System.out.println(2);break;} }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Kind.CASE_GROUP),
         element(Kind.IDENTIFIER, "c"),
         element(Kind.IDENTIFIER, "System"),
         element(Kind.MEMBER_SELECT),
         element(INT_LITERAL, "1"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).label(Kind.CASE_GROUP).successors(0),
       block(
-        element(Kind.CASE_GROUP),
-        element(Kind.IDENTIFIER, "d")).terminator(Kind.CONDITIONAL_OR).successors(2, 3),
+        element(Kind.IDENTIFIER, "d")).terminator(Kind.CONDITIONAL_OR).label(Kind.CASE_GROUP).successors(2, 3),
       block(
         element(Kind.IDENTIFIER, "e")).successors(2),
       block(
