@@ -34,7 +34,7 @@ public class UnclosedResourcesCheckTest {
   @Test
   public void test_supertype_resolution() {
     String file = "src/test/java/org/sonar/java/resolve/targets/TestSupertypeResolution.java";
-    JavaCheckVerifier.verify(file, new UnclosedResourcesCheck());
+    JavaCheckVerifier.verifyNoIssue(file, new UnclosedResourcesCheck());
   }
 
   @Test

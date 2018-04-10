@@ -29,7 +29,6 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.Pair;
-import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -54,10 +53,10 @@ public class ExceptionalYieldTest {
     assertThat(yield).isEqualTo(yield);
     assertThat(yield).isEqualTo(otherYield);
 
-    otherYield.setExceptionType("java.lang.Exception");
+    otherYield.setExceptionTypeName("java.lang.Exception");
     assertThat(yield).isNotEqualTo(otherYield);
 
-    yield.setExceptionType("java.lang.Exception");
+    yield.setExceptionTypeName("java.lang.Exception");
     assertThat(yield).isEqualTo(otherYield);
     SemanticModel semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A{}"), new SquidClassLoader(new ArrayList<>()));
     assertThat(yield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
@@ -77,7 +76,7 @@ public class ExceptionalYieldTest {
     assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
 
     // different values for different yields
-    other.setExceptionType("java.lang.Exception");
+    other.setExceptionTypeName("java.lang.Exception");
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // happy Path Yield method yield

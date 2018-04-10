@@ -56,7 +56,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     this.svCausingException = svCausingException;
     this.isMethodVarargs = behavior.isMethodVarArgs();
     Preconditions.checkArgument(exceptionType != null, "Exception type is required");
-    super.setExceptionType(exceptionType);
+    super.setExceptionTypeName(exceptionType);
   }
 
   @Override
@@ -123,7 +123,12 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
-  public void setExceptionType(String exceptionType) {
+  public void setExceptionTypeName(String exceptionType) {
+    throw new UnsupportedOperationException("Exception type can not be changed");
+  }
+
+  @Override
+  public void setExceptionType(Type exceptionType) {
     throw new UnsupportedOperationException("Exception type can not be changed");
   }
 

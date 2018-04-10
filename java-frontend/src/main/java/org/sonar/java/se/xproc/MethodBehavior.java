@@ -84,11 +84,7 @@ public class MethodBehavior {
       ExceptionalYield exceptionalYield = new ExceptionalYield(nodeForYield, this);
       if (resultSV != null) {
         Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
-        String typeName = null;
-        if(type != null) {
-          typeName = type.fullyQualifiedName();
-        }
-        exceptionalYield.setExceptionType(typeName);
+        exceptionalYield.setExceptionType(type);
       }
       yield = exceptionalYield;
     } else {
