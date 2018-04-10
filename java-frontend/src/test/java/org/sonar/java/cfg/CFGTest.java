@@ -2547,6 +2547,86 @@ public class CFGTest {
   }
 
   @Test
+  public void break_in_try_finally_within_loop_do_not_always_lead_to_exit() {
+    CFG cfg = buildCFG("void test() {\n" +
+      "    RuntimeException e = null;\n" +
+      "    for (int i = 0; i < 2; ) {\n" +
+      "      try {\n" +
+      "        e = new RuntimeException();\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        doSomething();\n" +
+      "      }\n" +
+      "    }\n" +
+      "    throw e;\n" +
+      "  }");
+
+    CFGChecker cfgChecker = checker(
+      block(
+        element(NULL_LITERAL),
+        element(VARIABLE, "e"),
+        element(INT_LITERAL, 0),
+        element(VARIABLE, "i")
+      ).successors(6),
+      block(
+        element(IDENTIFIER, "i"),
+        element(INT_LITERAL, 2),
+        element(Tree.Kind.LESS_THAN)
+      ).terminator(Tree.Kind.FOR_STATEMENT).successors(1, 5),
+      block(element(TRY_STATEMENT)).successors(4),
+      block(element(NEW_CLASS)).successors(3).exceptions(2),
+      block(
+        element(Tree.Kind.ASSIGNMENT)
+      ).terminator(BREAK_STATEMENT).successors(2),
+      block(
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)
+      ).successors(0, 1),
+      block(
+        element(IDENTIFIER, "e")
+      ).terminator(THROW_STATEMENT).successors(0));
+
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void break_in_try_finally_in_for_without_condition() {
+    CFG cfg = buildCFG("void test() {\n" +
+      "    RuntimeException e = null;\n" +
+      "    for (;;) {\n" +
+      "      try {\n" +
+      "        e = new RuntimeException();\n" +
+      "        break;\n" +
+      "      } finally {\n" +
+      "        doSomething();\n" +
+      "      }\n" +
+      "    }\n" +
+      "    throw e;\n" +
+      "  }");
+
+    CFGChecker cfgChecker = checker(
+      block(
+        element(NULL_LITERAL),
+        element(VARIABLE, "e")
+      ).successors(6),
+      terminator(Tree.Kind.FOR_STATEMENT).successors(5),
+      block(element(TRY_STATEMENT)).successors(4),
+      block(element(NEW_CLASS)).successors(3).exceptions(2),
+      block(
+        element(Tree.Kind.ASSIGNMENT)
+      ).terminator(BREAK_STATEMENT).successors(2),
+      block(
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)
+      ).successors(0, 1),
+      block(
+        element(IDENTIFIER, "e")
+      ).terminator(THROW_STATEMENT).successors(0));
+
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   public void throw_statement_within_try_catch() {
     CFG cfg = buildCFG("void fun() { try {throw new MyException();} catch(MyException me){foo();} bar();} class MyException extends Exception{}");
     CFGChecker cfgChecker = checker(

@@ -339,3 +339,61 @@ public class B {
   }
   static class MyException extends Exception {  }
 }
+
+abstract class C {
+  public void testCodeWithForLoop1() {
+    RuntimeException e = null;
+    for (;;) {
+      for (int i = 0; i < 2; ) {
+        try {
+          e = new RuntimeException(); // Noncompliant
+          break;
+        } finally {
+          doSomething();
+        }
+      }
+    }
+    throw e;
+  }
+
+  public void testCodeWithForLoop2() {
+    RuntimeException e = null;
+    for (;;) {
+      try {
+        e = new RuntimeException();
+        break;
+      } finally {
+        doSomething();
+      }
+    }
+    throw e;
+  }
+
+  public void testCodeWithForLoop3() {
+    RuntimeException e = null;
+    for (int i = 0; i < 2; ) {
+      try {
+        e = new RuntimeException();
+        break;
+      } finally {
+        doSomething();
+      }
+    }
+    throw e;
+  }
+
+  public void testCodeWithWhileLoop() {
+    RuntimeException e = null;
+    while(true) {
+      try {
+        e = new RuntimeException();
+        break;
+      } finally {
+        doSomething();
+      }
+    }
+    throw e;
+  }
+
+  abstract void doSomething();
+}
