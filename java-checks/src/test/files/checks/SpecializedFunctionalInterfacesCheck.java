@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-class A implements Supplier<Integer> { // Noncompliant [[sc=20;ec=37]] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
   @Override
   public Integer get() {
     return null;
@@ -148,7 +148,7 @@ class A3 {
     };
   }
 
-  private static class A4 implements Function<Entry<String, LinkedHashMap<String, Long>>, Entry<String, LinkedHashMap<String, Long>>> { // Noncompliant [[sc=38;ec=134]] 
+  private static class A4 implements Function<Entry<String, LinkedHashMap<String, Long>>, Entry<String, LinkedHashMap<String, Long>>> { // Noncompliant [[sc=24;ec=26]] 
     @Override
     public Entry<String, LinkedHashMap<String, Long>> apply(Entry<String, LinkedHashMap<String, Long>> t) {
       return null;
@@ -180,7 +180,7 @@ class A3 {
 
 }
 
-class MySupplier implements Supplier<Integer>  { // Noncompliant
+class MySupplier implements Supplier<Integer>  { // Noncompliant [[sc=7;ec=17;secondary=183]]
   Supplier<Integer> mySupplier = new MySupplier(); // Compliant 
   @Override
   public Integer get() {
@@ -188,7 +188,7 @@ class MySupplier implements Supplier<Integer>  { // Noncompliant
   }
 }
 
-class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=30;ec=47] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=7;ec=18;secondary=191] {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
   Supplier<Integer> mySupplier = new MySupplier1(); // Compliant
 
   @Override
@@ -201,7 +201,7 @@ class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=3
   }
 }
 
-class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=30;ec=65]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
+class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=204, 204]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
   Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
 
   @Override
@@ -211,5 +211,22 @@ class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncomplia
 
   @Override
   public void accept(Double t) {
+  }
+}
+
+class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=217, 217]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
+  Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
+
+  @Override
+  public Integer get() {
+    return null;
+  }
+
+  @Override
+  public void accept(Double t) {
+  }
+  
+  @Override
+  public void run() {
   }
 }
