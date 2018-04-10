@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -315,13 +316,28 @@ public class CFG {
         Block pred = happyPathPredecessor.iterator().next();
         if (pred.terminator != null && pred.terminator.is(Tree.Kind.BREAK_STATEMENT)) {
           Set<Block> succs = block.successors.stream()
-            .filter(suc -> suc.terminator == null || !suc.terminator.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT))
+            .map(suc -> isLoop(suc) ? getAfterLoopBlock(suc) : suc)
+            .filter(Objects::nonNull)
             .collect(Collectors.toSet());
           block.successors.clear();
           block.successors.addAll(succs);
         }
       }
     }
+  }
+
+  private static boolean isLoop(Block successor) {
+    return successor.terminator != null
+      && successor.terminator.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
+  }
+
+  @CheckForNull
+  private static Block getAfterLoopBlock(Block loop) {
+    if (loop.falseBlock != null) {
+      return loop.falseBlock;
+    }
+    // Because 'for' statements without condition are unconditional jumps block
+    return loop.successorWithoutJump;
   }
 
   private void prune() {
@@ -851,7 +867,7 @@ public class CFG {
       currentBlock = createBranch(tree, body, falseBranch);
       buildCondition(condition, body, falseBranch);
     } else {
-      currentBlock = createUnconditionalJump(tree, body, null);
+      currentBlock = createUnconditionalJump(tree, body, falseBranch);
     }
     updateBlock.addSuccessor(currentBlock);
     // process init
