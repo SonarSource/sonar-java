@@ -673,6 +673,30 @@ public class BytecodeCompleterTest {
     assertThat(staticMethod.flags()).isEqualTo(Flags.STATIC | Flags.PUBLIC);
   }
 
+  @Test
+  public void test_loading_java10_class() throws Exception {
+    BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(
+      new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java10/bin"))),
+      new ParametrizedTypeCache());
+    new Symbols(bytecodeCompleter);
+    TypeJavaSymbol classSymbol = (TypeJavaSymbol) bytecodeCompleter.loadClass("org.foo.A");
+    classSymbol.complete();
+    assertThat(classSymbol.getFullyQualifiedName()).isEqualTo("org.foo.A");
+    assertThat(classSymbol.memberSymbols()).hasSize(2);
+
+    Scope members = classSymbol.members();
+    Symbol implicitDefaultConstructor = members.lookup("<init>").get(0);
+    Symbol foo = members.lookup("foo").get(0);
+    assertThat(implicitDefaultConstructor.name()).isEqualTo("<init>");
+    assertThat(implicitDefaultConstructor.isMethodSymbol()).isTrue();
+    assertThat(((JavaSymbol.MethodJavaSymbol) implicitDefaultConstructor).isConstructor()).isTrue();
+    assertThat(((JavaSymbol.MethodJavaSymbol) implicitDefaultConstructor).parameterTypes()).isEmpty();
+
+    assertThat(foo.name()).isEqualTo("foo");
+    assertThat(foo.isMethodSymbol()).isTrue();
+    assertThat(((JavaSymbol.MethodJavaSymbol) foo).isConstructor()).isFalse();
+    assertThat(((JavaSymbol.MethodJavaSymbol) foo).parameterTypes()).isEmpty();
+  }
 
   @Test
   public void default_value_of_annotation_methods() throws Exception {
