@@ -336,7 +336,8 @@ public class CFG {
     if (loop.falseBlock != null) {
       return loop.falseBlock;
     }
-    return loop.successorWithoutJump; // Because 'for' statements without condition are unconditional jumps block
+    // Because 'for' statements without condition are unconditional jumps block
+    return loop.successorWithoutJump;
   }
 
   private void prune() {
