@@ -46,7 +46,6 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   private TestJavaFileScannerContext testContext;
   private boolean enableSemantic = true;
 
-
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
     this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
@@ -63,7 +62,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @Override
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel,
-                                                        SonarComponents sonarComponents, boolean failedParsing) {
+    SonarComponents sonarComponents, boolean failedParsing) {
     SemanticModel model = enableSemantic ? semanticModel : null;
     testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
     return testContext;
@@ -78,7 +77,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     private final Set<AnalyzerMessage> issues = new HashSet<>();
 
     public TestJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel,
-                                      @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
+      @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
       super(tree, file, semanticModel, sonarComponents, javaVersion, failedParsing);
     }
 
@@ -113,7 +112,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     }
 
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, Collections.singletonList(secondary), cost);
+      List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
+      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, flows, cost);
     }
   }
 }
