@@ -56,15 +56,4 @@
 115,
 157,
 ],
-'jdk6:java/net/PlainDatagramSocketImpl.java':[
-335,
-],
-'jdk6:java/text/MessageFormat.java':[
-465,
-],
-'jdk6:java/util/regex/Pattern.java':[
-1879,
-1967,
-2643,
-],
 }
