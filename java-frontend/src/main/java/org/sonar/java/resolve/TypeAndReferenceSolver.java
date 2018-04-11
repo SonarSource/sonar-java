@@ -25,9 +25,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
@@ -60,6 +62,7 @@ import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
@@ -310,6 +313,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     inferedExpression.setInferedType(newType);
     inferedExpression.accept(this);
+    if (inferedExpression.is(Tree.Kind.VAR_TYPE)) {
+      // change type of the variable
+      JavaSymbol.VariableJavaSymbol variableSymbol = ((VariableTreeImpl) inferedExpression.parent()).getSymbol();
+      variableSymbol.type = (JavaType) newType;
+    }
   }
 
   private static List<JavaType> getParameterTypes(@Nullable List<? extends Tree> args) {
@@ -835,15 +843,96 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitVariable(VariableTree tree) {
     scan(tree.modifiers());
-    completeMetadata(((VariableTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
+    JavaSymbol.VariableJavaSymbol variableSymbol = ((VariableTreeImpl) tree).getSymbol();
+    completeMetadata(variableSymbol, tree.modifiers().annotations());
     //skip type, it has been resolved in second pass
     ExpressionTree initializer = tree.initializer();
     if (initializer != null) {
       resolveAs(initializer, JavaSymbol.VAR);
-      if(((JavaType) initializer.symbolType()).isTagged(JavaType.DEFERRED)) {
-        setInferedType(tree.type().symbolType(), (DeferredType) initializer.symbolType());
+      TypeTree typeTree = tree.type();
+      JavaType initializerType = (JavaType) initializer.symbolType();
+      if (initializerType.isTagged(JavaType.DEFERRED)) {
+        setInferedType(typeTree.symbolType(), (DeferredType) initializer.symbolType());
+      } else if (typeTree.is(Tree.Kind.VAR_TYPE)) {
+        setInferedType(upwardProjection(initializerType), (DeferredType) typeTree.symbolType());
       }
     }
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    scan(tree.variable());
+    scan(tree.expression());
+    TypeTree typeTree = tree.variable().type();
+    if (typeTree.is(Tree.Kind.VAR_TYPE)) {
+      JavaType iteratedObjectType = getIteratedObjectType((JavaType) tree.expression().symbolType());
+      setInferedType(upwardProjection(iteratedObjectType), (DeferredType) typeTree.symbolType());
+    }
+    // scan the body only after handling type of variable
+    scan(tree.statement());
+  }
+
+  private JavaType getIteratedObjectType(JavaType type) {
+    return getIteratedObjectType(type, new HashSet<>());
+  }
+
+  private JavaType getIteratedObjectType(JavaType type, Set<String> knownTypes) {
+    if (type.isUnknown()) {
+      return Symbols.unknownType;
+    }
+    String fullyQualifiedName = type.fullyQualifiedName();
+    if (knownTypes.contains(fullyQualifiedName)) {
+      // already visited, early return to avoid loops in type hierarchy
+      return Symbols.unknownType;
+    }
+    knownTypes.add(fullyQualifiedName);
+    if (type.is("java.lang.Iterable")) {
+      if (!type.isParameterized()) {
+        // raw type
+        return symbols.objectType;
+      }
+      ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) type;
+      return ptjt.substitution(ptjt.typeParameters().get(0));
+    }
+    return type.directSuperTypes().stream()
+      .map(superType -> getIteratedObjectType(superType, knownTypes))
+      .filter(resolved -> !resolved.isUnknown())
+      .findFirst().orElse(Symbols.unknownType);
+  }
+
+  /**
+   * Upward projection: JLS10 - §14.4.1, §4.10.5, §5.1.10
+   *
+   * Find a close supertype of a type, where that supertype does not mention certain synthetic type variables
+   * (type variables introduced by the compiler during capture conversion or inference variable resolution).
+   *
+   * NOTE: Capture conversions or intersection types are not implemented as proper types in SonarJava, so
+   * approximating to type of the expression, except for wildcards, which are the closest thing we have from
+   * capture conversions.
+   *
+   * @param initializerType the type computed for the initializer of a local variable, to be projected upward
+   * @return the upward projection of the initializer type
+   */
+  private JavaType upwardProjection(JavaType initializerType) {
+
+    if (initializerType.isTagged(JavaType.WILDCARD)) {
+      // JLS10 - §5.1.10: the result is the upward projection of the upper bound of T.
+      WildCardType type = (WildCardType) initializerType;
+      switch (type.boundType) {
+        case UNBOUNDED:
+          return symbols.objectType;
+        case EXTENDS:
+          return type.bound;
+        case SUPER:
+          // the highest upper bound of the the bound
+          return symbols.objectType;
+      }
+    }
+    if (initializerType.isTagged(JavaType.TYPEVAR)) {
+      return initializerType.erasure();
+    }
+    // identity
+    return initializerType;
   }
 
   /**
@@ -892,6 +981,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
+    // FIXME SONARJAVA-2724: should be the intersection of the type with its bounds
     resolveAs(tree.type(), JavaSymbol.TYP);
     resolveAs(tree.expression(), JavaSymbol.VAR);
     JavaType castType = getType(tree.type());

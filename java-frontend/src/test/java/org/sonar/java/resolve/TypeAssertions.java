@@ -60,4 +60,11 @@ public class TypeAssertions extends AbstractAssert<TypeAssertions, Type> {
     return new TypeAssertions(actual);
   }
 
+  public TypeAssertions isUnknown() {
+    if (!actual.isUnknown()) {
+      failWithMessage("Expecting '%s' to be unknown", actual.name());
+    }
+    return this;
+  }
+
 }
