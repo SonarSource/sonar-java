@@ -229,4 +229,14 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
   @Override
   public void run() {
   }
+  
+  void foo4() {
+    BiFunction<Integer[][][], Integer[][][], Integer[][][]> myBiFunc = new BiFunction<Integer[][][], Integer[][][], Integer[][][]>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<Integer[][][]>'}}
+      @Override
+      public Integer[][][] apply(Integer[][][] t, Integer[][][] u) {
+        return null;
+      }
+    };
+  }
+  
 }

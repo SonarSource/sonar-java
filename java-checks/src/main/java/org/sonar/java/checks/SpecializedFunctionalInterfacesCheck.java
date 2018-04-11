@@ -20,27 +20,27 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WildcardTree;
 
 @Rule(key = "S4276")
 public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVisitor {
@@ -63,10 +63,18 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   public void checkClassInterfaces(ClassTree tree) {
-    List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = tree.superInterfaces().stream().map(SpecializedFunctionalInterfacesCheck::matchFunctionalInterface)
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .collect(Collectors.toList());
+    List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = new ArrayList<>();
+    List<TypeTree> interfacesList = tree.superInterfaces();
+    if (!interfacesList.isEmpty()) {
+      IntStream.range(0, interfacesList.size())
+        .forEach(i -> {
+          JavaType jt = (JavaType) tree.symbol().interfaces().get(i);
+          if (jt.isParameterized()) {
+            Optional<String> reportString = matchFunctionalInterface(jt);
+            reportString.ifPresent(rs -> reportTreeAndStringInterfaces.add(new InterfaceTreeAndStringPairReport(rs, interfacesList.get(i))));
+          }
+        });
+    }
     if (!reportTreeAndStringInterfaces.isEmpty()) {
       List<JavaFileScannerContext.Location> flow = reportTreeAndStringInterfaces.stream()
         .map(interf -> new JavaFileScannerContext.Location("", interf.classInterface))
@@ -79,8 +87,12 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   public void checkVariableTypeAndInitializer(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     if (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer))) {
-      matchFunctionalInterface(variableTree.type())
-        .ifPresent(treeAndStringInterface -> reportIssue(treeAndStringInterface.classInterface, reportMessage(treeAndStringInterface)));
+      matchFunctionalInterface((JavaType) variableTree.symbol().type());
+      JavaType jt = ((JavaType) variableTree.symbol().type());
+      if (jt.isParameterized()) {
+        matchFunctionalInterface(jt)
+          .ifPresent(reportString -> reportIssue(variableTree.type(), reportMessage(new InterfaceTreeAndStringPairReport(reportString, variableTree.type()))));
+      }
     }
   }
 
@@ -98,78 +110,66 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return initializeTree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) initializeTree).classBody() != null;
   }
 
-  private static Optional<InterfaceTreeAndStringPairReport> matchFunctionalInterface(TypeTree interfaceType) {
-    Optional<TypeArguments> args = interfaceParameters(interfaceType);
-    if (args.isPresent()) {
-      TypeArguments arguments = args.get();
-      Optional<String> reportString;
-      switch (interfaceType.symbolType().fullyQualifiedName()) {
-        case "java.util.function.Function":
-          reportString = handleFunctionInterface(arguments);
-          break;
-        case "java.util.function.BiFunction":
-          reportString = handleBiFunctionInterface(arguments);
-          break;
-        case "java.util.function.BiConsumer":
-          reportString = handleBiConsumerInterface(arguments);
-          break;
-        case "java.util.function.Supplier":
-        case "java.util.function.Consumer":
-        case "java.util.function.Predicate":
-        case "java.util.function.UnaryOperator":
-        case "java.util.function.BinaryOperator":
-          reportString = handleOneParameterInterface(arguments).map(s -> s + interfaceType.symbolType().name());
-          break;
-        default:
-          return Optional.empty();
-      }
-      return reportString.map(rs -> new InterfaceTreeAndStringPairReport(rs, interfaceType));
+  private static Optional<String> matchFunctionalInterface(JavaType jt) {
+    Optional<String> reportString;
+    switch (jt.getSymbol().getFullyQualifiedName()) {
+      case "java.util.function.Function":
+        reportString = handleFunctionInterface((ParametrizedTypeJavaType) jt);
+        break;
+      case "java.util.function.BiFunction":
+        reportString = handleBiFunctionInterface((ParametrizedTypeJavaType) jt);
+        break;
+      case "java.util.function.BiConsumer":
+        reportString = handleBiConsumerInterface((ParametrizedTypeJavaType) jt);
+        break;
+      case "java.util.function.Supplier":
+      case "java.util.function.Consumer":
+      case "java.util.function.Predicate":
+      case "java.util.function.UnaryOperator":
+      case "java.util.function.BinaryOperator":
+        reportString = handleOneParameterInterface((ParametrizedTypeJavaType) jt).map(s -> s + jt.name());
+        break;
+      default:
+        return Optional.empty();
     }
-    return Optional.empty();
+    return reportString;
   }
 
-  private static Optional<String> handleOneParameterInterface(TypeArguments args) {
-    return Optional.ofNullable(new ParameterTypeNameAndTreeType(args.get(0)).paramTypeName);
+  private static Optional<String> handleOneParameterInterface(ParametrizedTypeJavaType ptjt) {
+    return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(0)).paramTypeName);
   }
 
-  private static Optional<String> handleFunctionInterface(TypeArguments args) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(args.get(0));
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(args.get(1));
+  private static Optional<String> handleFunctionInterface(ParametrizedTypeJavaType ptjt) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(0));
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(1));
     String reportString = null;
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
-      reportString = String.format("UnaryOperator<%s>", firstArgument.paramType.name());
+      reportString = String.format("UnaryOperator<%s>", firstArgument.paramType);
     } else if (firstArgument.paramTypeName != null && secondArgument.paramTypeName != null) {
       reportString = String.format("%sTo%sFunction", firstArgument.paramTypeName, secondArgument.paramTypeName);
     } else if (firstArgument.paramTypeName == null && secondArgument.paramTypeName != null) {
-      reportString = String.format("To%sFunction<%s>", secondArgument.paramTypeName, firstArgument.paramType.name());
+      reportString = String.format("To%sFunction<%s>", secondArgument.paramTypeName, firstArgument.paramType);
     } else if (firstArgument.paramTypeName != null) {
-      reportString = String.format("%sFunction<%s>", firstArgument.paramTypeName, secondArgument.paramType.name());
+      reportString = String.format("%sFunction<%s>", firstArgument.paramTypeName, secondArgument.paramType);
     }
     return Optional.ofNullable(reportString);
   }
 
-  private static Optional<String> handleBiFunctionInterface(TypeArguments args) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(args.get(0));
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(args.get(1));
-    ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(args.get(2));
+  private static Optional<String> handleBiFunctionInterface(ParametrizedTypeJavaType ptjt) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(0));
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(1));
+    ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(2));
     if (firstArgument.paramType.equals(secondArgument.paramType) && firstArgument.paramType.equals(thirdArgument.paramType)) {
-      return Optional.of("BinaryOperator<" + firstArgument.paramType.name() + ">");
+      return Optional.of("BinaryOperator<" + firstArgument.paramType + ">");
     }
     return Optional.empty();
   }
 
-  private static Optional<String> handleBiConsumerInterface(TypeArguments args) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(args.get(0));
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(args.get(1));
+  private static Optional<String> handleBiConsumerInterface(ParametrizedTypeJavaType ptjt) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(0));
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, ptjt.typeParameters().get(1));
     if (secondArgument.paramTypeName != null) {
       return Optional.ofNullable(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<TypeArguments> interfaceParameters(TypeTree interfaceType) {
-    if (interfaceType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      return Optional.of(((ParameterizedTypeTree) interfaceType).typeArguments());
     }
     return Optional.empty();
   }
@@ -186,34 +186,14 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   private static class ParameterTypeNameAndTreeType {
 
-    Type paramType;
+    final JavaType paramType;
 
     @Nullable
-    String paramTypeName;
+    final String paramTypeName;
 
-    public ParameterTypeNameAndTreeType(Tree tree) {
-      switch (tree.kind()) {
-        case IDENTIFIER:
-          paramType = ((IdentifierTree) tree).symbolType();
-          paramTypeName = returnStringFromJavaObject(paramType);
-          break;
-        case MEMBER_SELECT:
-          paramType = ((MemberSelectExpressionTree) tree).symbolType();
-          paramTypeName = returnStringFromJavaObject(paramType);
-          break;
-        case PARAMETERIZED_TYPE:
-          paramType = ((ParameterizedTypeTree) tree).symbolType();
-          paramTypeName = null;
-          break;
-        case EXTENDS_WILDCARD:
-        case UNBOUNDED_WILDCARD:
-        case SUPER_WILDCARD:
-          paramType = ((WildcardTree) tree).symbolType();
-          paramTypeName = null;
-          break;
-        default:
-          break;
-      }
+    public ParameterTypeNameAndTreeType(ParametrizedTypeJavaType ptjt, TypeVariableJavaType tvjt) {
+      paramType = ptjt.substitution(tvjt);
+      paramTypeName = returnStringFromJavaObject(paramType);
     }
 
     @CheckForNull
