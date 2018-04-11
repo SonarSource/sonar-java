@@ -103,7 +103,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class FallThroughCommentVisitor extends SubscriptionVisitor {
-    private static final Pattern FALL_THROUGH_PATTERN = Pattern.compile("falls?\\-?thro?u[gh]?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern FALL_THROUGH_PATTERN = Pattern.compile("falls?[\\-\\s]?thro?u[gh]?", Pattern.CASE_INSENSITIVE);
     boolean hasComment = false;
 
     @Override
