@@ -43,9 +43,9 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor 
     UnaryOperator<Integer> a5 = (int1) -> int1; // Noncompliant
     UnaryOperator<Double> a10 = (double1) -> double1; // Noncompliant [[sc=5;ec=26]] {{Refactor this code to use the more specialised Functional Interface 'DoubleUnaryOperator'}}
     UnaryOperator<Long> a11 = long1 -> long1; // Noncompliant
-    BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant [[sc=5;ec=27]] {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer'}}
-    BiConsumer<A, Long> a13 = (aaa, long1) -> {};// Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjLongConsumer'}}
-    BiConsumer<A.AA, Double> a14 = (aaa, double1) -> {};; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjDoubleConsumer'}}
+    BiConsumer<A, Integer> a12 = (aaa, int1) -> {}; // Noncompliant [[sc=5;ec=27]] {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer<A>'}}
+    BiConsumer<A, Long> a13 = (aaa, long1) -> {};// Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjLongConsumer<A>'}}
+    BiConsumer<A.AA, Double> a14 = (aaa, double1) -> {};; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjDoubleConsumer<AA>'}}
     BiConsumer<A,A> compl1 = (a,aa)-> {};  // Compliant
     Function<A, Integer> a15 = (aaa) -> 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToIntFunction<A>'}}
     Function<A, Long> a16 = (aaa) -> new Long(1); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToLongFunction<A>'}}

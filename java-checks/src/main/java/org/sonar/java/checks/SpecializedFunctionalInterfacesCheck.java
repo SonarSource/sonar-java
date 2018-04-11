@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +33,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -50,45 +50,48 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
   }
 
-  private static final String REPORT_STRING = "Refactor this code to use the more specialised Functional Interface";
-
   @Override
   public void visitNode(Tree tree) {
     if (!hasSemantic()) {
       return;
     }
     if (tree.is(Tree.Kind.CLASS)) {
-      checkClassInterfaces(((ClassTree) tree).superInterfaces());
+      checkClassInterfaces(((ClassTree) tree));
     } else if (tree.is(Tree.Kind.VARIABLE)) {
       checkVariableTypeAndInitializer((VariableTree) tree);
     }
   }
 
-  public void checkClassInterfaces(ListTree<TypeTree> classInterfaces) {
-    List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = classInterfaces.stream().map(SpecializedFunctionalInterfacesCheck::matchFunctionalInterface)
+  public void checkClassInterfaces(ClassTree tree) {
+    List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = tree.superInterfaces().stream().map(SpecializedFunctionalInterfacesCheck::matchFunctionalInterface)
       .filter(Optional::isPresent)
       .map(Optional::get)
       .collect(Collectors.toList());
     if (!reportTreeAndStringInterfaces.isEmpty()) {
       List<JavaFileScannerContext.Location> flow = reportTreeAndStringInterfaces.stream()
-        .map(interf -> new JavaFileScannerContext.Location("Interface Not Specialized", interf.classInterface))
+        .map(interf -> new JavaFileScannerContext.Location("", interf.classInterface))
         .collect(Collectors.toList());
-      if (reportTreeAndStringInterfaces.size() > 1) {
-        reportIssue(((ClassTree) classInterfaces.parent()).simpleName(),
-          REPORT_STRING + "s '" + reportTreeAndStringInterfaces.stream().map(x -> x.reportString).collect(Collectors.joining(", ")) + "'", flow, null);
-      } else {
-        reportIssue(((ClassTree) classInterfaces.parent()).simpleName(), REPORT_STRING + " '" + reportTreeAndStringInterfaces.get(0).reportString + "'", flow, null);
-      }
+      reportIssue(tree.simpleName(), reportMessage(reportTreeAndStringInterfaces), flow, null);
+
     }
   }
 
   public void checkVariableTypeAndInitializer(VariableTree variableTree) {
-    TypeTree interfaceType = variableTree.type();
     ExpressionTree initializer = variableTree.initializer();
     if (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer))) {
-      matchFunctionalInterface(interfaceType)
-        .ifPresent(treeAndStringInterface -> reportIssue(treeAndStringInterface.classInterface, REPORT_STRING + " '" + treeAndStringInterface.reportString + "'"));
+      matchFunctionalInterface(variableTree.type())
+        .ifPresent(treeAndStringInterface -> reportIssue(treeAndStringInterface.classInterface, reportMessage(treeAndStringInterface)));
     }
+  }
+
+  private static String reportMessage(InterfaceTreeAndStringPairReport onlyOneInterface) {
+    return reportMessage(Collections.singletonList(onlyOneInterface));
+  }
+
+  private static String reportMessage(List<InterfaceTreeAndStringPairReport> interfacesToBeReported) {
+    String functionalInterfaces = interfacesToBeReported.stream().map(x -> x.reportString).collect(Collectors.joining(", "));
+    String manyInterfaces = (interfacesToBeReported.size() > 1 ? "s" : "") + " '";
+    return String.format("Refactor this code to use the more specialised Functional Interface%s%s'", manyInterfaces, functionalInterfaces);
   }
 
   private static boolean isAnonymousClass(ExpressionTree initializeTree) {
@@ -120,19 +123,13 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
         default:
           return Optional.empty();
       }
-      if (reportString.isPresent()) {
-        return Optional.of(new InterfaceTreeAndStringPairReport(reportString.get(), interfaceType));
-      }
+      return reportString.map(rs -> new InterfaceTreeAndStringPairReport(rs, interfaceType));
     }
     return Optional.empty();
   }
 
   private static Optional<String> handleOneParameterInterface(TypeArguments args) {
-    String reportString = new ParameterTypeNameAndTreeType(args.get(0)).paramTypeName;
-    if (reportString != null) {
-      return Optional.of(reportString);
-    }
-    return Optional.empty();
+    return Optional.ofNullable(new ParameterTypeNameAndTreeType(args.get(0)).paramTypeName);
   }
 
   private static Optional<String> handleFunctionInterface(TypeArguments args) {
@@ -140,18 +137,15 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(args.get(1));
     String reportString = null;
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
-      reportString = "UnaryOperator<" + firstArgument.paramType.name() + ">";
+      reportString = String.format("UnaryOperator<%s>", firstArgument.paramType.name());
     } else if (firstArgument.paramTypeName != null && secondArgument.paramTypeName != null) {
-      reportString = firstArgument.paramTypeName + "To" + secondArgument.paramTypeName + "Function";
+      reportString = String.format("%sTo%sFunction", firstArgument.paramTypeName, secondArgument.paramTypeName);
     } else if (firstArgument.paramTypeName == null && secondArgument.paramTypeName != null) {
-      reportString = "To" + secondArgument.paramTypeName + "Function<" + firstArgument.paramType.name() + ">";
+      reportString = String.format("To%sFunction<%s>", secondArgument.paramTypeName, firstArgument.paramType.name());
     } else if (firstArgument.paramTypeName != null) {
-      reportString = firstArgument.paramTypeName + "Function<" + secondArgument.paramType.name() + ">";
+      reportString = String.format("%sFunction<%s>", firstArgument.paramTypeName, secondArgument.paramType.name());
     }
-    if (reportString != null) {
-      return Optional.of(reportString);
-    }
-    return Optional.empty();
+    return Optional.ofNullable(reportString);
   }
 
   private static Optional<String> handleBiFunctionInterface(TypeArguments args) {
@@ -165,22 +159,12 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   private static Optional<String> handleBiConsumerInterface(TypeArguments args) {
-    String reportString = returnStringFromJavaObject(((IdentifierTree) args.get(1)).symbolType());
-    if (reportString != null) {
-      return Optional.of("Obj" + reportString + "Consumer");
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(args.get(0));
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(args.get(1));
+    if (secondArgument.paramTypeName != null) {
+      return Optional.ofNullable(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
     }
     return Optional.empty();
-  }
-
-  @CheckForNull
-  private static String returnStringFromJavaObject(Type argType) {
-    if (argType.is("java.lang.Integer")) {
-      return "Int";
-    } else if (argType.is("java.lang.Boolean") || argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
-      return argType.name();
-    } else {
-      return null;
-    }
   }
 
   private static Optional<TypeArguments> interfaceParameters(TypeTree interfaceType) {
@@ -191,8 +175,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   private static class InterfaceTreeAndStringPairReport {
-    String reportString;
-    TypeTree classInterface;
+    final String reportString;
+    final TypeTree classInterface;
 
     public InterfaceTreeAndStringPairReport(String report, TypeTree interf) {
       reportString = report;
@@ -201,7 +185,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   private static class ParameterTypeNameAndTreeType {
-    @Nullable
+
     Type paramType;
 
     @Nullable
@@ -210,29 +194,36 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     public ParameterTypeNameAndTreeType(Tree tree) {
       switch (tree.kind()) {
         case IDENTIFIER:
-          IdentifierTree idTree = (IdentifierTree) tree;
-          paramType = idTree.symbolType();
+          paramType = ((IdentifierTree) tree).symbolType();
           paramTypeName = returnStringFromJavaObject(paramType);
           break;
         case MEMBER_SELECT:
-          MemberSelectExpressionTree memberTree = (MemberSelectExpressionTree) tree;
-          paramType = memberTree.symbolType();
+          paramType = ((MemberSelectExpressionTree) tree).symbolType();
           paramTypeName = returnStringFromJavaObject(paramType);
           break;
         case PARAMETERIZED_TYPE:
-          ParameterizedTypeTree p = (ParameterizedTypeTree) tree;
+          paramType = ((ParameterizedTypeTree) tree).symbolType();
           paramTypeName = null;
-          paramType = p.symbolType();
           break;
         case EXTENDS_WILDCARD:
         case UNBOUNDED_WILDCARD:
         case SUPER_WILDCARD:
-          WildcardTree w = (WildcardTree) tree;
+          paramType = ((WildcardTree) tree).symbolType();
           paramTypeName = null;
-          paramType = w.symbolType();
           break;
         default:
           break;
+      }
+    }
+
+    @CheckForNull
+    private static String returnStringFromJavaObject(Type argType) {
+      if (argType.is("java.lang.Integer")) {
+        return "Int";
+      } else if (argType.is("java.lang.Boolean") || argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
+        return argType.name();
+      } else {
+        return null;
       }
     }
   }
