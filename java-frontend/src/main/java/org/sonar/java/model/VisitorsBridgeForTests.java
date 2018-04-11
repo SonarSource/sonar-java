@@ -113,7 +113,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     }
 
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, Collections.singletonList(secondary), cost);
+      List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());  
+      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, flows, cost);
     }
   }
 }
