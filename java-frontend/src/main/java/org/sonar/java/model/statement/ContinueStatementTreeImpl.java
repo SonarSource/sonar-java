@@ -76,7 +76,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   public Iterable<Tree> children() {
     return Iterables.concat(
       Collections.singletonList(continueKeyword),
-      label != null ? Collections.singletonList(continueKeyword) : Collections.<Tree>emptyList(),
+      label != null ? Collections.singletonList(label) : Collections.<Tree>emptyList(),
       Collections.singletonList(semicolonToken));
   }
 
