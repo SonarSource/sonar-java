@@ -235,3 +235,126 @@ class Conditions {
     }
   }
 }
+
+class NestedSwitches {
+  public enum E {
+    A, B
+  }
+
+  public int test1(String s, E e, int i) {
+    switch (s) {
+      case "FOO":
+        return 0;
+      case "BAR": // Compliant - all cases in the following switch have unconditional termination statements
+        switch (e) {
+          case A:
+            switch (i) {
+              case A:
+              case B:
+                return 1;
+              default:
+                return 2;
+            }
+          case B:
+            return 2;
+          default:
+            throw new IllegalArgumentException();
+        }
+      default:
+        throw new IllegalArgumentException();
+    }
+  }
+
+  public int test2(String s, E e) {
+    switch (s) {
+      case "FOO":
+        return 0;
+      case "BAR": // Noncompliant
+        switch (e) {
+          case A:
+            return 1;
+          case B:
+            return 2;
+        }
+      default:
+        throw new IllegalArgumentException();
+    }
+    return 0;
+  }
+
+  public int test3(String s, E e) {
+    int result = 0;
+    switch (s) {
+      case "FOO":
+        return 0;
+      case "BAR": // Noncompliant
+        switch (e) {
+          case A: // Noncompliant
+            result = 0;
+          case B:
+            return 2;
+        }
+      default:
+        throw new IllegalArgumentException();
+    }
+    return result;
+  }
+}
+
+class SwitchesAndLoops {
+  public enum E {
+    A, B
+  }
+
+  private void nestedSwitchesAndLoops(String s, E e) {
+    int result = 0;
+
+    for (int i = 0; i < 1; i++) {
+      switch (myVariable) {
+        case 0:
+          continue label1;
+        case 1:
+          switch (s) {
+            case "FOO":
+              for (int j = 0; j < 1; j++) {
+                switch (j) {
+                  case 0:
+                  case 1:
+                    throw new IllegalArgumentException();
+                  case 2:
+                    continue;
+                  case 3: // Noncompliant
+                    label1:
+                    result = 0;
+                  case 4:
+                    result = 1;
+                    // fallthrough
+                  case 5: // Noncompliant
+                    result = 1;
+                  case 6:
+                  case 7:
+                  case 8:
+                    result = 6;
+                }
+                continue;
+              }
+              continue;
+              return 0;
+            case "BAR":
+              switch (e) {
+                case A: // Noncompliant
+                  result = 0;
+                case B:
+                  return 2;
+              }
+          }
+          break;
+        case 2:
+          result = 2;
+          continue;
+        default:
+          result = 0;
+      }
+    }
+  }
+}

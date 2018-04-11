@@ -138,6 +138,7 @@ public class CFGTest {
     private boolean hasNoExit = false;
     private boolean isCatchBlock = false;
     private boolean isFinallyBlock = false;
+    private boolean withCaseGroup = false;
 
     BlockChecker(final int... ids) {
       if( ids.length <= 1) {
@@ -212,6 +213,11 @@ public class CFGTest {
       return this;
     }
 
+    BlockChecker hasCaseGroup() {
+      this.withCaseGroup = true;
+      return this;
+    }
+
     public void check(final Block block) {
       assertThat(block.elements()).as("Expected number of elements in block " + block.id()).hasSize(checkers.size());
       final Iterator<ElementChecker> checkerIterator = checkers.iterator();
@@ -241,6 +247,11 @@ public class CFGTest {
       assertThat(block.exceptions().stream().mapToInt(Block::id).sorted().toArray()).as("Expected exceptions in block " + block.id()).isEqualTo(exceptionsIDs);
       if (terminatorChecker != null) {
         terminatorChecker.check(block.terminator());
+      }
+      if (withCaseGroup) {
+        assertThat(block.caseGroup()).as("Block case group").isNotNull();
+      } else {
+        assertThat(block.caseGroup()).as("Block case group").isNull();
       }
       if (isCatchBlock) {
         assertThat(block.isCatchBlock()).as("Block B" + block.id() + " expected to be flagged as 'catch' block").isTrue();
@@ -595,20 +606,20 @@ public class CFGTest {
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(3),
+        ).hasCaseGroup().successors(3),
       block(
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+        ).hasCaseGroup().terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
       block(
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "baz"),
         element(Tree.Kind.METHOD_INVOCATION)
-        ).successors(0),
+        ).hasCaseGroup().successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")
@@ -626,20 +637,20 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
+        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(3),
       block(
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(0),
       block(
         element(INT_LITERAL, "4"),
         element(INT_LITERAL, "3"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "baz"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
@@ -656,13 +667,13 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
+        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(3),
       block(
         element(INT_LITERAL, "2"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(1),
+        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(1),
       block(
         element(Tree.Kind.VARIABLE, "a"),
         element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(1, 3, 4),
@@ -683,9 +694,9 @@ public class CFGTest {
         element(Kind.IDENTIFIER, "System"),
         element(Kind.MEMBER_SELECT),
         element(INT_LITERAL, "1"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(0),
       block(
-        element(Kind.IDENTIFIER, "d")).terminator(Kind.CONDITIONAL_OR).successors(2, 3),
+        element(Kind.IDENTIFIER, "d")).terminator(Kind.CONDITIONAL_OR).hasCaseGroup().successors(2, 3),
       block(
         element(Kind.IDENTIFIER, "e")).successors(2),
       block(
