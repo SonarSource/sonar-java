@@ -176,7 +176,7 @@ public class CFG {
     private Block successorWithoutJump;
 
     private Tree terminator;
-    private Tree label;
+    private CaseGroupTree caseGroup;
 
     private boolean isFinallyBlock;
     private boolean isCatchBlock = false;
@@ -302,12 +302,12 @@ public class CFG {
      * Used for simplifying implementation of RSPEC-128.
      */
     @CheckForNull
-    public Tree label() {
-      return label;
+    public CaseGroupTree caseGroup() {
+      return caseGroup;
     }
 
-    public void setLabel(Tree label) {
-      this.label = label;
+    public void setCaseGroup(CaseGroupTree caseGroup) {
+      this.caseGroup = caseGroup;
     }
   }
 
@@ -735,7 +735,7 @@ public class CFG {
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
-        currentBlock.setLabel(caseGroupTree);
+        currentBlock.setCaseGroup(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.

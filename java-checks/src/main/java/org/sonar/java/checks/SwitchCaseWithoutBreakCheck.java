@@ -64,11 +64,11 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
 
   private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, List<CaseGroupTree> caseGroupTrees) {
     return switchSuccessors.stream()
-      .filter(cfgBlock -> cfgBlock.label() != null && caseGroupTrees.contains(cfgBlock.label()))
+      .filter(cfgBlock -> cfgBlock.caseGroup() != null && caseGroupTrees.contains(cfgBlock.caseGroup()))
       .collect(
         Collectors.toMap(
           Function.identity(),
-          cfgBlock -> (CaseGroupTree) cfgBlock.label()));
+          CFG.Block::caseGroup));
   }
 
   private static Stream<CaseGroupTree> getForbiddenCaseGroupPredecessors(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
