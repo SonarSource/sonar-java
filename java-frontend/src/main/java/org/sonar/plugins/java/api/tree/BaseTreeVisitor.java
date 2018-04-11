@@ -22,7 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 /**
  * Default implementation of {@link TreeVisitor}.
@@ -358,7 +357,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
-  public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
+  public void visitTypeArguments(TypeArguments trees) {
     scan((List<Tree>)trees);
   }
 

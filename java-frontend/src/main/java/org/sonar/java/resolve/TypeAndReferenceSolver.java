@@ -42,7 +42,6 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.resolve.Resolve.Resolution;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -451,7 +450,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   @Override
-  public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
+  public void visitTypeArguments(TypeArguments trees) {
     resolveAs((List<? extends Tree>) trees, JavaSymbol.TYP);
   }
 
