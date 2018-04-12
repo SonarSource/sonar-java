@@ -45,6 +45,16 @@ class A {
         f();
         break;
     }
+
+    switch (1) { // Compliant
+      case 1:
+        break;
+      case 2:
+        break;
+      default:
+        f();
+        break;
+    }
   }
 
   void ifStatement() {

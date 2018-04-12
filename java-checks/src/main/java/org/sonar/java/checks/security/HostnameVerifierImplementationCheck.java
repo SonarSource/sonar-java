@@ -21,7 +21,7 @@ package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -61,7 +61,7 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
 
     if (tree.kind().equals(Tree.Kind.METHOD)) {
       checkMethodDefinition((MethodTree) tree);
-    } else if (tree.kind().equals(Tree.Kind.LAMBDA_EXPRESSION)) {
+    } else {
       checkLambdaDefinition(((LambdaExpressionTree) tree));
     }
   }
@@ -90,8 +90,11 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
       innerBlock = (BlockTree) innerBlock.body().get(0);
     }
 
-    if (isReturnTrueStatement(innerBlock.body())) {
-      reportIssue(innerBlock.body().get(0), ISSUE_MESSAGE);
+    List<StatementTree> statementTreeList = innerBlock.body().stream()
+      .filter(statementTree -> !statementTree.is(Tree.Kind.EMPTY_STATEMENT))
+      .collect(Collectors.toList());
+    if (isReturnTrueStatement(statementTreeList)) {
+      reportIssue(statementTreeList.get(0), ISSUE_MESSAGE);
     }
   }
 
@@ -107,8 +110,8 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
     return false;
   }
 
-  private static boolean isTrueLiteral(@Nullable Tree tree) {
-    if (tree != null && (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || tree.is(Tree.Kind.BOOLEAN_LITERAL))) {
+  private static boolean isTrueLiteral(Tree tree) {
+    if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || tree.is(Tree.Kind.BOOLEAN_LITERAL)) {
       ExpressionTree expression = ExpressionUtils.skipParentheses((ExpressionTree) tree);
       return expression.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expression).value());
     }
