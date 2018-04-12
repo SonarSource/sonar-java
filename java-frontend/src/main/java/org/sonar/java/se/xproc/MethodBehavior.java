@@ -85,6 +85,12 @@ public class MethodBehavior {
       if (resultSV != null) {
         Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
         String typeName = null;
+
+        while (type != null && type.symbol().owner().isMethodSymbol()) {
+          // skip anonymous or classes nested in methods to the closest exception type
+          // because bytecode visitor does not support them (see org.sonar.java.resolve.BytecodeVisitor.visitOuterClass)
+          type = type.symbol().superClass();
+        }
         if(type != null) {
           typeName = type.fullyQualifiedName();
         }
