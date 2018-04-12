@@ -20,8 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.Map;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
@@ -134,6 +136,33 @@ public class MethodJavaSymbolTest {
             assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
               .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test2([Lorg/sonar/java/resolve/targets/MethodCompleteSignature;)[Lorg/sonar/java/resolve/targets/MethodCompleteSignature;");
           }
+        }
+
+      }), Collections.singletonList(new File("target/test-classes")), null));
+  }
+
+  @Test
+  public void test_is_overridable() throws Exception {
+    Map<Integer, Boolean> methodOverridableByLine = ImmutableMap.of(
+      25, false,
+      29, false,
+      32, false,
+      35, false,
+      38, true);
+
+    JavaAstScanner.scanSingleFileForTests(
+      new File("src/test/java/org/sonar/java/resolve/targets/OverridableMethodSymbols.java"),
+      new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
+        @Override
+        public List<Tree.Kind> nodesToVisit() {
+          return Lists.newArrayList(Tree.Kind.METHOD);
+        }
+
+        @Override
+        public void visitNode(Tree tree) {
+          int line = ((JavaTree) tree).getLine();
+          JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) ((MethodTree) tree).symbol();
+          assertThat(symbol.isOverridable()).isEqualTo(methodOverridableByLine.get(line));
         }
 
       }), Collections.singletonList(new File("target/test-classes")), null));

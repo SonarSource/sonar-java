@@ -21,6 +21,18 @@ class A {
         return a.equalsIgnoreCase(b.getPeerHost());
       }
     });
+    b.method(new HostnameVerifier() {
+      @Override
+      public boolean verify(String a, SSLSession b) {
+        switch (1) {
+          case 1:
+            return true;
+          case 2:
+          default:
+            return false;
+        }
+      }
+    });
   }
 
   void method2() {
@@ -70,6 +82,7 @@ class E implements HostnameVerifier {
   public boolean verify(String a, SSLSession b) {
     {
       {
+        ;
         return true; // Noncompliant
       }
     }
@@ -85,4 +98,8 @@ class F implements HostnameVerifier {
       return true;
     }
   }
+}
+
+class G implements HostnameVerifier {
+  public abstract boolean verify(String a, SSLSession b);
 }

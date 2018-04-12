@@ -49,7 +49,7 @@ public class SwitchDefaultLastCaseCheck extends IssuableSubscriptionVisitor {
       for (int j = 0; j < labels.size(); j++) {
         CaseLabelTree label = labels.get(j);
         boolean defaultExists = isDefault(label);
-        if (defaultExists && ((j != labels.size() - 1) || (j == labels.size() - 1 && i == switchStatementTree.cases().size() - 1))) {
+        if (defaultExists && ((j != labels.size() - 1) || (i == switchStatementTree.cases().size() - 1))) {
           /*
            * we return Optional.empty() because either we have default at the end which is a best practise
            * or it is in a place in a case group where it can not affect the result of the execution

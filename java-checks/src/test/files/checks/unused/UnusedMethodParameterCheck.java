@@ -13,6 +13,8 @@ import org.apache.struts.action.Action;
 import org.apache.struts.actions.BaseAction;
 
 class A extends B{
+  void doSomething() { }
+
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
     compute(a);
   }
@@ -48,7 +50,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, // Noncompliant {{Remove these unused method parameters.}} [[sc=16;ec=17;secondary=51,52]]
+  void foo(int b, // Noncompliant {{Remove these unused method parameters.}} [[sc=16;ec=17;secondary=53,54]]
            int a) {
     System.out.println("");
   }

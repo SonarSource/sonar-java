@@ -106,6 +106,18 @@ class A {
       case 3:
         break;
     }
+
+    switch (1) {
+      case 1:
+        trivial();
+        break;
+      case 2: // Compliant - this case is covered by RSPEC-3923
+        trivial();
+        break;
+      default: // Compliant - this case is covered by RSPEC-3923
+        trivial();
+        break;
+    }
   }
 
   void ifStatement() {
@@ -132,10 +144,10 @@ class A {
       // skip empty blocks
     } else if (true) {
       System.out.println("bar");
-    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=126]] {{This branch's code block is the same as the block for the branch on line 126.}}
+    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=138]] {{This branch's code block is the same as the block for the branch on line 138.}}
       System.out.println("foo");
       System.out.println("foo");
-    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=126]] {{This branch's code block is the same as the block for the branch on line 126.}}
+    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=138]] {{This branch's code block is the same as the block for the branch on line 138.}}
       System.out.println("foo");
       System.out.println("foo");
     }
@@ -151,13 +163,13 @@ class A {
     else f();
 
     if (true) f();
-    else if (true) f(); // Noncompliant [[secondary=153]]
+    else if (true) f(); // Noncompliant [[secondary=165]]
 
     if (true) {
       f();
       f();
     }
-    else if (true) { // Noncompliant [[secondary=156]]
+    else if (true) { // Noncompliant [[secondary=168]]
       f();
       f();
     }
@@ -165,7 +177,7 @@ class A {
       g();
       g();
     }
-    else if (true) {  // Noncompliant [[secondary=164]]
+    else if (true) {  // Noncompliant [[secondary=176]]
       g();
       g();
     }

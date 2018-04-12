@@ -43,6 +43,7 @@ public class JavadocTest {
   private static Javadoc emptyDescriptionJavadoc;
   private static Javadoc fullParamsDescriptionJavadoc;
   private static Javadoc genericExceptionThrownJavadoc;
+  private static Javadoc genericExceptionThrownUndocumented;
 
   @BeforeClass
   public static void setup() {
@@ -60,6 +61,7 @@ public class JavadocTest {
     emptyDescriptionJavadoc = new Javadoc(methods.get("emptyDescription"));
     fullParamsDescriptionJavadoc = new Javadoc(methods.get("fullParamsDescription"));
     genericExceptionThrownJavadoc = new Javadoc(methods.get("genericExceptionThrown"));
+    genericExceptionThrownUndocumented = new Javadoc(methods.get("genericExceptionThrownUndocumented"));
   }
 
   @Test
@@ -69,6 +71,7 @@ public class JavadocTest {
     assertThat(emptyDescriptionJavadoc.noMainDescription()).isTrue();
     assertThat(fullParamsDescriptionJavadoc.noMainDescription()).isTrue();
     assertThat(genericExceptionThrownJavadoc.noMainDescription()).isTrue();
+    assertThat(genericExceptionThrownUndocumented.noMainDescription()).isTrue();
   }
 
   @Test
@@ -78,6 +81,7 @@ public class JavadocTest {
     assertThat(emptyDescriptionJavadoc.noReturnDescription()).isTrue();
     assertThat(fullParamsDescriptionJavadoc.noReturnDescription()).isTrue();
     assertThat(genericExceptionThrownJavadoc.noReturnDescription()).isTrue();
+    assertThat(genericExceptionThrownUndocumented.noReturnDescription()).isTrue();
   }
 
   @Test
@@ -87,6 +91,7 @@ public class JavadocTest {
     assertThat(emptyDescriptionJavadoc.undocumentedParameters()).containsExactlyInAnyOrder("a", "b", "c", "d", "e");
     assertThat(fullParamsDescriptionJavadoc.undocumentedParameters()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedParameters()).isEmpty();
+    assertThat(genericExceptionThrownUndocumented.undocumentedParameters()).isEmpty();
   }
 
   @Test
@@ -96,6 +101,7 @@ public class JavadocTest {
     assertThat(emptyDescriptionJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("NullPointerException");
     assertThat(fullParamsDescriptionJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("ObjectStreamException", "InvalidObjectException");
+    assertThat(genericExceptionThrownUndocumented.undocumentedThrownExceptions()).containsExactlyInAnyOrder("Exception");
   }
 
   @Test

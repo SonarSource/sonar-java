@@ -75,6 +75,10 @@ class A<B, C, E> {
   private int genericExceptionThrown() throws Exception {
     return 0;
   }
+
+  private int genericExceptionThrownUndocumented() throws Exception {
+    return 0;
+  }
 }
 
 /**

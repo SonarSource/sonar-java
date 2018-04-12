@@ -108,7 +108,6 @@ public final class Javadoc {
   private final String mainDescription;
   private final Map<BlockTagKey, List<String>> blockTagDescriptions;
   private final EnumMap<BlockTag, List<String>> undocumentedNamedTags;
-  private Map<String, List<String>> javadocExceptions;
 
   public Javadoc(Tree tree) {
     if (tree.is(METHOD_KINDS)) {
@@ -161,7 +160,9 @@ public final class Javadoc {
   }
 
   private List<String> computeUndocumentedThrownExceptions() {
-    Map<String, List<String>> thrownExceptionsMap = getJavadocExceptions();
+    Map<String, List<String>> thrownExceptionsMap = blockTagDescriptions.entrySet().stream()
+      .filter(entry -> entry.getKey().tag == BlockTag.EXCEPTIONS && entry.getKey().name != null)
+      .collect(Collectors.toMap(entry -> entry.getKey().name, Map.Entry::getValue));
     List<String> exceptionNames = elementExceptionNames;
     if (exceptionNames.size() == 1 && GENERIC_EXCEPTIONS.contains(toSimpleName(exceptionNames.get(0))) && !thrownExceptionsMap.isEmpty()) {
       // check for documented exceptions without description when only "Exception" is declared as being thrown
@@ -188,15 +189,6 @@ public final class Javadoc {
         .collect(Collectors.toList());
     }
     return isEmptyDescription(descriptions);
-  }
-
-  private Map<String, List<String>> getJavadocExceptions() {
-    if (javadocExceptions == null) {
-      javadocExceptions = blockTagDescriptions.entrySet().stream()
-        .filter(entry -> entry.getKey().tag == BlockTag.EXCEPTIONS && entry.getKey().name != null)
-        .collect(Collectors.toMap(entry -> entry.getKey().name, Map.Entry::getValue));
-    }
-    return javadocExceptions;
   }
 
   private static Map<BlockTagKey, List<String>> extractBlockTags(List<String> javadocLines, List<BlockTag> tags) {
@@ -231,8 +223,8 @@ public final class Javadoc {
     return descriptions == null || descriptions.isEmpty() || descriptions.stream().anyMatch(Javadoc::isEmptyDescription);
   }
 
-  private static boolean isEmptyDescription(@Nullable String part) {
-    return part == null || part.trim().isEmpty() || PLACEHOLDERS.contains(part.trim());
+  private static boolean isEmptyDescription(String part) {
+    return part.trim().isEmpty() || PLACEHOLDERS.contains(part.trim());
   }
 
   private static String exceptionName(TypeTree typeTree) {

@@ -76,6 +76,11 @@ class A {
     list.sort(Comparator.comparingInt(Object::hashCode));
   }
 
+  @Autowired
+  public void autowiredMethod4(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
+    list.size();
+  }
+
   public static void staticMethod(List<Object> list) { // Noncompliant {{Use 'java.util.Collection' here; it is a more general type than 'List'.}}
     list.size();
   }
