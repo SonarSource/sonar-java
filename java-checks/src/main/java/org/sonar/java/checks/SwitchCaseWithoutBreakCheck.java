@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,20 +75,25 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   private static Stream<CaseGroupTree> getForbiddenCaseGroupPredecessors(CFG.Block cfgBlock, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
     CaseGroupTree caseGroup = cfgBlockToCaseGroupMap.get(cfgBlock);
     return cfgBlock.predecessors().stream()
-      .map(predecessor -> getForbiddenCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap))
+      .map(predecessor -> getForbiddenCaseGroupPredecessor(predecessor, cfgBlockToCaseGroupMap, new HashSet<>()))
       .filter(Objects::nonNull)
       .filter(predecessor -> !intentionalFallThrough(predecessor, caseGroup))
       .distinct();
   }
 
   @Nullable
-  private static CaseGroupTree getForbiddenCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap) {
+  private static CaseGroupTree getForbiddenCaseGroupPredecessor(CFG.Block predecessor, Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap, Set<CFG.Block> seen) {
     if (cfgBlockToCaseGroupMap.get(predecessor) != null) {
       return cfgBlockToCaseGroupMap.get(predecessor);
     }
 
+    if (seen.contains(predecessor)) {
+      return null;
+    }
+
+    seen.add(predecessor);
     return predecessor.predecessors().stream()
-      .map(previousPredecessors -> getForbiddenCaseGroupPredecessor(previousPredecessors, cfgBlockToCaseGroupMap))
+      .map(previousPredecessors -> getForbiddenCaseGroupPredecessor(previousPredecessors, cfgBlockToCaseGroupMap, seen))
       .filter(Objects::nonNull)
       .findFirst()
       .orElse(null);

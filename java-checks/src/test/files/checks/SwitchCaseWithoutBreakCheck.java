@@ -357,4 +357,13 @@ class SwitchesAndLoops {
       }
     }
   }
+
+  public void infiniteLoopCheck() {
+    int value = 0;
+    switch (value) {
+      case 0: // Noncompliant
+        for (int i = 0; i < 1; i++) { }
+      case 1:
+    }
+  }
 }
