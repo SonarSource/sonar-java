@@ -26,16 +26,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.assertj.core.api.Fail;
-
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridgeForTests;
-import org.sonar.plugins.java.api.JavaFileScanner;
-
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +43,19 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.SonarComponents;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -186,10 +192,25 @@ public class JavaCheckVerifier {
   private void scanFile(String filename, JavaFileScanner[] checks, Collection<File> classpath) {
     List<JavaFileScanner> visitors = new ArrayList<>(Arrays.asList(checks));
     visitors.add(expectations.parser());
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), null);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
+    File file = new File(filename);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), sonarComponents(file));
+    JavaAstScanner.scanSingleFileForTests(file, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues());
+  }
+
+  private static SonarComponents sonarComponents(File file) {
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
+      @Override
+      public boolean reportAnalysisError(RecognitionException re, File file) {
+        return false;
+      }
+    };
+    sonarComponents.setSensorContext(context);
+    context.fileSystem().add(new TestInputFileBuilder("", file.getPath()).setCharset(StandardCharsets.UTF_8).build());
+    return sonarComponents;
   }
 
   protected void checkIssues(Set<AnalyzerMessage> issues) {
@@ -382,7 +403,7 @@ public class JavaCheckVerifier {
     if (attributes.containsKey(attribute)) {
       assertThat(issue.getMessage())
         .as("line " + issue.getLine() + " attribute mismatch for " + attribute + ": " + attributes)
-        .isEqualTo(String.valueOf((Object) attribute.get(attributes)));
+        .isEqualTo(attribute.getter.apply(attributes.get(attribute)));
     }
   }
 
