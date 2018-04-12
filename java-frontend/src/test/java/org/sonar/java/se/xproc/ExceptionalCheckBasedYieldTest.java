@@ -143,7 +143,7 @@ public class ExceptionalCheckBasedYieldTest {
     }.getClass();
     String exceptionType = "someException";
     ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, mockMethodBehavior());
-    yield.setExceptionType("anotherException");
+    yield.setExceptionTypeName("anotherException");
   }
 
   @Test
@@ -174,7 +174,7 @@ public class ExceptionalCheckBasedYieldTest {
 
     // same exception, but simple exceptional yield
     otherYield = new ExceptionalYield(null, mb);
-    otherYield.setExceptionType(mockedExceptionType1);
+    otherYield.setExceptionTypeName(mockedExceptionType1);
     assertThat(yield).isNotEqualTo(otherYield);
 
     // same exception, different SV

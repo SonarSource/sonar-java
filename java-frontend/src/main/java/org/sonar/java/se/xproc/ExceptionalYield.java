@@ -37,7 +37,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 public class ExceptionalYield extends MethodYield {
 
   @Nullable
-  private String exceptionType;
+  private Type exceptionType;
+
+  @Nullable
+  private String exceptionTypeName;
 
   public ExceptionalYield(MethodBehavior behavior) {
     super(behavior);
@@ -57,23 +60,38 @@ public class ExceptionalYield extends MethodYield {
       .distinct();
   }
 
-  public void setExceptionType(String exceptionType) {
+  public void setExceptionType(@Nullable Type exceptionType) {
     this.exceptionType = exceptionType;
+    this.exceptionTypeName = null;
+  }
+
+  public void setExceptionTypeName(String exceptionTypeName) {
+    this.exceptionTypeName = exceptionTypeName;
+    this.exceptionType = null;
   }
 
   public Type exceptionType(SemanticModel semanticModel) {
-    if (exceptionType == null) {
-      return Symbols.unknownType;
+    if (exceptionType != null) {
+      return exceptionType;
     }
-    Type type = semanticModel.getClassType(this.exceptionType);
-    return type == null ? Symbols.unknownType : type;
+    if (exceptionTypeName != null) {
+      Type type = semanticModel.getClassType(this.exceptionTypeName);
+      return type == null ? Symbols.unknownType : type;
+    }
+    return Symbols.unknownType;
   }
 
   @Override
   public String toString() {
+    String typeName = "";
+    if (exceptionType != null) {
+      typeName = " (" + exceptionType.fullyQualifiedName() + ")";
+    } else if (exceptionTypeName != null) {
+      typeName = " (" + exceptionTypeName + ")";
+    }
     return String.format("{params: %s, exceptional%s}",
       parametersConstraints.stream().map(constraints -> constraints.stream().map(Constraint::toString).collect(Collectors.toList())).collect(Collectors.toList()),
-      exceptionType == null ? "" : (" (" + exceptionType + ")"));
+      typeName);
   }
 
   @Override
@@ -81,6 +99,7 @@ public class ExceptionalYield extends MethodYield {
     return new HashCodeBuilder(3, 1295)
       .appendSuper(super.hashCode())
       .append(exceptionType)
+      .append(exceptionTypeName)
       .hashCode();
   }
 
@@ -96,6 +115,7 @@ public class ExceptionalYield extends MethodYield {
     return new EqualsBuilder()
       .appendSuper(super.equals(obj))
       .append(exceptionType, other.exceptionType)
+      .append(exceptionTypeName, other.exceptionTypeName)
       .isEquals();
   }
 
