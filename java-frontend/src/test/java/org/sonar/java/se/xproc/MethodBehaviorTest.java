@@ -170,6 +170,22 @@ public class MethodBehaviorTest {
     assertThat(resultConstraints).contains(ObjectConstraint.NULL, ObjectConstraint.NOT_NULL);
   }
 
+  @Test
+  public void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
+    Pair<SymbolicExecutionVisitor, SemanticModel> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
+      "src/test/java/org/sonar/java/resolve/targets/TestExceptionSupertypeResolution.java");
+    SymbolicExecutionVisitor sev = visitorAndSemantic.a;
+    SemanticModel semanticModel = visitorAndSemantic.b;
+    MethodBehavior mb = getMethodBehavior(sev, "throwException");
+    List<ExceptionalYield> exceptionYields = mb.exceptionalPathYields().collect(Collectors.toList());
+    assertThat(exceptionYields).hasSize(3);
+    assertThat(exceptionYields.stream()
+      .map(ey -> ey.exceptionType(semanticModel))
+      .map(exceptionType -> (exceptionType == null || exceptionType.isUnknown() ? null : exceptionType.fullyQualifiedName()))
+      .collect(Collectors.toSet()))
+        .containsOnly("org.sonar.java.resolve.targets.TestExceptionSupertypeResolution$Foo", "java.lang.Exception", null);
+  }
+
   private void addYield(MethodBehavior mb, @Nullable Constraint result, Constraint... constraints) {
     HappyPathYield yield = new HappyPathYield(mb);
     for (Constraint constraint : constraints) {
