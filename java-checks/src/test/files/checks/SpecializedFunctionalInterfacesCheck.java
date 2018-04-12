@@ -201,7 +201,7 @@ class MySupplier1 implements Supplier<Integer>, Runnable { // Noncompliant [sc=7
   }
 }
 
-class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=204, 204]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
+class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=204, 204]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
   Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
 
   @Override
@@ -214,7 +214,7 @@ class MySupplier2 implements Supplier<Integer>, Consumer<Double> { // Noncomplia
   }
 }
 
-class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=217, 217]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier, DoubleConsumer'}}
+class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // Noncompliant [[sc=7;ec=18;secondary=217, 217]] {{Refactor this code to use the more specialised Functional Interfaces 'IntSupplier', 'DoubleConsumer'}}
   Supplier<Integer> mySupplier = new MySupplier2(); // Compliant
 
   @Override
@@ -237,6 +237,13 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
         return null;
       }
     };
+  
+    com.google.common.base.Function<Integer, String> ff = new com.google.common.base.Function<Integer, String>(){ // Compliant
+      @Override
+      public String apply(Integer a) {
+        return null;
+      }
+    }; 
   }
   
 }
