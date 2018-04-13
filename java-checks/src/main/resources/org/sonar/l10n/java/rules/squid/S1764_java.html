@@ -22,8 +22,11 @@ int k = 5 - 5; //always 0
 c.equals(c); //always true
 </pre>
 <h2>Exceptions</h2>
-<p>The specific case of testing a floating point value against itself is a valid test for <code>NaN</code> and is therefore ignored.</p>
-<p>Similarly, left-shifting 1 onto 1 is common in the construction of bit masks, and is ignored.</p>
+<ul>
+  <li> This rule ignores <code>*</code>, <code>+</code>, and <code>=</code>. </li>
+  <li> The specific case of testing a floating point value against itself is a valid test for <code>NaN</code> and is therefore ignored. </li>
+  <li> Similarly, left-shifting 1 onto 1 is common in the construction of bit masks, and is ignored. </li>
+</ul>
 <pre>
 float f;
 if(f != f) { //test for NaN value
