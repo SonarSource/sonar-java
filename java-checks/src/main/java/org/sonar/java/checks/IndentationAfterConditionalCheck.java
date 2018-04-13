@@ -19,19 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -40,133 +39,93 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
 
   private JavaFileScannerContext context;
 
+  private Set<IfStatementTree> statementSet = new HashSet<>();
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    statementSet.clear();
     scan(context.getTree());
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    if (thereIsNoIssue(tree)) {
-      return;
-    }
-    if (checkElseStatementReports(tree)) {
-      context.reportIssue(this, tree.elseKeyword(),
-        "Use curly braces or indentation to denote the code conditionally executed by this \"" + tree.elseKeyword().text() + "\".");
-    }
-    report(tree.ifKeyword(), tree.closeParenToken(), tree.ifKeyword().text(), findSecondariesToReport(tree));
+    visitIfElseStatement(tree, tree.firstToken().column());
     super.visitIfStatement(tree);
+  }
+
+  /* to traverse the if-else if statements, in case of else if */
+  public void visitIfElseStatement(IfStatementTree tree, int column) {
+    if (!statementSet.contains(tree)) {
+      statementSet.add(tree);
+      checkForReport(tree.thenStatement(), tree.ifKeyword(), tree.closeParenToken(), column);
+      SyntaxToken elseKeyword = tree.elseKeyword();
+      if (elseKeyword != null) {
+        StatementTree elseStatement = tree.elseStatement();
+        if (elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+          visitIfElseStatement((IfStatementTree) elseStatement, elseKeyword.column());
+        } else {
+          checkElseStatementReport(tree);
+        }
+      }
+    }
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    if (thereIsNoIssue(tree)) {
-      return;
-    }
-    report(tree.whileKeyword(), tree.closeParenToken(), tree.whileKeyword().text(), findSecondariesToReport(tree));
     super.visitWhileStatement(tree);
+    checkForReport(tree.statement(), tree.whileKeyword(), tree.closeParenToken(), tree.firstToken().column());
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    if (thereIsNoIssue(tree)) {
-      return;
-    }
-    report(tree.forKeyword(), tree.closeParenToken(), tree.forKeyword().text(), findSecondariesToReport(tree));
     super.visitForStatement(tree);
+    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.firstToken().column());
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    if (thereIsNoIssue(tree)) {
+    super.visitForEachStatement(tree);
+    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.firstToken().column());
+  }
+
+  public void checkForReport(StatementTree statement, Tree startTree, Tree endTree, int column) {
+    if (noIssue(statement, column)) {
       return;
     }
-    report(tree.forKeyword(), tree.closeParenToken(), tree.forKeyword().text(), findSecondariesToReport(tree));
-    super.visitForEachStatement(tree);
+    report(startTree, endTree, startTree.firstToken().text(), statement);
   }
 
-  private static boolean thereIsNoIssue(Tree tree) {
-    return (blockExists(tree) || checkIdentation(tree));
+  private static boolean noIssue(StatementTree statement, int column) {
+    return (blockExists(statement) || isIndentationCorrect(statement, column));
   }
 
-  public void report(Tree firstTree, Tree secondTree, String operationName, List<JavaFileScannerContext.Location> flow) {
+  public void report(Tree firstTree, Tree secondTree, String operationName, StatementTree statement) {
     context.reportIssue(this, firstTree, secondTree,
-      "Use curly braces or indentation to denote the code conditionally executed by this \"" + operationName + "\".", flow, null);
+      "Use curly braces or indentation to denote the code conditionally executed by this \"" + operationName + "\".",
+      Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);
   }
 
-  private static boolean checkElseStatementReports(IfStatementTree tree) {
-    if (tree.elseKeyword() != null && !tree.elseStatement().is(Tree.Kind.IF_STATEMENT)) {
-      return tree.elseKeyword().column() >= tree.elseStatement().firstToken().column();
+  public void checkElseStatementReport(IfStatementTree tree) {
+    SyntaxToken elseKeyword = tree.elseKeyword();
+    StatementTree elseStatement = tree.elseStatement();
+    if (noIssue(elseStatement, elseKeyword.column())) {
+      return;
     }
-    return false;
-  }
-
-  private static List<JavaFileScannerContext.Location> findSecondariesToReport(Tree tree) {
-    Tree parentTree = tree.parent();
-    List<Tree> secondaryLinesToReport = new ArrayList<>();
-    StatementTree statement = returnStatement(tree);
-    secondaryLinesToReport.add(statement);
-    if (parentTree.is(Tree.Kind.BLOCK)) {
-      List<StatementTree> blockStmtList = ((BlockTree) parentTree).body();
-      secondaryLinesToReport.addAll(loopUntilNextEmptyLine(statement.firstToken().line(), blockStmtList, blockStmtList.indexOf(tree)));
-    }
-    return secondaryLinesToReport.stream().map(lineToReport -> new JavaFileScannerContext.Location("", lineToReport))
-      .collect(Collectors.toList());
-  }
-
-  private static List<Tree> loopUntilNextEmptyLine(int previousLine, List<StatementTree> statementsList, int currentLine) {
-    List<Tree> secondaryLinesToReport = new ArrayList<>();
-    for (int i = currentLine + 1; i < statementsList.size(); i++) {
-      StatementTree toBeReportedLine = statementsList.get(i);
-      int currLine = toBeReportedLine.firstToken().line();
-      if (previousLine < currLine - 1
-        && linesBeforeCurrentAreNotCommented(toBeReportedLine.firstToken().trivias().stream().map(SyntaxTrivia::startLine).collect(Collectors.toList()), currLine - 1)) {
-        break;
-      } else {
-        secondaryLinesToReport.add(toBeReportedLine);
-        previousLine = currLine;
-      }
-    }
-    return secondaryLinesToReport;
-
-  }
-
-  private static boolean linesBeforeCurrentAreNotCommented(List<Integer> syntaxTrivia, int prevLine) {
-    return !syntaxTrivia.contains(prevLine);
+    context.reportIssue(this, elseKeyword,
+      "Use curly braces or indentation to denote the code conditionally executed by this \"" + elseKeyword.text() + "\".",
+      Collections.singletonList(new JavaFileScannerContext.Location("", elseStatement)), null);
   }
 
   private static int columnStatement(Tree tree) {
     return tree.firstToken().column();
   }
 
-  private static boolean checkIdentation(Tree tree) {
-    return returnStatement(tree).firstToken().column() > columnStatement(tree);
+  private static boolean isIndentationCorrect(StatementTree statement, int column) {
+    return columnStatement(statement) > column;
   }
 
-  private static boolean blockExists(Tree tree) {
-    StatementTree statementTree = returnStatement(tree);
+  private static boolean blockExists(StatementTree statementTree) {
     return statementTree.is(Tree.Kind.BLOCK);
-  }
-
-  private static StatementTree returnStatement(Tree tree) {
-    StatementTree statementTree = null;
-    switch (tree.kind()) {
-      case IF_STATEMENT:
-        statementTree = ((IfStatementTree) tree).thenStatement();
-        break;
-      case WHILE_STATEMENT:
-        statementTree = ((WhileStatementTree) tree).statement();
-        break;
-      case FOR_STATEMENT:
-        statementTree = ((ForStatementTree) tree).statement();
-        break;
-      case FOR_EACH_STATEMENT:
-        statementTree = ((ForEachStatement) tree).statement();
-        break;
-      default:
-        throw new IllegalStateException("If there is no statement, then exception.");
-    }
-    return statementTree;
   }
 }

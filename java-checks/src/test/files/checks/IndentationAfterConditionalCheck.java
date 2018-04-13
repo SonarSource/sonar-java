@@ -1,11 +1,13 @@
+import java.util.List;
+
 class A {
   public int foo() {
     int i = 0;
-    if (i <= 1) // Noncompliant [[sc=5;ec=16;secondary=5,6]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    if (i <= 1) // Noncompliant [[sc=5;ec=16;secondary=7]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
     i = 1;
     i++;
 
-    if(i > 0)   // Noncompliant [[sc=5;ec=14;secondary=10,12]]
+    if(i > 0)   // Noncompliant [[sc=5;ec=14;secondary=12]]
     // ......
     doTheOtherThing();
     //.....
@@ -23,7 +25,7 @@ class A {
     if (i == 0)
           return 1;
 
-    if(i <= 11) // Noncompliant [[sc=5;ec=16;secondary=27,28,29]]
+    if(i <= 11) // Noncompliant [[sc=5;ec=16;secondary=29]]
     doTheThing();
     doTheOtherThing();
     somethingElseEntirely();
@@ -58,7 +60,7 @@ class A {
       i =100;
     i++;
 
-    for (; i <= 1;) // Noncompliant [[sc=5;ec=20;secondary=62,63]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for (; i <= 1;) // Noncompliant [[sc=5;ec=20;secondary=64]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
     i = 1;
     i++;
 
@@ -86,31 +88,30 @@ class A {
       i++;
     i += 10;
 
-    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=90,91]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
+    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=92]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
     i++;
     i+=10;
 
-    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=94]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
+    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=96]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
   i++;
 
-    List<Integer> l;
+    List<Integer> l=null;
     for(Integer ii : l) // Compliant
     {}
 
     for(Integer ii : l) // Compliant
       return i;
 
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=104,105,106]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=106]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
     i=1;
     i=2;
-    return i;
 
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=109]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
-   if(ii == 1)  // Noncompliant [[sc=4;ec=15;secondary=110]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=110]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+   if(ii == 1)  // Noncompliant [[sc=4;ec=15;secondary=111]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
    i++;
    i=2;
 
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=114]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=115]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
  i=1;
 
     if(i ==1)   // Noncompliant
@@ -118,10 +119,57 @@ class A {
     else
       i++;
 
-    for(int i =0;i<10;i++)  // Noncompliant [[sc=5;ec=27;secondary=122]]  {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for(i =0;i<10;i++)  // Noncompliant [[sc=5;ec=23;secondary=123]]  {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
   if(i==1)
     i++;
-
+    if(i == 1)   // Compliant
+      if(i == 2)  // Noncompliant [[sc=7;ec=17;secondary=127]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+      i++;
+      i+=2;
+      
+    if(i == 0)
+      i++;
+    else if(i == 1)
+      i = 1;
+    else    if(i ==3)
+      return i;
+    else       // Noncompliant [[sc=5;ec=9;secondary=137]] {{Use curly braces or indentation to denote the code conditionally executed by this "else".}}
+    i=1;
+    
+    while(i<=0)
+      for(;i<10;)  // Noncompliant [[sc=7;ec=18;secondary=141]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+     if(i<1)  // Noncompliant [[sc=6;ec=13;secondary=142]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    return 2;   
+    
+    if(i == 1)
+      return i;
+    else
+    {
+      i++;
+    }
+    
+    while(i>1)
+      if(i==1)    // Noncompliant
+    return i;
+   
+    if (i < 2) {
+      if ((i > 0) && (i > 3))  // Noncompliant [[sc=7;ec=30;secondary=157]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    return i;
+      return null;
+    }
+    
+    while (n < len) {
+      int count = in.read(b, off + n, len - n);
+      if (count < 0)        // Noncompliant
+    throw new EOFException();
+      n += count;
+  }
+    
+    if(true) {
+      if(i ==1)  // Noncompliant
+  return 1;
+    }
+    
     return i;  
   }
 
