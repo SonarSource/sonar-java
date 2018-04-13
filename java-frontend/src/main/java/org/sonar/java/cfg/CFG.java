@@ -260,17 +260,18 @@ public class CFG {
     }
 
     private void prune(Block inactiveBlock) {
+      boolean hasUniqueSuccessor = inactiveBlock.successors.size() == 1;
       if (inactiveBlock.equals(trueBlock)) {
-        if (inactiveBlock.successors.size() != 1) {
-          throw new IllegalStateException("True successor must be replaced by a unique successor!");
-        }
+        Preconditions.checkArgument(hasUniqueSuccessor, "True successor must be replaced by a unique successor!");
         trueBlock = inactiveBlock.successors.iterator().next();
       }
       if (inactiveBlock.equals(falseBlock)) {
-        if (inactiveBlock.successors.size() != 1) {
-          throw new IllegalStateException("False successor must be replaced by a unique successor!");
-        }
+        Preconditions.checkArgument(hasUniqueSuccessor, "False successor must be replaced by a unique successor!");
         falseBlock = inactiveBlock.successors.iterator().next();
+      }
+      if (inactiveBlock.equals(successorWithoutJump)) {
+        Preconditions.checkArgument(hasUniqueSuccessor, "SuccessorWithoutJump successor must be replaced by a unique successor!");
+        successorWithoutJump = inactiveBlock.successors.iterator().next();
       }
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
