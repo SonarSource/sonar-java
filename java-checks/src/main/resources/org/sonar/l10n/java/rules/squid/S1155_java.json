@@ -11,5 +11,6 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1155",
-  "sqKey": "S1155"
+  "sqKey": "S1155",
+  "scope": "All"
 }

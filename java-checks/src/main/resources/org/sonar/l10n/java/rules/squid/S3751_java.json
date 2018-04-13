@@ -7,9 +7,14 @@
     "constantCost": "2min"
   },
   "tags": [
-    "spring"
+    "spring",
+    "owasp-a6"
+  ],
+  "standards": [
+    "OWASP Top Ten"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3751",
-  "sqKey": "S3751"
+  "sqKey": "S3751",
+  "scope": "Main"
 }

@@ -7,9 +7,10 @@
     "constantCost": "5min"
   },
   "tags": [
-    
+    "owasp-a6"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3281",
-  "sqKey": "S3281"
+  "sqKey": "S3281",
+  "scope": "Main"
 }

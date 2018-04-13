@@ -7,5 +7,6 @@
   ],
   "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-3688",
-  "sqKey": "S3688"
+  "sqKey": "S3688",
+  "scope": "All"
 }

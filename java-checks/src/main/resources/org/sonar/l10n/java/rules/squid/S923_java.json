@@ -13,5 +13,6 @@
   ],
   "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-923",
-  "sqKey": "S923"
+  "sqKey": "S923",
+  "scope": "All"
 }
