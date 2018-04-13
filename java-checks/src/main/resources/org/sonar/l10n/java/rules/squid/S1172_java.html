@@ -40,6 +40,13 @@ protected void bar(String s) {
 public void qix(String s) {
   throw new UnsupportedOperationException("This method should be implemented in subclasses");
 }
+
+/**
+ * @param s This string may be use for further computation in overriding classes
+ */
+protected void foobar(int a, String s) { // no issue, method is overridable and unused parameter has proper javadoc
+  compute(a);
+}
 </pre>
 <h2>See</h2>
 <ul>

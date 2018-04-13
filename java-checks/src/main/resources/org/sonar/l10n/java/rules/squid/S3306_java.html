@@ -1,6 +1,7 @@
 <p>Field injection seems like a tidy way to get your classes what they need to do their jobs, but it's really a <code>NullPointerException</code>
 waiting to happen unless all your class constructors are <code>private</code>. That's because any class instances that are constructed by callers,
-rather than instantiated by the Spring framework, won't have the ability to perform the field injection.</p>
+rather than instantiated by a Dependency Injection framework compliant with the JSR-330 (Spring, Guice, ...), won't have the ability to perform the
+field injection.</p>
 <p>Instead <code>@Inject</code> should be moved to the constructor and the fields required as constructor parameters.</p>
 <p>This rule raises an issue when classes with non-<code>private</code> constructors (including the default constructor) use field injection.</p>
 <h2>Noncompliant Code Example</h2>

@@ -1,4 +1,5 @@
-<p>A <code>@Controller</code> method with a <code>@RequestMapping</code> annotation will be called to handle matching web requests. That will happen
+<p>A method with a <code>@RequestMapping</code> annotation part of a class annotated with <code>@Controller</code> (directly or indirectly through a
+meta annotation - <code>@RestController</code> from Spring Boot is a good example) will be called to handle matching web requests. That will happen
 even if the method is <code>private</code>, because Spring invokes such methods via reflection, without checking visibility. </p>
 <p>So marking a sensitive method <code>private</code> may seem like a good way to control how such code is called. Unfortunately, not all Spring
 frameworks ignore visibility in this way. For instance, if you've tried to control web access to your sensitive, <code>private</code>,
@@ -14,4 +15,8 @@ private String greet(String greetee) {  // Noncompliant
 @RequestMapping("/greet", method = GET)
 public String greet(String greetee) {
 </pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+</ul>
 

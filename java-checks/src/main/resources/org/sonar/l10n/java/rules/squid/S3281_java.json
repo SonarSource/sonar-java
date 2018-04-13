@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    
+    "owasp-a6"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3281",

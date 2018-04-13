@@ -7,8 +7,7 @@
     "constantCost": "30min"
   },
   "tags": [
-    "owasp-a1",
-    "injection"
+    "owasp-a6"
   ],
   "standards": [
     "OWASP Top Ten"
