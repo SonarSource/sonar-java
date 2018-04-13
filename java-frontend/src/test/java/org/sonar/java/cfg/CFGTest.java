@@ -135,6 +135,7 @@ public class CFGTest {
     private int ifTrue = -1;
     private int ifFalse = -1;
     private int exitId = -1;
+    private Integer successorWithoutJump = null;
     private boolean hasNoExit = false;
     private boolean isCatchBlock = false;
     private boolean isFinallyBlock = false;
@@ -169,6 +170,11 @@ public class CFGTest {
         successorIDs[n++] = i;
       }
       Arrays.sort(successorIDs);
+      return this;
+    }
+
+    BlockChecker successorWithoutJump(final int id) {
+      this.successorWithoutJump = id;
       return this;
     }
 
@@ -261,6 +267,10 @@ public class CFGTest {
       }
       if(hasNoExit) {
         assertThat(block.exitBlock()).as("Block B" + block.id() + " has an unexpected exit block").isNull();
+      }
+      if (successorWithoutJump != null) {
+        assertThat(block.successorWithoutJump()).isNotNull();
+        assertThat(block.successorWithoutJump().id()).isEqualTo(successorWithoutJump);
       }
     }
 
@@ -719,7 +729,7 @@ public class CFGTest {
         element(Tree.Kind.NULL_LITERAL),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
-      terminator(Tree.Kind.RETURN_STATEMENT, 0));
+      terminator(Tree.Kind.RETURN_STATEMENT, 0).successorWithoutJump(0));
     cfgChecker.check(cfg);
   }
 
@@ -771,7 +781,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0),
+      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.POSTFIX_INCREMENT)
@@ -797,7 +807,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1),
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.POSTFIX_INCREMENT)
@@ -826,7 +836,7 @@ public class CFGTest {
           element(INT_LITERAL, 2),
           element(Kind.GREATER_THAN)
         ).terminator(Kind.IF_STATEMENT).successors(3, 4),
-        terminator(Kind.CONTINUE_STATEMENT).successors(2),
+        terminator(Kind.CONTINUE_STATEMENT).successors(2).successorWithoutJump(3),
         block(
           element(Tree.Kind.IDENTIFIER, "System"),
           element(Tree.Kind.MEMBER_SELECT),
@@ -935,7 +945,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0));
+      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(3));
     cfgChecker.check(cfg);
   }
 
@@ -959,7 +969,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 3));
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 3).successorWithoutJump(3));
     cfgChecker.check(cfg);
   }
   @Test
@@ -983,7 +993,7 @@ public class CFGTest {
         element(STRING_LITERAL, "try"),
         element(METHOD_INVOCATION)
       ).successors(2).exceptions(1),
-      terminator(CONTINUE_STATEMENT, 1).hasNoExitBlock(),
+      terminator(CONTINUE_STATEMENT, 1).hasNoExitBlock().successorWithoutJump(1),
       block(element(IDENTIFIER, "qix"),
         element(STRING_LITERAL, "finally"),
         element(METHOD_INVOCATION)
@@ -1013,7 +1023,7 @@ public class CFGTest {
         element(STRING_LITERAL, "try"),
         element(METHOD_INVOCATION)
       ).successors(2).exceptions(1),
-      terminator(BREAK_STATEMENT, 1).hasNoExitBlock(),
+      terminator(BREAK_STATEMENT, 1).hasNoExitBlock().successorWithoutJump(1),
       block(element(IDENTIFIER, "qix"),
         element(STRING_LITERAL, "finally"),
         element(METHOD_INVOCATION)
@@ -1061,7 +1071,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0),
+      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
@@ -1085,7 +1095,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1),
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
@@ -1112,7 +1122,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0),
+      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.POSTFIX_INCREMENT)
@@ -1140,7 +1150,7 @@ public class CFGTest {
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(2,3),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1),
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(2),
         block(
             element(Tree.Kind.IDENTIFIER, "plop"),
             element(Kind.METHOD_INVOCATION)
@@ -1471,7 +1481,7 @@ public class CFGTest {
         block(
             element(Tree.Kind.TRY_STATEMENT)
         ).successors(3),
-        terminator(Kind.RETURN_STATEMENT).successors(2).exit(2),
+        terminator(Kind.RETURN_STATEMENT).successors(2).exit(2).successorWithoutJump(2),
         block(
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Kind.METHOD_INVOCATION)
@@ -1558,7 +1568,7 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "a"),
         element(Tree.Kind.TYPE_CAST)
       ).successors(1, 2),
-      terminator(RETURN_STATEMENT, 0),
+      terminator(RETURN_STATEMENT, 0).successorWithoutJump(0),
       block(
         element(Kind.VARIABLE, "cce"),
         element(NULL_LITERAL)
