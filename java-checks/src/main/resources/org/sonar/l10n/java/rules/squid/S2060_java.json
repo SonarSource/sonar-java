@@ -11,5 +11,6 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2060",
-  "sqKey": "S2060"
+  "sqKey": "S2060",
+  "scope": "All"
 }

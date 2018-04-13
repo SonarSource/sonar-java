@@ -11,5 +11,6 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1108",
-  "sqKey": "RightCurlyBraceDifferentLineAsNextBlockCheck"
+  "sqKey": "RightCurlyBraceDifferentLineAsNextBlockCheck",
+  "scope": "All"
 }

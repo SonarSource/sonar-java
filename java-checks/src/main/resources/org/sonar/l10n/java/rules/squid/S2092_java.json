@@ -19,5 +19,6 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2092",
-  "sqKey": "S2092"
+  "sqKey": "S2092",
+  "scope": "Main"
 }

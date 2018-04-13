@@ -12,5 +12,6 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3415",
-  "sqKey": "S3415"
+  "sqKey": "S3415",
+  "scope": "Tests"
 }

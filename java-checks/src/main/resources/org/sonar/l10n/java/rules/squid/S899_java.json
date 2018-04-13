@@ -18,5 +18,6 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-899",
-  "sqKey": "S899"
+  "sqKey": "S899",
+  "scope": "Main"
 }

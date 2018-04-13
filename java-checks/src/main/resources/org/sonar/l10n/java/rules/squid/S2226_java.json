@@ -16,5 +16,6 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2226",
-  "sqKey": "S2226"
+  "sqKey": "S2226",
+  "scope": "Main"
 }

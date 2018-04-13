@@ -11,5 +11,6 @@
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2391",
-  "sqKey": "S2391"
+  "sqKey": "S2391",
+  "scope": "Tests"
 }

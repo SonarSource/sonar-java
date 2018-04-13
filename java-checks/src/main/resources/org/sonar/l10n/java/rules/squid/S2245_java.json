@@ -18,5 +18,6 @@
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2245",
-  "sqKey": "S2245"
+  "sqKey": "S2245",
+  "scope": "Main"
 }

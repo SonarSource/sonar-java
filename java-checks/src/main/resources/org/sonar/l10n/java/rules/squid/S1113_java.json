@@ -15,5 +15,6 @@
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1113",
-  "sqKey": "ObjectFinalizeOverridenCheck"
+  "sqKey": "ObjectFinalizeOverridenCheck",
+  "scope": "Main"
 }
