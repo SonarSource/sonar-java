@@ -46,7 +46,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
   @Override
   public void visitIfStatement(IfStatementTree tree) {
     Tree parentTree = tree.parent();
-    if (parentTree.is(Tree.Kind.IF_STATEMENT) && ((IfStatementTree) parentTree).elseKeyword() != null) {
+    if (parentTree.is(Tree.Kind.IF_STATEMENT) && tree.equals(((IfStatementTree) parentTree).elseStatement())) {
       checkForReport(tree.thenStatement(), ((IfStatementTree) parentTree).elseKeyword(), tree.closeParenToken(), tree.ifKeyword().firstToken().text());
     } else {
       checkForReport(tree.thenStatement(), tree.ifKeyword(), tree.closeParenToken(), tree.ifKeyword().text());

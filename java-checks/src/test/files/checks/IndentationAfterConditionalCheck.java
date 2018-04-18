@@ -164,7 +164,13 @@ class A {
     else 
       if(i==1)
         return 1;
-    
+    if (i > 0)
+      if (i >1) // Noncompliant
+      doTheThing();
+      else
+        doTheOtherThing();
+    else
+      somethingElseEntirely();
     return i;  
   }
 
