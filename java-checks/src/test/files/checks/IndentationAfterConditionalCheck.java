@@ -72,10 +72,6 @@ class A {
     for (; i <= 1;) // Compliant
       i = 1;
 
-    for (; i <= 1;) // Compliant
-      i = 1;
-    i=2;
-
     while (i <= 10)  // Compliant
       i++;
 
@@ -84,46 +80,33 @@ class A {
       i += 10;
     }
 
-    while (i <= 10)  // Compliant
-      i++;
-    i += 10;
-
-    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=92]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
+    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=84]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
     i++;
     i+=10;
 
-    while(i<=11)     // Noncompliant [[sc=5;ec=17;secondary=96]] {{Use curly braces or indentation to denote the code conditionally executed by this "while".}}
-  i++;
-
     List<Integer> l=null;
-    for(Integer ii : l) // Compliant
-    {}
-
     for(Integer ii : l) // Compliant
       return i;
 
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=106]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=92]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
     i=1;
     i=2;
 
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=110]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
-   if(ii == 1)  // Noncompliant [[sc=4;ec=15;secondary=111]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=96]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+   if(ii == 1)  // Noncompliant [[sc=4;ec=15;secondary=97]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
    i++;
    i=2;
-
-    for(Integer ii : l) // Noncompliant [[sc=5;ec=24;secondary=115]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
- i=1;
 
     if(i ==1)   // Noncompliant
   i++;
     else
       i++;
 
-    for(i =0;i<10;i++)  // Noncompliant [[sc=5;ec=23;secondary=123]]  {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+    for(i =0;i<10;i++)  // Noncompliant [[sc=5;ec=23;secondary=106]]  {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
   if(i==1)
     i++;
     if(i == 1)   // Compliant
-      if(i == 2)  // Noncompliant [[sc=7;ec=17;secondary=127]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+      if(i == 2)  // Noncompliant [[sc=7;ec=17;secondary=110]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
       i++;
       i+=2;
       
@@ -133,12 +116,12 @@ class A {
       i = 1;
     else    if(i ==3)
       return i;
-    else       // Noncompliant [[sc=5;ec=9;secondary=137]] {{Use curly braces or indentation to denote the code conditionally executed by this "else".}}
+    else       // Noncompliant [[sc=5;ec=9;secondary=120]] {{Use curly braces or indentation to denote the code conditionally executed by this "else".}}
     i=1;
     
     while(i<=0)
-      for(;i<10;)  // Noncompliant [[sc=7;ec=18;secondary=141]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
-     if(i<1)  // Noncompliant [[sc=6;ec=13;secondary=142]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+      for(;i<10;)  // Noncompliant [[sc=7;ec=18;secondary=124]] {{Use curly braces or indentation to denote the code conditionally executed by this "for".}}
+     if(i<1)  // Noncompliant [[sc=6;ec=13;secondary=125]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
     return 2;   
     
     if(i == 1)
@@ -153,7 +136,7 @@ class A {
     return i;
    
     if (i < 2) {
-      if ((i > 0) && (i > 3))  // Noncompliant [[sc=7;ec=30;secondary=157]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+      if ((i > 0) && (i > 3))  // Noncompliant [[sc=7;ec=30;secondary=140]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
     return i;
       return null;
     }
@@ -169,6 +152,18 @@ class A {
       if(i ==1)  // Noncompliant
   return 1;
     }
+    if(i==0)
+      i++;
+    else if(i==1)
+      if(i==2)
+        i++;
+      else 
+        i++;
+    else if(i ==2) // Noncompliant [[sc=5;ec=19;secondary=163]] {{Use curly braces or indentation to denote the code conditionally executed by this "if".}}
+    i+=2;  
+    else 
+      if(i==1)
+        return 1;
     
     return i;  
   }

@@ -20,8 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,93 +37,50 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
 
   private JavaFileScannerContext context;
 
-  private Set<IfStatementTree> statementSet = new HashSet<>();
-
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    statementSet.clear();
     scan(context.getTree());
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    visitIfElseStatement(tree, tree.firstToken().column());
-    super.visitIfStatement(tree);
-  }
-
-  /* to traverse the if-else if statements, in case of else if */
-  public void visitIfElseStatement(IfStatementTree tree, int column) {
-    if (!statementSet.contains(tree)) {
-      statementSet.add(tree);
-      checkForReport(tree.thenStatement(), tree.ifKeyword(), tree.closeParenToken(), column);
-      SyntaxToken elseKeyword = tree.elseKeyword();
-      if (elseKeyword != null) {
-        StatementTree elseStatement = tree.elseStatement();
-        if (elseStatement.is(Tree.Kind.IF_STATEMENT)) {
-          visitIfElseStatement((IfStatementTree) elseStatement, elseKeyword.column());
-        } else {
-          checkElseStatementReport(tree);
-        }
-      }
+    Tree parentTree = tree.parent();
+    if (parentTree.is(Tree.Kind.IF_STATEMENT) && ((IfStatementTree) parentTree).elseKeyword() != null) {
+      checkForReport(tree.thenStatement(), ((IfStatementTree) parentTree).elseKeyword(), tree.closeParenToken(), tree.ifKeyword().firstToken().text());
+    } else {
+      checkForReport(tree.thenStatement(), tree.ifKeyword(), tree.closeParenToken(), tree.ifKeyword().text());
     }
+    SyntaxToken elseKeyword = tree.elseKeyword();
+    if (elseKeyword != null && !tree.elseStatement().is(Tree.Kind.IF_STATEMENT)) {
+      checkForReport(tree.elseStatement(), elseKeyword, elseKeyword, elseKeyword.firstToken().text());
+    }
+    super.visitIfStatement(tree);
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     super.visitWhileStatement(tree);
-    checkForReport(tree.statement(), tree.whileKeyword(), tree.closeParenToken(), tree.firstToken().column());
+    checkForReport(tree.statement(), tree.whileKeyword(), tree.closeParenToken(), tree.whileKeyword().text());
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
     super.visitForStatement(tree);
-    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.firstToken().column());
+    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.forKeyword().text());
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     super.visitForEachStatement(tree);
-    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.firstToken().column());
+    checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.forKeyword().text());
   }
 
-  public void checkForReport(StatementTree statement, Tree startTree, Tree endTree, int column) {
-    if (noIssue(statement, column)) {
-      return;
+  private void checkForReport(StatementTree statement, Tree startTree, Tree endTree, String name) {
+    if (!(statement.is(Tree.Kind.BLOCK) || statement.firstToken().column() > startTree.firstToken().column())) {
+      context.reportIssue(this, startTree, endTree,
+        "Use curly braces or indentation to denote the code conditionally executed by this \"" + name + "\".",
+        Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);
     }
-    report(startTree, endTree, startTree.firstToken().text(), statement);
-  }
-
-  private static boolean noIssue(StatementTree statement, int column) {
-    return (blockExists(statement) || isIndentationCorrect(statement, column));
-  }
-
-  public void report(Tree firstTree, Tree secondTree, String operationName, StatementTree statement) {
-    context.reportIssue(this, firstTree, secondTree,
-      "Use curly braces or indentation to denote the code conditionally executed by this \"" + operationName + "\".",
-      Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);
-  }
-
-  public void checkElseStatementReport(IfStatementTree tree) {
-    SyntaxToken elseKeyword = tree.elseKeyword();
-    StatementTree elseStatement = tree.elseStatement();
-    if (noIssue(elseStatement, elseKeyword.column())) {
-      return;
-    }
-    context.reportIssue(this, elseKeyword,
-      "Use curly braces or indentation to denote the code conditionally executed by this \"" + elseKeyword.text() + "\".",
-      Collections.singletonList(new JavaFileScannerContext.Location("", elseStatement)), null);
-  }
-
-  private static int columnStatement(Tree tree) {
-    return tree.firstToken().column();
-  }
-
-  private static boolean isIndentationCorrect(StatementTree statement, int column) {
-    return columnStatement(statement) > column;
-  }
-
-  private static boolean blockExists(StatementTree statementTree) {
-    return statementTree.is(Tree.Kind.BLOCK);
   }
 }
