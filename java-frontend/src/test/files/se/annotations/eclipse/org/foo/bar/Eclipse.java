@@ -2,6 +2,7 @@ package org.foo.bar;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import static org.eclipse.jdt.annotation.DefaultLocation.RETURN_TYPE;
 
@@ -29,4 +30,8 @@ interface A {
 abstract class B {
   Object field;
   abstract Object nonNullParametersReturnNonNull(Object nonNullParameter);
+}
+
+interface C {
+  public @Nullable String getStringNullable();
 }
