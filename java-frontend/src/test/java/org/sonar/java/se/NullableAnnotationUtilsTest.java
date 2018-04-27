@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
+import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
 
 public class NullableAnnotationUtilsTest {
 
@@ -73,6 +74,9 @@ public class NullableAnnotationUtilsTest {
 
     // fields not handled
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
+
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
 
     semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/foo/Eclipse.java", classPath);
     getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);

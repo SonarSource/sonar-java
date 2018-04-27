@@ -127,13 +127,13 @@ public final class NullableAnnotationUtils {
   }
 
   private static boolean isMethodAnnotatedWithEclipseNonNullReturnType(Symbol symbol) {
-    return symbol.isMethodSymbol() && isGloballyAnnotatedWithEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "RETURN_TYPE");
+    return symbol.isMethodSymbol() && !isUsingNullable(symbol) && isGloballyAnnotatedWithEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "RETURN_TYPE");
   }
 
   @CheckForNull
   public static String nonNullAnnotation(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
-    if (isNullableThroughNonNull(symbol)) {
+    if (isAnnotatedNullable(symbol)) {
       return null;
     }
     Optional<String> result = NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst();
