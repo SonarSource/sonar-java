@@ -64,7 +64,7 @@ Note: You need to run the `package` goal because the jacoco-previous module will
 To run integration tests, you will need to create a properties file like the one shown below, and set the url pointing to its location in an environment variable named `ORCHESTRATOR_CONFIG_URL`.
 
     # version of SonarQube Server
-    sonar.runtimeVersion=5.6
+    sonar.runtimeVersion=6.7
 
     orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
     
