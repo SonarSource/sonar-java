@@ -46,6 +46,34 @@ class A {
     return;
     return;
   }
+
+  int foo4(String path) { // Noncompliant {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
+    switch (path) {
+      case "FOO":
+        return 1;
+      case "BAR":
+        return 2;
+      case "FIZ":
+        return 3;
+      default:
+        return 4;
+    }
+  }
+
+  int foo5(String path) { // Noncompliant {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
+    switch (path) {
+      case "FOO":
+        return 1;
+      default:
+        switch (path) {
+          case "BAR":
+            return 2;
+          default:
+            return 3;
+        }
+    }
+    return 4;
+  }
 }
 interface B {
   default void method() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
