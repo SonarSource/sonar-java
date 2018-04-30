@@ -31,11 +31,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.ucfg.BasicBlock;
 import org.sonar.ucfg.Expression;
 import org.sonar.ucfg.Instruction;
@@ -45,6 +47,7 @@ import org.sonar.ucfg.UCFGBuilder;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.ucfg.UCFGBuilder.call;
 import static org.sonar.ucfg.UCFGBuilder.constant;
 import static org.sonar.ucfg.UCFGBuilder.newBasicBlock;
@@ -312,19 +315,7 @@ public class UCFGJavaVisitorTest {
   }
 
   private UCFG assertCodeToUCfg(String source, UCFG expectedUCFG, boolean testLocations) {
-    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
-    UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
-    UCFGJavaVisitor.fileKey = FILE_KEY;
-    UCFGJavaVisitor.visitCompilationUnit(cut);
-
-    UCFG actualUCFG = null;
-    try {
-      File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
-      File ucfg = new File(java_ucfg_dir, "ucfg_0.proto");
-      actualUCFG = UCFGtoProtobuf.fromProtobufFile(ucfg);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    UCFG actualUCFG = createUCFG(source);
     assertThat(actualUCFG.methodId()).isEqualTo(expectedUCFG.methodId());
     assertThat(actualUCFG.basicBlocks()).isEqualTo(expectedUCFG.basicBlocks());
     assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b->b.calls().stream()))
@@ -338,6 +329,41 @@ public class UCFGJavaVisitorTest {
       assertThat(locStream).containsExactlyElementsOf(toLocationStream(expectedUCFG).collect(Collectors.toList()));
     }
     return actualUCFG;
+  }
+
+  private UCFG createUCFG(String source) {
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
+    UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
+    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.visitCompilationUnit(cut);
+
+    UCFG actualUCFG = null;
+    try {
+      File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
+      File ucfg = new File(java_ucfg_dir, "ucfg_0.proto");
+      actualUCFG = UCFGtoProtobuf.fromProtobufFile(ucfg);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return actualUCFG;
+  }
+
+  @Test
+  public void method_with_unknown_symbol_should_not_produce_ucfg() {
+    UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot()) {
+      @Override
+      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+        fail("should not serialize a UCFG of a method with unknown parameters");
+      }
+    };
+    UCFGJavaVisitor.fileKey = FILE_KEY;
+    // method with unknown arg
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics("class A {void foo(UnkownType t) {return t;}}");
+    UCFGJavaVisitor.visitCompilationUnit(cut);
+
+    // method with unkown return type
+    cut = getCompilationUnitTreeWithSemantics("class A {UnkownType foo(String t) {return t;}}");
+    UCFGJavaVisitor.visitCompilationUnit(cut);
   }
 
   private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
