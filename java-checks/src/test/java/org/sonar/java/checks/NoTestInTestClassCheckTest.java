@@ -19,11 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
-
 import java.io.File;
 import java.util.ArrayList;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NoTestInTestClassCheckTest {
 
@@ -31,6 +30,12 @@ public class NoTestInTestClassCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
+  }
+
+  @Test
+  public void testEnclosed() {
+    JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheckEnclosed.java", new NoTestInTestClassCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NoTestInTestClassCheckEnclosed.java", new NoTestInTestClassCheck());
   }
 
   @Test

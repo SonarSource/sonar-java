@@ -96,12 +96,7 @@ class OtherTest extends BaseTest {
   public void test2() {
   }
 }
-@org.junit.runner.RunWith(org.junit.experimental.runners.Enclosed.class)
-public class MyNewTest { // should not raise an issue
-}
-@RunWith(Enclosed.class)
-public class MyNew2Test { // no issue
-}
+
 @org.junit.runner.RunWith(cucumber.api.junit.Cucumber.class)
 public class MyCucumberTest { // should not raise an issue
 }
