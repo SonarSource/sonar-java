@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -64,6 +65,7 @@ import org.sonar.ucfg.UCFGBuilder.BlockBuilder;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSIGNMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
@@ -93,14 +95,23 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (tree.block() != null) {
+    List<Type> types = new ArrayList<>(tree.symbol().parameterTypes());
+    if (!tree.is(CONSTRUCTOR)) {
+      types.add(tree.symbol().returnType().type());
+    }
+    if (tree.block() != null && types.stream().noneMatch(Type::isUnknown)) {
       CFG cfg = CFG.build(tree);
-      try {
-        UCFG uCFG = buildUCfg(tree, cfg);
-        UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
-      } catch (Exception e) {
-        LOG.error("Cannot generate ucfg in file " + fileKey + " for method at line" + tree.firstToken().line(), e);
-      }
+      serializeUCFG(tree, cfg);
+    }
+  }
+
+  @VisibleForTesting
+  protected void serializeUCFG(MethodTree tree, CFG cfg) {
+    try {
+      UCFG uCFG = buildUCfg(tree, cfg);
+      UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
+    } catch (Exception e) {
+      LOG.error("Cannot generate ucfg in file " + fileKey + " for method at line" + tree.firstToken().line(), e);
     }
   }
 
