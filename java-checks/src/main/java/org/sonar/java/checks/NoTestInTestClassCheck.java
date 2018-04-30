@@ -126,19 +126,27 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol.MethodSymbol> members) {
     if (symbol.name().endsWith("Test")
-      && !runWithEnclosedOrCucumberOrSuiteRunner(symbol)
+      && !runWithCucumberOrSuiteOrTheoriesRunner(symbol)
       && members.noneMatch(this::isTestMethod)) {
       reportClass(className);
     }
   }
 
-  private static boolean runWithEnclosedOrCucumberOrSuiteRunner(Symbol.TypeSymbol symbol) {
+  private static boolean runWithCucumberOrSuiteOrTheoriesRunner(Symbol.TypeSymbol symbol) {
+    return checkRunWith(symbol, "Cucumber.class","Suite.class", "Theories.class");
+  }
+
+  protected static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
-    if(annotationValues != null && annotationValues.size() == 1) {
+    if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
       if (value instanceof MemberSelectExpressionTree) {
         String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
-        return runnerParam.endsWith("Enclosed.class") || runnerParam.endsWith("Cucumber.class") || runnerParam.endsWith("Suite.class") || runnerParam.endsWith("Theories.class");
+        for (String runnerClass : runnerClasses) {
+          if (runnerParam.endsWith(runnerClass)) {
+            return true;
+          }
+        }
       }
     }
     return false;
@@ -155,7 +163,10 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     if ("java.lang.Object".equals(symbol.type().fullyQualifiedName())) {
       return Stream.empty();
     }
-    Stream<Symbol.MethodSymbol> members = symbol.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(Symbol.MethodSymbol.class::cast);
+    Stream<Symbol.MethodSymbol> members = Stream.empty();
+    if (!checkRunWith(symbol, "Enclosed.class")) {
+      members = symbol.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(Symbol.MethodSymbol.class::cast);
+    }
     Type superClass = symbol.superClass();
     if (superClass != null) {
       members = Stream.concat(members, getAllMembers(superClass.symbol()));
@@ -166,10 +177,16 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     for (Symbol s : symbol.memberSymbols()) {
       if (s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")) {
         members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
+      } else if (checkRunWith(symbol, "Enclosed.class") && isPublicStaticClass(s) && !s.isAbstract()) {
+        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
       }
     }
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     return members;
+  }
+
+  private static boolean isPublicStaticClass(Symbol symbol) {
+    return symbol.isTypeSymbol() && symbol.isPublic() && symbol.isStatic();
   }
 
   private void reportClass(IdentifierTree className) {
