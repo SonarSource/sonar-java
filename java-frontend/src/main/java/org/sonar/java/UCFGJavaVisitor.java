@@ -87,17 +87,22 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
   }
 
+  @Override
   public void scanFile(JavaFileScannerContext context) {
     this.fileKey = context.getFileKey();
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     scan(context.getTree());
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    List<Type> types = new ArrayList<>(tree.symbol().parameterTypes());
+    Symbol.MethodSymbol methodSymbol = tree.symbol();
+    List<Type> types = new ArrayList<>(methodSymbol.parameterTypes());
     if (!tree.is(CONSTRUCTOR)) {
-      types.add(tree.symbol().returnType().type());
+      types.add(methodSymbol.returnType().type());
     }
     if (tree.block() != null && types.stream().noneMatch(Type::isUnknown)) {
       CFG cfg = CFG.build(tree);

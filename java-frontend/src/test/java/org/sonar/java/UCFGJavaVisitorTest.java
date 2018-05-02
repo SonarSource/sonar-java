@@ -29,11 +29,13 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -364,6 +366,43 @@ public class UCFGJavaVisitorTest {
     // method with unkown return type
     cut = getCompilationUnitTreeWithSemantics("class A {UnkownType foo(String t) {return t;}}");
     UCFGJavaVisitor.visitCompilationUnit(cut);
+  }
+
+  @Test
+  public void ucfg_requires_semantic() {
+    UCFGJavaVisitor UCFGJavaVisitor = Mockito.spy(new UCFGJavaVisitor(tmp.getRoot()) {
+      @Override
+      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+        // do nothing
+      }
+    });
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse("class A {void foo(String t) {return t;}}");
+    SemanticModel semanticModel = SemanticModel.createFor(cut, squidClassLoader);
+
+    JavaFileScannerContext context = Mockito.mock(JavaFileScannerContext.class);
+    Mockito.when(context.getTree()).thenReturn(cut);
+    Mockito.when(context.getSemanticModel()).thenReturn(semanticModel);
+
+    UCFGJavaVisitor.scanFile(context);
+
+    Mockito.verify(UCFGJavaVisitor, Mockito.times(1)).serializeUCFG(Mockito.any(), Mockito.any());
+  }
+
+  @Test
+  public void no_ucfg_without_semantic() {
+    UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot()) {
+      @Override
+      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+        fail("should not serialize a UCFG whout semantic");
+      }
+    };
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse("class A {void foo(String t) {return t;}}");
+
+    JavaFileScannerContext context = Mockito.mock(JavaFileScannerContext.class);
+    Mockito.when(context.getTree()).thenReturn(cut);
+    Mockito.when(context.getSemanticModel()).thenReturn(null);
+
+    UCFGJavaVisitor.scanFile(context);
   }
 
   private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
