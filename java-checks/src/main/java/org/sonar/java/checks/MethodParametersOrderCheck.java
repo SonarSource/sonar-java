@@ -70,7 +70,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
     if (matchingNames(formalParameterList, argumentsList)
       && matchingTypesWrongOrder(formalParameterList, argumentsList)) {
-      List<JavaFileScannerContext.Location> flow = methodDeclaration.parameters().stream().map(param -> new JavaFileScannerContext.Location("Formal Parameters", param))
+      List<JavaFileScannerContext.Location> flow = methodDeclaration.parameters().stream().map(param -> new JavaFileScannerContext.Location("Misplaced Parameters", param))
         .collect(Collectors.toList());
       reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.",
         flow, null);
