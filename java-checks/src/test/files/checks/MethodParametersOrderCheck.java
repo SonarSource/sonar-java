@@ -69,7 +69,7 @@ class A {
   }
 
   public void test1() {
-    int a = 0, b = 1;
+    int a = 0, b = 1, c=2;
     int newEntry = 0;
     int oldEntryForKey = 0;
     int entry = 0;
@@ -79,6 +79,7 @@ class A {
     new B().test2(a, b); // Compliant
     new B().test2(b, a); // Noncompliant
     new B().test2(a, b, entry); // Compliant
+    new B().test2(c, b, a); // Noncompliant [[secondary=101,103]]
   }
 
   public void foo2() {
@@ -96,7 +97,10 @@ class B {
   public void test2(int a, int b) {
   };
 
-  public void test2(int a, int b, int c) {
+  public void test2(
+    int a,
+    int b,
+    int c) {
   };
 
   public void test2(int a, String b) {
