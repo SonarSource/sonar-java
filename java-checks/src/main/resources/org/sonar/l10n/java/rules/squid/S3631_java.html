@@ -1,6 +1,6 @@
 <p>For arrays of objects, <code>Arrays.asList(T ... a).stream()</code> and <code>Arrays.stream(array)</code> are basically equivalent in terms of
 performance. However, for arrays of primitives, using <code>Arrays.asList</code> will force the construction of a list of boxed types, and then use
-<em>that</em> last as a stream. On the other hand, <code>Arrays.stream</code> uses the appropriate primitive stream type (<code>IntStream</code>,
+<em>that</em> list as a stream. On the other hand, <code>Arrays.stream</code> uses the appropriate primitive stream type (<code>IntStream</code>,
 <code>LongStream</code>, <code>DoubleStream</code>) when applicable, with much better performance.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
