@@ -68,13 +68,14 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     }
     ParametersList formalParameterList = parametersByMethod.computeIfAbsent(methodInvTree.symbol(), m -> new ParametersList(methodDeclaration));
     List<IdentifierTree> argumentsList = methodInvTree.arguments().stream().map(this::argumentToIdentifier).collect(Collectors.toList());
-    if (matchingNames(formalParameterList, argumentsList)
-      && matchingTypesWrongOrder(formalParameterList, argumentsList)) {
-      List<JavaFileScannerContext.Location> flow = methodDeclaration.parameters().stream().map(param -> new JavaFileScannerContext.Location("Formal Parameters", param))
-        .collect(Collectors.toList());
-      reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.",
-        flow, null);
-
+    if (matchingNames(formalParameterList, argumentsList)) {
+      List<VariableTree> matchingTypesWrongOrder = matchingTypesWrongOrder(formalParameterList, argumentsList);
+      if (!matchingTypesWrongOrder.isEmpty()) {
+        List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream().map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
+          .collect(Collectors.toList());
+        reportIssue(methodInvTree.arguments(), "Parameters to " + methodInvTree.symbol().name() + " have the same names but not the same order as the method arguments.", flow,
+          null);
+      }
     }
   }
 
@@ -98,28 +99,32 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     return argListNames.size() == new HashSet<>(argListNames).size();
   }
 
-  private static boolean matchingTypesWrongOrder(ParametersList formalParameterList, List<IdentifierTree> argumentList) {
+  private static List<VariableTree> matchingTypesWrongOrder(ParametersList formalParameterList, List<IdentifierTree> argumentList) {
     Iterator<IdentifierTree> argumentsIterator = argumentList.stream().filter(Objects::nonNull).iterator();
-    int countArgumentsNotOrdered = 0;
+    List<VariableTree> misplacedParameters = new ArrayList<>();
     while (argumentsIterator.hasNext()) {
       IdentifierTree argument = argumentsIterator.next();
       int index = formalParameterList.indexOf(argument.name().toLowerCase(Locale.ENGLISH));
       Type formalType = formalParameterList.typeOfIndex(index);
       Type argType = argument.symbolType();
       if (!formalType.is(argType.fullyQualifiedName()) || formalType.isUnknown() || argType.isUnknown()) {
-        return false;
+        return Collections.emptyList();
       }
       if (argumentList.indexOf(argument) != index) {
-        countArgumentsNotOrdered++;
+        misplacedParameters.add(formalParameterList.parameterAt(index));
       }
     }
-    return countArgumentsNotOrdered >= 2;
+    if (misplacedParameters.size() >= 2) {
+      return misplacedParameters;
+    }
+    return Collections.emptyList();
   }
 
   private static class ParametersList {
 
     private List<String> parameterNames;
     private List<Type> parameterTypes;
+    private List<VariableTree> parameters;
 
     public ParametersList(MethodTree methodTree) {
       parameterNames = new ArrayList<>();
@@ -128,6 +133,7 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
         parameterNames.add(symbol.name().toLowerCase(Locale.ENGLISH));
         parameterTypes.add(symbol.type());
       });
+      parameters = methodTree.parameters();
     }
 
     public boolean hasArgumentWithName(String argument) {
@@ -140,6 +146,10 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
 
     public Type typeOfIndex(int index) {
       return parameterTypes.get(index);
+    }
+
+    public VariableTree parameterAt(int index) {
+      return parameters.get(index);
     }
   }
 }
