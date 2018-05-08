@@ -1,0 +1,30 @@
+<p>Empty implementations of the <code>X509TrustManager</code> interface are often created to allow connection to a host that is not signed by a root
+certificate authority. Such an implementation will accept any certificate, which leaves the application vulnerable to Man-in-the-middle attacks. The
+correct solution is to provide an appropriate trust store.</p>
+<p>This rule raises an issue when an implementation of <code>X509TrustManager</code> never throws exception.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+class TrustAllManager implements X509TrustManager {
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {  // Noncompliant, nothing means trust any client
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Noncompliant, this method never throws exception, it means trust any client
+        LOG.log(Level.SEVERE, ERROR_MESSAGE);
+    }
+
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/295.html">MITRE, CWE-295</a> - Improper Certificate Validation </li>
+  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/VwAZAg">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms </li>
+</ul>
+
