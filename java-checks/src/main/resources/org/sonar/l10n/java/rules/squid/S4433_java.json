@@ -3,9 +3,8 @@
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
-    "func": "Linear",
-    "linearDesc": null,
-    "linearFactor": null
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
   },
   "tags": [
     "cwe",
