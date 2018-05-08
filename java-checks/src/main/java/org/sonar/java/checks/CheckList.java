@@ -45,6 +45,7 @@ import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
+import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
@@ -332,6 +333,7 @@ public final class CheckList {
       .add(AESAlgorithmCheck.class)
       .add(ConstructorCallingOverridableCheck.class)
       .add(EqualsOnAtomicClassCheck.class)
+      .add(LDAPAuthenticatedConnectionCheck.class)
       .add(LDAPInjectionCheck.class)
       .add(NonShortCircuitLogicCheck.class)
       .add(OSCommandInjectionCheck.class)
