@@ -1,0 +1,25 @@
+{
+  "title": "AES encryption algorithm should be used with secured mode",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "owasp-a6",
+    "sans-top25-porous"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten",
+    "SANS Top 25"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4432",
+  "sqKey": "S4432",
+  "scope": "Main"
+}
