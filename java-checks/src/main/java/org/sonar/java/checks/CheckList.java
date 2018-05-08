@@ -42,6 +42,7 @@ import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
+import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
@@ -327,6 +328,7 @@ public final class CheckList {
       .add(IteratorNextExceptionCheck.class)
       .add(AvoidDESCheck.class)
       .add(RSAUsesOAEPCheck.class)
+      .add(AESAlgorithmCheck.class)
       .add(ConstructorCallingOverridableCheck.class)
       .add(EqualsOnAtomicClassCheck.class)
       .add(LDAPInjectionCheck.class)
