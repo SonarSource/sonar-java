@@ -167,6 +167,16 @@ public class LiteralUtilsTest {
     assertThat(result).isTrue();
   }
 
+  @Test
+  public void is_0xff() {
+    ExpressionTree tree = getReturnExpression("int foo() { return 0xFF; }");
+    assertThat(LiteralUtils.is0xff(tree)).isTrue();
+    tree = getReturnExpression("int foo() { return 0x01; }");
+    assertThat(LiteralUtils.is0xff(tree)).isFalse();
+    tree = getReturnExpression("char foo() { return '0'; }");
+    assertThat(LiteralUtils.is0xff(tree)).isFalse();
+  }
+
   private ExpressionTree getFirstExpression(String code) {
     ClassTree firstType = getClassTree(code);
     StatementTree firstStatement = ((MethodTree) firstType.members().get(0)).block().body().get(0);

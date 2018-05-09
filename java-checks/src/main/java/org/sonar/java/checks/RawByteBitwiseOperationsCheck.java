@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -28,11 +30,7 @@ import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.LinkedList;
-import java.util.List;
 
 @Rule(key = "S3034")
 public class RawByteBitwiseOperationsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -57,7 +55,7 @@ public class RawByteBitwiseOperationsCheck extends BaseTreeVisitor implements Ja
       shifts.add(tree);
       return;
     }
-    if (isSecuringByte(tree)) {
+    if (ExpressionUtils.isSecuringByte(tree)) {
       byteContainments.add(tree);
       return;
     }
@@ -71,14 +69,6 @@ public class RawByteBitwiseOperationsCheck extends BaseTreeVisitor implements Ja
 
   private static boolean isShifting(BinaryExpressionTree tree) {
     return tree.is(Tree.Kind.LEFT_SHIFT, Tree.Kind.RIGHT_SHIFT, Tree.Kind.UNSIGNED_RIGHT_SHIFT);
-  }
-
-  private static boolean isSecuringByte(BinaryExpressionTree tree) {
-    return tree.is(Tree.Kind.AND) && (is0xff(tree.rightOperand()) || is0xff(tree.leftOperand()));
-  }
-
-  private static boolean is0xff(ExpressionTree expression) {
-    return expression.is(Tree.Kind.INT_LITERAL) && "0xff".equals(((LiteralTree) expression).value());
   }
 
   private static boolean isIntegerOrLongExpected(Type type) {

@@ -26,9 +26,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -44,6 +43,11 @@ public class IntegerToHexStringCheck extends AbstractMethodDetection {
     .typeDefinition(TypeCriteria.subtypeOf("java.io.PrintStream"))
     .name("print")
     .addParameter(TypeCriteria.is("java.lang.String"));
+
+  private static final MethodMatcher JOINER_MATCHER = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("java.util.StringJoiner"))
+    .name("add")
+    .addParameter(TypeCriteria.is("java.lang.CharSequence"));
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -68,23 +72,14 @@ public class IntegerToHexStringCheck extends AbstractMethodDetection {
       .map(Tree::parent)
       .filter(tree -> tree.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
-      .filter(parentMethod-> APPEND_MATCHER.matches(parentMethod) || PRINT_MATCHER.matches(parentMethod))
+      .filter(parentMethod -> APPEND_MATCHER.matches(parentMethod) ||
+        PRINT_MATCHER.matches(parentMethod) ||
+        JOINER_MATCHER.matches(parentMethod))
       .isPresent();
   }
 
   private static boolean typeIsByte(ExpressionTree expression) {
-    if (expression.symbolType().isSubtypeOf("byte")) {
-      return true;
-    }
-    if (expression.is(Tree.Kind.AND)) {
-      BinaryExpressionTree and = (BinaryExpressionTree) expression;
-      return isFFLiteral(and.rightOperand()) || isFFLiteral(and.leftOperand());
-    }
-    return false;
-  }
-
-  private static boolean isFFLiteral(ExpressionTree expression) {
-    return expression.is(Tree.Kind.INT_LITERAL) &&
-      "0xFF".equalsIgnoreCase(((LiteralTree) expression).value());
+    return expression.symbolType().isSubtypeOf("byte") ||
+      ExpressionUtils.isSecuringByte(expression);
   }
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -105,6 +106,14 @@ public final class ExpressionUtils {
 
   public static boolean isNullLiteral(ExpressionTree tree) {
     return skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
+  }
+
+  public static boolean isSecuringByte(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.AND)) {
+      BinaryExpressionTree and = (BinaryExpressionTree) expression;
+      return LiteralUtils.is0xff(and.rightOperand()) || LiteralUtils.is0xff(and.leftOperand());
+    }
+    return false;
   }
 
   /**
