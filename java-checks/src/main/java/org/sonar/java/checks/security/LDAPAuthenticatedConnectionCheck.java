@@ -22,23 +22,18 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S4433")
-public class LDAPAuthenticatedConnectionCheck  extends AbstractMethodDetection {
-
-  private static final String CONTEXT_CLASS_NAME = "Context";
+public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -58,47 +53,17 @@ public class LDAPAuthenticatedConnectionCheck  extends AbstractMethodDetection {
     ExpressionTree putValue = methodTree.arguments().get(1);
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(putValue);
     ExpressionTree mechanismTree = defaultPropertyValue == null ? putValue : defaultPropertyValue;
-    if (isSecurityAuthentication(putKey) && isNone(mechanismTree)) {
+    if (isSecurityAuthenticationConstant(putKey) && ConstantsHelper.isStringLiteralWithValue(mechanismTree, "none")) {
       reportIssue(putValue, "Change authentication to \"simple\" or stronger.");
     }
   }
 
-  private static boolean isSecurityAuthentication(ExpressionTree tree) {
+  private static boolean isSecurityAuthenticationConstant(ExpressionTree tree) {
     if (tree.is(Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree javaxConstant = (MemberSelectExpressionTree) tree;
-      return isContextClass(javaxConstant.expression())
-        && "SECURITY_AUTHENTICATION".equals(javaxConstant.identifier().name());
+      MemberSelectExpressionTree constantExpression = (MemberSelectExpressionTree) tree;
+      return "javax.naming.Context".equals(constantExpression.expression().symbolType().fullyQualifiedName())
+        && "SECURITY_AUTHENTICATION".equals(constantExpression.identifier().name());
     }
-    return false;
-  }
-
-  private static boolean isNone(ExpressionTree authenticationMechanism) {
-    if (authenticationMechanism.is(Kind.STRING_LITERAL)) {
-      String mechanismName = LiteralUtils.trimQuotes(((LiteralTree) authenticationMechanism).value());
-      return "none".equals(mechanismName);
-    }
-    return false;
-  }
-
-  private static boolean isContextClass(ExpressionTree expressionTree) {
-    if (expressionTree.is(Kind.IDENTIFIER)) {
-      return CONTEXT_CLASS_NAME.equals(((IdentifierTree) expressionTree).name());
-    }
-    return isFullyQualifiedContextClass(expressionTree);
-  }
-
-  private static boolean isFullyQualifiedContextClass(ExpressionTree expressionTree) {
-    if (expressionTree.is(Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree fullyQualifiedName = (MemberSelectExpressionTree) expressionTree;
-      if (fullyQualifiedName.expression().is(Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree packageName = (MemberSelectExpressionTree) fullyQualifiedName.expression();
-        if (packageName.expression().is(Kind.IDENTIFIER)) {
-          return "javax".equals(((IdentifierTree) packageName.expression()).name())
-              && "naming".equals(packageName.identifier().name())
-              && CONTEXT_CLASS_NAME.equals(fullyQualifiedName.identifier().name());
-        }
-      }
-    }
-    return false;
+    return ConstantsHelper.isStringLiteralWithValue(tree, "java.naming.security.authentication");
   }
 }

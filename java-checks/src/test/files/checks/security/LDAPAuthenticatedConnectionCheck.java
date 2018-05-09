@@ -21,22 +21,27 @@ class S4433 {
 
   void method4() {
     Hashtable<String, String> env = new Hashtable<>();
-    env.put(Context.SECURITY_AUTHENTICATION, "simple");
+    env.put("java.naming.security.authentication", "none"); // Noncompliant {{Change authentication to "simple" or stronger.}}
   }
 
   void method5() {
     Hashtable<String, String> env = new Hashtable<>();
-    env.put(Context.SECURITY_AUTHENTICATION, "CRAM-MD5");
+    env.put(Context.SECURITY_AUTHENTICATION, "simple");
   }
 
   void method6(java.util.Properties props) {
-    String authMechanism = props.getProperty("AUTH_MECH", "simple");
+    String authMechanism = props.getProperty("AUTH_MECH", "CRAM-MD5");
     Hashtable<String, String> env = new Hashtable<>();
-    env.put(Context.SECURITY_PRINCIPAL, authMechanism);
+    env.put(Context.SECURITY_AUTHENTICATION, authMechanism);
   }
 
   void method7() {
     Hashtable<String, String> env = new Hashtable<>();
     env.put(Context.SECURITY_PRINCIPAL, "none");
+  }
+
+  void method8() {
+    Hashtable<String, String> env = new Hashtable<>();
+    env.put("SECURITY_AUTHENTICATION", "none");
   }
 }
