@@ -25,6 +25,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class ConstantsHelper {
 
+  private ConstantsHelper() {
+  }
+
   public static boolean isStringLiteralWithValue(Tree tree, String expectedValue) {
     if (tree == null || !tree.is(Tree.Kind.STRING_LITERAL)) {
       return false;
