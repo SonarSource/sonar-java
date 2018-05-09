@@ -22,9 +22,11 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -52,14 +54,16 @@ public class LDAPAuthenticatedConnectionCheck  extends AbstractMethodDetection {
     if (methodTree.arguments().size() != 2) {
       return;
     }
-    Tree putKey = methodTree.arguments().get(0);
-    Tree putValue = methodTree.arguments().get(1);
-    if (isSoughtKey(putKey) && isSoughtValue(putValue)) {
+    ExpressionTree putKey = methodTree.arguments().get(0);
+    ExpressionTree putValue = methodTree.arguments().get(1);
+    ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(putValue);
+    ExpressionTree mechanismTree = defaultPropertyValue == null ? putValue : defaultPropertyValue;
+    if (isSecurityAuthentication(putKey) && isNone(mechanismTree)) {
       reportIssue(putValue, "Change authentication to \"simple\" or stronger.");
     }
   }
 
-  private static boolean isSoughtKey(Tree tree) {
+  private static boolean isSecurityAuthentication(ExpressionTree tree) {
     if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree javaxConstant = (MemberSelectExpressionTree) tree;
       return isContextClass(javaxConstant.expression())
@@ -68,10 +72,10 @@ public class LDAPAuthenticatedConnectionCheck  extends AbstractMethodDetection {
     return false;
   }
 
-  private static boolean isSoughtValue(Tree tree) {
-    if (tree.is(Kind.STRING_LITERAL)) {
-      LiteralTree lt = (LiteralTree) tree;
-      return "\"none\"".equals(lt.value());
+  private static boolean isNone(ExpressionTree authenticationMechanism) {
+    if (authenticationMechanism.is(Kind.STRING_LITERAL)) {
+      String mechanismName = LiteralUtils.trimQuotes(((LiteralTree) authenticationMechanism).value());
+      return "none".equals(mechanismName);
     }
     return false;
   }
