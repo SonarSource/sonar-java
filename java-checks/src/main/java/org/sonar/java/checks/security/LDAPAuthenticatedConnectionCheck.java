@@ -19,8 +19,12 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.AbstractInjectionChecker;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -30,31 +34,29 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S4433")
-public class LDAPAuthenticatedConnectionCheck extends AbstractInjectionChecker {
+public class LDAPAuthenticatedConnectionCheck  extends AbstractMethodDetection {
 
   private static final String CONTEXT_CLASS_NAME = "Context";
 
   @Override
-  public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
-    MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-    if (isPutMethod(methodTree) && methodTree.arguments().size() == 2) {
-      Tree putKey = methodTree.arguments().get(0);
-      Tree putValue = methodTree.arguments().get(1);
-      if (isSoughtKey(putKey) && isSoughtValue(putValue)) {
-        reportIssue(putValue, "Change authentication to \"simple\" or stronger.");
-      }
-    }
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return Collections.singletonList(
+      MethodMatcher.create()
+        .typeDefinition(TypeCriteria.is("java.util.Hashtable"))
+        .name("put")
+        .withAnyParameters());
   }
 
-  private static boolean isPutMethod(MethodInvocationTree methodTree) {
-    if (methodTree.methodSelect().is(Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) methodTree.methodSelect();
-      return "put".equals(methodSelect.identifier().name());
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
+    if (methodTree.arguments().size() != 2) {
+      return;
     }
-    return false;
+    Tree putKey = methodTree.arguments().get(0);
+    Tree putValue = methodTree.arguments().get(1);
+    if (isSoughtKey(putKey) && isSoughtValue(putValue)) {
+      reportIssue(putValue, "Change authentication to \"simple\" or stronger.");
+    }
   }
 
   private static boolean isSoughtKey(Tree tree) {
