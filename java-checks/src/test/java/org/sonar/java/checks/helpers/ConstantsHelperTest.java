@@ -51,8 +51,15 @@ public class ConstantsHelperTest {
   }
 
   @Test
-  public void isStringLiteralWithValue_withNull_returnsFalse() {
+  public void isStringLiteralWithValue_withNullTree_returnsFalse() {
     boolean result = ConstantsHelper.isStringLiteralWithValue(null, "expected");
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  public void isStringLiteralWithValue_withNullString_returnsFalse() {
+    ExpressionTree tree = getReturnExpression("void foo(java.util.Properties props){ return \"expected\"; }");
+    boolean result = ConstantsHelper.isStringLiteralWithValue(tree, null);
     assertThat(result).isFalse();
   }
 

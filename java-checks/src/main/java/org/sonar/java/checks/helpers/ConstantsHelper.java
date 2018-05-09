@@ -29,7 +29,7 @@ public class ConstantsHelper {
   }
 
   public static boolean isStringLiteralWithValue(Tree tree, String expectedValue) {
-    if (tree == null || !tree.is(Tree.Kind.STRING_LITERAL)) {
+    if (tree == null || expectedValue == null || !tree.is(Tree.Kind.STRING_LITERAL)) {
       return false;
     }
     String mechanismName = LiteralUtils.trimQuotes(((LiteralTree) tree).value());
