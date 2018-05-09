@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -93,6 +94,15 @@ public class LiteralUtilsTest {
   String s4 = "\n";
 
   @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = LiteralUtils.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    // call for coverage
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
+  @Test
   public void test_int_and_long_value() throws Exception {
     Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null, 5678};
     Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null, 10010L};
@@ -134,19 +144,6 @@ public class LiteralUtilsTest {
   @Test
   public void testTrimQuotes() {
     assertThat(LiteralUtils.trimQuotes("\"test\"")).isEqualTo("test");
-  }
-
-  @Test
-  public void hasValue_withNullTree_returnsFalse() {
-    boolean result = LiteralUtils.hasValue(null, "expected");
-    assertThat(result).isFalse();
-  }
-
-  @Test
-  public void hasValue_withNullString_returnsFalse() {
-    ExpressionTree tree = getReturnExpression("void foo(java.util.Properties props){ return \"expected\"; }");
-    boolean result = LiteralUtils.hasValue(tree, null);
-    assertThat(result).isFalse();
   }
 
   @Test

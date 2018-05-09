@@ -111,7 +111,7 @@ public class LiteralUtils {
   }
 
   public static boolean hasValue(Tree tree, String expectedValue) {
-    if (tree == null || expectedValue == null || !tree.is(Tree.Kind.STRING_LITERAL)) {
+    if (!tree.is(Tree.Kind.STRING_LITERAL)) {
       return false;
     }
     String mechanismName = trimQuotes(((LiteralTree) tree).value());
