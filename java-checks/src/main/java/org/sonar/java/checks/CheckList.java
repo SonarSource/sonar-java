@@ -44,6 +44,7 @@ import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
+import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
@@ -501,6 +502,7 @@ public final class CheckList {
       .add(ClassFieldCountCheck.class)
       .add(DoubleCheckedLockingCheck.class)
       .add(WriteObjectTheOnlySynchronizedMethodCheck.class)
+      .add(TrustManagerCertificateCheck.class)
       .add(TwoLocksWaitCheck.class)
       .add(SynchronizationOnGetClassCheck.class)
       .add(DisallowedClassCheck.class)

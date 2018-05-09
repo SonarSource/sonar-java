@@ -1,0 +1,23 @@
+{
+  "title": "TrustManagers should not blindly accept any certificates",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "60min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "owasp-a6"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4424",
+  "sqKey": "S4424",
+  "scope": "Main"
+}
