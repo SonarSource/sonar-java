@@ -39,7 +39,7 @@ public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Collections.singletonList(
       MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("java.util.Hashtable"))
+        .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))
         .name("put")
         .withAnyParameters());
   }

@@ -1,4 +1,6 @@
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.Context;
 
 class S4433 {
@@ -10,18 +12,18 @@ class S4433 {
 
   void method2() {
     Hashtable<String, String> env = new Hashtable<>();
-    env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant {{Change authentication to "simple" or stronger.}}
+    env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant
   }
 
   void method3(java.util.Properties props) {
     String authMechanism = props.getProperty("AUTH_MECH", "none");
-    Hashtable<String, String> env = new Hashtable<>();
-    env.put(Context.SECURITY_AUTHENTICATION, authMechanism); // Noncompliant {{Change authentication to "simple" or stronger.}}
+    Map<String, String> env = new Hashtable<>();
+    env.put(Context.SECURITY_AUTHENTICATION, authMechanism); // Noncompliant
   }
 
   void method4() {
-    Hashtable<String, String> env = new Hashtable<>();
-    env.put("java.naming.security.authentication", "none"); // Noncompliant {{Change authentication to "simple" or stronger.}}
+    Map<String, String> env = new ConcurrentHashMap<>();
+    env.put("java.naming.security.authentication", "none"); // Noncompliant
   }
 
   void method5() {
