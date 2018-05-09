@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S4433")
 public class LDAPAuthenticatedConnectionCheck extends AbstractInjectionChecker {
 
-  private final static String CONTEXT_CLASS_NAME = "Context";
+  private static final String CONTEXT_CLASS_NAME = "Context";
 
   @Override
   public void visitNode(Tree tree) {
