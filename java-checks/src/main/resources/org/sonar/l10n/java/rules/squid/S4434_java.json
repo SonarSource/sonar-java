@@ -1,0 +1,22 @@
+{
+  "title": "LDAP deserialization should be disabled",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a8",
+    "cert"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-4434",
+  "sqKey": "S4434",
+  "scope": "Main"
+}
