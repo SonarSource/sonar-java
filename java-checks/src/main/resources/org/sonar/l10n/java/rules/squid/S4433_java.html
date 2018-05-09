@@ -1,0 +1,39 @@
+<p>An un-authenticated LDAP connection can lead to transactions without access control. Authentication, and with it, access control, are the last line
+of defense against LDAP injections and should not be disabled.</p>
+<p>This rule raises an issue when an LDAP connection is created with <code>Context.SECURITY_AUTHENTICATION</code> set to <code>"none"</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
+env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=JNDITutorial");
+
+// Use anonymous authentication
+env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+// Set up the environment for creating the initial context
+Hashtable&lt;String, Object&gt; env = new Hashtable&lt;String, Object&gt;();
+env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+env.put(Context.PROVIDER_URL, "ldap://localhost:389/o=JNDITutorial");
+
+// Use simple authentication
+env.put(Context.SECURITY_AUTHENTICATION, "simple");
+env.put(Context.SECURITY_PRINCIPAL, "cn=S. User, ou=NewHires, o=JNDITutorial");
+env.put(Context.SECURITY_CREDENTIALS, getLDAPPassword());
+
+// Create the initial context
+DirContext ctx = new InitialDirContext(env);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/521.html">CWE-521</a> - Weak Password Requirements </li>
+  <li> OWASP Top 10 2017 Category A2 - Broken Authentication </li>
+  <li> <a href="https://docs.oracle.com/javase/tutorial/jndi/ldap/authentication.html">Modes of Authenticating to LDAP</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#LDAP_ANONYMOUS">LDAP_ANONYMOUS</a> </li>
+</ul>
+
