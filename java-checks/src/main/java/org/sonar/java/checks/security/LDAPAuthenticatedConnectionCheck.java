@@ -22,11 +22,11 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -53,7 +53,7 @@ public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
     ExpressionTree putValue = methodTree.arguments().get(1);
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(putValue);
     ExpressionTree mechanismTree = defaultPropertyValue == null ? putValue : defaultPropertyValue;
-    if (isSecurityAuthenticationConstant(putKey) && ConstantsHelper.isStringLiteralWithValue(mechanismTree, "none")) {
+    if (isSecurityAuthenticationConstant(putKey) && LiteralUtils.hasValue(mechanismTree, "none")) {
       reportIssue(putValue, "Change authentication to \"simple\" or stronger.");
     }
   }
@@ -64,6 +64,6 @@ public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
       return "javax.naming.Context".equals(constantExpression.expression().symbolType().fullyQualifiedName())
         && "SECURITY_AUTHENTICATION".equals(constantExpression.identifier().name());
     }
-    return ConstantsHelper.isStringLiteralWithValue(tree, "java.naming.security.authentication");
+    return LiteralUtils.hasValue(tree, "java.naming.security.authentication");
   }
 }

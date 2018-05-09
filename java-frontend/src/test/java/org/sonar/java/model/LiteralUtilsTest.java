@@ -19,11 +19,21 @@
  */
 package org.sonar.java.model;
 
+import com.sonar.sslr.api.typed.ActionParser;
+import java.util.Collections;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -35,6 +45,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LiteralUtilsTest {
+
+  private final ActionParser<Tree> p = JavaParser.createParser();
 
   static List<VariableTree> variables;
 
@@ -124,4 +136,55 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.trimQuotes("\"test\"")).isEqualTo("test");
   }
 
+  @Test
+  public void hasValue_withNullTree_returnsFalse() {
+    boolean result = LiteralUtils.hasValue(null, "expected");
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  public void hasValue_withNullString_returnsFalse() {
+    ExpressionTree tree = getReturnExpression("void foo(java.util.Properties props){ return \"expected\"; }");
+    boolean result = LiteralUtils.hasValue(tree, null);
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  public void hasValue_withNonStringLiteral_returnsFalse() {
+    ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
+    boolean result = LiteralUtils.hasValue(tree, "expected");
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  public void hasValue_withOtherValue_returnsFalse() {
+    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(java.util.Properties props){ return \"other than expected\"; }");
+    boolean result = LiteralUtils.hasValue(tree, "expected");
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  public void hasValue_withExpectedValue_returnsTrue() {
+    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(java.util.Properties props){ return \"expected\"; }");
+    boolean result = LiteralUtils.hasValue(tree, "expected");
+    assertThat(result).isTrue();
+  }
+
+  private ExpressionTree getFirstExpression(String code) {
+    ClassTree firstType = getClassTree(code);
+    StatementTree firstStatement = ((MethodTree) firstType.members().get(0)).block().body().get(0);
+    return ((ExpressionStatementTree) firstStatement).expression();
+  }
+
+  private ExpressionTree getReturnExpression(String code) {
+    ClassTree firstType = getClassTree(code);
+    ReturnStatementTree returnExpression = (ReturnStatementTree) ((MethodTree) firstType.members().get(0)).block().body().get(0);
+    return returnExpression.expression();
+  }
+
+  private ClassTree getClassTree(String code) {
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse("class A { " + code + "}");
+    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+    return (ClassTree) compilationUnitTree.types().get(0);
+  }
 }
