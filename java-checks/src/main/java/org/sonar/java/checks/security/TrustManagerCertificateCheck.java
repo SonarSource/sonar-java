@@ -63,10 +63,8 @@ public class TrustManagerCertificateCheck extends IssuableSubscriptionVisitor {
     if (blockTree == null) {
       return;
     }
-    if (!CHECK_CLIENT_TRUSTED_MATCHER.matches(methodTree) && !CHECK_SERVER_TRUSTED_MATCHER.matches(methodTree)) {
-      return;
-    }
-    if (!ThrowExceptionVisitor.throwsException(blockTree)) {
+    if ((CHECK_CLIENT_TRUSTED_MATCHER.matches(methodTree) || CHECK_SERVER_TRUSTED_MATCHER.matches(methodTree)) &&
+      !ThrowExceptionVisitor.throwsException(blockTree)) {
       reportIssue(methodTree.simpleName(), "Change this method so it throws exceptions.");
     }
   }
