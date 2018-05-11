@@ -337,7 +337,6 @@ public final class CheckList {
       .add(EqualsOnAtomicClassCheck.class)
       .add(LDAPAuthenticatedConnectionCheck.class)
       .add(LDAPDeserializationCheck.class)
-      .add(LDAPInjectionCheck.class)
       .add(NonShortCircuitLogicCheck.class)
       .add(ArrayHashCodeAndToStringCheck.class)
       .add(DefaultEncodingUsageCheck.class)
