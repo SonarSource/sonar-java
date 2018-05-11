@@ -5,7 +5,7 @@ import java.util.Properties;
 class S4434 {
 
   void nonCompliantCreate(int scope, long countLimit, int timeLimit, String[] attributes, boolean deref) {
-    SearchControls ctrl = new SearchControls(scope, countLimit, timeLimit, attributes, true, deref); // Noncompliant
+    SearchControls ctrl = new SearchControls(scope, countLimit, timeLimit, attributes, true, deref); // Noncompliant {{Disable object deserialization.}}
   }
 
   void nonCompliantSet() {
@@ -18,7 +18,7 @@ class S4434 {
   }
 
   void compliantCreate(int scope, long countLimit, int timeLimit, String[] attributes, boolean retobj, boolean deref) {
-    new SearchControls(scope, countLimit, timeLimit, attributes, retobj, deref);
+    new SearchControls(scope, countLimit, timeLimit, attributes, retobj, deref); // Should be noncompliant if we know retobj is true
   }
 
   void compliantSet() {
@@ -28,6 +28,6 @@ class S4434 {
 
   void compliantSet(boolean returnObject) {
     SearchControls ctrl = new SearchControls();
-    ctrl.setReturningObjFlag(returnObject);
+    ctrl.setReturningObjFlag(returnObject); // Should be noncompliant if we know returnObject is true
   }
 }
