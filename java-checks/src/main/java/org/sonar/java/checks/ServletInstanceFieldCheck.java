@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -44,6 +45,11 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private List<VariableTree> issuableVariables = new ArrayList<>();
   private List<VariableTree> excludedVariables = new ArrayList<>();
+
+  private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
+    "javax.inject.Inject",
+    "javax.ejb.EJB",
+    "javax.annotation.Resource");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -73,7 +79,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isExcluded(VariableTree variable) {
     SymbolMetadata varMetadata = variable.symbol().metadata();
-    return isStaticOrFinal(variable) || varMetadata.isAnnotatedWith("javax.inject.Inject") || varMetadata.isAnnotatedWith("javax.ejb.EJB");
+    return isStaticOrFinal(variable) || ANNOTATIONS_EXCLUDING_FIELDS.stream().anyMatch(varMetadata::isAnnotatedWith);
   }
 
   private static boolean isServletInit(MethodTree tree) {
