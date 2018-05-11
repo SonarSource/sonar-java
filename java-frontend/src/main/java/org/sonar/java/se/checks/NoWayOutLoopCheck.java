@@ -24,6 +24,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGLoop;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -96,7 +97,7 @@ public class NoWayOutLoopCheck extends SECheck {
 
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
-      if (isHardCodedTrue(tree.condition())) {
+      if (LiteralUtils.hasValue(tree.condition(), true)) {
         CFGLoop loopBlocks = contexts.peek().getLoop(tree);
         if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
           context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
@@ -237,10 +238,6 @@ public class NoWayOutLoopCheck extends SECheck {
     public Iterator<Update> iterator() {
       return updates.iterator();
     }
-  }
-
-  static boolean isHardCodedTrue(ExpressionTree condition) {
-    return condition.is(Tree.Kind.BOOLEAN_LITERAL) && Boolean.parseBoolean(((LiteralTree) condition).value());
   }
 
   private static class MethodContext {
