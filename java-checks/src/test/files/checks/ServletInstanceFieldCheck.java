@@ -2,6 +2,7 @@ package javax.inject;
 
 import javax.servlet.http.HttpServlet;
 import org.apache.struts.action.Action;
+import javax.annotation.Resource;
 
 @interface Inject{}
 class A {
@@ -39,6 +40,7 @@ class C extends Action {
 class D extends HttpServlet {
 
   @Inject private String userName; // compliant annotated with inject;
+  @Resource private String city; // compliant annotated with resource;
   private static String staticVar;
 }
 
