@@ -13,6 +13,7 @@ class A {
 
     StringJoiner joiner = new StringJoiner("");
     joiner.add(Integer.toHexString( b )); // Noncompliant
+    joiner.add(Integer.toHexString( c ));
   }
 
   public void bar(StringBuffer sb, byte b) {

@@ -173,6 +173,8 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.is0xff(tree)).isTrue();
     tree = getReturnExpression("int foo() { return 0x01; }");
     assertThat(LiteralUtils.is0xff(tree)).isFalse();
+    tree = getReturnExpression("int foo() { return 0Xff; }");
+    assertThat(LiteralUtils.is0xff(tree)).isTrue();
     tree = getReturnExpression("char foo() { return '0'; }");
     assertThat(LiteralUtils.is0xff(tree)).isFalse();
   }
