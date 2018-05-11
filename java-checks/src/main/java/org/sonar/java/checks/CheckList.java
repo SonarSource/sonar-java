@@ -44,6 +44,7 @@ import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
+import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
@@ -492,6 +493,7 @@ public final class CheckList {
       .add(DivisionByZeroCheck.class)
       .add(SimpleClassNameCheck.class)
       .add(NullShouldNotBeUsedWithOptionalCheck.class)
+      .add(IntegerToHexStringCheck.class)
       .add(PrivateFieldUsedLocallyCheck.class)
       .add(OptionalGetBeforeIsPresentCheck.class)
       .add(ValueBasedObjectsShouldNotBeSerializedCheck.class)

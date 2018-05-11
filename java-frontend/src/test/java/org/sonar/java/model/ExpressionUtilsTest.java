@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.lang.reflect.Modifier.isFinal;
@@ -126,6 +127,28 @@ public class ExpressionUtilsTest {
     assertThat(ExpressionUtils.extractIdentifier(assignments.get(0)).symbol())
       .isEqualTo(ExpressionUtils.extractIdentifier(assignments.get(1)).symbol());
 
+  }
+
+  @Test
+  public void securing_byte() {
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(
+      "class A {static{\n" +
+        "12;\n" +
+        "12 & 0xFF;\n" +
+        "0xff & 12;\n" +
+        "12 & 12;\n" +
+        "}}\n");
+
+    StaticInitializerTree staticInitializer = (StaticInitializerTree) ((ClassTree) tree.types().get(0)).members().get(0);
+    List<ExpressionTree> expressions = staticInitializer.body().stream()
+      .map(ExpressionStatementTree.class::cast)
+      .map(ExpressionStatementTree::expression)
+      .collect(Collectors.toList());
+
+    assertThat(ExpressionUtils.isSecuringByte(expressions.get(0))).isFalse();
+    assertThat(ExpressionUtils.isSecuringByte(expressions.get(1))).isTrue();
+    assertThat(ExpressionUtils.isSecuringByte(expressions.get(2))).isTrue();
+    assertThat(ExpressionUtils.isSecuringByte(expressions.get(3))).isFalse();
   }
 
   private List<AssignmentExpressionTree> findAssignmentExpressionTrees(MethodTree methodTree) {

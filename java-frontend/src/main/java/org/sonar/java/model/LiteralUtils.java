@@ -19,15 +19,14 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 
 public class LiteralUtils {
 
@@ -91,6 +90,10 @@ public class LiteralUtils {
 
   public static boolean isEmptyString(Tree tree) {
     return tree.is(Tree.Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
+  }
+
+  public static boolean is0xff(ExpressionTree expression) {
+    return expression.is(Tree.Kind.INT_LITERAL) && "0xff".equalsIgnoreCase(((LiteralTree) expression).value());
   }
 
   public static String trimQuotes(String value) {
