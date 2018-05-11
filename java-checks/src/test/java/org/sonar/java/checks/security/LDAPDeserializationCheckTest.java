@@ -27,6 +27,5 @@ public class LDAPDeserializationCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/LDAPDeserializationCheck.java", new LDAPDeserializationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/LDAPDeserializationCheck.java", new LDAPDeserializationCheck());
   }
 }
