@@ -88,7 +88,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.symbolType().isSubtypeOf("java.util.HashMap") && hasEnumKey(tree.identifier().symbolType())) {
+    if (isUnorderedMap(tree.symbolType()) && hasEnumKey(tree.identifier().symbolType())) {
       addIssue(tree);
     } else {
       super.visitNewClass(tree);
@@ -99,10 +99,15 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     ExpressionTree expression = ExpressionUtils.skipParentheses(given);
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
-      if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {
+      if (isUnorderedMap(newClassTree.symbolType()) && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {
         addIssue(newClassTree);
       }
     }
+  }
+
+  private static boolean isUnorderedMap(Type type) {
+    return type.isSubtypeOf("java.util.HashMap") &&
+      !type.isSubtypeOf("java.util.LinkedHashMap");
   }
 
   private static boolean hasEnumKey(Type symbolType) {
