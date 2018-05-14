@@ -502,6 +502,27 @@ public class JavaSymbol implements Symbol {
     }
   }
 
+  public static class ConstantJavaSymbol extends VariableJavaSymbol {
+
+    @Nullable
+    private final Object value;
+
+    public ConstantJavaSymbol(int flags, String name, JavaSymbol owner, @Nullable Object value) {
+      super(flags, name, owner);
+      this.value = value;
+    }
+
+    public ConstantJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner, @Nullable Object value) {
+      super(flags, name, type, owner);
+      this.value = value;
+    }
+
+    @CheckForNull
+    public Object value() {
+      return value;
+    }
+  }
+
   /**
    * Represents a method, constructor or initializer (static or instance).
    */

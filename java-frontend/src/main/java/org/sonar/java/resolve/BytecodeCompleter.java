@@ -28,10 +28,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
 
@@ -43,6 +48,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
    */
   private final Map<String, JavaSymbol.TypeJavaSymbol> classes = new HashMap<>();
   private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<>();
+  private final Map<JavaSymbol.TypeJavaSymbol, Map<String, Object>> constantValues = new HashMap<>();
 
   private Set<String> classesNotFound = new TreeSet<>();
 
@@ -82,6 +88,35 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
+
+  @CheckForNull
+  public Object constantValue(Symbol owner, String constantName) {
+    if (constantValues.containsKey(owner)) {
+      return constantValues.get(owner).get(constantName);
+    }
+    if (owner.isTypeSymbol()) {
+      JavaSymbol.TypeJavaSymbol typeSymbol = (JavaSymbol.TypeJavaSymbol) owner;
+      String bytecodeName = typeSymbol.getFullyQualifiedName();
+      byte[] bytes = classLoader.getBytesForClass(bytecodeName);
+      if (bytes != null) {
+        Map<String, Object> valuesByFieldName = new HashMap<>();
+        ClassReader classReader = new ClassReader(bytes);
+        classReader.accept(
+          new ClassVisitor(Opcodes.ASM5) {
+            @Override
+            public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+              valuesByFieldName.put(name, value);
+              return super.visitField(access, name, descriptor, signature, value);
+            }
+          },
+          ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+        constantValues.put(typeSymbol, valuesByFieldName);
+        return valuesByFieldName.get(constantName);
+      }
+    }
+    return null;
+  }
+
 
   @Nullable
   private InputStream inputStreamFor(String fullname) {
