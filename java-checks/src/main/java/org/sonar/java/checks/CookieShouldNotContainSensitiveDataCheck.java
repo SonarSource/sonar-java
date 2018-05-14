@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -27,21 +27,42 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
 
+  private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
+  private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
+  private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+
+  private static final int VALUE_PARAM_INDEX = 1;
+
+  private static final String MESSAGE = "If the data stored in this cookie is sensitive, it should be stored internally in the user session.";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-        MethodMatcher.create()
-            .typeDefinition(TypeCriteria.subtypeOf("javax.servlet.http.Cookie")).name("setValue").withAnyParameters());
+    return Arrays.asList(
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SERVLET_COOKIE)).name("<init>").withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SERVLET_COOKIE)).name("setValue").withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(NET_HTTP_COOKIE)).name("<init>").withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(NET_HTTP_COOKIE)).name("setValue").withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_COOKIE)).name("<init>").withAnyParameters());
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    if (newClassTree.arguments().size() <= VALUE_PARAM_INDEX) {
+      return;
+    }
+    reportIssue(newClassTree.arguments().get(VALUE_PARAM_INDEX), MESSAGE);
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    return;
+    if (methodTree.arguments().size() != 1) {
+      return;
+    }
+    reportIssue(methodTree.methodSelect(), MESSAGE);
   }
-
 }
