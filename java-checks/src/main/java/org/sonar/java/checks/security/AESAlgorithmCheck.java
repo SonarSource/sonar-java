@@ -22,15 +22,13 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4432")
 public class AESAlgorithmCheck extends AbstractMethodDetection {
@@ -52,11 +50,9 @@ public class AESAlgorithmCheck extends AbstractMethodDetection {
     ExpressionTree firstArgument = mit.arguments().get(0);
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(firstArgument);
     ExpressionTree algorithmTree = defaultPropertyValue == null ? firstArgument : defaultPropertyValue;
-    if (algorithmTree.is(Tree.Kind.STRING_LITERAL)) {
-      String algorithmName = LiteralUtils.trimQuotes(((LiteralTree) algorithmTree).value());
-      if (isInsecureAESAlgorithm(algorithmName)) {
-        reportIssue(firstArgument, "Use Galois/Counter Mode (GCM/NoPadding) instead.");
-      }
+    String algorithmName = ConstantUtils.resolveAsStringConstant(algorithmTree);
+    if (algorithmName != null && isInsecureAESAlgorithm(algorithmName)) {
+      reportIssue(firstArgument, "Use Galois/Counter Mode (GCM/NoPadding) instead.");
     }
   }
 
