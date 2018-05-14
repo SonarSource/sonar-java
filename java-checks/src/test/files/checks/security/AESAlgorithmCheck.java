@@ -16,6 +16,7 @@ abstract class A {
     String algo = props.getProperty("myAlgo", "AES/ECB/PKCS5Padding");
     Cipher.getInstance(algo); // Noncompliant
 
+    Cipher.getInstance("AES" + "/ECB/NoPadding"); // Noncompliant
   }
 
   abstract java.security.Provider getProvider();
