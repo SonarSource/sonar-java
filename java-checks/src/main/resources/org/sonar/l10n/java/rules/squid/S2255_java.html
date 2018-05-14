@@ -1,0 +1,24 @@
+<p>Attackers can use widely-available tools to view cookies and read any sensitive information they may contain. Even if the information is encoded in
+a way that is not human-readable, certain techniques could determine which encoding is being used, then decode the information.</p>
+<p>Moreover, cookies should be used only to manage the user session. All information relating to the user should be associated internally to the user
+session, and should never be sent to the client. In a very few corner cases, cookies can be used for non-sensitive information that needs to live
+longer than the user session.</p>
+<p>This rule raises an issue when data is stored in a cookie. Issues raised are intended to be reviewed by a security auditor as the false-positive
+rate will be high. It's indeed impossible to statically check if the data stored in the cookie is sensitive or not. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response){
+    Cookie cookie = new Cookie("userAccountID", acctID);
+    response.addCookie(cookie);
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/312.html">CWE-312</a> - Cleartext Storage of Sensitive Information </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/315.html">CWE-315</a> - Cleartext Storage of Sensitive Information in a Cookie </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO52-J.+Do+not+store+unencrypted+sensitive+information+on+the+client+side">CERT,
+  FIO52-J.</a> - Do not store unencrypted sensitive information on the client side </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#COOKIE_USAGE">COOKIE_USAGE</a> </li>
+</ul>
+
