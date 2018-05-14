@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -120,6 +121,15 @@ public class JavaPropertiesHelperTest {
         + "java.util.Properties props = new java.util.Properties();"
         + "String myValue = \"hello\";");
     ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(((MethodInvocationTree) tree).arguments().get(0));
+    assertThat(defaultValue).isNull();
+  }
+
+  @Test
+  public void null_if_unknown_symbol() throws Exception {
+    ExpressionTree tree = firstExpression("void foo() { unknown(e -> e.method()); }");
+    ExpressionTree functionCallArgument = ((MethodInvocationTree) tree).arguments().get(0);
+    MethodInvocationTree methodCallInsideLambda = (MethodInvocationTree)((LambdaExpressionTree)functionCallArgument).body();
+    ExpressionTree defaultValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(methodCallInsideLambda);
     assertThat(defaultValue).isNull();
   }
 
