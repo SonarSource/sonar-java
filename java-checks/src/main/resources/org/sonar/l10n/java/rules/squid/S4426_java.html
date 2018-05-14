@@ -1,0 +1,28 @@
+<p>When generating cryptograpic keys (or key pairs), it is important to use a key length that provides enough entropy against brute-force attacks. For
+the <code>Blowfish</code> algorithm the key should be at least 128 bits long, while for the <code>RSA</code> algorithm it should be at least 2048 bits
+long.</p>
+<p>This rule raises an issue when a Blowfish key generator, or RSA key-pair generator is initialized with too small a length parameter.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
+keyGen.init(64); // Noncompliant
+
+KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+keyPairGen.initialize(512); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
+keyGen.init(128);
+
+KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+keyPairGen.initialize(2048);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/326.html">MITRE, CWE-326</a> - Inadequate Encryption Strength </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#BLOWFISH_KEY_SIZE">BLOWFISH_KEY_SIZE</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#RSA_KEY_SIZE">RSA_KEY_SIZE</a> </li>
+</ul>
+
