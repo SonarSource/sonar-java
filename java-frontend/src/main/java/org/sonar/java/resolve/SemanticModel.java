@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import javax.annotation.CheckForNull;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
@@ -153,5 +154,10 @@ public class SemanticModel {
 
   public Set<String> classesNotFound() {
     return bytecodeCompleter.classesNotFound();
+  }
+
+  @CheckForNull
+  public Object constantValue(Symbol owner, String constantName) {
+    return bytecodeCompleter.constantValue(owner, constantName);
   }
 }

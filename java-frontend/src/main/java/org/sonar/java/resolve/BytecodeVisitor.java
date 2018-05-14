@@ -28,6 +28,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -198,8 +199,12 @@ public class BytecodeVisitor extends ClassVisitor {
     Preconditions.checkNotNull(desc);
     if (isNotSynthetic(flags)) {
       //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
-      final JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(Flags.filterAccessBytecodeFlags(flags),
-          name, convertAsmType(org.objectweb.asm.Type.getType(desc)), classSymbol);
+      int filteredFlags = Flags.filterAccessBytecodeFlags(flags);
+      JavaType type = convertAsmType(Type.getType(desc));
+      JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(filteredFlags, name, type, classSymbol);
+      if (Flags.isFlagged(flags, Flags.STATIC) && Flags.isFlagged(flags, Flags.FINAL)) {
+        symbol = new JavaSymbol.ConstantJavaSymbol(filteredFlags, name, type, classSymbol, value);
+      }
       classSymbol.members.enter(symbol);
       if (signature != null) {
         ReadType typeReader = new ReadType();
