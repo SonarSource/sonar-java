@@ -26,8 +26,12 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
@@ -55,7 +59,10 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     if (newClassTree.arguments().size() <= VALUE_PARAM_INDEX) {
       return;
     }
-    reportIssue(newClassTree.arguments().get(VALUE_PARAM_INDEX), MESSAGE);
+    // only flag is first parameter is the name of the cookie (javax.ws.rs.core.NewCookie can have other constructors)
+    if (newClassTree.arguments().get(0).is(Kind.STRING_LITERAL)) {
+      reportIssue(newClassTree.arguments().get(VALUE_PARAM_INDEX), MESSAGE);
+    }
   }
 
   @Override
