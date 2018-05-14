@@ -99,7 +99,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     boolean hasArityOne = mit.arguments().size() == 1;
     if (hasArityOne && isCallSiteCookie(methodSymbol)) {
       ExpressionTree expressionTree = mit.arguments().get(0);
-      if (LiteralUtils.hasValue(expressionTree, false)) {
+      if (LiteralUtils.isFalse(expressionTree)) {
         return false;
       }
       return "setSecure".equals(getIdentifier(mit).name());

@@ -96,7 +96,7 @@ public class NoWayOutLoopCheck extends SECheck {
 
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
-      if (LiteralUtils.hasValue(tree.condition(), true)) {
+      if (LiteralUtils.isTrue(tree.condition())) {
         CFGLoop loopBlocks = contexts.peek().getLoop(tree);
         if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
           context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");

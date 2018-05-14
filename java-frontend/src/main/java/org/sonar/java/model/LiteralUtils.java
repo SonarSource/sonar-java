@@ -121,7 +121,11 @@ public class LiteralUtils {
     return expectedValue.equals(actualValue);
   }
 
-  public static boolean hasValue(Tree tree, boolean expectedValue) {
-    return tree.is(Kind.BOOLEAN_LITERAL) && expectedValue == (Boolean.parseBoolean(((LiteralTree) tree).value()));
+  public static boolean isTrue(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
+  }
+
+  public static boolean isFalse(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
   }
 }

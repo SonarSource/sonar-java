@@ -113,7 +113,7 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
   private static boolean isTrueLiteral(Tree tree) {
     if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || tree.is(Tree.Kind.BOOLEAN_LITERAL)) {
       ExpressionTree expression = ExpressionUtils.skipParentheses((ExpressionTree) tree);
-      return LiteralUtils.hasValue(expression, true);
+      return LiteralUtils.isTrue(expression);
     }
     return false;
   }

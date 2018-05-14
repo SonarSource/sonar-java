@@ -60,7 +60,7 @@ public class LDAPDeserializationCheck extends AbstractMethodDetection {
   }
 
   private void reportIfTrue(ExpressionTree toUnderline) {
-    if (LiteralUtils.hasValue(toUnderline, true)) {
+    if (LiteralUtils.isTrue(toUnderline)) {
       reportIssue(toUnderline, "Disable object deserialization.");
     }
   }

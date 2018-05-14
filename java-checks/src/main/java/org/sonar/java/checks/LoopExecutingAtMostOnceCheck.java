@@ -123,7 +123,7 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isTrue(ExpressionTree expressionTree) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
-    return LiteralUtils.hasValue(expr, true);
+    return LiteralUtils.isTrue(expr);
   }
 
   /**
