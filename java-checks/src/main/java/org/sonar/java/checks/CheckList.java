@@ -304,6 +304,7 @@ public final class CheckList {
       .add(ToStringReturningNullCheck.class)
       .add(TransactionalMethodVisibilityCheck.class)
       .add(CompareToResultTestCheck.class)
+      .add(CookieShouldNotContainSensitiveDataCheck.class)
       .add(SecureCookieCheck.class)
       .add(CatchIllegalMonitorStateExceptionCheck.class)
       .add(ForLoopTerminationConditionCheck.class)
