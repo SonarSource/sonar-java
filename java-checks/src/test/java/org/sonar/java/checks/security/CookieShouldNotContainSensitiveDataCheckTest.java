@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import org.junit.Test;
-import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CookieShouldNotContainSensitiveDataCheckTest {

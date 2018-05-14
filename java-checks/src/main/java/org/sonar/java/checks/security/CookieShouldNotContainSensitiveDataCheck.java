@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherFactory;
 import org.sonar.java.matcher.TypeCriteria;
 
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -33,31 +34,35 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
 
-  private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
-  private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
-  private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
-
-  private static final int VALUE_PARAM_INDEX = 1;
-
   private static final String MESSAGE = "If the data stored in this cookie is sensitive, it should be stored internally in the user session.";
+
+  private static class ClassName {
+    private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
+    private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
+    private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+  }
+
+  private static final String CONSTRUCTOR = "<init>";
+  private static final String SET_VALUE_METHOD = "setValue";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SERVLET_COOKIE)).name("<init>").withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SERVLET_COOKIE)).name("setValue").withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(NET_HTTP_COOKIE)).name("<init>").withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(NET_HTTP_COOKIE)).name("setValue").withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_COOKIE)).name("<init>").withAnyParameters());
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters());
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (newClassTree.arguments().size() <= VALUE_PARAM_INDEX) {
+    int valueParameterIndex = 1;
+    if (newClassTree.arguments().size() <= valueParameterIndex) {
       return;
     }
     if (hasNameValueParameters(newClassTree)) {
-      reportIssue(newClassTree.arguments().get(VALUE_PARAM_INDEX), MESSAGE);
+      reportIssue(newClassTree.arguments().get(valueParameterIndex), MESSAGE);
     }
   }
 
@@ -70,7 +75,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
   }
 
   // this treats the corner case javax.ws.rs.core.NewCookie
-  private boolean hasNameValueParameters(NewClassTree newClassTree) {
+  private static boolean hasNameValueParameters(NewClassTree newClassTree) {
     return newClassTree.arguments().get(0).is(Kind.STRING_LITERAL);
   }
 }
