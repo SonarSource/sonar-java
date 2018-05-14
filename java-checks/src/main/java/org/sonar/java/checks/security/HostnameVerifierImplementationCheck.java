@@ -26,11 +26,11 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -113,7 +113,7 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
   private static boolean isTrueLiteral(Tree tree) {
     if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || tree.is(Tree.Kind.BOOLEAN_LITERAL)) {
       ExpressionTree expression = ExpressionUtils.skipParentheses((ExpressionTree) tree);
-      return expression.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expression).value());
+      return LiteralUtils.isTrue(expression);
     }
     return false;
   }

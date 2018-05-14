@@ -28,6 +28,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -37,7 +38,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -123,7 +123,7 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isTrue(ExpressionTree expressionTree) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expressionTree);
-    return expr.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expr).value());
+    return LiteralUtils.isTrue(expr);
   }
 
   /**

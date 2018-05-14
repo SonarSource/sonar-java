@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -99,7 +99,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     boolean hasArityOne = mit.arguments().size() == 1;
     if (hasArityOne && isCallSiteCookie(methodSymbol)) {
       ExpressionTree expressionTree = mit.arguments().get(0);
-      if (expressionTree.is(Tree.Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) expressionTree).value())) {
+      if (LiteralUtils.isFalse(expressionTree)) {
         return false;
       }
       return "setSecure".equals(getIdentifier(mit).name());

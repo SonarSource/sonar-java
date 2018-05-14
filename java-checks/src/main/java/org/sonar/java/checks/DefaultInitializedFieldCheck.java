@@ -75,7 +75,7 @@ public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
         String charValue = ((LiteralTree) expression).value();
         return "'\\u0000'".equals(charValue) || "'\\0'".equals(charValue);
       case BOOLEAN_LITERAL:
-        return "false".equals(((LiteralTree) expression).value());
+        return LiteralUtils.isFalse(expression);
       case INT_LITERAL:
       case LONG_LITERAL:
         Long value = LiteralUtils.longLiteralValue(expression);

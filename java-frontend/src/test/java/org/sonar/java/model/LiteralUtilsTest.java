@@ -155,14 +155,14 @@ public class LiteralUtilsTest {
 
   @Test
   public void hasValue_withOtherValue_returnsFalse() {
-    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(java.util.Properties props){ return \"other than expected\"; }");
+    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"other than expected\"; }");
     boolean result = LiteralUtils.hasValue(tree, "expected");
     assertThat(result).isFalse();
   }
 
   @Test
   public void hasValue_withExpectedValue_returnsTrue() {
-    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(java.util.Properties props){ return \"expected\"; }");
+    LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"expected\"; }");
     boolean result = LiteralUtils.hasValue(tree, "expected");
     assertThat(result).isTrue();
   }
@@ -177,6 +177,40 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.is0xff(tree)).isTrue();
     tree = getReturnExpression("char foo() { return '0'; }");
     assertThat(LiteralUtils.is0xff(tree)).isFalse();
+  }
+
+  public void isTrue_withNonBooleanLiteral_returnsFalse() {
+    ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
+    assertThat(LiteralUtils.isTrue(tree)).isFalse();
+  }
+
+  public void isFalse_withNonBooleanLiteral_returnsFalse() {
+    ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
+    assertThat(LiteralUtils.isFalse(tree)).isFalse();
+  }
+
+  @Test
+  public void isTrue_withFalseValue_returnsFalse() {
+    LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
+    assertThat(LiteralUtils.isTrue(falseTree)).isFalse();
+  }
+
+  @Test
+  public void isFalse_withTrueValue_returnsFalse() {
+    LiteralTree trueTree = (LiteralTree) getReturnExpression("void foo(){ return true; }");
+    assertThat(LiteralUtils.isFalse(trueTree)).isFalse();
+  }
+
+  @Test
+  public void isTrue_withExpectedValue_returnsTrue() {
+    LiteralTree trueTree = (LiteralTree) getReturnExpression("void foo(){ return true; }");
+    assertThat(LiteralUtils.isTrue(trueTree)).isTrue();
+  }
+
+  @Test
+  public void isFalse_withExpectedValue_returnsTrue() {
+    LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
+    assertThat(LiteralUtils.isFalse(falseTree)).isTrue();
   }
 
   private ExpressionTree getFirstExpression(String code) {

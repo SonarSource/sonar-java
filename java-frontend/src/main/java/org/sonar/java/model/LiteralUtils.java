@@ -114,10 +114,18 @@ public class LiteralUtils {
   }
 
   public static boolean hasValue(Tree tree, String expectedValue) {
-    if (!tree.is(Tree.Kind.STRING_LITERAL)) {
+    if (!tree.is(Kind.STRING_LITERAL)) {
       return false;
     }
-    String mechanismName = trimQuotes(((LiteralTree) tree).value());
-    return expectedValue.equals(mechanismName);
+    String actualValue = trimQuotes(((LiteralTree) tree).value());
+    return expectedValue.equals(actualValue);
+  }
+
+  public static boolean isTrue(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
+  }
+
+  public static boolean isFalse(Tree tree) {
+    return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
   }
 }
