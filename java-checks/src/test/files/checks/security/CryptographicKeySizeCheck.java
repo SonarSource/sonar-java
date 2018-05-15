@@ -17,13 +17,13 @@ class A {
   public void foo2() throws NoSuchAlgorithmException {
     KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
     int x = 64;
-    keyGen.init(x); // FN
+    keyGen.init(x); // FN requires following variable's values with SE-based engine
   }
 
   public void foo3() throws NoSuchAlgorithmException {
     String algorithm = "Blowfish";
     KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
-    keyGen.init(64);  // FN
+    keyGen.init(64);  // FN requires following variable's values with SE-based engine
   }
 
   public void foo4() throws NoSuchAlgorithmException {
@@ -38,7 +38,7 @@ class A {
   }
 
   public void foo6() {
-    keyG2.init(64);  // FN
+    keyG2.init(64);  // FN requires following variable's values with SE-based engine
   }
 
   public void foo() throws NoSuchAlgorithmException {
@@ -47,7 +47,7 @@ class A {
 
     keyGen.init(64);  // Noncompliant
 
-    keyGen2.init(96);  // FN
+    keyGen2.init(96);  // FN requires following variable's values with SE-based engine
 
     KeyGenerator keyGen3 = KeyGenerator.getInstance("Blowfish");
     keyGen3.init(64);  // Noncompliant {{Use a key length of at least 128 bits.}}
@@ -80,13 +80,13 @@ class B {
   public void foo2() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     int x = 64;
-    keyGen.initialize(x); // FN
+    keyGen.initialize(x); // FN requires following variable's values with SE-based engine
   }
 
   public void foo3() throws NoSuchAlgorithmException {
     String algorithm = "RSA";
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance(algorithm);
-    keyGen.initialize(64);  // FN
+    keyGen.initialize(64);  // FN requires following variable's values with SE-based engine
   }
 
   public void foo4() throws NoSuchAlgorithmException {
@@ -102,7 +102,7 @@ class B {
 
   public void foo6() {
     A a = new A();
-    a.keyPairG.initialize(1024);    // FN
+    a.keyPairG.initialize(1024);    // FN requires following variable's values with SE-based engine
   }
 
   public void foo7() {

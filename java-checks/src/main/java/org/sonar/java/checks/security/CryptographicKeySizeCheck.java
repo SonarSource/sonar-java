@@ -74,14 +74,12 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
           storeSymbolOfAssignedInstance(mit);
         }
       }
-    } else {
-      if (isValidKeyGenSymbolOfInitializeMethod(mit)) {
-        checkAlgorithmParameterToReport(mit.arguments().get(0)).ifPresent(reportString -> reportIssue(mit, reportString));
-      }
+    } else if (initializeIsCalledOnPreviouslyDefinedKeyGen(mit)) {
+      checkAlgorithmParameterToReport(mit.arguments().get(0)).ifPresent(reportString -> reportIssue(mit, reportString));
     }
   }
 
-  private static boolean isValidKeyGenSymbolOfInitializeMethod(MethodInvocationTree mit) {
+  private static boolean initializeIsCalledOnPreviouslyDefinedKeyGen(MethodInvocationTree mit) {
     boolean isValidKeyGenSymbol = false;
     if (getInstanceInfo.keyGenMethodSymbol != null) {
       ExpressionTree expr = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
