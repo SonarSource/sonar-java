@@ -11,7 +11,7 @@ class A {
 
   public void foo1() throws NoSuchAlgorithmException {
     KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
-    keyGen.init(64);  // Noncompliant {{Use a key length of at least 128 bits.}}
+    keyGen.init(64);  // Noncompliant [[sc=5;ec=20]] {{Use a key length of at least 128 bits.}}
   }
 
   public void foo2() throws NoSuchAlgorithmException {
@@ -37,12 +37,7 @@ class A {
     keyG.init(64);  // Noncompliant {{Use a key length of at least 128 bits.}}
   }
 
-  public void foo6() throws NoSuchAlgorithmException {
-    keyG = KeyGenerator.getInstance("Blowfish");
-    keyG.init(128);  // Compliant
-  }
-
-  public void foo7() {
+  public void foo6() {
     keyG2.init(64);  // FN
   }
 
@@ -58,7 +53,7 @@ class A {
     keyGen3.init(64);  // Noncompliant {{Use a key length of at least 128 bits.}}
   }
 
-  public void foo8() throws NoSuchAlgorithmException {
+  public void foo7() throws NoSuchAlgorithmException {
     keyG = KeyGenerator.getInstance("AES");
     keyG.init(64);  // Compliant
   }
@@ -66,7 +61,6 @@ class A {
   private KeyGenerator createGen() {
     return KeyGenerator.getInstance("Blowfish");
   }
-
 }
 
 class B {
@@ -80,7 +74,7 @@ class B {
 
   public void foo1() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-    keyGen.initialize(1024);;  // Noncompliant {{Use a key length of at least 2048 bits.}}
+    keyGen.initialize(1024);  // Noncompliant {{Use a key length of at least 2048 bits.}}
   }
 
   public void foo2() throws NoSuchAlgorithmException {
@@ -103,28 +97,28 @@ class B {
 
   public void foo5() throws NoSuchAlgorithmException {
     keyG = KeyPairGenerator.getInstance("RSA");
-    keyG.initialize(64);  // Noncompliant {{Use a key length of at least 2048 bits.}}
+    keyG.initialize(2048);  // Compliant
   }
 
-  public void foo6() throws NoSuchAlgorithmException {
-    keyG = KeyPairGenerator.getInstance("RSA");
-    keyG.initialize(2048);  // Compliant
+  public void foo6() {
+    A a = new A();
+    a.keyPairG.initialize(1024);    // FN
   }
 
   public void foo7() {
     A a = new A();
-    a.keyPairG.initialize(1028);    // FN
-  }
-
-  public void foo8() {
-    A a = new A();
     a.keyPairG = KeyPairGenerator.getInstance("RSA");
-    a.keyPairG.initialize(1028);    // Noncompliant
+    a.keyPairG.initialize(1024);    // Noncompliant
   }
 
-  public void foo9() throws NoSuchAlgorithmException {
+  public void foo8() throws NoSuchAlgorithmException {
     keyG = KeyPairGenerator.getInstance("DSA");
     keyG.initialize(64);  // Compliant
   }
 
+  public void foo9() throws NoSuchAlgorithmException {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    KeyPairGenerator keyGen2 = KeyPairGenerator.getInstance("DSA");
+    keyGen.initialize(1024);  // Noncompliant
+  }
 }

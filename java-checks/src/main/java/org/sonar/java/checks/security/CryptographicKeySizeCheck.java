@@ -20,7 +20,9 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -44,7 +46,13 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   private static final String GET_INSTANCE_METHOD = "getInstance";
   private static final String STRING = "java.lang.String";
 
-  private static GetInstanceMethodInfo getInstanceInfo = new GetInstanceMethodInfo();
+  private static final GetInstanceMethodInfo getInstanceInfo = new GetInstanceMethodInfo();
+
+  private static final Map<String, Integer> algorithmKeySizeMap = new HashMap<>();
+  static {
+    algorithmKeySizeMap.put("RSA", 2048);
+    algorithmKeySizeMap.put("Blowfish", 128);
+  }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -57,19 +65,25 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (!hasSemantic()) {
-      return;
-    }
-    if (isGetInstanceMethod(mit)) {
-      storeSymbolOfAssignedInstance(mit);
-    } else if (isValidKeyGenSymbolOfInitializeMethod(mit)) {
-      checkAlgorithmParameterToReport(mit.arguments().get(0)).ifPresent(reportString -> reportIssue(mit, reportString));
+    if (GET_INSTANCE_METHOD.equals(mit.symbol().name())) {
+      ExpressionTree argument = mit.arguments().get(0);
+      if (argument.is(Tree.Kind.STRING_LITERAL)) {
+        String algorithm = LiteralUtils.trimQuotes(((LiteralTree) argument).value());
+        if (algorithmKeySizeMap.containsKey(algorithm)) {
+          storeAlgorithmKeySize(algorithm);
+          storeSymbolOfAssignedInstance(mit);
+        }
+      }
+    } else {
+      if (isValidKeyGenSymbolOfInitializeMethod(mit)) {
+        checkAlgorithmParameterToReport(mit.arguments().get(0)).ifPresent(reportString -> reportIssue(mit, reportString));
+      }
     }
   }
 
   private static boolean isValidKeyGenSymbolOfInitializeMethod(MethodInvocationTree mit) {
     boolean isValidKeyGenSymbol = false;
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) && getInstanceInfo.keyGenMethodSymbol != null) {
+    if (getInstanceInfo.keyGenMethodSymbol != null) {
       ExpressionTree expr = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       if (expr.is(Tree.Kind.IDENTIFIER)) {
         isValidKeyGenSymbol = getInstanceInfo.keyGenMethodSymbol.equals(((IdentifierTree) expr).symbol());
@@ -78,26 +92,6 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
       }
     }
     return isValidKeyGenSymbol;
-  }
-
-  private static boolean isGetInstanceMethod(MethodInvocationTree mit) {
-    boolean algorithmMatches = false;
-    if (GET_INSTANCE_METHOD.equals(mit.symbol().name())) {
-      ExpressionTree arg = (mit.arguments().get(0));
-      if (!arg.is(Tree.Kind.STRING_LITERAL)) {
-        return false;
-      }
-      String algorithm = LiteralUtils.trimQuotes(((LiteralTree) arg).value());
-      if ("Blowfish".equals(algorithm)) {
-        getInstanceInfo.minKeySizeValue = 128;
-        algorithmMatches = true;
-
-      } else if ("RSA".equals(algorithm)) {
-        getInstanceInfo.minKeySizeValue = 2048;
-        algorithmMatches = true;
-      }
-    }
-    return algorithmMatches;
   }
 
   private static Optional<String> checkAlgorithmParameterToReport(ExpressionTree argument) {
@@ -121,6 +115,10 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
         getInstanceInfo.keyGenMethodSymbol = ((MemberSelectExpressionTree) variable).identifier().symbol();
       }
     }
+  }
+
+  private static void storeAlgorithmKeySize(String algorithm) {
+    getInstanceInfo.minKeySizeValue = algorithmKeySizeMap.get(algorithm);
   }
 
   private static final class GetInstanceMethodInfo {
