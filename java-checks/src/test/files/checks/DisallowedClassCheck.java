@@ -1,3 +1,9 @@
+import unknown;
+import java.lang.Object;
+import java.lang.String; // Noncompliant
+import java.lang.String.*; // Noncompliant
+import static java.lang.String.valueOf; // Noncompliant
+
 class A {
   private String disallowed; // Noncompliant [[sc=11;ec=17]]
   private Integer disallowed2;
@@ -7,6 +13,9 @@ class A {
   Unknown method(String param) { // Noncompliant [[sc=18;ec=24]]
     B var = new B(); // Compliant, no subtypes checked
     String str = new String(); // Noncompliant [[sc=5;ec=11]]
+    Object obj1 = String.valueOf(3); // Noncompliant [[sc=19;ec=33]]
+    Object obj2 = valueOf(3); // Noncompliant [[sc=19;ec=26]]
+    Object obj3 = unknown(3);
     System.out.println(var);
     var.doSomething(new Integer(1));
     return new Unknown();
