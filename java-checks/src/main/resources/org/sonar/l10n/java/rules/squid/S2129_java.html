@@ -9,7 +9,9 @@ String nonempty = new String("Hello world"); // Noncompliant
 Double myDouble = new Double(1.1); // Noncompliant; use valueOf
 Integer integer = new Integer(1); // Noncompliant
 Boolean bool = new Boolean(true); // Noncompliant
-BigInteger bigInteger = new BigInteger("1"); // Noncompliant
+BigInteger bigInteger1 = new BigInteger("3"); // Noncompliant
+BigInteger bigInteger2 = new BigInteger("9223372036854775807"); // Noncompliant
+BigInteger bigInteger3 = new BigInteger("111222333444555666777888999"); // Compliant, greater than Long.MAX_VALUE
 BigDecimal bigDecimal = new BigDecimal(1.1); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
@@ -19,7 +21,9 @@ String nonempty = "Hello world";
 Double myDouble = Double.valueOf(1.1);
 Integer integer = Integer.valueOf(1);
 Boolean bool = Boolean.valueOf(true);
-BigInteger bigInteger = BigInteger.valueOf(1);
+BigInteger bigInteger1 = BigInteger.valueOf(3);
+BigInteger bigInteger2 = BigInteger.valueOf(9223372036854775807L);
+BigInteger bigInteger3 = new BigInteger("111222333444555666777888999");
 BigDecimal bigDecimal = BigDecimal.valueOf(1.1);
 </pre>
 
