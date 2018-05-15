@@ -48,8 +48,8 @@ public class ConstantUtils {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree id = (IdentifierTree) expression;
       Symbol symbol = id.symbol();
-      if (symbol instanceof JavaSymbol.ConstantJavaSymbol) {
-        Object constantValue = ((JavaSymbol.ConstantJavaSymbol) symbol).value();
+      if (symbol.isVariableSymbol()) {
+        Object constantValue = ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
         if (constantValue instanceof String) {
           return (String) constantValue;
         }

@@ -28,6 +28,7 @@ import com.google.common.collect.Multiset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
@@ -482,13 +483,26 @@ public class JavaSymbol implements Symbol {
 
     VariableTree declaration;
 
+    @Nullable
+    private final Object value;
+
     public VariableJavaSymbol(int flags, String name, JavaSymbol owner) {
+      this(flags, name, owner, null);
+    }
+
+    public VariableJavaSymbol(int flags, String name, JavaSymbol owner, @Nullable Object value) {
       super(VAR, flags, name, owner);
+      this.value = value;
     }
 
     public VariableJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
+      this(flags, name, type, owner, null);
+    }
+
+    public VariableJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner, @Nullable Object value) {
       super(VAR, flags, name, owner);
       this.type = type;
+      this.value = value;
     }
 
     @Override
@@ -496,30 +510,16 @@ public class JavaSymbol implements Symbol {
       return declaration;
     }
 
+    public Optional<Object> constantValue() {
+      if (Flags.isFlagged(flags, Flags.STATIC) && Flags.isFlagged(flags, Flags.FINAL)) {
+        return Optional.ofNullable(value);
+      }
+      return Optional.empty();
+    }
+
     @Override
     public String toString() {
       return String.format("%s#%s", owner().name(), name());
-    }
-  }
-
-  public static class ConstantJavaSymbol extends VariableJavaSymbol {
-
-    @Nullable
-    private final Object value;
-
-    public ConstantJavaSymbol(int flags, String name, JavaSymbol owner, @Nullable Object value) {
-      super(flags, name, owner);
-      this.value = value;
-    }
-
-    public ConstantJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner, @Nullable Object value) {
-      super(flags, name, type, owner);
-      this.value = value;
-    }
-
-    @CheckForNull
-    public Object value() {
-      return value;
     }
   }
 

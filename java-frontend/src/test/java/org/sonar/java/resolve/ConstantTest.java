@@ -53,8 +53,8 @@ public class ConstantTest {
           VariableTree variableTree = (VariableTree) tree;
           Object value = null;
           Symbol symbol = variableTree.symbol();
-          if (symbol instanceof JavaSymbol.ConstantJavaSymbol) {
-            value = ((JavaSymbol.ConstantJavaSymbol) symbol).value();
+          if (symbol.isVariableSymbol()) {
+            value = ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
           }
           valuesByFieldName.put(variableTree.simpleName().name(), value);
         }
