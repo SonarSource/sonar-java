@@ -38,6 +38,30 @@ public class ConstantUtils {
 
   @CheckForNull
   public static String resolveAsStringConstant(ExpressionTree tree) {
+    Object constant = resolveAsConstant(tree);
+    return constant instanceof String ? (String) constant : null;
+  }
+
+  @CheckForNull
+  public static Integer resolveAsIntConstant(ExpressionTree tree) {
+    Object constant = resolveAsConstant(tree);
+    return constant instanceof Integer ? (Integer) constant : null;
+  }
+
+  @CheckForNull
+  public static Long resolveAsLongConstant(ExpressionTree tree) {
+    Object constant = resolveAsConstant(tree);
+    if (constant instanceof Long) {
+      return (Long) constant;
+    }
+    if (constant instanceof Integer) {
+      return ((Integer) constant).longValue();
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private static Object resolveAsConstant(ExpressionTree tree) {
     ExpressionTree expression = tree;
     while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       expression = ((ParenthesizedTree) expression).expression();
@@ -49,22 +73,43 @@ public class ConstantUtils {
       IdentifierTree id = (IdentifierTree) expression;
       Symbol symbol = id.symbol();
       if (symbol.isVariableSymbol()) {
-        Object constantValue = ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
-        if (constantValue instanceof String) {
-          return (String) constantValue;
-        }
+        return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
       }
     }
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
     }
+    if (tree.is(Tree.Kind.INT_LITERAL)) {
+      return Integer.valueOf(((LiteralTree) tree).value());
+    }
+    if (tree.is(Tree.Kind.LONG_LITERAL)) {
+      String value = ((LiteralTree) tree).value();
+      return Long.valueOf(value.substring(0, value.length() - 1));
+    }
     if (expression.is(Tree.Kind.PLUS)) {
-      BinaryExpressionTree binaryExpression = (BinaryExpressionTree) expression;
-      String left = resolveAsStringConstant(binaryExpression.leftOperand());
-      String right = resolveAsStringConstant(binaryExpression.rightOperand());
-      if (left != null && right != null) {
-        return left + right;
-      }
+      return resolvePlus((BinaryExpressionTree) expression);
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private static Object resolvePlus(BinaryExpressionTree binaryExpression) {
+    Object left = resolveAsConstant(binaryExpression.leftOperand());
+    Object right = resolveAsConstant(binaryExpression.rightOperand());
+    if (left == null || right == null) {
+      return null;
+    } else if (left instanceof String) {
+      return ((String) left) + right;
+    } else if (right instanceof String) {
+      return left + ((String) right);
+    } else if (left instanceof Long && right instanceof Long) {
+      return ((Long) left) + ((Long) right);
+    } else if (left instanceof Long && right instanceof Integer) {
+      return ((Long) left) + ((Integer) right);
+    } else if (left instanceof Integer && right instanceof Long) {
+      return ((Integer) left) + ((Long) right);
+    } else if (left instanceof Integer && right instanceof Integer) {
+      return ((Integer) left) + ((Integer) right);
     }
     return null;
   }
