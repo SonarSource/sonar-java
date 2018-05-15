@@ -71,7 +71,7 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
     }
     ExpressionTree argument = newClassTree.arguments().get(0);
     if (!argument.is(Tree.Kind.STRING_LITERAL)) {
-      return false;
+      return true;
     }
     try {
       BigInteger value = new BigInteger(LiteralUtils.trimQuotes(((LiteralTree)argument).value()));

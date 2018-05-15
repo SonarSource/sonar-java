@@ -3,7 +3,7 @@ import java.math.BigInteger;
 
 class A {
 
-  void bar(char[] chars) {
+  void bar(char[] chars, String str) {
     String empty = new String(); // Noncompliant [[sc=24;ec=30]] {{Remove this "String" constructor}}
     String nonempty = new String("Hello world"); // Noncompliant
     nonempty = new String(chars);
@@ -16,6 +16,7 @@ class A {
     Short myShort = new Short((short) 0); // Noncompliant [[sc=25;ec=30]] {{Remove this "Short" constructor}}
     Float myFloat = new Float(1.0f); // Noncompliant [[sc=25;ec=30]] {{Remove this "Float" constructor}}
     byte b = 0;
+    BigInteger bigInteger0 = new BigInteger(str);
     BigInteger bigInteger1 = new BigInteger("1"); // Noncompliant {{Remove this "BigInteger" constructor}}
     BigInteger bigInteger2 = new BigInteger("9223372036854775807"); // Noncompliant
     BigInteger bigInteger3 = new BigInteger("9223372036854775808");
