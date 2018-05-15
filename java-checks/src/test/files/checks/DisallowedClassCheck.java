@@ -6,7 +6,7 @@ import static java.lang.String.valueOf; // Noncompliant
 
 class A {
   private String disallowed; // Noncompliant [[sc=11;ec=17]]
-  private Integer disallowed2;
+  private Integer allowed;
   private java.util.Date date;
   String method1() { // Noncompliant [[sc=3;ec=9]]
   }
@@ -33,6 +33,6 @@ class B extends String { // Noncompliant [[sc=17;ec=23]]
 
 class C {
   void foo(Object o) {
-    ((java.util.Optional<String>) o).map(value -> 1);
+    ((java.util.Optional<String>) o).map(value -> 1); // Compliant, ignore inferred type
   }
 }
