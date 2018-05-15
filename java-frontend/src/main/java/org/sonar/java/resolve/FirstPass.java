@@ -426,10 +426,8 @@ public class FirstPass extends BaseTreeVisitor {
 
   private void declareVariable(int flags, IdentifierTree identifierTree, VariableTreeImpl tree) {
     String name = identifierTree.name();
-    JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(flags, name, env.scope.owner);
-    if (Flags.isFlagged(flags, Flags.STATIC) && Flags.isFlagged(flags, Flags.FINAL)) {
-      symbol = new JavaSymbol.ConstantJavaSymbol(flags, name, env.scope.owner, semanticModel.constantValue(env.scope.owner, name));
-    }
+    Object constantValue = semanticModel.constantValue(env.scope.owner, name);
+    JavaSymbol.VariableJavaSymbol symbol = new JavaSymbol.VariableJavaSymbol(flags, name, env.scope.owner, constantValue);
     symbol.declaration = tree;
     enterSymbol(tree, symbol);
     symbol.completer = completer;

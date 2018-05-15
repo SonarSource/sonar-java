@@ -729,11 +729,12 @@ public class BytecodeCompleterTest {
   public void constant_value() {
     TypeJavaSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ClassWithConstants");
 
-    Symbol const1 = classSymbol.lookupSymbols("CONST1").iterator().next();
-    assertThat(const1).isInstanceOf(JavaSymbol.ConstantJavaSymbol.class);
-    assertThat(((JavaSymbol.ConstantJavaSymbol) const1).value()).isEqualTo("CONST_VALUE");
+    assertThat(lookupVariable(classSymbol, "CONST1").constantValue().orElse(null)).isEqualTo("CONST_VALUE");
+    assertThat(lookupVariable(classSymbol, "nonStatic").constantValue()).isEmpty();
+    assertThat(lookupVariable(classSymbol, "nonFinal").constantValue()).isEmpty();
+  }
 
-    assertThat(classSymbol.lookupSymbols("nonStatic").iterator().next()).isNotInstanceOf(JavaSymbol.ConstantJavaSymbol.class);
-    assertThat(classSymbol.lookupSymbols("nonFinal").iterator().next()).isNotInstanceOf(JavaSymbol.ConstantJavaSymbol.class);
+  private JavaSymbol.VariableJavaSymbol lookupVariable(TypeJavaSymbol classSymbol, String variableName) {
+    return (JavaSymbol.VariableJavaSymbol) classSymbol.lookupSymbols(variableName).iterator().next();
   }
 }

@@ -89,6 +89,9 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
     }
   }
 
+  /**
+   * This method reads constant values in bytecode. It should be called when resolving semantics from source.
+   */
   @CheckForNull
   public Object constantValue(Symbol owner, String constantName) {
     if (constantValues.containsKey(owner)) {
