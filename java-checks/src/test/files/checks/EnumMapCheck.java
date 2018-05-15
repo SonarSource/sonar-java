@@ -1,6 +1,7 @@
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 class MyClass {
 
@@ -14,7 +15,7 @@ class MyClass {
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
     Map<MyClass.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
-    
+
     Map<COLOR, String> map;
     map = new HashMap<>(); // Noncompliant [[sc=11;ec=26]]
   }
@@ -22,6 +23,7 @@ class MyClass {
   public void compliant() {
     Map<COLOR, String> enummap = new EnumMap<COLOR, String>(COLOR.class);
     Map<String, String> otherMap = new HashMap<String, String>();
+    Map<COLOR, Integer> myMap = new LinkedHashMap<>(); // compliant, preserve insertion order
     Map<java.lang.String, String> otherMap2 = new HashMap<>();
     Map otherMap3 = new HashMap();
     Map otherMap4;
