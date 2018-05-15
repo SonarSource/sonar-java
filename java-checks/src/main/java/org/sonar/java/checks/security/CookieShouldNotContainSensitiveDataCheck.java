@@ -28,7 +28,6 @@ import org.sonar.java.matcher.TypeCriteria;
 
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
@@ -60,21 +59,11 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     if (newClassTree.arguments().size() <= valueParameterIndex) {
       return;
     }
-    if (hasNameValueParameters(newClassTree)) {
-      reportIssue(newClassTree.arguments().get(valueParameterIndex), MESSAGE);
-    }
+    reportIssue(newClassTree.arguments().get(valueParameterIndex), MESSAGE);
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    if (methodTree.arguments().size() != 1) {
-      return;
-    }
     reportIssue(methodTree.methodSelect(), MESSAGE);
-  }
-
-  // this treats the corner case javax.ws.rs.core.NewCookie
-  private static boolean hasNameValueParameters(NewClassTree newClassTree) {
-    return newClassTree.arguments().get(0).is(Kind.STRING_LITERAL);
   }
 }

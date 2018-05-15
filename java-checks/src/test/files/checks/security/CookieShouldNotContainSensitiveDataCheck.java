@@ -16,7 +16,8 @@ class S2255 {
   void jaxRsCookie() {
     javax.ws.rs.core.Cookie cookie=new javax.ws.rs.core.Cookie("name", "value"); // Noncompliant
     cookie = new javax.ws.rs.core.Cookie("name", "value", "path", "domain"); // Noncompliant
-    NewCookie nc = new NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
+    NewCookie nc1 = new NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
+    NewCookie nc2 = new NewCookie(cookie, "comment", 2, true); // Noncompliant
   }
 
   void httpCookie() {
@@ -24,11 +25,10 @@ class S2255 {
     cookie.setValue("value"); // Noncompliant
   }
 
-  void compliant(Cookie servletCookie, HttpCookie httpCookie, javax.ws.rs.core.Cookie jaxRsCookie) {
+  void compliant(Cookie servletCookie, HttpCookie httpCookie, javax.ws.rs.core.Cookie jaxRsCookie, NewCookie newCookie) {
     servletCookie.getValue();
     httpCookie.getValue();
     jaxRsCookie.getValue();
-    NewCookie newCookie = new NewCookie(jaxRsCookie, "comment", 2, true);
     newCookie.getValue();
   }
 }
