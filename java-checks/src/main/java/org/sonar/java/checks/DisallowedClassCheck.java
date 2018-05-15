@@ -23,11 +23,15 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.IllegalRuleParameterException;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,6 +56,28 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
       scan(context.getTree());
     }
   }
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    String importName = ExpressionsHelper.concatenate((ExpressionTree) tree.qualifiedIdentifier());
+    if (!checkIfDisallowed(importName, tree.qualifiedIdentifier())) {
+      int separator = importName.lastIndexOf('.');
+      if (separator != -1) {
+        checkIfDisallowed(importName.substring(0, separator), tree.qualifiedIdentifier());
+      }
+    }
+    super.visitImport(tree);
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if(tree.symbol().isMethodSymbol()) {
+      String className = tree.symbol().owner().type().fullyQualifiedName();
+      checkIfDisallowed(className, tree.methodSelect());
+    }
+    super.visitMethodInvocation(tree);
+  }
+
 
   @Override
   public void visitVariable(VariableTree variableTree) {
@@ -96,7 +122,7 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
     super.visitAnnotation(annotationTree);
   }
 
-  private void checkIfDisallowed(String className, Tree tree) {
+  private boolean checkIfDisallowed(String className, Tree tree) {
     if (pattern == null) {
       try {
         pattern = Pattern.compile(disallowedClass);
@@ -106,6 +132,8 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
     }
     if (pattern.matcher(className).matches() && !tree.is(Tree.Kind.INFERED_TYPE)) {
       context.reportIssue(this, tree, "Remove the use of this forbidden class.");
+      return true;
     }
+    return false;
   }
 }
