@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherFactory;
 import org.sonar.java.matcher.TypeCriteria;
 
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
