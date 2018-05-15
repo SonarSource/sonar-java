@@ -25,10 +25,14 @@ public class ClassWithConstants {
   public static final String CONSTANT1 = "abc";
   public static final String CONSTANT2 = CONSTANT1 + "def";
   public static final int INT_CONSTANT1 = 42;
+  public static final long LONG_CONSTANT1 = 99L;
+  public static final Object OBJECT_CONSTANT = new Object();
 
   public void literals(String param) {
     System.out.println("hello");
     System.out.println(true);
+    System.out.println(43);
+    System.out.println(77L);
     System.out.println(param);
   }
 
@@ -36,20 +40,33 @@ public class ClassWithConstants {
     System.out.println(CONSTANT1);
     System.out.println(CONSTANT2);
     System.out.println(INT_CONSTANT1);
+    System.out.println(LONG_CONSTANT1);
   }
 
   public void parentheses(String parentheses) {
     System.out.println(((CONSTANT1)));
+    System.out.println(((INT_CONSTANT1)));
   }
 
-  public void member_select(String parentheses) {
+  public void memberSelect(String parentheses) {
     System.out.println(ClassWithConstants.CONSTANT1);
   }
 
-  public void concatenation(String param) {
+  public void plus(String param) {
     System.out.println("hello " + CONSTANT1);
     System.out.println("hello " + param);
     System.out.println(param + "hello ");
+    System.out.println("hello" + INT_CONSTANT1);
+    System.out.println(INT_CONSTANT1 + "hello");
+    System.out.println(INT_CONSTANT1 + 1);
+    System.out.println(LONG_CONSTANT1 + 1);
+    System.out.println(2 + LONG_CONSTANT1);
+    System.out.println(3L + LONG_CONSTANT1);
+  }
+
+  public void other() {
+    System.out.println(String.valueOf(1));
+    System.out.println(OBJECT_CONSTANT);
   }
 
 }
