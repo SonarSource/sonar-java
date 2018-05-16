@@ -19,113 +19,133 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4426")
-public class CryptographicKeySizeCheck extends AbstractMethodDetection {
+public class CryptographicKeySizeCheck extends IssuableSubscriptionVisitor {
 
-  private static final String KEY_PAIR_GENERATOR = "java.security.KeyPairGenerator";
-  private static final String KEY_GENERATOR = "javax.crypto.KeyGenerator";
-  private static final String GET_INSTANCE_METHOD = "getInstance";
-  private static final String STRING = "java.lang.String";
-
-  private static final GetInstanceMethodInfo getInstanceInfo = new GetInstanceMethodInfo();
-
-  private static final Map<String, Integer> algorithmKeySizeMap = new HashMap<>();
-  static {
-    algorithmKeySizeMap.put("RSA", 2048);
-    algorithmKeySizeMap.put("Blowfish", 128);
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(KEY_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
-      MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
-      MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").withAnyParameters());
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+    MethodVisitor methodVisitor = new MethodVisitor();
+    tree.accept(methodVisitor);
   }
 
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (GET_INSTANCE_METHOD.equals(mit.symbol().name())) {
-      ExpressionTree argument = mit.arguments().get(0);
-      if (argument.is(Tree.Kind.STRING_LITERAL)) {
-        String algorithm = LiteralUtils.trimQuotes(((LiteralTree) argument).value());
-        if (algorithmKeySizeMap.containsKey(algorithm)) {
-          storeAlgorithmKeySize(algorithm);
-          storeSymbolOfAssignedInstance(mit);
+  private class MethodVisitor extends BaseTreeVisitor {
+
+    private String algorithm = null;
+    private Symbol geInstanceKeyGenSymbol = null;
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // skip anonymous classes
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (isKeyGenGetInstanceOrInitMethod(tree)) {
+        String methodName = tree.symbol().name();
+        ExpressionTree arg = tree.arguments().get(0);
+        if ("getInstance".equals(methodName)) {
+          if (arg.is(Tree.Kind.STRING_LITERAL)) {
+            extractSymbolOfAssignedInstance(tree).ifPresent(keyGenSymbol -> {
+              algorithm = LiteralUtils.trimQuotes(((LiteralTree) arg).value());
+              geInstanceKeyGenSymbol = keyGenSymbol;
+            });
+          }
+        } else if (isInitMethod(methodName) && initializeIsCalledOnPreviouslyDefinedKeyGen(tree)) {
+          Integer minKeySize = findMinimumKeySizeFromAlgorithm(algorithm);
+          if (minKeySize != -1) {
+            checkAlgorithmParameterToReport(arg, minKeySize)
+              .ifPresent(reportString -> reportIssue(tree, reportString));
+          }
         }
       }
-    } else if (initializeIsCalledOnPreviouslyDefinedKeyGen(mit)) {
-      checkAlgorithmParameterToReport(mit.arguments().get(0)).ifPresent(reportString -> reportIssue(mit, reportString));
     }
-  }
 
-  private static boolean initializeIsCalledOnPreviouslyDefinedKeyGen(MethodInvocationTree mit) {
-    boolean isValidKeyGenSymbol = false;
-    if (getInstanceInfo.keyGenMethodSymbol != null) {
-      ExpressionTree expr = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (expr.is(Tree.Kind.IDENTIFIER)) {
-        isValidKeyGenSymbol = getInstanceInfo.keyGenMethodSymbol.equals(((IdentifierTree) expr).symbol());
-      } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-        isValidKeyGenSymbol = getInstanceInfo.keyGenMethodSymbol.equals(((MemberSelectExpressionTree) expr).identifier().symbol());
+    private boolean isKeyGenGetInstanceOrInitMethod(MethodInvocationTree mit) {
+      Symbol mitSymbol = mit.symbol();
+      if (mitSymbol.type() != null) {
+        String keyGenName = mitSymbol.type().fullyQualifiedName();
+        return ("javax.crypto.KeyGenerator".equals(keyGenName) || "java.security.KeyPairGenerator".equals(keyGenName))
+          && !mit.arguments().isEmpty();
+      }
+      return false;
+    }
+
+    private boolean isInitMethod(String methodName) {
+      return ("init".equals(methodName)) || ("initialize".equals(methodName));
+    }
+
+    private Optional<String> checkAlgorithmParameterToReport(ExpressionTree argument, Integer keySize) {
+      String reportString = null;
+      if (argument.is(Tree.Kind.INT_LITERAL) && (Integer.parseInt(((LiteralTree) argument).value()) < keySize)) {
+        reportString = "Use a key length of at least " + keySize + " bits.";
+      }
+      return Optional.ofNullable(reportString);
+    }
+
+    private int findMinimumKeySizeFromAlgorithm(String algorithm) {
+      switch (algorithm) {
+        case "Blowfish":
+          return 128;
+        case "RSA":
+          return 2048;
+        default:
+          return -1;
       }
     }
-    return isValidKeyGenSymbol;
-  }
 
-  private static Optional<String> checkAlgorithmParameterToReport(ExpressionTree argument) {
-    String reportString = null;
-    if (argument.is(Tree.Kind.INT_LITERAL) && (Integer.parseInt(((LiteralTree) argument).value()) < getInstanceInfo.minKeySizeValue)) {
-      reportString = "Use a key length of at least " + getInstanceInfo.minKeySizeValue + " bits.";
-    }
-    getInstanceInfo.nullifyAttributes();
-    return Optional.ofNullable(reportString);
-  }
-
-  private static void storeSymbolOfAssignedInstance(MethodInvocationTree mit) {
-    Tree parentExpression = mit.parent();
-    if (parentExpression.is(Tree.Kind.VARIABLE)) {
-      getInstanceInfo.keyGenMethodSymbol = ((VariableTree) parentExpression).symbol();
-    } else if (parentExpression.is(Tree.Kind.ASSIGNMENT)) {
-      ExpressionTree variable = ((AssignmentExpressionTree) parentExpression).variable();
-      if (variable.is(Tree.Kind.IDENTIFIER)) {
-        getInstanceInfo.keyGenMethodSymbol = ((IdentifierTree) variable).symbol();
-      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-        getInstanceInfo.keyGenMethodSymbol = ((MemberSelectExpressionTree) variable).identifier().symbol();
+    private Optional<Symbol> extractSymbolOfAssignedInstance(MethodInvocationTree mit) {
+      Tree parentExpression = mit.parent();
+      Symbol keyGenSymbol = null;
+      if (parentExpression.is(Tree.Kind.VARIABLE)) {
+        keyGenSymbol = ((VariableTree) parentExpression).symbol();
+      } else if (parentExpression.is(Tree.Kind.ASSIGNMENT)) {
+        ExpressionTree variable = ((AssignmentExpressionTree) parentExpression).variable();
+        if (variable.is(Tree.Kind.IDENTIFIER)) {
+          keyGenSymbol = ((IdentifierTree) variable).symbol();
+        } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+          keyGenSymbol = ((MemberSelectExpressionTree) variable).identifier().symbol();
+        }
       }
+      return Optional.ofNullable(keyGenSymbol);
     }
-  }
 
-  private static void storeAlgorithmKeySize(String algorithm) {
-    getInstanceInfo.minKeySizeValue = algorithmKeySizeMap.get(algorithm);
-  }
-
-  private static final class GetInstanceMethodInfo {
-    private Symbol keyGenMethodSymbol;
-    private Integer minKeySizeValue;
-
-    private void nullifyAttributes() {
-      this.minKeySizeValue = null;
-      this.keyGenMethodSymbol = null;
+    private boolean initializeIsCalledOnPreviouslyDefinedKeyGen(MethodInvocationTree mit) {
+      boolean isValidKeyGenSymbol = false;
+      if (geInstanceKeyGenSymbol != null) {
+        ExpressionTree expr = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+        if (expr.is(Tree.Kind.IDENTIFIER)) {
+          isValidKeyGenSymbol = geInstanceKeyGenSymbol.equals(((IdentifierTree) expr).symbol());
+        } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+          isValidKeyGenSymbol = geInstanceKeyGenSymbol.equals(((MemberSelectExpressionTree) expr).identifier().symbol());
+        }
+      }
+      return isValidKeyGenSymbol;
     }
   }
 }
