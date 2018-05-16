@@ -251,3 +251,63 @@ abstract class AbstractClass {
     };
   }
 }
+
+class ThisInstanceTest {
+
+  interface WithDefault {
+    default String defaultMethod() { return "defaultMethod"; }
+    String funcMethod();
+  }
+  void testDefault() {
+    WithDefault f = new WithDefault() {  // Compliant, invoke a default method
+      @Override
+      public String funcMethod() {
+        return defaultMethod();
+      }
+    };
+  }
+
+  interface Math {
+    int powerOfTwo(int n);
+  }
+
+  void testRecursion() {
+    Math f = new Math() {  // Compliant, recursion
+      @Override
+      public String powerOfTwo(int n) {
+        return n == 0 ? 1 : 2 * powerOfTwo(n -1);
+      }
+    };
+  }
+
+  int globalPowerOfTwo(int n) {
+    return n == 0 ? 1 : 2 * globalPowerOfTwo(n -1);
+  }
+
+  void testNotThisInstanceMethod() {
+    Math f = new Math() {  // Noncompliant
+      @Override
+      public String powerOfTwo(int n) {
+        return globalPowerOfTwo(n);
+      }
+    };
+  }
+
+  interface InvokeStatic {
+
+    int func();
+
+    static int staticFunc() {
+      InvokeStatic f = new InvokeStatic() {  // Noncompliant
+        @Override
+        public String func(int n) {
+          unknown();
+          staticFunc();
+          return 0;
+        }
+      };
+      return f.func();
+    }
+  }
+
+}
