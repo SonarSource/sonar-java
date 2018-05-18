@@ -15,6 +15,7 @@ class A {
   {
     random.nextBytes(bytes2);
   }
+  IvParameterSpec iv = new IvParameterSpec(bytes2); // Compliant FP, will be fixed with SE engine
 
   void foo1()
     throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException,
@@ -30,7 +31,7 @@ class A {
   }
 
   void foo3() {
-    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant FP
+    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant FP, will be fixed with SE engine
   }
 
   void foo4() throws UnsupportedEncodingException {
@@ -53,4 +54,35 @@ class A {
   void foo7(byte[] bytes) {
     IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant
   }
+
+  void foo8() throws UnsupportedEncodingException {
+    if (true) {
+      byte[] bytes = "111".getBytes("UTF-8");
+      random.nextBytes(bytes);
+      IvParameterSpec iv = new IvParameterSpec(bytes); // Compliant
+    }
+  }
+
+  void foo9() throws UnsupportedEncodingException {
+    byte[] bytes = "111".getBytes("UTF-8");
+    random.nextBytes(bytes);
+    if (true) {
+      IvParameterSpec iv = new IvParameterSpec(bytes); // Compliant
+    }
+  }
+
+  void foo10() throws UnsupportedEncodingException {
+    byte[] bytes = "111".getBytes("UTF-8");
+    if (true) {
+      IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant
+    }
+  }
+
+  void foo11() throws UnsupportedEncodingException {
+    if (true) {
+      byte[] bytes = "111".getBytes("UTF-8");
+      IvParameterSpec iv = new IvParameterSpec(bytes); // Noncompliant
+    }
+  }
+
 }
