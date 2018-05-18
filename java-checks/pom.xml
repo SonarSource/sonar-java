@@ -156,6 +156,16 @@
                   <artifactId>spring-jdbc</artifactId>
                   <version>4.3.7.RELEASE</version>
                 </artifactItem>
+                <dependency>
+                  <groupId>org.springframework.security</groupId>
+                  <artifactId>spring-security-web</artifactId>
+                  <version>5.0.5.RELEASE</version>
+                </dependency>
+                <dependency>
+                  <groupId>org.apache.shiro</groupId>
+                  <artifactId>shiro-web</artifactId>
+                  <version>1.2.3</version>
+                </dependency>
                 <artifactItem>
                   <groupId>org.projectlombok</groupId>
                   <artifactId>lombok</artifactId>

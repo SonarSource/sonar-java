@@ -26,6 +26,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
@@ -38,7 +39,15 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
     private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
     private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
+    private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
+    private static final String SPRING_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   }
+
+  private static List<String> cookieArgumentTypes = Arrays.asList(
+      ClassName.SERVLET_COOKIE,
+      ClassName.JAX_RS_COOKIE,
+      "org.apache.shiro.web.servlet.Cookie"
+  );
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String SET_VALUE_METHOD = "setValue";
@@ -46,24 +55,46 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters());
-  }
-
-  @Override
-  protected void onConstructorFound(NewClassTree newClassTree) {
-    int valueParameterIndex = 1;
-    if (newClassTree.arguments().size() <= valueParameterIndex) {
-      return;
-    }
-    reportIssue(newClassTree.arguments().get(valueParameterIndex), MESSAGE);
+      // setters
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
+      // constructors
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SPRING_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+      // javax.ws.rs.core.NewCookie is a subtype of JAX_RS_COOKIE
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(CONSTRUCTOR).withAnyParameters());
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
     reportIssue(methodTree.methodSelect(), MESSAGE);
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    if (firstArgumentIsCookie(newClassTree)) {
+      reportIssue(newClassTree.arguments().get(0), MESSAGE);
+    } else if (secondArgumentIsValue(newClassTree)) {
+      reportIssue(newClassTree.arguments().get(1), MESSAGE);
+    }
+  }
+
+  private static boolean firstArgumentIsCookie(NewClassTree newClassTree) {
+    if (newClassTree.arguments().isEmpty()) {
+      return false;
+    }
+    ExpressionTree firstArgument = newClassTree.arguments().get(0);
+    return cookieArgumentTypes.stream().anyMatch(type -> firstArgument.symbolType().isSubtypeOf(type));
+  }
+
+  private static boolean secondArgumentIsValue(NewClassTree newClassTree) {
+    if (newClassTree.arguments().size() < 2) {
+      return false;
+    }
+    ExpressionTree secondArgument = newClassTree.arguments().get(1);
+    return secondArgument.symbolType().isSubtypeOf("java.lang.String");
   }
 }
