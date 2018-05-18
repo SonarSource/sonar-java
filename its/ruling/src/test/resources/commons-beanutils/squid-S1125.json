@@ -1,8 +1,17 @@
 {
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BaseDynaBeanMapDecorator.java':[
+123,
+],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
 464,
 471,
 822,
 829,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaBean.java':[
+896,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaClass.java':[
+354,
 ],
 }

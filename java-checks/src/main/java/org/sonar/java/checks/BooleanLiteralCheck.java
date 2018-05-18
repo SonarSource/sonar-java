@@ -20,50 +20,50 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import java.util.List;
 
 @Rule(key = "S1125")
 public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.CONDITIONAL_AND, Kind.CONDITIONAL_OR, Kind.LOGICAL_COMPLEMENT);
+    return ImmutableList.of(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO, Kind.CONDITIONAL_AND, Kind.CONDITIONAL_OR,
+      Kind.LOGICAL_COMPLEMENT, Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     LiteralTree literal;
     if(tree.is(Kind.LOGICAL_COMPLEMENT)) {
-      literal = getBooleanLiteral(((UnaryExpressionTree)tree).expression());
+      literal = getBooleanLiteral(((UnaryExpressionTree) tree).expression());
+    } else if (tree.is(Kind.CONDITIONAL_EXPRESSION)) {
+      ConditionalExpressionTree expression = (ConditionalExpressionTree) tree;
+      literal = getBooleanLiteral(expression.trueExpression(), expression.falseExpression());
     } else {
-      literal = getBooleanLiteralOperands((BinaryExpressionTree)tree);
+      BinaryExpressionTree expression = (BinaryExpressionTree) tree;
+      literal = getBooleanLiteral(expression.leftOperand(), expression.rightOperand());
     }
     if(literal != null) {
       reportIssue(literal, "Remove the literal \"" + literal.value() + "\" boolean value.");
     }
   }
 
-  private static LiteralTree getBooleanLiteral(Tree tree) {
-    LiteralTree result = null;
-    if (tree.is(Kind.BOOLEAN_LITERAL)) {
-      result = (LiteralTree) tree;
-    }
-    return result;
+  @Nullable
+  private static LiteralTree getBooleanLiteral(Tree... trees) {
+    return Arrays.stream(trees)
+      .filter(tree -> tree.is(Kind.BOOLEAN_LITERAL))
+      .map(LiteralTree.class::cast)
+      .findFirst().orElse(null);
   }
 
-  private static LiteralTree getBooleanLiteralOperands(BinaryExpressionTree tree) {
-    LiteralTree result = getBooleanLiteral(tree.leftOperand());
-    if (result == null) {
-      result = getBooleanLiteral(tree.rightOperand());
-    }
-    return result;
-  }
 }
